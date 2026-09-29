@@ -8,35 +8,47 @@ An Example is one *state* plus one or more typed questions. Question kinds:
 Every question gets one *answer slot* in the prompt ("Answer k: ("). The model is read at that slot only,
 restricted to the option-label tokens. No decoding. All slots of an example come from ONE forward pass.
 """
-from __future__ import annotations
-import json, random
-from dataclasses import dataclass, field, asdict
 
-LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"   # 52 single-token labels in Gemma's vocab
+from __future__ import annotations
+
+import json
+import random
+from dataclasses import asdict, dataclass, field
+
+LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"  # 52 single-token labels in Gemma's vocab
 MAX_OPTIONS = len(LETTERS)
 NONE_OPT = "none of the above"
 
 
 @dataclass
 class Q:
-    text: str                       # the instruction / question
-    options: list                   # canonical option strings (for noul: ["no","yes"]; for score: level labels in order)
-    gold: int = -1                  # index into options (-1 unknown)
-    kind: str = "choice"            # choice | noul | score
-    descs: list | None = None       # optional per-option descriptions (same length as options)
-    id: str | None = None           # optional id (api use)
+    text: str  # the instruction / question
+    options: (
+        list  # canonical option strings (for noul: ["no","yes"]; for score: level labels in order)
+    )
+    gold: int = -1  # index into options (-1 unknown)
+    kind: str = "choice"  # choice | noul | score
+    descs: list | None = None  # optional per-option descriptions (same length as options)
+    id: str | None = None  # optional id (api use)
 
 
 @dataclass
 class Example:
     state: str
-    qs: list                        # list[Q]
+    qs: list  # list[Q]
     task: str = ""
     meta: dict = field(default_factory=dict)
 
     def to_json(self):
-        return json.dumps({"state": self.state, "task": self.task, "meta": self.meta,
-                           "qs": [asdict(q) for q in self.qs]}, ensure_ascii=False)
+        return json.dumps(
+            {
+                "state": self.state,
+                "task": self.task,
+                "meta": self.meta,
+                "qs": [asdict(q) for q in self.qs],
+            },
+            ensure_ascii=False,
+        )
 
     @staticmethod
     def from_json(s):
@@ -56,16 +68,29 @@ def render_option(letter, opt, desc):
 
 def truncate_tokens(tok, text, max_tokens):
     """Token-budget truncation keeping head (70%) and tail (30%) of the text."""
+    if max_tokens < 0:
+        raise ValueError("max_tokens must be nonnegative")
     ids = tok.encode(text, add_special_tokens=False)
     if len(ids) <= max_tokens:
         return ids
-    head = int(max_tokens * 0.7); tail = max_tokens - head - 8
     mid = tok.encode("\n[... truncated ...]\n", add_special_tokens=False)
-    return ids[:head] + mid + ids[-tail:]
+    if max_tokens <= len(mid):
+        return ids[:max_tokens]
+    remaining = max_tokens - len(mid)
+    head = int(remaining * 0.7)
+    tail = remaining - head
+    return ids[:head] + mid + (ids[-tail:] if tail else [])
 
 
-def build(example: Example, tok, rng=None, max_state_tokens=1536, shuffle_choice=True, max_options=MAX_OPTIONS,
-          train=True):
+def build(
+    example: Example,
+    tok,
+    rng=None,
+    max_state_tokens=1536,
+    shuffle_choice=True,
+    max_options=MAX_OPTIONS,
+    train=True,
+):
     """Tokenize one example into a single sequence with one answer slot per question.
 
     Returns dict(ids, slots, golds, nopts, perms) where perms[k] maps displayed position j -> original option index.
@@ -73,6 +98,8 @@ def build(example: Example, tok, rng=None, max_state_tokens=1536, shuffle_choice
     'noul' is always (A) no (B) yes.  'score' levels keep their order.
     """
     rng = rng or random
+    if not 1 <= max_options <= MAX_OPTIONS:
+        raise ValueError("max_options must fit the candidate vocabulary")
     bos = [tok.bos_token_id] if tok.bos_token_id is not None else []
     ids = list(bos) + tok.encode("<state>\n", add_special_tokens=False)
     ids += truncate_tokens(tok, example.state, max_state_tokens)
@@ -80,13 +107,25 @@ def build(example: Example, tok, rng=None, max_state_tokens=1536, shuffle_choice
     slots, golds, nopts, perms = [], [], [], []
     n = len(example.qs)
     for k, q in enumerate(example.qs):
+        if not q.options:
+            raise ValueError("a question needs at least one option")
+        if len(q.options) > max_options and (not train or q.kind != "choice"):
+            raise ValueError(
+                "oversized questions require explicit chunking; evaluation cannot use gold-based sampling"
+            )
         opts = list(range(len(q.options)))
         if q.kind == "choice":
             if len(opts) > max_options:
                 others = [i for i in opts if i != q.gold]
-                keep = rng.sample(others, max_options - 1) + ([q.gold] if q.gold >= 0 else [others[0]])
+                keep = (
+                    rng.sample(others, max_options - 1) + [q.gold]
+                    if q.gold >= 0
+                    else rng.sample(others, max_options)
+                )
                 opts = keep
-                rng.shuffle(opts)          # never leave the kept gold at a fixed position (eval mode included)
+                rng.shuffle(
+                    opts
+                )  # never leave the kept gold at a fixed position (eval mode included)
             elif shuffle_choice and train:
                 rng.shuffle(opts)
         label = f"Question {k + 1}" if n > 1 else "Question"
@@ -120,6 +159,7 @@ def letter_ids(tok):
 
 def collate(items, pad_id, bucket=64):
     import torch
+
     T = max(len(it["ids"]) for it in items)
     T = ((T + bucket - 1) // bucket) * bucket
     B = len(items)
@@ -131,14 +171,24 @@ def collate(items, pad_id, bucket=64):
         input_ids[b, :n] = torch.tensor(it["ids"])
         attn[b, :n] = 1
         for k, s in enumerate(it["slots"]):
-            slot_idx.append(s); slot_batch.append(b); golds.append(it["golds"][k]); nopts.append(it["nopts"][k])
-    return dict(input_ids=input_ids, attention_mask=attn, slot_idx=torch.tensor(slot_idx), slot_batch=torch.tensor(slot_batch),
-                golds=torch.tensor(golds), nopts=torch.tensor(nopts))
+            slot_idx.append(s)
+            slot_batch.append(b)
+            golds.append(it["golds"][k])
+            nopts.append(it["nopts"][k])
+    return dict(
+        input_ids=input_ids,
+        attention_mask=attn,
+        slot_idx=torch.tensor(slot_idx),
+        slot_batch=torch.tensor(slot_batch),
+        golds=torch.tensor(golds),
+        nopts=torch.tensor(nopts),
+    )
 
 
 def batches_by_tokens(items, max_tokens, rng, bucket=64, max_rows=384):
     """Group items into micro-batches with a token budget (B*T <= max_tokens)."""
     from collections import defaultdict
+
     groups = defaultdict(list)
     for i, it in enumerate(items):
         T = ((len(it["ids"]) + bucket - 1) // bucket) * bucket
@@ -148,6 +198,6 @@ def batches_by_tokens(items, max_tokens, rng, bucket=64, max_rows=384):
         rng.shuffle(idx)
         B = max(1, min(max_rows, max_tokens // T))
         for c in range(0, len(idx), B):
-            out.append(idx[c:c + B])
+            out.append(idx[c : c + B])
     rng.shuffle(out)
     return out
