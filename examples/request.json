@@ -1,0 +1,16 @@
+{
+  "state": "I was billed twice for September. Please refund the duplicate charge.",
+  "questions": {
+    "team": {
+      "type": "choice",
+      "instructions": "Which department should handle this request?",
+      "criteria": {"billing": "invoices and refunds", "technical": "bugs and outages"}
+    },
+    "refund": {"type": "noul", "instructions": "Is a refund explicitly requested?"},
+    "urgency": {
+      "type": "score",
+      "instructions": "How urgent is the request?",
+      "criteria": ["routine", "soon", "critical"]
+    }
+  }
+}
