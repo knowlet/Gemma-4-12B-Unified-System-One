@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "backend": "laya:convaiinnovations/laya",
+  "metadata": {
+    "model": "convaiinnovations/laya",
+    "revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+    "subfolder": null,
+    "device": "cuda",
+    "max_len": 512,
+    "temperature": [
+      1.6369030475616455,
+      1.2514300346374512,
+      1.983399510383606
+    ],
+    "temperature_by_options": {
+      "choice:3-5": 1.7601518630981445,
+      "choice:6-10": 1.0000158548355103,
+      "score:3-5": 1.2514300346374512,
+      "noul:2": 1.983399510383606,
+      "choice:11+": 0.5,
+      "choice:2": 1.9063563346862793
+    },
+    "runtime_version": "0.3.21"
+  },
+  "dataset_sha256": "cba5062e01f7fcb303ccc98fcb815c14bb20a37f1149b205fa8c29f043c19004",
+  "case_ids": [
+    "billing-en",
+    "technical-en",
+    "sentiment-score"
+  ],
+  "created_at": "2026-09-29T17:06:17.514680+00:00",
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Linux-4.19.0-gvisor-x86_64-with-glibc2.36"
+  },
+  "warmup": 1,
+  "warmup_errors": [],
+  "counts": {
+    "ok": 5
+  },
+  "coverage": 1.0,
+  "metrics": {
+    "n": 5,
+    "acc": 1.0,
+    "nll": 0.19681896683851957,
+    "brier": 0.093397048,
+    "ece": 0.16472,
+    "aurc": 0.0,
+    "acc_at_80": 1.0,
+    "acc_at_50": 1.0,
+    "chance": 0.4666666666666667,
+    "mean_conf": 0.8352799999999998,
+    "score_mae": 0.14359999999999995
+  },
+  "by_type": {
+    "choice": {
+      "n": 2,
+      "acc": 1.0,
+      "nll": 0.29563743481026594,
+      "brier": 0.18749833000000002,
+      "ece": 0.22855000000000003,
+      "aurc": 0.0,
+      "acc_at_80": 1.0,
+      "acc_at_50": 1.0,
+      "chance": 0.5,
+      "mean_conf": 0.77145
+    },
+    "noul": {
+      "n": 2,
+      "acc": 1.0,
+      "nll": 0.1058887946382458,
+      "brier": 0.020271529999999992,
+      "ece": 0.10044999999999993,
+      "aurc": 0.0,
+      "acc_at_80": 1.0,
+      "acc_at_50": 1.0,
+      "chance": 0.5,
+      "mean_conf": 0.8995500000000001
+    },
+    "score": {
+      "n": 1,
+      "acc": 1.0,
+      "nll": 0.18104237529557432,
+      "brier": 0.05144551999999999,
+      "ece": 0.16559999999999997,
+      "aurc": 0.0,
+      "acc_at_80": 1.0,
+      "acc_at_50": 1.0,
+      "chance": 0.3333333333333333,
+      "mean_conf": 0.8344,
+      "score_mae": 0.14359999999999995
+    }
+  },
+  "latency_ms": {
+    "p50": 29.26500199999893,
+    "p95": 63.99904850000091,
+    "requests": 3
+  },
+  "records": [
+    {
+      "case_id": "billing-en",
+      "question_id": "team",
+      "type": "choice",
+      "status": "ok",
+      "gold": "billing",
+      "latency_ms": 29.003380000002466,
+      "probabilities": {
+        "billing": 0.9752,
+        "technical": 0.0248
+      }
+    },
+    {
+      "case_id": "billing-en",
+      "question_id": "refund",
+      "type": "noul",
+      "status": "ok",
+      "gold": "true",
+      "latency_ms": 29.003380000002466,
+      "probabilities": {
+        "false": 0.10719999999999996,
+        "true": 0.8928
+      }
+    },
+    {
+      "case_id": "technical-en",
+      "question_id": "team",
+      "type": "choice",
+      "status": "ok",
+      "gold": "technical",
+      "latency_ms": 29.26500199999893,
+      "probabilities": {
+        "billing": 0.4323,
+        "technical": 0.5677
+      }
+    },
+    {
+      "case_id": "technical-en",
+      "question_id": "refund",
+      "type": "noul",
+      "status": "ok",
+      "gold": "false",
+      "latency_ms": 29.26500199999893,
+      "probabilities": {
+        "false": 0.9063,
+        "true": 0.0937
+      }
+    },
+    {
+      "case_id": "sentiment-score",
+      "question_id": "rating",
+      "type": "score",
+      "status": "ok",
+      "gold": "1",
+      "latency_ms": 67.85838700000113,
+      "probabilities": {
+        "0": 0.1546,
+        "1": 0.8344,
+        "2": 0.011
+      },
+      "score": 0.8564,
+      "gold_score": 1.0
+    }
+  ]
+}
