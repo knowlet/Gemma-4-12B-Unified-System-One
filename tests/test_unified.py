@@ -195,9 +195,10 @@ def test_training_rejects_test_split_and_leakage(model, benchmark_case):
         train_model(model, [train], [calibration], steps=1)
 
 
-def test_legacy_large_choice_evaluation_is_gold_independent():
+def test_legacy_large_choice_evaluation_is_gold_independent(monkeypatch):
     import numpy as np
 
+    from s1 import engine
     from s1.engine import score_examples
     from s1.schema import Example, Q
 
@@ -215,9 +216,19 @@ def test_legacy_large_choice_evaluation_is_gold_independent():
             )
 
     question = Q("choose", [str(i) for i in range(77)], gold=0)
-    first = score_examples(FakeModel(), [Example("state", [question])])[0][0]
+    noul = Q("refund?", ["no", "yes"], kind="noul", descs=["no refund", "refund requested"])
+    original_decide = engine.decide
+    rubrics = []
+
+    def capture(model, state, questions, **kwargs):
+        rubrics.append(questions[1]["criteria"])
+        return original_decide(model, state, questions, **kwargs)
+
+    monkeypatch.setattr(engine, "decide", capture)
+    first = score_examples(FakeModel(), [Example("state", [question, noul])])[0][0]
     question.gold = 76
-    second = score_examples(FakeModel(), [Example("state", [question])])[0][0]
+    second = score_examples(FakeModel(), [Example("state", [question, noul])])[0][0]
+    assert rubrics == [{"false": "no refund", "true": "refund requested"}] * 2
     assert len(first) == 77
     assert first.sum() == pytest.approx(1)
     np.testing.assert_array_equal(first, second)

@@ -142,6 +142,8 @@ def score_examples(
                     question["options"] = criteria
                 elif q.kind == "score":
                     question["levels"] = criteria
+                elif q.kind == "noul" and q.descs:
+                    question["criteria"] = dict(zip(("false", "true"), q.descs))
                 questions.append(question)
             response = decide(
                 model, example.state, questions, max_state_tokens=max_state_tokens, temperature=T
