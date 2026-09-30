@@ -6,7 +6,17 @@ import pytest
 
 
 @pytest.fixture
-def tiny_encoder(tmp_path):
+def cpu_only(monkeypatch):
+    torch = pytest.importorskip("torch")
+    # SetFit chooses its model device separately from the Transformers trainer.
+    # Keep both on CPU even on macOS hosts with MPS or runners with CUDA.
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
+    monkeypatch.setenv("ACCELERATE_USE_CPU", "true")
+
+
+@pytest.fixture
+def tiny_encoder(tmp_path, cpu_only):
     torch = pytest.importorskip("torch")
     pytest.importorskip("sentence_transformers")
     from sentence_transformers import SentenceTransformer, models
@@ -41,21 +51,37 @@ def tiny_encoder(tmp_path):
     BertModel(config).save_pretrained(path)
     tokenizer.save_pretrained(path)
     encoder = SentenceTransformer(
-        modules=[models.Transformer(str(path), max_seq_length=32), models.Pooling(16)]
+        modules=[models.Transformer(str(path), max_seq_length=32), models.Pooling(16)],
+        device="cpu",
     )
     output = tmp_path / "embedding"
     encoder.save(str(output))
     return output
 
 
-def test_real_embedding_and_setfit_train_reload_without_downloads(tiny_encoder, tmp_path):
+def test_real_embedding_and_setfit_train_reload_without_downloads(
+    tiny_encoder, tmp_path, monkeypatch
+):
     pytest.importorskip("setfit")
+    from setfit import Trainer
+
     from s1.evaluation.baselines import BaselineBackend
     from s1.evaluation.contracts import ModelSpec
     from s1.evaluation.datasets import EvaluationCase
     from s1.evaluation.experiments import write_cases
     from s1.evaluation.responses import normalize
     from s1.evaluation.supervision import fit_baseline
+
+    train = Trainer.train
+    training_devices = []
+
+    def checked_train(trainer, *args, **kwargs):
+        devices = (trainer.model.device.type, trainer.st_trainer.args.device.type)
+        training_devices.append(devices)
+        assert devices == ("cpu", "cpu")
+        return train(trainer, *args, **kwargs)
+
+    monkeypatch.setattr(Trainer, "train", checked_train)
 
     cases = [
         EvaluationCase.model_validate(
@@ -99,6 +125,7 @@ def test_real_embedding_and_setfit_train_reload_without_downloads(tiny_encoder, 
         revision="a" * 40,
         steps=1,
     )
+    assert training_devices == [("cpu", "cpu")]
     fitted = BaselineBackend(
         ModelSpec(
             id="setfit",
