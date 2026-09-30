@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 import random
 
@@ -53,6 +54,11 @@ def permute_request(request, rng):
     return request
 
 
+def _request_key(request):
+    """Ignore mapping insertion order for overlap checks; retain sequence order."""
+    return json.dumps(request.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+
+
 def train_model(
     model, train_cases, calibration_cases, *, steps=100, lr=2e-5, brier_weight=0.1, seed=0
 ):
@@ -69,8 +75,8 @@ def train_model(
         )
     if {c.id for c in train_cases} & {c.id for c in calibration_cases}:
         raise ValueError("training and calibration ids overlap")
-    if {c.request.model_dump_json() for c in train_cases} & {
-        c.request.model_dump_json() for c in calibration_cases
+    if {_request_key(c.request) for c in train_cases} & {
+        _request_key(c.request) for c in calibration_cases
     }:
         raise ValueError("training and calibration requests overlap")
     if (

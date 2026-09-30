@@ -98,7 +98,9 @@ large-choice selection are future optimizations, not claimed features.
 Use the same JSONL schema as evaluation, with explicit `split: train` and
 `split: calibration`. Gold is keyed by semantic label, so shuffling options cannot
 change the answer. Training and calibration ids and identical request bodies must
-be disjoint. The test split is never used to fit temperature.
+be disjoint. Request overlap checks ignore JSON object key order, including nested
+objects, while preserving array order and values. This comparison does not reorder
+the requests passed to the model. The test split is never used to fit temperature.
 
 ```bash
 uv sync --extra inference --extra train

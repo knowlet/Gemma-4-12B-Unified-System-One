@@ -298,6 +298,68 @@ def test_training_rejects_test_split_and_leakage(model, benchmark_case):
         train_model(model, [train], [calibration], steps=1)
 
 
+@pytest.mark.parametrize("reordered", ["state", "nested_state", "state_list_item", "criteria"])
+def test_training_rejects_reordered_mapping_keys(benchmark_case, reordered):
+    from s1.training import train_model
+
+    train = benchmark_case.model_copy(deep=True)
+    train.split = "train"
+    train.request.state = {
+        "ticket": {"topic": "billing", "refund": True},
+        "events": [{"kind": "payment", "amount": 10}],
+    }
+    calibration = train.model_copy(deep=True)
+    calibration.id = "calibration-ticket"
+    calibration.split = "calibration"
+    if reordered == "state":
+        calibration.request.state = dict(reversed(calibration.request.state.items()))
+    elif reordered == "nested_state":
+        state = calibration.request.state
+        state["ticket"] = dict(reversed(state["ticket"].items()))
+    elif reordered == "state_list_item":
+        events = calibration.request.state["events"]
+        events[0] = dict(reversed(events[0].items()))
+    else:
+        question = calibration.request.questions[0]
+        question.criteria = dict(reversed(question.criteria.items()))
+
+    assert train.request.model_dump() == calibration.request.model_dump()
+    before = (train.request.model_dump_json(), calibration.request.model_dump_json())
+    assert before[0] != before[1]
+    # Reject leakage before any model/optimizer access, without modifying inputs.
+    with pytest.raises(ValueError, match="requests overlap"):
+        train_model(None, [train], [calibration], steps=1)
+    assert before == (train.request.model_dump_json(), calibration.request.model_dump_json())
+
+
+@pytest.mark.parametrize(
+    "different", ["state_value", "state_list_order", "question_order", "media_order"]
+)
+def test_training_overlap_check_preserves_request_differences(model, benchmark_case, different):
+    from s1.training import train_model
+
+    train = benchmark_case.model_copy(deep=True)
+    train.split = "train"
+    train.request.state = {"events": ["paid", "refunded"]}
+    train.request.media = [AudioInput(samples=[0.1] * 16), AudioInput(samples=[0.2] * 16)]
+    calibration = train.model_copy(deep=True)
+    calibration.id = "calibration-ticket"
+    calibration.split = "calibration"
+    if different == "state_value":
+        calibration.request.state["events"][1] = "disputed"
+    elif different == "state_list_order":
+        calibration.request.state["events"].reverse()
+    elif different == "question_order":
+        calibration.request.questions.reverse()
+    else:
+        calibration.request.media.reverse()
+
+    before = (train.request.model_dump_json(), calibration.request.model_dump_json())
+    report = train_model(model, [train], [calibration], steps=1)
+    assert report["steps"] == 1
+    assert before == (train.request.model_dump_json(), calibration.request.model_dump_json())
+
+
 def test_legacy_large_choice_evaluation_is_gold_independent(monkeypatch):
     import numpy as np
 
