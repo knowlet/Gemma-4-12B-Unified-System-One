@@ -22,7 +22,7 @@ from .adapters import execution_blockers, load_adapter
 from .artifacts import write_json
 from .contracts import ProfileSpec
 from .planning import _configuration_blockers, case_eligibility, runtime_identity
-from .responses import normalize
+from .responses import normalize, pipeline_info
 
 
 class Transition(StrictModel):
@@ -78,30 +78,81 @@ def load_episodes(path):
     return episodes
 
 
+def _call_costs(raw, pipeline, preprocessing_expected):
+    """Keep each dispatched stage's bill; missing bills never mean free work."""
+    has_pipeline = isinstance(pipeline, dict)
+    preprocessing = preprocessing_expected or has_pipeline
+    stages = {}
+    if preprocessing:
+        stages["preprocessing"] = (
+            pipeline.get("preprocess_reported_cost_usd") if has_pipeline else None
+        )
+    # PipelineAdapter records decision_ms even when the decision call raises.
+    # A preprocessing failure has no decision dispatch to charge.
+    if raw is not None or not preprocessing or not has_pipeline or "decision_ms" in pipeline:
+        stages["decision"] = raw.get("cost_usd") if isinstance(raw, dict) else None
+    invalid = False
+    for stage, cost in stages.items():
+        if cost is None:
+            continue
+        try:
+            valid = type(cost) in (float, int) and np.isfinite(float(cost)) and cost >= 0
+        except OverflowError:
+            valid = False
+        if not valid:
+            invalid = True
+            stages[stage] = None
+        else:
+            stages[stage] = float(cost)
+    total = sum(stages.values()) if all(c is not None for c in stages.values()) else None
+    if total is not None and not np.isfinite(total):
+        total, invalid = None, True
+    return stages, total, invalid
+
+
 def _call(adapter, spec, request):
     started = time.perf_counter()
-    raw = adapter.predict(request.model_copy(deep=True))
-    response = normalize(request, raw, spec.capabilities.probabilities)
-    q = request.questions[0]
-    answer = response["answers"][q.id]
-    label = answer["choice"] if answer["probabilities"] is not None else answer["label"]
-    confidence = (
-        max(answer["probabilities"].values()) if answer["probabilities"] is not None else None
-    )
-    cost = raw.get("cost_usd")
-    if cost is not None and (type(cost) not in (float, int) or not np.isfinite(cost) or cost < 0):
-        raise ValueError("invalid reported model cost")
-    return (
-        label,
-        confidence,
-        {
-            "model_id": spec.id,
-            "latency_ms": (time.perf_counter() - started) * 1000,
-            "reported_cost_usd": cost,
-            "ceiling_cost_usd": spec.cost_per_request_usd or 0,
-            "cache_hit": raw.get("cache_hit") if type(raw.get("cache_hit")) is bool else None,
-        },
-    )
+    raw = None
+    call = {
+        "model_id": spec.id,
+        "latency_ms": None,
+        "reported_cost_usd": None,
+        "ceiling_cost_usd": spec.cost_per_request_usd or 0,
+        "cache_hit": None,
+    }
+    try:
+        raw = adapter.predict(request.model_copy(deep=True))
+        pipeline = raw.get("pipeline")
+        stages, total, invalid = _call_costs(raw, pipeline, spec.preprocessing != "none")
+        call.update(
+            pipeline=pipeline_info(pipeline),
+            reported_cost_by_stage_usd=stages,
+            reported_cost_usd=total,
+            cache_hit=raw.get("cache_hit") if type(raw.get("cache_hit")) is bool else None,
+        )
+        if invalid:
+            raise ValueError("invalid reported model or preprocessing cost")
+        response = normalize(request, raw, spec.capabilities.probabilities)
+        answer = response["answers"][request.questions[0].id]
+        label = answer["choice"] if answer["probabilities"] is not None else answer["label"]
+        confidence = (
+            max(answer["probabilities"].values()) if answer["probabilities"] is not None else None
+        )
+    except Exception as exc:
+        if "reported_cost_by_stage_usd" not in call:
+            pipeline = getattr(exc, "evaluation_pipeline", None)
+            stages, total, _ = _call_costs(raw, pipeline, spec.preprocessing != "none")
+            call.update(
+                pipeline=pipeline_info(pipeline),
+                reported_cost_by_stage_usd=stages,
+                reported_cost_usd=total,
+            )
+        call["error_type"] = type(exc).__name__
+        exc.evaluation_workflow_call = call
+        raise
+    finally:
+        call["latency_ms"] = (time.perf_counter() - started) * 1000
+    return label, confidence, call
 
 
 def run_episode(episode, policy, small, strong, specs, threshold):
@@ -136,16 +187,7 @@ def run_episode(episode, policy, small, strong, specs, threshold):
                 calls.append(call)
         except Exception as exc:
             # A failed dispatched call still consumes the conservative cost ceiling.
-            calls.append(
-                {
-                    "model_id": spec.id,
-                    "latency_ms": None,
-                    "reported_cost_usd": None,
-                    "ceiling_cost_usd": spec.cost_per_request_usd or 0,
-                    "cache_hit": None,
-                    "error_type": type(exc).__name__,
-                }
-            )
+            calls.append(exc.evaluation_workflow_call)
             outcome = "model_error"
             break
         events.append({"step": step, "state_id": current, "action": action})

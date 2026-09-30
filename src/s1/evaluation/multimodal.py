@@ -103,32 +103,30 @@ class PipelineAdapter:
             )
         finally:
             self._local.pipeline = {"preprocess_ms": (time.perf_counter() - started) * 1000}
-        if not isinstance(response, dict) or not isinstance(response.get("text"), str):
+        if not isinstance(response, dict):
             raise BackendResponseError("preprocessor must return text")
         cost = response.get("cost_usd")
         if cost is not None and (
             type(cost) not in (int, float) or not math.isfinite(cost) or cost < 0
         ):
             raise BackendResponseError("invalid reported preprocessing cost")
-        preprocess_ms = (time.perf_counter() - started) * 1000
-        self._local.pipeline = {
-            "preprocess_ms": preprocess_ms,
-            "preprocess_reported_cost_usd": cost,
-        }
+        self._local.pipeline["preprocess_reported_cost_usd"] = cost
+        if not isinstance(response.get("text"), str):
+            raise BackendResponseError("preprocessor must return text")
         converted = request.model_copy(
             update={
                 "media": [],
                 "state": {"state": request.state, "media_observation": response["text"]},
             }
         )
-        result = self.adapter.predict(converted)
+        decision_started = time.perf_counter()
+        try:
+            result = self.adapter.predict(converted)
+        finally:
+            self._local.pipeline["decision_ms"] = (time.perf_counter() - decision_started) * 1000
         return {
             **result,
-            "pipeline": {
-                "preprocess_ms": preprocess_ms,
-                "preprocess_reported_cost_usd": cost,
-                "decision_ms": (time.perf_counter() - started) * 1000 - preprocess_ms,
-            },
+            "pipeline": dict(self._local.pipeline),
         }
 
     def predict_batch(self, requests):

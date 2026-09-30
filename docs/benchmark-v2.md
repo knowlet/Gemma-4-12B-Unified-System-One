@@ -332,8 +332,10 @@ is measured replay wall time, not simulated external tool duration.
 `workflow_summary.json` reports completion, false completion, fallback, retries,
 p95 and cost per success. The numerator includes **all episodes**, including failures.
 Reported model bills are separate from conservative ceilings and fixture tool costs;
-missing bills stay unknown. `workflow_comparison.json` pairs policy deltas by source
-group. Provider cache carryover is unknown and disclosed.
+calls retain preprocessing and decision bills separately, and sum each stage once.
+An unknown bill from any executed stage keeps the reported total unknown, including
+downstream failures after successful preprocessing. `workflow_comparison.json` pairs
+policy deltas by source group. Provider cache carryover is unknown and disclosed.
 
 ## Boundaries of this delivery
 
