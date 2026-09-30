@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python: ['3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.12.19'
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      - run: uv sync --locked --extra api
+      - run: uv run --no-sync ruff check .
+      - run: uv run --no-sync ruff format --check .
+      - run: uv run --no-sync pytest --cov=s1 --cov-report=xml
+      - run: uv run --no-sync s1 benchmark --backend uniform examples/benchmarks/smoke.jsonl --output artifacts/uniform.json
+      - run: uv build --no-sources
+      - uses: actions/upload-artifact@v4
+        with:
+          name: contracts-${{ matrix.python }}
+          path: |
+            coverage.xml
+            artifacts/uniform.json
+            dist/*
+  inference:
+    # macOS wheels have no CUDA payload; tiny models need no GPU or HF access.
+    runs-on: macos-14
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.12.19'
+          python-version: '3.12'
+          enable-cache: true
+      - run: uv sync --locked --extra inference --extra api --extra train
+      - run: uv run --no-sync pytest

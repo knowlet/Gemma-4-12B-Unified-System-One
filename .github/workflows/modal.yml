@@ -1,0 +1,52 @@
+name: Modal
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Cloud smoke, real model smoke, or authenticated deployment
+        type: choice
+        options: [smoke, model-smoke, deploy]
+        default: smoke
+
+permissions:
+  contents: read
+
+concurrency:
+  group: modal-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  modal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Configure this GitHub Environment with reviewers for production deployments.
+    environment: modal
+    env:
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+      S1_HF_SECRET: ${{ vars.S1_HF_SECRET }}
+      S1_REVISION: ${{ vars.S1_REVISION }}
+      REQUESTED_ACTION: ${{ inputs.action }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.12.19'
+          python-version: '3.12'
+      - run: uv sync --locked --extra modal
+      - name: Verify credentials are configured
+        run: test -n "$MODAL_TOKEN_ID" && test -n "$MODAL_TOKEN_SECRET"
+      - name: Run selected cloud action
+        run: |
+          if [ "$REQUESTED_ACTION" = deploy ]; then
+            uv run --no-sync modal deploy apps/modal/unified.py
+          else
+            uv run --no-sync modal run apps/modal/unified.py --mode "$REQUESTED_ACTION"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modal-results
+          path: artifacts/
+          if-no-files-found: ignore

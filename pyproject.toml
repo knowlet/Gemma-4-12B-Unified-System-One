@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gemma-system-one"
+version = "0.1.0"
+description = "Multimodal, candidate-only System One decisions and reproducible model comparisons"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = "MIT"
+dependencies = ["numpy>=2,<3", "pydantic>=2.11,<3", "httpx>=0.28,<1"]
+
+[project.optional-dependencies]
+inference = ["torch==2.8.0", "torchvision==0.23.0", "transformers==5.17.0", "accelerate>=1.10,<2", "pillow>=11,<13", "soundfile>=0.13,<1", "librosa>=0.11,<1", "sentencepiece>=0.2,<1", "protobuf>=5,<7"]
+train = ["peft==0.21.0", "datasets>=4,<5", "requests>=2.32,<3"]
+api = ["fastapi>=0.115,<1", "uvicorn>=0.34,<1"]
+modal = ["modal==1.6.0"]
+laya = ["laya==0.3.21"]
+
+[project.scripts]
+s1 = "s1.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8.3,<10", "pytest-cov>=6,<8", "ruff>=0.12,<1", "build>=1.2,<2"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/s1"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["inference: requires the inference extra; never downloads weights", "integration: explicitly invoked live model or cloud checks"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = [".agents", ".codex", "*.md", "src/s1/data_real.py", "src/s1/data_synth.py", "src/s1/demo*.py", "src/s1/doom_sim.py", "scripts/make_report.py", "apps/modal/build_data.py", "apps/modal/build_emails.py", "apps/modal/emu_check.py", "apps/modal/evaluate.py", "apps/modal/games.py", "apps/modal/hf_upload.py", "apps/modal/mario_data.py", "apps/modal/serve.py", "apps/modal/train.py", "apps/modal/typesafe_eval.py"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/test_unified.py" = ["E402"]
+"tests/test_api.py" = ["E402"]
