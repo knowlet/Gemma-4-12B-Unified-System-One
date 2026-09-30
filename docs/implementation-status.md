@@ -7,10 +7,11 @@ conventional commits. Do not publish or claim live model measurements from fixtu
 - [x] E0 registry/preflight/budget planning (`f3136f0`).
 - [x] E1 reference execution/artifacts (`2228e8a`).
 - [x] E2 hard/soft/ordinal metrics, split audit, source-group bootstrap, and
-  calibration-only fitting/application implemented (validation in progress).
+  calibration-only fitting/application (`dc4f9fe`).
 - [ ] E1 additional provider protocols, low-cost baselines, dataset import/provenance.
-- [ ] E3 native independent Gemma batching, controlled readouts and sweep/parity tools.
-- [ ] E4 fixed concurrency/open-loop scheduling, deadlines, goodput and timing.
+- [x] E3 native independent Gemma batching, G0–G4 controlled readouts,
+  synthetic N/K/length/reuse preparation, order perturbation and paired behavior tools.
+- [x] E4 fixed concurrency/open-loop scheduling, SLO accounting, goodput and timing.
 - [ ] E5 multimodal counterfactual/pipeline/retention comparisons.
 - [ ] E6 matched few-shot support/training recipes and seed comparisons.
 - [ ] E7 resettable workflow evaluation, cost accounting and standalone reports.

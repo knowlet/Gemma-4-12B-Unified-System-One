@@ -277,3 +277,47 @@ The first usable comparative milestone remains E0–E3. Further work should pres
 separate generalist, supervised specialist, native multimodal, pipeline, systems
 and workflow tracks. Local forward time and remote API latency must remain separate;
 latency/N is amortized cost, not the time a user waits for an answer.
+
+## E3/E4 execution additions
+
+Gemma entries `gemma-g0/g1/g2/g4` now select one-token constrained generation,
+full head at decision positions, independent sequential candidate readout, and
+independent native batches. G3 remains causal. G0 emits hard labels only: probability
+metrics stay null. G4 groups compatible processor tensor shapes and right-pads text;
+media are preserved, with separate forwards for incompatible shapes. Runtime
+records disclose forward count, batch sizes and sequence token counts (whole batch
+scope, repeated on its members; do not sum duplicate batch telemetry).
+
+Tiny real Gemma forwards test text/image/audio/mixed input, unrelated-question
+changes, reordering, mixed-request batches and full-head parity. FP32 uses 1e-5
+absolute/relative tolerance; BF16 cross-batch checks use 2e-3 because GEMM shapes can
+change rounding. These checks do not establish real 12B quality or bitwise parity.
+Shared-prefix and packed branch caches are not enabled; their future release must
+pass these same behavior comparisons against G4.
+
+```bash
+uv run --no-sync s1 eval prepare-sweep --output artifacts/shape-sweep
+uv run --no-sync s1 eval perturb examples/benchmarks/text-contract.jsonl --seed 3 --output artifacts/reordered.jsonl
+uv run --no-sync s1 eval behavior artifacts/reference artifacts/reordered --left-model gemma-g4 --right-model gemma-g4
+```
+
+Shape workloads are explicitly synthetic, lengths are characters, and reused states
+retain source groups. Register chosen cells as suites, then vary profile B/C. No
+full Cartesian grid is executed automatically. Models still require explicit enable,
+revision, capabilities and cost ceilings.
+
+Profiles now accept `load_mode = "closed_loop" | "fixed" | "poisson"`, `arrival_rate`
+(requests/sec, required for fixed/Poisson), and `slo_ms`. C bounds worker concurrency;
+B calls the adapter's declared native or explicitly loop-emulated batch API. Open-loop
+uses B=1; server batching is a separate deployment policy. Arrival timestamps are
+precomputed independently of service completion. All calls drain before model close.
+SLO is an observed deadline, not forced cancellation of local GPU computation. Backend
+timeouts remain censored observations and never become successful latency samples.
+
+Summaries include queue dispatch lag, end-to-end p99, successful request/decision
+throughput, correct-within-SLO goodput and all-critical-fields-correct goodput. Fewer
+than 10,000 completions marks p99 as screening only. Model setup time and process
+lifetime peak RSS are separate; CUDA memory telemetry is available for local Gemma.
+RSS/GPU allocator peaks are process-scoped, not isolated per-request allocations.
+Set model `hardware_label` and `service_region` for the comparison cell. Local Gemma
+uses one batch worker; concurrency measurements belong to a configured service.

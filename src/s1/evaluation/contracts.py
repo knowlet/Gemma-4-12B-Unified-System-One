@@ -50,10 +50,13 @@ class ModelSpec(ConfigModel):
     calibration_file: str | None = None
     base_calibration: Literal["none", "checkpoint", "provider"] | None = None
     runtime: str = Field(default="reference", min_length=1)
+    readout: Literal["candidate", "full", "generate"] = "candidate"
     device: str | None = Field(default=None, min_length=1)
     subfolder: str | None = Field(default=None, min_length=1)
     context_limit: int = Field(default=16384, ge=1, strict=True)
     http_timeout_seconds: float = Field(default=120, gt=0, strict=True)
+    hardware_label: str | None = None
+    service_region: str | None = None
     endpoint_env: EnvironmentName | None = None
     token_env: EnvironmentName | None = None
     # An operator-supplied conservative ceiling, including local compute costs.
@@ -118,6 +121,9 @@ class ProfileSpec(ConfigModel):
     warmup: int = Field(default=0, ge=0, strict=True)
     batch_size: int = Field(default=1, ge=1, strict=True)
     concurrency: int = Field(default=1, ge=1, strict=True)
+    load_mode: Literal["closed_loop", "fixed", "poisson"] = "closed_loop"
+    arrival_rate: float | None = Field(default=None, gt=0, strict=True)
+    slo_ms: float | None = Field(default=None, gt=0, strict=True)
     require_native_batch: StrictBool = False
     require_independent_questions: StrictBool = False
     require_probabilities: StrictBool = False
@@ -128,6 +134,10 @@ class ProfileSpec(ConfigModel):
     def unique_models(self):
         if len(set(self.models)) != len(self.models):
             raise ValueError("profile model ids must be unique")
+        if self.load_mode != "closed_loop" and self.arrival_rate is None:
+            raise ValueError("open-loop load requires arrival_rate")
+        if self.load_mode != "closed_loop" and self.batch_size != 1:
+            raise ValueError("open-loop load uses B=1; server batching is a separate policy")
         return self
 
 

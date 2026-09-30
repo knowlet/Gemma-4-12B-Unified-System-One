@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 
 from .artifacts import read_records, write_json
+from .loadgen import systems_metrics
 from .metrics import quality_metrics
 
 
@@ -25,6 +26,7 @@ def summarize_run(directory) -> dict:
         calls = [row for row in requests if row["model_id"] == model_id]
         measured = [row for row in calls if row["phase"] == "measurement"]
         valid = [row for row in rows if row["status"] == "ok"]
+        distributions = [row for row in valid if row["probabilities"] is not None]
         repetitions = cell["identity"]["profile"]["repetitions"]
         expected = sum(cell["coverage"]["decisions"].values()) * repetitions
         eligible = cell["coverage"]["decisions"]["eligible"] * repetitions
@@ -47,6 +49,7 @@ def summarize_run(directory) -> dict:
             },
             "records_complete": len(rows) == expected,
             "metrics": quality_metrics(rows),
+            "systems": systems_metrics(calls, rows),
             "warmup_counts": dict(
                 Counter(row["status"] for row in calls if row["phase"] == "warmup")
             ),
@@ -59,8 +62,8 @@ def summarize_run(directory) -> dict:
                 / len(actual_choices)
                 if actual_choices
                 else None,
-                "standardized_argmax_accuracy": standardized_correct / len(valid)
-                if valid
+                "standardized_argmax_accuracy": standardized_correct / len(distributions)
+                if distributions
                 else None,
                 "operational_correctness": actual_correct / eligible
                 if attempted and eligible

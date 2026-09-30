@@ -87,3 +87,83 @@ notes = "Candidate from the planning discussion; exact weights and capabilities 
 id = "setfit"
 adapter = "unimplemented"
 notes = "Supervised specialist track; matched support data required in E6."
+
+[[models]]
+id = "gemma-g0"
+adapter = "gemma"
+model_id = "google/gemma-4-12B-it"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+readout = "generate"
+calibration = "none"
+notes = "Controlled readout; pin the same revision and declare cost before enabling."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "none"
+batch = "none"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "gemma-g1"
+adapter = "gemma"
+model_id = "google/gemma-4-12B-it"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+readout = "full"
+calibration = "none"
+notes = "Controlled readout; pin the same revision and declare cost before enabling."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "gemma-g2"
+adapter = "gemma"
+model_id = "google/gemma-4-12B-it"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+readout = "candidate"
+calibration = "none"
+notes = "Controlled readout; pin the same revision and declare cost before enabling."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "gemma-g4"
+adapter = "gemma"
+model_id = "google/gemma-4-12B-it"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "independent_batch"
+readout = "candidate"
+calibration = "none"
+notes = "Controlled readout; pin the same revision and declare cost before enabling."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "native"
+concurrent_requests = false
+independent_questions = true

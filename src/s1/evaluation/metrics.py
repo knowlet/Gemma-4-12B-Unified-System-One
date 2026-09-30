@@ -93,6 +93,11 @@ def quality_metrics(records):
     binary_scores, binary_gold = [], []
     zero_gold = 0
     for row in rows:
+        if row["type"] == "score" and "score" in row and "gold_score" in row:
+            mae.append(abs(row["score"] - row["gold_score"]))
+            ordinal_error.append(
+                abs(row["labels"].index(row["actual_label"]) - row["labels"].index(row["gold"]))
+            )
         dist = row.get("probabilities")
         if dist is None:
             continue
@@ -122,10 +127,7 @@ def quality_metrics(records):
             binary_scores.append(float(dist["true"]))
             binary_gold.append(row["gold"] == "true")
         if row["type"] == "score":
-            ordinal_error.append(abs(int(p.argmax()) - y))
             rps.append(float(np.square(np.cumsum(p - onehot)[:-1]).sum() / (len(p) - 1)))
-            if "score" in row and "gold_score" in row:
-                mae.append(abs(row["score"] - row["gold_score"]))
     bins, ece = [], 0.0
     for index in range(15):
         selected = [i for i, conf in enumerate(confidence) if min(int(conf * 15), 14) == index]

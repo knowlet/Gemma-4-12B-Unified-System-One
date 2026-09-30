@@ -8,7 +8,6 @@ from typing import Literal
 
 from pydantic import Field
 
-from s1.backends import normalize_response
 from s1.contracts import StrictModel
 from s1.errors import BackendTimeoutError
 
@@ -18,6 +17,7 @@ from .contracts import ModelSpec
 from .datasets import fingerprint, load_cases
 from .planning import create_plan
 from .reporting import write_summary
+from .responses import execution_info, normalize
 
 
 class RuntimeTelemetry(StrictModel):
@@ -71,6 +71,15 @@ def _predictions(case, request_record, response):
         if response is not None:
             answer = response["answers"][question.id]
             dist = answer["probabilities"]
+            if dist is None:
+                row["actual_label"] = answer["label"]
+                if question.type == "score":
+                    row["score"] = question.score_values()[question.labels().index(answer["label"])]
+                    row["gold_score"] = question.score_values()[
+                        question.labels().index(row["gold"])
+                    ]
+                yield row
+                continue
             best = max(question.labels(), key=dist.__getitem__)
             row.update(
                 probabilities=dist,
@@ -88,7 +97,18 @@ def _predictions(case, request_record, response):
 
 
 def _record_call(
-    artifacts, adapter, cell, case, repetition, index, phase, eligibility, now, reason=None
+    artifacts,
+    adapter,
+    cell,
+    case,
+    repetition,
+    index,
+    phase,
+    eligibility,
+    now,
+    reason=None,
+    completed=None,
+    slo_ms=None,
 ):
     row = {
         "request_id": f"{cell['model_id']}:{repetition}:{phase}:{index}",
@@ -108,12 +128,31 @@ def _record_call(
         "latency_ms": None,
     }
     response = None
-    if adapter is not None and eligibility == "eligible" and reason is None:
+    if completed is not None:
+        completed = dict(completed)
+        response = completed.pop("response")
+        error = completed.pop("error_type")
+        row.update(completed)
+        if error:
+            artifacts.append(
+                "errors",
+                {
+                    "model_id": cell["model_id"],
+                    "request_id": row["request_id"],
+                    "phase": phase,
+                    "error_type": error,
+                    "status": row["status"],
+                },
+            )
+    elif adapter is not None and eligibility == "eligible" and reason is None:
         row["scheduled_at_s"] = row["dispatched_at_s"] = now()
         try:
             # A mutating adapter cannot change golds, later repetitions or normalization.
             result = adapter.predict(case.request.model_copy(deep=True))
-            response = normalize_response(case.request, result)
+            row["adapter_execution"] = execution_info(result)
+            response = normalize(
+                case.request, result, cell["identity"]["model"]["capabilities"]["probabilities"]
+            )
         except BaseException as exc:
             interrupted = not isinstance(exc, Exception)
             row["status"] = (
@@ -144,6 +183,9 @@ def _record_call(
             row["status"] = "ok"
             row["all_required_answers_ready_at_s"] = row["terminated_at_s"] = now()
             row["latency_ms"] = (row["terminated_at_s"] - row["dispatched_at_s"]) * 1000
+        row["deadline_miss"] = (
+            (row["status"] != "ok" or row["latency_ms"] > slo_ms) if slo_ms is not None else None
+        )
     artifacts.append("requests", row)
     if phase == "measurement":
         for prediction in _predictions(case, row, response):
@@ -185,8 +227,8 @@ def execute(
         "plan": plan,
         "started_at": datetime.now(timezone.utc).isoformat(),
         "finished_at": None,
-        "timing": "monotonic seconds since run start; serial dispatch, no artificial arrival schedule",
-        "execution_mode": "sequential",
+        "timing": "monotonic seconds since run start; latency measured from scheduled arrival",
+        "execution_mode": profile.load_mode,
         "retries": 0,
         "runner_result_cache": False,
         "seed_policy": "recorded_only; no stochastic sampling or support selection in E1",
@@ -216,8 +258,10 @@ def execute(
                 try:
                     if not reasons:
                         try:
+                            setup_started = now()
                             adapter = adapter_factory(spec, environment)
                             execution["telemetry"] = _telemetry(adapter, spec)
+                            execution["setup_ms"] = (now() - setup_started) * 1000
                             execution["status"] = "running"
                         except Exception as exc:
                             execution["status"] = "setup_error"
@@ -238,6 +282,11 @@ def execute(
                         if entry["eligibility"] == "eligible"
                     ]
                     running = execution["status"] == "running"
+                    use_loadgen = (
+                        profile.batch_size > 1
+                        or profile.concurrency > 1
+                        or profile.load_mode != "closed_loop"
+                    )
                     for repetition in range(profile.repetitions):
                         if running:
                             for index in range(profile.warmup):
@@ -254,6 +303,8 @@ def execute(
                                 )
                                 failures |= status in ("error", "timeout")
                         for index, (case, entry) in enumerate(zip(cases, cell["cases"])):
+                            if running and use_loadgen and entry["eligibility"] == "eligible":
+                                continue
                             status = _record_call(
                                 artifacts,
                                 adapter if running else None,
@@ -265,10 +316,42 @@ def execute(
                                 entry["eligibility"],
                                 now,
                                 reason=None if running else execution["reasons"],
+                                slo_ms=profile.slo_ms,
                             )
                             failures |= status in ("error", "timeout")
+                        if running and use_loadgen:
+                            from .loadgen import run_load
+
+                            indexed = [
+                                (i, case)
+                                for i, (case, entry) in enumerate(zip(cases, cell["cases"]))
+                                if entry["eligibility"] == "eligible"
+                            ]
+                            for index, case, completed in run_load(
+                                adapter,
+                                indexed,
+                                profile,
+                                spec.capabilities.probabilities,
+                                now,
+                                repetition,
+                            ):
+                                status = _record_call(
+                                    artifacts,
+                                    None,
+                                    cell,
+                                    case,
+                                    repetition,
+                                    index,
+                                    "measurement",
+                                    "eligible",
+                                    now,
+                                    completed=completed,
+                                )
+                                failures |= status in ("error", "timeout")
                     if running:
                         execution["status"] = "completed_with_errors" if failures else "completed"
+                        if hasattr(adapter, "resources"):
+                            execution["resources"] = adapter.resources()
                 finally:
                     if adapter is not None:
                         try:

@@ -1,0 +1,145 @@
+"""Controlled Gemma readouts; native batches preserve all processor tensors."""
+
+from __future__ import annotations
+
+from collections import defaultdict
+
+from s1.contracts import answer_from_probabilities
+from s1.unified import project_candidates
+
+SEQUENCE_KEYS = {
+    "input_ids",
+    "attention_mask",
+    "mm_token_type_ids",
+    "token_type_ids",
+    "position_ids",
+}
+
+
+def _bucket_key(inputs):
+    # Media tensors are concatenated in sequence order. Different media shapes go
+    # to separate real forwards; padding image/audio features with invented data
+    # would change the processor contract.
+    return tuple(
+        (key, tuple(value.shape[1:]) if key not in SEQUENCE_KEYS else (), str(value.dtype))
+        for key, value in sorted(inputs.items())
+    )
+
+
+def _collate(prepared, pad_id):
+    import torch
+    from torch.nn.functional import pad
+
+    length = max(inputs["input_ids"].shape[1] for inputs, _, _ in prepared)
+    result = {}
+    for key in prepared[0][0]:
+        values = [inputs[key] for inputs, _, _ in prepared]
+        if key in SEQUENCE_KEYS:
+            if any(value.ndim != 2 or value.shape[0] != 1 for value in values):
+                raise ValueError("unsupported processor sequence tensor shape")
+            fill = pad_id if key == "input_ids" else 0
+            values = [pad(value, (0, length - value.shape[1]), value=fill) for value in values]
+        result[key] = torch.cat(values, dim=0)
+    return result
+
+
+def predict_batch(model, requests, *, independent=True, readout="candidate"):
+    """G1/G2/G3/G4, with full-head projection only at required answer positions."""
+    import torch
+
+    if readout not in ("candidate", "full"):
+        raise ValueError("native batching requires candidate or full readout")
+    if not requests:
+        raise ValueError("empty batch")
+    buckets, answers = defaultdict(list), [{} for _ in requests]
+    model.lm.eval()
+    with torch.inference_mode():
+        for index, request in enumerate(requests):
+            groups = [[q] for q in request.questions] if independent else [request.questions]
+            for questions in groups:
+                part = request.model_copy(update={"questions": questions})
+                prepared = model.prepare(part)
+                buckets[_bucket_key(prepared[0])].append((index, questions, prepared))
+        batch_sizes, token_counts = [], []
+        for items in buckets.values():
+            prepared = [item[2] for item in items]
+            inputs = _collate(prepared, getattr(model.tok, "pad_token_id", None) or 0)
+            batch_sizes.append(len(items))
+            token_counts.extend(p[0]["input_ids"].shape[1] for p in prepared)
+            out = model.backbone(**inputs, use_cache=False, return_dict=True)
+            hidden = torch.cat(
+                [out.last_hidden_state[i, slots] for i, (_, slots, _) in enumerate(prepared)]
+            )
+            counts = torch.cat([p[2] for p in prepared])
+            if readout == "candidate":
+                logits = project_candidates(
+                    hidden, model.head, model.letters, counts, model.softcap
+                )
+            else:
+                logits = model.head(hidden.to(model.head.weight.dtype))
+                if model.softcap is not None:
+                    logits = torch.tanh(logits / model.softcap) * model.softcap
+                logits = logits[:, model.letters].float()
+                mask = (
+                    torch.arange(len(model.letters), device=logits.device)[None] >= counts[:, None]
+                )
+                logits = logits.masked_fill(mask, float("-inf"))
+            probabilities = (logits / model.temperature).softmax(-1).cpu().tolist()
+            offset = 0
+            for index, questions, _ in items:
+                for question in questions:
+                    answers[index][question.id] = answer_from_probabilities(
+                        question, probabilities[offset][: len(question.labels())]
+                    )
+                    offset += 1
+    return [
+        {
+            "answers": result,
+            "execution": {
+                "forward_calls": len(buckets),
+                "batch_sizes": batch_sizes,
+                "sequence_tokens": token_counts,
+                "scope": "whole_adapter_batch",
+                "readout": readout,
+                "independent_questions": independent,
+            },
+        }
+        for result in answers
+    ]
+
+
+def predict_sequential(model, request, *, readout="candidate"):
+    answers = {}
+    for question in request.questions:
+        part = request.model_copy(update={"questions": [question]})
+        result = predict_batch(model, [part], readout=readout)[0]
+        answers.update(result["answers"])
+    return {"answers": answers}
+
+
+def predict_generated(model, request):
+    """G0: exactly one constrained answer token per question, thinking disabled.
+
+    Generation scores are deliberately not presented as complete probabilities.
+    """
+    import torch
+
+    answers = {}
+    model.lm.eval()
+    with torch.inference_mode():
+        for question in request.questions:
+            inputs, _, _ = model.prepare(request.model_copy(update={"questions": [question]}))
+            allowed = model.letters[: len(question.labels())].tolist()
+            output = model.lm.generate(
+                **inputs,
+                max_new_tokens=1,
+                do_sample=False,
+                use_cache=False,
+                prefix_allowed_tokens_fn=lambda batch_id, ids: allowed,
+                pad_token_id=getattr(model.tok, "pad_token_id", None) or 0,
+            )
+            token = output[0, -1].item()
+            if token not in allowed:
+                raise ValueError("generated token is outside the candidate set")
+            answers[question.id] = {"label": question.labels()[allowed.index(token)]}
+    return {"answers": answers}

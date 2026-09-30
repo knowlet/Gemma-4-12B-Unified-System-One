@@ -232,7 +232,6 @@ def test_budget_prevents_loading(registry, tmp_path):
     "changes,reason",
     [
         ({"batch_size": 2}, "batch_unavailable"),
-        ({"concurrency": 2}, "executor_requires_b1_c1"),
     ],
 )
 def test_executor_does_not_emulate_unsupported_parallel_modes(registry, tmp_path, changes, reason):

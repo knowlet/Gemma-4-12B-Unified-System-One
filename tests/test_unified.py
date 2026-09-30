@@ -17,6 +17,69 @@ from s1.unified import UnifiedDecisionModel, candidate_ids, project_candidates
 pytestmark = pytest.mark.inference
 
 
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+@pytest.mark.parametrize("modality", ["text", "image", "audio", "mixed"])
+def test_native_batch_independence(model, decision_request, dtype, modality):
+    from s1.evaluation.gemma import predict_batch, predict_sequential
+
+    model.lm.to(dtype=dtype)
+    if modality in ("image", "mixed"):
+        buffer = io.BytesIO()
+        Image.new("RGB", (4, 4), "blue").save(buffer, format="PNG")
+        decision_request.media.append(ImageInput(data=base64.b64encode(buffer.getvalue()).decode()))
+    if modality in ("audio", "mixed"):
+        decision_request.media.append(AudioInput(samples=[0.2] * 16))
+    reference = predict_sequential(model, decision_request)
+    changed = decision_request.model_copy(deep=True)
+    changed.questions[0].instructions = "A completely unrelated and longer question"
+    changed.questions.reverse()
+    # An unrelated text-only request is processed in a separate shape bucket.
+    text_only = decision_request.model_copy(deep=True)
+    text_only.media = []
+    calls = []
+    hook = model.backbone.register_forward_hook(lambda _, args, output: calls.append(1))
+    try:
+        batch = predict_batch(model, [decision_request, changed, text_only])
+    finally:
+        hook.remove()
+    assert len(calls) == (1 if modality == "text" else 2)
+    assert sum(batch[0]["execution"]["batch_sizes"]) == 9
+    # Different BF16 GEMM shapes can round differently. This is a numerical
+    # tolerance check, not a claim of bitwise batch parity.
+    tolerance = 2e-3 if dtype == torch.bfloat16 else 1e-5
+    for q in decision_request.questions:
+        expected = list(reference["answers"][q.id]["probabilities"].values())
+        actual = list(batch[0]["answers"][q.id]["probabilities"].values())
+        torch.testing.assert_close(
+            torch.tensor(actual), torch.tensor(expected), atol=tolerance, rtol=tolerance
+        )
+        assert actual.index(max(actual)) == expected.index(max(expected))
+        if q.id != decision_request.questions[0].id:
+            other = list(batch[1]["answers"][q.id]["probabilities"].values())
+            torch.testing.assert_close(
+                torch.tensor(other), torch.tensor(expected), atol=tolerance, rtol=tolerance
+            )
+    full = predict_batch(model, [decision_request], readout="full")[0]
+    same_batch = predict_batch(model, [decision_request])[0]
+    for q in decision_request.questions:
+        torch.testing.assert_close(
+            torch.tensor(list(full["answers"][q.id]["probabilities"].values())),
+            torch.tensor(list(same_batch["answers"][q.id]["probabilities"].values())),
+            atol=1e-5,
+            rtol=1e-5,
+        )
+
+
+def test_generation_is_one_hard_label_per_question(model, decision_request):
+    from s1.evaluation.gemma import predict_generated
+    from s1.evaluation.responses import normalize
+
+    result = normalize(decision_request, predict_generated(model, decision_request), "none")
+    for question in decision_request.questions:
+        assert result["answers"][question.id]["label"] in question.labels()
+        assert result["answers"][question.id]["probabilities"] is None
+
+
 class Tokenizer:
     unk_token_id = 255
 

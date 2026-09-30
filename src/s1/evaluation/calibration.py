@@ -127,7 +127,16 @@ class CalibratedAdapter:
         self.adapter, self.temperature = adapter, artifact["temperature"]
 
     def predict(self, request):
-        response = normalize_response(request, self.adapter.predict(request))
+        return self._apply(request, self.adapter.predict(request))
+
+    def predict_batch(self, requests):
+        responses = self.adapter.predict_batch(requests)
+        if len(responses) != len(requests):
+            raise ValueError("batch response count mismatch")
+        return [self._apply(request, response) for request, response in zip(requests, responses)]
+
+    def _apply(self, request, response):
+        response = normalize_response(request, response)
         answers = {}
         for q in request.questions:
             original = response["answers"][q.id]

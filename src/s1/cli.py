@@ -85,6 +85,18 @@ def main(argv=None):
     calibration.add_argument("directory", type=Path)
     calibration.add_argument("--model", required=True)
     calibration.add_argument("--output", required=True, type=Path)
+    sweep = planning.add_parser("prepare-sweep")
+    sweep.add_argument("--output", required=True, type=Path)
+    sweep.add_argument("--cases", type=int, default=8)
+    perturb = planning.add_parser("perturb")
+    perturb.add_argument("dataset", type=Path)
+    perturb.add_argument("--output", required=True, type=Path)
+    perturb.add_argument("--seed", type=int, default=0)
+    behavior = planning.add_parser("behavior")
+    behavior.add_argument("left", type=Path)
+    behavior.add_argument("right", type=Path)
+    behavior.add_argument("--left-model", required=True)
+    behavior.add_argument("--right-model", required=True)
     train = commands.add_parser("train")
     train.add_argument("--train-data", type=Path, required=True)
     train.add_argument("--calibration-data", type=Path, required=True)
@@ -97,6 +109,23 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         if args.command == "eval":
+            if args.eval_command in ("prepare-sweep", "perturb", "behavior"):
+                from .evaluation.experiments import (
+                    behavior_comparison,
+                    perturb_dataset,
+                    prepare_sweep,
+                )
+
+                if args.eval_command == "prepare-sweep":
+                    report = prepare_sweep(args.output, cases_per_cell=args.cases)
+                elif args.eval_command == "perturb":
+                    report = perturb_dataset(args.dataset, args.output, seed=args.seed)
+                else:
+                    report = behavior_comparison(
+                        args.left, args.right, args.left_model, args.right_model
+                    )
+                print(json.dumps(report, indent=2, allow_nan=False))
+                return 0
             if args.eval_command == "audit-splits":
                 from .evaluation.datasets import audit_splits
 

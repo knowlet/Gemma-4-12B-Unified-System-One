@@ -19,20 +19,37 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
     if spec.calibration == "domain":
         spec = spec.model_copy(update={"calibration": spec.base_calibration})
     reasons = []
-    if profile.batch_size != 1 or profile.concurrency != 1 or profile.require_native_batch:
-        reasons.append("executor_requires_b1_c1")
+    if profile.batch_size > 1 and not (
+        (
+            spec.adapter == "gemma"
+            and spec.execution_mode == "independent_batch"
+            and spec.readout != "generate"
+        )
+        or spec.capabilities.batch == "loop_emulated"
+    ):
+        reasons.append("executor_batch_unavailable")
+    if profile.concurrency > 1 and spec.adapter in ("gemma", "laya"):
+        reasons.append("local_model_concurrency_unavailable")
     if spec.runtime != "reference":
         reasons.append("executor_runtime_unavailable")
-    if spec.capabilities.probabilities != "complete":
-        reasons.append("executor_requires_complete_probabilities")
+    if spec.capabilities.probabilities == "unknown":
+        reasons.append("executor_requires_known_probability_contract")
+    if spec.adapter != "gemma" and spec.readout != "candidate":
+        reasons.append("readout_only_supported_by_gemma")
     if spec.adapter == "uniform":
         if spec.execution_mode != "sequential" or spec.calibration != "none":
             reasons.append("uniform_policy_mismatch")
         if spec.precision != "float64":
             reasons.append("uniform_precision_mismatch")
     elif spec.adapter == "gemma":
-        if spec.execution_mode != "causal_multislot":
-            reasons.append("gemma_requires_causal_multislot")
+        if spec.execution_mode not in ("causal_multislot", "independent_batch", "sequential"):
+            reasons.append("gemma_execution_mode_unavailable")
+        if spec.readout == "generate" and (
+            spec.execution_mode != "sequential" or spec.capabilities.probabilities != "none"
+        ):
+            reasons.append("generation_requires_sequential_hard_labels")
+        if spec.readout != "generate" and spec.capabilities.probabilities != "complete":
+            reasons.append("logit_readout_requires_complete_probabilities")
         if spec.calibration not in ("none", "checkpoint"):
             reasons.append("gemma_calibration_unavailable")
         if spec.subfolder:
@@ -74,7 +91,29 @@ class ReferenceAdapter:
         return self.spec.capabilities
 
     def predict(self, request: DecisionRequest) -> dict:
+        if self.spec.adapter == "gemma":
+            from .gemma import predict_batch, predict_generated, predict_sequential
+
+            if self.spec.readout == "generate":
+                return predict_generated(self.backend.model, request)
+            if self.spec.execution_mode == "sequential":
+                return predict_sequential(self.backend.model, request, readout=self.spec.readout)
+            return predict_batch(
+                self.backend.model,
+                [request],
+                readout=self.spec.readout,
+                independent=self.spec.execution_mode == "independent_batch",
+            )[0]
         return self.backend.predict(request)
+
+    def predict_batch(self, requests):
+        if self.spec.adapter == "gemma" and self.spec.execution_mode == "independent_batch":
+            from .gemma import predict_batch
+
+            return predict_batch(self.backend.model, requests, readout=self.spec.readout)
+        if self.spec.capabilities.batch == "loop_emulated":
+            return [self.predict(request) for request in requests]
+        raise ValueError("native batching is unavailable for this adapter")
 
     def telemetry(self) -> dict:
         # Never persist arbitrary backend metadata (e.g. endpoint URLs or tokens).
@@ -100,6 +139,21 @@ class ReferenceAdapter:
             "precision": self.spec.precision,
             "context_policy": "provider" if self.spec.adapter == "http" else "not_applicable",
         }
+
+    def resources(self):
+        import resource
+
+        result = {"process_peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}
+        if self.spec.adapter == "gemma" and self.backend.model.device.startswith("cuda"):
+            import torch
+
+            device = self.backend.model.device
+            result.update(
+                gpu_name=torch.cuda.get_device_name(device),
+                peak_allocated_bytes=torch.cuda.max_memory_allocated(device),
+                peak_reserved_bytes=torch.cuda.max_memory_reserved(device),
+            )
+        return result
 
     def close(self) -> None:
         if hasattr(self.backend, "close"):
