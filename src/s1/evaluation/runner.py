@@ -4,39 +4,18 @@ from __future__ import annotations
 
 import time
 from datetime import datetime, timezone
-from typing import Literal
 
-from pydantic import Field
-
-from s1.contracts import StrictModel
 from s1.errors import BackendTimeoutError
 
 from .adapters import execution_blockers, load_adapter
 from .artifacts import Artifacts
 from .contracts import ModelSpec
 from .datasets import fingerprint, load_cases
+from .integrity import RuntimeTelemetry as RuntimeTelemetry
+from .integrity import validate_runtime_telemetry as _telemetry
 from .planning import create_plan
 from .reporting import write_summary
 from .responses import execution_info, normalize, pipeline_info
-
-
-class RuntimeTelemetry(StrictModel):
-    revision: str | None = None
-    device: str | None = None
-    precision: Literal["float64", "float32", "float16", "bfloat16", "quantized", "provider"]
-    temperature: float | None = Field(default=None, gt=0)
-    calibration_temperature: float | None = Field(default=None, gt=0)
-    context_limit: int | None = Field(default=None, ge=1)
-    context_policy: Literal["reject", "truncate", "provider", "not_applicable"]
-
-
-def _telemetry(adapter, spec):
-    result = RuntimeTelemetry.model_validate(adapter.telemetry())
-    if spec.adapter in ("gemma", "laya") and result.revision != spec.revision:
-        raise ValueError("resolved model revision differs from the plan")
-    if result.precision != spec.precision:
-        raise ValueError("resolved precision differs from the plan")
-    return result.model_dump(mode="json")
 
 
 def _predictions(case, request_record, response):

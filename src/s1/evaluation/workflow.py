@@ -11,6 +11,7 @@ import hashlib
 import json
 import time
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Literal
 
 import numpy as np
@@ -21,6 +22,7 @@ from s1.contracts import DecisionRequest, StrictModel
 from .adapters import execution_blockers, load_adapter
 from .artifacts import write_json
 from .contracts import ProfileSpec
+from .integrity import fitting_provenance_blockers, validate_runtime_telemetry
 from .planning import _configuration_blockers, case_eligibility, runtime_identity
 from .responses import normalize, pipeline_info
 
@@ -314,19 +316,22 @@ def execute_workflows(
     )
     environment = dict(environment or {})
     reasons, service = [], {}
+    cases = [
+        SimpleNamespace(id=episode.id, group_id=episode.group_id, request=state.observation)
+        for episode in episodes
+        for state in episode.states.values()
+    ]
     for spec in specs:
         if not (spec.enabled or spec.id in enable_models):
             reasons.append(f"disabled:{spec.id}")
         blockers, identity = _configuration_blockers(spec, profile, environment)
         reasons.extend(blockers + execution_blockers(spec, profile))
+        reasons.extend(fitting_provenance_blockers(spec, cases))
         service[spec.id] = identity
         if spec.adapter != "uniform" and spec.cost_per_request_usd is None:
             reasons.append("unknown_cost_ceiling")
-        for episode in episodes:
-            for state in episode.states.values():
-                case = type("CaseView", (), {"id": episode.id, "request": state.observation})()
-                if case_eligibility(spec, case)["eligibility"] != "eligible":
-                    reasons.append(f"unsupported_workflow:{spec.id}")
+        if any(case_eligibility(spec, case)["eligibility"] != "eligible" for case in cases):
+            reasons.append(f"unsupported_workflow:{spec.id}")
     # Four policies: small + strong + rules(worker worst case) + cascade(two calls).
     steps = sum(e.max_steps for e in episodes)
     reserve_calls = steps * 5
@@ -360,6 +365,10 @@ def execute_workflows(
         "reserved_calls": reserve_calls,
         "reserved_cost_usd": reserve_cost,
         "reasons": sorted(set(reasons)),
+        "execution": {
+            spec.id: {"status": "not_run", "reasons": sorted(set(reasons)), "telemetry": None}
+            for spec in specs
+        },
         "provider_cache_policy": "unknown",
         "result_cache": False,
         "cost_policy": "reported provider costs when available; otherwise explicit ceilings; replay tool costs",
@@ -370,7 +379,26 @@ def execute_workflows(
         if not reasons:
             for spec in specs:
                 if spec.id not in adapters:
-                    adapters[spec.id] = adapter_factory(spec, environment)
+                    execution = manifest["execution"][spec.id]
+                    setup_started = time.perf_counter()
+                    try:
+                        adapters[spec.id] = adapter_factory(spec, environment)
+                        execution["telemetry"] = validate_runtime_telemetry(adapters[spec.id], spec)
+                        execution["status"] = "ready"
+                    except Exception as exc:
+                        execution.update(
+                            status="setup_error",
+                            reasons=["adapter_setup_failed"],
+                            error_type=type(exc).__name__,
+                        )
+                        manifest["status"] = "setup_error"
+                        manifest["reasons"].append(f"adapter_setup_failed:{spec.id}")
+                    execution["setup_ms"] = (time.perf_counter() - setup_started) * 1000
+                    # Persist resolved identity or setup failure before any prediction.
+                    write_json(output / "workflow_manifest.json", manifest)
+                    if manifest["status"] == "setup_error":
+                        break
+        if manifest["status"] == "running":
             with (output / "episodes.jsonl").open("x", encoding="utf-8") as stream:
                 for policy in ("always_small", "always_strong", "rules_first", "cascade"):
                     for episode in episodes:
@@ -385,6 +413,16 @@ def execute_workflows(
                         rows.append(row)
                         stream.write(json.dumps(row, allow_nan=False) + "\n")
                         stream.flush()
+            failed_models = {
+                call["model_id"]
+                for row in rows
+                for call in row["calls"]
+                if call.get("error_type") is not None
+            }
+            for model_id, execution in manifest["execution"].items():
+                execution["status"] = (
+                    "completed_with_errors" if model_id in failed_models else "completed"
+                )
             manifest["status"] = "completed"
     except BaseException:
         manifest["status"] = "interrupted"

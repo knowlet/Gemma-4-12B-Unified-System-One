@@ -329,6 +329,12 @@ test. Records preserve every routed model call, failure, transition, retry, fall
 model switch and reported cache hit. Unobserved cache loss remains null. Task latency
 is measured replay wall time, not simulated external tool duration.
 
+Preflight checks every episode state, including states that a policy might never
+visit, for training/calibration overlap by episode ID, source group and canonical
+request hash. An overlap blocks adapter construction. After loading, workflows apply
+the same resolved precision/revision checks as normal evaluation before any inference.
+The workflow manifest preserves each adapter's resolved telemetry and setup failure.
+
 `workflow_summary.json` reports completion, false completion, fallback, retries,
 p95 and cost per success. The numerator includes **all episodes**, including failures.
 Reported model bills are separate from conservative ceilings and fixture tool costs;

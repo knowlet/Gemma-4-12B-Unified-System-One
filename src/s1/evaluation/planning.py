@@ -15,6 +15,7 @@ from urllib.parse import urlsplit
 
 from .contracts import ModelSpec, ProfileSpec
 from .datasets import fingerprint, load_cases, request_fingerprint
+from .integrity import fitting_provenance_blockers
 from .registry import Registry
 
 
@@ -251,21 +252,7 @@ def create_plan(
             model = model.model_copy(update={"enabled": True})
         case_rows = [case_eligibility(model, case) for case in cases]
         reasons, service = _configuration_blockers(model, profile, environment or {})
-        if model.decision_adapter_path:
-            try:
-                provenance = json.loads(
-                    (Path(model.decision_adapter_path) / "training-provenance.json").read_text()
-                )
-                for case in cases:
-                    for split in ("train", "calibration"):
-                        if (
-                            case.id in provenance[f"{split}_ids"]
-                            or (case.group_id or case.id) in provenance[f"{split}_groups"]
-                            or request_fingerprint(case.request) in provenance[f"{split}_requests"]
-                        ):
-                            reasons.append("evaluation_overlaps_adapter_training")
-            except (OSError, ValueError, KeyError, TypeError):
-                reasons.append("missing_adapter_training_provenance")
+        reasons.extend(fitting_provenance_blockers(model, cases))
         if model.preprocessing != "none" and suite.track != "pipeline":
             reasons.append("preprocessor_requires_pipeline_track")
         if (
@@ -274,26 +261,6 @@ def create_plan(
             and any(c.request.media for c in cases)
         ):
             reasons.append("raw_media_pipeline_requires_preprocessor")
-        if model.adapter in ("tfidf", "prior", "setfit") and model.artifact_file:
-            try:
-                artifact = json.loads(Path(model.artifact_file).read_text())
-                for case in cases:
-                    if (
-                        case.id in artifact["train_ids"]
-                        or (case.group_id or case.id) in artifact["train_groups"]
-                        or request_fingerprint(case.request) in artifact["train_requests"]
-                    ):
-                        reasons.append("evaluation_overlaps_training")
-                        break
-            except (OSError, ValueError, KeyError, TypeError):
-                reasons.append("invalid_training_provenance")
-        if model.calibration == "domain":
-            from .calibration import validate_calibration
-
-            try:
-                validate_calibration(model, cases)
-            except (ValueError, OSError):
-                reasons.append("invalid_or_overlapping_calibration")
         counts = Counter(row["eligibility"] for row in case_rows)
         decision_counts = {
             status: sum(row["decisions"] for row in case_rows if row["eligibility"] == status)
