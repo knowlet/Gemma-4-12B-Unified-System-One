@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 
 from .artifacts import read_records, write_json
+from .metrics import quality_metrics
 
 
 def summarize_run(directory) -> dict:
@@ -45,6 +46,7 @@ def summarize_run(directory) -> dict:
                 "source_groups": len({row["group_id"] for row in rows}),
             },
             "records_complete": len(rows) == expected,
+            "metrics": quality_metrics(rows),
             "warmup_counts": dict(
                 Counter(row["status"] for row in calls if row["phase"] == "warmup")
             ),

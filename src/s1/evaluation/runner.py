@@ -25,6 +25,7 @@ class RuntimeTelemetry(StrictModel):
     device: str | None = None
     precision: Literal["float64", "float32", "float16", "bfloat16", "quantized", "provider"]
     temperature: float | None = Field(default=None, gt=0)
+    calibration_temperature: float | None = Field(default=None, gt=0)
     context_limit: int | None = Field(default=None, ge=1)
     context_policy: Literal["reject", "truncate", "provider", "not_applicable"]
 
@@ -59,6 +60,13 @@ def _predictions(case, request_record, response):
             actual_label=None,
             standardized_argmax=None,
             probabilities=None,
+        )
+        row.update(
+            labels=question.labels(),
+            score_values=question.score_values() if question.type == "score" else None,
+            soft_gold=(case.soft_gold or {}).get(question.id),
+            critical=question.id in (case.critical_questions or []),
+            modalities=sorted({"text", *(m.type for m in case.request.media)}),
         )
         if response is not None:
             answer = response["answers"][question.id]

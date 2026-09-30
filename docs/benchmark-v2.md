@@ -230,11 +230,43 @@ before formal systems comparisons in E3/E4.
 
 ## Remaining milestones
 
+E2 tools are now available:
+
+```bash
+uv run --no-sync s1 eval audit-splits data/train.jsonl data/calibration.jsonl data/test.jsonl
+uv run --no-sync s1 eval compare artifacts/run-a artifacts/run-b --seed 0 --resamples 2000 --output artifacts/comparison.json
+uv run --no-sync s1 eval calibrate artifacts/calibration-run --model gemma-g3 --output artifacts/temperature.json
+```
+
+Use a profile with `split = "calibration"` to collect calibration predictions.
+Fitting refuses test runs, incomplete records and already domain-calibrated input.
+To apply the artifact, set `calibration = "domain"`, `base_calibration`, the
+`calibration_file` path (relative to the working directory), and its printed
+`calibration_sha256`. The base model settings must match the fitting run. Evaluation
+case IDs, group IDs and canonical request hashes must be disjoint from fitting data.
+The probability power transform uses a disclosed 1e-12 floor and positive fitted T.
+
+Optional `soft_gold` maps question IDs to complete target distributions, and
+`critical_questions` identifies critical fields; neither is sent to adapters.
+Summaries now contain sum-over-classes Brier, floored NLL, 15-bin reliability/ECE,
+tie-averaged risk–coverage/AURC, NouL ROC-AUC/average precision/FPR/FNR, numeric Score
+MAE, ordinal error and RPS normalized by K−1. Soft-target cross-entropy/Brier/KL and
+teacher agreement are reported separately from hard-label quality. Undefined metrics
+remain null. Missing distributions never become invented probabilities.
+
+Task-macro accuracy requires task IDs; macro-F1 is calculated within task/schema/type
+groups. NouL uses positive label `true` and strict P(true)>0.5, retaining false on a
+tie. NLL discloses its floor and number of zero-gold-probability observations.
+Bootstrap intervals resample source groups, keeping repeated decisions, questions
+and translations together. Fewer than two groups are inconclusive. Pair comparisons
+report both common-valid conditional and common-eligible operational differences,
+plus full counts; intervals are descriptive and not multiplicity-adjusted.
+
 | Stage | Deliverable | Acceptance focus |
 | --- | --- | --- |
 | E0 — implemented | Registry, preflight, budgeted dry-run plans | Offline; unknown ≠ unsupported; deterministic identities; honest budgets |
 | E1 — core implemented | Reference bridges, grouped bilingual fixtures, execution records | Gold isolated; honest failure/coverage records; additional model families and representative datasets still pending |
-| E2 | Actual choice vs standardized argmax, hard/soft/ordinal metrics, calibration, cluster bootstrap | Explicit denominators; no test fitting; hand-checkable reference metrics |
+| E2 — implemented | Hard/soft/ordinal metrics, calibration, split audit, paired cluster bootstrap | Explicit denominators; no test fitting; hand-checkable reference metrics |
 | E3 | Gemma G4 independent reference, N/K/B sweeps, order sensitivity | Separate causal and independent semantics; reference parity |
 | E4 | Concurrency/open-loop load generation, timing and telemetry | Timeouts retained; quality-under-load and correct-within-SLO goodput |
 | E5 | Native media, OCR/ASR alternatives, counterfactuals and retention | Content sensitivity and full preprocessing cost |

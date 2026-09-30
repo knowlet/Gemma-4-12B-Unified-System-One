@@ -47,6 +47,8 @@ class ModelSpec(ConfigModel):
     ] = "unknown"
     calibration: Literal["none", "checkpoint", "domain", "provider", "unknown"] = "unknown"
     calibration_sha256: Digest | None = None
+    calibration_file: str | None = None
+    base_calibration: Literal["none", "checkpoint", "provider"] | None = None
     runtime: str = Field(default="reference", min_length=1)
     device: str | None = Field(default=None, min_length=1)
     subfolder: str | None = Field(default=None, min_length=1)
@@ -64,6 +66,10 @@ class ModelSpec(ConfigModel):
     def consistent_settings(self):
         if self.calibration == "domain" and self.calibration_sha256 is None:
             raise ValueError("domain calibration requires calibration_sha256")
+        if self.calibration == "domain" and (
+            not self.calibration_file or not self.base_calibration
+        ):
+            raise ValueError("domain calibration requires calibration_file and base_calibration")
         if self.adapter != "http" and (self.endpoint_env or self.token_env):
             raise ValueError("endpoint_env and token_env are only valid for HTTP adapters")
         if self.adapter == "uniform" and self.cost_per_request_usd not in (None, 0):
@@ -106,6 +112,7 @@ class Budget(ConfigModel):
 class ProfileSpec(ConfigModel):
     id: Identifier
     suite: Identifier
+    split: Literal["test", "calibration"] = "test"
     models: tuple[Identifier, ...] = Field(min_length=1)
     repetitions: int = Field(default=1, ge=1, strict=True)
     warmup: int = Field(default=0, ge=0, strict=True)

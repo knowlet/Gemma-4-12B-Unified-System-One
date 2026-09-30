@@ -74,6 +74,17 @@ def main(argv=None):
         sub.add_argument("--output", type=Path, required=command == "run")
     summary = planning.add_parser("summarize", help="recompute summary from saved run records")
     summary.add_argument("directory", type=Path)
+    audit = planning.add_parser("audit-splits")
+    audit.add_argument("datasets", nargs="+", type=Path)
+    comparison = planning.add_parser("compare")
+    comparison.add_argument("directories", nargs="+", type=Path)
+    comparison.add_argument("--seed", type=int, default=0)
+    comparison.add_argument("--resamples", type=int, default=2000)
+    comparison.add_argument("--output", type=Path)
+    calibration = planning.add_parser("calibrate")
+    calibration.add_argument("directory", type=Path)
+    calibration.add_argument("--model", required=True)
+    calibration.add_argument("--output", required=True, type=Path)
     train = commands.add_parser("train")
     train.add_argument("--train-data", type=Path, required=True)
     train.add_argument("--calibration-data", type=Path, required=True)
@@ -86,6 +97,31 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         if args.command == "eval":
+            if args.eval_command == "audit-splits":
+                from .evaluation.datasets import audit_splits
+
+                report = audit_splits(args.datasets)
+                print(json.dumps(report, indent=2))
+                return 0 if report["valid"] else 1
+            if args.eval_command == "compare":
+                from .evaluation.statistics import compare_runs
+
+                report = compare_runs(args.directories, seed=args.seed, resamples=args.resamples)
+                if args.output:
+                    write_report(report, args.output)
+                print(json.dumps(report, indent=2, allow_nan=False))
+                return 0
+            if args.eval_command == "calibrate":
+                from .evaluation.calibration import fit_from_run
+
+                print(
+                    json.dumps(
+                        fit_from_run(args.directory, args.model, args.output),
+                        indent=2,
+                        allow_nan=False,
+                    )
+                )
+                return 0
             if args.eval_command == "summarize":
                 from .evaluation.reporting import write_summary
 

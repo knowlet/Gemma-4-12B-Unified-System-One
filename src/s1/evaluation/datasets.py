@@ -3,14 +3,22 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from s1.benchmark import Case
 
-METADATA_FIELDS = ("group_id", "task_id", "language", "schema_id")
+METADATA_FIELDS = (
+    "group_id",
+    "task_id",
+    "language",
+    "schema_id",
+    "soft_gold",
+    "critical_questions",
+)
 
 
 class EvaluationCase(Case):
@@ -19,6 +27,29 @@ class EvaluationCase(Case):
     task_id: str | None = Field(default=None, min_length=1)
     language: str | None = Field(default=None, min_length=1)
     schema_id: str | None = Field(default=None, min_length=1)
+    soft_gold: dict[str, dict[str, float]] | None = None
+    critical_questions: list[str] | None = None
+
+    @model_validator(mode="after")
+    def validate_annotations(self):
+        from s1.contracts import validate_distribution
+
+        questions = {q.id: q for q in self.request.questions}
+        if self.critical_questions is not None:
+            if (
+                len(set(self.critical_questions)) != len(self.critical_questions)
+                or set(self.critical_questions) - questions.keys()
+            ):
+                raise ValueError("critical_questions must contain unique request question ids")
+        if self.soft_gold is not None:
+            if set(self.soft_gold) - questions.keys():
+                raise ValueError("soft_gold has unknown question ids")
+            for key, target in self.soft_gold.items():
+                labels = questions[key].labels()
+                if set(target) != set(labels):
+                    raise ValueError("soft_gold must cover all candidate labels")
+                validate_distribution([target[label] for label in labels], len(labels))
+        return self
 
     def metadata(self) -> dict:
         return {
@@ -27,6 +58,7 @@ class EvaluationCase(Case):
             "task_id": self.task_id,
             "language": self.language,
             "schema_id": self.schema_id,
+            "split": self.split,
         }
 
 
@@ -54,3 +86,39 @@ def fingerprint(cases) -> str:
         for case in cases
     ]
     return hashlib.sha256("\n".join(rows).encode()).hexdigest()
+
+
+def audit_splits(paths) -> dict:
+    """Reject source-group, ID, or identical-request leakage across splits."""
+    seen = {"id": {}, "group": {}, "request": {}}
+    counts, overlaps = {}, []
+    for path in paths:
+        for case in load_cases(path):
+            counts[case.split] = counts.get(case.split, 0) + 1
+            request_key = hashlib.sha256(
+                json.dumps(
+                    case.request.model_dump(mode="json"), sort_keys=True, separators=(",", ":")
+                ).encode()
+            ).hexdigest()
+            for kind, key in (
+                ("id", case.id),
+                ("group", case.group_id or case.id),
+                ("request", request_key),
+            ):
+                previous = seen[kind].setdefault(key, set())
+                if previous - {case.split}:
+                    overlaps.append(
+                        {
+                            "kind": kind,
+                            "splits": sorted(previous | {case.split}),
+                            "key_sha256": hashlib.sha256(key.encode()).hexdigest(),
+                        }
+                    )
+                previous.add(case.split)
+    return {"valid": not overlaps, "split_counts": counts, "overlaps": overlaps}
+
+
+def request_fingerprint(request):
+    return hashlib.sha256(
+        json.dumps(request.model_dump(mode="json"), sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()

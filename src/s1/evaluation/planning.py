@@ -14,7 +14,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from .contracts import ModelSpec, ProfileSpec
-from .datasets import fingerprint, load_cases
+from .datasets import fingerprint, load_cases, request_fingerprint
 from .registry import Registry
 
 
@@ -80,6 +80,8 @@ def case_eligibility(model: ModelSpec, case) -> dict:
             unsupported.append(f"max_{name}_exceeded")
     return {
         "case_id": case.id,
+        "group_id": getattr(case, "group_id", None) or case.id,
+        "request_sha256": request_fingerprint(case.request),
         "decisions": len(case.request.questions),
         "eligibility": "unsupported" if unsupported else "unknown" if unknown else "eligible",
         "reasons": unsupported + unknown,
@@ -168,8 +170,8 @@ def create_plan(
         raise ValueError("--enable-model must name a model selected by the profile")
     suite = registry.suites[profile.suite]
     cases = load_cases(registry.dataset_path(suite))
-    if any(case.split != "test" for case in cases):
-        raise ValueError("evaluation planning requires a test-only dataset")
+    if any(case.split != profile.split for case in cases):
+        raise ValueError(f"evaluation planning requires a {profile.split}-only dataset")
     dataset_hash = fingerprint(cases)
     if suite.dataset_sha256 and suite.dataset_sha256 != dataset_hash:
         raise ValueError("dataset fingerprint differs from the suite's pinned dataset_sha256")
@@ -183,6 +185,13 @@ def create_plan(
             model = model.model_copy(update={"enabled": True})
         case_rows = [case_eligibility(model, case) for case in cases]
         reasons, service = _configuration_blockers(model, profile, environment or {})
+        if model.calibration == "domain":
+            from .calibration import validate_calibration
+
+            try:
+                validate_calibration(model, cases)
+            except (ValueError, OSError):
+                reasons.append("invalid_or_overlapping_calibration")
         counts = Counter(row["eligibility"] for row in case_rows)
         decision_counts = {
             status: sum(row["decisions"] for row in case_rows if row["eligibility"] == status)

@@ -16,6 +16,8 @@ class Adapter(Protocol):
 
 
 def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
+    if spec.calibration == "domain":
+        spec = spec.model_copy(update={"calibration": spec.base_calibration})
     reasons = []
     if profile.batch_size != 1 or profile.concurrency != 1 or profile.require_native_batch:
         reasons.append("executor_requires_b1_c1")
@@ -106,6 +108,16 @@ class ReferenceAdapter:
 
 
 def load_adapter(spec: ModelSpec, environment) -> Adapter:
+    if spec.calibration == "domain":
+        from .calibration import CalibratedAdapter, validate_calibration
+
+        artifact = validate_calibration(spec)
+        return CalibratedAdapter(
+            load_adapter(
+                spec.model_copy(update={"calibration": spec.base_calibration}), environment
+            ),
+            artifact,
+        )
     # Optional model libraries are still imported only inside their constructors.
     from s1.backends import GemmaBackend, HTTPBackend, LayaBackend, UniformBackend
 
