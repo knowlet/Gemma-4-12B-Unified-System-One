@@ -6,6 +6,12 @@ import secrets
 import threading
 
 from .contracts import DecisionRequest
+from .errors import (
+    BackendResponseError,
+    BackendTimeoutError,
+    BackendTransportError,
+    RequestValidationError,
+)
 
 
 def create_app(backend, *, api_key=None):
@@ -30,7 +36,11 @@ def create_app(backend, *, api_key=None):
         try:
             with lock:
                 return normalize_response(request, backend.predict(request))
-        except ValueError as exc:
+        except RequestValidationError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except BackendTimeoutError as exc:
+            raise HTTPException(status_code=504, detail=str(exc)) from exc
+        except (BackendResponseError, BackendTransportError) as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     return app

@@ -11,7 +11,8 @@ from PIL import Image
 from transformers import Gemma4UnifiedConfig, Gemma4UnifiedForConditionalGeneration
 
 from s1.contracts import AudioInput, ImageInput
-from s1.unified import UnifiedDecisionModel, candidate_ids
+from s1.errors import RequestValidationError
+from s1.unified import UnifiedDecisionModel, candidate_ids, project_candidates
 
 pytestmark = pytest.mark.inference
 
@@ -89,7 +90,9 @@ def model():
 
 
 @pytest.mark.parametrize("modality", ["text", "image", "audio", "mixed"])
-def test_projection_matches_full_lm_head(model, decision_request, modality):
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+def test_projection_matches_full_lm_head(model, decision_request, modality, dtype):
+    model.lm.to(dtype=dtype)
     if modality in ("image", "mixed"):
         buffer = io.BytesIO()
         Image.new("RGB", (4, 4), "red").save(buffer, format="PNG")
@@ -103,7 +106,9 @@ def test_projection_matches_full_lm_head(model, decision_request, modality):
         full = model.lm(**inputs, use_cache=False).logits[0, slots][:, model.letters]
         candidate = model.logits(decision_request)
     for i, count in enumerate(counts):
-        torch.testing.assert_close(candidate[i, :count], full[i, :count], atol=1e-5, rtol=1e-5)
+        torch.testing.assert_close(
+            candidate[i, :count], full[i, :count].float(), atol=1e-5, rtol=1e-5
+        )
         assert torch.isneginf(candidate[i, count:]).all()
     # A selected-row implementation must never call the full output head.
     handle = model.head.register_forward_hook(lambda *args: pytest.fail("full LM head was called"))
@@ -118,9 +123,29 @@ def test_projection_matches_full_lm_head(model, decision_request, modality):
     assert len(result["answers"]) == 3
 
 
+@pytest.mark.parametrize("softcap", [None, 30.0])
+def test_bfloat16_softcap_preserves_native_tie_and_mask(softcap):
+    head = torch.nn.Linear(1, 4, bias=True, dtype=torch.bfloat16)
+    with torch.no_grad():
+        head.weight.copy_(torch.tensor([[0.0], [14.625], [14.75], [0.0]]))
+        head.bias.zero_()
+    hidden = torch.ones((2, 1), dtype=torch.bfloat16)
+    ids = torch.tensor([1, 2])
+    counts = torch.tensor([2, 1])
+    native = head(hidden)[:, ids]
+    if softcap is not None:
+        native = torch.tanh(native / softcap) * softcap
+        assert native[0, 0] == native[0, 1]
+    expected = native.float()
+    expected[1, 1] = float("-inf")
+    actual = project_candidates(hidden, head, ids, counts, softcap)
+    torch.testing.assert_close(actual, expected, atol=0, rtol=0)
+    assert actual.argmax(-1).tolist() == expected.argmax(-1).tolist()
+
+
 def test_context_rejection_and_temperature(model, decision_request):
     model.max_context = 5
-    with pytest.raises(ValueError, match="nothing was truncated"):
+    with pytest.raises(RequestValidationError, match="nothing was truncated"):
         model.prepare(decision_request)
     for temperature in (0, -1, float("nan"), float("inf")):
         with pytest.raises(ValueError):
@@ -129,8 +154,86 @@ def test_context_rejection_and_temperature(model, decision_request):
 
 def test_corrupt_image_is_a_validation_error(model, decision_request):
     decision_request.media.append(ImageInput(data=base64.b64encode(b"not an image").decode()))
-    with pytest.raises(ValueError, match="invalid"):
+    with pytest.raises(RequestValidationError, match="invalid"):
         model.prepare(decision_request)
+
+
+@pytest.mark.parametrize("data", ["!invalid-base64!", "圖片", "bm90IGFuIGltYWdl"])
+def test_invalid_image_is_still_a_client_error(model, request_data, data):
+    pytest.importorskip("fastapi")
+    from fastapi.testclient import TestClient
+
+    from s1.api import create_app
+
+    request_data["media"] = [{"type": "image", "data": data}]
+    client = TestClient(create_app(model), raise_server_exceptions=False)
+    for path in ("/decide", "/v1/systemone"):
+        response = client.post(path, json=request_data)
+        assert response.status_code == 422
+        assert "invalid" in response.json()["detail"]
+
+
+@pytest.mark.parametrize("explicit_temperature", [None, 2.0])
+@pytest.mark.parametrize("commit", [None, "a" * 40])
+def test_constructor_uses_resolved_calibration_revision(
+    model, monkeypatch, explicit_temperature, commit
+):
+    from transformers import AutoModelForMultimodalLM, AutoProcessor
+
+    from s1 import unified
+
+    model.lm.config._commit_hash = commit
+    resolved_revision = commit or "main"
+    model_calls = []
+    config_calls = []
+
+    def load_model(name, **kwargs):
+        model_calls.append((name, kwargs["revision"]))
+        return model.lm
+
+    def load_config(name, *, revision):
+        config_calls.append((name, revision))
+        return 3.0
+
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
+    monkeypatch.setattr(AutoModelForMultimodalLM, "from_pretrained", load_model)
+    monkeypatch.setattr(unified, "load_temperature", load_config)
+    restored = UnifiedDecisionModel(
+        "owner/checkpoint", revision="main", temperature=explicit_temperature, device="cpu"
+    )
+    assert model_calls == [("owner/checkpoint", "main")]
+    assert restored.revision == resolved_revision
+    assert restored.temperature == (3.0 if explicit_temperature is None else explicit_temperature)
+    assert config_calls == (
+        [("owner/checkpoint", resolved_revision)] if explicit_temperature is None else []
+    )
+
+
+def test_local_and_hub_checkpoint_calibration_match(model, decision_request, tmp_path, monkeypatch):
+    import huggingface_hub
+    from transformers import AutoModelForMultimodalLM, AutoProcessor
+
+    config_path = tmp_path / "s1_config.json"
+    config_path.write_text('{"temperature": 3.0}')
+    commit = "a" * 40
+    model.lm.config._commit_hash = commit
+    downloads = []
+
+    def download(name, filename, *, revision):
+        downloads.append((name, filename, revision))
+        return str(config_path)
+
+    monkeypatch.setattr(huggingface_hub, "hf_hub_download", download)
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
+    monkeypatch.setattr(
+        AutoModelForMultimodalLM, "from_pretrained", lambda *args, **kwargs: model.lm
+    )
+    local = UnifiedDecisionModel(str(tmp_path), device="cpu")
+    assert downloads == []
+    remote = UnifiedDecisionModel("owner/checkpoint", revision="main", device="cpu")
+    assert downloads == [("owner/checkpoint", "s1_config.json", commit)]
+    assert local.temperature == remote.temperature == 3.0
+    assert local.predict(decision_request)["answers"] == remote.predict(decision_request)["answers"]
 
 
 def test_context_sensitive_candidates_rejected():

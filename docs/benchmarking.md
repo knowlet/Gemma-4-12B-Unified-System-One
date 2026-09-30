@@ -42,6 +42,13 @@ The adapter performs no retries or model fallback. `--supports-media` is only fo
 endpoints implementing this project's base64/sample-array contract. Laya rejects
 media requests explicitly. Jev live access is not required for tests.
 
+If a Choice answer supplies `choice`, it must be a valid label with maximum
+probability; inconsistent choices fail validation. Tied maxima are accepted and
+the supplied choice is preserved in API answers and benchmark records. If omitted,
+the first maximum in request order is used. Probability-based metrics, including
+accuracy, use distribution argmax with that same first-maximum tie rule; they can
+differ from the preserved service choice only on ties.
+
 Laya's Score outputs use zero-based indices. Its adapter converts numeric rubric
 keys to descriptions, then maps probabilities back to the original keys and
 recomputes the expected numeric score. Four-decimal probability rounding is

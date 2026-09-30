@@ -119,6 +119,8 @@ def evaluate(backend, cases, *, warmup=0):
                 "latency_ms": latency,
                 "probabilities": answer["probabilities"],
             }
+            if q.type == "choice":
+                record["choice"] = answer["choice"]
             if q.type == "score":
                 record.update(
                     score=answer["score"],

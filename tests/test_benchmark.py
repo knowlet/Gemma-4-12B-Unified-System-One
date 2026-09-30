@@ -17,6 +17,20 @@ def test_uniform_known_metrics(benchmark_case):
     assert report["coverage"] == 1
 
 
+def test_choice_tie_is_preserved_with_distribution_based_metrics(benchmark_case):
+    class TiedChoice(UniformBackend):
+        def predict(self, request):
+            result = super().predict(request)
+            result["answers"]["route"]["choice"] = "technical"
+            return result
+
+    report = evaluate(TiedChoice(), [benchmark_case])
+    record = next(r for r in report["records"] if r["question_id"] == "route")
+    assert record["choice"] == "technical"
+    assert record["probabilities"] == {"billing": 0.5, "technical": 0.5}
+    assert report["by_type"]["choice"]["acc"] == 1.0
+
+
 def test_failures_and_common_subset(benchmark_case):
     class Broken:
         name = "broken"

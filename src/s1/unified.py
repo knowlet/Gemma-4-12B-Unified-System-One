@@ -13,7 +13,9 @@ import math
 import time
 from pathlib import Path
 
+from .checkpoint import load_temperature
 from .contracts import AudioInput, DecisionRequest, answer_from_probabilities
+from .errors import RequestValidationError
 from .schema import LETTERS
 
 DEFAULT_MODEL = "google/gemma-4-12B-it"
@@ -41,11 +43,13 @@ def project_candidates(hidden, head, ids, nopts, softcap=None):
 
     weight = head.weight[ids]
     bias = head.bias[ids] if getattr(head, "bias", None) is not None else None
-    logits = F.linear(hidden.to(weight.dtype), weight, bias).float()
+    logits = F.linear(hidden.to(weight.dtype), weight, bias)
     if softcap is not None:
         if not math.isfinite(softcap) or softcap <= 0:
             raise ValueError("logit softcap must be positive and finite")
         logits = torch.tanh(logits / softcap) * softcap
+    # Match the native LM head's softcap rounding before calibrating in float32.
+    logits = logits.float()
     mask = torch.arange(len(ids), device=logits.device)[None, :] >= nopts[:, None]
     return logits.masked_fill(mask, float("-inf"))
 
@@ -70,18 +74,16 @@ class UnifiedDecisionModel:
         lm = AutoModelForMultimodalLM.from_pretrained(name, revision=revision, dtype=dtype)
         if lm.config.model_type != "gemma4_unified":
             raise ValueError("UnifiedDecisionModel requires a Gemma 4 Unified checkpoint")
+        resolved_revision = getattr(lm.config, "_commit_hash", None) or revision
         if temperature is None:
-            config_path = Path(name) / "s1_config.json"
-            temperature = (
-                json.loads(config_path.read_text())["temperature"] if config_path.is_file() else 1.0
-            )
+            temperature = load_temperature(name, revision=resolved_revision)
         if lora:
             from peft import LoraConfig, get_peft_model
 
             lm = get_peft_model(lm, LoraConfig(**lora))
         self._initialize(lm, processor, str(device), temperature, max_context)
         self.name = name
-        self.revision = revision or getattr(lm.config, "_commit_hash", None)
+        self.revision = resolved_revision
 
     @classmethod
     def from_components(cls, lm, processor, *, device="cpu", temperature=1.0, max_context=16384):
@@ -136,12 +138,15 @@ class UnifiedDecisionModel:
                     )
                 try:
                     raw = base64.b64decode(media.data, validate=True)
+                except ValueError as exc:
+                    raise RequestValidationError("invalid base64 image") from exc
+                try:
                     with Image.open(io.BytesIO(raw)) as image:
                         if image.width * image.height > 16_000_000:
-                            raise ValueError("image exceeds 16 megapixels")
+                            raise RequestValidationError("image exceeds 16 megapixels")
                         images.append(image.convert("RGB"))
                 except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
-                    raise ValueError("invalid or oversized image") from exc
+                    raise RequestValidationError("invalid or oversized image") from exc
                 content.append({"type": "image"})
         text = self.processor.apply_chat_template(
             [{"role": "user", "content": content}],
@@ -167,7 +172,7 @@ class UnifiedDecisionModel:
             slots.append(prefix_length + len(suffix) - 1)
             nopts.append(len(q.labels()))
         if prefix_length + len(suffix) > self.max_context:
-            raise ValueError(
+            raise RequestValidationError(
                 f"request exceeds {self.max_context} context tokens; nothing was truncated"
             )
         inputs["input_ids"] = torch.cat([inputs["input_ids"], torch.tensor([suffix])], dim=1)

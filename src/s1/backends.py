@@ -3,16 +3,23 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from importlib.metadata import version
 from typing import Protocol
 
 import httpx
 
 from .contracts import DecisionRequest, answer_from_probabilities
+from .errors import (
+    BackendResponseError,
+    BackendTimeoutError,
+    BackendTransportError,
+    RequestValidationError,
+)
 
 
-class UnsupportedRequest(ValueError):
-    pass
+class UnsupportedRequest(RequestValidationError):
+    """This backend does not support the supplied request."""
 
 
 class Backend(Protocol):
@@ -21,41 +28,101 @@ class Backend(Protocol):
     def predict(self, request: DecisionRequest) -> dict: ...
 
 
+_ROUNDING_TOLERANCE = 0.000051
+
+
+def _probability(value):
+    # Do not coerce booleans, numeric strings, or arbitrary objects into numbers.
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise BackendResponseError("backend probabilities must be numbers in [0, 1]")
+    try:
+        value = float(value)
+    except OverflowError as exc:
+        raise BackendResponseError("backend probabilities must be finite") from exc
+    if not math.isfinite(value) or not 0 <= value <= 1:
+        raise BackendResponseError("backend probabilities must be finite numbers in [0, 1]")
+    return value
+
+
+def _distribution(dist, labels):
+    if not isinstance(dist, Mapping):
+        raise BackendResponseError("response probabilities must be an object")
+    if set(dist) != set(labels):
+        raise BackendResponseError("response probability labels differ from request")
+    values = [_probability(dist[label]) for label in labels]
+    total = sum(values)
+    # Laya serializes each probability to four decimal places. Only repair
+    # bounded rounding error; missing mass or invalid values are failures.
+    if total <= 0 or abs(total - 1) > len(values) * _ROUNDING_TOLERANCE:
+        raise BackendResponseError("invalid backend probability distribution")
+    return [value / total for value in values]
+
+
 def normalize_response(request, response, *, ordinal_scores=False):
-    answers = response["answers"]
+    """Validate backend shapes and rebuild derived fields from probabilities.
+
+    Answers may be keyed objects or a list with unique string IDs. Choice/score
+    distributions must contain exactly the requested labels and numeric values;
+    Noul requires a numeric P(true), with any supplied distribution agreeing.
+    A supplied choice must be a legal label at the distribution's exact maximum.
+    Preserve it even in a tie; an absent choice uses the first maximum in request
+    label order. Benchmark metrics independently use that ordered distribution's
+    argmax, so a preserved tied choice need not be the benchmark's tie winner.
+    """
+    if not isinstance(response, Mapping):
+        raise BackendResponseError("backend response must be an object")
+    answers = response.get("answers")
     if isinstance(answers, list):
-        if len({a["id"] for a in answers}) != len(answers):
-            raise ValueError("duplicate answer ids")
-        answers = {a["id"]: a for a in answers}
+        by_id = {}
+        for answer in answers:
+            if not isinstance(answer, Mapping):
+                raise BackendResponseError("each response answer must be an object")
+            answer_id = answer.get("id")
+            if not isinstance(answer_id, str) or not answer_id:
+                raise BackendResponseError("each listed answer needs a nonempty string id")
+            if answer_id in by_id:
+                raise BackendResponseError("duplicate answer ids")
+            by_id[answer_id] = answer
+        answers = by_id
+    if not isinstance(answers, Mapping):
+        raise BackendResponseError("response answers must be an object or list")
     if set(answers) != {q.id for q in request.questions}:
-        raise ValueError("response question ids differ from the request")
+        raise BackendResponseError("response question ids differ from the request")
     normalized = {}
     for q in request.questions:
         answer = answers[q.id]
+        if not isinstance(answer, Mapping):
+            raise BackendResponseError("each response answer must be an object")
+        if "id" in answer and answer["id"] != q.id:
+            raise BackendResponseError("response answer id differs from its dictionary key")
         if answer.get("type", q.type) != q.type:
-            raise ValueError("response question type differs from request")
+            raise BackendResponseError("response question type differs from request")
         if q.type == "noul":
-            p = float(answer["noul"])
+            p = _probability(answer.get("noul"))
             values = [1 - p, p]
+            if "probabilities" in answer:
+                supplied = _distribution(answer["probabilities"], q.labels())
+                if any(
+                    abs(actual - expected) > len(values) * _ROUNDING_TOLERANCE
+                    for actual, expected in zip(supplied, values)
+                ):
+                    raise BackendResponseError("response noul differs from its distribution")
         else:
-            dist = answer["probabilities"]
             keys = (
                 [str(i) for i in range(len(q.labels()))]
                 if ordinal_scores and q.type == "score"
                 else q.labels()
             )
-            if set(dist) != set(keys):
-                raise ValueError("response probability labels differ from request")
-            values = [float(dist[k]) for k in keys]
-        total = sum(values)
-        # Laya serializes each probability to four decimal places. Only repair
-        # bounded rounding error; missing mass or invalid values are failures.
-        if (
-            not all(math.isfinite(x) and 0 <= x <= 1 for x in values)
-            or abs(total - 1) > len(values) * 0.000051
-        ):
-            raise ValueError("invalid backend probability distribution")
-        normalized[q.id] = answer_from_probabilities(q, [x / total for x in values])
+            values = _distribution(answer.get("probabilities"), keys)
+        normalized[q.id] = answer_from_probabilities(q, values)
+        if q.type == "choice" and "choice" in answer:
+            choice = answer["choice"]
+            labels = q.labels()
+            if not isinstance(choice, str) or choice not in labels:
+                raise BackendResponseError("response choice is not a legal label")
+            if values[labels.index(choice)] != max(values):
+                raise BackendResponseError("response choice does not maximize its distribution")
+            normalized[q.id]["choice"] = choice
     return {**response, "answers": normalized}
 
 
@@ -131,6 +198,7 @@ class HTTPBackend:
         if httpx.URL(url).username or httpx.URL(url).password:
             raise ValueError("use a bearer token rather than credentials in the endpoint URL")
         self.name, self.url, self.supports_media = name, url, supports_media
+        self.timeout = timeout
         self.client = client or httpx.Client(timeout=timeout, follow_redirects=False)
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
         self.metadata = {
@@ -145,9 +213,28 @@ class HTTPBackend:
         payload = {"state": request.state, "questions": request.named_questions_payload()}
         if request.media:
             payload["media"] = [m.model_dump() for m in request.media]
-        response = self.client.post(self.url, json=payload, headers=self.headers)
-        response.raise_for_status()
-        return normalize_response(request, response.json())
+        try:
+            response = self.client.post(
+                self.url,
+                json=payload,
+                headers=self.headers,
+                timeout=self.timeout,
+                follow_redirects=False,
+            )
+            response.raise_for_status()
+        except httpx.TimeoutException as exc:
+            raise BackendTimeoutError("backend request timed out") from exc
+        except httpx.HTTPStatusError as exc:
+            raise BackendResponseError(f"backend returned HTTP {exc.response.status_code}") from exc
+        except httpx.DecodingError as exc:
+            raise BackendResponseError("backend response could not be decoded") from exc
+        except httpx.RequestError as exc:
+            raise BackendTransportError("backend transport failed") from exc
+        try:
+            data = response.json()
+        except ValueError as exc:
+            raise BackendResponseError("backend returned invalid JSON") from exc
+        return normalize_response(request, data)
 
     def close(self):
         self.client.close()

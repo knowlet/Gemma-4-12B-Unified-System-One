@@ -46,6 +46,21 @@ The probabilities are conditional on the supplied candidates. They are not the
 full vocabulary's probability mass, and temperature 1.0 is an **uncalibrated**
 baseline. Fit temperature on held-out calibration data before trusting confidence.
 
+Saved checkpoints load `s1_config.json` from either a local directory or the same
+resolved Hub commit as the model. Only a missing optional file defaults to 1.0;
+unavailable or malformed calibration files fail loading. An explicit temperature
+overrides the saved value. Candidate projection applies softcapping in the LM
+head's dtype before converting to float32 for masking, calibration and softmax.
+
+Backend Choice answers must agree with a maximum of the supplied distribution.
+Any supplied tied maximum is preserved; absent choices are derived using the first
+maximum in request order. Inconsistent choices are response errors.
+
+The API returns 422 for explicit request validation failures (including unsupported
+media, invalid images and excess context), 502 for invalid backend responses or
+upstream HTTP/connection failures, and 504 for upstream timeouts. Internal failures
+are server errors; an arbitrary `ValueError` does not make the request invalid.
+
 Multi-slot causal attention allows later questions to see earlier questions and
 their unfilled answer prompts. Earlier positions cannot see later questions.
 There are no generated prior answers, but the slots are not statistically
