@@ -32,6 +32,7 @@ jobs:
       - run: uv run --no-sync ruff format --check .
       - run: uv run --no-sync pytest --cov=s1 --cov-report=xml
       - run: uv run --no-sync s1 benchmark --backend uniform examples/benchmarks/smoke.jsonl --output artifacts/uniform.json
+      - run: uv run --no-sync s1 eval plan --profile smoke --enable-model uniform --output artifacts/evaluation/smoke-plan.json
       - run: uv build --no-sources
       - uses: actions/upload-artifact@v4
         with:
@@ -39,6 +40,7 @@ jobs:
           path: |
             coverage.xml
             artifacts/uniform.json
+            artifacts/evaluation/smoke-plan.json
             dist/*
   inference:
     # macOS wheels have no CUDA payload; tiny models need no GPU or HF access.

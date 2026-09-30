@@ -1,5 +1,9 @@
 # Reproducible comparisons
 
+The [Decision Benchmark v2 planner](benchmark-v2.md) adds offline capability and
+budget checks with `s1 eval preflight` / `s1 eval plan`. Its E0 milestone is available;
+the runnable evaluation and report contract below remain v1.
+
 Every backend receives the same `DecisionRequest`, keyed question ids and candidate
 order. A JSONL row contains `id`, `split: test`, `request` and a `gold` map covering
 every question. Choice golds are option keys, Score golds are level keys and Noul

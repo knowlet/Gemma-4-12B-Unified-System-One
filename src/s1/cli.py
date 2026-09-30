@@ -61,6 +61,17 @@ def main(argv=None):
             sub.add_argument("--port", type=int, default=8000)
     compare = commands.add_parser("compare")
     compare.add_argument("reports", nargs="+", type=Path)
+    evaluation = commands.add_parser("eval", help="offline v2 evaluation planning")
+    planning = evaluation.add_subparsers(dest="eval_command", required=True)
+    for command in ("preflight", "plan"):
+        sub = planning.add_parser(command)
+        sub.add_argument("--registry", type=Path, default=Path("configs/benchmarks/models.toml"))
+        sub.add_argument("--suites", type=Path, default=Path("configs/benchmarks/suites.toml"))
+        sub.add_argument("--profiles", type=Path, default=Path("configs/benchmarks/profiles.toml"))
+        sub.add_argument("--profile", required=True)
+        sub.add_argument("--lockfile", type=Path, default=Path("uv.lock"))
+        sub.add_argument("--enable-model", action="append", default=[])
+        sub.add_argument("--output", type=Path)
     train = commands.add_parser("train")
     train.add_argument("--train-data", type=Path, required=True)
     train.add_argument("--calibration-data", type=Path, required=True)
@@ -72,6 +83,23 @@ def main(argv=None):
     train.add_argument("--seed", type=int, default=0)
     args = parser.parse_args(argv)
     try:
+        if args.command == "eval":
+            from .evaluation.planning import create_plan
+            from .evaluation.registry import Registry
+
+            registry = Registry.load(args.registry, args.suites, args.profiles)
+            report = create_plan(
+                registry,
+                args.profile,
+                lockfile=args.lockfile,
+                environment=os.environ,
+                enable_models=args.enable_model,
+                purpose=args.eval_command,
+            )
+            if args.output:
+                write_report(report, args.output)
+            print(json.dumps(report, indent=2, allow_nan=False))
+            return 0 if report["can_execute"] else 1
         if args.command == "compare":
             print(
                 json.dumps(

@@ -25,6 +25,9 @@ Cloud tooling: add `--extra modal`; Laya comparisons: add `--extra laya`.
 See [architecture](docs/architecture.md), [benchmarking](docs/benchmarking.md),
 and [Modal deployment](docs/modal.md) for runnable examples and limitations.
 
+[Decision Benchmark v2](docs/benchmark-v2.md) now includes offline capability
+preflight and budget planning: `uv run --no-sync s1 eval plan --profile smoke --enable-model uniform`.
+
 ## Layout
 
 | Path | Purpose |

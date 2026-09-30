@@ -1,0 +1,87 @@
+schema_version = 2
+baseline_revision = "f8390676ae942699a71a85ae9a99cfcd7b9b3806"
+
+# Everything is disabled by default. Missing revisions/costs remain unknown.
+# Capabilities describe the project's adapters, not inferred vendor guarantees.
+[[models]]
+id = "uniform"
+adapter = "uniform"
+enabled = false
+precision = "float32"
+execution_mode = "sequential"
+calibration = "none"
+cost_per_request_usd = 0
+notes = "Sanity baseline only; passing smoke is not evidence of model quality."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = true
+independent_questions = true
+
+[[models]]
+id = "gemma-g3"
+adapter = "gemma"
+enabled = false
+model_id = "google/gemma-4-12B-it"
+precision = "bfloat16"
+execution_mode = "causal_multislot"
+calibration = "checkpoint"
+notes = "Existing causal multi-slot path. Set immutable revision and cost estimate before planning."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = false
+independent_questions = false
+
+[[models]]
+id = "laya-general"
+adapter = "laya"
+enabled = false
+model_id = "convaiinnovations/laya"
+execution_mode = "provider"
+calibration = "checkpoint"
+notes = "Pin a checkpoint and verify its limits/precision. Unverified fields are intentionally absent."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+probabilities = "complete"
+batch = "none"
+
+[[models]]
+id = "jev-http"
+adapter = "http"
+enabled = false
+precision = "provider"
+execution_mode = "provider"
+calibration = "provider"
+endpoint_env = "JEV_BENCHMARK_ENDPOINT"
+token_env = "JEV_BENCHMARK_TOKEN"
+notes = "Configure a compatible wire endpoint and declared capabilities; E0 never contacts it."
+
+[[models]]
+id = "kev"
+adapter = "unimplemented"
+notes = "Candidate from the planning discussion; exact weights and capabilities need verification."
+
+[[models]]
+id = "decider"
+adapter = "unimplemented"
+notes = "Candidate from the planning discussion; exact weights and capabilities need verification."
+
+[[models]]
+id = "agentjev"
+adapter = "unimplemented"
+notes = "Candidate from the planning discussion; exact weights and capabilities need verification."
+
+[[models]]
+id = "setfit"
+adapter = "unimplemented"
+notes = "Supervised specialist track; matched support data required in E6."
