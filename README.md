@@ -29,6 +29,12 @@ and [Modal deployment](docs/modal.md) for runnable examples and limitations.
 Gemma G0–G4 readouts, native batches, load tests, calibration/statistics, matched
 training, multimodal pipelines, resettable workflows and standalone reports:
 
+Accuracy gates default to the full decision population and require complete shared
+support; a common eligible subset must be declared explicitly. Workflows check every
+state for training/calibration overlap, validate the loaded model identity before
+inference, and include OCR/ASR bills in reported costs. Unknown stage bills keep the
+total unknown. See the v2 guide for gate population and workflow manifest fields.
+
 ```bash
 uv run --no-sync s1 eval run --profile text-smoke --enable-model uniform \
   --output artifacts/evaluation/text-smoke-run
