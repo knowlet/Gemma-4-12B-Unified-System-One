@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections import defaultdict
 from pathlib import Path
@@ -48,6 +49,14 @@ def _key(row):
     return row["case_id"], row["question_id"], row["repetition"]
 
 
+def _population_identity(keys, index):
+    """Pin decision slots and source groups without including observed answers."""
+    members = [[*key, index[key]["group_id"]] for key in sorted(keys)]
+    return hashlib.sha256(
+        json.dumps(members, separators=(",", ":"), ensure_ascii=False).encode()
+    ).hexdigest()
+
+
 def paired_comparison(left, right, *, seed=0, resamples=2000):
     indices = []
     for rows in (left, right):
@@ -64,13 +73,30 @@ def paired_comparison(left, right, *, seed=0, resamples=2000):
         ):
             raise ValueError("paired observations disagree on gold/group/task metadata")
     successful = [key for key in common if a[key]["status"] == b[key]["status"] == "ok"]
+    jointly_eligible = [
+        key for key in common if a[key]["eligibility"] == b[key]["eligibility"] == "eligible"
+    ]
     eligible = [
         key
-        for key in common
-        if a[key]["eligibility"] == b[key]["eligibility"] == "eligible"
-        and a[key]["status"] != "not_run"
-        and b[key]["status"] != "not_run"
+        for key in jointly_eligible
+        if a[key]["status"] != "not_run" and b[key]["status"] != "not_run"
     ]
+    population = a | b
+    population_evidence = {
+        "decisions": len(population),
+        "groups": len({row["group_id"] for row in population.values()}),
+        "identity_sha256": _population_identity(population, population),
+        "jointly_eligible_decisions": len(jointly_eligible),
+        "jointly_eligible_groups": len({a[key]["group_id"] for key in jointly_eligible}),
+        "jointly_eligible_identity_sha256": _population_identity(jointly_eligible, a),
+        "eligibility_mismatches": sum(
+            a[key]["eligibility"] != b[key]["eligibility"] for key in common
+        ),
+        "left_only": len(a.keys() - b.keys()),
+        "right_only": len(b.keys() - a.keys()),
+        "left_not_run": sum(row["status"] == "not_run" for row in left),
+        "right_not_run": sum(row["status"] == "not_run" for row in right),
+    }
 
     def interval(keys):
         values = [
@@ -89,6 +115,7 @@ def paired_comparison(left, right, *, seed=0, resamples=2000):
         "common_decisions": len(common),
         "left_only": len(a.keys() - b.keys()),
         "right_only": len(b.keys() - a.keys()),
+        "population": population_evidence,
         "conditional_accuracy_delta": interval(successful),
         "operational_accuracy_delta": interval(eligible),
         "left_valid": sum(r["status"] == "ok" for r in left),

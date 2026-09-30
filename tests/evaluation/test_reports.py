@@ -5,6 +5,7 @@ from s1.evaluation.gates import assess_gate
 from s1.evaluation.registry import Registry
 from s1.evaluation.reports import build_report
 from s1.evaluation.runner import execute
+from s1.evaluation.statistics import paired_comparison
 from s1.evaluation.workflow import execute_workflows
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -54,13 +55,33 @@ def test_gate_requires_sufficient_source_groups(tmp_path):
     comparison = tmp_path / "comparison.json"
 
     def assess(groups, interval):
+        rows = [
+            {
+                "case_id": str(index),
+                "question_id": "q",
+                "repetition": 0,
+                "group_id": str(index),
+                "gold": "a",
+                "actual_label": "a",
+                "status": "ok",
+                "eligibility": "eligible",
+            }
+            for index in range(groups)
+        ]
         comparison.write_text(
             json.dumps(
                 {
                     "comparisons": [
                         {
                             **spec,
-                            "operational_accuracy_delta": {"groups": groups, "interval": interval},
+                            "population": paired_comparison(rows, rows, resamples=100)[
+                                "population"
+                            ],
+                            "operational_accuracy_delta": {
+                                "groups": groups,
+                                "observations": groups,
+                                "interval": interval,
+                            },
                         }
                     ]
                 }

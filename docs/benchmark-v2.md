@@ -150,13 +150,25 @@ are not adjusted automatically. Comparisons are `right_minus_left`.
 `eval gate comparison.json --spec gate.json` applies a preregistered accuracy gate:
 
 ```json
-{"left_experiment_id":"<64-hex>","right_experiment_id":"<64-hex>","accuracy_margin":0.01,"min_groups":30}
+{"left_experiment_id":"<64-hex>","right_experiment_id":"<64-hex>","accuracy_margin":0.01,"min_groups":30,"population":"all_decisions","min_support_fraction":1.0}
 ```
 
 The lower operational-accuracy CI must clear `-margin`. Insufficient groups or a CI
 crossing the boundary returns `inconclusive`, never pass. This gate does not imply
 critical-field safety, retention or serving acceptance; inspect those separately.
 Register the gate before observing test results.
+
+The default `all_decisions` population requires both models to support and execute
+every paired decision. Missing records, unsupported decisions or unexecuted eligible
+decisions make that gate inconclusive, even if the remaining subset has enough groups.
+Unsupported decisions retain their coverage status; they are not assigned wrong answers.
+To assess only shared support, preregister `population = "common_eligible"` and a
+`min_support_fraction` for the fraction of all decisions jointly eligible. Execution
+must still be complete; `not_run` records cannot be omitted from either gate policy.
+The result records the selected population's hash, decision/group counts, support
+fraction and reasons. Optional `population_sha256` pins the expected decision identities.
+Passing a subset gate applies only to that subset. Older comparisons without population
+evidence must be recomputed before a gate can pass.
 
 ## Calibration and data provenance
 
