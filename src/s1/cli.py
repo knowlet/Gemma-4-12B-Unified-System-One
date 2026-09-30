@@ -61,9 +61,9 @@ def main(argv=None):
             sub.add_argument("--port", type=int, default=8000)
     compare = commands.add_parser("compare")
     compare.add_argument("reports", nargs="+", type=Path)
-    evaluation = commands.add_parser("eval", help="offline v2 evaluation planning")
+    evaluation = commands.add_parser("eval", help="v2 evaluation planning and execution")
     planning = evaluation.add_subparsers(dest="eval_command", required=True)
-    for command in ("preflight", "plan"):
+    for command in ("preflight", "plan", "run"):
         sub = planning.add_parser(command)
         sub.add_argument("--registry", type=Path, default=Path("configs/benchmarks/models.toml"))
         sub.add_argument("--suites", type=Path, default=Path("configs/benchmarks/suites.toml"))
@@ -71,7 +71,9 @@ def main(argv=None):
         sub.add_argument("--profile", required=True)
         sub.add_argument("--lockfile", type=Path, default=Path("uv.lock"))
         sub.add_argument("--enable-model", action="append", default=[])
-        sub.add_argument("--output", type=Path)
+        sub.add_argument("--output", type=Path, required=command == "run")
+    summary = planning.add_parser("summarize", help="recompute summary from saved run records")
+    summary.add_argument("directory", type=Path)
     train = commands.add_parser("train")
     train.add_argument("--train-data", type=Path, required=True)
     train.add_argument("--calibration-data", type=Path, required=True)
@@ -84,10 +86,28 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         if args.command == "eval":
+            if args.eval_command == "summarize":
+                from .evaluation.reporting import write_summary
+
+                print(json.dumps(write_summary(args.directory), indent=2, allow_nan=False))
+                return 0
             from .evaluation.planning import create_plan
             from .evaluation.registry import Registry
 
             registry = Registry.load(args.registry, args.suites, args.profiles)
+            if args.eval_command == "run":
+                from .evaluation.runner import execute
+
+                report = execute(
+                    registry,
+                    args.profile,
+                    output=args.output,
+                    lockfile=args.lockfile,
+                    environment=os.environ,
+                    enable_models=args.enable_model,
+                )
+                print(json.dumps(report, indent=2, allow_nan=False))
+                return 0 if report["run_status"] == "completed" else 1
             report = create_plan(
                 registry,
                 args.profile,

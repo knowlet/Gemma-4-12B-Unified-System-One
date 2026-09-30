@@ -39,15 +39,19 @@ class ModelSpec(ConfigModel):
     model_id: str | None = Field(default=None, min_length=1)
     revision: str | None = Field(default=None, min_length=1)
     processor_revision: str | None = Field(default=None, min_length=1)
-    precision: Literal["float32", "bfloat16", "float16", "quantized", "provider", "unknown"] = (
-        "unknown"
-    )
+    precision: Literal[
+        "float64", "float32", "bfloat16", "float16", "quantized", "provider", "unknown"
+    ] = "unknown"
     execution_mode: Literal[
         "sequential", "causal_multislot", "independent_batch", "provider", "unknown"
     ] = "unknown"
     calibration: Literal["none", "checkpoint", "domain", "provider", "unknown"] = "unknown"
     calibration_sha256: Digest | None = None
     runtime: str = Field(default="reference", min_length=1)
+    device: str | None = Field(default=None, min_length=1)
+    subfolder: str | None = Field(default=None, min_length=1)
+    context_limit: int = Field(default=16384, ge=1, strict=True)
+    http_timeout_seconds: float = Field(default=120, gt=0, strict=True)
     endpoint_env: EnvironmentName | None = None
     token_env: EnvironmentName | None = None
     # An operator-supplied conservative ceiling, including local compute costs.

@@ -13,9 +13,8 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from s1.benchmark import fingerprint, load_cases
-
 from .contracts import ModelSpec, ProfileSpec
+from .datasets import fingerprint, load_cases
 from .registry import Registry
 
 
@@ -158,7 +157,7 @@ def create_plan(
     """Inspect actual dataset shapes and reserve aggregate cost before execution.
 
     `ready` means declaration-level checks passed, not runtime/GPU compatibility.
-    There is intentionally no executor or resume implementation in E0.
+    The sequential executor performs additional adapter-specific checks.
     """
     if purpose not in ("plan", "preflight"):
         raise ValueError("purpose must be plan or preflight")
@@ -273,8 +272,8 @@ def create_plan(
         "can_execute": bool(candidates) and not statuses["blocked"] and not budget_reasons,
         "limitations": [
             "Offline declaration checks only; no models loaded or endpoints contacted.",
-            "E0 has no executor. Context length, hardware and media decoding remain runtime checks.",
+            "Context length, hardware and media decoding remain runtime checks.",
             "Costs are operator estimates, not measured or provider-verified charges.",
-            "Current dataset contract is v1: at most 52 options and 64 questions per request.",
+            "The request contract allows at most 52 options and 64 questions per request.",
         ],
     }

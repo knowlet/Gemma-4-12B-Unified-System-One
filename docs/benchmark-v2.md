@@ -1,9 +1,10 @@
 # Decision Benchmark v2
 
-E0 is implemented: validated registries, offline capability preflight, deterministic
-experiment identities and aggregate budget planning. The frozen v1 baseline is
+E0 and the E1 execution core are implemented: validated registries, offline capability
+preflight, deterministic identities, aggregate budgets, reference adapter bridges,
+grouped text fixtures and incremental run records. The frozen v1 baseline is
 `f8390676ae942699a71a85ae9a99cfcd7b9b3806`. Existing `s1 benchmark` and `s1 compare`
-continue to use their v1 contracts. No model-quality results are implied by E0.
+continue to use their v1 contracts. The fixtures do not establish model quality.
 
 ## Run the offline planner
 
@@ -22,7 +23,7 @@ Both commands perform the same offline validation and budget checks; the artifac
 `kind` distinguishes a preflight from a saved plan. They never import model runtimes,
 download weights, resolve Hub revisions, contact endpoints, run inference or spend
 the declared budget. `--enable-model` overrides a selected model's disabled flag for
-this plan only; it does not edit the registry or authorize a future executor.
+this invocation only; planning does not edit the registry or invoke the executor.
 
 All shipped models are disabled. The inventory command therefore writes its report
 and exits **1**. Exit **0** means at least one enabled model is ready and every
@@ -34,6 +35,92 @@ The smoke plan has 3 requests / 5 decisions per repetition, 3 repetitions, and 1
 warmup request per repetition: **9 measured requests + 3 warmups = 12 requests**,
 with 15 measured decisions and zero estimated compute/API cost for uniform. The
 three-case dataset is a contract fixture, not a representative quality suite.
+
+## Execute and recompute a run
+
+```bash
+uv run --no-sync s1 eval run --profile text-smoke --enable-model uniform \
+  --output artifacts/evaluation/text-smoke-run
+uv run --no-sync s1 eval summarize artifacts/evaluation/text-smoke-run
+```
+
+`run` performs a fresh preflight and then executes the selected models. Its output
+directory **must not exist**: previous results are never overwritten and resume is
+not implemented. `summarize` only recomputes `summary.json` from local records.
+The text fixture has 10 requests, 18 decisions and 5 translation groups; one warmup
+makes 11 prediction calls. These are handwritten English/Traditional Chinese
+contract cases, not a public benchmark conversion or representative evaluation set.
+
+The E1 executor accepts **B=1, C=1** and complete distributions. It bridges the
+existing Uniform, Gemma, Laya and compatible HTTP adapters. Other model families,
+choice-only adapters, native batching, queueing and open-loop scheduling remain
+future work. Execution never silently emulates a requested batch or concurrency.
+
+For model runs, explicitly enable the relevant entry, pin its revision, declare
+verified capabilities and costs, select a matching profile and install the existing
+inference/Laya extras. `run` can load weights and call configured endpoints; the
+example above invokes only the free local Uniform backend. A globally blocked plan
+loads no adapters. Executor-specific unsupported settings are recorded per model
+as `not_run`, while other eligible models can still complete.
+
+| Adapter | Applied settings and limits |
+| --- | --- |
+| Uniform | Sequential, uncalibrated Python float64 probabilities; no model loading |
+| Gemma | Causal multi-slot; explicit device; BF16 for CUDA, float32 otherwise; context limit rejects excess input; calibration is checkpoint temperature or explicit T=1 |
+| Laya | Revision, optional subfolder, device and context limit; checkpoint calibration; precision is declared `provider` because the current wrapper cannot control it; context may be truncated |
+| HTTP | Endpoint/token environment variables, `http_timeout_seconds`, native-media declaration; version/precision/calibration remain provider assertions |
+
+A separate processor revision and unsupported runtime/calibration policies cannot
+be silently ignored. Loaded local model revisions and reported precision must match
+the plan before prediction. Laya limits/independence still need verification for the
+chosen checkpoint. Endpoint compatibility is an operator responsibility, not a claim
+that every Jev service implements this repository's wire contract.
+
+Each adapter receives only a deep copy of `DecisionRequest`. Gold labels, group,
+task, language and schema metadata remain in the evaluator. Mutations cannot affect
+normalization or later repetitions. Runtime errors, including a late
+`UnsupportedRequest`, retain their original eligibility. The runner does not retry
+or cache results; provider-side caching is unknown. HTTP timeouts come from the existing client; local computation has
+no forced deadline in E1. The seed is recorded only: this executor does not perform
+stochastic support selection or claim control over provider randomness.
+
+## Run artifacts and descriptive metrics
+
+| Artifact | Contents |
+| --- | --- |
+| `run_manifest.json` | Effective plan, source/data/lock identities, model lifecycle, sanitized runtime telemetry, start/finish times |
+| `requests.jsonl` | Warmup and measured requests, frozen eligibility, dispatch/readiness/termination times and status |
+| `predictions.jsonl` | One row per measured decision, including failures/not-run cases; gold label, actual choice, standardized argmax, complete probabilities and Score expectation where available |
+| `errors.jsonl` | Setup, prediction, timeout and cleanup error types, without exception messages or raw backend responses |
+| `summary.json` | Recomputable counts, denominators, coverage, descriptive accuracy and successful-request p50/p95 |
+
+Rows are flushed after each completed call. A handled interruption marks the
+manifest `interrupted` and retains completed/in-flight records. Hard process or
+machine termination can leave a `running` manifest or incomplete final record;
+there is no recovery/resume protocol yet. Interrupted runs may be inspected with
+`summarize`; `records_complete` and recorded/planned decision counts identify partial
+data. The eligible denominator comes from the frozen plan, never from successful
+rows alone.
+
+`actual_choice_accuracy` uses the service's valid Choice, preserving tied maxima;
+`standardized_argmax_accuracy` uses the first maximum in candidate order for all
+primitives. `actual_label_accuracy` uses service Choice and standardized Noul/Score
+labels. Score expectation and numeric gold are retained for E2's numeric metrics.
+`operational_correctness` divides correct labels by all planned eligible decisions.
+For a model with no attempted measured requests, quality and execution coverage are
+`null`; disabled or unavailable models do not receive fabricated zero scores.
+
+Warmups count toward the budget and have error records but are excluded from quality
+and latency percentiles. Latency includes request copying, backend preprocessing,
+inference/network and response validation; it excludes model setup. Failure elapsed
+time is available from dispatch/termination fields, never substituted for successful
+completion latency. These are sequential wall-clock observations, not GPU kernel
+benchmarks or stable tail-latency estimates. Repetitions are not independent source
+groups, and this milestone provides no confidence intervals or significance claims.
+
+Exit **0** from `run` means all enabled models completed without setup, warmup,
+prediction or cleanup errors. **1** covers errors, no execution or partial execution;
+artifacts are still saved. **2** covers invalid input or an existing output directory.
 
 ## Configuration contract
 
@@ -52,16 +139,20 @@ Override paths with `--registry`, `--suites`, `--profiles`, and `--lockfile`. Da
 paths are relative to the **suite configuration file**, even when invoked from a
 different directory. Other CLI paths are relative to the working directory.
 
-E0 loads the existing v1 JSONL `Case` contract and requires a nonempty test-only
-dataset with unique IDs and valid gold labels. Case IDs and SHA-256 appear in plans;
+The v2 loader accepts v1 JSONL and optional `group_id`, `task_id`, `language` and
+`schema_id` fields, and recognizes development splits. Planning/execution still
+require a nonempty test-only dataset with unique IDs and valid gold labels. Group
+IDs default to case IDs when omitted; other metadata stays null. Case IDs and SHA-256 appear in plans;
 request bodies, gold labels, media payloads and credential values do not. The
 fingerprint preserves case, question and candidate order because order can affect
-predictions. It is a hash of validated cases, not of the raw JSONL bytes.
+predictions. It is a hash of validated cases, not of the raw JSONL bytes. V1
+fingerprints remain unchanged when the optional metadata is absent; supplied
+metadata participates in the fingerprint.
 
 The dataset contract still limits each request to 52 candidates per question,
 64 questions and 8 media items. A declared larger model limit does not enable the
-planned high-cardinality track. Group IDs, richer splits and soft targets belong
-to the v2 dataset work in E1/E2.
+planned high-cardinality track. Soft targets and cross-split group audits remain
+E2 work.
 
 ## Eligibility and readiness
 
@@ -93,10 +184,11 @@ Each selected model then has a readiness status:
 - `blocked`: enabled but missing configuration, capability information or budget.
 - `ready`: the offline declaration and budget checks passed.
 
-`ready` and `can_execute` are planning results. E0 has **no executor**. They do not
+`ready` and `can_execute` are planning results. They do not
 validate installed inference extras, available GPU memory, decoded media, tokenizer
 context length, credentials, endpoint reachability or the truth of a vendor claim.
-Those require later runtime checks. Runtime failures must not retroactively change
+The E1 runner performs additional configuration/setup checks and records runtime
+failures. Runtime failures must not retroactively change
 the frozen eligible denominator to unsupported.
 
 Gemma and Laya require a model ID and an immutable 40/64-character lowercase hex
@@ -106,7 +198,8 @@ environment variable. If `token_env` is declared, it must contain a nonempty val
 The planner verifies presence only. Endpoint URLs must be HTTP(S), without userinfo,
 query credentials or fragments; only their SHA-256 is stored. Capability assertions
 for Jev, Kev, Decider, AgentJev and SetFit intentionally remain unverified in the
-starter registry. Their adapters/checkpoints are not implemented by this milestone.
+starter registry. A compatible generic HTTP bridge is available; dedicated adapters
+for Kev, Decider, AgentJev and SetFit are not implemented by this milestone.
 
 ## Budget and identity
 
@@ -130,16 +223,17 @@ hash, installed relevant package versions, Python/platform, and endpoint hash wh
 configured. `plan_id` hashes the ordered experiment IDs. Timestamps and command
 purpose are excluded so repeated equivalent planning is stable. Changes to candidate
 order, seed, precision, revision, calibration, cost/budget, source or lock change the
-identity. This is an E0 planning identity: no resume is implemented. Before actual
-execution, the run manifest must additionally capture resolved runtime/model/data
-artifacts, hardware/device, service region, tokenization and preprocessing policies.
+identity. No resume is implemented. E1 also records resolved local revision/device,
+precision and context policy when exposed by the existing adapter. Hardware SKU,
+service region and detailed tokenizer/preprocessing telemetry remain necessary
+before formal systems comparisons in E3/E4.
 
 ## Remaining milestones
 
 | Stage | Deliverable | Acceptance focus |
 | --- | --- | --- |
 | E0 — implemented | Registry, preflight, budgeted dry-run plans | Offline; unknown ≠ unsupported; deterministic identities; honest budgets |
-| E1 | V2 adapters, text datasets, execution records | Gold excluded from adapter input; missing access recorded as not run |
+| E1 — core implemented | Reference bridges, grouped bilingual fixtures, execution records | Gold isolated; honest failure/coverage records; additional model families and representative datasets still pending |
 | E2 | Actual choice vs standardized argmax, hard/soft/ordinal metrics, calibration, cluster bootstrap | Explicit denominators; no test fitting; hand-checkable reference metrics |
 | E3 | Gemma G4 independent reference, N/K/B sweeps, order sensitivity | Separate causal and independent semantics; reference parity |
 | E4 | Concurrency/open-loop load generation, timing and telemetry | Timeouts retained; quality-under-load and correct-within-SLO goodput |
