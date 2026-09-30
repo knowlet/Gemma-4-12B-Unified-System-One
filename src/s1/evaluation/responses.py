@@ -4,6 +4,18 @@ from s1.backends import normalize_response
 from s1.errors import BackendResponseError
 
 
+def pipeline_info(value):
+    import math
+
+    if not isinstance(value, dict):
+        return None
+    return {
+        key: float(value[key])
+        for key in ("preprocess_ms", "decision_ms", "preprocess_reported_cost_usd")
+        if type(value.get(key)) in (int, float) and math.isfinite(value[key]) and value[key] >= 0
+    }
+
+
 def execution_info(response):
     info = response.get("execution") if isinstance(response, dict) else None
     if not isinstance(info, dict):

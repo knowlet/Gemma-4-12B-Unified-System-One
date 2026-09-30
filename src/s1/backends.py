@@ -213,6 +213,9 @@ class HTTPBackend:
         payload = {"state": request.state, "questions": request.named_questions_payload()}
         if request.media:
             payload["media"] = [m.model_dump() for m in request.media]
+        return normalize_response(request, self._post(payload))
+
+    def _post(self, payload):
         try:
             response = self.client.post(
                 self.url,
@@ -234,7 +237,7 @@ class HTTPBackend:
             data = response.json()
         except ValueError as exc:
             raise BackendResponseError("backend returned invalid JSON") from exc
-        return normalize_response(request, data)
+        return data
 
     def close(self):
         self.client.close()

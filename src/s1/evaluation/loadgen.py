@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from s1.errors import BackendTimeoutError
 
-from .responses import execution_info, normalize
+from .responses import execution_info, normalize, pipeline_info
 
 
 def arrival_offsets(count, mode, rate, seed):
@@ -92,6 +92,18 @@ def run_load(adapter, indexed_cases, profile, probability_mode, now, repetition)
                         "batch_id": f"{repetition}:{batch_index}",
                         "batch_size": len(batch),
                         "adapter_execution": execution_info(result),
+                        "probability_postprocessing": (
+                            "bounded_four_decimal_renormalization"
+                            if isinstance(result, dict)
+                            and result.get("probability_postprocessing")
+                            == "bounded_four_decimal_renormalization"
+                            else None
+                        ),
+                        "pipeline": pipeline_info(
+                            result.get("pipeline")
+                            if isinstance(result, dict)
+                            else getattr(result, "evaluation_pipeline", None)
+                        ),
                     },
                 )
             )

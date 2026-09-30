@@ -148,7 +148,7 @@ class CalibratedAdapter:
             answers[q.id] = answer_from_probabilities(q, p / p.sum())
             if q.type == "choice":
                 answers[q.id]["choice"] = original["choice"]
-        return {"answers": answers}
+        return {**response, "answers": answers}
 
     def telemetry(self):
         return {**self.adapter.telemetry(), "calibration_temperature": self.temperature}

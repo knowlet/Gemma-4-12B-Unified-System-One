@@ -316,6 +316,7 @@ def test_training_lora_calibration_and_checkpoint(model, benchmark_case, tmp_pat
 
     from s1.training import train_model
 
+    model.lm.save_pretrained(tmp_path / "base")
     lm = get_peft_model(
         model.lm, LoraConfig(r=2, lora_alpha=4, target_modules=["q_proj", "v_proj"])
     )
@@ -338,6 +339,16 @@ def test_training_lora_calibration_and_checkpoint(model, benchmark_case, tmp_pat
         if name in before
     )
     expected = model.predict(train.request)["answers"]
+    model.save_adapter(tmp_path / "decision-adapter")
+    assert (tmp_path / "decision-adapter/adapter_model.safetensors").is_file()
+    assert (tmp_path / "decision-adapter/s1_config.json").is_file()
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
+    separate = UnifiedDecisionModel(
+        str(tmp_path / "base"), adapter_path=str(tmp_path / "decision-adapter")
+    )
+    assert separate.temperature == model.temperature
+    for key, answer in separate.predict(train.request)["answers"].items():
+        assert answer["probabilities"] == pytest.approx(expected[key]["probabilities"], abs=1e-5)
     model.save(tmp_path)
     assert (tmp_path / "processor-test.json").is_file()
     monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
@@ -345,6 +356,70 @@ def test_training_lora_calibration_and_checkpoint(model, benchmark_case, tmp_pat
     assert restored.temperature == model.temperature
     for key, answer in restored.predict(train.request)["answers"].items():
         assert answer["probabilities"] == pytest.approx(expected[key]["probabilities"], abs=1e-5)
+
+
+def test_matched_lora_curve_keeps_test_locked_and_saves_six_adapters(
+    model, benchmark_case, tmp_path
+):
+    pytest.importorskip("peft")
+    from peft import LoraConfig, get_peft_model
+
+    from s1.evaluation.datasets import EvaluationCase
+    from s1.evaluation.experiments import write_cases
+    from s1.evaluation.supervision import prepare_support
+    from s1.evaluation.training_curve import train_curve
+
+    for split, count in (("train", 8), ("calibration", 2), ("test", 2)):
+        cases = []
+        for i in range(count):
+            raw = benchmark_case.model_dump(mode="json")
+            raw.update(id=f"{split}-{i}", group_id=f"{split}-{i}", split=split)
+            raw["request"]["state"] = f"{split} independent document {i}"
+            raw["request"]["questions"] = raw["request"]["questions"][:1]
+            raw["gold"] = {"route": "billing" if i % 2 else "technical"}
+            cases.append(EvaluationCase.model_validate(raw))
+        write_cases(tmp_path / f"{split}.jsonl", cases)
+    prepare_support(
+        tmp_path / "train.jsonl",
+        [tmp_path / "calibration.jsonl", tmp_path / "test.jsonl"],
+        tmp_path / "support",
+        shots=[1],
+    )
+
+    def factory(name, **kwargs):
+        lm = Gemma4UnifiedForConditionalGeneration(model.lm.config)
+        return UnifiedDecisionModel.from_components(
+            get_peft_model(lm, LoraConfig(**kwargs["lora"])), Processor()
+        )
+
+    report = train_curve(
+        tmp_path / "support/support.json",
+        tmp_path / "calibration.jsonl",
+        tmp_path / "curve",
+        model_id="tiny-fixture",
+        revision="a" * 40,
+        steps=1,
+        max_updates=6,
+        model_factory=factory,
+    )
+    assert report["status"] == "completed" and len(report["runs"]) == 6
+    for i in range(0, 6, 2):
+        a, b = report["runs"][i : i + 2]
+        assert a["train_ids"] == b["train_ids"]
+        assert a["seed"] == b["seed"]
+        assert a["brier_weight"] == 0 and b["brier_weight"] == 0.1
+        assert a["adapter_sha256"] != b["adapter_sha256"]
+    with pytest.raises(ValueError, match="calibration"):
+        train_curve(
+            tmp_path / "support/support.json",
+            tmp_path / "test.jsonl",
+            tmp_path / "leak",
+            model_id="tiny-fixture",
+            revision="a" * 40,
+            steps=1,
+            max_updates=6,
+            model_factory=lambda *args, **kwargs: pytest.fail("must validate before model load"),
+        )
 
 
 def test_training_rejects_test_split_and_leakage(model, benchmark_case):

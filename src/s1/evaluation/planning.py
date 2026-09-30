@@ -41,6 +41,10 @@ def runtime_identity(lockfile) -> dict:
         "accelerate",
         "laya",
         "peft",
+        "scikit-learn",
+        "sentence-transformers",
+        "setfit",
+        "datasets",
     ):
         try:
             packages[name] = version(name)
@@ -78,6 +82,19 @@ def case_eligibility(model: ModelSpec, case) -> dict:
             unknown.append(f"unknown_max_{name}")
         elif actual > limit:
             unsupported.append(f"max_{name}_exceeded")
+    if model.protocol == "agentjev" and any(
+        q.type == "score" and len(q.labels()) > 10 for q in case.request.questions
+    ):
+        unsupported.append("max_score_levels_exceeded")
+    if model.adapter in ("tfidf", "prior", "setfit") and model.artifact_file:
+        from .baselines import schema_key
+
+        try:
+            artifact = json.loads(Path(model.artifact_file).read_text())
+            if any(schema_key(q) not in artifact["schemas"] for q in case.request.questions):
+                unsupported.append("unseen_supervised_schema")
+        except (OSError, ValueError, KeyError, TypeError):
+            unknown.append("invalid_baseline_artifact")
     return {
         "case_id": case.id,
         "group_id": getattr(case, "group_id", None) or case.id,
@@ -92,10 +109,21 @@ def _configuration_blockers(
     model: ModelSpec, profile: ProfileSpec, environment
 ) -> tuple[list, dict]:
     reasons, service = [], {}
+    if model.decision_adapter_path:
+        from .checkpoints import directory_digest
+
+        if model.adapter != "gemma" or not model.decision_adapter_sha256:
+            reasons.append("invalid_decision_adapter_settings")
+        else:
+            try:
+                if directory_digest(model.decision_adapter_path) != model.decision_adapter_sha256:
+                    reasons.append("decision_adapter_hash_mismatch")
+            except (OSError, ValueError):
+                reasons.append("missing_decision_adapter")
     caps = model.capabilities
     if model.adapter == "unimplemented":
         reasons.append("adapter_not_implemented")
-    if model.adapter in ("gemma", "laya"):
+    if model.adapter in ("gemma", "laya", "embedding", "nli", "cross_encoder", "setfit"):
         if not model.model_id:
             reasons.append("missing_model_id")
         if not model.revision or not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", model.revision):
@@ -103,6 +131,18 @@ def _configuration_blockers(
         processor = model.processor_revision or model.revision
         if not processor or not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", processor):
             reasons.append("unresolved_processor_revision")
+    if model.adapter in ("tfidf", "prior", "setfit"):
+        if not model.artifact_file or not model.artifact_sha256:
+            reasons.append("missing_baseline_artifact")
+        else:
+            try:
+                if (
+                    hashlib.sha256(Path(model.artifact_file).read_bytes()).hexdigest()
+                    != model.artifact_sha256
+                ):
+                    reasons.append("baseline_artifact_hash_mismatch")
+            except OSError:
+                reasons.append("missing_baseline_artifact")
     if model.adapter != "uniform":
         if model.precision == "unknown":
             reasons.append("unknown_precision")
@@ -144,6 +184,30 @@ def _configuration_blockers(
         reasons.append("batch_unavailable")
     if profile.concurrency > 1 and caps.concurrent_requests is not True:
         reasons.append("concurrent_requests_unavailable")
+    if model.preprocessing != "none":
+        if not model.preprocessor_revision:
+            reasons.append("unresolved_preprocessor_revision")
+        endpoint = (
+            environment.get(model.preprocessor_endpoint_env, "")
+            if model.preprocessor_endpoint_env
+            else ""
+        )
+        try:
+            parsed = urlsplit(endpoint)
+            valid = (
+                parsed.scheme in ("https", "http")
+                and parsed.hostname
+                and not (parsed.username or parsed.password or parsed.query or parsed.fragment)
+            )
+            _ = parsed.port
+        except ValueError:
+            valid = False
+        if not valid:
+            reasons.append("missing_or_invalid_preprocessor_endpoint")
+        else:
+            service["preprocessor_endpoint_sha256"] = hashlib.sha256(endpoint.encode()).hexdigest()
+        if model.preprocessor_token_env and not environment.get(model.preprocessor_token_env):
+            reasons.append("missing_preprocessor_credentials")
     return reasons, service
 
 
@@ -175,7 +239,9 @@ def create_plan(
     dataset_hash = fingerprint(cases)
     if suite.dataset_sha256 and suite.dataset_sha256 != dataset_hash:
         raise ValueError("dataset fingerprint differs from the suite's pinned dataset_sha256")
-    if suite.information_view != "native_media" and any(case.request.media for case in cases):
+    if suite.information_view not in ("native_media", "pipeline_output") and any(
+        case.request.media for case in cases
+    ):
         raise ValueError("media payloads require the native_media information view")
     runtime = runtime_identity(lockfile)
     cells = []
@@ -185,6 +251,42 @@ def create_plan(
             model = model.model_copy(update={"enabled": True})
         case_rows = [case_eligibility(model, case) for case in cases]
         reasons, service = _configuration_blockers(model, profile, environment or {})
+        if model.decision_adapter_path:
+            try:
+                provenance = json.loads(
+                    (Path(model.decision_adapter_path) / "training-provenance.json").read_text()
+                )
+                for case in cases:
+                    for split in ("train", "calibration"):
+                        if (
+                            case.id in provenance[f"{split}_ids"]
+                            or (case.group_id or case.id) in provenance[f"{split}_groups"]
+                            or request_fingerprint(case.request) in provenance[f"{split}_requests"]
+                        ):
+                            reasons.append("evaluation_overlaps_adapter_training")
+            except (OSError, ValueError, KeyError, TypeError):
+                reasons.append("missing_adapter_training_provenance")
+        if model.preprocessing != "none" and suite.track != "pipeline":
+            reasons.append("preprocessor_requires_pipeline_track")
+        if (
+            suite.track == "pipeline"
+            and model.preprocessing == "none"
+            and any(c.request.media for c in cases)
+        ):
+            reasons.append("raw_media_pipeline_requires_preprocessor")
+        if model.adapter in ("tfidf", "prior", "setfit") and model.artifact_file:
+            try:
+                artifact = json.loads(Path(model.artifact_file).read_text())
+                for case in cases:
+                    if (
+                        case.id in artifact["train_ids"]
+                        or (case.group_id or case.id) in artifact["train_groups"]
+                        or request_fingerprint(case.request) in artifact["train_requests"]
+                    ):
+                        reasons.append("evaluation_overlaps_training")
+                        break
+            except (OSError, ValueError, KeyError, TypeError):
+                reasons.append("invalid_training_provenance")
         if model.calibration == "domain":
             from .calibration import validate_calibration
 

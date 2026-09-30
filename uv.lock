@@ -538,6 +538,29 @@ wheels = [
 ]
 
 [[package]]
+name = "evaluate"
+version = "0.4.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "datasets" },
+    { name = "dill" },
+    { name = "fsspec", extra = ["http"] },
+    { name = "huggingface-hub" },
+    { name = "multiprocess" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "packaging" },
+    { name = "pandas" },
+    { name = "requests" },
+    { name = "tqdm" },
+    { name = "xxhash" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ad/d0/0c17a8e6e8dc7245f22dea860557c32bae50fc4d287ae030cb0e8ab8720f/evaluate-0.4.6.tar.gz", hash = "sha256:e07036ca12b3c24331f83ab787f21cc2dbf3631813a1631e63e40897c69a3f21", size = 65716, upload-time = "2025-09-18T13:06:30.581Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3e/af/3e990d8d4002bbc9342adb4facd59506e653da93b2417de0fa6027cb86b1/evaluate-0.4.6-py3-none-any.whl", hash = "sha256:bca85bc294f338377b7ac2f861e21c308b11b2a285f510d7d5394d5df437db29", size = 84069, upload-time = "2025-09-18T13:06:29.265Z" },
+]
+
+[[package]]
 name = "fastapi"
 version = "0.141.1"
 source = { registry = "https://pypi.org/simple" }
@@ -665,6 +688,11 @@ api = [
     { name = "fastapi" },
     { name = "uvicorn" },
 ]
+baselines = [
+    { name = "scikit-learn" },
+    { name = "sentence-transformers" },
+    { name = "setfit" },
+]
 inference = [
     { name = "accelerate" },
     { name = "librosa" },
@@ -711,14 +739,17 @@ requires-dist = [
     { name = "protobuf", marker = "extra == 'inference'", specifier = ">=5,<7" },
     { name = "pydantic", specifier = ">=2.11,<3" },
     { name = "requests", marker = "extra == 'train'", specifier = ">=2.32,<3" },
+    { name = "scikit-learn", marker = "extra == 'baselines'", specifier = ">=1.7,<2" },
+    { name = "sentence-transformers", marker = "extra == 'baselines'", specifier = ">=5,<6" },
     { name = "sentencepiece", marker = "extra == 'inference'", specifier = ">=0.2,<1" },
+    { name = "setfit", marker = "extra == 'baselines'", specifier = ">=1.1,<2" },
     { name = "soundfile", marker = "extra == 'inference'", specifier = ">=0.13,<1" },
     { name = "torch", marker = "extra == 'inference'", specifier = "==2.8.0" },
     { name = "torchvision", marker = "extra == 'inference'", specifier = "==0.23.0" },
     { name = "transformers", marker = "extra == 'inference'", specifier = "==5.17.0" },
     { name = "uvicorn", marker = "extra == 'api'", specifier = ">=0.34,<1" },
 ]
-provides-extras = ["inference", "train", "api", "modal", "laya"]
+provides-extras = ["inference", "train", "api", "modal", "laya", "baselines"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -2223,6 +2254,34 @@ wheels = [
 ]
 
 [[package]]
+name = "sentence-transformers"
+version = "5.7.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "huggingface-hub" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "scikit-learn" },
+    { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "tokenizers" },
+    { name = "torch" },
+    { name = "tqdm" },
+    { name = "transformers" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9d/59/867381b1414a975da6c9953f48a07c05cb0629305e2d37c9bcc9764367b2/sentence_transformers-5.7.0.tar.gz", hash = "sha256:fd8c8fc35e6323631dff9f3760969ebf7980dc3cfda0ab1354bc6a774cc0e5d8", size = 466382, upload-time = "2026-08-06T12:12:33.371Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e8/c8/f63d99e354532f5b83e735dd1e001bda92495fbfde934f65d924abf2b071/sentence_transformers-5.7.0-py3-none-any.whl", hash = "sha256:b78141da3d8137e70d965866e2ca43190b9266f3d4d8752e250ded75e7136730", size = 611333, upload-time = "2026-08-06T12:12:31.881Z" },
+]
+
+[package.optional-dependencies]
+train = [
+    { name = "accelerate" },
+    { name = "datasets" },
+]
+
+[[package]]
 name = "sentencepiece"
 version = "0.2.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2256,6 +2315,24 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/3e/1a/4c6b39d03f5ba8439509adbd5a23c9538088a3cb679e7a47b911e8442bc6/sentencepiece-0.2.2-cp313-cp313t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:59d6588712101ccfcae9b03692be3aaae1514c2078666d7b05f15ba3a702e41b", size = 1398595, upload-time = "2026-07-12T08:39:02.86Z" },
     { url = "https://files.pythonhosted.org/packages/0f/bc/9eedddcec1fd57bc70200fa3ebf792d18fa63527a5369581cd416c81f97f/sentencepiece-0.2.2-cp313-cp313t-win_amd64.whl", hash = "sha256:89625fb43765cccaa1443b9adb61f283e5fe4cb1536728205d06bada730caa53", size = 1259346, upload-time = "2026-07-12T08:39:04.559Z" },
     { url = "https://files.pythonhosted.org/packages/41/15/7e74c8533848866ff560b29f7d8719921b76c4ec7149592d6d28e0deee75/sentencepiece-0.2.2-cp313-cp313t-win_arm64.whl", hash = "sha256:4f0603267cd15b92b68c2c0e852a441507614b70dc7773659baa6b8c214a91fd", size = 1196596, upload-time = "2026-07-12T08:39:06.454Z" },
+]
+
+[[package]]
+name = "setfit"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "datasets" },
+    { name = "evaluate" },
+    { name = "huggingface-hub" },
+    { name = "packaging" },
+    { name = "scikit-learn" },
+    { name = "sentence-transformers", extra = ["train"] },
+    { name = "transformers" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ff/b7/9f22b2b9d54da2de429c350be6a0c9c7d6615e3c7e5f74ff86535abd68b0/setfit-1.2.0.tar.gz", hash = "sha256:ed87e37cb7a35b04dac398c55e2dc9642a4b098d64cdf4b91a91d55dbae1de43", size = 86769, upload-time = "2026-09-04T14:35:10.135Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2c/82/32260de73fd4ad41c3f25cbd55911d393e5d0df9a22d9fa8616470861f91/setfit-1.2.0-py3-none-any.whl", hash = "sha256:dcf9292f073f47252c3fea73b141c4f43dc1d01789e0c8e2de017337e0428e34", size = 77131, upload-time = "2026-09-04T14:35:08.736Z" },
 ]
 
 [[package]]

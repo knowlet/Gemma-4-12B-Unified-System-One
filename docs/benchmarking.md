@@ -1,9 +1,9 @@
 # Reproducible comparisons
 
-The [Decision Benchmark v2 tools](benchmark-v2.md) add offline capability/budget
-checks and sequential execution with `s1 eval preflight`, `plan`, `run` and
-`summarize`. E0 and the E1 execution core are available; the commands and report
-contract below remain v1.
+The [Decision Benchmark v2 tools](benchmark-v2.md) implement E0–E7: capability/budget
+planning, multiple model routes, native batching, serving load, calibration and
+statistics, multimodal pipelines, matched training and workflow reports. The commands
+and report contract below remain v1.
 
 Every backend receives the same `DecisionRequest`, keyed question ids and candidate
 order. A JSONL row contains `id`, `split: test`, `request` and a `gold` map covering

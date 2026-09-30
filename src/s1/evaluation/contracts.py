@@ -34,7 +34,19 @@ class Capabilities(ConfigModel):
 
 class ModelSpec(ConfigModel):
     id: Identifier
-    adapter: Literal["uniform", "gemma", "laya", "http", "unimplemented"]
+    adapter: Literal[
+        "uniform",
+        "gemma",
+        "laya",
+        "http",
+        "tfidf",
+        "prior",
+        "embedding",
+        "nli",
+        "cross_encoder",
+        "setfit",
+        "unimplemented",
+    ]
     enabled: StrictBool = False
     model_id: str | None = Field(default=None, min_length=1)
     revision: str | None = Field(default=None, min_length=1)
@@ -51,6 +63,15 @@ class ModelSpec(ConfigModel):
     base_calibration: Literal["none", "checkpoint", "provider"] | None = None
     runtime: str = Field(default="reference", min_length=1)
     readout: Literal["candidate", "full", "generate"] = "candidate"
+    protocol: Literal["compatible", "typesafe", "agentjev"] = "compatible"
+    preprocessing: Literal["none", "http_ocr", "http_asr", "http_media"] = "none"
+    preprocessor_endpoint_env: EnvironmentName | None = None
+    preprocessor_token_env: EnvironmentName | None = None
+    preprocessor_revision: str | None = None
+    artifact_file: str | None = None
+    artifact_sha256: Digest | None = None
+    decision_adapter_path: str | None = None
+    decision_adapter_sha256: Digest | None = None
     device: str | None = Field(default=None, min_length=1)
     subfolder: str | None = Field(default=None, min_length=1)
     context_limit: int = Field(default=16384, ge=1, strict=True)
@@ -75,6 +96,8 @@ class ModelSpec(ConfigModel):
             raise ValueError("domain calibration requires calibration_file and base_calibration")
         if self.adapter != "http" and (self.endpoint_env or self.token_env):
             raise ValueError("endpoint_env and token_env are only valid for HTTP adapters")
+        if self.adapter != "http" and self.protocol != "compatible":
+            raise ValueError("provider protocol is only valid for HTTP adapters")
         if self.adapter == "uniform" and self.cost_per_request_usd not in (None, 0):
             raise ValueError("uniform has zero compute/API cost")
         if self.execution_mode == "causal_multislot" and self.capabilities.independent_questions:

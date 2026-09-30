@@ -34,6 +34,7 @@ jobs:
       - run: uv run --no-sync s1 benchmark --backend uniform examples/benchmarks/smoke.jsonl --output artifacts/uniform.json
       - run: uv run --no-sync s1 eval plan --profile smoke --enable-model uniform --output artifacts/evaluation/smoke-plan.json
       - run: uv run --no-sync s1 eval run --profile text-smoke --enable-model uniform --output artifacts/evaluation/text-smoke-run
+      - run: uv run --no-sync python scripts/benchmark_v2_acceptance.py --output artifacts/evaluation/acceptance
       - run: uv build --no-sources
       - uses: actions/upload-artifact@v4
         with:
@@ -56,5 +57,5 @@ jobs:
           version: '0.12.19'
           python-version: '3.12'
           enable-cache: true
-      - run: uv sync --locked --extra inference --extra api --extra train
+      - run: uv sync --locked --extra inference --extra api --extra train --extra baselines
       - run: uv run --no-sync pytest

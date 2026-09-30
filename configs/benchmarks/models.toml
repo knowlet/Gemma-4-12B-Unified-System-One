@@ -70,23 +70,58 @@ notes = "Configure a compatible wire endpoint and declared capabilities; E0 neve
 
 [[models]]
 id = "kev"
-adapter = "unimplemented"
-notes = "Candidate from the planning discussion; exact weights and capabilities need verification."
+adapter = "http"
+protocol = "typesafe"
+precision = "provider"
+execution_mode = "provider"
+calibration = "provider"
+endpoint_env = "KEV_BENCHMARK_ENDPOINT"
+notes = "Pin deployed weights/runtime in revision and declare cost. Endpoint is never auto-discovered."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = true
 
 [[models]]
 id = "decider"
-adapter = "unimplemented"
-notes = "Candidate from the planning discussion; exact weights and capabilities need verification."
+adapter = "http"
+protocol = "typesafe"
+precision = "provider"
+execution_mode = "provider"
+calibration = "provider"
+endpoint_env = "DECIDER_BENCHMARK_ENDPOINT"
+notes = "Pin deployed weights/runtime in revision and declare cost. Endpoint is never auto-discovered."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = true
 
 [[models]]
 id = "agentjev"
-adapter = "unimplemented"
-notes = "Candidate from the planning discussion; exact weights and capabilities need verification."
+adapter = "http"
+protocol = "agentjev"
+precision = "provider"
+execution_mode = "provider"
+calibration = "provider"
+endpoint_env = "AGENTJEV_BENCHMARK_ENDPOINT"
+notes = "Pin deployed weights/runtime in revision and declare cost. Endpoint is never auto-discovered."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = true
 
-[[models]]
-id = "setfit"
-adapter = "unimplemented"
-notes = "Supervised specialist track; matched support data required in E6."
 
 [[models]]
 id = "gemma-g0"
@@ -165,5 +200,107 @@ max_options = 52
 max_questions = 64
 probabilities = "complete"
 batch = "native"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "prior"
+adapter = "prior"
+precision = "float64"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "tfidf"
+adapter = "tfidf"
+precision = "float64"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "embedding"
+adapter = "embedding"
+precision = "float32"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "none"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "nli"
+adapter = "nli"
+precision = "float32"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "none"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "cross_encoder"
+adapter = "cross_encoder"
+precision = "float32"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "none"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "setfit"
+adapter = "setfit"
+precision = "float32"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
 concurrent_requests = false
 independent_questions = true

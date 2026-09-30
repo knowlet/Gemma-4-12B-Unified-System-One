@@ -162,7 +162,14 @@ def quality_metrics(records):
         if r.get("critical") and r["eligibility"] == "eligible" and r["status"] != "not_run"
     ]
     slices = {}
-    for field in ("task_id", "language", "type"):
+    for field in (
+        "task_id",
+        "language",
+        "type",
+        "modalities",
+        "candidate_count",
+        "questions_per_request",
+    ):
         values = sorted({str(row[field]) for row in rows if row.get(field) is not None})
         slices[field] = {
             value: {

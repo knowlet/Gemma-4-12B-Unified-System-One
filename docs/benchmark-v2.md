@@ -1,299 +1,204 @@
 # Decision Benchmark v2
 
-E0 and the E1 execution core are implemented: validated registries, offline capability
-preflight, deterministic identities, aggregate budgets, reference adapter bridges,
-grouped text fixtures and incremental run records. The frozen v1 baseline is
-`f8390676ae942699a71a85ae9a99cfcd7b9b3806`. Existing `s1 benchmark` and `s1 compare`
-continue to use their v1 contracts. The fixtures do not establish model quality.
+E0–E7 evaluation tooling is implemented. The frozen v1 baseline remains
+`f8390676ae942699a71a85ae9a99cfcd7b9b3806`; `s1 benchmark` and `s1 compare` retain their
+v1 interfaces. V2 runs are separate, reproducible artifacts. The supplied datasets
+are contract fixtures, **not evidence of pretrained model quality**.
 
-## Run the offline planner
-
-From the repository root:
+## Start with the offline acceptance run
 
 ```bash
 uv sync --locked --extra api
-uv run --no-sync s1 eval preflight --profile smoke --enable-model uniform
-uv run --no-sync s1 eval plan --profile smoke --enable-model uniform \
-  --output artifacts/evaluation/smoke-plan.json
-uv run --no-sync s1 eval plan --profile inventory \
-  --output artifacts/evaluation/inventory-plan.json
+uv run --no-sync python scripts/benchmark_v2_acceptance.py --output artifacts/evaluation/acceptance
 ```
 
-Both commands perform the same offline validation and budget checks; the artifact's
-`kind` distinguishes a preflight from a saved plan. They never import model runtimes,
-download weights, resolve Hub revisions, contact endpoints, run inference or spend
-the declared budget. `--enable-model` overrides a selected model's disabled flag for
-this invocation only; planning does not edit the registry or invoke the executor.
+This needs no model weights, credentials, GPU or network. It exercises preflight,
+three load modes, metrics, paired statistics, support selection, prior fitting,
+media-view preparation, resettable workflows and standalone reports. Open
+`artifacts/evaluation/acceptance/report/report.html` or `report.md`.
 
-All shipped models are disabled. The inventory command therefore writes its report
-and exits **1**. Exit **0** means at least one enabled model is ready and every
-enabled model passed the checks. Exit **2** means malformed configuration, invalid
-data, missing input files or an unknown reference. Disabled models remain visible
-without blocking enabled models.
+All output run/training/report directories must be new. Existing results are never
+overwritten. There is no resume protocol; an interrupted run remains inspectable,
+but cannot be treated as a finished comparison.
 
-The smoke plan has 3 requests / 5 decisions per repetition, 3 repetitions, and 1
-warmup request per repetition: **9 measured requests + 3 warmups = 12 requests**,
-with 15 measured decisions and zero estimated compute/API cost for uniform. The
-three-case dataset is a contract fixture, not a representative quality suite.
-
-## Execute and recompute a run
+## Plan and run
 
 ```bash
-uv run --no-sync s1 eval run --profile text-smoke --enable-model uniform \
-  --output artifacts/evaluation/text-smoke-run
-uv run --no-sync s1 eval summarize artifacts/evaluation/text-smoke-run
+uv run --no-sync s1 eval preflight --profile smoke --enable-model uniform
+uv run --no-sync s1 eval plan --profile smoke --enable-model uniform --output artifacts/plan.json
+uv run --no-sync s1 eval run --profile text-smoke --enable-model uniform --output artifacts/text
+uv run --no-sync s1 eval summarize artifacts/text
 ```
 
-`run` performs a fresh preflight and then executes the selected models. Its output
-directory **must not exist**: previous results are never overwritten and resume is
-not implemented. `summarize` only recomputes `summary.json` from local records.
-The text fixture has 10 requests, 18 decisions and 5 translation groups; one warmup
-makes 11 prediction calls. These are handwritten English/Traditional Chinese
-contract cases, not a public benchmark conversion or representative evaluation set.
+`preflight` and `plan` never load models or contact endpoints. All registry models
+are disabled by default. Explicit enabling applies only to this invocation.
+`ready` means configuration is complete; runtime loading, credential validity and
+hardware compatibility are checked during execution. `run` may download selected
+weights and call configured services.
 
-The E1 executor accepts **B=1, C=1** and complete distributions. It bridges the
-existing Uniform, Gemma, Laya and compatible HTTP adapters. Other model families,
-choice-only adapters, native batching, queueing and open-loop scheduling remain
-future work. Execution never silently emulates a requested batch or concurrency.
+| Configuration | Contract |
+|---|---|
+| `configs/benchmarks/models.toml` | Adapter, immutable revision, precision, readout, calibration, declared capabilities, cost ceiling, device/region, credential environment-variable names |
+| `configs/benchmarks/suites.toml` | Dataset, optional fingerprint, track and information view |
+| `configs/benchmarks/profiles.toml` | Models, suite, split, repetitions, warmup, B/C, required capabilities, arrival policy, SLO, seed, aggregate budget |
 
-For model runs, explicitly enable the relevant entry, pin its revision, declare
-verified capabilities and costs, select a matching profile and install the existing
-inference/Laya extras. `run` can load weights and call configured endpoints; the
-example above invokes only the free local Uniform backend. A globally blocked plan
-loads no adapters. Executor-specific unsupported settings are recorded per model
-as `not_run`, while other eligible models can still complete.
+Override with `--registry`, `--suites`, `--profiles`, `--lockfile`. Suite dataset paths
+are relative to the suite TOML; other paths are relative to the current directory.
+Unknown settings are rejected. Unknown capability differs from unsupported. A
+runtime failure never changes predeclared eligibility. Unsupported/disabled models
+remain visible, without fabricated zero quality.
 
-| Adapter | Applied settings and limits |
-| --- | --- |
-| Uniform | Sequential, uncalibrated Python float64 probabilities; no model loading |
-| Gemma | Causal multi-slot; explicit device; BF16 for CUDA, float32 otherwise; context limit rejects excess input; calibration is checkpoint temperature or explicit T=1 |
-| Laya | Revision, optional subfolder, device and context limit; checkpoint calibration; precision is declared `provider` because the current wrapper cannot control it; context may be truncated |
-| HTTP | Endpoint/token environment variables, `http_timeout_seconds`, native-media declaration; version/precision/calibration remain provider assertions |
+Budgets reserve **all logical requests**, including warmups and each batch member,
+across all ready enabled models. Unknown cost blocks execution; only Uniform is
+intrinsically free. `cost_per_request_usd` is a conservative operator ceiling,
+including preprocessing where configured. It is not an invoice. There are no retries
+or runner result caches. Provider-side caches remain unknown unless observed.
 
-A separate processor revision and unsupported runtime/calibration policies cannot
-be silently ignored. Loaded local model revisions and reported precision must match
-the plan before prediction. Laya limits/independence still need verification for the
-chosen checkpoint. Endpoint compatibility is an operator responsibility, not a claim
-that every Jev service implements this repository's wire contract.
+Each experiment ID hashes the effective configuration, source code, dependency lock,
+installed runtime versions, dataset and ordered candidates, seed, calibration,
+model/processor revisions, hardware/service labels and endpoint hashes. Raw prompts,
+media and credential values are not copied into evaluation artifacts. Gold and
+evaluation metadata never reach adapters.
 
-Each adapter receives only a deep copy of `DecisionRequest`. Gold labels, group,
-task, language and schema metadata remain in the evaluator. Mutations cannot affect
-normalization or later repetitions. Runtime errors, including a late
-`UnsupportedRequest`, retain their original eligibility. The runner does not retry
-or cache results; provider-side caching is unknown. HTTP timeouts come from the existing client; local computation has
-no forced deadline in E1. The seed is recorded only: this executor does not perform
-stochastic support selection or claim control over provider randomness.
+Exit 0 means completion, 1 means blocked/partial/errors/inconclusive gate, and 2 means
+invalid input. Calibration profiles explicitly use `split = "calibration"`; ordinary
+quality profiles require test-only data.
 
-## Run artifacts and descriptive metrics
+## Model routes and controlled Gemma readouts
+
+| Route | Implemented adapter / output |
+|---|---|
+| Uniform | Complete uniform distributions, sanity only |
+| Gemma G0 | `readout = "generate"`, sequential, one constrained answer token/question, thinking off; hard labels only |
+| Gemma G1 | `readout = "full"`, sequential independent questions; full vocabulary only at required answer positions |
+| Gemma G2 | Candidate projection, sequential independent questions |
+| Gemma G3 | Existing causal multi-slot; later questions can read earlier question text |
+| Gemma G4 | Independent question sequences in real native batches; compatible processor tensor shapes share a forward |
+| Laya | Existing wrapper, pinned checkpoint/subfolder, provider precision; context truncation disclosed |
+| Jev-compatible HTTP | `protocol = "compatible"`, exact configured endpoint |
+| Kev / Mapika Decider | `protocol = "typesafe"`; Score criteria sent as ordered descriptions, returned indices mapped to original numeric levels |
+| AgentJev | `protocol = "agentjev"`; boolean/choice/score and `results[].answers[]` mapping; text-only, Score ≤10 levels |
+| TF-IDF + LR / prior | JSON classifier artifact, fixed schema, training-only fit, complete distributions |
+| Embedding / NLI / cross-encoder | Candidate ranking with hard labels; similarity/entailment scores are not converted into fake candidate probabilities |
+| SetFit | Local trained checkpoint plus hashed training/class-label artifact; complete classifier distribution |
+
+Install `--extra inference`, `--extra laya`, `--extra train` or `--extra baselines`
+only for the selected routes. Heavy libraries are imported lazily. Local Gemma uses
+BF16 on CUDA and float32 on CPU; declaring another precision is blocked. Baseline
+encoders use float32; TF-IDF/prior math uses float64. Embedding/SetFit context
+truncation is disclosed. NLI/cross-encoder reject excess context. NLI checkpoints
+must identify their entailment class; cross-encoders must return a scalar score.
+
+Local HF checkpoints need immutable 40/64-character hex revisions. HTTP versions
+are operator assertions: record the deployed weights **and runtime** in `revision`,
+and set `hardware_label` / `service_region`. These adapters do not prove the remote
+service is running the claimed checkpoint. Upstream model families, multilingual
+Laya and sizes can use distinct registry entries; never conflate them as one model.
+
+Protocol references verified during implementation:
+[Kev contract](https://github.com/jaredpalmer/kev/blob/main/kev/api.py),
+[Decider](https://github.com/Mapika/decider),
+[AgentJev contract](https://github.com/malevrigns/agent-jev/blob/main/jev_service/contract.py),
+[SetFit API](https://huggingface.co/docs/setfit/reference/main),
+[Sentence Transformers API](https://sbert.net/docs/package_reference/sentence_transformer/model.html).
+Pin the deployed source revision rather than assuming these moving branches stay compatible.
+
+The TypeSafe wire mapping accepts bounded four-decimal probability rounding (at
+most K×0.00005 total mass error) and explicitly renormalizes that distribution.
+Larger errors or non-four-decimal malformed outputs remain failures. This handles
+Kev's documented serialization without loosening the generic probability validator.
+
+## Artifacts and metrics
 
 | Artifact | Contents |
-| --- | --- |
-| `run_manifest.json` | Effective plan, source/data/lock identities, model lifecycle, sanitized runtime telemetry, start/finish times |
-| `requests.jsonl` | Warmup and measured requests, frozen eligibility, dispatch/readiness/termination times and status |
-| `predictions.jsonl` | One row per measured decision, including failures/not-run cases; gold label, actual choice, standardized argmax, complete probabilities and Score expectation where available |
-| `errors.jsonl` | Setup, prediction, timeout and cleanup error types, without exception messages or raw backend responses |
-| `summary.json` | Recomputable counts, denominators, coverage, descriptive accuracy and successful-request p50/p95 |
+|---|---|
+| `run_manifest.json` | Frozen plan, identities, lifecycle, setup time, runtime/allocator telemetry |
+| `requests.jsonl` | Warmup/measurement status, scheduled/dispatch/ready/termination times, batch ID, SLO, pipeline stage timing/cost |
+| `predictions.jsonl` | One record per measured decision, including failures/not-run; IDs/groups, actual label, standardized argmax, distribution, hard/soft gold, K/N/modality metadata |
+| `errors.jsonl` | Phase and exception type, without raw provider error messages |
+| `summary.json` | Recomputable quality, coverage, latency, goodput and source-group counts |
+| `report.md`, `report.html` | Separate tracks/views/hardware, quality/latency tables, descriptive frontier, reliability and risk–coverage SVGs, workflow results |
 
-Rows are flushed after each completed call. A handled interruption marks the
-manifest `interrupted` and retains completed/in-flight records. Hard process or
-machine termination can leave a `running` manifest or incomplete final record;
-there is no recovery/resume protocol yet. Interrupted runs may be inspected with
-`summarize`; `records_complete` and recorded/planned decision counts identify partial
-data. The eligible denominator comes from the frozen plan, never from successful
-rows alone.
+Requests are atomic: partial/malformed answers fail the whole request. Output is
+flushed as calls complete. Interrupted manifests and incomplete record counts remain
+explicit. Warmups consume budget but are excluded from measured quality and latency.
 
-`actual_choice_accuracy` uses the service's valid Choice, preserving tied maxima;
-`standardized_argmax_accuracy` uses the first maximum in candidate order for all
-primitives. `actual_label_accuracy` uses service Choice and standardized Noul/Score
-labels. Score expectation and numeric gold are retained for E2's numeric metrics.
-`operational_correctness` divides correct labels by all planned eligible decisions.
-For a model with no attempted measured requests, quality and execution coverage are
-`null`; disabled or unavailable models do not receive fabricated zero scores.
+Metrics include actual Choice and standardized ordered argmax accuracy, task-macro
+accuracy, per-schema macro-F1, all-fields-correct, critical-field errors, sum-Brier,
+NLL (1e-12 floor plus zero-gold-probability count), 15-bin reliability/ECE,
+tie-averaged risk–coverage/AURC, Noul AUROC/AP/FPR/FNR, numeric Score MAE, ordinal
+error and normalized RPS. Noul positive label is `true`; P(true)=0.5 standardizes to
+`false`. Soft-target cross-entropy/Brier/KL and teacher agreement are separate.
+Hard-label adapters still receive accuracy/Score MAE; unavailable probability
+metrics stay null. Slices cover task, language, type, modality, K and N.
 
-Warmups count toward the budget and have error records but are excluded from quality
-and latency percentiles. Latency includes request copying, backend preprocessing,
-inference/network and response validation; it excludes model setup. Failure elapsed
-time is available from dispatch/termination fields, never substituted for successful
-completion latency. These are sequential wall-clock observations, not GPU kernel
-benchmarks or stable tail-latency estimates. Repetitions are not independent source
-groups, and this milestone provides no confidence intervals or significance claims.
+Always examine three denominators: valid-answer conditional quality, valid/eligible
+execution coverage, and correct/eligible operational correctness. Failures and
+timeouts cannot disappear into a successful-only comparison.
 
-Exit **0** from `run` means all enabled models completed without setup, warmup,
-prediction or cleanup errors. **1** covers errors, no execution or partial execution;
-artifacts are still saved. **2** covers invalid input or an existing output directory.
+```bash
+uv run --no-sync s1 eval compare artifacts/reference artifacts/candidate --seed 0 --resamples 2000 --output artifacts/comparison.json
+uv run --no-sync s1 eval report artifacts/reference artifacts/candidate --output artifacts/report
+```
 
-## Configuration contract
+Formal quality comparison requires complete finished records, identical dataset
+fingerprints and information views. Paired bootstrap resamples source groups, keeping
+translations, slots and repetitions together. At least two groups are needed for
+an interval; small samples are not strong release evidence. Multiple comparisons
+are not adjusted automatically. Comparisons are `right_minus_left`.
 
-TOML uses Python 3.11's standard library and adds no dependencies. Omitted fields
-represent unknown values where allowed; TOML has no `null` literal. Unknown keys,
-duplicate IDs, missing model/suite references, negative budgets, nonfinite prices,
-and incompatible calibration declarations are errors.
+`eval gate comparison.json --spec gate.json` applies a preregistered accuracy gate:
 
-| File | Contents |
-| --- | --- |
-| `configs/benchmarks/models.toml` | Model identity, adapter, precision, execution/calibration policy, capabilities, cost ceiling, environment variable names |
-| `configs/benchmarks/suites.toml` | Dataset path, track, information view and optional dataset fingerprint pin |
-| `configs/benchmarks/profiles.toml` | Selected models/suite, repetitions, warmups, B/C, required capabilities, seed and aggregate budget |
+```json
+{"left_experiment_id":"<64-hex>","right_experiment_id":"<64-hex>","accuracy_margin":0.01,"min_groups":30}
+```
 
-Override paths with `--registry`, `--suites`, `--profiles`, and `--lockfile`. Dataset
-paths are relative to the **suite configuration file**, even when invoked from a
-different directory. Other CLI paths are relative to the working directory.
+The lower operational-accuracy CI must clear `-margin`. Insufficient groups or a CI
+crossing the boundary returns `inconclusive`, never pass. This gate does not imply
+critical-field safety, retention or serving acceptance; inspect those separately.
+Register the gate before observing test results.
 
-The v2 loader accepts v1 JSONL and optional `group_id`, `task_id`, `language` and
-`schema_id` fields, and recognizes development splits. Planning/execution still
-require a nonempty test-only dataset with unique IDs and valid gold labels. Group
-IDs default to case IDs when omitted; other metadata stays null. Case IDs and SHA-256 appear in plans;
-request bodies, gold labels, media payloads and credential values do not. The
-fingerprint preserves case, question and candidate order because order can affect
-predictions. It is a hash of validated cases, not of the raw JSONL bytes. V1
-fingerprints remain unchanged when the optional metadata is absent; supplied
-metadata participates in the fingerprint.
-
-The dataset contract still limits each request to 52 candidates per question,
-64 questions and 8 media items. A declared larger model limit does not enable the
-planned high-cardinality track. Soft targets and cross-split group audits remain
-E2 work.
-
-## Eligibility and readiness
-
-Each request is classified before any model execution:
-
-| Eligibility | Meaning |
-| --- | --- |
-| `eligible` | Declared modalities, primitives, K and N cover the whole request |
-| `unsupported` | A declared capability explicitly excludes part of the request |
-| `unknown` | Required capability information is missing and there is no explicit exclusion |
-
-Requests are atomic in this milestone. If one question is unsupported, the entire
-request is unsupported. Counts retain all requests and all decisions in separate
-denominators. Unknown support blocks an enabled model; an explicitly unsupported
-subset remains visible and can be excluded before execution. A model with no eligible
-requests cannot be ready. No eligibility state produces a zero quality score.
-
-Capabilities describe the configured **adapter**, including its limits. Batch
-support is `native`, `loop_emulated`, `none`, or `unknown`; a loop cannot satisfy
-`require_native_batch`. B (independent inputs per batch) and C (concurrent requests)
-are separate profile fields. N and K are inspected from each actual request.
-`require_independent_questions` rejects causal multi-slot or unknown semantics.
-`require_probabilities` requires a declared complete distribution. Uniform accepts
-media for a sanity baseline; this does not claim media understanding.
-
-Each selected model then has a readiness status:
-
-- `not_run`: disabled, with all unmet conditions still listed.
-- `blocked`: enabled but missing configuration, capability information or budget.
-- `ready`: the offline declaration and budget checks passed.
-
-`ready` and `can_execute` are planning results. They do not
-validate installed inference extras, available GPU memory, decoded media, tokenizer
-context length, credentials, endpoint reachability or the truth of a vendor claim.
-The E1 runner performs additional configuration/setup checks and records runtime
-failures. Runtime failures must not retroactively change
-the frozen eligible denominator to unsupported.
-
-Gemma and Laya require a model ID and an immutable 40/64-character lowercase hex
-revision. A missing processor revision inherits that model revision. HTTP requires
-an operator-recorded provider version and an endpoint supplied through the named
-environment variable. If `token_env` is declared, it must contain a nonempty value.
-The planner verifies presence only. Endpoint URLs must be HTTP(S), without userinfo,
-query credentials or fragments; only their SHA-256 is stored. Capability assertions
-for Jev, Kev, Decider, AgentJev and SetFit intentionally remain unverified in the
-starter registry. A compatible generic HTTP bridge is available; dedicated adapters
-for Kev, Decider, AgentJev and SetFit are not implemented by this milestone.
-
-## Budget and identity
-
-`max_requests` and `max_estimated_cost_usd` apply to the sum of all enabled, otherwise
-ready models. Warmups count against the budget on every repetition. Estimates count
-logical requests, including every batch member, not Python calls or GPU forwards.
-They assume no retries; a future retry policy must reserve extra budget.
-
-`cost_per_request_usd` is an operator-supplied conservative ceiling covering the
-planned input sizes and compute/API costs. Missing cost is **unknown**, including
-for local models. Only uniform is intrinsically free. An explicit zero for another
-adapter is an operator assertion. Decimal arithmetic avoids rejecting a budget
-because of binary floating-point addition. Exceeding either aggregate limit blocks
-all candidate models; the planner does not silently select a cheaper subset.
-Disabled/otherwise blocked models have individual hypothetical estimates but do
-not reserve aggregate budget.
-
-Every cell's `experiment_id` hashes its effective model configuration, suite,
-dataset fingerprint, profile, frozen baseline, source-code hash, dependency-lock
-hash, installed relevant package versions, Python/platform, and endpoint hash when
-configured. `plan_id` hashes the ordered experiment IDs. Timestamps and command
-purpose are excluded so repeated equivalent planning is stable. Changes to candidate
-order, seed, precision, revision, calibration, cost/budget, source or lock change the
-identity. No resume is implemented. E1 also records resolved local revision/device,
-precision and context policy when exposed by the existing adapter. Hardware SKU,
-service region and detailed tokenizer/preprocessing telemetry remain necessary
-before formal systems comparisons in E3/E4.
-
-## Remaining milestones
-
-E2 tools are now available:
+## Calibration and data provenance
 
 ```bash
 uv run --no-sync s1 eval audit-splits data/train.jsonl data/calibration.jsonl data/test.jsonl
-uv run --no-sync s1 eval compare artifacts/run-a artifacts/run-b --seed 0 --resamples 2000 --output artifacts/comparison.json
-uv run --no-sync s1 eval calibrate artifacts/calibration-run --model gemma-g3 --output artifacts/temperature.json
+uv run --no-sync s1 eval calibrate artifacts/calibration-run --model gemma-g4 --output artifacts/temperature.json
 ```
 
-Use a profile with `split = "calibration"` to collect calibration predictions.
-Fitting refuses test runs, incomplete records and already domain-calibrated input.
-To apply the artifact, set `calibration = "domain"`, `base_calibration`, the
-`calibration_file` path (relative to the working directory), and its printed
-`calibration_sha256`. The base model settings must match the fitting run. Evaluation
-case IDs, group IDs and canonical request hashes must be disjoint from fitting data.
-The probability power transform uses a disclosed 1e-12 floor and positive fitted T.
+Calibration fitting only accepts complete calibration-split probability records.
+Apply with `calibration = "domain"`, `base_calibration`, `calibration_file` and
+`calibration_sha256`. Base settings must match; evaluation IDs, source groups and
+canonical request hashes must not overlap fitting data. Temperature uses a disclosed
+1e-12-floored probability power transform; test data never tune it.
 
-Optional `soft_gold` maps question IDs to complete target distributions, and
-`critical_questions` identifies critical fields; neither is sent to adapters.
-Summaries now contain sum-over-classes Brier, floored NLL, 15-bin reliability/ECE,
-tie-averaged risk–coverage/AURC, NouL ROC-AUC/average precision/FPR/FNR, numeric Score
-MAE, ordinal error and RPS normalized by K−1. Soft-target cross-entropy/Brier/KL and
-teacher agreement are reported separately from hard-label quality. Undefined metrics
-remain null. Missing distributions never become invented probabilities.
+Cases may include `group_id`, `task_id`, `schema_id`, `language`, `soft_gold` and
+`critical_questions`. Gold stays separate from the request. Group IDs should cover
+documents, sessions, recordings and translation families; missing groups fall back
+to case IDs. Canonical fingerprints preserve question/candidate ordering.
 
-Task-macro accuracy requires task IDs; macro-F1 is calculated within task/schema/type
-groups. NouL uses positive label `true` and strict P(true)>0.5, retaining false on a
-tie. NLL discloses its floor and number of zero-gold-probability observations.
-Bootstrap intervals resample source groups, keeping repeated decisions, questions
-and translations together. Fewer than two groups are inconclusive. Pair comparisons
-report both common-valid conditional and common-eligible operational differences,
-plus full counts; intervals are descriptive and not multiplicity-adjusted.
+Public-source conversion uses local JSONL and saves source SHA-256, provenance,
+original split, derived evaluation split and the transformed fingerprint:
 
-| Stage | Deliverable | Acceptance focus |
-| --- | --- | --- |
-| E0 — implemented | Registry, preflight, budgeted dry-run plans | Offline; unknown ≠ unsupported; deterministic identities; honest budgets |
-| E1 — core implemented | Reference bridges, grouped bilingual fixtures, execution records | Gold isolated; honest failure/coverage records; additional model families and representative datasets still pending |
-| E2 — implemented | Hard/soft/ordinal metrics, calibration, split audit, paired cluster bootstrap | Explicit denominators; no test fitting; hand-checkable reference metrics |
-| E3 | Gemma G4 independent reference, N/K/B sweeps, order sensitivity | Separate causal and independent semantics; reference parity |
-| E4 | Concurrency/open-loop load generation, timing and telemetry | Timeouts retained; quality-under-load and correct-within-SLO goodput |
-| E5 | Native media, OCR/ASR alternatives, counterfactuals and retention | Content sensitivity and full preprocessing cost |
-| E6 | Few-shot/SetFit and Gemma CE/Brier comparison | Matched support IDs, multiple seeds and locked tests |
-| E7 | Closed-loop workflows and report | Task completion, false completion and cost per success |
+```bash
+uv run --no-sync s1 eval import-data data/boolq-validation.jsonl --format boolq --source-url https://example.org/pinned-source --revision SOURCE_REVISION --license SOURCE_LICENSE --original-split validation --split test --output data/boolq-heldout.jsonl
+```
 
-The first usable comparative milestone remains E0–E3. Further work should preserve
-separate generalist, supervised specialist, native multimodal, pipeline, systems
-and workflow tracks. Local forward time and remote API latency must remain separate;
-latency/N is amortized cost, not the time a user waits for an answer.
+Formats: `boolq` (`passage/question/answer`), `ocnli`
+(`sentence1/sentence2/label`) and `choice`
+(`state/question/options/answer`, optional language/group_id/id). OCNLI unlabeled
+test rows are rejected. A held-out labeled development set stays identified as such;
+conversion never claims an official test score. Choice preserves the entire supplied
+ontology. K>52 is rejected rather than selecting distractors using gold. Source URL,
+revision and license are operator-supplied and must be verified for formal results.
 
-## E3/E4 execution additions
+## Parallelism and serving
 
-Gemma entries `gemma-g0/g1/g2/g4` now select one-token constrained generation,
-full head at decision positions, independent sequential candidate readout, and
-independent native batches. G3 remains causal. G0 emits hard labels only: probability
-metrics stay null. G4 groups compatible processor tensor shapes and right-pads text;
-media are preserved, with separate forwards for incompatible shapes. Runtime
-records disclose forward count, batch sizes and sequence token counts (whole batch
-scope, repeated on its members; do not sum duplicate batch telemetry).
-
-Tiny real Gemma forwards test text/image/audio/mixed input, unrelated-question
-changes, reordering, mixed-request batches and full-head parity. FP32 uses 1e-5
-absolute/relative tolerance; BF16 cross-batch checks use 2e-3 because GEMM shapes can
-change rounding. These checks do not establish real 12B quality or bitwise parity.
-Shared-prefix and packed branch caches are not enabled; their future release must
-pass these same behavior comparisons against G4.
+N = questions per state, K = candidates per question, B = independent requests per
+batch, C = client workers. G4 expands questions to independent sequences; media
+processor tensors are retained, with separate forwards for incompatible shapes.
+`adapter_execution` discloses batch sizes, forward calls and actual sequence lengths;
+its scope is the whole adapter batch, repeated on member records. Do not sum duplicates.
+G2's per-question forwards are not a native batch.
 
 ```bash
 uv run --no-sync s1 eval prepare-sweep --output artifacts/shape-sweep
@@ -301,23 +206,141 @@ uv run --no-sync s1 eval perturb examples/benchmarks/text-contract.jsonl --seed 
 uv run --no-sync s1 eval behavior artifacts/reference artifacts/reordered --left-model gemma-g4 --right-model gemma-g4
 ```
 
-Shape workloads are explicitly synthetic, lengths are characters, and reused states
-retain source groups. Register chosen cells as suites, then vary profile B/C. No
-full Cartesian grid is executed automatically. Models still require explicit enable,
-revision, capabilities and cost ceilings.
+Shape workloads cover one axis at a time: N 1–64, K 2–52, text lengths and state reuse.
+Lengths are **characters**, with actual model tokens recorded separately. Register
+chosen cells as suites and vary B/C profiles; no full Cartesian product runs implicitly.
+Order perturbation preserves semantic labels/source groups. Behavior comparison
+reports common validity, flips, max probability delta and grouped accuracy delta;
+it deliberately allows changed inputs for order/retention diagnostics.
 
-Profiles now accept `load_mode = "closed_loop" | "fixed" | "poisson"`, `arrival_rate`
-(requests/sec, required for fixed/Poisson), and `slo_ms`. C bounds worker concurrency;
-B calls the adapter's declared native or explicitly loop-emulated batch API. Open-loop
-uses B=1; server batching is a separate deployment policy. Arrival timestamps are
-precomputed independently of service completion. All calls drain before model close.
-SLO is an observed deadline, not forced cancellation of local GPU computation. Backend
-timeouts remain censored observations and never become successful latency samples.
+Tiny real Gemma tests cover FP32/BF16, text/image/audio/mixed input, question reordering,
+unrelated-question changes and mixed batches. Full-head parity uses 1e-5 tolerance;
+cross-batch BF16 uses 2e-3 because GEMM shapes can change rounding. These are numerical
+and isolation tests, not pretrained multimodal understanding evidence.
 
-Summaries include queue dispatch lag, end-to-end p99, successful request/decision
-throughput, correct-within-SLO goodput and all-critical-fields-correct goodput. Fewer
-than 10,000 completions marks p99 as screening only. Model setup time and process
-lifetime peak RSS are separate; CUDA memory telemetry is available for local Gemma.
-RSS/GPU allocator peaks are process-scoped, not isolated per-request allocations.
-Set model `hardware_label` and `service_region` for the comparison cell. Local Gemma
-uses one batch worker; concurrency measurements belong to a configured service.
+Profiles support `load_mode = "closed_loop" | "fixed" | "poisson"`, `arrival_rate`
+(requests/sec for fixed/Poisson), `slo_ms`, `batch_size`, `concurrency`. Open-loop
+uses B=1, with arrivals computed independently of service speed. Offline B>1 invokes
+the declared native or explicitly loop-emulated adapter batch. Local Gemma/Laya
+concurrency is blocked; use native Gemma batching or a configured service for C sweeps.
+
+Latency is scheduled-arrival to all-answers-ready, including queueing, preprocessing,
+inference/network and validation. It is never latency/N. Service latency and dispatch
+lag are separate. An SLO miss is an observation, not forced cancellation of local
+computation. Backend timeouts remain censored; failed calls do not enter successful
+latency percentiles. Work drains before model close.
+
+Summaries contain requests/sec, decisions/sec, correct-within-SLO goodput,
+all-critical-fields-correct requests/sec, deadline misses and p99 screening flags.
+Fewer than 10,000 completions is marked screening-only. Setup time is separate;
+RSS is a process-lifetime peak, CUDA values are allocator peaks, not per-request
+memory. Remote engine timing is not inferred from RTT. Repeat formal runs over
+multiple time blocks and compare only matched hardware/service regions.
+
+## Native media, counterfactuals and OCR/ASR pipelines
+
+`eval prepare-media bundle.jsonl --output artifacts/media` prepares M0–M3. Each row:
+
+```json
+{"case":{"id":"media-a","group_id":"source-pair","request":{"state":"...","questions":["<normal Question objects>"],"media":["<normal image/audio inputs>"]},"gold":{"q":"label"}},"missing_media_gold":{"q":"unknown"},"verified_text":"Human-verified transcript or description"}
+```
+
+Use actual contract objects in place of explanatory placeholders. M0 removes media
+and **requires separately annotated gold**; M1 retains raw media; M2 adds verified
+transcript/description; M3 retains raw media for a measured service pipeline. M2 is
+a diagnostic view, not free deployable perception. Different-gold counterfactual
+pairs must share text/questions and change media. Both answers must be correct:
+flipping alone is insufficient.
+
+M3 model configuration: `preprocessing = "http_ocr" | "http_asr" | "http_media"`,
+`preprocessor_endpoint_env`, optional `preprocessor_token_env`, and
+`preprocessor_revision`. Use suite `track = "pipeline"`,
+`information_view = "pipeline_output"`. The explicitly configured OCR/ASR service
+accepts `{"media":[...]}` and returns `{"text":"...","cost_usd":0.01}`; cost is optional,
+reported by the service, and not inferred. No specific vendor OCR/ASR is assumed.
+The pipeline adapter consumes declared media, adds the observation to state, then
+calls the text decision model. Both stages' time is included; preprocessing cost/time
+survive downstream failure. Native batching is not claimed for this wrapper.
+
+```bash
+uv run --no-sync s1 eval counterfactual artifacts/native-run --model gemma-g4 --views artifacts/media/media-views.json
+uv run --no-sync s1 eval behavior artifacts/base-media artifacts/lora-media --left-model gemma-g4 --right-model gemma-lora
+```
+
+Run base and decision adapters on identical held-out media for retention. Supply
+representative licensed images/audio; bundled synthetic signals only test plumbing.
+
+## Matched specialist and LoRA training
+
+```bash
+uv sync --locked --extra inference --extra train --extra baselines
+uv run --no-sync s1 eval prepare-support data/train.jsonl --heldout data/calibration.jsonl data/test.jsonl --shots 8 32 128 --output artifacts/support
+uv run --no-sync s1 eval fit-baseline artifacts/support/shots-8-seed-0.jsonl --method tfidf --seed 0 --output artifacts/tfidf
+uv run --no-sync s1 eval fit-baseline artifacts/support/shots-8-seed-0.jsonl --method setfit --model PINNED_EMBEDDER --revision COMMIT_SHA --seed 0 --steps 20 --output artifacts/setfit
+uv run --no-sync s1 eval train-curve artifacts/support/support.json --calibration data/calibration.jsonl --revision GEMMA_COMMIT_SHA --steps 100 --max-updates 1800 --output artifacts/gemma-curve
+```
+
+Support preparation requires one fixed text schema, one question/case, training-only
+labels, three seeds and disjoint held-out groups/IDs/requests. It takes at most one
+representative per source group, stratifies by class, and nests lower-shot supports
+inside larger ones for each seed. Insufficient classes/groups are errors, never
+silently reduced quotas. Every method receives the exact saved support IDs. This
+is matched annotation budget, not a claim that SetFit and LoRA consume equal FLOPs.
+
+TF-IDF/LR and prior save JSON parameters; no pickle is used for these artifacts.
+SetFit saves a local checkpoint plus a hashed manifest with class ordering and a
+checkpoint content digest. Configure `artifact_file`/`artifact_sha256`; use the saved
+SetFit model directory as `model_id` and pin its manifest digest as the local revision.
+Evaluation rejects unseen schemas and training overlap. Embedding/NLI can instead
+accept new runtime candidates, with their hard-label probability contract.
+
+`train-curve` runs CE and CE+Brier using identical support, initialization seed,
+steps, learning rate and LoRA rank/targets for seeds 0/1/2. Calibration data are locked
+by the support manifest; test data are never fitted. It saves **separate adapters**,
+calibration/provenance and content hashes. Select them with `decision_adapter_path`
+and `decision_adapter_sha256`; use the pinned base model revision. Preflight rejects
+evaluation overlap with adapter training/calibration data. `calibration = "checkpoint"`
+uses the saved adapter temperature; `none` explicitly uses T=1. Compare base/LoRA
+quality and held-out media retention using the normal runner. Failed/interrupted
+training preserves completed cells, without claiming remaining cells completed.
+
+## Resettable workflows and costs
+
+```bash
+uv run --no-sync s1 eval workflow examples/benchmarks/workflows.jsonl --small uniform --strong uniform --enable-model uniform --output artifacts/workflow
+uv run --no-sync s1 eval report artifacts/text artifacts/workflow --output artifacts/report
+```
+
+The shipped CI and UI/document scenarios are **finite-state replay fixtures**. Each
+episode resets to its initial state with a matched seed; action transitions determine
+the next observation and externally specified goal state. They execute no arbitrary
+shell/browser actions. Replace fixtures with licensed representative environments
+before claiming coding-agent or UI task success.
+
+Policies: always-small, always-strong, rules-first, and small→the same strong worker
+when confidence is below a fixed threshold or the action is `escalate`. Hard-label
+S1 outputs always fall back in the cascade. Rules only inspect public state fields;
+models receive observations/candidates, not transition tables or goal truth. Saying
+`complete` before the goal is satisfied records a false completion.
+
+Worst-case calls and model/tool cost ceilings are reserved before loading models.
+`--max-calls`, `--max-cost-usd`, `--threshold` are explicit; freeze the threshold before
+test. Records preserve every routed model call, failure, transition, retry, fallback,
+model switch and reported cache hit. Unobserved cache loss remains null. Task latency
+is measured replay wall time, not simulated external tool duration.
+
+`workflow_summary.json` reports completion, false completion, fallback, retries,
+p95 and cost per success. The numerator includes **all episodes**, including failures.
+Reported model bills are separate from conservative ceilings and fixture tool costs;
+missing bills stay unknown. `workflow_comparison.json` pairs policy deltas by source
+group. Provider cache carryover is unknown and disclosed.
+
+## Boundaries of this delivery
+
+The reference E0–E7 tooling and offline acceptance are available. Live comparative
+results still require pinned weights/API credentials, appropriate hardware, explicit
+budgets and representative held-out data. No such results are implied by passing CI.
+Shared-prefix KV and branch-isolated packed attention, quantized/MLX/optimized runtime
+tracks, K>52, specialized vendor OCR/ASR deployment, production browser/coding agents,
+and crash-resume are separate extensions. No loop is mislabeled as a native batch,
+and no unimplemented cache is advertised as a speedup.

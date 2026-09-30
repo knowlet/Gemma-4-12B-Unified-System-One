@@ -19,6 +19,8 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
     if spec.calibration == "domain":
         spec = spec.model_copy(update={"calibration": spec.base_calibration})
     reasons = []
+    if spec.preprocessing != "none" and spec.capabilities.batch == "native":
+        reasons.append("pipeline_batch_is_loop_emulated")
     if profile.batch_size > 1 and not (
         (
             spec.adapter == "gemma"
@@ -78,6 +80,17 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
             "provider",
         ):
             reasons.append("http_policy_mismatch")
+    elif spec.adapter in ("tfidf", "prior", "embedding", "nli", "cross_encoder", "setfit"):
+        if spec.execution_mode != "sequential" or spec.calibration not in ("none", "checkpoint"):
+            reasons.append("baseline_policy_mismatch")
+        expected = "float64" if spec.adapter in ("tfidf", "prior") else "float32"
+        if spec.precision != expected:
+            reasons.append("baseline_precision_mismatch")
+        expected_probabilities = (
+            "none" if spec.adapter in ("embedding", "nli", "cross_encoder") else "complete"
+        )
+        if spec.capabilities.probabilities != expected_probabilities:
+            reasons.append("baseline_probability_contract_mismatch")
     else:
         reasons.append("adapter_not_implemented")
     return reasons
@@ -135,6 +148,14 @@ class ReferenceAdapter:
                 "context_limit": self.backend.max_len,
                 "context_policy": "truncate",
             }
+        if self.spec.adapter in ("embedding", "setfit"):
+            return {"precision": "float32", "context_policy": "truncate"}
+        if self.spec.adapter in ("nli", "cross_encoder"):
+            return {
+                "precision": "float32",
+                "context_policy": "reject",
+                "context_limit": self.spec.context_limit,
+            }
         return {
             "precision": self.spec.precision,
             "context_policy": "provider" if self.spec.adapter == "http" else "not_applicable",
@@ -142,8 +163,10 @@ class ReferenceAdapter:
 
     def resources(self):
         import resource
+        import sys
 
-        result = {"process_peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}
+        rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        result = {"process_peak_rss_kib": rss / 1024 if sys.platform == "darwin" else rss}
         if self.spec.adapter == "gemma" and self.backend.model.device.startswith("cuda"):
             import torch
 
@@ -172,8 +195,21 @@ def load_adapter(spec: ModelSpec, environment) -> Adapter:
             ),
             artifact,
         )
+    if spec.preprocessing != "none":
+        from .multimodal import wrap_pipeline
+
+        return wrap_pipeline(
+            load_adapter(spec.model_copy(update={"preprocessing": "none"}), environment),
+            spec,
+            environment,
+        )
     # Optional model libraries are still imported only inside their constructors.
-    from s1.backends import GemmaBackend, HTTPBackend, LayaBackend, UniformBackend
+    if spec.decision_adapter_path:
+        from .checkpoints import directory_digest
+
+        if directory_digest(spec.decision_adapter_path) != spec.decision_adapter_sha256:
+            raise ValueError("decision adapter changed after planning")
+    from s1.backends import GemmaBackend, LayaBackend, UniformBackend
 
     if spec.adapter == "uniform":
         backend = UniformBackend()
@@ -184,6 +220,7 @@ def load_adapter(spec: ModelSpec, environment) -> Adapter:
             device=spec.device,
             max_context=spec.context_limit,
             temperature=1.0 if spec.calibration == "none" else None,
+            **({"adapter_path": spec.decision_adapter_path} if spec.decision_adapter_path else {}),
         )
     elif spec.adapter == "laya":
         backend = LayaBackend(
@@ -194,13 +231,20 @@ def load_adapter(spec: ModelSpec, environment) -> Adapter:
             max_len=spec.context_limit,
         )
     elif spec.adapter == "http":
-        backend = HTTPBackend(
+        from .providers import ProviderHTTPBackend
+
+        backend = ProviderHTTPBackend(
             environment[spec.endpoint_env],
             name=spec.id,
             token=environment.get(spec.token_env) if spec.token_env else None,
             timeout=spec.http_timeout_seconds,
             supports_media=bool(set(spec.capabilities.modalities or ()) & {"image", "audio"}),
+            protocol=spec.protocol,
         )
+    elif spec.adapter in ("tfidf", "prior", "embedding", "nli", "cross_encoder", "setfit"):
+        from .baselines import BaselineBackend
+
+        backend = BaselineBackend(spec)
     else:
         raise ValueError("adapter not implemented")
     return ReferenceAdapter(spec, backend)

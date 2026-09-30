@@ -17,7 +17,7 @@ from .contracts import ModelSpec
 from .datasets import fingerprint, load_cases
 from .planning import create_plan
 from .reporting import write_summary
-from .responses import execution_info, normalize
+from .responses import execution_info, normalize, pipeline_info
 
 
 class RuntimeTelemetry(StrictModel):
@@ -67,6 +67,8 @@ def _predictions(case, request_record, response):
             soft_gold=(case.soft_gold or {}).get(question.id),
             critical=question.id in (case.critical_questions or []),
             modalities=sorted({"text", *(m.type for m in case.request.media)}),
+            candidate_count=len(question.labels()),
+            questions_per_request=len(case.request.questions),
         )
         if response is not None:
             answer = response["answers"][question.id]
@@ -150,10 +152,18 @@ def _record_call(
             # A mutating adapter cannot change golds, later repetitions or normalization.
             result = adapter.predict(case.request.model_copy(deep=True))
             row["adapter_execution"] = execution_info(result)
+            row["pipeline"] = pipeline_info(result.get("pipeline"))
+            row["probability_postprocessing"] = (
+                "bounded_four_decimal_renormalization"
+                if result.get("probability_postprocessing")
+                == "bounded_four_decimal_renormalization"
+                else None
+            )
             response = normalize(
                 case.request, result, cell["identity"]["model"]["capabilities"]["probabilities"]
             )
         except BaseException as exc:
+            row["pipeline"] = pipeline_info(getattr(exc, "evaluation_pipeline", None))
             interrupted = not isinstance(exc, Exception)
             row["status"] = (
                 "interrupted"
