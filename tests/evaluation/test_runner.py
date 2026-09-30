@@ -379,7 +379,10 @@ def test_invalid_dataset_errors_do_not_include_prompt_text(tmp_path):
     assert "secret" not in str(exc.value)
 
 
-def test_adapter_factory_forwards_settings_without_loading_real_models(registry, monkeypatch):
+@pytest.mark.parametrize("precision", ["bfloat16", "float32"])
+def test_adapter_factory_forwards_settings_without_loading_real_models(
+    registry, monkeypatch, precision
+):
     import s1.backends
 
     calls = []
@@ -396,14 +399,20 @@ def test_adapter_factory_forwards_settings_without_loading_real_models(registry,
         model_id="local/model",
         revision="a" * 40,
         device="cuda:1",
-        precision="bfloat16",
+        precision=precision,
         calibration="none",
         context_limit=2048,
     )
     load_adapter(gemma, {}).close()
     assert calls[-1] == (
         ("local/model",),
-        {"revision": "a" * 40, "device": "cuda:1", "max_context": 2048, "temperature": 1.0},
+        {
+            "revision": "a" * 40,
+            "device": "cuda:1",
+            "precision": precision,
+            "max_context": 2048,
+            "temperature": 1.0,
+        },
     )
     laya = ModelSpec(
         id="l",
@@ -425,6 +434,24 @@ def test_gemma_precision_and_processor_policy_cannot_be_ignored(registry):
     reasons = execution_blockers(spec, registry.profiles["smoke"])
     assert "gemma_device_precision_mismatch" in reasons
     assert "separate_processor_revision_unavailable" in reasons
+
+
+@pytest.mark.parametrize(
+    "device,precision,supported",
+    [
+        ("cuda:1", "float32", True),
+        ("cuda:1", "bfloat16", True),
+        ("cuda:1", "float16", False),
+        ("cpu", "float32", True),
+        ("cpu", "bfloat16", False),
+    ],
+)
+def test_gemma_explicit_precision_is_checked_against_runtime_support(
+    registry, device, precision, supported
+):
+    spec = registry.models["gemma-g3"].model_copy(update={"device": device, "precision": precision})
+    reasons = execution_blockers(spec, registry.profiles["smoke"])
+    assert ("gemma_device_precision_mismatch" not in reasons) == supported
 
 
 def test_cli_run_and_recompute(tmp_path):

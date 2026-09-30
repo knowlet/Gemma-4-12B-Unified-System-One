@@ -230,6 +230,17 @@ unrelated-question changes and mixed batches. Full-head parity uses 1e-5 toleran
 cross-batch BF16 uses 2e-3 because GEMM shapes can change rounding. These are numerical
 and isolation tests, not pretrained multimodal understanding evidence.
 
+The full pinned 12B checkpoint behaves differently from tiny random models:
+the 2026-10-01 A100 validation measured BF16 probability drift up to 0.4267
+when only batch shape changed. Masks, explicit positions and attention-kernel
+changes did not eliminate it; the candidate projection itself matched exactly.
+Inputs remain logically separate, but BF16 probability parity is not established.
+`UnifiedDecisionModel(..., device="cuda", precision="float32")` and registry
+`precision = "float32"` select an explicit FP32 runtime for controlled parity
+experiments. Keep every compared readout on the same declared precision; the
+default CUDA runtime remains BF16. See [live validation](validation/2026-10-01/live-validation.md)
+for actual checkpoint receipts, numerical bounds and memory measurements.
+
 Profiles support `load_mode = "closed_loop" | "fixed" | "poisson"`, `arrival_rate`
 (requests/sec for fixed/Poisson), `slo_ms`, `batch_size`, `concurrency`. Open-loop
 uses B=1, with arrivals computed independently of service speed. Offline B>1 invokes

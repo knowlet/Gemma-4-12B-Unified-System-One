@@ -61,6 +61,7 @@ class UnifiedDecisionModel:
         *,
         revision=None,
         device=None,
+        precision=None,
         temperature=None,
         max_context=16384,
         lora=None,
@@ -69,8 +70,13 @@ class UnifiedDecisionModel:
         import torch
         from transformers import AutoModelForMultimodalLM, AutoProcessor
 
-        device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-        dtype = torch.bfloat16 if str(device).startswith("cuda") else torch.float32
+        device = str(device or ("cuda" if torch.cuda.is_available() else "cpu"))
+        if precision not in (None, "float32", "bfloat16"):
+            raise ValueError("precision must be float32 or bfloat16")
+        precision = precision or ("bfloat16" if device.startswith("cuda") else "float32")
+        if precision == "bfloat16" and not device.startswith("cuda"):
+            raise ValueError("bfloat16 precision requires a CUDA device")
+        dtype = getattr(torch, precision)
         processor = AutoProcessor.from_pretrained(name, revision=revision)
         lm = AutoModelForMultimodalLM.from_pretrained(name, revision=revision, dtype=dtype)
         if lm.config.model_type != "gemma4_unified":

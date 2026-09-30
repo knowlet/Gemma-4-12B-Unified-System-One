@@ -272,6 +272,69 @@ def test_constructor_uses_resolved_calibration_revision(
     )
 
 
+@pytest.mark.parametrize(
+    "device,precision,expected_dtype",
+    [
+        ("cpu", None, torch.float32),
+        ("cpu", "float32", torch.float32),
+        ("cuda:1", None, torch.bfloat16),
+        ("cuda:1", "bfloat16", torch.bfloat16),
+        ("cuda:1", "float32", torch.float32),
+    ],
+)
+def test_constructor_forwards_explicit_precision_and_device(
+    model, monkeypatch, device, precision, expected_dtype
+):
+    from transformers import AutoModelForMultimodalLM, AutoProcessor
+
+    loaded, initialized = [], []
+
+    def load_model(name, **kwargs):
+        loaded.append((name, kwargs))
+        return model.lm.to(dtype=kwargs["dtype"])
+
+    def initialize(self, lm, processor, selected_device, temperature, max_context):
+        # Assert GPU constructor settings without claiming this CPU test performs
+        # a CUDA transfer; real CUDA FP32 parity is an explicit live check.
+        initialized.append((selected_device, lm.get_output_embeddings().weight.dtype))
+
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
+    monkeypatch.setattr(AutoModelForMultimodalLM, "from_pretrained", load_model)
+    monkeypatch.setattr(UnifiedDecisionModel, "_initialize", initialize)
+    UnifiedDecisionModel(
+        "owner/checkpoint", revision="a" * 40, device=device, precision=precision, temperature=1.0
+    )
+    assert loaded == [("owner/checkpoint", {"revision": "a" * 40, "dtype": expected_dtype})]
+    assert initialized == [(device, expected_dtype)]
+
+
+@pytest.mark.parametrize("precision", ["float16", "quantized", "unknown", "bfloat16"])
+def test_constructor_rejects_unsupported_cpu_precision_before_loading(monkeypatch, precision):
+    from transformers import AutoModelForMultimodalLM, AutoProcessor
+
+    def refuse_load(*args, **kwargs):
+        pytest.fail("invalid precision must fail before processor/checkpoint access")
+
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", refuse_load)
+    monkeypatch.setattr(AutoModelForMultimodalLM, "from_pretrained", refuse_load)
+    with pytest.raises(ValueError, match="precision"):
+        UnifiedDecisionModel("owner/checkpoint", device="cpu", precision=precision, temperature=1.0)
+
+
+def test_explicit_float32_constructor_loads_actual_tiny_checkpoint(
+    model, decision_request, tmp_path, monkeypatch
+):
+    from transformers import AutoProcessor
+
+    model.lm.to(dtype=torch.bfloat16).save_pretrained(tmp_path)
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
+    loaded = UnifiedDecisionModel(str(tmp_path), device="cpu", precision="float32", temperature=1.0)
+    assert loaded.head.weight.dtype == torch.float32
+    assert all(parameter.dtype == torch.float32 for parameter in loaded.lm.parameters())
+    assert loaded.head.weight.device.type == "cpu"
+    assert torch.isfinite(loaded.logits(decision_request)[:, :2]).all()
+
+
 def test_local_and_hub_checkpoint_calibration_match(model, decision_request, tmp_path, monkeypatch):
     import huggingface_hub
     from transformers import AutoModelForMultimodalLM, AutoProcessor

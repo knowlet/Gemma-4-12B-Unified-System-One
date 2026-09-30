@@ -58,12 +58,13 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
             reasons.append("gemma_subfolder_unavailable")
         if spec.processor_revision and spec.processor_revision != spec.revision:
             reasons.append("separate_processor_revision_unavailable")
-        # The existing runtime chooses dtype from device; do not mislabel the run.
+        # Precision is explicit: CUDA may use FP32 for strict batch parity;
+        # the default CUDA BF16 path retains its distinct runtime identity.
         if spec.device is None:
             reasons.append("gemma_requires_explicit_device")
         else:
-            expected = "bfloat16" if spec.device.startswith("cuda") else "float32"
-            if spec.precision != expected:
+            supported = ("bfloat16", "float32") if spec.device.startswith("cuda") else ("float32",)
+            if spec.precision not in supported:
                 reasons.append("gemma_device_precision_mismatch")
     elif spec.adapter == "laya":
         if spec.execution_mode != "provider" or spec.calibration != "checkpoint":
@@ -218,6 +219,7 @@ def load_adapter(spec: ModelSpec, environment) -> Adapter:
             spec.model_id,
             revision=spec.revision,
             device=spec.device,
+            precision=spec.precision,
             max_context=spec.context_limit,
             temperature=1.0 if spec.calibration == "none" else None,
             **({"adapter_path": spec.decision_adapter_path} if spec.decision_adapter_path else {}),
