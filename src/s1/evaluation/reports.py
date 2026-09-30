@@ -7,8 +7,9 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from .artifacts import write_json
+from .artifacts import read_records, write_json
 from .reporting import summarize_run
+from .statistics import paired_comparison
 
 
 def _number(value):
@@ -37,11 +38,17 @@ def build_report(directories, output):
                 {
                     "manifest": json.loads((directory / "workflow_manifest.json").read_text()),
                     "summary": json.loads((directory / "workflow_summary.json").read_text()),
+                    "paired_comparison": json.loads(
+                        (directory / "workflow_comparison.json").read_text()
+                    )
+                    if (directory / "workflow_comparison.json").exists()
+                    else None,
                 }
             )
             continue
         summary = summarize_run(directory)
         manifest = json.loads((directory / "run_manifest.json").read_text())
+        predictions = read_records(directory, "predictions")
         for cell in manifest["plan"]["models"]:
             identity = cell["identity"]
             model = identity["model"]
@@ -51,6 +58,7 @@ def build_report(directories, output):
                 identity["dataset_sha256"],
                 model.get("hardware_label") or "hardware_unspecified",
                 model.get("service_region") or "region_unspecified",
+                "service" if model["adapter"] == "http" else "in_process",
             )
             groups[key].append(
                 {
@@ -59,6 +67,7 @@ def build_report(directories, output):
                     "model": model,
                     "profile": identity["profile"],
                     "summary": summary["models"][cell["model_id"]],
+                    "predictions": [r for r in predictions if r["model_id"] == cell["model_id"]],
                 }
             )
     sections, markdown = (
@@ -70,8 +79,9 @@ def build_report(directories, output):
             "",
         ],
     )
+    comparisons = []
     for key, models in sorted(groups.items()):
-        title = " / ".join((key[0], key[1], key[2][:12], key[3], key[4]))
+        title = " / ".join((key[0], key[1], key[2][:12], key[3], key[4], key[5]))
         table, points = [], []
         markdown += [
             f"## {title}",
@@ -147,6 +157,28 @@ def build_report(directories, output):
             + "</section>"
         )
         markdown += ["", frontier_note, ""]
+        executed = [
+            m
+            for m in models
+            if m["summary"]["status"] in ("completed", "completed_with_errors")
+            and m["summary"]["records_complete"]
+        ]
+        if len(executed) > 1:
+            baseline = executed[0]
+            paired = [
+                {
+                    "left_experiment_id": baseline["experiment_id"],
+                    "right_experiment_id": m["experiment_id"],
+                    **paired_comparison(baseline["predictions"], m["predictions"]),
+                }
+                for m in executed[1:]
+            ]
+            comparisons.append({"group": list(key), "comparisons": paired})
+            content = json.dumps(paired, indent=2)
+            sections.append(
+                f"<section><h2>Paired source-group intervals</h2><p>{html.escape(title)}. First executed row is baseline; multiple comparisons are unadjusted.</p><pre>{html.escape(content)}</pre></section>"
+            )
+            markdown += ["### Paired source-group intervals", "", "```json", content, "```", ""]
     for workflow in workflows:
         content = json.dumps(workflow, indent=2, ensure_ascii=False)
         sections.append(
@@ -165,6 +197,7 @@ def build_report(directories, output):
         "workflow_runs": len(workflows),
         "html": str(output / "report.html"),
         "markdown": str(output / "report.md"),
+        "paired_comparisons": comparisons,
     }
     write_json(output / "report.json", result)
     return result

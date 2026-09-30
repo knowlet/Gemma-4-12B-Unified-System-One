@@ -264,6 +264,8 @@ def execute_workflows(
     ):
         raise ValueError("workflow budgets must be finite and nonnegative")
     episodes = load_episodes(episodes_path)
+    if any(key not in registry.models for key in (small_id, strong_id)):
+        raise ValueError("workflow references an unknown model")
     specs = [registry.models[key] for key in (small_id, strong_id)]
     profile = ProfileSpec(
         id="workflow", suite="workflow", models=tuple(dict.fromkeys([small_id, strong_id]))

@@ -19,13 +19,18 @@ def binary_metrics(scores, labels):
     scores, labels = np.asarray(scores), np.asarray(labels, dtype=bool)
     positives, negatives = int(labels.sum()), int((~labels).sum())
     order = np.argsort(-scores, kind="stable")
+    ordered_scores, ordered_labels = scores[order], labels[order]
     tp = fp = 0
     previous_recall = previous_fpr = 0.0
     ap = auc = 0.0
-    for value in sorted(set(scores.tolist()), reverse=True):
-        block = scores[order] == value
-        tp += int(labels[order][block].sum())
-        fp += int((~labels[order][block]).sum())
+    start = 0
+    boundaries = (
+        np.r_[np.flatnonzero(np.diff(ordered_scores)) + 1, len(scores)] if len(scores) else []
+    )
+    for end in boundaries:
+        tp += int(ordered_labels[start:end].sum())
+        fp += int((~ordered_labels[start:end]).sum())
+        start = end
         recall = tp / positives if positives else 0
         fpr = fp / negatives if negatives else 0
         ap += (recall - previous_recall) * tp / (tp + fp)
@@ -48,11 +53,13 @@ def binary_metrics(scores, labels):
 
 def risk_coverage(confidence, correct):
     """Expected prefix risk under a random ordering inside equal-confidence blocks."""
-    ordered = sorted(zip(confidence, correct), reverse=True)
+    blocks = defaultdict(list)
+    for conf, ok in zip(confidence, correct):
+        blocks[conf].append(float(ok))
     risks, accepted = [], 0
     expected_correct = 0.0
-    for value in sorted(set(confidence), reverse=True):
-        block = [float(ok) for conf, ok in ordered if conf == value]
+    for value in sorted(blocks, reverse=True):
+        block = blocks[value]
         rate = float(np.mean(block))
         for offset in range(1, len(block) + 1):
             risks.append(1 - (expected_correct + offset * rate) / (accepted + offset))

@@ -111,13 +111,16 @@ def run_load(adapter, indexed_cases, profile, probability_mode, now, repetition)
 
     # Flush records on the owning thread as each batch completes. Futures never
     # write artifacts concurrently. Draining workers precedes adapter.close().
-    with ThreadPoolExecutor(max_workers=profile.concurrency) as pool:
+    pool = ThreadPoolExecutor(max_workers=profile.concurrency)
+    try:
         futures = [
             pool.submit(worker, i, batch, offset)
             for i, (batch, offset) in enumerate(zip(batches, offsets))
         ]
         for future in as_completed(futures):
             yield from future.result()
+    finally:
+        pool.shutdown(wait=True, cancel_futures=True)
 
 
 def systems_metrics(calls, predictions):
@@ -139,7 +142,9 @@ def systems_metrics(calls, predictions):
     critical = {}
     for r in predictions:
         if r.get("critical"):
-            critical.setdefault(r["request_id"], []).append(r in correct)
+            critical.setdefault(r["request_id"], []).append(
+                r["status"] == "ok" and r["actual_label"] == r["gold"]
+            )
     latencies = [r["latency_ms"] for r in success]
     has_slo = any(r.get("deadline_miss") is not None for r in measured)
     return {

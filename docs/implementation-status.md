@@ -19,6 +19,13 @@ conventional commits. Do not publish or claim live model measurements from fixtu
   comparisons, noninferiority gate and standalone reports.
 - [x] End-to-end offline acceptance and documentation.
 
+Local verification: **455 tests passed, none skipped**, including real tiny Gemma
+FP32/BF16 media forwards, three-seed CE/CE+Brier updates, separate adapter reload,
+TF-IDF/LR fit, local NLI/cross-encoder forwards, and SetFit training/save/reload.
+Ruff lint/format, `uv lock --check --offline`, wheel/sdist build and the offline
+acceptance script passed. CI definitions also run acceptance and install the optional
+baseline runtimes in the inference job; remote CI has not been run by this task.
+
 External validation still required: actual model weights/API credentials, suitable
 GPU hardware, representative held-out media/workflow data and paid service budgets.
 CPU-only PyTorch 2.8.0 and Transformers 5.17.0 were installed locally for real tiny

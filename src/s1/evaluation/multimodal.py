@@ -157,11 +157,21 @@ def wrap_pipeline(adapter, spec, environment):
 def counterfactual_summary(directory, model, views_manifest):
     manifest = json.loads(Path(views_manifest).read_text())
     run = json.loads((Path(directory) / "run_manifest.json").read_text())
+    if run["status"] in ("running", "interrupted") or run["execution"].get(model, {}).get(
+        "status"
+    ) not in ("completed", "completed_with_errors"):
+        raise ValueError("counterfactual scoring requires a finished executed model")
     if run["plan"]["dataset_sha256"] != manifest["views"]["M1"]["dataset_sha256"]:
         raise ValueError("counterfactual run does not match the prepared native media dataset")
     rows = [r for r in read_records(directory, "predictions") if r["model_id"] == model]
     if not rows:
         raise ValueError("missing model predictions")
+    cell = next(c for c in run["plan"]["models"] if c["model_id"] == model)
+    expected = (
+        sum(cell["coverage"]["decisions"].values()) * cell["identity"]["profile"]["repetitions"]
+    )
+    if len(rows) != expected:
+        raise ValueError("counterfactual scoring requires complete decision records")
     lookup = {(r["case_id"], r["question_id"], r["repetition"]): r for r in rows}
     if len(lookup) != len(rows):
         raise ValueError("duplicate prediction records")
@@ -174,6 +184,8 @@ def counterfactual_summary(directory, model, views_manifest):
             if right is None:
                 raise ValueError("missing counterfactual decision")
             if left["gold"] == right["gold"]:
+                continue
+            if left["eligibility"] != "eligible" or right["eligibility"] != "eligible":
                 continue
             pairs += 1
             if left["status"] == right["status"] == "ok":
