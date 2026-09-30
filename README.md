@@ -35,6 +35,12 @@ state for training/calibration overlap, validate the loaded model identity befor
 inference, and include OCR/ASR bills in reported costs. Unknown stage bills keep the
 total unknown. See the v2 guide for gate population and workflow manifest fields.
 
+The [2026-10-01 live validation](docs/validation/2026-10-01/live-validation.md)
+records full 12B GPU, public held-out data, training, OCR/ASR and HTTP load results.
+CUDA defaults to BF16; use explicit `precision="float32"` (and matching registry
+precision) for probability-parity checks. The pinned 12B BF16 backbone shows
+material batch-dependent numerical drift, even with independent question inputs.
+
 ```bash
 uv run --no-sync s1 eval run --profile text-smoke --enable-model uniform \
   --output artifacts/evaluation/text-smoke-run
