@@ -5,6 +5,13 @@ planning, multiple model routes, native batching, serving load, calibration and
 statistics, multimodal pipelines, matched training and workflow reports. The commands
 and report contract below remain v1.
 
+For current results, use the [matched accuracy, memory and latency comparison](comparison.md):
+17 completed model/precision configurations with 29 retained attempts on the fixed
+128-case BoolQ and 52-case media benchmark. It includes local Decider, Kev, AgentJev
+and Laya, Gemma BF16/INT8/NF4, and a separate NF4 training continuation. The
+[Modal reproduction guide](modal.md#reproduce-the-october-1-matched-comparison)
+describes that campaign; the v1 examples below are smaller standalone evaluations.
+
 Every backend receives the same `DecisionRequest`, keyed question ids and candidate
 order. A JSONL row contains `id`, `split: test`, `request` and a `gold` map covering
 every question. Choice golds are option keys, Score golds are level keys and Noul

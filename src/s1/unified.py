@@ -66,6 +66,7 @@ class UnifiedDecisionModel:
         max_context=16384,
         lora=None,
         adapter_path=None,
+        quantization="none",
     ):
         import torch
         from transformers import AutoModelForMultimodalLM, AutoProcessor
@@ -77,13 +78,20 @@ class UnifiedDecisionModel:
         if precision == "bfloat16" and not device.startswith("cuda"):
             raise ValueError("bfloat16 precision requires a CUDA device")
         dtype = getattr(torch, precision)
+        from .quantization import inspect_quantization, loading_kwargs
+
+        quantized_loading = loading_kwargs(quantization, device=device, precision=precision)
+        if lora and adapter_path:
+            raise ValueError("choose a new LoRA or an existing adapter, not both")
+        if lora and quantization != "none":
+            raise ValueError("quantized inference supports existing adapters; train LoRA in BF16")
         processor = AutoProcessor.from_pretrained(name, revision=revision)
-        lm = AutoModelForMultimodalLM.from_pretrained(name, revision=revision, dtype=dtype)
+        lm = AutoModelForMultimodalLM.from_pretrained(
+            name, revision=revision, dtype=dtype, **quantized_loading
+        )
         if lm.config.model_type != "gemma4_unified":
             raise ValueError("UnifiedDecisionModel requires a Gemma 4 Unified checkpoint")
         resolved_revision = getattr(lm.config, "_commit_hash", None) or revision
-        if lora and adapter_path:
-            raise ValueError("choose a new LoRA or an existing adapter, not both")
         if temperature is None:
             temperature = load_temperature(adapter_path or name, revision=resolved_revision)
         if adapter_path:
@@ -94,6 +102,8 @@ class UnifiedDecisionModel:
             from peft import LoraConfig, get_peft_model
 
             lm = get_peft_model(lm, LoraConfig(**lora))
+        self.quantization = quantization
+        self.quantization_details = inspect_quantization(lm, quantization)
         self._initialize(lm, processor, str(device), temperature, max_context)
         self.name = name
         self.revision = resolved_revision
@@ -102,6 +112,8 @@ class UnifiedDecisionModel:
     def from_components(cls, lm, processor, *, device="cpu", temperature=1.0, max_context=16384):
         """Dependency injection for offline tests and already-loaded checkpoints."""
         self = cls.__new__(cls)
+        self.quantization = "none"
+        self.quantization_details = {"method": "none", "quantized_linear_modules": 0}
         self._initialize(lm, processor, device, temperature, max_context)
         self.name = getattr(lm.config, "_name_or_path", "in-memory") or "in-memory"
         self.revision = getattr(lm.config, "_commit_hash", None)
@@ -113,7 +125,11 @@ class UnifiedDecisionModel:
         self.set_temperature(temperature)
         if max_context < 1:
             raise ValueError("max_context must be positive")
-        self.lm, self.processor, self.device = lm.to(device).eval(), processor, device
+        # bitsandbytes is already placed by its explicit device map. A second
+        # .to() can reject INT8 modules or reallocate their quantization state.
+        if self.quantization == "none":
+            lm = lm.to(device)
+        self.lm, self.processor, self.device = lm.eval(), processor, device
         self.tok = processor.tokenizer
         base = lm.get_base_model() if hasattr(lm, "peft_config") else lm
         self.backbone = base.model
@@ -122,6 +138,16 @@ class UnifiedDecisionModel:
         self.softcap = getattr(config, "final_logit_softcapping", None)
         self.max_context = min(max_context, getattr(config, "max_position_embeddings", max_context))
         self.letters = torch.tensor(candidate_ids(self.tok), device=device)
+
+    def reset_memory_peak(self):
+        from .resources import reset_memory_peak
+
+        reset_memory_peak(self.device)
+
+    def memory_snapshot(self):
+        from .resources import memory_snapshot
+
+        return memory_snapshot(self.lm, self.device)
 
     def set_temperature(self, temperature):
         if not math.isfinite(temperature) or temperature <= 0:
@@ -228,6 +254,10 @@ class UnifiedDecisionModel:
         }
 
     def save(self, path):
+        if self.quantization != "none":
+            raise ValueError(
+                "save the original BF16 checkpoint and adapter separately before quantizing"
+            )
         path = Path(path)
         path.mkdir(parents=True, exist_ok=True)
         lm = self.lm.merge_and_unload() if hasattr(self.lm, "merge_and_unload") else self.lm

@@ -410,6 +410,7 @@ def test_adapter_factory_forwards_settings_without_loading_real_models(
             "revision": "a" * 40,
             "device": "cuda:1",
             "precision": precision,
+            "quantization": "none",
             "max_context": 2048,
             "temperature": 1.0,
         },

@@ -12,6 +12,9 @@ import modal
 ROOT = Path(__file__).resolve().parents[2] if modal.is_local() else Path("/workspace")
 model_name = os.environ.get("S1_MODEL") or "google/gemma-4-12B-it"
 revision = os.environ.get("S1_REVISION") or None
+quantization = os.environ.get("S1_QUANTIZATION") or "none"
+adapter_path = os.environ.get("S1_ADAPTER_PATH") or None
+precision = os.environ.get("S1_PRECISION") or None
 app = modal.App("gemma-unified-system-one")
 cache = modal.Volume.from_name("gemma-unified-system-one", create_if_missing=True)
 cpu_image = (
@@ -25,7 +28,7 @@ runtime = (
     modal.Image.debian_slim(python_version="3.12")
     .uv_sync(
         uv_project_dir=ROOT,
-        extras=["inference", "train", "api", "laya"],
+        extras=["inference", "train", "api", "laya", "quantization"],
         frozen=True,
         extra_options="--no-dev",
     )
@@ -36,6 +39,9 @@ runtime = (
             "USE_TF": "0",
             "S1_MODEL": model_name,
             "S1_REVISION": revision or "",
+            "S1_QUANTIZATION": quantization,
+            "S1_ADAPTER_PATH": adapter_path or "",
+            "S1_PRECISION": precision or "",
         }
     )
     .add_local_python_source("s1")
@@ -45,6 +51,28 @@ gpu = os.environ.get("S1_GPU", "A100-40GB")
 hf_secrets = (
     [modal.Secret.from_name(os.environ["S1_HF_SECRET"])] if os.environ.get("S1_HF_SECRET") else []
 )
+
+
+def _inference_options(backend="gemma"):
+    if quantization not in ("none", "int8", "nf4"):
+        raise ValueError("S1_QUANTIZATION must be none, int8, or nf4")
+    if precision not in (None, "float32", "bfloat16"):
+        raise ValueError("S1_PRECISION must be float32 or bfloat16")
+    if backend != "gemma":
+        if quantization != "none" or adapter_path or precision:
+            raise ValueError("S1_QUANTIZATION/S1_ADAPTER_PATH/S1_PRECISION require Gemma")
+        return {}
+    if quantization != "none" and precision == "float32":
+        raise ValueError("INT8/NF4 requires bfloat16 precision")
+    return {"quantization": quantization, "adapter_path": adapter_path, "precision": precision}
+
+
+def _validate_training_options():
+    if quantization != "none" or adapter_path or precision:
+        raise ValueError(
+            "S1_QUANTIZATION/S1_ADAPTER_PATH/S1_PRECISION are inference settings; "
+            "unset them before training"
+        )
 
 
 @app.function(image=cpu_image, timeout=180, cpu=2)
@@ -76,7 +104,7 @@ def model_smoke():
     from s1.contracts import DecisionRequest
     from s1.unified import UnifiedDecisionModel
 
-    model = UnifiedDecisionModel(model_name, revision=revision)
+    model = UnifiedDecisionModel(model_name, revision=revision, **_inference_options())
     image = io.BytesIO()
     Image.new("RGB", (64, 64), "red").save(image, format="PNG")
     questions = {
@@ -96,7 +124,14 @@ def model_smoke():
         request = DecisionRequest(state="The object is red.", questions=questions, media=media)
         results[name] = model.predict(request)
     cache.commit()
-    return {"model": model.name, "revision": model.revision, "results": results}
+    return {
+        "model": model.name,
+        "revision": model.revision,
+        "results": results,
+        "quantization": model.quantization,
+        "quantization_details": model.quantization_details,
+        "memory": model.memory_snapshot(),
+    }
 
 
 @app.function(
@@ -113,8 +148,9 @@ def benchmark(rows: list[dict], backend: str = "laya"):
 
     if backend not in ("gemma", "laya"):
         raise ValueError("backend must be gemma or laya")
+    options = _inference_options(backend)
     runner = (
-        GemmaBackend(model_name, revision=revision)
+        GemmaBackend(model_name, revision=revision, **options)
         if backend == "gemma"
         else LayaBackend(device="cuda")
     )
@@ -132,6 +168,7 @@ def benchmark(rows: list[dict], backend: str = "laya"):
     max_containers=1,
 )
 def train(rows: list[dict], calibration: list[dict], steps: int = 100, run: str = "unified-lora"):
+    _validate_training_options()
     import torch
 
     from s1.benchmark import Case, write_report
@@ -180,7 +217,7 @@ class Server:
     def load(self):
         from s1.backends import GemmaBackend
 
-        self.backend = GemmaBackend(model_name, revision=revision)
+        self.backend = GemmaBackend(model_name, revision=revision, **_inference_options())
 
     @modal.asgi_app(requires_proxy_auth=True)
     def web(self):
@@ -204,10 +241,13 @@ def main(
     if mode == "smoke":
         result = smoke.remote()
     elif mode == "model-smoke":
+        _inference_options()
         result = model_smoke.remote()
     elif mode == "benchmark":
+        _inference_options(backend)
         result = benchmark.remote([c.model_dump() for c in load_cases(dataset)], backend)
     elif mode == "train":
+        _validate_training_options()
         if not calibration:
             raise ValueError("--calibration must name a separate calibration JSONL file")
         result = train.remote(

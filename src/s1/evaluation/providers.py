@@ -6,6 +6,59 @@ from s1.backends import HTTPBackend, normalize_response
 from s1.errors import BackendResponseError, RequestValidationError
 
 
+def typesafe_payload(request):
+    if request.media:
+        raise RequestValidationError("this provider adapter is text-only")
+    questions = request.named_questions_payload()
+    for q in request.questions:
+        if q.type == "score":
+            questions[q.id]["criteria"] = q.descriptions()
+    return {"state": request.state, "questions": questions}
+
+
+def agentjev_payload(request):
+    if request.media:
+        raise RequestValidationError("this provider adapter is text-only")
+    questions = []
+    for q in request.questions:
+        question = {
+            "id": q.id,
+            "type": "boolean" if q.type == "noul" else q.type,
+            "question": q.instructions,
+        }
+        if q.type == "score":
+            if len(q.labels()) > 10:
+                raise RequestValidationError("AgentJev score supports up to 10 levels")
+            question["levels"] = q.descriptions()
+        else:
+            question["options" if q.type == "choice" else "criteria"] = dict(
+                zip(q.labels(), q.descriptions())
+            )
+        questions.append(question)
+    return {"state": request.state, "questions": questions}
+
+
+def normalize_agentjev_response(request, response):
+    try:
+        if len(response["results"]) != 1:
+            raise ValueError("wrong result count")
+        raw = response["results"][0]["answers"]
+        answers = {}
+        for answer in raw:
+            key = answer["id"]
+            if key in answers:
+                raise ValueError("duplicate answer")
+            converted = {"probabilities": answer["distribution"]}
+            if answer["type"] == "boolean":
+                converted["noul"] = answer["probability"]
+            elif answer["type"] == "choice":
+                converted["choice"] = answer["value"]
+            answers[key] = converted
+        return normalize_response(request, {"answers": answers}, ordinal_scores=True)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise BackendResponseError("invalid AgentJev response") from exc
+
+
 def normalize_typesafe_rounding(response):
     """Kev serializes four decimals: accept only the corresponding bounded error.
 
@@ -54,47 +107,9 @@ class ProviderHTTPBackend(HTTPBackend):
         if request.media:
             raise RequestValidationError("this provider wire adapter is text-only")
         if self.protocol == "typesafe":
-            questions = request.named_questions_payload()
-            for q in request.questions:
-                if q.type == "score":
-                    questions[q.id]["criteria"] = q.descriptions()
-            response = self._post({"state": request.state, "questions": questions})
+            response = self._post(typesafe_payload(request))
             response = normalize_typesafe_rounding(response)
             return normalize_response(request, response, ordinal_scores=True)
         if self.protocol != "agentjev":
             raise ValueError("unknown HTTP protocol")
-        questions = []
-        for q in request.questions:
-            question = {
-                "id": q.id,
-                "type": "boolean" if q.type == "noul" else q.type,
-                "question": q.instructions,
-            }
-            if q.type == "score":
-                if len(q.labels()) > 10:
-                    raise RequestValidationError("AgentJev score supports up to 10 levels")
-                question["levels"] = q.descriptions()
-            else:
-                question["options" if q.type == "choice" else "criteria"] = dict(
-                    zip(q.labels(), q.descriptions())
-                )
-            questions.append(question)
-        response = self._post({"state": request.state, "questions": questions})
-        try:
-            if len(response["results"]) != 1:
-                raise ValueError("wrong result count")
-            raw = response["results"][0]["answers"]
-            answers = {}
-            for answer in raw:
-                key = answer["id"]
-                if key in answers:
-                    raise ValueError("duplicate answer")
-                converted = {"probabilities": answer["distribution"]}
-                if answer["type"] == "boolean":
-                    converted["noul"] = answer["probability"]
-                elif answer["type"] == "choice":
-                    converted["choice"] = answer["value"]
-                answers[key] = converted
-            return normalize_response(request, {"answers": answers}, ordinal_scores=True)
-        except (KeyError, TypeError, ValueError) as exc:
-            raise BackendResponseError("invalid AgentJev response") from exc
+        return normalize_agentjev_response(request, self._post(agentjev_payload(request)))

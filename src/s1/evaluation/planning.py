@@ -83,7 +83,7 @@ def case_eligibility(model: ModelSpec, case) -> dict:
             unknown.append(f"unknown_max_{name}")
         elif actual > limit:
             unsupported.append(f"max_{name}_exceeded")
-    if model.protocol == "agentjev" and any(
+    if (model.adapter == "agentjev" or model.protocol == "agentjev") and any(
         q.type == "score" and len(q.labels()) > 10 for q in case.request.questions
     ):
         unsupported.append("max_score_levels_exceeded")
@@ -124,7 +124,17 @@ def _configuration_blockers(
     caps = model.capabilities
     if model.adapter == "unimplemented":
         reasons.append("adapter_not_implemented")
-    if model.adapter in ("gemma", "laya", "embedding", "nli", "cross_encoder", "setfit"):
+    if model.adapter in (
+        "gemma",
+        "laya",
+        "decider",
+        "kev",
+        "agentjev",
+        "embedding",
+        "nli",
+        "cross_encoder",
+        "setfit",
+    ):
         if not model.model_id:
             reasons.append("missing_model_id")
         if not model.revision or not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", model.revision):

@@ -255,6 +255,10 @@ class GemmaBackend:
             "temperature": self.model.temperature,
             "device": self.model.device,
             "max_context": self.model.max_context,
+            "precision": str(self.model.head.weight.dtype).removeprefix("torch."),
+            "quantization": self.model.quantization,
+            "quantization_details": self.model.quantization_details,
+            "adapter_path": str(kwargs["adapter_path"]) if kwargs.get("adapter_path") else None,
         }
 
     def predict(self, request):
