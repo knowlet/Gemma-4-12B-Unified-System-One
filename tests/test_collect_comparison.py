@@ -135,6 +135,22 @@ def campaign(tmp_path, name, day, models, *, media_hash=None):
     return path
 
 
+def update_consistent_identity(path, index, key, value):
+    """Change a model's saved identity consistently, leaving pair eligibility to validation."""
+    data = json.loads(path.read_text())
+    row = data["runs"][index]
+    row[key] = value
+    manifest_path = path.parent / row["model_id"] / "boolq/run_manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    plan_key = {"checkpoint": "model_id", "adapter_sha256": "decision_adapter_sha256"}.get(key, key)
+    manifest["plan"]["models"][0]["identity"]["model"][plan_key] = value
+    if key in ("revision", "precision", "quantization"):
+        manifest["execution"][row["model_id"]]["telemetry"][key] = value
+    manifest_path.write_text(json.dumps(manifest))
+    row["artifact_sha256"]["boolq/run_manifest.json"] = COLLECT.digest(manifest_path)
+    path.write_text(json.dumps(data))
+
+
 def test_latest_success_selected_without_cherry_picking_and_all_attempts_retained(tmp_path):
     first = campaign(tmp_path, "first", 1, [("gemma-base-bf16", "completed", 120)])
     second = campaign(tmp_path, "second", 2, [("gemma-base-bf16", "completed", 110)])
@@ -173,18 +189,19 @@ def test_pre_execution_bad_dataset_retained_but_evaluated_mismatch_rejected(tmp_
         COLLECT.collect([good, measured], tmp_path / "summary.json", resamples=100)
 
 
-def test_complete_same_seed_pair_uses_source_groups_and_pins_prediction_artifacts(tmp_path):
+@pytest.mark.parametrize("mode", ["int8", "nf4"])
+def test_complete_same_seed_pair_uses_source_groups_and_pins_prediction_artifacts(tmp_path, mode):
     path = campaign(
         tmp_path,
         "measured",
         1,
         [
             ("gemma-ce128-s0-bf16", "completed", 116),
-            ("gemma-ce128-s0-nf4", "completed", 117),
+            (f"gemma-ce128-s0-{mode}", "completed", 117),
         ],
     )
     result = COLLECT.collect([path], tmp_path / "summary.json", resamples=100)
-    pair = next(c for c in result["comparisons"] if c["right"] == "gemma-ce128-s0-nf4")
+    pair = next(c for c in result["comparisons"] if c["right"] == f"gemma-ce128-s0-{mode}")
     assert pair["status"] == "computed"
     delta = pair["operational_accuracy_delta"]
     assert delta["estimate"] == 1 / 128
@@ -195,6 +212,70 @@ def test_complete_same_seed_pair_uses_source_groups_and_pins_prediction_artifact
     assert pair["left_evidence"]["predictions_sha256"]
     assert pair["right_evidence"]["manifest_sha256"]
     assert pair["multiple_comparisons_adjusted"] is False
+
+
+@pytest.mark.parametrize("mode", ["int8", "nf4"])
+@pytest.mark.parametrize(
+    ("index", "key", "value"),
+    [
+        (0, "precision", "float32"),
+        (1, "precision", "float32"),
+        (0, "quantization", "candidate_mode"),
+        (1, "quantization", "none"),
+        (1, "quantization", "other_mode"),
+    ],
+)
+def test_same_seed_pair_rejects_consistent_but_wrong_precision_or_mode(
+    tmp_path, mode, index, key, value
+):
+    candidate = f"gemma-ce128-s0-{mode}"
+    path = campaign(
+        tmp_path,
+        "measured",
+        1,
+        [("gemma-ce128-s0-bf16", "completed", 116), (candidate, "completed", 117)],
+    )
+    if value == "candidate_mode":
+        value = mode
+    elif value == "other_mode":
+        value = "int8" if mode == "nf4" else "nf4"
+    update_consistent_identity(path, index, key, value)
+    result = COLLECT.collect([path], tmp_path / "summary.json", resamples=100)
+    assert len(result["runs"]) == 2  # Each individual measurement remains internally valid.
+    pair = next(c for c in result["comparisons"] if c["right"] == candidate)
+    assert pair["status"] == "not_available"
+    assert "unquantized BF16 reference" in pair["reason"]
+    assert "operational_accuracy_delta" not in pair
+
+
+@pytest.mark.parametrize("key", ["checkpoint", "revision", "adapter_sha256"])
+def test_same_seed_pair_requires_same_identity_between_consistent_individual_runs(tmp_path, key):
+    path = campaign(
+        tmp_path,
+        "measured",
+        1,
+        [("gemma-ce128-s0-bf16", "completed", 116), ("gemma-ce128-s0-nf4", "completed", 117)],
+    )
+    update_consistent_identity(path, 1, key, "different")
+    result = COLLECT.collect([path], tmp_path / "summary.json", resamples=100)
+    pair = next(c for c in result["comparisons"] if c["right"] == "gemma-ce128-s0-nf4")
+    assert pair["status"] == "not_available"
+    assert "identical checkpoint and adapter identities" in pair["reason"]
+
+
+def test_same_seed_pair_does_not_treat_two_missing_adapter_digests_as_identical(tmp_path):
+    path = campaign(
+        tmp_path,
+        "measured",
+        1,
+        [("gemma-ce128-s0-bf16", "completed", 116), ("gemma-ce128-s0-nf4", "completed", 117)],
+    )
+    for index in (0, 1):
+        update_consistent_identity(path, index, "adapter_sha256", None)
+    result = COLLECT.collect([path], tmp_path / "summary.json", resamples=100)
+    pair = next(c for c in result["comparisons"] if c["right"] == "gemma-ce128-s0-nf4")
+    assert pair["status"] == "not_available"
+    assert "operational_accuracy_delta" not in pair
 
 
 @pytest.mark.parametrize("tamper", ["request", "gold", "missing", "counts", "adapter"])

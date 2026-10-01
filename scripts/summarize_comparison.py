@@ -175,6 +175,19 @@ def _validate_observation(value: dict, expected: int, label: str) -> dict:
     return result
 
 
+def _same_seed_quantization_identity(base: dict, candidate: dict, mode: str) -> bool:
+    return (
+        mode in ("int8", "nf4")
+        and all(
+            base.get(key) is not None and base[key] == candidate.get(key)
+            for key in ("checkpoint", "revision", "adapter_sha256")
+        )
+        and base.get("precision") == candidate.get("precision") == "bfloat16"
+        and base.get("quantization") == "none"
+        and candidate.get("quantization") == mode
+    )
+
+
 def seed_aggregates(runs: list[dict]) -> list[dict]:
     """Require every predeclared seed; never average only the seeds that succeeded."""
     by_id = {run["model_id"]: run for run in runs}
@@ -251,12 +264,13 @@ def seed_aggregates(runs: list[dict]) -> list[dict]:
                     )
                 )
                 and (
-                    mode != "nf4-recovered"
-                    or (
-                        base.get("adapter_sha256") is not None
+                    (
+                        mode == "nf4-recovered"
+                        and base.get("adapter_sha256") is not None
                         and member.get("recovery", {}).get("parent_adapter_sha256")
                         == base["adapter_sha256"]
                     )
+                    or _same_seed_quantization_identity(base, member, mode)
                 )
                 for base, member in zip(baseline, members)
             ):
@@ -826,7 +840,9 @@ def render(
             "200-update recipe. Its adapter weights differ from the original CE adapter, and it must not "
             "be described as a controlled quantization-only comparison. The original NF4 scores "
             "and every seed remain visible.",
-            "All three recovery quality receipts are available in this snapshot."
+            "The combined summary includes quality results and artifact hashes for all three "
+            "recovery seeds. Individual recovery receipts and prediction artifacts are not "
+            "included in this repository snapshot."
             if recovery_complete
             else "Recovery evidence is pending or incomplete in this snapshot; "
             "no three-seed recovery accuracy or target pass is claimed.",

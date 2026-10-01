@@ -1,11 +1,13 @@
 """Policy and accounting checks do not require inference dependencies or GPUs."""
 
+import importlib.util
 import logging
 import sys
 from types import SimpleNamespace
 
 import pytest
 
+from s1 import resources
 from s1.quantization import (
     DENSE_MODULES,
     inspect_quantization,
@@ -97,14 +99,40 @@ def test_memory_bytes_and_explicit_peak_window(monkeypatch):
     assert receipt["peak_reserved_bytes"] == 800
     assert receipt["gpu_total_bytes"] == 1000
     assert receipt["device_used_bytes"] == 900
-    assert receipt["process_peak_scope"] == "process_lifetime"
+    assert receipt["process_peak_scope"] == (
+        "process_lifetime" if resources.resource is not None else "unavailable"
+    )
 
 
-def test_cpu_memory_does_not_query_cuda(monkeypatch):
+@pytest.mark.parametrize("platform,rss_bytes", [("linux", 7168), ("darwin", 7)])
+def test_cpu_memory_does_not_query_cuda(monkeypatch, platform, rss_bytes):
     monkeypatch.setitem(sys.modules, "torch", None)
+    monkeypatch.setattr(resources, "sys", SimpleNamespace(platform=platform))
+    monkeypatch.setattr(
+        resources,
+        "resource",
+        SimpleNamespace(RUSAGE_SELF=0, getrusage=lambda _: SimpleNamespace(ru_maxrss=7)),
+    )
     reset_memory_peak("cpu")
     receipt = memory_snapshot(device="cpu")
-    assert receipt["process_peak_rss_bytes"] > 0
+    assert receipt["process_peak_rss_bytes"] == rss_bytes
+    assert receipt["process_peak_rss_kib"] == rss_bytes / 1024
+    assert receipt["process_peak_scope"] == "process_lifetime"
+    assert "peak_allocated_bytes" not in receipt
+
+
+def test_memory_module_import_and_cpu_snapshot_without_unix_resource(monkeypatch):
+    monkeypatch.setitem(sys.modules, "resource", None)
+    monkeypatch.setitem(sys.modules, "torch", None)
+    spec = importlib.util.spec_from_file_location("resources_without_unix", resources.__file__)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    module.reset_memory_peak("cpu")
+    receipt = module.memory_snapshot(SimpleNamespace(get_memory_footprint=lambda: 512), "cpu")
+    assert receipt["model_footprint_bytes"] == 512
+    assert receipt["process_peak_scope"] == "unavailable"
+    assert "process_peak_rss_bytes" not in receipt
+    assert "process_peak_rss_kib" not in receipt
     assert "peak_allocated_bytes" not in receipt
 
 

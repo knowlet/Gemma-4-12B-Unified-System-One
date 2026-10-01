@@ -13,6 +13,7 @@ from s1.evaluation.local_competitors import (
     LocalCompetitorBackend,
     local_competitor_spec,
 )
+from s1.evaluation.planning import case_eligibility
 from s1.evaluation.registry import Registry
 
 
@@ -46,6 +47,45 @@ def test_pinned_specs_are_executable_and_match_registry(name, registry):
     )
     with pytest.raises(ValueError, match="checkpoint identity"):
         LocalCompetitorBackend(changed)
+
+
+@pytest.mark.parametrize("name", CHECKPOINTS)
+@pytest.mark.parametrize("offset", [-1, 0, 1])
+def test_native_context_cannot_exceed_checkpoint_limit(name, offset):
+    spec = local_competitor_spec(name).model_copy(
+        update={"context_limit": CHECKPOINTS[name].context_limit + offset}
+    )
+    profile = ProfileSpec(id="p", suite="s", models=(spec.id,))
+    expected = ["local_competitor_context_limit_exceeded"] if offset > 0 else []
+    assert execution_blockers(spec, profile) == expected
+
+
+@pytest.mark.parametrize("model_id", ["agentjev-local", "agentjev"])
+@pytest.mark.parametrize(
+    "question_type,levels,eligible",
+    [("score", 10, True), ("score", 11, False), ("score", 52, False), ("choice", 52, True)],
+)
+def test_agentjev_score_limit_preserves_52_choice_options(
+    registry, model_id, question_type, levels, eligible
+):
+    request = DecisionRequest.model_validate(
+        {
+            "state": "A fact",
+            "questions": [
+                {
+                    "id": "q",
+                    "type": question_type,
+                    "instructions": "Select a level.",
+                    "criteria": [f"level-{index}" for index in range(levels)],
+                }
+            ],
+        }
+    )
+    result = case_eligibility(
+        registry.models[model_id], SimpleNamespace(id="boundary", request=request)
+    )
+    assert result["eligibility"] == ("eligible" if eligible else "unsupported")
+    assert result["reasons"] == ([] if eligible else ["max_score_levels_exceeded"])
 
 
 @pytest.mark.parametrize("name", CHECKPOINTS)

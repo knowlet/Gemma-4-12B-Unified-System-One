@@ -88,6 +88,8 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
             reasons.append("local_competitor_device_precision_mismatch")
         if (spec.model_id, spec.revision) != (identity.model_id, identity.revision):
             reasons.append("local_competitor_checkpoint_unverified")
+        if spec.context_limit > identity.context_limit:
+            reasons.append("local_competitor_context_limit_exceeded")
         if spec.capabilities.probabilities != "complete":
             reasons.append("local_competitor_requires_complete_probabilities")
         if spec.subfolder or (spec.processor_revision and spec.processor_revision != spec.revision):

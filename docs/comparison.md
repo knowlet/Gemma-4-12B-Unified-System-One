@@ -201,7 +201,7 @@ The pinned checkpoint contains 11,959,730,176 parameters: 10,899,947,520 eligibl
 Three-seed aggregates require all predeclared seeds (0, 1, 2), complete BoolQ coverage, and matching GPU identity or configured GPU tier. Observed SKUs remain explicit. Missing seeds are never dropped from an average. Memory uses the worst peak across seeds, and paired deltas compare the same seed against its newly measured BF16 row (or original NF4 for the extra-training recovery). These are three models evaluated on the same 128 examples, not 384 independent test examples. Accuracy/memory target status is separate from completion of every load stage and its latency SLOs.
 
 **Exploratory NF4 recovery:** an additional fixed 100-update QLoRA continuation is a separate method, using the 256-case training pool and 16-case calibration split. The parent CE adapter has 100 optimizer updates; the fixed continuation adds 100 at batch size 1 (100 training cases, less than one epoch), for a 200-update recipe. Its adapter weights differ from the original CE adapter, and it must not be described as a controlled quantization-only comparison. The original NF4 scores and every seed remain visible.
-All three recovery quality receipts are available in this snapshot.
+The combined summary includes quality results and artifact hashes for all three recovery seeds. Individual recovery receipts and prediction artifacts are not included in this repository snapshot.
 
 ## Current paired BoolQ comparisons
 

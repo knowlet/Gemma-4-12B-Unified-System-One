@@ -5,6 +5,7 @@ import json
 import shutil
 import zipfile
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import modal
 
@@ -40,31 +41,31 @@ def prepare():
     sys.path.insert(0, "/workspace/scripts")
     from prepare_live_validation_data import prepare as prepare_data
 
-    destination = Path("/tmp/recovered-datasets")
-    destination.mkdir()
-    shutil.copytree("/workspace/raw", destination / "raw")
-    result = prepare_data(destination)
-    historical = json.loads(Path("/workspace/historical.json").read_text())["data"]
-    matches = {
-        name: result["datasets"][name]["dataset_sha256"] == expected["dataset_sha256"]
-        for name, expected in historical["datasets"].items()
-    }
-    diagnostics = {
-        "architecture": platform.machine(),
-        "packages": {
-            name: importlib.metadata.version(name)
-            for name in ("numpy", "scipy", "pillow", "soundfile", "pyarrow")
-        },
-        "matches": matches,
-        "datasets": result["datasets"],
-        "media_bundle_sha256": result["media_bundle_sha256"],
-    }
-    (destination / "recovery.json").write_text(json.dumps(diagnostics, indent=2) + "\n")
-    bundle = io.BytesIO()
-    with zipfile.ZipFile(bundle, "w", zipfile.ZIP_DEFLATED) as archive:
-        for path in sorted(destination.glob("*.json*")):
-            archive.write(path, path.name)
-    return {"diagnostics": diagnostics, "archive": bundle.getvalue()}
+    with TemporaryDirectory(prefix="recovered-datasets-") as temporary:
+        destination = Path(temporary)
+        shutil.copytree("/workspace/raw", destination / "raw")
+        result = prepare_data(destination)
+        historical = json.loads(Path("/workspace/historical.json").read_text())["data"]
+        matches = {
+            name: result["datasets"][name]["dataset_sha256"] == expected["dataset_sha256"]
+            for name, expected in historical["datasets"].items()
+        }
+        diagnostics = {
+            "architecture": platform.machine(),
+            "packages": {
+                name: importlib.metadata.version(name)
+                for name in ("numpy", "scipy", "pillow", "soundfile", "pyarrow")
+            },
+            "matches": matches,
+            "datasets": result["datasets"],
+            "media_bundle_sha256": result["media_bundle_sha256"],
+        }
+        (destination / "recovery.json").write_text(json.dumps(diagnostics, indent=2) + "\n")
+        bundle = io.BytesIO()
+        with zipfile.ZipFile(bundle, "w", zipfile.ZIP_DEFLATED) as archive:
+            for path in sorted(destination.glob("*.json*")):
+                archive.write(path, path.name)
+        return {"diagnostics": diagnostics, "archive": bundle.getvalue()}
 
 
 @app.local_entrypoint()

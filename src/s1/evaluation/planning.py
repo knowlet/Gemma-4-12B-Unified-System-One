@@ -83,7 +83,7 @@ def case_eligibility(model: ModelSpec, case) -> dict:
             unknown.append(f"unknown_max_{name}")
         elif actual > limit:
             unsupported.append(f"max_{name}_exceeded")
-    if model.protocol == "agentjev" and any(
+    if (model.adapter == "agentjev" or model.protocol == "agentjev") and any(
         q.type == "score" and len(q.labels()) > 10 for q in case.request.questions
     ):
         unsupported.append("max_score_levels_exceeded")

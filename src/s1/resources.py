@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
-import resource
 import sys
+
+try:
+    import resource
+except ImportError:  # Windows does not provide Unix process resource usage.
+    resource = None
 
 
 def reset_memory_peak(device="cuda"):
@@ -26,14 +30,17 @@ def memory_snapshot(module=None, device="cuda"):
     The registered tensor footprint excludes activation/workspace allocations
     and may exclude auxiliary quantizer state; CUDA allocation is the deployment
     measurement. Device-wide usage also includes other processes and CUDA context.
+    Process RSS fields are omitted where the resource module is unavailable.
     """
-    rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    rss_bytes = int(rss if sys.platform == "darwin" else rss * 1024)
-    result = {
-        "process_peak_rss_bytes": rss_bytes,
-        "process_peak_rss_kib": rss_bytes / 1024,
-        "process_peak_scope": "process_lifetime",
-    }
+    result = {"process_peak_scope": "unavailable"}
+    if resource is not None:
+        rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        rss_bytes = int(rss if sys.platform == "darwin" else rss * 1024)
+        result.update(
+            process_peak_rss_bytes=rss_bytes,
+            process_peak_rss_kib=rss_bytes / 1024,
+            process_peak_scope="process_lifetime",
+        )
     if module is not None:
         if hasattr(module, "get_memory_footprint"):
             footprint = module.get_memory_footprint()

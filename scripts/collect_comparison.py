@@ -311,6 +311,17 @@ def compare_selected(selected, output, *, seed, resamples):
                     raise ValueError(
                         "same-seed comparison requires identical checkpoint and adapter identities"
                     )
+                mode = right_id.rsplit("-", 1)[-1]
+                if not (
+                    mode in ("int8", "nf4")
+                    and left_row.get("precision") == right_row.get("precision") == "bfloat16"
+                    and left_row.get("quantization") == "none"
+                    and right_row.get("quantization") == mode
+                ):
+                    raise ValueError(
+                        "same-seed comparison requires an unquantized BF16 reference and "
+                        "the candidate's declared INT8/NF4 mode with BF16 computation"
+                    )
             if kind == "exploratory_extra_training_recovery":
                 verify_recovery_pair(selected[left_id]["row"], selected[right_id]["row"])
             for name in (left_id, right_id):

@@ -138,21 +138,25 @@ def test_complete_measured_row_keeps_latency_and_memory_boundaries():
     assert result["memory"]["model_footprint_bytes"] == 7_000_000_000
 
 
-def seeded_campaign():
+def seeded_campaign(quantized_mode="nf4"):
     runs = []
-    for mode in ("bf16", "nf4"):
+    for mode in ("bf16", quantized_mode):
         for seed in range(3):
             runs.append(
                 {
                     "model_id": f"gemma-ce128-s{seed}-{mode}",
                     "gpu": "test GPU",
                     "status": "completed",
+                    "checkpoint": "pinned-checkpoint",
+                    "revision": "f" * 40,
+                    "adapter_sha256": f"{seed:064x}",
+                    "precision": "bfloat16",
                     "quantization": "none" if mode == "bf16" else mode,
                     "boolq": {
                         "expected": 128,
                         "recorded": 128,
                         "valid": 128,
-                        "correct": 116 + int(mode == "nf4"),
+                        "correct": 116 + int(mode != "bf16"),
                     },
                     "memory": {"peak_allocated_bytes": 7_000_000_000 + seed * 100_000_000},
                     "acceptance": {"status": "passed"},
@@ -161,15 +165,55 @@ def seeded_campaign():
     return {"dataset": {"sha256": "boolq-fixed-hash"}, "runs": runs}
 
 
-def test_seed_summary_uses_all_seeds_worst_memory_and_paired_delta():
-    summary = REPORT.build_summary(historical(), seeded_campaign())
-    group = next(g for g in summary["seed_aggregates"] if g["format"] == "nf4")
+@pytest.mark.parametrize("mode", ["int8", "nf4"])
+def test_seed_summary_uses_all_seeds_worst_memory_and_paired_delta(mode):
+    summary = REPORT.build_summary(historical(), seeded_campaign(mode))
+    group = next(g for g in summary["seed_aggregates"] if g["format"] == mode)
     assert group["status"] == "complete"
     assert group["completed_seeds"] == [0, 1, 2]
     assert group["accuracy_mean"] == 117 / 128
     assert group["worst_peak_allocated_bytes"] == 7_200_000_000
     assert group["paired_mean_delta_vs_bf16_pp"] == 100 / 128
     assert group["accuracy_memory_target_status"] == "passed"
+
+
+@pytest.mark.parametrize("mode", ["int8", "nf4"])
+@pytest.mark.parametrize("key", ["checkpoint", "revision", "adapter_sha256"])
+@pytest.mark.parametrize("change", ["mismatch", "both_missing"])
+def test_seed_delta_requires_matching_present_base_and_adapter_identity(mode, key, change):
+    data = seeded_campaign(mode)
+    if change == "mismatch":
+        data["runs"][4][key] = "different"
+    else:
+        data["runs"][1].pop(key)
+        data["runs"][4].pop(key)
+    summary = REPORT.build_summary(historical(), data)
+    group = next(g for g in summary["seed_aggregates"] if g["format"] == mode)
+    assert group["accuracy_mean"] == 117 / 128
+    assert group["paired_mean_delta_vs_bf16_pp"] is None
+
+
+@pytest.mark.parametrize("mode", ["int8", "nf4"])
+@pytest.mark.parametrize(
+    ("index", "key", "value"),
+    [
+        (1, "precision", "float32"),
+        (4, "precision", "float32"),
+        (1, "quantization", "candidate_mode"),
+        (4, "quantization", "none"),
+        (4, "quantization", "other_mode"),
+    ],
+)
+def test_seed_delta_requires_unquantized_bf16_to_declared_quantization(mode, index, key, value):
+    data = seeded_campaign(mode)
+    if value == "candidate_mode":
+        value = mode
+    elif value == "other_mode":
+        value = "int8" if mode == "nf4" else "nf4"
+    data["runs"][index][key] = value
+    summary = REPORT.build_summary(historical(), data)
+    group = next(g for g in summary["seed_aggregates"] if g["format"] == mode)
+    assert group["paired_mean_delta_vs_bf16_pp"] is None
 
 
 def test_missing_seed_cannot_silently_raise_average_or_pass():
@@ -235,3 +279,19 @@ def test_recovery_accuracy_is_separate_from_unchanged_original_nf4_group():
     assert groups["nf4"]["accuracy_mean"] == 117 / 128
     assert groups["nf4-recovered"]["accuracy_mean"] is None
     assert groups["nf4-recovered"]["missing_seeds"] == [2]
+
+
+def test_published_recovery_summary_does_not_claim_raw_receipts_are_included(tmp_path):
+    history = json.loads(REPORT.DEFAULT_HISTORICAL.read_text())
+    campaign_path = ROOT / "docs/validation/2026-10-01/comparison-summary.json"
+    saved = json.loads(campaign_path.read_text())
+    summary = REPORT.build_summary(history, saved)
+    rendered = REPORT.render(
+        summary, history, REPORT.DEFAULT_HISTORICAL, campaign_path, tmp_path / "report.md"
+    )
+    assert "quality results and artifact hashes for all three recovery seeds" in rendered
+    assert "Individual recovery receipts and prediction artifacts are not included" in rendered
+    assert "quality receipts are available" not in rendered
+    groups = {group["format"]: group for group in summary["seed_aggregates"]}
+    assert groups["int8"]["paired_mean_delta_vs_bf16_pp"] == pytest.approx(100 / 384)
+    assert groups["nf4"]["paired_mean_delta_vs_bf16_pp"] == pytest.approx(-1500 / 384)
