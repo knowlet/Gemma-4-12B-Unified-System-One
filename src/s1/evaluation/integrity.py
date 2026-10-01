@@ -75,13 +75,28 @@ class RuntimeTelemetry(StrictModel):
     calibration_temperature: float | None = Field(default=None, gt=0)
     context_limit: int | None = Field(default=None, ge=1)
     context_policy: Literal["reject", "truncate", "provider", "not_applicable"]
+    quantization: Literal["none", "int8", "nf4"] = "none"
+    quantization_details: dict | None = None
+    runtime_package: str | None = None
+    source_revision: str | None = None
+    base_model_id: str | None = None
+    base_revision: str | None = None
+    checkpoint_task: str | None = None
+    compute_precision: str | None = None
+    compute_backend: str | None = None
+    runtime_options: dict | None = None
+    temperatures_by_type: dict[str, float] | None = None
 
 
 def validate_runtime_telemetry(adapter, spec):
     """Validate resolved identity before inference and return persistable telemetry."""
     result = RuntimeTelemetry.model_validate(adapter.telemetry())
-    if spec.adapter in ("gemma", "laya") and result.revision != spec.revision:
+    if spec.adapter in ("gemma", "laya", "decider", "kev", "agentjev") and (
+        result.revision != spec.revision
+    ):
         raise ValueError("resolved model revision differs from the plan")
     if result.precision != spec.precision:
         raise ValueError("resolved precision differs from the plan")
+    if result.quantization != spec.quantization:
+        raise ValueError("resolved quantization differs from the plan")
     return result.model_dump(mode="json")

@@ -13,10 +13,26 @@ from .contracts import DecisionRequest
 
 
 def make_backend(args):
+    if args.backend != "gemma" and (
+        args.quantization != "none" or args.adapter_path or args.precision
+    ):
+        raise ValueError("--quantization, --adapter-path and --precision require --backend gemma")
     if args.backend == "uniform":
         return UniformBackend()
     if args.backend == "gemma":
-        return GemmaBackend(args.model, revision=args.revision, device=args.device)
+        if args.quantization != "none" and (
+            (args.device is not None and not args.device.startswith("cuda"))
+            or args.precision == "float32"
+        ):
+            raise ValueError("--quantization int8/nf4 requires CUDA and bfloat16 precision")
+        return GemmaBackend(
+            args.model,
+            revision=args.revision,
+            device=args.device,
+            precision=args.precision,
+            quantization=args.quantization,
+            adapter_path=str(args.adapter_path) if args.adapter_path else None,
+        )
     if args.backend == "laya":
         return LayaBackend(
             args.model or "convaiinnovations/laya",
@@ -44,6 +60,20 @@ def main(argv=None):
         sub.add_argument("--model")
         sub.add_argument("--revision")
         sub.add_argument("--device")
+        sub.add_argument(
+            "--precision",
+            choices=["float32", "bfloat16"],
+            help="Gemma floating precision; defaults to BF16 on CUDA, FP32 on CPU",
+        )
+        sub.add_argument(
+            "--quantization",
+            choices=["none", "int8", "nf4"],
+            default="none",
+            help="Gemma CUDA inference weight format; keeps the candidate head dense",
+        )
+        sub.add_argument(
+            "--adapter-path", type=Path, help="existing Gemma PEFT decision adapter directory"
+        )
         sub.add_argument("--subfolder")
         sub.add_argument("--max-len", type=int, default=512)
         sub.add_argument("--endpoint")

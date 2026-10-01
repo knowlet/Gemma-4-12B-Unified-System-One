@@ -221,6 +221,69 @@ concurrent_requests = false
 independent_questions = true
 
 [[models]]
+id = "decider-local"
+adapter = "decider"
+model_id = "Mapika/decider-2b"
+revision = "533964dae8be954c5b5e19fa4948e48408094c1e"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "checkpoint"
+context_limit = 32768
+notes = "Decider v11, decider-ai==1.4.0 eager runtime with published per-type calibration. Text-only; declare local compute cost before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "kev-local"
+adapter = "kev"
+model_id = "jaredpalmer/kev-0.8b"
+revision = "9a45d25eb2ab761841196625383fa1dff0e56c1e"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "checkpoint"
+context_limit = 8192
+notes = "Kev documents+skills checkpoint; source 1d77363be5769ad8c64486a51f731f940e92a59b. BF16 merged LoRA, checkpoint temperature, eager without persistent prefix cache. Text-only."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "agentjev-local"
+adapter = "agentjev"
+model_id = "aimeigaoshou/agent-jev"
+revision = "0e2593e6e6c0eade0700712ac13c4389aa7654cc"
+precision = "float32"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "checkpoint"
+context_limit = 2048
+notes = "Current coding-completion checkpoint, not historical typed-decisions specialist. Source a965ca8ff06ccabc0c796dca5447b55cc2069cee. FP32 weights with upstream BF16 CUDA autocast; score supports at most 10 levels; text-only."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
 id = "tfidf"
 adapter = "tfidf"
 precision = "float64"

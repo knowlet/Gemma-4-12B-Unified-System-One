@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-01T11:29:45.371654+08:00",
+  "kind": "metadata_only_parameter_storage_lower_bounds",
+  "model_id": "google/gemma-4-12B-it",
+  "revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+  "config_sha256": "478c46e8d2c52d5c2d85bf67e3b3e8c90e7c9d91086cee27e3c267907e936bd9",
+  "config_source": "https://huggingface.co/google/gemma-4-12B-it/blob/707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7/config.json",
+  "method": "AutoConfig from pinned config; AutoModelForMultimodalLM.from_config inside accelerate.init_empty_weights; tie_weights; count unique named parameters and classify exact nn.Linear using Transformers should_convert_module with dense_modules exclusions. No model weight shards downloaded or allocated.",
+  "packages": {
+    "torch": "2.11.0+cu130",
+    "transformers": "5.17.0",
+    "accelerate": "1.15.0"
+  },
+  "dense_modules": [
+    "lm_head",
+    "model.embed_vision",
+    "model.embed_audio"
+  ],
+  "counts": {
+    "total_parameters": 11959730176,
+    "quantizable_linear_parameters": 10899947520,
+    "dense_parameters": 1059782656,
+    "tied_input_embedding_and_output_head_parameters": 1006632960,
+    "vocab_size": 262144,
+    "hidden_size": 3840,
+    "input_and_head_share_parameter": true
+  },
+  "raw_parameter_bytes": {
+    "bf16": {
+      "bytes": 23919460352,
+      "formula": "2 * total_parameters"
+    },
+    "int8": {
+      "bytes": 13019512832,
+      "formula": "quantizable_linear_parameters + 2 * dense_parameters"
+    },
+    "nf4": {
+      "bytes": 7569539072,
+      "formula": "quantizable_linear_parameters / 2 + 2 * dense_parameters"
+    }
+  },
+  "excludes": [
+    "quantization scales and metadata",
+    "LoRA adapter",
+    "registered non-parameter buffers",
+    "activations",
+    "attention workspace",
+    "CUDA context",
+    "allocator reservation"
+  ],
+  "not_measured_vram": true,
+  "interpretation": "The standard linear-only INT8 variant cannot meet a strict decimal 12GB allocation cap even before runtime overhead. NF4 has a raw parameter lower bound near7.57GB, so an8GB full-runtime cap must be measured and is not implied by this estimate."
+}

@@ -335,6 +335,70 @@ def test_explicit_float32_constructor_loads_actual_tiny_checkpoint(
     assert torch.isfinite(loaded.logits(decision_request)[:, :2]).all()
 
 
+@pytest.mark.integration
+@pytest.mark.parametrize("quantization", ["int8", "nf4"])
+def test_real_quantized_cuda_adapter_preserves_multimodal_candidate_readout(
+    model, decision_request, tmp_path, monkeypatch, quantization
+):
+    pytest.importorskip("bitsandbytes")
+    pytest.importorskip("peft")
+    if not torch.cuda.is_available() or not torch.cuda.is_bf16_supported():
+        pytest.skip("requires CUDA with BF16 support; no checkpoint downloads")
+    from peft import LoraConfig, get_peft_model
+    from transformers import AutoProcessor
+
+    from s1.evaluation.gemma import predict_batch
+
+    model.lm.to(dtype=torch.bfloat16).save_pretrained(tmp_path / "base")
+    adapted = get_peft_model(
+        model.lm, LoraConfig(r=2, lora_alpha=4, target_modules=["q_proj", "v_proj"])
+    )
+    # Exercise a nonzero adapter rather than the initial no-op LoRA weights.
+    with torch.no_grad():
+        for name, value in adapted.named_parameters():
+            if "lora_B" in name:
+                value.fill_(0.01)
+    adapted.save_pretrained(tmp_path / "adapter")
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
+    loaded = UnifiedDecisionModel(
+        str(tmp_path / "base"),
+        adapter_path=str(tmp_path / "adapter"),
+        device="cuda",
+        precision="bfloat16",
+        quantization=quantization,
+        temperature=1.0,
+    )
+    assert loaded.quantization_details["quantized_linear_modules"] > 0
+    assert loaded.head.weight.dtype == torch.bfloat16
+    assert loaded.lm.peft_config
+    buffer = io.BytesIO()
+    Image.new("RGB", (4, 4), "red").save(buffer, format="PNG")
+    image = ImageInput(data=base64.b64encode(buffer.getvalue()).decode())
+    audio = AudioInput(samples=[0.1] * 16)
+    loaded.reset_memory_peak()
+    for media in ([], [image], [audio], [image, audio]):
+        request = decision_request.model_copy(update={"media": media})
+        inputs, slots, counts = loaded.prepare(request)
+        with torch.inference_mode():
+            native = loaded.lm(**inputs, use_cache=False).logits[0, slots][:, loaded.letters]
+            selected = loaded.logits(request)
+        for i, count in enumerate(counts):
+            torch.testing.assert_close(selected[i, :count], native[i, :count].float())
+        hook = loaded.head.register_forward_hook(
+            lambda *args: pytest.fail("candidate inference called the full head")
+        )
+        try:
+            responses = predict_batch(loaded, [request, request])
+            assert responses[0]["answers"] == responses[1]["answers"]
+        finally:
+            hook.remove()
+    receipt = loaded.memory_snapshot()
+    assert receipt["peak_allocated_bytes"] >= receipt["allocated_bytes"] > 0
+    assert receipt["model_footprint_bytes"] > 0
+    with pytest.raises(ValueError, match="separately"):
+        loaded.save(tmp_path / "unsafe-merge")
+
+
 def test_local_and_hub_checkpoint_calibration_match(model, decision_request, tmp_path, monkeypatch):
     import huggingface_hub
     from transformers import AutoModelForMultimodalLM, AutoProcessor
@@ -407,7 +471,7 @@ def test_training_lora_calibration_and_checkpoint(model, benchmark_case, tmp_pat
     assert (tmp_path / "decision-adapter/s1_config.json").is_file()
     monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
     separate = UnifiedDecisionModel(
-        str(tmp_path / "base"), adapter_path=str(tmp_path / "decision-adapter")
+        str(tmp_path / "base"), adapter_path=str(tmp_path / "decision-adapter"), device="cpu"
     )
     assert separate.temperature == model.temperature
     for key, answer in separate.predict(train.request)["answers"].items():
@@ -415,7 +479,7 @@ def test_training_lora_calibration_and_checkpoint(model, benchmark_case, tmp_pat
     model.save(tmp_path)
     assert (tmp_path / "processor-test.json").is_file()
     monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
-    restored = UnifiedDecisionModel(str(tmp_path))
+    restored = UnifiedDecisionModel(str(tmp_path), device="cpu")
     assert restored.temperature == model.temperature
     for key, answer in restored.predict(train.request)["answers"].items():
         assert answer["probabilities"] == pytest.approx(expected[key]["probabilities"], abs=1e-5)

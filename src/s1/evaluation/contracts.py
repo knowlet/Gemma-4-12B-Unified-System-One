@@ -38,6 +38,9 @@ class ModelSpec(ConfigModel):
         "uniform",
         "gemma",
         "laya",
+        "decider",
+        "kev",
+        "agentjev",
         "http",
         "tfidf",
         "prior",
@@ -54,6 +57,7 @@ class ModelSpec(ConfigModel):
     precision: Literal[
         "float64", "float32", "bfloat16", "float16", "quantized", "provider", "unknown"
     ] = "unknown"
+    quantization: Literal["none", "int8", "nf4"] = "none"
     execution_mode: Literal[
         "sequential", "causal_multislot", "independent_batch", "provider", "unknown"
     ] = "unknown"
@@ -88,6 +92,8 @@ class ModelSpec(ConfigModel):
 
     @model_validator(mode="after")
     def consistent_settings(self):
+        if self.quantization != "none" and self.adapter != "gemma":
+            raise ValueError("quantization is only supported by the Gemma adapter")
         if self.calibration == "domain" and self.calibration_sha256 is None:
             raise ValueError("domain calibration requires calibration_sha256")
         if self.calibration == "domain" and (

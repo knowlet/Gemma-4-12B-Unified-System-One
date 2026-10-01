@@ -233,6 +233,17 @@ def test_workflow_validated_telemetry_is_persisted_before_first_prediction(tmp_p
             assert manifest["execution"]["uniform"]["telemetry"] == {
                 **observed,
                 "calibration_temperature": None,
+                "quantization": "none",
+                "quantization_details": None,
+                "runtime_package": None,
+                "source_revision": None,
+                "base_model_id": None,
+                "base_revision": None,
+                "checkpoint_task": None,
+                "compute_precision": None,
+                "compute_backend": None,
+                "runtime_options": None,
+                "temperatures_by_type": None,
             }
             return super().predict(request)
 

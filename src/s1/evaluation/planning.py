@@ -124,7 +124,17 @@ def _configuration_blockers(
     caps = model.capabilities
     if model.adapter == "unimplemented":
         reasons.append("adapter_not_implemented")
-    if model.adapter in ("gemma", "laya", "embedding", "nli", "cross_encoder", "setfit"):
+    if model.adapter in (
+        "gemma",
+        "laya",
+        "decider",
+        "kev",
+        "agentjev",
+        "embedding",
+        "nli",
+        "cross_encoder",
+        "setfit",
+    ):
         if not model.model_id:
             reasons.append("missing_model_id")
         if not model.revision or not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", model.revision):

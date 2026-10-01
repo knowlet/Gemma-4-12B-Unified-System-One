@@ -1,0 +1,84 @@
+{
+  "status": "historical_inputs_recovered",
+  "historical_source": "modal-volume://gemma-unified-system-one/runs/20261001-v2-live-03/services/checks/pipeline/media-views/M1.jsonl",
+  "historical_dataset_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35",
+  "regenerated_dataset_sha256": "16ac5b202fd21732974eefb36ab40cf8dcf0de9bc2af7136d281bef5ec113b53",
+  "restored_file_sha256": "e6f0806c1e625f1ecf4ca8430f0660358c08009233f832e53e24a8a23151865b",
+  "restored_media_bundle_sha256": "5baf11cd62aa437027aebfc28f8644311088c5c6a84dcac84d9941f8d00b92bf",
+  "cases": 52,
+  "identical_ids_and_gold": true,
+  "regenerated_request_differences": {
+    "image": 32,
+    "audio": 20
+  },
+  "regeneration_attempts": [
+    {
+      "architecture": "aarch64",
+      "dataset_sha256": "16ac5b202fd21732974eefb36ab40cf8dcf0de9bc2af7136d281bef5ec113b53"
+    },
+    {
+      "architecture": "x86_64",
+      "python": "3.12",
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "pillow": "12.3.0",
+      "app_id": "ap-gPkH7i4FGpStHHfFc0WsPH",
+      "dataset_sha256": "16ac5b202fd21732974eefb36ab40cf8dcf0de9bc2af7136d281bef5ec113b53"
+    },
+    {
+      "architecture": "x86_64",
+      "python": "3.11",
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "pillow": "12.3.0",
+      "app_id": "ap-bkzEY4oNHI5W85rGfppJl8",
+      "dataset_sha256": "16ac5b202fd21732974eefb36ab40cf8dcf0de9bc2af7136d281bef5ec113b53"
+    }
+  ],
+  "root_cause": "Reconstruction changes PNG data and float32 samples; original exact inputs recovered from archived M1, so no media pin migration required. Exact dependency responsible was not determined.",
+  "source_pins": {
+    "boolq-train.parquet": {
+      "url": "https://huggingface.co/datasets/google/boolq/resolve/35b264d03638db9f4ce671b711558bf7ff0f80d5/data/train-00000-of-00001.parquet",
+      "sha256": "4f028e992c0bd4df30b9f056f4946b64f5c23028034ff0ed5ea467d8538cc623"
+    },
+    "boolq-validation.parquet": {
+      "url": "https://huggingface.co/datasets/google/boolq/resolve/35b264d03638db9f4ce671b711558bf7ff0f80d5/data/validation-00000-of-00001.parquet",
+      "sha256": "52355d11524b4b874a9b9dcc278feb10f672d52c4f4eff9872e695ede59820f8"
+    },
+    "mnist-test.parquet": {
+      "url": "https://huggingface.co/datasets/ylecun/mnist/resolve/77f3279092a1c1579b2250db8eafed0ad422088c/mnist/test-00000-of-00001.parquet",
+      "sha256": "d49fcf556ce25b002b302e318ce4a11098bbfe5d4499c3f35d7c72297c52374b"
+    },
+    "boolq-README.md": {
+      "url": "https://raw.githubusercontent.com/google-research-datasets/boolean-questions/90af34107399cc7a446b373dc4ee35b8001da7c2/README.md",
+      "sha256": "0afe70d7cdbb644637592212f0cb15339389910bf00f35764ec3c545257aa663"
+    },
+    "mnist-README.md": {
+      "url": "https://huggingface.co/datasets/ylecun/mnist/raw/77f3279092a1c1579b2250db8eafed0ad422088c/README.md",
+      "sha256": "8cd17b7ebe5c115eb401f2ce57f9b3c8b16a6e293dc312c35e4f37f7a81fc4a2"
+    },
+    "fsdd-README.md": {
+      "url": "https://raw.githubusercontent.com/Jakobovski/free-spoken-digit-dataset/26eb9aaf76e81b692f806f9140c2d2777410d7a1/README.md",
+      "sha256": "523de3cafa0f54707a0ab2760a2d32b640ccfe834a081d7d35c894f1fb6d79f5"
+    },
+    "fsdd-metadata.py": {
+      "url": "https://raw.githubusercontent.com/Jakobovski/free-spoken-digit-dataset/26eb9aaf76e81b692f806f9140c2d2777410d7a1/metadata.py",
+      "sha256": "b7fcb538c27ec10ef94031de437b6b9da4724e8fdd2a1c6f25e7b3d76a067c76"
+    }
+  },
+  "structural_diff": {
+    "state_questions_labels_metadata": "identical for all 52 cases",
+    "image_changed_fields": [
+      "media[0].data"
+    ],
+    "image_count": 32,
+    "image_decompressed_png_equal": 32,
+    "audio_changed_fields": [
+      "media[0].samples"
+    ],
+    "audio_count": 20,
+    "audio_sample_count_equal": 20,
+    "audio_max_absolute_sample_difference": 8.940696716308594e-08
+  },
+  "restored_provenance_sha256": "b3d495366276d89b7e87db945c3d3786b1732924b5ed7cd225c4fd789ae6ad9d"
+}

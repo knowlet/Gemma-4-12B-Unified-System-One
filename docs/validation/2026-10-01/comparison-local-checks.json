@@ -1,0 +1,194 @@
+{
+  "generated_at": "2026-10-01T12:19:48.193642+08:00",
+  "pytest": {
+    "passed": 608,
+    "skipped": 0,
+    "warnings": 3,
+    "seconds": 135.11,
+    "command": "PYTHONPATH=/tmp/s1-quantization-deps:src /tmp/moa-model-env/bin/python -m pytest -q",
+    "log_sha256": "5111c9701fbb899f1a6dbecc6da9a95fa64f2f35d66f2beeed183534d0fd7463",
+    "scope": "full repository suite including real tiny CUDA INT8/NF4 and adapter tests; local Torch2.11/CUDA13 runtime, distinct from Modal Torch2.8",
+    "log_path": "artifacts/comparison-final-tests.log"
+  },
+  "build": {
+    "status": "passed",
+    "command": "uv run --no-sync python -m build",
+    "log_path": "artifacts/comparison-build.log",
+    "log_sha256": "b54be5de46989b209c6e16c8bc015e74b942575010e0c5560868ac15508fa81b"
+  },
+  "dependency_lock": {
+    "status": "passed",
+    "command": "uv lock --check",
+    "resolved_packages": 136
+  },
+  "ruff": {
+    "status": "passed",
+    "command": "uv run --no-sync ruff check ."
+  },
+  "modal_jobs": {
+    "task_apps": 13,
+    "stopped": 13,
+    "active": 0,
+    "source": "artifacts/comparison-modal-final-apps.json",
+    "source_sha256": "097a243ac40bc545b8a82721cdc4bba198e8afd0649f2e398e4cdbc38d44d02b"
+  },
+  "final_evidence_tests": {
+    "passed": 52,
+    "skipped": 0,
+    "seconds": 0.46,
+    "command": "uv run --no-sync pytest -q tests/test_collect_comparison.py tests/test_comparison_report.py tests/test_nf4_recovery.py",
+    "log_path": "artifacts/comparison-final-evidence-tests.log",
+    "log_sha256": "04439fb3e65e40eccaa424feaf660536a968998bed1d4b22706663aec7e9338a",
+    "scope": "targeted tests after final collector identity, artifact hash and recovery lineage changes; overlaps the earlier full suite"
+  },
+  "pr_preflight": {
+    "checked_at": "2026-10-01T12:44:15.841844+08:00",
+    "status": "passed",
+    "contracts_passed": 571,
+    "contracts_skipped": 12,
+    "skip_reason": "Optional Torch, sklearn and huggingface_hub dependencies are absent from the lightweight API/Modal environment. Earlier inference-enabled checks remain recorded above.",
+    "checks": [
+      {
+        "name": "lint",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "ruff",
+          "check",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 0.04,
+        "log": "artifacts/pr-validation-20261001/lint.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "name": "format",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "ruff",
+          "format",
+          "--check",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 0.03,
+        "log": "artifacts/pr-validation-20261001/format.log",
+        "sha256": "c0e5e25bab31b3d55ca20587ad32a798a72f9d0cca80c542239bf4d1472695fc"
+      },
+      {
+        "name": "contracts",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "pytest",
+          "--cov=s1",
+          "--cov-report=xml:artifacts/pr-validation-20261001/coverage.xml"
+        ],
+        "exit_code": 0,
+        "seconds": 17.07,
+        "log": "artifacts/pr-validation-20261001/contracts.log",
+        "sha256": "5598fd150fb3c93e7dbddc6a8066390e10b9c49886a497b26433fbef04f0e564"
+      },
+      {
+        "name": "uniform",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "s1",
+          "benchmark",
+          "--backend",
+          "uniform",
+          "examples/benchmarks/smoke.jsonl",
+          "--output",
+          "artifacts/pr-validation-20261001/uniform.json"
+        ],
+        "exit_code": 0,
+        "seconds": 0.42,
+        "log": "artifacts/pr-validation-20261001/uniform.log",
+        "sha256": "0780c0b640006fd9339c0f611fbf46a132b1c4b4dd88417358a97bf910677ef9"
+      },
+      {
+        "name": "plan",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "s1",
+          "eval",
+          "plan",
+          "--profile",
+          "smoke",
+          "--enable-model",
+          "uniform",
+          "--output",
+          "artifacts/pr-validation-20261001/smoke-plan.json"
+        ],
+        "exit_code": 0,
+        "seconds": 0.38,
+        "log": "artifacts/pr-validation-20261001/plan.log",
+        "sha256": "3f0af28480c676b9ba593c4275e067f5ec51a467a2f02eba1d1f970ddcd21746"
+      },
+      {
+        "name": "evaluation",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "s1",
+          "eval",
+          "run",
+          "--profile",
+          "text-smoke",
+          "--enable-model",
+          "uniform",
+          "--output",
+          "artifacts/pr-validation-20261001/text-smoke-run"
+        ],
+        "exit_code": 0,
+        "seconds": 0.45,
+        "log": "artifacts/pr-validation-20261001/evaluation.log",
+        "sha256": "0bdff93b4e5659d9628319ef9adeb5f52ec3781dd4273c1c89388b618a51fd5c"
+      },
+      {
+        "name": "acceptance",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "python",
+          "scripts/benchmark_v2_acceptance.py",
+          "--output",
+          "artifacts/pr-validation-20261001/acceptance"
+        ],
+        "exit_code": 0,
+        "seconds": 0.82,
+        "log": "artifacts/pr-validation-20261001/acceptance.log",
+        "sha256": "7e1e21080f8d7b2afa9a755d3189793efec0f5f64317feecc199d64f0f73a141"
+      },
+      {
+        "name": "build",
+        "command": [
+          "uv",
+          "build",
+          "--no-sources"
+        ],
+        "exit_code": 0,
+        "seconds": 2.4,
+        "log": "artifacts/pr-validation-20261001/build.log",
+        "sha256": "e2595884d50f896ac35f37afcf60e444aa98dce2de895367e25eaf99bfd89eda"
+      }
+    ],
+    "source": "artifacts/pr-validation-20261001/checks.json",
+    "source_sha256": "8cdbaa5ec8ab51814aaf1ef4947f4f4d1cf6c81d98ede635108ae5e81119fd46",
+    "documentation_links": {
+      "files_checked": 6,
+      "missing": 0
+    }
+  }
+}

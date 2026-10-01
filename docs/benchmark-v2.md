@@ -5,6 +5,12 @@ E0–E7 evaluation tooling is implemented. The frozen v1 baseline remains
 v1 interfaces. V2 runs are separate, reproducible artifacts. The supplied datasets
 are contract fixtures, **not evidence of pretrained model quality**.
 
+The [latest measured comparison](comparison.md) is the authoritative result table:
+17 completed model/precision configurations, 29 retained attempts, the same 128
+BoolQ cases and 52 native-media cases, and matched serving-load measurements. It
+covers local Decider, Kev, AgentJev and Laya, plus Gemma BF16, INT8, NF4 and a
+separately labeled NF4 training continuation. Historical results remain below.
+
 ## Start with the offline acceptance run
 
 ```bash
@@ -76,15 +82,23 @@ quality profiles require test-only data.
 | Gemma G4 | Independent question sequences in real native batches; compatible processor tensor shapes share a forward |
 | Laya | Existing wrapper, pinned checkpoint/subfolder, provider precision; context truncation disclosed |
 | Jev-compatible HTTP | `protocol = "compatible"`, exact configured endpoint |
-| Kev / Mapika Decider | `protocol = "typesafe"`; Score criteria sent as ordered descriptions, returned indices mapped to original numeric levels |
-| AgentJev | `protocol = "agentjev"`; boolean/choice/score and `results[].answers[]` mapping; text-only, Score ≤10 levels |
+| Kev / Mapika Decider HTTP | `protocol = "typesafe"`; Score criteria sent as ordered descriptions, returned indices mapped to original numeric levels |
+| AgentJev HTTP | `protocol = "agentjev"`; boolean/choice/score and `results[].answers[]` mapping; text-only, Score ≤10 levels |
+| Local Decider | `adapter = "decider"`; pinned checkpoint and eager runtime with checkpoint calibration; text-only |
+| Local Kev | `adapter = "kev"`; pinned checkpoint, merged LoRA and pointer head with checkpoint calibration; text-only |
+| Local AgentJev | `adapter = "agentjev"`; pinned current coding checkpoint, FP32 weights with BF16 CUDA autocast; text-only, Score ≤10 levels |
 | TF-IDF + LR / prior | JSON classifier artifact, fixed schema, training-only fit, complete distributions |
 | Embedding / NLI / cross-encoder | Candidate ranking with hard labels; similarity/entailment scores are not converted into fake candidate probabilities |
 | SetFit | Local trained checkpoint plus hashed training/class-label artifact; complete classifier distribution |
 
-Install `--extra inference`, `--extra laya`, `--extra train` or `--extra baselines`
-only for the selected routes. Heavy libraries are imported lazily. Local Gemma uses
-BF16 on CUDA and float32 on CPU; declaring another precision is blocked. Baseline
+Install `--extra inference`, `--extra laya`, `--extra train`, `--extra quantization`
+or `--extra baselines` only for the selected routes. Heavy libraries are imported
+lazily. Local Gemma defaults to BF16 on CUDA and float32 on CPU; CUDA also supports
+explicit float32 for numerical controls. The separate `quantization` setting enables
+INT8 or NF4 on CUDA with BF16 surrounding computation and optional pinned CE adapters; see
+the [quantization guide](quantization.md) for retained dense layers, dependency and
+memory requirements. The [Modal comparison setup](modal.md#reproduce-the-october-1-matched-comparison)
+pins the local competitors' runtime dependencies. Baseline
 encoders use float32; TF-IDF/prior math uses float64. Embedding/SetFit context
 truncation is disclosed. NLI/cross-encoder reject excess context. NLI checkpoints
 must identify their entailment class; cross-encoders must return a scalar score.
@@ -239,13 +253,16 @@ Inputs remain logically separate, but BF16 probability parity is not established
 `precision = "float32"` select an explicit FP32 runtime for controlled parity
 experiments. Keep every compared readout on the same declared precision; the
 default CUDA runtime remains BF16. See [live validation](validation/2026-10-01/live-validation.md)
-for actual checkpoint receipts, numerical bounds and memory measurements.
+for actual checkpoint receipts, numerical bounds and historical memory limitations.
 
 Profiles support `load_mode = "closed_loop" | "fixed" | "poisson"`, `arrival_rate`
 (requests/sec for fixed/Poisson), `slo_ms`, `batch_size`, `concurrency`. Open-loop
 uses B=1, with arrivals computed independently of service speed. Offline B>1 invokes
-the declared native or explicitly loop-emulated adapter batch. Local Gemma/Laya
-concurrency is blocked; use native Gemma batching or a configured service for C sweeps.
+the declared native or explicitly loop-emulated adapter batch. Direct local adapters
+without concurrent-request support reject C>1; use native Gemma batching or a
+configured service for C sweeps. The [matched comparison harness](comparison.md)
+uses one model per process behind loopback HTTP and a serial inference lock, with
+no request batching or result cache; its concurrent measurements include queueing.
 
 Latency is scheduled-arrival to all-answers-ready, including queueing, preprocessing,
 inference/network and validation. It is never latency/N. Service latency and dispatch
@@ -366,12 +383,73 @@ An unknown bill from any executed stage keeps the reported total unknown, includ
 downstream failures after successful preprocessing. `workflow_comparison.json` pairs
 policy deltas by source group. Provider cache carryover is unknown and disclosed.
 
+## Recorded live results (2026-10-01)
+
+The [latest comparison](comparison.md) and its
+[combined receipt](validation/2026-10-01/comparison-summary.json) include the completed
+local competitor and quantization campaign. Use those tables for current accuracy,
+measured memory, per-workload latency and three-seed acceptance results.
+
+The earlier measurements below come from actual CPU/A100 Modal runs, not the
+offline fixtures.
+The [full live-validation report](validation/2026-10-01/live-validation.md) includes
+the run receipts, pinned data/model identities, per-task slices and limitations; the
+[machine-readable summary](validation/2026-10-01/live-summary.json) links the saved
+artifacts.
+
+### Earlier held-out quality screening
+
+The public text screen uses 128 labeled BoolQ validation cases. Training curves use
+separate support data with 128 examples per class and three seeds; ranges below are
+the observed min–max across those seeds.
+
+| Evaluation | Accuracy | Additional recorded metrics |
+|---|---:|---|
+| Gemma G4 FP32, public text screen | 111/128 (86.72%) | — |
+| CE adapter, 128 shots/class, 3 seeds | mean 91.15% (90.62–91.41%) | NLL 0.2451; Brier sum 0.1427; ECE-15 0.0524 |
+| CE+Brier adapter, 128 shots/class, 3 seeds | mean 90.89% (90.62–91.41%) | NLL 0.2438; Brier sum 0.1417; ECE-15 0.0560 |
+| Prior baseline, 128 shots/class, 3 seeds | mean 50.00% | — |
+| TF-IDF baseline, 128 shots/class, 3 seeds | mean 52.34% | — |
+| SetFit baseline, 128 shots/class, 3 seeds | mean 49.48% | — |
+| Gemma G4 FP32, public media screen | 33/52 (63.46%) | 32 MNIST images and 20 FSDD recordings |
+
+For the paired seed-0 CE adapter comparison against the frozen BF16 base, the
+accuracy difference was +3.906 percentage points (source-group bootstrap 95% CI:
+−1.562 to +9.375; 128 groups, 2,000 resamples). This is descriptive, unadjusted
+evidence and the interval includes zero. The media results cover digit-only MNIST and
+FSDD subsets, so they do not establish broad image or audio quality.
+
+### Earlier serving load screening
+
+The initial service checks recorded 10,512/10,512 successful requests. The block
+labeled `fixed-c16-n10000` had p99 latency 105.027 ms (block-bootstrap 95% CI:
+102.413–106.950 ms), 8.381 completed requests/second and no 1,000 ms SLO misses.
+Its summary does not record the offered request rate or actual peak requests in
+flight. The configured worker limit of 16 therefore does not establish sustained
+16-request concurrency at that p99. Separate closed-loop and overload stress
+completed their requests but missed the SLO:
+
+| Workload | Completed | p99 latency | 1,000 ms SLO misses |
+|---|---:|---:|---:|
+| Closed loop, concurrency 16, 128 requests | 128/128 | 1,564.742 ms | 118/128 |
+| Fixed, concurrency 64, 128 requests | 128/128 | 2,452.714 ms | 85/128 |
+| Closed loop, concurrency 64, 128 requests | 128/128 | 6,692.645 ms | 120/128 |
+
+These are screening workloads on one machine; loopback measurements do not establish
+WAN or deployment latency. The hosted Jev/TypeSafe, Kev, Decider and AgentJev endpoint
+evaluations were not run because endpoint access, immutable deployed revisions and
+cost metadata were unavailable. The subsequent [matched comparison](comparison.md)
+completed local Decider, Kev, AgentJev and Laya checkpoints; those measurements do
+not claim to characterize their hosted services or separately optimized runtimes.
+
 ## Boundaries of this delivery
 
-The reference E0–E7 tooling and offline acceptance are available. Live comparative
-results still require pinned weights/API credentials, appropriate hardware, explicit
-budgets and representative held-out data. No such results are implied by passing CI.
-Shared-prefix KV and branch-isolated packed attention, quantized/MLX/optimized runtime
-tracks, K>52, specialized vendor OCR/ASR deployment, production browser/coding agents,
-and crash-resume are separate extensions. No loop is mislabeled as a native batch,
-and no unimplemented cache is advertised as a speedup.
+The reference E0–E7 tooling and offline acceptance are available. The live results
+above are limited to the stated public-data slices and serving workloads; they do not
+establish production readiness or broad multimodal quality. INT8 and NF4 inference
+and the separate fixed NF4 training continuation are implemented and measured;
+their [accuracy/memory acceptance results](comparison.md) must not be inferred from
+bit width alone. Shared-prefix KV, branch-isolated packed attention, FP8, MLX and
+further optimized runtimes, K>52, specialized vendor OCR/ASR deployment, production
+browser/coding agents, and crash-resume remain separate extensions. No loop is
+mislabeled as a native batch, and no unimplemented cache is advertised as a speedup.
