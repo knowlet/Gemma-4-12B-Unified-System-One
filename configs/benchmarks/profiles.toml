@@ -1,0 +1,71 @@
+schema_version = 2
+
+[[profiles]]
+id = "smoke"
+suite = "smoke"
+models = ["uniform"]
+warmup = 1
+repetitions = 3
+require_probabilities = true
+[profiles.budget]
+max_requests = 12
+max_estimated_cost_usd = 0
+
+[[profiles]]
+id = "text-smoke"
+suite = "text-contract"
+models = ["uniform"]
+warmup = 1
+require_probabilities = true
+[profiles.budget]
+max_requests = 11
+max_estimated_cost_usd = 0
+
+[[profiles]]
+id = "inventory"
+suite = "smoke"
+models = ["uniform", "gemma-g3", "laya-general", "jev-http", "kev", "decider", "agentjev", "setfit"]
+require_probabilities = true
+[profiles.budget]
+max_requests = 1000
+max_estimated_cost_usd = 0
+
+# Controlled readouts: same dataset and base revision; G0 has hard labels only.
+[[profiles]]
+id = "gemma-ablation"
+suite = "text-contract"
+models = ["gemma-g0", "gemma-g1", "gemma-g2", "gemma-g3", "gemma-g4"]
+repetitions = 3
+warmup = 1
+[profiles.budget]
+max_requests = 165
+max_estimated_cost_usd = 0
+
+[[profiles]]
+id = "gemma-native-batch"
+suite = "text-contract"
+models = ["gemma-g4"]
+batch_size = 4
+require_native_batch = true
+require_independent_questions = true
+require_probabilities = true
+warmup = 1
+slo_ms = 1000
+[profiles.budget]
+max_requests = 11
+max_estimated_cost_usd = 0
+
+# Only explicitly configured/authorized endpoints are ever called.
+[[profiles]]
+id = "provider-load"
+suite = "text-contract"
+models = ["jev-http", "kev", "decider", "agentjev"]
+concurrency = 4
+load_mode = "poisson"
+arrival_rate = 2
+slo_ms = 1000
+warmup = 1
+require_probabilities = true
+[profiles.budget]
+max_requests = 44
+max_estimated_cost_usd = 0

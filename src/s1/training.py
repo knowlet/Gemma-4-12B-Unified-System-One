@@ -75,6 +75,10 @@ def train_model(
         )
     if {c.id for c in train_cases} & {c.id for c in calibration_cases}:
         raise ValueError("training and calibration ids overlap")
+    if {getattr(c, "group_id", None) or c.id for c in train_cases} & {
+        getattr(c, "group_id", None) or c.id for c in calibration_cases
+    }:
+        raise ValueError("training and calibration source groups overlap")
     if {_request_key(c.request) for c in train_cases} & {
         _request_key(c.request) for c in calibration_cases
     }:
@@ -131,6 +135,8 @@ def train_model(
     return {
         "steps": steps,
         "seed": seed,
+        "learning_rate": lr,
+        "brier_weight": brier_weight,
         "loss_initial": losses[0],
         "loss_final": losses[-1],
         "calibration": calibration,

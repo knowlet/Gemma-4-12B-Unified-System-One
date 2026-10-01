@@ -25,6 +25,29 @@ Cloud tooling: add `--extra modal`; Laya comparisons: add `--extra laya`.
 See [architecture](docs/architecture.md), [benchmarking](docs/benchmarking.md),
 and [Modal deployment](docs/modal.md) for runnable examples and limitations.
 
+[Decision Benchmark v2](docs/benchmark-v2.md) includes model comparison adapters,
+Gemma G0–G4 readouts, native batches, load tests, calibration/statistics, matched
+training, multimodal pipelines, resettable workflows and standalone reports:
+
+Accuracy gates default to the full decision population and require complete shared
+support; a common eligible subset must be declared explicitly. Workflows check every
+state for training/calibration overlap, validate the loaded model identity before
+inference, and include OCR/ASR bills in reported costs. Unknown stage bills keep the
+total unknown. See the v2 guide for gate population and workflow manifest fields.
+
+The [2026-10-01 live validation](docs/validation/2026-10-01/live-validation.md)
+records full 12B GPU, public held-out data, training, OCR/ASR and HTTP load results.
+CUDA defaults to BF16; use explicit `precision="float32"` (and matching registry
+precision) for probability-parity checks. The pinned 12B BF16 backbone shows
+material batch-dependent numerical drift, even with independent question inputs.
+
+```bash
+uv run --no-sync s1 eval run --profile text-smoke --enable-model uniform \
+  --output artifacts/evaluation/text-smoke-run
+uv run --no-sync python scripts/benchmark_v2_acceptance.py \
+  --output artifacts/evaluation/acceptance
+```
+
 ## Layout
 
 | Path | Purpose |

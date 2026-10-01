@@ -61,22 +61,35 @@ class UnifiedDecisionModel:
         *,
         revision=None,
         device=None,
+        precision=None,
         temperature=None,
         max_context=16384,
         lora=None,
+        adapter_path=None,
     ):
         import torch
         from transformers import AutoModelForMultimodalLM, AutoProcessor
 
-        device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-        dtype = torch.bfloat16 if str(device).startswith("cuda") else torch.float32
+        device = str(device or ("cuda" if torch.cuda.is_available() else "cpu"))
+        if precision not in (None, "float32", "bfloat16"):
+            raise ValueError("precision must be float32 or bfloat16")
+        precision = precision or ("bfloat16" if device.startswith("cuda") else "float32")
+        if precision == "bfloat16" and not device.startswith("cuda"):
+            raise ValueError("bfloat16 precision requires a CUDA device")
+        dtype = getattr(torch, precision)
         processor = AutoProcessor.from_pretrained(name, revision=revision)
         lm = AutoModelForMultimodalLM.from_pretrained(name, revision=revision, dtype=dtype)
         if lm.config.model_type != "gemma4_unified":
             raise ValueError("UnifiedDecisionModel requires a Gemma 4 Unified checkpoint")
         resolved_revision = getattr(lm.config, "_commit_hash", None) or revision
+        if lora and adapter_path:
+            raise ValueError("choose a new LoRA or an existing adapter, not both")
         if temperature is None:
-            temperature = load_temperature(name, revision=resolved_revision)
+            temperature = load_temperature(adapter_path or name, revision=resolved_revision)
+        if adapter_path:
+            from peft import PeftModel
+
+            lm = PeftModel.from_pretrained(lm, adapter_path, is_trainable=False)
         if lora:
             from peft import LoraConfig, get_peft_model
 
@@ -220,6 +233,25 @@ class UnifiedDecisionModel:
         lm = self.lm.merge_and_unload() if hasattr(self.lm, "merge_and_unload") else self.lm
         lm.save_pretrained(path, safe_serialization=True)
         self.processor.save_pretrained(path)
+        (path / "s1_config.json").write_text(
+            json.dumps(
+                {
+                    "temperature": self.temperature,
+                    "source_model": self.name,
+                    "source_revision": self.revision,
+                    "prompt_version": 1,
+                },
+                indent=2,
+            )
+            + "\n"
+        )
+
+    def save_adapter(self, path):
+        if not hasattr(self.lm, "peft_config"):
+            raise ValueError("only a PEFT model can save a separate decision adapter")
+        path = Path(path)
+        path.mkdir(parents=True, exist_ok=False)
+        self.lm.save_pretrained(path, safe_serialization=True)
         (path / "s1_config.json").write_text(
             json.dumps(
                 {

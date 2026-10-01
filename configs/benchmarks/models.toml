@@ -1,0 +1,306 @@
+schema_version = 2
+baseline_revision = "f8390676ae942699a71a85ae9a99cfcd7b9b3806"
+
+# Everything is disabled by default. Missing revisions/costs remain unknown.
+# Capabilities describe the project's adapters, not inferred vendor guarantees.
+[[models]]
+id = "uniform"
+adapter = "uniform"
+enabled = false
+precision = "float64"
+execution_mode = "sequential"
+calibration = "none"
+cost_per_request_usd = 0
+notes = "Sanity baseline only; passing smoke is not evidence of model quality."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = true
+independent_questions = true
+
+[[models]]
+id = "gemma-g3"
+adapter = "gemma"
+enabled = false
+model_id = "google/gemma-4-12B-it"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "causal_multislot"
+calibration = "checkpoint"
+notes = "Existing causal multi-slot path. Set immutable revision and cost estimate before planning."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = false
+independent_questions = false
+
+[[models]]
+id = "laya-general"
+adapter = "laya"
+enabled = false
+model_id = "convaiinnovations/laya"
+context_limit = 512
+execution_mode = "provider"
+calibration = "checkpoint"
+notes = "Pin a checkpoint and verify its limits/precision. Unverified fields are intentionally absent."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+probabilities = "complete"
+batch = "none"
+
+[[models]]
+id = "jev-http"
+adapter = "http"
+enabled = false
+precision = "provider"
+execution_mode = "provider"
+calibration = "provider"
+endpoint_env = "JEV_BENCHMARK_ENDPOINT"
+token_env = "JEV_BENCHMARK_TOKEN"
+notes = "Configure a compatible wire endpoint and declared capabilities; E0 never contacts it."
+
+[[models]]
+id = "kev"
+adapter = "http"
+protocol = "typesafe"
+precision = "provider"
+execution_mode = "provider"
+calibration = "provider"
+endpoint_env = "KEV_BENCHMARK_ENDPOINT"
+notes = "Pin deployed weights/runtime in revision and declare cost. Endpoint is never auto-discovered."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = true
+
+[[models]]
+id = "decider"
+adapter = "http"
+protocol = "typesafe"
+precision = "provider"
+execution_mode = "provider"
+calibration = "provider"
+endpoint_env = "DECIDER_BENCHMARK_ENDPOINT"
+notes = "Pin deployed weights/runtime in revision and declare cost. Endpoint is never auto-discovered."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = true
+
+[[models]]
+id = "agentjev"
+adapter = "http"
+protocol = "agentjev"
+precision = "provider"
+execution_mode = "provider"
+calibration = "provider"
+endpoint_env = "AGENTJEV_BENCHMARK_ENDPOINT"
+notes = "Pin deployed weights/runtime in revision and declare cost. Endpoint is never auto-discovered."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = true
+
+
+[[models]]
+id = "gemma-g0"
+adapter = "gemma"
+model_id = "google/gemma-4-12B-it"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+readout = "generate"
+calibration = "none"
+notes = "Controlled readout; pin the same revision and declare cost before enabling."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "none"
+batch = "none"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "gemma-g1"
+adapter = "gemma"
+model_id = "google/gemma-4-12B-it"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+readout = "full"
+calibration = "none"
+notes = "Controlled readout; pin the same revision and declare cost before enabling."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "gemma-g2"
+adapter = "gemma"
+model_id = "google/gemma-4-12B-it"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+readout = "candidate"
+calibration = "none"
+notes = "Controlled readout; pin the same revision and declare cost before enabling."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "none"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "gemma-g4"
+adapter = "gemma"
+model_id = "google/gemma-4-12B-it"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "independent_batch"
+readout = "candidate"
+calibration = "none"
+notes = "Controlled readout; pin the same revision and declare cost before enabling."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "native"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "prior"
+adapter = "prior"
+precision = "float64"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "tfidf"
+adapter = "tfidf"
+precision = "float64"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "embedding"
+adapter = "embedding"
+precision = "float32"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "none"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "nli"
+adapter = "nli"
+precision = "float32"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "none"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "cross_encoder"
+adapter = "cross_encoder"
+precision = "float32"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "none"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+[[models]]
+id = "setfit"
+adapter = "setfit"
+precision = "float32"
+execution_mode = "sequential"
+calibration = "none"
+notes = "Declare cost and pin weights or training artifact before enabling."
+[models.capabilities]
+modalities = ["text"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true

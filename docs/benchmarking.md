@@ -1,5 +1,10 @@
 # Reproducible comparisons
 
+The [Decision Benchmark v2 tools](benchmark-v2.md) implement E0–E7: capability/budget
+planning, multiple model routes, native batching, serving load, calibration and
+statistics, multimodal pipelines, matched training and workflow reports. The commands
+and report contract below remain v1.
+
 Every backend receives the same `DecisionRequest`, keyed question ids and candidate
 order. A JSONL row contains `id`, `split: test`, `request` and a `gold` map covering
 every question. Choice golds are option keys, Score golds are level keys and Noul
