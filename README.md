@@ -111,6 +111,11 @@ uv run --no-sync python scripts/benchmark_v2_acceptance.py \
   --output artifacts/evaluation/acceptance
 ```
 
+On Apple Silicon, Unified inference now selects MPS automatically and uses BF16
+on macOS 14 or newer (FP32 on older supported macOS). Use `--device cpu` or
+`--dtype float32` for an explicit reference configuration. See the
+[MPS measurements](docs/mps.md) and [GGUF / MLX release paths](docs/model-export.md).
+
 ## Layout
 
 | Path | Purpose |
@@ -119,7 +124,7 @@ uv run --no-sync python scripts/benchmark_v2_acceptance.py \
 | `apps/modal/` | Cloud entrypoints; retained upstream training and demos |
 | `tests/` | Offline contracts, numerical regression tests and tiny-model integration |
 | `examples/` | Requests and a small benchmark fixture, not an accuracy leaderboard |
-| `scripts/` | Dataset preparation, training checks, comparison collection and reports |
+| `scripts/` | Dataset preparation, training checks, MPS profiling, MLX validation and comparison reports |
 | `docs/` | Design, evaluation protocol and deployment instructions |
 | `results/`, `media/`, `report.html` | Historical upstream artifacts, retained unchanged |
 

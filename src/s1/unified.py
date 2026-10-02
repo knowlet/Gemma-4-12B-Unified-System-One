@@ -16,6 +16,7 @@ from pathlib import Path
 from .checkpoint import load_temperature
 from .contracts import AudioInput, DecisionRequest, answer_from_probabilities
 from .errors import RequestValidationError
+from .runtime import resolve_device, resolve_dtype
 from .schema import LETTERS
 
 DEFAULT_MODEL = "google/gemma-4-12B-it"
@@ -62,33 +63,45 @@ class UnifiedDecisionModel:
         revision=None,
         device=None,
         precision=None,
+        dtype=None,
+        attn_implementation=None,
         temperature=None,
         max_context=16384,
         lora=None,
         adapter_path=None,
         quantization="none",
     ):
-        import torch
         from transformers import AutoModelForMultimodalLM, AutoProcessor
 
-        device = str(device or ("cuda" if torch.cuda.is_available() else "cpu"))
+        device = resolve_device(device)
         if precision not in (None, "float32", "bfloat16"):
             raise ValueError("precision must be float32 or bfloat16")
-        precision = precision or ("bfloat16" if device.startswith("cuda") else "float32")
         if precision == "bfloat16" and not device.startswith("cuda"):
-            raise ValueError("bfloat16 precision requires a CUDA device")
-        dtype = getattr(torch, precision)
+            raise ValueError("bfloat16 precision requires a CUDA device; use dtype for MPS")
+        selected_dtype = resolve_dtype(dtype, device)
+        if precision is not None:
+            precision_dtype = resolve_dtype(precision, device)
+            if dtype not in (None, "auto") and selected_dtype != precision_dtype:
+                raise ValueError("precision and dtype must agree when both are specified")
+            selected_dtype = precision_dtype
+        if attn_implementation not in (None, "eager", "sdpa"):
+            raise ValueError("attn_implementation must be eager, sdpa, or None")
         from .quantization import inspect_quantization, loading_kwargs
 
-        quantized_loading = loading_kwargs(quantization, device=device, precision=precision)
+        quantized_loading = loading_kwargs(
+            quantization,
+            device=device,
+            precision=str(selected_dtype).removeprefix("torch."),
+        )
         if lora and adapter_path:
             raise ValueError("choose a new LoRA or an existing adapter, not both")
         if lora and quantization != "none":
             raise ValueError("quantized inference supports existing adapters; train LoRA in BF16")
         processor = AutoProcessor.from_pretrained(name, revision=revision)
-        lm = AutoModelForMultimodalLM.from_pretrained(
-            name, revision=revision, dtype=dtype, **quantized_loading
-        )
+        kwargs = {"revision": revision, "dtype": selected_dtype, **quantized_loading}
+        if attn_implementation is not None:
+            kwargs["attn_implementation"] = attn_implementation
+        lm = AutoModelForMultimodalLM.from_pretrained(name, **kwargs)
         if lm.config.model_type != "gemma4_unified":
             raise ValueError("UnifiedDecisionModel requires a Gemma 4 Unified checkpoint")
         resolved_revision = getattr(lm.config, "_commit_hash", None) or revision
@@ -129,12 +142,14 @@ class UnifiedDecisionModel:
         # .to() can reject INT8 modules or reallocate their quantization state.
         if self.quantization == "none":
             lm = lm.to(device)
-        self.lm, self.processor, self.device = lm.eval(), processor, device
+        self.lm, self.processor, self.device = lm.eval(), processor, str(device)
         self.tok = processor.tokenizer
         base = lm.get_base_model() if hasattr(lm, "peft_config") else lm
         self.backbone = base.model
         self.head = base.get_output_embeddings()
         config = getattr(base.config, "text_config", base.config)
+        self.dtype = str(self.head.weight.dtype).removeprefix("torch.")
+        self.attn_implementation = getattr(config, "_attn_implementation", None)
         self.softcap = getattr(config, "final_logit_softcapping", None)
         self.max_context = min(max_context, getattr(config, "max_position_embeddings", max_context))
         self.letters = torch.tensor(candidate_ids(self.tok), device=device)

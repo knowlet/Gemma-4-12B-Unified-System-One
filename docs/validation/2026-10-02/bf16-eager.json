@@ -1,0 +1,3000 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "created_at": "2026-10-02T05:17:54.755527+00:00",
+  "environment": {
+    "python": "3.12.11",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "torch": "2.8.0",
+    "transformers": "5.17.0",
+    "mps_environment": {
+      "PYTORCH_ENABLE_MPS_FALLBACK": null,
+      "PYTORCH_MPS_FAST_MATH": null,
+      "PYTORCH_MPS_PREFER_METAL": null,
+      "PYTORCH_MPS_HIGH_WATERMARK_RATIO": null,
+      "PYTORCH_MPS_LOW_WATERMARK_RATIO": null
+    }
+  },
+  "requested": {
+    "model": "google/gemma-4-12B-it",
+    "revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+    "device": "mps",
+    "dtype": "bfloat16",
+    "attn_implementation": "eager",
+    "dataset": "examples/benchmarks/mps.jsonl",
+    "warmup": 1,
+    "repeat": 3,
+    "limit": null,
+    "max_context": 16384,
+    "temperature": null,
+    "output": "artifacts/mps/bf16-eager.json"
+  },
+  "load_time_ms": 35301.835959005984,
+  "cases": [
+    {
+      "id": "billing-en",
+      "question_count": 2,
+      "input_tokens": 86,
+      "warmup_samples": [
+        {
+          "latency_ms": 19144.167124999512,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9998205304145813,
+                "technical": 0.00017952795315068215
+              },
+              "confidence": 0.9998205304145813,
+              "margin": 0.9996410024614306,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.11920291930437088,
+                "true": 0.8807971477508545
+              },
+              "confidence": 0.8807971477508545,
+              "margin": 0.7615942284464836,
+              "noul": 0.8807971477508545
+            }
+          }
+        }
+      ],
+      "end_to_end_samples": [
+        {
+          "latency_ms": 701.2102919979952,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9998205304145813,
+                "technical": 0.00017952795315068215
+              },
+              "confidence": 0.9998205304145813,
+              "margin": 0.9996410024614306,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.11920291930437088,
+                "true": 0.8807971477508545
+              },
+              "confidence": 0.8807971477508545,
+              "margin": 0.7615942284464836,
+              "noul": 0.8807971477508545
+            }
+          }
+        },
+        {
+          "latency_ms": 748.4313329987344,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9998205304145813,
+                "technical": 0.00017952795315068215
+              },
+              "confidence": 0.9998205304145813,
+              "margin": 0.9996410024614306,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.11920291930437088,
+                "true": 0.8807971477508545
+              },
+              "confidence": 0.8807971477508545,
+              "margin": 0.7615942284464836,
+              "noul": 0.8807971477508545
+            }
+          }
+        },
+        {
+          "latency_ms": 693.152874999214,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9998205304145813,
+                "technical": 0.00017952795315068215
+              },
+              "confidence": 0.9998205304145813,
+              "margin": 0.9996410024614306,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.11920291930437088,
+                "true": 0.8807971477508545
+              },
+              "confidence": 0.8807971477508545,
+              "margin": 0.7615942284464836,
+              "noul": 0.8807971477508545
+            }
+          }
+        }
+      ],
+      "phase_samples": [
+        {
+          "prepare_ms": 2.7310419973218814,
+          "backbone_forward_ms": 675.1426249975339,
+          "projection_softmax_cpu_ms": 1.4454170013777912,
+          "input_tokens": 86,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9998205304145813,
+                "technical": 0.00017952795315068215
+              },
+              "confidence": 0.9998205304145813,
+              "margin": 0.9996410024614306,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.11920291930437088,
+                "true": 0.8807971477508545
+              },
+              "confidence": 0.8807971477508545,
+              "margin": 0.7615942284464836,
+              "noul": 0.8807971477508545
+            }
+          }
+        },
+        {
+          "prepare_ms": 2.5444160055485554,
+          "backbone_forward_ms": 670.3626250018715,
+          "projection_softmax_cpu_ms": 1.0852499981410801,
+          "input_tokens": 86,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9998205304145813,
+                "technical": 0.00017952795315068215
+              },
+              "confidence": 0.9998205304145813,
+              "margin": 0.9996410024614306,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.11920291930437088,
+                "true": 0.8807971477508545
+              },
+              "confidence": 0.8807971477508545,
+              "margin": 0.7615942284464836,
+              "noul": 0.8807971477508545
+            }
+          }
+        },
+        {
+          "prepare_ms": 2.4186669979826547,
+          "backbone_forward_ms": 689.046250001411,
+          "projection_softmax_cpu_ms": 1.0594590057735331,
+          "input_tokens": 86,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9998205304145813,
+                "technical": 0.00017952795315068215
+              },
+              "confidence": 0.9998205304145813,
+              "margin": 0.9996410024614306,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.11920291930437088,
+                "true": 0.8807971477508545
+              },
+              "confidence": 0.8807971477508545,
+              "margin": 0.7615942284464836,
+              "noul": 0.8807971477508545
+            }
+          }
+        }
+      ],
+      "summary": {
+        "request_count": 3,
+        "decision_count": 6,
+        "total_measured_ms": 2142.7944999959436,
+        "latency_ms": {
+          "p50": 701.2102919979952,
+          "p95": 743.7092288986605
+        },
+        "requests_per_second": 1.4000409278657748,
+        "decisions_per_second": 2.8000818557315497
+      },
+      "phase_latency_ms": {
+        "prepare_ms": {
+          "p50": 2.5444160055485554,
+          "p95": 2.7123793981445488
+        },
+        "backbone_forward_ms": {
+          "p50": 675.1426249975339,
+          "p95": 687.6558875010232
+        },
+        "projection_softmax_cpu_ms": {
+          "p50": 1.0852499981410801,
+          "p95": 1.40940030105412
+        }
+      }
+    },
+    {
+      "id": "technical-en",
+      "question_count": 2,
+      "input_tokens": 90,
+      "warmup_samples": [
+        {
+          "latency_ms": 823.1292499986012,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 1.3007127563469112e-05,
+                "technical": 0.999987006187439
+              },
+              "confidence": 0.999987006187439,
+              "margin": 0.9999739990598755,
+              "choice": "technical"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.7981867790222168,
+                "true": 0.2018132209777832
+              },
+              "confidence": 0.7981867790222168,
+              "margin": 0.5963735580444336,
+              "noul": 0.2018132209777832
+            }
+          }
+        }
+      ],
+      "end_to_end_samples": [
+        {
+          "latency_ms": 682.2590419978951,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 1.3007127563469112e-05,
+                "technical": 0.999987006187439
+              },
+              "confidence": 0.999987006187439,
+              "margin": 0.9999739990598755,
+              "choice": "technical"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.7981867790222168,
+                "true": 0.2018132209777832
+              },
+              "confidence": 0.7981867790222168,
+              "margin": 0.5963735580444336,
+              "noul": 0.2018132209777832
+            }
+          }
+        },
+        {
+          "latency_ms": 705.2360829984536,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 1.3007127563469112e-05,
+                "technical": 0.999987006187439
+              },
+              "confidence": 0.999987006187439,
+              "margin": 0.9999739990598755,
+              "choice": "technical"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.7981867790222168,
+                "true": 0.2018132209777832
+              },
+              "confidence": 0.7981867790222168,
+              "margin": 0.5963735580444336,
+              "noul": 0.2018132209777832
+            }
+          }
+        },
+        {
+          "latency_ms": 730.3083750011865,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 1.3007127563469112e-05,
+                "technical": 0.999987006187439
+              },
+              "confidence": 0.999987006187439,
+              "margin": 0.9999739990598755,
+              "choice": "technical"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.7981867790222168,
+                "true": 0.2018132209777832
+              },
+              "confidence": 0.7981867790222168,
+              "margin": 0.5963735580444336,
+              "noul": 0.2018132209777832
+            }
+          }
+        }
+      ],
+      "phase_samples": [
+        {
+          "prepare_ms": 2.481374998751562,
+          "backbone_forward_ms": 751.3380829987,
+          "projection_softmax_cpu_ms": 1.4628749995608814,
+          "input_tokens": 90,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 1.3007127563469112e-05,
+                "technical": 0.999987006187439
+              },
+              "confidence": 0.999987006187439,
+              "margin": 0.9999739990598755,
+              "choice": "technical"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.7981867790222168,
+                "true": 0.2018132209777832
+              },
+              "confidence": 0.7981867790222168,
+              "margin": 0.5963735580444336,
+              "noul": 0.2018132209777832
+            }
+          }
+        },
+        {
+          "prepare_ms": 2.8338749980321154,
+          "backbone_forward_ms": 784.1316249978263,
+          "projection_softmax_cpu_ms": 1.1222499961149879,
+          "input_tokens": 90,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 1.3007127563469112e-05,
+                "technical": 0.999987006187439
+              },
+              "confidence": 0.999987006187439,
+              "margin": 0.9999739990598755,
+              "choice": "technical"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.7981867790222168,
+                "true": 0.2018132209777832
+              },
+              "confidence": 0.7981867790222168,
+              "margin": 0.5963735580444336,
+              "noul": 0.2018132209777832
+            }
+          }
+        },
+        {
+          "prepare_ms": 2.2485829977085814,
+          "backbone_forward_ms": 792.3144169981242,
+          "projection_softmax_cpu_ms": 1.6493329967488535,
+          "input_tokens": 90,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 1.3007127563469112e-05,
+                "technical": 0.999987006187439
+              },
+              "confidence": 0.999987006187439,
+              "margin": 0.9999739990598755,
+              "choice": "technical"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.7981867790222168,
+                "true": 0.2018132209777832
+              },
+              "confidence": 0.7981867790222168,
+              "margin": 0.5963735580444336,
+              "noul": 0.2018132209777832
+            }
+          }
+        }
+      ],
+      "summary": {
+        "request_count": 3,
+        "decision_count": 6,
+        "total_measured_ms": 2117.8034999975353,
+        "latency_ms": {
+          "p50": 705.2360829984536,
+          "p95": 727.8011458009132
+        },
+        "requests_per_second": 1.4165620181492247,
+        "decisions_per_second": 2.8331240362984493
+      },
+      "phase_latency_ms": {
+        "prepare_ms": {
+          "p50": 2.481374998751562,
+          "p95": 2.79862499810406
+        },
+        "backbone_forward_ms": {
+          "p50": 784.1316249978263,
+          "p95": 791.4961377980944
+        },
+        "projection_softmax_cpu_ms": {
+          "p50": 1.4628749995608814,
+          "p95": 1.6306871970300563
+        }
+      }
+    },
+    {
+      "id": "sentiment-score",
+      "question_count": 1,
+      "input_tokens": 60,
+      "warmup_samples": [
+        {
+          "latency_ms": 874.0073750013835,
+          "answers": {
+            "rating": {
+              "id": "rating",
+              "type": "score",
+              "probabilities": {
+                "0": 1.6701354979886673e-05,
+                "1": 0.9999793767929077,
+                "2": 3.966919393860735e-06
+              },
+              "confidence": 0.9999793767929077,
+              "margin": 0.9999626754379278,
+              "level": "1",
+              "score": 0.9999873106316954
+            }
+          }
+        }
+      ],
+      "end_to_end_samples": [
+        {
+          "latency_ms": 501.78820799919777,
+          "answers": {
+            "rating": {
+              "id": "rating",
+              "type": "score",
+              "probabilities": {
+                "0": 1.6701354979886673e-05,
+                "1": 0.9999793767929077,
+                "2": 3.966919393860735e-06
+              },
+              "confidence": 0.9999793767929077,
+              "margin": 0.9999626754379278,
+              "level": "1",
+              "score": 0.9999873106316954
+            }
+          }
+        },
+        {
+          "latency_ms": 488.15954200108536,
+          "answers": {
+            "rating": {
+              "id": "rating",
+              "type": "score",
+              "probabilities": {
+                "0": 1.6701354979886673e-05,
+                "1": 0.9999793767929077,
+                "2": 3.966919393860735e-06
+              },
+              "confidence": 0.9999793767929077,
+              "margin": 0.9999626754379278,
+              "level": "1",
+              "score": 0.9999873106316954
+            }
+          }
+        },
+        {
+          "latency_ms": 485.4167080047773,
+          "answers": {
+            "rating": {
+              "id": "rating",
+              "type": "score",
+              "probabilities": {
+                "0": 1.6701354979886673e-05,
+                "1": 0.9999793767929077,
+                "2": 3.966919393860735e-06
+              },
+              "confidence": 0.9999793767929077,
+              "margin": 0.9999626754379278,
+              "level": "1",
+              "score": 0.9999873106316954
+            }
+          }
+        }
+      ],
+      "phase_samples": [
+        {
+          "prepare_ms": 2.852457997505553,
+          "backbone_forward_ms": 484.5420420024311,
+          "projection_softmax_cpu_ms": 1.1728750032489188,
+          "input_tokens": 60,
+          "answers": {
+            "rating": {
+              "id": "rating",
+              "type": "score",
+              "probabilities": {
+                "0": 1.6701354979886673e-05,
+                "1": 0.9999793767929077,
+                "2": 3.966919393860735e-06
+              },
+              "confidence": 0.9999793767929077,
+              "margin": 0.9999626754379278,
+              "level": "1",
+              "score": 0.9999873106316954
+            }
+          }
+        },
+        {
+          "prepare_ms": 2.558125001087319,
+          "backbone_forward_ms": 479.0827079996234,
+          "projection_softmax_cpu_ms": 1.5668330015614629,
+          "input_tokens": 60,
+          "answers": {
+            "rating": {
+              "id": "rating",
+              "type": "score",
+              "probabilities": {
+                "0": 1.6701354979886673e-05,
+                "1": 0.9999793767929077,
+                "2": 3.966919393860735e-06
+              },
+              "confidence": 0.9999793767929077,
+              "margin": 0.9999626754379278,
+              "level": "1",
+              "score": 0.9999873106316954
+            }
+          }
+        },
+        {
+          "prepare_ms": 2.6986660013790242,
+          "backbone_forward_ms": 485.3571249986999,
+          "projection_softmax_cpu_ms": 1.1904169950867072,
+          "input_tokens": 60,
+          "answers": {
+            "rating": {
+              "id": "rating",
+              "type": "score",
+              "probabilities": {
+                "0": 1.6701354979886673e-05,
+                "1": 0.9999793767929077,
+                "2": 3.966919393860735e-06
+              },
+              "confidence": 0.9999793767929077,
+              "margin": 0.9999626754379278,
+              "level": "1",
+              "score": 0.9999873106316954
+            }
+          }
+        }
+      ],
+      "summary": {
+        "request_count": 3,
+        "decision_count": 3,
+        "total_measured_ms": 1475.3644580050604,
+        "latency_ms": {
+          "p50": 488.15954200108536,
+          "p95": 500.4253413993865
+        },
+        "requests_per_second": 2.0333958729468797,
+        "decisions_per_second": 2.0333958729468797
+      },
+      "phase_latency_ms": {
+        "prepare_ms": {
+          "p50": 2.6986660013790242,
+          "p95": 2.8370787978929
+        },
+        "backbone_forward_ms": {
+          "p50": 484.5420420024311,
+          "p95": 485.275616699073
+        },
+        "projection_softmax_cpu_ms": {
+          "p50": 1.1904169950867072,
+          "p95": 1.5291914009139873
+        }
+      }
+    },
+    {
+      "id": "synthetic-image",
+      "question_count": 2,
+      "input_tokens": 344,
+      "warmup_samples": [
+        {
+          "latency_ms": 2873.165750002954,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.06008664891123772,
+                "true": 0.9399133324623108
+              },
+              "confidence": 0.9399133324623108,
+              "margin": 0.8798266835510731,
+              "noul": 0.9399133324623108
+            }
+          }
+        }
+      ],
+      "end_to_end_samples": [
+        {
+          "latency_ms": 2193.859083999996,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.06008664891123772,
+                "true": 0.9399133324623108
+              },
+              "confidence": 0.9399133324623108,
+              "margin": 0.8798266835510731,
+              "noul": 0.9399133324623108
+            }
+          }
+        },
+        {
+          "latency_ms": 2205.0702499982435,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.06008664891123772,
+                "true": 0.9399133324623108
+              },
+              "confidence": 0.9399133324623108,
+              "margin": 0.8798266835510731,
+              "noul": 0.9399133324623108
+            }
+          }
+        },
+        {
+          "latency_ms": 2209.2402090056567,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.06008664891123772,
+                "true": 0.9399133324623108
+              },
+              "confidence": 0.9399133324623108,
+              "margin": 0.8798266835510731,
+              "noul": 0.9399133324623108
+            }
+          }
+        }
+      ],
+      "phase_samples": [
+        {
+          "prepare_ms": 7.839083002181724,
+          "backbone_forward_ms": 2218.919457998709,
+          "projection_softmax_cpu_ms": 29.260875002364628,
+          "input_tokens": 344,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.06008664891123772,
+                "true": 0.9399133324623108
+              },
+              "confidence": 0.9399133324623108,
+              "margin": 0.8798266835510731,
+              "noul": 0.9399133324623108
+            }
+          }
+        },
+        {
+          "prepare_ms": 7.615667003847193,
+          "backbone_forward_ms": 2095.168499996362,
+          "projection_softmax_cpu_ms": 29.018333996646106,
+          "input_tokens": 344,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.06008664891123772,
+                "true": 0.9399133324623108
+              },
+              "confidence": 0.9399133324623108,
+              "margin": 0.8798266835510731,
+              "noul": 0.9399133324623108
+            }
+          }
+        },
+        {
+          "prepare_ms": 7.424167000863235,
+          "backbone_forward_ms": 2115.1026250008726,
+          "projection_softmax_cpu_ms": 29.977124999277294,
+          "input_tokens": 344,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.06008664891123772,
+                "true": 0.9399133324623108
+              },
+              "confidence": 0.9399133324623108,
+              "margin": 0.8798266835510731,
+              "noul": 0.9399133324623108
+            }
+          }
+        }
+      ],
+      "summary": {
+        "request_count": 3,
+        "decision_count": 6,
+        "total_measured_ms": 6608.169543003896,
+        "latency_ms": {
+          "p50": 2205.0702499982435,
+          "p95": 2208.8232131049153
+        },
+        "requests_per_second": 0.4539835094237429,
+        "decisions_per_second": 0.9079670188474858
+      },
+      "phase_latency_ms": {
+        "prepare_ms": {
+          "p50": 7.615667003847193,
+          "p95": 7.816741402348271
+        },
+        "backbone_forward_ms": {
+          "p50": 2115.1026250008726,
+          "p95": 2208.537774698925
+        },
+        "projection_softmax_cpu_ms": {
+          "p50": 29.260875002364628,
+          "p95": 29.905499999586027
+        }
+      }
+    },
+    {
+      "id": "synthetic-audio",
+      "question_count": 2,
+      "input_tokens": 91,
+      "warmup_samples": [
+        {
+          "latency_ms": 969.9054170050658,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.622459352016449,
+                "true": 0.377540647983551
+              },
+              "confidence": 0.622459352016449,
+              "margin": 0.24491870403289795,
+              "noul": 0.377540647983551
+            }
+          }
+        }
+      ],
+      "end_to_end_samples": [
+        {
+          "latency_ms": 698.4991669960436,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.622459352016449,
+                "true": 0.377540647983551
+              },
+              "confidence": 0.622459352016449,
+              "margin": 0.24491870403289795,
+              "noul": 0.377540647983551
+            }
+          }
+        },
+        {
+          "latency_ms": 691.1290839998401,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.622459352016449,
+                "true": 0.377540647983551
+              },
+              "confidence": 0.622459352016449,
+              "margin": 0.24491870403289795,
+              "noul": 0.377540647983551
+            }
+          }
+        },
+        {
+          "latency_ms": 691.6516249984852,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.622459352016449,
+                "true": 0.377540647983551
+              },
+              "confidence": 0.622459352016449,
+              "margin": 0.24491870403289795,
+              "noul": 0.377540647983551
+            }
+          }
+        }
+      ],
+      "phase_samples": [
+        {
+          "prepare_ms": 3.5484170002746396,
+          "backbone_forward_ms": 687.8806249951595,
+          "projection_softmax_cpu_ms": 1.5731670064269565,
+          "input_tokens": 91,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.622459352016449,
+                "true": 0.377540647983551
+              },
+              "confidence": 0.622459352016449,
+              "margin": 0.24491870403289795,
+              "noul": 0.377540647983551
+            }
+          }
+        },
+        {
+          "prepare_ms": 3.296917006082367,
+          "backbone_forward_ms": 686.9746659940574,
+          "projection_softmax_cpu_ms": 1.0901249988819472,
+          "input_tokens": 91,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.622459352016449,
+                "true": 0.377540647983551
+              },
+              "confidence": 0.622459352016449,
+              "margin": 0.24491870403289795,
+              "noul": 0.377540647983551
+            }
+          }
+        },
+        {
+          "prepare_ms": 3.017374998307787,
+          "backbone_forward_ms": 686.7481670051347,
+          "projection_softmax_cpu_ms": 1.1325419982313178,
+          "input_tokens": 91,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999485015869141,
+                "technical": 5.144220631336793e-05
+              },
+              "confidence": 0.9999485015869141,
+              "margin": 0.9998970593806007,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.622459352016449,
+                "true": 0.377540647983551
+              },
+              "confidence": 0.622459352016449,
+              "margin": 0.24491870403289795,
+              "noul": 0.377540647983551
+            }
+          }
+        }
+      ],
+      "summary": {
+        "request_count": 3,
+        "decision_count": 6,
+        "total_measured_ms": 2081.279875994369,
+        "latency_ms": {
+          "p50": 691.6516249984852,
+          "p95": 697.8144127962878
+        },
+        "requests_per_second": 1.4414207500885463,
+        "decisions_per_second": 2.8828415001770926
+      },
+      "phase_latency_ms": {
+        "prepare_ms": {
+          "p50": 3.296917006082367,
+          "p95": 3.5232670008554123
+        },
+        "backbone_forward_ms": {
+          "p50": 686.9746659940574,
+          "p95": 687.7900290950492
+        },
+        "projection_softmax_cpu_ms": {
+          "p50": 1.1325419982313178,
+          "p95": 1.5291045056073926
+        }
+      }
+    },
+    {
+      "id": "synthetic-mixed",
+      "question_count": 2,
+      "input_tokens": 349,
+      "warmup_samples": [
+        {
+          "latency_ms": 2231.322125000588,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999687671661377,
+                "technical": 3.12019074044656e-05
+              },
+              "confidence": 0.9999687671661377,
+              "margin": 0.9999375652587332,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.09534946084022522,
+                "true": 0.9046505093574524
+              },
+              "confidence": 0.9046505093574524,
+              "margin": 0.8093010485172272,
+              "noul": 0.9046505093574524
+            }
+          }
+        }
+      ],
+      "end_to_end_samples": [
+        {
+          "latency_ms": 2097.94200000033,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999687671661377,
+                "technical": 3.12019074044656e-05
+              },
+              "confidence": 0.9999687671661377,
+              "margin": 0.9999375652587332,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.09534946084022522,
+                "true": 0.9046505093574524
+              },
+              "confidence": 0.9046505093574524,
+              "margin": 0.8093010485172272,
+              "noul": 0.9046505093574524
+            }
+          }
+        },
+        {
+          "latency_ms": 2139.0097920011613,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999687671661377,
+                "technical": 3.12019074044656e-05
+              },
+              "confidence": 0.9999687671661377,
+              "margin": 0.9999375652587332,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.09534946084022522,
+                "true": 0.9046505093574524
+              },
+              "confidence": 0.9046505093574524,
+              "margin": 0.8093010485172272,
+              "noul": 0.9046505093574524
+            }
+          }
+        },
+        {
+          "latency_ms": 2210.316332995717,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999687671661377,
+                "technical": 3.12019074044656e-05
+              },
+              "confidence": 0.9999687671661377,
+              "margin": 0.9999375652587332,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.09534946084022522,
+                "true": 0.9046505093574524
+              },
+              "confidence": 0.9046505093574524,
+              "margin": 0.8093010485172272,
+              "noul": 0.9046505093574524
+            }
+          }
+        }
+      ],
+      "phase_samples": [
+        {
+          "prepare_ms": 7.951333995151799,
+          "backbone_forward_ms": 2173.9438330041594,
+          "projection_softmax_cpu_ms": 28.98624999943422,
+          "input_tokens": 349,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999687671661377,
+                "technical": 3.12019074044656e-05
+              },
+              "confidence": 0.9999687671661377,
+              "margin": 0.9999375652587332,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.09534946084022522,
+                "true": 0.9046505093574524
+              },
+              "confidence": 0.9046505093574524,
+              "margin": 0.8093010485172272,
+              "noul": 0.9046505093574524
+            }
+          }
+        },
+        {
+          "prepare_ms": 8.004666000488214,
+          "backbone_forward_ms": 2135.635207996529,
+          "projection_softmax_cpu_ms": 29.56741700472776,
+          "input_tokens": 349,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999687671661377,
+                "technical": 3.12019074044656e-05
+              },
+              "confidence": 0.9999687671661377,
+              "margin": 0.9999375652587332,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.09534946084022522,
+                "true": 0.9046505093574524
+              },
+              "confidence": 0.9046505093574524,
+              "margin": 0.8093010485172272,
+              "noul": 0.9046505093574524
+            }
+          }
+        },
+        {
+          "prepare_ms": 7.9264169980888255,
+          "backbone_forward_ms": 2147.2464580001542,
+          "projection_softmax_cpu_ms": 29.18962499825284,
+          "input_tokens": 349,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999687671661377,
+                "technical": 3.12019074044656e-05
+              },
+              "confidence": 0.9999687671661377,
+              "margin": 0.9999375652587332,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.09534946084022522,
+                "true": 0.9046505093574524
+              },
+              "confidence": 0.9046505093574524,
+              "margin": 0.8093010485172272,
+              "noul": 0.9046505093574524
+            }
+          }
+        }
+      ],
+      "summary": {
+        "request_count": 3,
+        "decision_count": 6,
+        "total_measured_ms": 6447.268124997208,
+        "latency_ms": {
+          "p50": 2139.0097920011613,
+          "p95": 2203.1856788962614
+        },
+        "requests_per_second": 0.4653133609208007,
+        "decisions_per_second": 0.9306267218416014
+      },
+      "phase_latency_ms": {
+        "prepare_ms": {
+          "p50": 7.951333995151799,
+          "p95": 7.999332799954573
+        },
+        "backbone_forward_ms": {
+          "p50": 2147.2464580001542,
+          "p95": 2171.274095503759
+        },
+        "projection_softmax_cpu_ms": {
+          "p50": 29.18962499825284,
+          "p95": 29.529637804080267
+        }
+      }
+    },
+    {
+      "id": "long-state",
+      "question_count": 2,
+      "input_tokens": 716,
+      "warmup_samples": [
+        {
+          "latency_ms": 4740.214249999553,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999151229858398,
+                "technical": 8.481102850055322e-05
+              },
+              "confidence": 0.9999151229858398,
+              "margin": 0.9998303119573393,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.08509903401136398,
+                "true": 0.9149009585380554
+              },
+              "confidence": 0.9149009585380554,
+              "margin": 0.8298019245266914,
+              "noul": 0.9149009585380554
+            }
+          }
+        }
+      ],
+      "end_to_end_samples": [
+        {
+          "latency_ms": 4280.644042002677,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999151229858398,
+                "technical": 8.481102850055322e-05
+              },
+              "confidence": 0.9999151229858398,
+              "margin": 0.9998303119573393,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.08509903401136398,
+                "true": 0.9149009585380554
+              },
+              "confidence": 0.9149009585380554,
+              "margin": 0.8298019245266914,
+              "noul": 0.9149009585380554
+            }
+          }
+        },
+        {
+          "latency_ms": 4929.3652920023305,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999151229858398,
+                "technical": 8.481102850055322e-05
+              },
+              "confidence": 0.9999151229858398,
+              "margin": 0.9998303119573393,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.08509903401136398,
+                "true": 0.9149009585380554
+              },
+              "confidence": 0.9149009585380554,
+              "margin": 0.8298019245266914,
+              "noul": 0.9149009585380554
+            }
+          }
+        },
+        {
+          "latency_ms": 4486.114874998748,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999151229858398,
+                "technical": 8.481102850055322e-05
+              },
+              "confidence": 0.9999151229858398,
+              "margin": 0.9998303119573393,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.08509903401136398,
+                "true": 0.9149009585380554
+              },
+              "confidence": 0.9149009585380554,
+              "margin": 0.8298019245266914,
+              "noul": 0.9149009585380554
+            }
+          }
+        }
+      ],
+      "phase_samples": [
+        {
+          "prepare_ms": 4.314500001783017,
+          "backbone_forward_ms": 4488.69195899897,
+          "projection_softmax_cpu_ms": 32.374000002164394,
+          "input_tokens": 716,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999151229858398,
+                "technical": 8.481102850055322e-05
+              },
+              "confidence": 0.9999151229858398,
+              "margin": 0.9998303119573393,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.08509903401136398,
+                "true": 0.9149009585380554
+              },
+              "confidence": 0.9149009585380554,
+              "margin": 0.8298019245266914,
+              "noul": 0.9149009585380554
+            }
+          }
+        },
+        {
+          "prepare_ms": 3.673582999908831,
+          "backbone_forward_ms": 4527.4498330036295,
+          "projection_softmax_cpu_ms": 36.9835419987794,
+          "input_tokens": 716,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999151229858398,
+                "technical": 8.481102850055322e-05
+              },
+              "confidence": 0.9999151229858398,
+              "margin": 0.9998303119573393,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.08509903401136398,
+                "true": 0.9149009585380554
+              },
+              "confidence": 0.9149009585380554,
+              "margin": 0.8298019245266914,
+              "noul": 0.9149009585380554
+            }
+          }
+        },
+        {
+          "prepare_ms": 5.288874999678228,
+          "backbone_forward_ms": 4502.504834003048,
+          "projection_softmax_cpu_ms": 45.081625001330394,
+          "input_tokens": 716,
+          "answers": {
+            "team": {
+              "id": "team",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9999151229858398,
+                "technical": 8.481102850055322e-05
+              },
+              "confidence": 0.9999151229858398,
+              "margin": 0.9998303119573393,
+              "choice": "billing"
+            },
+            "refund": {
+              "id": "refund",
+              "type": "noul",
+              "probabilities": {
+                "false": 0.08509903401136398,
+                "true": 0.9149009585380554
+              },
+              "confidence": 0.9149009585380554,
+              "margin": 0.8298019245266914,
+              "noul": 0.9149009585380554
+            }
+          }
+        }
+      ],
+      "summary": {
+        "request_count": 3,
+        "decision_count": 6,
+        "total_measured_ms": 13696.124209003756,
+        "latency_ms": {
+          "p50": 4486.114874998748,
+          "p95": 4885.040250301972
+        },
+        "requests_per_second": 0.2190400696006989,
+        "decisions_per_second": 0.4380801392013978
+      },
+      "phase_latency_ms": {
+        "prepare_ms": {
+          "p50": 4.314500001783017,
+          "p95": 5.191437499888707
+        },
+        "backbone_forward_ms": {
+          "p50": 4502.504834003048,
+          "p95": 4524.955333103571
+        },
+        "projection_softmax_cpu_ms": {
+          "p50": 36.9835419987794,
+          "p95": 44.271816701075295
+        }
+      }
+    },
+    {
+      "id": "sixteen-questions",
+      "question_count": 16,
+      "input_tokens": 551,
+      "warmup_samples": [
+        {
+          "latency_ms": 3865.616666000278,
+          "answers": {
+            "q0": {
+              "id": "q0",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9997965693473816,
+                "technical": 0.0002034269564319402
+              },
+              "confidence": 0.9997965693473816,
+              "margin": 0.9995931423909497,
+              "choice": "billing"
+            },
+            "q1": {
+              "id": "q1",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9953904151916504,
+                "technical": 0.004609571769833565
+              },
+              "confidence": 0.9953904151916504,
+              "margin": 0.9907808434218168,
+              "choice": "billing"
+            },
+            "q2": {
+              "id": "q2",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q3": {
+              "id": "q3",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q4": {
+              "id": "q4",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q5": {
+              "id": "q5",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q6": {
+              "id": "q6",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.957912266254425,
+                "technical": 0.042087722569704056
+              },
+              "confidence": 0.957912266254425,
+              "margin": 0.915824543684721,
+              "choice": "billing"
+            },
+            "q7": {
+              "id": "q7",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9796676635742188,
+                "technical": 0.020332351326942444
+              },
+              "confidence": 0.9796676635742188,
+              "margin": 0.9593353122472763,
+              "choice": "billing"
+            },
+            "q8": {
+              "id": "q8",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q9": {
+              "id": "q9",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9840936064720154,
+                "technical": 0.01590638980269432
+              },
+              "confidence": 0.9840936064720154,
+              "margin": 0.9681872166693211,
+              "choice": "billing"
+            },
+            "q10": {
+              "id": "q10",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9820137619972229,
+                "technical": 0.017986206337809563
+              },
+              "confidence": 0.9820137619972229,
+              "margin": 0.9640275556594133,
+              "choice": "billing"
+            },
+            "q11": {
+              "id": "q11",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9783847332000732,
+                "technical": 0.02161533199250698
+              },
+              "confidence": 0.9783847332000732,
+              "margin": 0.9567694012075663,
+              "choice": "billing"
+            },
+            "q12": {
+              "id": "q12",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9755768775939941,
+                "technical": 0.024423087015748024
+              },
+              "confidence": 0.9755768775939941,
+              "margin": 0.9511537905782461,
+              "choice": "billing"
+            },
+            "q13": {
+              "id": "q13",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q14": {
+              "id": "q14",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q15": {
+              "id": "q15",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9669140577316284,
+                "technical": 0.03308597579598427
+              },
+              "confidence": 0.9669140577316284,
+              "margin": 0.9338280819356441,
+              "choice": "billing"
+            }
+          }
+        }
+      ],
+      "end_to_end_samples": [
+        {
+          "latency_ms": 3436.4530419989023,
+          "answers": {
+            "q0": {
+              "id": "q0",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9997965693473816,
+                "technical": 0.0002034269564319402
+              },
+              "confidence": 0.9997965693473816,
+              "margin": 0.9995931423909497,
+              "choice": "billing"
+            },
+            "q1": {
+              "id": "q1",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9953904151916504,
+                "technical": 0.004609571769833565
+              },
+              "confidence": 0.9953904151916504,
+              "margin": 0.9907808434218168,
+              "choice": "billing"
+            },
+            "q2": {
+              "id": "q2",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q3": {
+              "id": "q3",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q4": {
+              "id": "q4",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q5": {
+              "id": "q5",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q6": {
+              "id": "q6",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.957912266254425,
+                "technical": 0.042087722569704056
+              },
+              "confidence": 0.957912266254425,
+              "margin": 0.915824543684721,
+              "choice": "billing"
+            },
+            "q7": {
+              "id": "q7",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9796676635742188,
+                "technical": 0.020332351326942444
+              },
+              "confidence": 0.9796676635742188,
+              "margin": 0.9593353122472763,
+              "choice": "billing"
+            },
+            "q8": {
+              "id": "q8",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q9": {
+              "id": "q9",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9840936064720154,
+                "technical": 0.01590638980269432
+              },
+              "confidence": 0.9840936064720154,
+              "margin": 0.9681872166693211,
+              "choice": "billing"
+            },
+            "q10": {
+              "id": "q10",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9820137619972229,
+                "technical": 0.017986206337809563
+              },
+              "confidence": 0.9820137619972229,
+              "margin": 0.9640275556594133,
+              "choice": "billing"
+            },
+            "q11": {
+              "id": "q11",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9783847332000732,
+                "technical": 0.02161533199250698
+              },
+              "confidence": 0.9783847332000732,
+              "margin": 0.9567694012075663,
+              "choice": "billing"
+            },
+            "q12": {
+              "id": "q12",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9755768775939941,
+                "technical": 0.024423087015748024
+              },
+              "confidence": 0.9755768775939941,
+              "margin": 0.9511537905782461,
+              "choice": "billing"
+            },
+            "q13": {
+              "id": "q13",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q14": {
+              "id": "q14",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q15": {
+              "id": "q15",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9669140577316284,
+                "technical": 0.03308597579598427
+              },
+              "confidence": 0.9669140577316284,
+              "margin": 0.9338280819356441,
+              "choice": "billing"
+            }
+          }
+        },
+        {
+          "latency_ms": 3745.1031250020606,
+          "answers": {
+            "q0": {
+              "id": "q0",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9997965693473816,
+                "technical": 0.0002034269564319402
+              },
+              "confidence": 0.9997965693473816,
+              "margin": 0.9995931423909497,
+              "choice": "billing"
+            },
+            "q1": {
+              "id": "q1",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9953904151916504,
+                "technical": 0.004609571769833565
+              },
+              "confidence": 0.9953904151916504,
+              "margin": 0.9907808434218168,
+              "choice": "billing"
+            },
+            "q2": {
+              "id": "q2",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q3": {
+              "id": "q3",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q4": {
+              "id": "q4",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q5": {
+              "id": "q5",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q6": {
+              "id": "q6",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.957912266254425,
+                "technical": 0.042087722569704056
+              },
+              "confidence": 0.957912266254425,
+              "margin": 0.915824543684721,
+              "choice": "billing"
+            },
+            "q7": {
+              "id": "q7",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9796676635742188,
+                "technical": 0.020332351326942444
+              },
+              "confidence": 0.9796676635742188,
+              "margin": 0.9593353122472763,
+              "choice": "billing"
+            },
+            "q8": {
+              "id": "q8",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q9": {
+              "id": "q9",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9840936064720154,
+                "technical": 0.01590638980269432
+              },
+              "confidence": 0.9840936064720154,
+              "margin": 0.9681872166693211,
+              "choice": "billing"
+            },
+            "q10": {
+              "id": "q10",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9820137619972229,
+                "technical": 0.017986206337809563
+              },
+              "confidence": 0.9820137619972229,
+              "margin": 0.9640275556594133,
+              "choice": "billing"
+            },
+            "q11": {
+              "id": "q11",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9783847332000732,
+                "technical": 0.02161533199250698
+              },
+              "confidence": 0.9783847332000732,
+              "margin": 0.9567694012075663,
+              "choice": "billing"
+            },
+            "q12": {
+              "id": "q12",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9755768775939941,
+                "technical": 0.024423087015748024
+              },
+              "confidence": 0.9755768775939941,
+              "margin": 0.9511537905782461,
+              "choice": "billing"
+            },
+            "q13": {
+              "id": "q13",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q14": {
+              "id": "q14",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q15": {
+              "id": "q15",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9669140577316284,
+                "technical": 0.03308597579598427
+              },
+              "confidence": 0.9669140577316284,
+              "margin": 0.9338280819356441,
+              "choice": "billing"
+            }
+          }
+        },
+        {
+          "latency_ms": 3552.8330829984043,
+          "answers": {
+            "q0": {
+              "id": "q0",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9997965693473816,
+                "technical": 0.0002034269564319402
+              },
+              "confidence": 0.9997965693473816,
+              "margin": 0.9995931423909497,
+              "choice": "billing"
+            },
+            "q1": {
+              "id": "q1",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9953904151916504,
+                "technical": 0.004609571769833565
+              },
+              "confidence": 0.9953904151916504,
+              "margin": 0.9907808434218168,
+              "choice": "billing"
+            },
+            "q2": {
+              "id": "q2",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q3": {
+              "id": "q3",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q4": {
+              "id": "q4",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q5": {
+              "id": "q5",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q6": {
+              "id": "q6",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.957912266254425,
+                "technical": 0.042087722569704056
+              },
+              "confidence": 0.957912266254425,
+              "margin": 0.915824543684721,
+              "choice": "billing"
+            },
+            "q7": {
+              "id": "q7",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9796676635742188,
+                "technical": 0.020332351326942444
+              },
+              "confidence": 0.9796676635742188,
+              "margin": 0.9593353122472763,
+              "choice": "billing"
+            },
+            "q8": {
+              "id": "q8",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q9": {
+              "id": "q9",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9840936064720154,
+                "technical": 0.01590638980269432
+              },
+              "confidence": 0.9840936064720154,
+              "margin": 0.9681872166693211,
+              "choice": "billing"
+            },
+            "q10": {
+              "id": "q10",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9820137619972229,
+                "technical": 0.017986206337809563
+              },
+              "confidence": 0.9820137619972229,
+              "margin": 0.9640275556594133,
+              "choice": "billing"
+            },
+            "q11": {
+              "id": "q11",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9783847332000732,
+                "technical": 0.02161533199250698
+              },
+              "confidence": 0.9783847332000732,
+              "margin": 0.9567694012075663,
+              "choice": "billing"
+            },
+            "q12": {
+              "id": "q12",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9755768775939941,
+                "technical": 0.024423087015748024
+              },
+              "confidence": 0.9755768775939941,
+              "margin": 0.9511537905782461,
+              "choice": "billing"
+            },
+            "q13": {
+              "id": "q13",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q14": {
+              "id": "q14",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q15": {
+              "id": "q15",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9669140577316284,
+                "technical": 0.03308597579598427
+              },
+              "confidence": 0.9669140577316284,
+              "margin": 0.9338280819356441,
+              "choice": "billing"
+            }
+          }
+        }
+      ],
+      "phase_samples": [
+        {
+          "prepare_ms": 4.750459003844298,
+          "backbone_forward_ms": 3683.5951670000213,
+          "projection_softmax_cpu_ms": 34.863334003603086,
+          "input_tokens": 551,
+          "answers": {
+            "q0": {
+              "id": "q0",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9997965693473816,
+                "technical": 0.0002034269564319402
+              },
+              "confidence": 0.9997965693473816,
+              "margin": 0.9995931423909497,
+              "choice": "billing"
+            },
+            "q1": {
+              "id": "q1",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9953904151916504,
+                "technical": 0.004609571769833565
+              },
+              "confidence": 0.9953904151916504,
+              "margin": 0.9907808434218168,
+              "choice": "billing"
+            },
+            "q2": {
+              "id": "q2",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q3": {
+              "id": "q3",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q4": {
+              "id": "q4",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q5": {
+              "id": "q5",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q6": {
+              "id": "q6",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.957912266254425,
+                "technical": 0.042087722569704056
+              },
+              "confidence": 0.957912266254425,
+              "margin": 0.915824543684721,
+              "choice": "billing"
+            },
+            "q7": {
+              "id": "q7",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9796676635742188,
+                "technical": 0.020332351326942444
+              },
+              "confidence": 0.9796676635742188,
+              "margin": 0.9593353122472763,
+              "choice": "billing"
+            },
+            "q8": {
+              "id": "q8",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q9": {
+              "id": "q9",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9840936064720154,
+                "technical": 0.01590638980269432
+              },
+              "confidence": 0.9840936064720154,
+              "margin": 0.9681872166693211,
+              "choice": "billing"
+            },
+            "q10": {
+              "id": "q10",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9820137619972229,
+                "technical": 0.017986206337809563
+              },
+              "confidence": 0.9820137619972229,
+              "margin": 0.9640275556594133,
+              "choice": "billing"
+            },
+            "q11": {
+              "id": "q11",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9783847332000732,
+                "technical": 0.02161533199250698
+              },
+              "confidence": 0.9783847332000732,
+              "margin": 0.9567694012075663,
+              "choice": "billing"
+            },
+            "q12": {
+              "id": "q12",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9755768775939941,
+                "technical": 0.024423087015748024
+              },
+              "confidence": 0.9755768775939941,
+              "margin": 0.9511537905782461,
+              "choice": "billing"
+            },
+            "q13": {
+              "id": "q13",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q14": {
+              "id": "q14",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q15": {
+              "id": "q15",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9669140577316284,
+                "technical": 0.03308597579598427
+              },
+              "confidence": 0.9669140577316284,
+              "margin": 0.9338280819356441,
+              "choice": "billing"
+            }
+          }
+        },
+        {
+          "prepare_ms": 2.7933329984080046,
+          "backbone_forward_ms": 3531.367333001981,
+          "projection_softmax_cpu_ms": 34.28070799418492,
+          "input_tokens": 551,
+          "answers": {
+            "q0": {
+              "id": "q0",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9997965693473816,
+                "technical": 0.0002034269564319402
+              },
+              "confidence": 0.9997965693473816,
+              "margin": 0.9995931423909497,
+              "choice": "billing"
+            },
+            "q1": {
+              "id": "q1",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9953904151916504,
+                "technical": 0.004609571769833565
+              },
+              "confidence": 0.9953904151916504,
+              "margin": 0.9907808434218168,
+              "choice": "billing"
+            },
+            "q2": {
+              "id": "q2",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q3": {
+              "id": "q3",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q4": {
+              "id": "q4",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q5": {
+              "id": "q5",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q6": {
+              "id": "q6",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.957912266254425,
+                "technical": 0.042087722569704056
+              },
+              "confidence": 0.957912266254425,
+              "margin": 0.915824543684721,
+              "choice": "billing"
+            },
+            "q7": {
+              "id": "q7",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9796676635742188,
+                "technical": 0.020332351326942444
+              },
+              "confidence": 0.9796676635742188,
+              "margin": 0.9593353122472763,
+              "choice": "billing"
+            },
+            "q8": {
+              "id": "q8",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q9": {
+              "id": "q9",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9840936064720154,
+                "technical": 0.01590638980269432
+              },
+              "confidence": 0.9840936064720154,
+              "margin": 0.9681872166693211,
+              "choice": "billing"
+            },
+            "q10": {
+              "id": "q10",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9820137619972229,
+                "technical": 0.017986206337809563
+              },
+              "confidence": 0.9820137619972229,
+              "margin": 0.9640275556594133,
+              "choice": "billing"
+            },
+            "q11": {
+              "id": "q11",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9783847332000732,
+                "technical": 0.02161533199250698
+              },
+              "confidence": 0.9783847332000732,
+              "margin": 0.9567694012075663,
+              "choice": "billing"
+            },
+            "q12": {
+              "id": "q12",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9755768775939941,
+                "technical": 0.024423087015748024
+              },
+              "confidence": 0.9755768775939941,
+              "margin": 0.9511537905782461,
+              "choice": "billing"
+            },
+            "q13": {
+              "id": "q13",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q14": {
+              "id": "q14",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q15": {
+              "id": "q15",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9669140577316284,
+                "technical": 0.03308597579598427
+              },
+              "confidence": 0.9669140577316284,
+              "margin": 0.9338280819356441,
+              "choice": "billing"
+            }
+          }
+        },
+        {
+          "prepare_ms": 2.84658299642615,
+          "backbone_forward_ms": 3564.2694589987514,
+          "projection_softmax_cpu_ms": 45.41400000016438,
+          "input_tokens": 551,
+          "answers": {
+            "q0": {
+              "id": "q0",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9997965693473816,
+                "technical": 0.0002034269564319402
+              },
+              "confidence": 0.9997965693473816,
+              "margin": 0.9995931423909497,
+              "choice": "billing"
+            },
+            "q1": {
+              "id": "q1",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9953904151916504,
+                "technical": 0.004609571769833565
+              },
+              "confidence": 0.9953904151916504,
+              "margin": 0.9907808434218168,
+              "choice": "billing"
+            },
+            "q2": {
+              "id": "q2",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q3": {
+              "id": "q3",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q4": {
+              "id": "q4",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q5": {
+              "id": "q5",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q6": {
+              "id": "q6",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.957912266254425,
+                "technical": 0.042087722569704056
+              },
+              "confidence": 0.957912266254425,
+              "margin": 0.915824543684721,
+              "choice": "billing"
+            },
+            "q7": {
+              "id": "q7",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9796676635742188,
+                "technical": 0.020332351326942444
+              },
+              "confidence": 0.9796676635742188,
+              "margin": 0.9593353122472763,
+              "choice": "billing"
+            },
+            "q8": {
+              "id": "q8",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.977022647857666,
+                "technical": 0.022977367043495178
+              },
+              "confidence": 0.977022647857666,
+              "margin": 0.9540452808141708,
+              "choice": "billing"
+            },
+            "q9": {
+              "id": "q9",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9840936064720154,
+                "technical": 0.01590638980269432
+              },
+              "confidence": 0.9840936064720154,
+              "margin": 0.9681872166693211,
+              "choice": "billing"
+            },
+            "q10": {
+              "id": "q10",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9820137619972229,
+                "technical": 0.017986206337809563
+              },
+              "confidence": 0.9820137619972229,
+              "margin": 0.9640275556594133,
+              "choice": "billing"
+            },
+            "q11": {
+              "id": "q11",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9783847332000732,
+                "technical": 0.02161533199250698
+              },
+              "confidence": 0.9783847332000732,
+              "margin": 0.9567694012075663,
+              "choice": "billing"
+            },
+            "q12": {
+              "id": "q12",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9755768775939941,
+                "technical": 0.024423087015748024
+              },
+              "confidence": 0.9755768775939941,
+              "margin": 0.9511537905782461,
+              "choice": "billing"
+            },
+            "q13": {
+              "id": "q13",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q14": {
+              "id": "q14",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9740425944328308,
+                "technical": 0.02595735341310501
+              },
+              "confidence": 0.9740425944328308,
+              "margin": 0.9480852410197258,
+              "choice": "billing"
+            },
+            "q15": {
+              "id": "q15",
+              "type": "choice",
+              "probabilities": {
+                "billing": 0.9669140577316284,
+                "technical": 0.03308597579598427
+              },
+              "confidence": 0.9669140577316284,
+              "margin": 0.9338280819356441,
+              "choice": "billing"
+            }
+          }
+        }
+      ],
+      "summary": {
+        "request_count": 3,
+        "decision_count": 48,
+        "total_measured_ms": 10734.389249999367,
+        "latency_ms": {
+          "p50": 3552.8330829984043,
+          "p95": 3725.876120801695
+        },
+        "requests_per_second": 0.2794756115258422,
+        "decisions_per_second": 4.4716097844134755
+      },
+      "phase_latency_ms": {
+        "prepare_ms": {
+          "p50": 2.84658299642615,
+          "p95": 4.560071403102484
+        },
+        "backbone_forward_ms": {
+          "p50": 3564.2694589987514,
+          "p95": 3671.6625961998943
+        },
+        "projection_softmax_cpu_ms": {
+          "p50": 34.863334003603086,
+          "p95": 44.35893340050825
+        }
+      }
+    }
+  ],
+  "pinned_revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+  "model": {
+    "name": "google/gemma-4-12B-it",
+    "resolved_revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+    "device": "mps",
+    "dtype": "bfloat16",
+    "attn_implementation": "eager",
+    "temperature": 1.0
+  },
+  "dataset_sha256": "e642f9f113c7ec3fc291e342a43906b0740cc50fcc0c7aaa30747fc9488e6f63",
+  "case_ids": [
+    "billing-en",
+    "technical-en",
+    "sentiment-score",
+    "synthetic-image",
+    "synthetic-audio",
+    "synthetic-mixed",
+    "long-state",
+    "sixteen-questions"
+  ],
+  "planned_request_count": 24,
+  "planned_decision_count": 87,
+  "warmup_per_case": 1,
+  "repeat_per_case": 3,
+  "measurement": {
+    "end_to_end": "synchronized full predict; excludes warmup and phase profiling",
+    "phases": "separate forwards; synchronized boundaries add overhead; not an E2E sum",
+    "throughput": "serial successful E2E requests only; decisions count questions",
+    "tokens": "processor-expanded input length, including all question answer slots",
+    "failure_policy": "stop at first error and preserve completed samples"
+  },
+  "memory_snapshots": {
+    "before_profile": {
+      "kind": "snapshot_not_peak",
+      "device": "mps",
+      "unit": "bytes",
+      "current_allocated_memory": 23919476480,
+      "driver_allocated_memory": 24579014656,
+      "recommended_max_memory": 55662788608,
+      "available": true
+    },
+    "after_profile": {
+      "kind": "snapshot_not_peak",
+      "device": "mps",
+      "unit": "bytes",
+      "current_allocated_memory": 23919476480,
+      "driver_allocated_memory": 24681578496,
+      "recommended_max_memory": 55662788608,
+      "available": true
+    },
+    "after_load": {
+      "kind": "snapshot_not_peak",
+      "device": "mps",
+      "unit": "bytes",
+      "current_allocated_memory": 23919476480,
+      "driver_allocated_memory": 24579014656,
+      "recommended_max_memory": 55662788608,
+      "available": true
+    }
+  },
+  "summary": {
+    "request_count": 24,
+    "decision_count": 87,
+    "total_measured_ms": 45303.193460997136,
+    "latency_ms": {
+      "p50": 1423.1866664995323,
+      "p95": 4455.294250049337
+    },
+    "requests_per_second": 0.5297639783531444,
+    "decisions_per_second": 1.9203944215301485,
+    "total_measured_input_tokens": 6861,
+    "request_coverage": 1.0,
+    "decision_coverage": 1.0,
+    "phase_request_count": 24,
+    "phase_coverage": 1.0
+  },
+  "unattempted_case_ids": []
+}
