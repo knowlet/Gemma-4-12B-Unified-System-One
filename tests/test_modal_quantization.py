@@ -129,6 +129,8 @@ def test_public_backend_metadata_records_quantized_adapter(monkeypatch):
         revision="a" * 40,
         temperature=1.2,
         device="cuda",
+        dtype="bfloat16",
+        attn_implementation="sdpa",
         max_context=16384,
         head=SimpleNamespace(weight=SimpleNamespace(dtype="torch.bfloat16")),
         quantization="nf4",
