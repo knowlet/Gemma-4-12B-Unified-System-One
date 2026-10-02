@@ -6,8 +6,8 @@ statistics, multimodal pipelines, matched training and workflow reports. The com
 and report contract below remain v1.
 
 For current results, use the [matched accuracy, memory and latency comparison](comparison.md):
-17 completed model/precision configurations with 29 retained attempts on the fixed
-128-case BoolQ and 52-case media benchmark. It includes local Decider, Kev, AgentJev
+18 completed model/precision configurations with 30 retained attempts on the fixed
+128-case BoolQ and 52-case media benchmark. It includes local Clef, Decider, Kev, AgentJev
 and Laya, Gemma BF16/INT8/NF4, and a separate NF4 training continuation. The
 [Modal reproduction guide](modal.md#reproduce-the-october-1-matched-comparison)
 describes that campaign; the v1 examples below are smaller standalone evaluations.

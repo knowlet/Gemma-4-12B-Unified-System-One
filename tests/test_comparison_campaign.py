@@ -73,20 +73,74 @@ def save_quality(tmp_path, dataset, statuses):
         (tmp_path / f"{name}.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
 
 
-def test_quality_summary_keeps_failures_in_full_case_denominator(tmp_path):
+def test_quality_summary_keeps_failures_in_eligible_case_denominator(tmp_path):
     dataset = cases()
     save_quality(tmp_path, dataset, ["ok", "ok", "error", "not_run"])
     summary = summarize_quality(tmp_path, dataset)
     assert summary["expected"] == summary["recorded"] == 4
     assert summary["valid"] == 2
     assert summary["correct"] == 1
-    assert summary["accuracy"] == 0.25
+    assert summary["accuracy"] is None
+    assert summary["eligible"] == 3
+    assert summary["supported_accuracy"] == pytest.approx(1 / 3)
     assert summary["errors"] == summary["unsupported"] == 1
     assert summary["status"] == "partial"
     assert summary["dataset_sha256"] == fingerprint(dataset)
     assert summary["mean_ms"] == summary["p50_ms"] == 20.0
     assert summary["p99_ms"] == pytest.approx(29.8)
     assert summary["nll"] is not None
+
+
+def test_image_only_support_keeps_audio_quality_unknown(tmp_path):
+    dataset = [
+        case.model_copy(update={"task_id": "mnist" if i < 2 else "fsdd"})
+        for i, case in enumerate(cases())
+    ]
+    save_quality(tmp_path, dataset, ["ok", "ok", "not_run", "not_run"])
+    summary = summarize_quality(tmp_path, dataset)
+    assert summary["expected"] == summary["recorded"] == 4
+    assert summary["eligible"] == summary["valid"] == summary["unsupported"] == 2
+    assert summary["correct"] == 1
+    assert summary["accuracy"] is None
+    assert summary["supported_accuracy"] == 0.5
+    image, audio = summary["by_task"]["mnist"], summary["by_task"]["fsdd"]
+    assert image["accuracy"] == image["supported_accuracy"] == 0.5
+    assert image["native_status"] == "completed"
+    assert audio["correct"] is audio["accuracy"] is audio["supported_accuracy"] is None
+    assert audio["unsupported"] == audio["expected"] == 2
+    assert audio["eligible"] == audio["valid"] == 0
+    assert audio["native_status"] == "unsupported"
+
+
+@pytest.mark.parametrize("first_status,expected", [("ok", "partial_support"), ("error", "partial")])
+def test_partial_media_completion_requires_every_supported_case(
+    tmp_path, monkeypatch, first_status, expected
+):
+    from s1.evaluation import comparison
+
+    config = ROOT / "configs/benchmarks"
+    registry = Registry.load(
+        config / "models.toml", config / "suites.toml", config / "profiles.toml"
+    )
+    base = registry.models["gemma-g4"]
+    spec = base.model_copy(
+        update={
+            "capabilities": base.capabilities.model_copy(update={"modalities": ("text", "image")})
+        }
+    )
+    dataset = cases()
+    monkeypatch.setattr(comparison, "load_cases", lambda _: dataset)
+
+    def execute(current, profile, *, output, **kwargs):
+        assert current.profiles[profile].warmup == 3
+        output.mkdir()
+        statuses = [first_status, "ok", "not_run", "not_run"] if profile == "media" else ["ok"] * 4
+        save_quality(output, dataset, statuses)
+
+    monkeypatch.setattr(comparison, "execute", execute)
+    result = comparison.run_quality(registry, spec, None, tmp_path, tmp_path, ROOT / "uv.lock")
+    assert result["media"]["native_status"] == expected
+    assert result["media"]["unsupported"] == 2
 
 
 def test_unsupported_media_has_no_manufactured_zero_accuracy(tmp_path):
@@ -117,8 +171,8 @@ def test_every_predeclared_model_has_executable_precision_policy():
         config / "models.toml", config / "suites.toml", config / "profiles.toml"
     )
     specs = campaign_specs(registry, "/saved-adapters")
-    assert len(specs) == 14
-    assert len({spec.id for spec in specs}) == 14
+    assert len(specs) == 15
+    assert len({spec.id for spec in specs}) == 15
     for spec in specs:
         ModelSpec.model_validate(spec.model_dump())
         profile = ProfileSpec(id="quality", suite="boolq", models=(spec.id,))

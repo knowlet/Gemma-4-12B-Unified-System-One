@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "campaign_id": "20261002-clef-01",
+  "model_id": "clef-local",
+  "checkpoint": "Cloudflare/clef",
+  "revision": "2f3de3dd85f379784083b0814d997ab627200f0c",
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "source_campaign": "artifacts/comparison/20261002-clef-01/campaign.json",
+  "source_campaign_sha256": "e2efa14d249eaa342740fbf214ca0170fab23c0fa4066aeb99d3c2d7e2d478aa",
+  "source_directory": "artifacts/comparison/20261002-clef-01/clef-local",
+  "files": [
+    {
+      "path": "clef-local/receipt.json",
+      "source_artifact": "receipt.json",
+      "bytes": 14059,
+      "sha256": "c1d93913343a5536e39f0d5ba5d00a0f5de254898ce66c60a281dac3a0531496"
+    },
+    {
+      "path": "clef-local/boolq/predictions.jsonl",
+      "source_artifact": "boolq/predictions.jsonl",
+      "bytes": 103200,
+      "sha256": "a95e1441c0e59c74722f18c570df00a49b8bfd77ec49f76d42c7430405cd8ee3"
+    },
+    {
+      "path": "clef-local/boolq/run_manifest.json",
+      "source_artifact": "boolq/run_manifest.json",
+      "bytes": 55567,
+      "sha256": "b9b6e1ff2d53685db185cdf0c5eca9412d0473076260a2b97041df1299e517e5"
+    },
+    {
+      "path": "clef-local/media/predictions.jsonl",
+      "source_artifact": "media/predictions.jsonl",
+      "bytes": 53037,
+      "sha256": "13c89329542becad8190767936f97751b73b5c73b0213235ea54e87617f45534"
+    },
+    {
+      "path": "clef-local/media/run_manifest.json",
+      "source_artifact": "media/run_manifest.json",
+      "bytes": 25462,
+      "sha256": "b4b21970f5c9567d70af486e91ae137c19e45747a7315055512cd127722d16f5"
+    }
+  ],
+  "published_bytes": 423630,
+  "copy_policy": "Original bytes, without JSON reformatting; prediction/manifests verified against receipt artifact_sha256.",
+  "media_population": {
+    "total": 52,
+    "eligible_images": 32,
+    "unsupported_audio": 20,
+    "valid_images": 32,
+    "correct_images": 27,
+    "full_population_accuracy": null
+  },
+  "historical_summary": "docs/validation/2026-10-01/comparison-summary.json",
+  "historical_summary_sha256": "90ec50618bed0e531881b6306157a12e852ece901be30d0bd5c12f685a40f8c2",
+  "historical_campaign_sources_verified": 11,
+  "modal": {
+    "volume": "gemma-unified-system-one",
+    "path": "/comparisons/20261002-clef-01/clef-local",
+    "app_id": "ap-dIEOA1B4rkxHIYU6JN2ueB",
+    "call_id": "fc-01M3XJCNTFREKQNA5D3EYYRN9H"
+  },
+  "omitted_artifacts": "Full requests, errors, six load-cell records and manifests remain in the Modal volume and downloaded source directory; their hashes are retained in receipt.json.",
+  "reference": {
+    "model_id": "gemma-base-bf16",
+    "source_campaign": "artifacts/comparison/20261001-gemma-pilot-02/campaign.json",
+    "source_campaign_sha256": "d93b22e9a6e9f57fc5c614f33f5d73c4746dd3fef02556e36c9b7df823275610",
+    "source_directory": "artifacts/comparison/20261001-gemma-pilot-02/gemma-base-bf16",
+    "files": [
+      {
+        "path": "clef-reference-base-bf16/receipt.json",
+        "source_artifact": "receipt.json",
+        "bytes": 12872,
+        "sha256": "01607aff0412d04f43ff44cd87a4696213869e5aa2de505e7836d9a20d301fe1"
+      },
+      {
+        "path": "clef-reference-base-bf16/boolq/predictions.jsonl",
+        "source_artifact": "boolq/predictions.jsonl",
+        "bytes": 104524,
+        "sha256": "3d57bfc33aeb9b355450ee514396298253771ab7ce5bbf407868bd32c79a1b4c"
+      },
+      {
+        "path": "clef-reference-base-bf16/boolq/run_manifest.json",
+        "source_artifact": "boolq/run_manifest.json",
+        "bytes": 54909,
+        "sha256": "71a71d496b98344e88a58a38fe6ae6e8792090a2c2882b28bb1c4eebc8f35fae"
+      }
+    ]
+  }
+}

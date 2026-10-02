@@ -130,6 +130,7 @@ def _configuration_blockers(
         "decider",
         "kev",
         "agentjev",
+        "clef",
         "embedding",
         "nli",
         "cross_encoder",

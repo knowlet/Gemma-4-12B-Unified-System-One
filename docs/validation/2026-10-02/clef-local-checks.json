@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-02T14:07:27.937343+08:00",
+  "environment": {
+    "python": "3.12.13",
+    "platform": "Linux-6.17.0-1026-nvidia-aarch64-with-glibc2.39"
+  },
+  "pytest": {
+    "command": "uv run --no-sync pytest -q",
+    "passed": 660,
+    "skipped": 13,
+    "warnings": 1,
+    "seconds": 8.12,
+    "log_sha256": "969b42d218da2807739ee4553140112f4a38a21bdd38fd996d5b20d8b6a4c36f",
+    "skip_scope": "Optional inference/baseline dependencies absent from the lightweight environment, including one Pillow test."
+  },
+  "clef_with_inference_dependencies": {
+    "command": "PYTHONPATH=src /tmp/moa-model-env/bin/python -m pytest -q tests/evaluation/test_clef.py",
+    "passed": 16,
+    "skipped": 0,
+    "seconds": 0.34,
+    "log_sha256": "82b57a32cf2a6790a70040cb9eb52b4e2571a7b283c95c69a982acd880870d84",
+    "scope": "Includes real Pillow pixel/timestamp decoding; model boundaries use test doubles. Full-checkpoint CUDA execution is recorded separately."
+  },
+  "checks": {
+    "ruff_check": "passed",
+    "ruff_format_check": "100 files already formatted",
+    "build": "passed: wheel and sdist",
+    "uniform_benchmark": "passed",
+    "evaluation_smoke_plan": "passed",
+    "evaluation_text_smoke": "completed",
+    "benchmark_v2_offline_acceptance": "passed",
+    "git_diff_check": "passed"
+  },
+  "live": {
+    "campaign_id": "20261002-clef-01",
+    "receipt": "clef-local/receipt.json",
+    "receipt_sha256": "c1d93913343a5536e39f0d5ba5d00a0f5de254898ce66c60a281dac3a0531496",
+    "artifact_hashes_verified": 17,
+    "gpu": "NVIDIA A100-SXM4-80GB",
+    "packages": {
+      "torch": "2.8.0",
+      "transformers": "5.17.0",
+      "peft": "0.21.0",
+      "bitsandbytes": "0.50.2",
+      "laya": "0.3.21"
+    },
+    "boolq_valid": 128,
+    "boolq_correct": 115,
+    "image_valid": 32,
+    "image_correct": 27,
+    "audio_unsupported": 20,
+    "load_cells": 6,
+    "load_requests": 768,
+    "load_successful": 768,
+    "load_slo_misses": 317,
+    "status": "completed",
+    "modal_app_id": "ap-dIEOA1B4rkxHIYU6JN2ueB",
+    "modal_app_state": "stopped",
+    "modal_remaining_tasks": 0
+  },
+  "scope": "Local validation and a single fixed-checkpoint live Clef run. Historical results retain their original receipts; optional dependency skips are not model quality evidence.",
+  "final_preflight": {
+    "checked_at": "2026-10-02T14:07:27.936355+08:00",
+    "ruff_check": "passed",
+    "ruff_format_check": "100 files already formatted",
+    "build": "passed: wheel and sdist",
+    "published_evidence_files": 8,
+    "published_evidence_bytes": 423630,
+    "paired_interval_replayed": "exact estimate and interval match from repository files",
+    "historical_summary_unchanged": true,
+    "combined_summary_sha256": "94af96cc0d5f6184f3eb9ca2ffbbcd19efd9dd599271359084d39906818725b8",
+    "selected_models": 18,
+    "retained_attempts": 30,
+    "paired_comparisons": 14
+  }
+}

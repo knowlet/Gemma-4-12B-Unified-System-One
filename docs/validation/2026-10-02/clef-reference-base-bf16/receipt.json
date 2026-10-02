@@ -1,0 +1,343 @@
+{
+  "model_id": "gemma-base-bf16",
+  "checkpoint": "google/gemma-4-12B-it",
+  "revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+  "precision": "bfloat16",
+  "quantization": "none",
+  "adapter_sha256": null,
+  "status": "completed",
+  "error": null,
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "boolq": {
+    "expected": 128,
+    "recorded": 128,
+    "valid": 128,
+    "correct": 111,
+    "accuracy": 0.8671875,
+    "status": "completed",
+    "dataset_sha256": "7bdb25dc3d8a0371bb73909fe55597de86f66e808bc42d1a5a1cb17d08f44d41",
+    "errors": 0,
+    "unsupported": 0,
+    "nll": 0.38427099267028175,
+    "brier_sum": 0.21396227712748897,
+    "ece_15": 0.08483035247354573,
+    "p50_ms": 87.73534250000381,
+    "p95_ms": 91.36128810000024,
+    "p99_ms": 92.94039527999672,
+    "mean_ms": 87.66550585937483,
+    "latency_scope": "CUDA-synchronized adapter wall time; excludes setup and warmup",
+    "by_task": {
+      "boolq": {
+        "expected": 128,
+        "valid": 128,
+        "correct": 111
+      }
+    }
+  },
+  "media": {
+    "expected": 52,
+    "recorded": 52,
+    "valid": 52,
+    "correct": 34,
+    "accuracy": 0.6538461538461539,
+    "status": "completed",
+    "dataset_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35",
+    "errors": 0,
+    "unsupported": 0,
+    "nll": 1.088442454249144,
+    "brier_sum": 0.4611372383010653,
+    "ece_15": 0.1504705365464461,
+    "p50_ms": 114.33678799999925,
+    "p95_ms": 117.61910530000002,
+    "p99_ms": 118.55367867000027,
+    "mean_ms": 106.57735771153787,
+    "latency_scope": "CUDA-synchronized adapter wall time; excludes setup and warmup",
+    "by_task": {
+      "fsdd": {
+        "expected": 20,
+        "valid": 20,
+        "correct": 6
+      },
+      "mnist": {
+        "expected": 32,
+        "valid": 32,
+        "correct": 28
+      }
+    },
+    "native_status": "completed"
+  },
+  "memory": {
+    "process_peak_rss_bytes": 29447491584,
+    "process_peak_rss_kib": 28757316.0,
+    "process_peak_scope": "process_lifetime",
+    "model_footprint_bytes": 23919463522,
+    "model_footprint_scope": "registered_parameters_and_buffers",
+    "gpu_name": "NVIDIA A100 80GB PCIe",
+    "gpu_total_bytes": 85094825984,
+    "device_used_bytes": 25722421248,
+    "allocated_bytes": 24345341952,
+    "reserved_bytes": 24838668288,
+    "peak_allocated_bytes": 24452161536,
+    "peak_reserved_bytes": 24838668288,
+    "cuda_peak_scope": "post_load_quality_warmup_media_and_http_load",
+    "host_rss_bytes": 29447491584
+  },
+  "load": [
+    {
+      "id": "closed_loop-c1-n128",
+      "arrival": "closed_loop",
+      "concurrency": 1,
+      "arrival_rate": null,
+      "requests": 128,
+      "successful": 128,
+      "slo_misses": 0,
+      "completed_backend_calls": 128,
+      "p50_ms": 92.31061799999196,
+      "p95_ms": 99.48362379999907,
+      "p99_ms": 103.66028216999467,
+      "mean_ms": 93.04256485156333,
+      "systems": {
+        "measurement_seconds": 11.922220551000002,
+        "requests_per_second": 10.73625499985099,
+        "decisions_per_second": 10.73625499985099,
+        "correct_within_slo_per_second": 9.31034613268328,
+        "critical_correct_within_slo_requests_per_second": null,
+        "deadline_misses": 0,
+        "dispatch_lag_p95_ms": 0.0,
+        "successful_p99_ms": 103.66028216999467,
+        "p99_precision": "screening_only",
+        "timeout_observations": "censored; excluded from successful latency percentiles"
+      },
+      "scope": "same 128 BoolQ cases; real loopback HTTP; serialized model; no result cache; screening p99"
+    },
+    {
+      "id": "closed_loop-c4-n128",
+      "arrival": "closed_loop",
+      "concurrency": 4,
+      "arrival_rate": null,
+      "requests": 128,
+      "successful": 128,
+      "slo_misses": 0,
+      "completed_backend_calls": 128,
+      "p50_ms": 378.90793100000764,
+      "p95_ms": 403.2600078499989,
+      "p99_ms": 440.5881303800021,
+      "mean_ms": 377.7999436484387,
+      "systems": {
+        "measurement_seconds": 12.232818342000002,
+        "requests_per_second": 10.463655751391848,
+        "decisions_per_second": 10.463655751391848,
+        "correct_within_slo_per_second": 9.073951471910117,
+        "critical_correct_within_slo_requests_per_second": null,
+        "deadline_misses": 0,
+        "dispatch_lag_p95_ms": 0.0,
+        "successful_p99_ms": 440.5881303800021,
+        "p99_precision": "screening_only",
+        "timeout_observations": "censored; excluded from successful latency percentiles"
+      },
+      "scope": "same 128 BoolQ cases; real loopback HTTP; serialized model; no result cache; screening p99"
+    },
+    {
+      "id": "closed_loop-c16-n128",
+      "arrival": "closed_loop",
+      "concurrency": 16,
+      "arrival_rate": null,
+      "requests": 128,
+      "successful": 128,
+      "slo_misses": 119,
+      "completed_backend_calls": 128,
+      "p50_ms": 1517.1284910000081,
+      "p95_ms": 1668.7156505000046,
+      "p99_ms": 1680.9172156399966,
+      "mean_ms": 1459.8603170156248,
+      "systems": {
+        "measurement_seconds": 12.466009810000003,
+        "requests_per_second": 10.267920686001768,
+        "decisions_per_second": 10.267920686001768,
+        "correct_within_slo_per_second": 0.5615269125157217,
+        "critical_correct_within_slo_requests_per_second": null,
+        "deadline_misses": 119,
+        "dispatch_lag_p95_ms": 0.0,
+        "successful_p99_ms": 1680.9172156399966,
+        "p99_precision": "screening_only",
+        "timeout_observations": "censored; excluded from successful latency percentiles"
+      },
+      "scope": "same 128 BoolQ cases; real loopback HTTP; serialized model; no result cache; screening p99"
+    },
+    {
+      "id": "closed_loop-c64-n128",
+      "arrival": "closed_loop",
+      "concurrency": 64,
+      "arrival_rate": null,
+      "requests": 128,
+      "successful": 128,
+      "slo_misses": 121,
+      "completed_backend_calls": 128,
+      "p50_ms": 6067.956336000001,
+      "p95_ms": 6461.072510950001,
+      "p99_ms": 6509.69246621,
+      "mean_ms": 4878.518853820313,
+      "systems": {
+        "measurement_seconds": 12.785984223,
+        "requests_per_second": 10.010961828792803,
+        "decisions_per_second": 10.010961828792803,
+        "correct_within_slo_per_second": 0.3128425571497751,
+        "critical_correct_within_slo_requests_per_second": null,
+        "deadline_misses": 121,
+        "dispatch_lag_p95_ms": 0.0,
+        "successful_p99_ms": 6509.69246621,
+        "p99_precision": "screening_only",
+        "timeout_observations": "censored; excluded from successful latency percentiles"
+      },
+      "scope": "same 128 BoolQ cases; real loopback HTTP; serialized model; no result cache; screening p99"
+    },
+    {
+      "id": "fixed-c16-n128",
+      "arrival": "fixed",
+      "concurrency": 16,
+      "arrival_rate": 5.0,
+      "requests": 128,
+      "successful": 128,
+      "slo_misses": 0,
+      "completed_backend_calls": 128,
+      "p50_ms": 97.16896250001383,
+      "p95_ms": 102.34282465005577,
+      "p99_ms": 106.42782789001048,
+      "mean_ms": 97.43262729689084,
+      "systems": {
+        "measurement_seconds": 25.500645699000003,
+        "requests_per_second": 5.0194807422080086,
+        "decisions_per_second": 5.0194807422080086,
+        "correct_within_slo_per_second": 4.3528309561335075,
+        "critical_correct_within_slo_requests_per_second": null,
+        "deadline_misses": 0,
+        "dispatch_lag_p95_ms": 1.1681562500172047,
+        "successful_p99_ms": 106.42782789001048,
+        "p99_precision": "screening_only",
+        "timeout_observations": "censored; excluded from successful latency percentiles"
+      },
+      "scope": "same 128 BoolQ cases; real loopback HTTP; serialized model; no result cache; screening p99"
+    },
+    {
+      "id": "poisson-c16-n128",
+      "arrival": "poisson",
+      "concurrency": 16,
+      "arrival_rate": 5.0,
+      "requests": 128,
+      "successful": 128,
+      "slo_misses": 0,
+      "completed_backend_calls": 128,
+      "p50_ms": 106.04882846379837,
+      "p95_ms": 308.4670254876897,
+      "p99_ms": 364.6153267896356,
+      "mean_ms": 147.0858715306962,
+      "systems": {
+        "measurement_seconds": 25.725025598000002,
+        "requests_per_second": 4.975699616405878,
+        "decisions_per_second": 4.975699616405878,
+        "correct_within_slo_per_second": 4.314864511101972,
+        "critical_correct_within_slo_requests_per_second": null,
+        "deadline_misses": 0,
+        "dispatch_lag_p95_ms": 1.3683932285204028,
+        "successful_p99_ms": 364.6153267896356,
+        "p99_precision": "screening_only",
+        "timeout_observations": "censored; excluded from successful latency percentiles"
+      },
+      "scope": "same 128 BoolQ cases; real loopback HTTP; serialized model; no result cache; screening p99"
+    }
+  ],
+  "artifacts": {
+    "receipt": "receipt.json",
+    "predictions": "boolq/predictions.jsonl",
+    "media_predictions": "media/predictions.jsonl",
+    "load": "load-summary.json"
+  },
+  "dataset": {
+    "sha256": "7bdb25dc3d8a0371bb73909fe55597de86f66e808bc42d1a5a1cb17d08f44d41",
+    "cases": 128,
+    "media_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35",
+    "media_comparability": "exact52 archived requests, case IDs, labels and historical dataset fingerprint",
+    "files": {
+      "text-test.jsonl": {
+        "cases": 128,
+        "sha256": "7bdb25dc3d8a0371bb73909fe55597de86f66e808bc42d1a5a1cb17d08f44d41"
+      },
+      "media-test.jsonl": {
+        "cases": 52,
+        "sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35"
+      }
+    },
+    "split_audit": {
+      "valid": true,
+      "split_counts": {
+        "train": 256,
+        "calibration": 16,
+        "test": 180
+      },
+      "overlaps": []
+    }
+  },
+  "started_at_unix": 1790825833.473735,
+  "lock_sha256": "fb43de38bff10ccc91c11db31ebe6bfc7812c97def91243345e856887e7230cd",
+  "packages": {
+    "torch": "2.8.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.0",
+    "bitsandbytes": "0.50.2",
+    "laya": "0.3.21"
+  },
+  "load_seconds": 35.307839525,
+  "telemetry": {
+    "revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+    "device": "cuda",
+    "precision": "bfloat16",
+    "temperature": 1.0,
+    "context_limit": 16384,
+    "context_policy": "reject",
+    "quantization": "none",
+    "quantization_details": {
+      "method": "none",
+      "quantized_linear_modules": 0
+    }
+  },
+  "loading_memory": {
+    "process_peak_rss_bytes": 29447491584,
+    "process_peak_rss_kib": 28757316.0,
+    "process_peak_scope": "process_lifetime",
+    "model_footprint_bytes": 23919463522,
+    "model_footprint_scope": "registered_parameters_and_buffers",
+    "gpu_name": "NVIDIA A100 80GB PCIe",
+    "gpu_total_bytes": 85094825984,
+    "device_used_bytes": 24694816768,
+    "allocated_bytes": 23996035072,
+    "reserved_bytes": 24249368576,
+    "peak_allocated_bytes": 23996035072,
+    "peak_reserved_bytes": 24249368576,
+    "cuda_peak_scope": "since_last_reset_or_process_start"
+  },
+  "elapsed_seconds": 156.732849231,
+  "acceptance": {
+    "status": "not_applicable"
+  },
+  "artifact_sha256": {
+    "boolq/errors.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "boolq/predictions.jsonl": "3d57bfc33aeb9b355450ee514396298253771ab7ce5bbf407868bd32c79a1b4c",
+    "boolq/requests.jsonl": "476cb7181854ba17442014ae8423bd97646f0311b44fda79adfbcfcc326daeb9",
+    "boolq/run_manifest.json": "71a71d496b98344e88a58a38fe6ae6e8792090a2c2882b28bb1c4eebc8f35fae",
+    "boolq/summary.json": "9bf84c4570215c348b296fed5b049ad5d5fb657099f2c0b65fa74d715a776630",
+    "closed_loop-c1-n128.jsonl": "a32237d6bbea3c1dfca245381a4021cfc74a676c7c3caf85a417aa50182d2ab1",
+    "closed_loop-c16-n128.jsonl": "4a694d37b9fe691e66d2027bf235bcc1def7383c53275ded5aa58fd3df69cb68",
+    "closed_loop-c4-n128.jsonl": "1f53ad1347dd5d020fa34cb132c698a6e1f9fb30d744ddf1781ad2b77354378b",
+    "closed_loop-c64-n128.jsonl": "752eb5705197610d82b6079bbeb5be6770b8f8bd360ac0da52b4c1f0d92be89a",
+    "fixed-c16-n128.jsonl": "28ea769119a61c11ee56d880078a5a54322e1451462ea16f2e77633434b1205e",
+    "load-summary.json": "9040ae7ccc96f095cb71661d4e26d5344a9c9130cc27b39de38d52acc50364fd",
+    "media/errors.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "media/predictions.jsonl": "d7711c8057f4322fbb9ad045f895f1f51707efc9501e169608459114e32ed76b",
+    "media/requests.jsonl": "9e5db97e5d178224db73311222c3f61ff1403f3b742dcd62cd3b4155c22c2c6f",
+    "media/run_manifest.json": "9cd2472e85544eaac025688f5ccb03fc981a0f77b4be141b334a34b00870c489",
+    "media/summary.json": "e274cae02d0dd7d3696770f8f46c9c058ff152f229b493991a888f2ff0cafe29",
+    "poisson-c16-n128.jsonl": "3bde12d4fd3b98acdecc4795e9124076a7d6746abb192b2650bb7dce8eb2757a"
+  },
+  "modal_call_id": "fc-01M3TRK0Q1JVW4H96KA6J89ZTB",
+  "modal_app_id": "ap-Z378KbORETD2GZbQmpH6gg"
+}

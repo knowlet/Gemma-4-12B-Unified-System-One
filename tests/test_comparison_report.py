@@ -138,6 +138,97 @@ def test_complete_measured_row_keeps_latency_and_memory_boundaries():
     assert result["memory"]["model_footprint_bytes"] == 7_000_000_000
 
 
+def partial_media_campaign():
+    data = campaign()
+    data["dataset"]["media_sha256"] = "media-fixed-hash"
+    data["runs"][0]["model_id"] = "clef-local"
+    data["runs"][0]["media"] = {
+        "expected": 52,
+        "recorded": 52,
+        "eligible": 32,
+        "unsupported": 20,
+        "valid": 32,
+        "correct": 28,
+        "accuracy": None,
+        "supported_accuracy": 28 / 32,
+        "native_status": "partial_support",
+        "by_task": {
+            "mnist": {
+                "expected": 32,
+                "eligible": 32,
+                "unsupported": 0,
+                "valid": 32,
+                "correct": 28,
+                "accuracy": 28 / 32,
+                "native_status": "completed",
+            },
+            "fsdd": {
+                "expected": 20,
+                "eligible": 0,
+                "unsupported": 20,
+                "valid": 0,
+                "correct": None,
+                "accuracy": None,
+                "native_status": "unsupported",
+            },
+        },
+    }
+    return data
+
+
+def test_partial_media_support_reports_image_quality_and_no_audio_accuracy(tmp_path):
+    data = partial_media_campaign()
+    original = json.loads(json.dumps(data))
+    history = historical()
+    source = tmp_path / "historical.json"
+    source.write_text(json.dumps(history))
+    summary = REPORT.build_summary(history, data)
+    media = summary["runs"][0]["media"]
+    assert media["accuracy"] is None
+    assert media["supported_accuracy"] == 28 / 32
+    assert media["by_task"]["fsdd"]["accuracy"] is None
+    assert data == original
+    rendered = REPORT.render(summary, history, source, None, tmp_path / "report.md")
+    assert "28/32 (87.50%) | unsupported (20 cases)" in rendered
+    assert "supported subset 87.50% (28/32; valid 32); 20/52 unsupported" in rendered
+    assert "0/20 (0.00%)" not in rendered
+    assert "28/52" not in rendered
+
+
+def test_supported_media_errors_remain_in_eligible_denominator():
+    data = partial_media_campaign()
+    media = data["runs"][0]["media"]
+    media["valid"] = media["by_task"]["mnist"]["valid"] = 31
+    media["native_status"] = media["by_task"]["mnist"]["native_status"] = "partial"
+    summary = REPORT.build_summary(historical(), data)
+    assert summary["runs"][0]["media"]["supported_accuracy"] == 28 / 32
+    assert summary["runs"][0]["media"]["by_task"]["mnist"]["accuracy"] == 28 / 32
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"accuracy": 28 / 52},
+        {"eligible": 31},
+        {"valid": 33},
+        {"supported_accuracy": 28 / 31},
+        {"correct": None},
+    ],
+)
+def test_partial_media_rejects_wrong_denominators_or_missing_evidence(changes):
+    data = partial_media_campaign()
+    data["runs"][0]["media"].update(changes)
+    with pytest.raises(ValueError):
+        REPORT.build_summary(historical(), data)
+
+
+def test_partial_media_quality_still_requires_original_media_fingerprint():
+    data = partial_media_campaign()
+    del data["dataset"]["media_sha256"]
+    with pytest.raises(ValueError, match="media dataset hash"):
+        REPORT.build_summary(historical(), data)
+
+
 def seeded_campaign(quantized_mode="nf4"):
     runs = []
     for mode in ("bf16", quantized_mode):
