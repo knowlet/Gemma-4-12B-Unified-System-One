@@ -41,6 +41,7 @@ class ModelSpec(ConfigModel):
         "decider",
         "kev",
         "agentjev",
+        "clef",
         "http",
         "tfidf",
         "prior",

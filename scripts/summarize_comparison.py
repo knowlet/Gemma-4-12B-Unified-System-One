@@ -151,16 +151,41 @@ def historical_rows(historical: dict) -> list[dict]:
     return rows
 
 
-def _validate_observation(value: dict, expected: int, label: str) -> dict:
+def _validate_observation(
+    value: dict, expected: int, label: str, *, allow_partial_support: bool = False
+) -> dict:
     """Recompute operational accuracy and reject ambiguous/contradictory counts."""
     result = dict(value)
     denominator = result.get("expected", expected)
     if denominator != expected:
         raise ValueError(f"{label}: expected {expected} decisions, got {denominator}")
     result["expected"] = denominator
+    unsupported = result.get("unsupported", 0)
+    if allow_partial_support and (not isinstance(unsupported, int) or unsupported < 0):
+        raise ValueError(f"{label}: unsupported count must be a nonnegative integer")
+    eligible = result.get("eligible", denominator - unsupported)
+    if allow_partial_support:
+        if any(not isinstance(v, int) or v < 0 for v in (unsupported, eligible)) or (
+            unsupported + eligible != denominator
+        ):
+            raise ValueError(f"{label}: inconsistent supported/unsupported counts")
+        if unsupported:
+            result["eligible"] = eligible
+            if result.get("accuracy") is not None:
+                raise ValueError(f"{label}: partial support cannot report full-population accuracy")
+            result["accuracy"] = None
+            valid = result.get("valid")
+            if valid is not None and valid > eligible:
+                raise ValueError(f"{label}: valid answers exceed supported decisions")
     counts = [result.get(key) for key in ("correct", "valid", "recorded")]
     if any(v is not None and (not isinstance(v, int) or v < 0) for v in counts):
         raise ValueError(f"{label}: counts must be nonnegative integers")
+    if (
+        allow_partial_support
+        and result.get("supported_accuracy") is not None
+        and any(v is None for v in counts)
+    ):
+        raise ValueError(f"{label}: supported accuracy requires complete decision counts")
     if all(v is not None for v in counts):
         correct, valid, recorded = counts
         if not correct <= valid <= recorded <= denominator:
@@ -169,9 +194,94 @@ def _validate_observation(value: dict, expected: int, label: str) -> dict:
         supplied = result.get("accuracy")
         if supplied is not None and not math.isclose(supplied, accuracy, abs_tol=1e-9):
             raise ValueError(f"{label}: accuracy must retain the full expected denominator")
-        result["accuracy"] = accuracy
+        if allow_partial_support and unsupported:
+            supported_accuracy = correct / eligible if eligible else None
+            supplied = result.get("supported_accuracy")
+            if supplied is not None and (
+                supported_accuracy is None
+                or not math.isclose(supplied, supported_accuracy, abs_tol=1e-9)
+            ):
+                raise ValueError(
+                    f"{label}: supported accuracy must retain the eligible denominator"
+                )
+            result["supported_accuracy"] = supported_accuracy
+        else:
+            result["accuracy"] = accuracy
     elif result.get("accuracy") is not None:
         raise ValueError(f"{label}: accuracy requires correct, valid, and recorded counts")
+    return result
+
+
+def _has_media_observations(value: dict) -> bool:
+    return (
+        any(
+            value.get(key) is not None
+            for key in ("correct", "accuracy", "supported_accuracy", "mean_ms", "p99_ms")
+        )
+        or any(isinstance(value.get(key), int) and value[key] > 0 for key in ("recorded", "valid"))
+        or any(_has_media_observations(task) for task in (value.get("by_task") or {}).values())
+    )
+
+
+def _validate_media(value: dict, expected: int, label: str) -> dict:
+    def support_counts(row, count, parent=None):
+        row = dict(row)
+        if "unsupported" not in row:
+            if "eligible" in row:
+                if not isinstance(row["eligible"], int):
+                    raise ValueError(f"{label}: eligible count must be an integer")
+                row["unsupported"] = count - row["eligible"]
+            elif parent and parent["eligible"] == 0:
+                row["unsupported"] = count
+            elif parent and parent["unsupported"]:
+                raise ValueError(f"{label}: partial media support requires per-task eligibility")
+            else:
+                row["unsupported"] = 0
+        if not isinstance(row["unsupported"], int):
+            raise ValueError(f"{label}: unsupported count must be an integer")
+        row.setdefault("eligible", count - row["unsupported"])
+        return row
+
+    result = _validate_observation(
+        support_counts(value, expected), expected, label, allow_partial_support=True
+    )
+    measured = _has_media_observations(value)
+    tasks = value.get("by_task") or {}
+    if set(tasks) - {"mnist", "fsdd"} or (measured and set(tasks) != {"mnist", "fsdd"}):
+        raise ValueError(f"{label}: measured media requires both fixed tasks, mnist and fsdd")
+    result["by_task"] = {}
+    for task, task_expected in (("mnist", 32), ("fsdd", 20)):
+        if task not in tasks:
+            continue
+        task_value = support_counts(tasks[task], task_expected, result)
+        # Legacy task summaries used expected as their recorded task count.
+        if measured:
+            task_value.setdefault("recorded", task_value.get("expected"))
+        result["by_task"][task] = _validate_observation(
+            task_value, task_expected, f"{label}/{task}", allow_partial_support=True
+        )
+    if not measured:
+        return result
+    for row in (result, *result["by_task"].values()):
+        if row.get("recorded") is None or row.get("valid") is None:
+            raise ValueError(f"{label}: measured media requires complete aggregate and task counts")
+        if (
+            not 0 <= row["valid"] <= row["recorded"] <= row["expected"]
+            or row["valid"] > row["eligible"]
+        ):
+            raise ValueError(f"{label}: inconsistent aggregate or task coverage")
+        if row["valid"] and row.get("correct") is None:
+            raise ValueError(f"{label}: valid media answers require correct counts")
+    if result.get("correct") is None and any(
+        task["eligible"] > 0
+        and any(task.get(key) is not None for key in ("correct", "accuracy", "supported_accuracy"))
+        for task in result["by_task"].values()
+    ):
+        raise ValueError(f"{label}: measured task quality requires an aggregate correct count")
+    for key in ("recorded", "eligible", "unsupported", "valid", "correct"):
+        total = sum(task.get(key) or 0 for task in result["by_task"].values())
+        if (result.get(key) or 0) != total:
+            raise ValueError(f"{label}: task {key} total differs from aggregate")
     return result
 
 
@@ -324,15 +434,14 @@ def build_summary(historical: dict, campaign: dict | None) -> dict:
         run["boolq"] = _validate_observation(source.get("boolq") or {}, expected, run["model_id"])
         if run["boolq"].get("accuracy") is not None and not actual_hash:
             raise ValueError("measured campaign BoolQ results require the dataset hash")
-        run["media"] = _validate_observation(
-            source.get("media") or {}, media_expected, f"{run['model_id']} media"
-        )
+        raw_media = source.get("media") or {}
         media_hash = dataset.get("media_sha256")
-        if run["media"].get("accuracy") is not None:
+        if _has_media_observations(raw_media):
             if not media_hash:
                 raise ValueError("measured campaign media results require the media dataset hash")
             if media_hash != media.get("dataset_sha256"):
                 raise ValueError("campaign media dataset hash differs from the historical 52 cases")
+        run["media"] = _validate_media(raw_media, media_expected, f"{run['model_id']} media")
         run["memory"] = {
             key: (source.get("memory") or {}).get(key)
             for key in (
@@ -402,6 +511,20 @@ def _accuracy(value: dict | None) -> str:
     return result
 
 
+def _media_accuracy(value: dict) -> str:
+    if value.get("native_status") in ("unsupported", "not_supported"):
+        return "unsupported native media"
+    if value.get("unsupported", 0):
+        if value.get("supported_accuracy") is None:
+            return "supported subset not measured; unsupported media present"
+        return (
+            f"supported subset {_pct(value['supported_accuracy'])} "
+            f"({value['correct']}/{value['eligible']}; valid {value['valid']}); "
+            f"{value['unsupported']}/{value['expected']} unsupported"
+        )
+    return _accuracy(value)
+
+
 def _table(headers: list[str], rows: list[list]) -> list[str]:
     return [
         "| " + " | ".join(headers) + " |",
@@ -415,6 +538,22 @@ def practical_takeaways(summary: dict) -> list[str]:
     runs = {row["model_id"]: row for row in summary["runs"]}
     groups = {row["format"]: row for row in summary["seed_aggregates"]}
     points = []
+    clef = runs.get("clef-local")
+    if clef and clef["boolq"].get("accuracy") is not None:
+        mnist = clef["media"].get("by_task", {}).get("mnist", {})
+        image_statement = (
+            "Its image result is reported over the 32 MNIST cases; native audio is unsupported. "
+            if mnist.get("accuracy") is not None
+            else "The Clef protocol covers 32 MNIST cases and marks native audio unsupported; "
+            "no MNIST accuracy is recorded in this snapshot. "
+        )
+        points.append(
+            f"- Clef records {_pct(clef['boolq']['accuracy'])} BoolQ accuracy, "
+            f"{_number(clef['boolq'].get('mean_ms'))} ms serial mean latency, and "
+            f"{_memory(clef['memory']['peak_allocated_bytes'])} GB (GiB) peak CUDA allocation. "
+            + image_statement
+            + "The matched BoolQ comparison against Gemma base is shown separately from media coverage."
+        )
     bf16 = groups.get("bf16", {})
     base, decider, laya = (
         runs.get(name, {}) for name in ("gemma-base-bf16", "decider-local", "laya-general")
@@ -553,9 +692,7 @@ def render(
     for run in summary["runs"]:
         quality, mem = run["boolq"], run["memory"]
         media = run["media"]
-        media_text = _accuracy(media)
-        if media.get("native_status") in ("unsupported", "not_supported"):
-            media_text = "unsupported native media"
+        media_text = _media_accuracy(media)
         closed_loop = {
             cell.get("concurrency"): cell
             for cell in run["load"]
@@ -623,15 +760,43 @@ def render(
     for run in summary["runs"]:
         if run.get("reason"):
             lines.append(f"- `{_cell(run['model_id'])}`: {_cell(run['reason'])}.")
+    clef_run = next((run for run in summary["runs"] if run["model_id"] == "clef-local"), None)
+    if clef_run:
+        completed_measurement = clef_run.get("status") in (
+            "completed",
+            "completed_with_errors",
+        ) and any(
+            observed.get(key) is not None
+            for observed in (clef_run["boolq"], clef_run["media"])
+            for key in ("accuracy", "supported_accuracy")
+        )
+        lines.extend(
+            [
+                "Clef is the pinned full 27B release, evaluated in the shared PyTorch reference "
+                "runtime without optional flash-linear-attention or causal-conv1d acceleration. "
+                "These timings describe this local runtime, not an optimized hosted Clef service "
+                "or the smaller Clef-Flash model."
+                if completed_measurement
+                else "The Clef protocol targets the pinned full 27B release in the shared "
+                "PyTorch reference runtime. This snapshot has no completed measured Clef run; "
+                "the configured protocol is not evidence of runtime execution.",
+                "",
+            ]
+        )
     media_rows = []
     for run in summary["runs"]:
         media = run["media"]
-        if media.get("accuracy") is None:
+        if media.get("accuracy") is None and media.get("supported_accuracy") is None:
             continue
         scores = []
         for task in ("mnist", "fsdd"):
             observed = media.get("by_task", {}).get(task, {})
             count, correct = observed.get("expected"), observed.get("correct")
+            if observed.get("native_status") == "unsupported" or (
+                count and observed.get("unsupported") == count
+            ):
+                scores.append(f"unsupported ({count} cases)")
+                continue
             scores.append(
                 f"{correct}/{count} ({100 * correct / count:.2f}%)"
                 if count and correct is not None
@@ -641,7 +806,7 @@ def render(
             [
                 run["model_id"],
                 *scores,
-                _accuracy(media),
+                _media_accuracy(media),
                 f"{_number(media.get('mean_ms'))} / {_number(media.get('p99_ms'))}",
             ]
         )
@@ -649,7 +814,7 @@ def render(
         lines.extend(["## Current native-media retention", ""])
         lines.extend(
             _table(
-                ["Model", "MNIST", "FSDD", "All 52 media cases", "Media mean / p99 ms"],
+                ["Model", "MNIST", "FSDD", "Media quality and support", "Media mean / p99 ms"],
                 media_rows,
             )
         )
@@ -658,6 +823,12 @@ def render(
                 "These are the same raw images and recordings in every current model row. "
                 "Text-only providers remain unsupported for native media; no oracle "
                 "description, OCR, or ASR output is inserted into these scores.",
+                "Models with partial native support report accuracy over their eligible subset "
+                "and expose unsupported cases separately. An image-only result over 32 MNIST "
+                "cases is not a full 52-case image/audio score; unsupported audio has no accuracy. "
+                "Errors within a supported task remain in that task's denominator. Media latency "
+                "uses successful supported requests, so an image-only timing covers a different "
+                "modality mix from Gemma's combined image/audio timing.",
                 "",
             ]
         )
@@ -1052,6 +1223,19 @@ def render(
                 "",
             ]
         )
+        published_index = campaign_path.parent / "clef-evidence.json"
+        if published_index.exists():
+            lines.extend(
+                [
+                    "Clef's receipt, BoolQ/media predictions and run manifests, plus the Gemma-base "
+                    "BoolQ reference, are published with "
+                    f"{_link(published_index, output, 'verified source hashes')}. "
+                    f"{_link(campaign_path.parent / 'README.md', output, 'Evidence and replay instructions')} "
+                    "show how to recompute the paired interval without Modal access and retrieve "
+                    "the full load archive separately.",
+                    "",
+                ]
+            )
     if summary["attempts"]:
         selected_count = sum(attempt.get("selected", False) for attempt in summary["attempts"])
         lines.extend(
@@ -1076,6 +1260,11 @@ def render(
                 run["telemetry"].get("context_policy", "not recorded"),
             ]
         )
+    reproduction_summary = (
+        os.path.relpath(campaign_path.resolve(), ROOT)
+        if campaign_path
+        else "docs/validation/2026-10-01/comparison-summary.json"
+    )
     lines.extend(
         _table(
             [
@@ -1104,10 +1293,11 @@ def render(
             "uv run --no-sync python scripts/collect_comparison.py \\",
             "  artifacts/comparison/your-unique-run/campaign.json \\",
             "  artifacts/comparison/your-recovery-run/campaign.json \\",
-            "  --output docs/validation/2026-10-01/comparison-summary.json",
+            "  --campaign-id your-comparison-id \\",
+            f"  --output {reproduction_summary}",
             "uv run --no-sync python scripts/summarize_comparison.py \\",
             "  --historical docs/validation/2026-10-01/live-summary.json \\",
-            "  --campaign docs/validation/2026-10-01/comparison-summary.json \\",
+            f"  --campaign {reproduction_summary} \\",
             "  --output docs/comparison.md",
             "```",
             "",

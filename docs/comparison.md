@@ -2,7 +2,7 @@
 
 This report is generated from saved evidence. New campaign rows and historical Modal results retain their own model, precision, hardware, and workload identities.
 
-Campaign: `20261001-matched-comparison`; status: **completed**.
+Campaign: `20261002-clef-matched-comparison`; status: **completed**.
 No missing or blocked result is counted as a successful evaluation.
 
 ## Shared evaluation contract
@@ -35,14 +35,17 @@ The configured Modal tier is A100-80GB, but the allocator may provide PCIe or SX
 | gemma-ce128-s0-nf4-recovered / nf4 / bfloat16 | completed | 88.28% (113/128; valid 128) | 55.77% (29/52; valid 52) | 7.61 (7.09) | 8.34 (7.77) / 8.56 (7.97) | 9.44 (8.79) | 192.18 / 201.70 | 206.51 / 3258.32 | NVIDIA A100-SXM4-80GB |
 | gemma-ce128-s1-nf4-recovered / nf4 / bfloat16 | completed | 90.62% (116/128; valid 128) | 57.69% (30/52; valid 52) | 7.61 (7.09) | 8.34 (7.77) / 8.56 (7.97) | 9.44 (8.79) | 182.39 / 191.54 | 195.69 / 3120.67 | NVIDIA A100-SXM4-80GB |
 | gemma-ce128-s2-nf4-recovered / nf4 / bfloat16 | completed | 92.19% (118/128; valid 128) | 55.77% (29/52; valid 52) | 7.61 (7.09) | 8.34 (7.77) / 8.56 (7.97) | 9.44 (8.79) | 173.40 / 182.12 | 189.39 / 3014.78 | NVIDIA A100-SXM4-80GB |
+| clef-local / bfloat16 | completed | 89.84% (115/128; valid 128) | supported subset 84.38% (27/32; valid 32); 20/52 unsupported | 54.97 (51.19) | 55.66 (51.84) / 55.86 (52.02) | 56.75 (52.85) | 185.02 / 245.80 | 252.91 / 3259.15 | NVIDIA A100-SXM4-80GB |
 
 Decider and Kev use eager PyTorch reference execution; their live worker logs report missing optional causal-conv1d and flash-linear-attention kernels. Published CUDA-graph or compiled GPU timings describe different runtimes. AgentJev uses the pinned current coding checkpoint, not the older typed-decision checkpoint. INT8 timing includes the logging behavior of its recorded run. Early verbose cast-warning attempts remain in the audit trail; newer receipts identify the once-per-process logging filter. The filter changes logging only, and the reruns preserve accuracy. Runtime and hardware variation prevent attributing a timing difference solely to logging.
 
 The selected Decider and Kev rows use corrected full-module tensor footprints. Earlier partial-module footprints remain only in superseded attempts in the audit index; the first Kev footprint excluded its small FP32 pointer head. CUDA peaks cover the full process in both versions. Treat measured CUDA allocation and device usage as separate deployment-memory observations.
 
+Clef is the pinned full 27B release, evaluated in the shared PyTorch reference runtime without optional flash-linear-attention or causal-conv1d acceleration. These timings describe this local runtime, not an optimized hosted Clef service or the smaller Clef-Flash model.
+
 ## Current native-media retention
 
-| Model | MNIST | FSDD | All 52 media cases | Media mean / p99 ms |
+| Model | MNIST | FSDD | Media quality and support | Media mean / p99 ms |
 | --- | --- | --- | --- | --- |
 | gemma-base-bf16 | 28/32 (87.50%) | 6/20 (30.00%) | 65.38% (34/52; valid 52) | 106.58 / 118.55 |
 | gemma-ce128-s0-bf16 | 28/32 (87.50%) | 6/20 (30.00%) | 65.38% (34/52; valid 52) | 163.50 / 173.94 |
@@ -57,8 +60,10 @@ The selected Decider and Kev rows use corrected full-module tensor footprints. E
 | gemma-ce128-s0-nf4-recovered | 28/32 (87.50%) | 1/20 (5.00%) | 55.77% (29/52; valid 52) | 204.29 / 212.32 |
 | gemma-ce128-s1-nf4-recovered | 29/32 (90.62%) | 1/20 (5.00%) | 57.69% (30/52; valid 52) | 194.38 / 203.72 |
 | gemma-ce128-s2-nf4-recovered | 28/32 (87.50%) | 1/20 (5.00%) | 55.77% (29/52; valid 52) | 184.47 / 195.50 |
+| clef-local | 27/32 (84.38%) | unsupported (20 cases) | supported subset 84.38% (27/32; valid 32); 20/52 unsupported | 335.77 / 565.13 |
 
 These are the same raw images and recordings in every current model row. Text-only providers remain unsupported for native media; no oracle description, OCR, or ASR output is inserted into these scores.
+Models with partial native support report accuracy over their eligible subset and expose unsupported cases separately. An image-only result over 32 MNIST cases is not a full 52-case image/audio score; unsupported audio has no accuracy. Errors within a supported task remain in that task's denominator. Media latency uses successful supported requests, so an image-only timing covers a different modality mix from Gemma's combined image/audio timing.
 
 
 Accuracy targets (>89% or ≥90%) and memory targets (~12 GB or 6–8 GB) are acceptance goals. A format name, successful model load, or nominal bit count does not establish that a target was met. Each quantized CE adapter must be evaluated in its own row.
@@ -172,6 +177,12 @@ The current harness runs one model in one process and serializes inference with 
 | gemma-ce128-s2-nf4-recovered | closed_loop | 64 | 128 / 128 | 11583.08 | 11933.83 | 11939.12 | 124 |
 | gemma-ce128-s2-nf4-recovered | fixed | 16 | 128 / 128 | 179.44 | 185.85 | 191.83 | 0 |
 | gemma-ce128-s2-nf4-recovered | poisson | 16 | 128 / 128 | 1016.26 | 1738.34 | 1899.61 | 65 |
+| clef-local | closed_loop | 1 | 128 / 128 | 191.30 | 213.89 | 252.91 | 0 |
+| clef-local | closed_loop | 4 | 128 / 128 | 733.43 | 819.03 | 1015.72 | 2 |
+| clef-local | closed_loop | 16 | 128 / 128 | 2921.19 | 3226.86 | 3259.15 | 123 |
+| clef-local | closed_loop | 64 | 128 / 128 | 11769.86 | 12231.95 | 12271.34 | 124 |
+| clef-local | fixed | 16 | 128 / 128 | 194.92 | 275.17 | 443.24 | 0 |
+| clef-local | poisson | 16 | 128 / 128 | 1251.75 | 1969.64 | 2079.98 | 68 |
 
 ## Quantization and target checks
 
@@ -219,6 +230,7 @@ Deltas are candidate minus reference, in percentage points. Every computed inter
 | gemma-base-bf16 | decider-local | computed | +1.562 | [-6.250, +9.375] | 128 |
 | gemma-base-bf16 | kev-local | computed | -14.844 | [-24.219, -6.250] | 128 |
 | gemma-base-bf16 | agentjev-local | computed | -14.062 | [-23.438, -3.906] | 128 |
+| gemma-base-bf16 | clef-local | computed | +3.125 | [-3.906, +10.156] | 128 |
 | gemma-ce128-s0-nf4 | gemma-ce128-s0-nf4-recovered | computed | +2.344 | [-1.562, +6.250] | 128 |
 | gemma-ce128-s1-nf4 | gemma-ce128-s1-nf4-recovered | computed | +3.906 | [-0.781, +8.594] | 128 |
 | gemma-ce128-s2-nf4 | gemma-ce128-s2-nf4-recovered | computed | +3.125 | [-1.562, +7.812] | 128 |
@@ -291,6 +303,7 @@ BF16 native-batch and question-independence parity checks failed in the historic
 
 ## Practical strengths and limits
 
+- Clef records 89.84% BoolQ accuracy, 185.02 ms serial mean latency, and 55.66 (51.84) GB (GiB) peak CUDA allocation. Its image result is reported over the 32 MNIST cases; native audio is unsupported. The matched BoolQ comparison against Gemma base is shown separately from media coverage.
 - Gemma CE-128 BF16 records 91.15% mean BoolQ accuracy across all three seeds, with worst measured CUDA allocation 24.50 (22.82) GB (GiB). It accepts raw images and audio, but media accuracy varies by task and high concurrency adds queueing.
 - Decider records 88.28%, compared with Gemma base 86.72% and CE-128 BF16 mean 91.15%. Its peak CUDA allocation is 4.25 (3.95) GB (GiB); native image/audio inputs are unsupported. These are point estimates, not proof of a population-level accuracy ordering.
 - Laya records 82.03%, 32.99 ms serial mean latency (the lowest measured mean in the selected rows), and 2.77 (2.58) GB (GiB) peak allocation. This is a small, fast text-only option with lower BoolQ accuracy than Gemma CE-128.
@@ -303,9 +316,11 @@ BF16 native-batch and question-independence parity checks failed in the historic
 
 Historical source: [live-summary.json](validation/2026-10-01/live-summary.json) (SHA-256 `14f355dc3ac6861bce76bf50a2d2467bb2456cee04aa105b16291770452d1571`). The [full historical report](validation/2026-10-01/live-validation.md) includes prediction hashes, model revisions, Modal jobs, calibration, learning curves, and provenance. The [September 30 smoke report](validation/2026-09-30/README.md) used A100 40GB and five fixture decisions; those smoke results are not an accuracy ranking.
 
-Campaign source: [campaign receipt](validation/2026-10-01/comparison-summary.json) (SHA-256 `90ec50618bed0e531881b6306157a12e852ece901be30d0bd5c12f685a40f8c2`).
+Campaign source: [campaign receipt](validation/2026-10-02/comparison-summary.json) (SHA-256 `94af96cc0d5f6184f3eb9ca2ffbbcd19efd9dd599271359084d39906818725b8`).
 
-The combined receipt retains **29 attempts**, with **17 selected model rows**. Selection uses the latest completed attempt by recorded start time, or the latest compatible incomplete attempt when none completed; it never selects by test accuracy. Superseded failures and incompatible pre-execution attempts remain in its audit index.
+Clef's receipt, BoolQ/media predictions and run manifests, plus the Gemma-base BoolQ reference, are published with [verified source hashes](validation/2026-10-02/clef-evidence.json). [Evidence and replay instructions](validation/2026-10-02/README.md) show how to recompute the paired interval without Modal access and retrieve the full load archive separately.
+
+The combined receipt retains **30 attempts**, with **18 selected model rows**. Selection uses the latest completed attempt by recorded start time, or the latest compatible incomplete attempt when none completed; it never selects by test accuracy. Superseded failures and incompatible pre-execution attempts remain in its audit index.
 
 | Model | Checkpoint | Pinned revision | Process peak RSS GB (GiB) | Context limit | Context policy |
 | --- | --- | --- | --- | --- | --- |
@@ -326,6 +341,7 @@ The combined receipt retains **29 attempts**, with **17 selected model rows**. S
 | gemma-ce128-s0-nf4-recovered | google/gemma-4-12B-it | 707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7 | 30.54 (28.44) | 16384 | reject |
 | gemma-ce128-s1-nf4-recovered | google/gemma-4-12B-it | 707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7 | 30.57 (28.47) | 16384 | reject |
 | gemma-ce128-s2-nf4-recovered | google/gemma-4-12B-it | 707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7 | 30.57 (28.47) | 16384 | reject |
+| clef-local | Cloudflare/clef | 2f3de3dd85f379784083b0814d997ab627200f0c | 60.78 (56.60) | 16384 | reject |
 
 Follow the [original-data preparation and restoration steps](modal.md#reproduce-the-october-1-matched-comparison) before launching a fresh run. The restored native media is byte-identical to the archived dataset; its [recovery audit](validation/2026-10-01/media-rebuild.json) retains the reconstruction diagnostics without changing the benchmark input identity.
 
@@ -336,10 +352,11 @@ uv run --no-sync modal run apps/modal/recover_nf4.py --run your-recovery-run
 uv run --no-sync python scripts/collect_comparison.py \
   artifacts/comparison/your-unique-run/campaign.json \
   artifacts/comparison/your-recovery-run/campaign.json \
-  --output docs/validation/2026-10-01/comparison-summary.json
+  --campaign-id your-comparison-id \
+  --output docs/validation/2026-10-02/comparison-summary.json
 uv run --no-sync python scripts/summarize_comparison.py \
   --historical docs/validation/2026-10-01/live-summary.json \
-  --campaign docs/validation/2026-10-01/comparison-summary.json \
+  --campaign docs/validation/2026-10-02/comparison-summary.json \
   --output docs/comparison.md
 ```
 

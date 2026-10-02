@@ -8,9 +8,9 @@ This project extends [system-one-open](https://github.com/mithalouni/system-one-
 The original E2B experiments and demos remain available; their historical results
 are not measurements of this Unified model. See [upstream notes](docs/upstream.md).
 
-## Latest measured results — October 1, 2026
+## Latest measured results — October 2, 2026
 
-The matched Modal campaign completed **17 model/format/seed configurations** on
+Matched Modal runs now cover **18 model/format/seed configurations** on
 the same **128 BoolQ questions, 52 native media cases, and six HTTP load shapes**.
 The [full comparison](docs/comparison.md) includes per-seed accuracy, media results,
 memory, latency percentiles, paired confidence intervals, and historical A100 runs.
@@ -22,6 +22,7 @@ memory, latency percentiles, paired confidence intervals, and historical A100 ru
 | Gemma CE-128 NF4 | 87.24% | 8.34 GB | 160–226 ms |
 | Gemma NF4 + 100 additional training updates | **90.36%** | **8.34 GB** | 173–192 ms |
 | Gemma base BF16 | 86.72% | 24.45 GB | 88 ms |
+| Cloudflare Clef-27B | **89.84%** | 55.66 GB | 185 ms |
 | Decider-2B | 88.28% | 4.25 GB | 76 ms |
 | Laya | 82.03% | 2.77 GB | 33 ms |
 | AgentJev-0.6B | 72.66% | 3.70 GB | 41 ms |
@@ -43,17 +44,26 @@ minimum GPU capacity needed for deployment.
   device usage is 9.44 GB; deployment on an 8 GB GPU has not been established.
 - **Media remains a weakness.** Gemma base scores 28/32 on MNIST and 6/20 on FSDD;
   every original and recovered NF4 seed scores only 1/20 on FSDD. The four external
-  text models are marked unsupported for native images/audio.
+  text models are marked unsupported for native images/audio. Clef scores 27/32
+  on MNIST; its 20 audio cases are unsupported, with no fabricated audio accuracy.
+- **Clef has a higher BoolQ point estimate than Gemma base**, 115/128 versus 111/128,
+  with 55.66 GB peak allocation. Their paired difference is +3.125 percentage points
+  (95% CI −3.906 to +10.156), which does not establish a statistical advantage.
+  Clef uses the full pinned 27B release and shared reference runtime, not Clef-Flash
+  or an optimized hosted service.
 - **Smaller models offer useful tradeoffs.** Decider scores 88.28% with 4.25 GB
   peak allocation; Laya has the lowest measured mean latency at 33 ms and 82.03%
   accuracy. Decider/Kev use eager reference kernels; AgentJev uses its current
   coding checkpoint. Their optimized or older published runs are different tests.
 
-See the [saved result summary](docs/validation/2026-10-01/comparison-summary.json)
-for 29 retained attempts and 13 paired comparisons, the
+See the [latest saved result summary](docs/validation/2026-10-02/comparison-summary.json)
+for 30 retained attempts and 14 paired comparisons, the
+[Clef evidence and replay commands](docs/validation/2026-10-02/README.md) for published
+predictions and manifests, the
 [quantization guide](docs/quantization.md) for inference commands, and
 [NF4 recovery instructions](docs/modal.md#reproduce-the-fixed-nf4-lora-recovery)
 for the fixed training recipe and all three saved adapters.
+The [October 1 summary](docs/validation/2026-10-01/comparison-summary.json) remains unchanged.
 
 ## Development
 

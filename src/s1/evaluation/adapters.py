@@ -30,7 +30,14 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
         or spec.capabilities.batch == "loop_emulated"
     ):
         reasons.append("executor_batch_unavailable")
-    if profile.concurrency > 1 and spec.adapter in ("gemma", "laya", "decider", "kev", "agentjev"):
+    if profile.concurrency > 1 and spec.adapter in (
+        "gemma",
+        "laya",
+        "decider",
+        "kev",
+        "agentjev",
+        "clef",
+    ):
         reasons.append("local_model_concurrency_unavailable")
     if spec.runtime != "reference":
         reasons.append("executor_runtime_unavailable")
@@ -94,6 +101,10 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
             reasons.append("local_competitor_requires_complete_probabilities")
         if spec.subfolder or (spec.processor_revision and spec.processor_revision != spec.revision):
             reasons.append("local_competitor_processor_override_unavailable")
+    elif spec.adapter == "clef":
+        from .clef import configuration_blockers
+
+        reasons.extend(configuration_blockers(spec))
     elif spec.adapter == "http":
         if (spec.execution_mode, spec.calibration, spec.precision) != (
             "provider",
@@ -163,7 +174,7 @@ class ReferenceAdapter:
                 "quantization": model.quantization,
                 "quantization_details": model.quantization_details,
             }
-        if self.spec.adapter in ("decider", "kev", "agentjev"):
+        if self.spec.adapter in ("decider", "kev", "agentjev", "clef"):
             return self.backend.telemetry()
         if self.spec.adapter == "laya":
             return {
@@ -189,7 +200,7 @@ class ReferenceAdapter:
     def resources(self):
         if self.spec.adapter == "gemma":
             return self.backend.model.memory_snapshot()
-        if self.spec.adapter in ("decider", "kev", "agentjev"):
+        if self.spec.adapter in ("decider", "kev", "agentjev", "clef"):
             return self.backend.resources()
         import resource
         import sys
@@ -265,6 +276,10 @@ def load_adapter(spec: ModelSpec, environment) -> Adapter:
         from .local_competitors import LocalCompetitorBackend
 
         backend = LocalCompetitorBackend(spec)
+    elif spec.adapter == "clef":
+        from .clef import ClefBackend
+
+        backend = ClefBackend(spec)
     elif spec.adapter == "http":
         from .providers import ProviderHTTPBackend
 
