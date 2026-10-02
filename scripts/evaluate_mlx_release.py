@@ -451,6 +451,7 @@ def main(argv=None):
         exported, config, softcap = validate_conversion(args.model, conversion, identity)
         report.update(identity)
         report.update(
+            source_checkpoint_files=manifests["calibration"]["source_checkpoint_files"],
             input_manifest_sha256=pins,
             dataset_manifest_sha256=args.dataset_manifest_sha256,
             conversion_manifest_sha256=args.conversion_manifest_sha256,
