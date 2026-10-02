@@ -46,6 +46,30 @@ and durable adapter/optimizer/RNG checkpoints. A short same-recipe pilot measure
 time and peak GPU memory before the complete pass. There is no test-driven
 checkpoint selection or hyperparameter search.
 
+```bash
+uv sync --locked --extra inference --extra train --extra api --extra modal
+# Choose a new run name. Completed or interrupted runs preserve their identity.
+uv run --no-sync modal run --detach apps/modal/release.py --stage pilot --run your-release-run
+uv run --no-sync modal run --detach apps/modal/release.py --stage train --run your-release-run
+uv run --no-sync modal run --detach apps/modal/release.py --stage evaluate --run your-release-run
+uv run --no-sync modal run apps/modal/release.py --stage export-results --run your-release-run
+```
+
+Stages run sequentially; training requires a matching successful pilot, and
+evaluation requires completed training and calibrated merged weights. Use
+`--resume` only to continue an interrupted pilot/train with unchanged code,
+lockfile, data and recipe. The runtime binds all `src/s1` sources and the trainer
+to the run identity. Checkpoints preserve optimizer, RNG, sample order and the
+completed-update ledger; abandoned log tails are retained separately. The soft
+training budget is five hours and the Modal invocation cap is six hours.
+
+The recorded run is `20261002-boolq-release-01`, seed 42, with training code at
+`b2a46b1`. Its A100-SXM4-80GB pilot completed all eight updates in 10.41 training
+seconds; the longest of all 2,048 prepared training inputs was 656 tokens, and
+the observed peak CUDA allocation was 24.617 GB. Loading, preprocessing preflight
+and persistence brought the complete pilot stage to 74.93 seconds. These are
+pilot observations, not a minimum deployment memory requirement.
+
 The adapter is retained before merging. The merged checkpoint is reloaded and
 its scalar temperature is fitted using only the calibration split. Full test
 coverage, accuracy, NLL, multiclass Brier and ECE are reported for the base and

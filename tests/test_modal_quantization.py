@@ -137,6 +137,9 @@ def test_public_backend_metadata_records_quantized_adapter(monkeypatch):
         quantization_details={"method": "bitsandbytes"},
     )
     monkeypatch.setattr(unified, "UnifiedDecisionModel", lambda *a, **kw: model)
+    monkeypatch.setattr(
+        "s1.backends.version", lambda package: {"torch": "2.8.0", "transformers": "5.17.0"}[package]
+    )
     backend = GemmaBackend(adapter_path="/vol/ce-adapter", quantization="nf4")
     assert backend.metadata["quantization"] == "nf4"
     assert backend.metadata["adapter_path"] == "/vol/ce-adapter"

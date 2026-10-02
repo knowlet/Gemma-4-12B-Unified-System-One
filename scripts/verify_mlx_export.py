@@ -202,7 +202,7 @@ def load_case_arrays(directory, case):
     return arrays, hashlib.sha256(file_path.read_bytes()).hexdigest()
 
 
-def selected_probabilities(model, arrays, case, letters, temperature, softcap):
+def _selected_logits_mlx(model, arrays, case, letters, softcap):
     import mlx.core as mx
 
     inputs = {name: mx.array(value) for name, value in arrays.items() if name != "attention_mask"}
@@ -224,12 +224,56 @@ def selected_probabilities(model, arrays, case, letters, temperature, softcap):
     logits = hidden.astype(head_rows.dtype) @ head_rows.T
     if softcap is not None:
         logits = mx.tanh(logits / softcap) * softcap
-    logits = logits.astype(mx.float32)
+    return logits.astype(mx.float32)
+
+
+def selected_logits(model, arrays, case, letters, softcap):
+    """Return finite raw legal logits after native softcap, without temperature."""
+    import mlx.core as mx
+
+    logits = _selected_logits_mlx(model, arrays, case, letters, softcap)
+    mx.eval(logits)
+    result = np.asarray(logits)
+    if result.shape != (len(case["questions"]), len(letters)) or not np.isfinite(result).all():
+        raise ValueError("selected logits have an invalid shape or nonfinite values")
+    return [row[:count].astype(np.float64) for row, count in zip(result, case["nopts"])]
+
+
+def selected_probabilities(model, arrays, case, letters, temperature, softcap):
+    import mlx.core as mx
+
+    logits = _selected_logits_mlx(model, arrays, case, letters, softcap)
     legal = mx.arange(len(letters))[None, :] < mx.array(case["nopts"], dtype=mx.int32)[:, None]
     probabilities = mx.softmax(mx.where(legal, logits / temperature, -mx.inf), axis=-1)
     mx.eval(probabilities)
     result = np.asarray(probabilities)
     return [_distribution(row[:count], count) for row, count in zip(result, case["nopts"])]
+
+
+def validate_loaded_model(model, processor, letters):
+    """Shared tokenizer, tied-head and complete multimodal weight checks."""
+    from mlx.utils import tree_flatten
+
+    tokenizer = processor.tokenizer
+    boundary = tokenizer.encode("\nAnswer: (", add_special_tokens=False)
+    for letter, token_id in zip("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", letters):
+        if tokenizer.encode(letter, add_special_tokens=False) != [token_id] or tokenizer.encode(
+            "\nAnswer: (" + letter, add_special_tokens=False
+        ) != boundary + [token_id]:
+            raise ValueError("export tokenizer candidate ids differ at the answer boundary")
+    parameter_names = [name for name, _ in tree_flatten(model.parameters())]
+    inventory = {
+        component: [name for name in parameter_names if name.startswith(component + ".")]
+        for component in ("vision_embedder", "embed_vision", "embed_audio")
+    }
+    if any(not names for names in inventory.values()):
+        raise ValueError("export is missing a required multimodal component's weights")
+    if getattr(model.language_model, "lm_head", None) is not None:
+        raise ValueError("unexpected separate output head; refusing to substitute tied embeddings")
+    return {
+        "modality_weight_inventory": inventory,
+        "loaded_parameter_tensor_count": len(parameter_names),
+    }
 
 
 def _library_versions():
@@ -304,32 +348,10 @@ def main(argv=None):
                 raise ValueError(f"{case['id']}: captured and reference input token counts differ")
         stage = "load_mlx_model"
         import mlx.core as mx
-        from mlx.utils import tree_flatten
         from mlx_vlm import load
 
         model, processor = load(str(args.model), strict=True)
-        tokenizer = processor.tokenizer
-        boundary = tokenizer.encode("\nAnswer: (", add_special_tokens=False)
-        for letter, token_id in zip(
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", manifest["letters"]
-        ):
-            if tokenizer.encode(letter, add_special_tokens=False) != [token_id] or tokenizer.encode(
-                "\nAnswer: (" + letter, add_special_tokens=False
-            ) != boundary + [token_id]:
-                raise ValueError("export tokenizer candidate ids differ at the answer boundary")
-        parameter_names = [name for name, _ in tree_flatten(model.parameters())]
-        inventory = {
-            component: [name for name in parameter_names if name.startswith(component + ".")]
-            for component in ("vision_embedder", "embed_vision", "embed_audio")
-        }
-        report["modality_weight_inventory"] = inventory
-        report["loaded_parameter_tensor_count"] = len(parameter_names)
-        if any(not names for names in inventory.values()):
-            raise ValueError("export is missing a required multimodal component's weights")
-        if getattr(model.language_model, "lm_head", None) is not None:
-            raise ValueError(
-                "unexpected separate output head; refusing to substitute tied embeddings"
-            )
+        report.update(validate_loaded_model(model, processor, manifest["letters"]))
         stage = "verify_cases"
         all_drifts, all_agreements = [], []
         for case, arrays, digest in prepared:
