@@ -217,6 +217,10 @@ def execute(
         "started_at": datetime.now(timezone.utc).isoformat(),
         "finished_at": None,
         "timing": "monotonic seconds since run start; latency measured from scheduled arrival",
+        "setup_timing_scope": (
+            "adapter factory invocation and runtime telemetry; "
+            "excludes model loading performed before execute"
+        ),
         "execution_mode": profile.load_mode,
         "retries": 0,
         "runner_result_cache": False,

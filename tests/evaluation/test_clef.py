@@ -162,7 +162,8 @@ def test_audio_is_ineligible_and_rejected_before_model_access(spec):
         ClefBackend.__new__(ClefBackend).predict(request)
 
 
-def test_native_images_preserve_pixels_and_frame_timestamps(spec):
+@pytest.mark.parametrize("timestamps", [(None, None), (1.25, 2.5)])
+def test_native_images_preserve_pixels_and_frame_timestamps(spec, timestamps):
     image_module = pytest.importorskip("PIL.Image")
     buffer = io.BytesIO()
     image_module.new("RGB", (2, 3), (10, 20, 30)).save(buffer, format="PNG")
@@ -174,19 +175,43 @@ def test_native_images_preserve_pixels_and_frame_timestamps(spec):
                 {
                     "type": "image",
                     "data": base64.b64encode(buffer.getvalue()).decode(),
-                    "timestamp_seconds": 1.25,
+                    "timestamp_seconds": timestamp,
                 }
+                for timestamp in timestamps
             ],
         }
     )
     record = request_record(request)
-    assert record["images"][0].size == (2, 3)
-    assert record["images"][0].getpixel((0, 0)) == (10, 20, 30)
-    assert record["state"] == {"state": request.state, "image_timestamps_seconds": [1.25]}
+    assert len(record["images"]) == 2
+    assert all(image.size == (2, 3) for image in record["images"])
+    assert all(image.getpixel((0, 0)) == (10, 20, 30) for image in record["images"])
+    expected_state = (
+        request.state
+        if timestamps[0] is None
+        else {"state": request.state, "image_timestamps_seconds": list(timestamps)}
+    )
+    assert record["state"] == expected_state
     assert (
         case_eligibility(spec, SimpleNamespace(id="image", request=request))["eligibility"]
         == "eligible"
     )
+
+
+@pytest.mark.parametrize("timestamps", [(1.25, None), (None, 1.25)])
+def test_mixed_image_timestamps_rejected_before_decode_or_model(monkeypatch, timestamps):
+    request = DecisionRequest.model_validate(
+        {
+            "state": "Mixed image timestamps.",
+            "questions": [{"id": "q", "type": "noul", "instructions": "True?"}],
+            "media": [
+                {"type": "image", "data": "not-decoded", "timestamp_seconds": timestamp}
+                for timestamp in timestamps
+            ],
+        }
+    )
+    monkeypatch.setattr(base64, "b64decode", lambda *args, **kwargs: pytest.fail("decoded image"))
+    with pytest.raises(RequestValidationError, match="all have timestamps or all omit"):
+        ClefBackend.__new__(ClefBackend).predict(request)
 
 
 @pytest.mark.parametrize("length", [CONTEXT_LIMIT - 1, CONTEXT_LIMIT, CONTEXT_LIMIT + 1])

@@ -59,6 +59,15 @@ Manifests preserve request identities; the published predictions contain no raw
 image/audio payloads. The reference receipt also lists historical artifacts that
 are not copied here. Only the files listed in the index are included.
 
+The archived manifest's `setup_ms` measures the runner's adapter-factory call and
+runtime telemetry validation. This campaign supplies an already-loaded shared
+adapter, so Clef's BoolQ value of **0.481779 ms** is not checkpoint-loading time.
+The separate [Clef receipt](clef-local/receipt.json) records `load_seconds` as
+**244.880485042 seconds** for checkpoint acquisition and model/processor setup
+before either quality run. It excludes Modal scheduling/container startup.
+The raw manifests retain their original bytes and hashes; future manifests also
+declare this distinction in `setup_timing_scope`.
+
 Recompute the paired BoolQ interval from these repository files without GPU or
 Modal access:
 
@@ -71,7 +80,7 @@ uv run --no-sync s1 eval compare \
 ```
 
 This replay was checked against the combined summary and gives the identical
-estimate and interval. Local implementation checks are recorded in
+estimate and interval. Initial implementation checks are recorded in
 [clef-local-checks.json](clef-local-checks.json).
 
 ## Full archive and fresh execution

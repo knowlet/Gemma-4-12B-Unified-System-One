@@ -212,6 +212,79 @@ def _validate_observation(
     return result
 
 
+def _has_media_observations(value: dict) -> bool:
+    return (
+        any(
+            value.get(key) is not None
+            for key in ("correct", "accuracy", "supported_accuracy", "mean_ms", "p99_ms")
+        )
+        or any(isinstance(value.get(key), int) and value[key] > 0 for key in ("recorded", "valid"))
+        or any(_has_media_observations(task) for task in (value.get("by_task") or {}).values())
+    )
+
+
+def _validate_media(value: dict, expected: int, label: str) -> dict:
+    def support_counts(row, count, parent=None):
+        row = dict(row)
+        if "unsupported" not in row:
+            if "eligible" in row:
+                if not isinstance(row["eligible"], int):
+                    raise ValueError(f"{label}: eligible count must be an integer")
+                row["unsupported"] = count - row["eligible"]
+            elif parent and parent["eligible"] == 0:
+                row["unsupported"] = count
+            elif parent and parent["unsupported"]:
+                raise ValueError(f"{label}: partial media support requires per-task eligibility")
+            else:
+                row["unsupported"] = 0
+        if not isinstance(row["unsupported"], int):
+            raise ValueError(f"{label}: unsupported count must be an integer")
+        row.setdefault("eligible", count - row["unsupported"])
+        return row
+
+    result = _validate_observation(
+        support_counts(value, expected), expected, label, allow_partial_support=True
+    )
+    measured = _has_media_observations(value)
+    tasks = value.get("by_task") or {}
+    if set(tasks) - {"mnist", "fsdd"} or (measured and set(tasks) != {"mnist", "fsdd"}):
+        raise ValueError(f"{label}: measured media requires both fixed tasks, mnist and fsdd")
+    result["by_task"] = {}
+    for task, task_expected in (("mnist", 32), ("fsdd", 20)):
+        if task not in tasks:
+            continue
+        task_value = support_counts(tasks[task], task_expected, result)
+        # Legacy task summaries used expected as their recorded task count.
+        if measured:
+            task_value.setdefault("recorded", task_value.get("expected"))
+        result["by_task"][task] = _validate_observation(
+            task_value, task_expected, f"{label}/{task}", allow_partial_support=True
+        )
+    if not measured:
+        return result
+    for row in (result, *result["by_task"].values()):
+        if row.get("recorded") is None or row.get("valid") is None:
+            raise ValueError(f"{label}: measured media requires complete aggregate and task counts")
+        if (
+            not 0 <= row["valid"] <= row["recorded"] <= row["expected"]
+            or row["valid"] > row["eligible"]
+        ):
+            raise ValueError(f"{label}: inconsistent aggregate or task coverage")
+        if row["valid"] and row.get("correct") is None:
+            raise ValueError(f"{label}: valid media answers require correct counts")
+    if result.get("correct") is None and any(
+        task["eligible"] > 0
+        and any(task.get(key) is not None for key in ("correct", "accuracy", "supported_accuracy"))
+        for task in result["by_task"].values()
+    ):
+        raise ValueError(f"{label}: measured task quality requires an aggregate correct count")
+    for key in ("recorded", "eligible", "unsupported", "valid", "correct"):
+        total = sum(task.get(key) or 0 for task in result["by_task"].values())
+        if (result.get(key) or 0) != total:
+            raise ValueError(f"{label}: task {key} total differs from aggregate")
+    return result
+
+
 def _same_seed_quantization_identity(base: dict, candidate: dict, mode: str) -> bool:
     return (
         mode in ("int8", "nf4")
@@ -361,32 +434,14 @@ def build_summary(historical: dict, campaign: dict | None) -> dict:
         run["boolq"] = _validate_observation(source.get("boolq") or {}, expected, run["model_id"])
         if run["boolq"].get("accuracy") is not None and not actual_hash:
             raise ValueError("measured campaign BoolQ results require the dataset hash")
-        run["media"] = _validate_observation(
-            source.get("media") or {},
-            media_expected,
-            f"{run['model_id']} media",
-            allow_partial_support=True,
-        )
-        if "by_task" in run["media"]:
-            run["media"]["by_task"] = dict(run["media"]["by_task"])
-        for task, task_expected in (("mnist", 32), ("fsdd", 20)):
-            if task not in run["media"].get("by_task", {}):
-                continue
-            task_value = dict(run["media"]["by_task"][task])
-            # Historical task summaries use expected as the recorded task count.
-            task_value.setdefault("recorded", task_value.get("expected"))
-            run["media"]["by_task"][task] = _validate_observation(
-                task_value,
-                task_expected,
-                f"{run['model_id']} media/{task}",
-                allow_partial_support=True,
-            )
+        raw_media = source.get("media") or {}
         media_hash = dataset.get("media_sha256")
-        if any(run["media"].get(key) is not None for key in ("accuracy", "supported_accuracy")):
+        if _has_media_observations(raw_media):
             if not media_hash:
                 raise ValueError("measured campaign media results require the media dataset hash")
             if media_hash != media.get("dataset_sha256"):
                 raise ValueError("campaign media dataset hash differs from the historical 52 cases")
+        run["media"] = _validate_media(raw_media, media_expected, f"{run['model_id']} media")
         run["memory"] = {
             key: (source.get("memory") or {}).get(key)
             for key in (
@@ -485,12 +540,19 @@ def practical_takeaways(summary: dict) -> list[str]:
     points = []
     clef = runs.get("clef-local")
     if clef and clef["boolq"].get("accuracy") is not None:
+        mnist = clef["media"].get("by_task", {}).get("mnist", {})
+        image_statement = (
+            "Its image result is reported over the 32 MNIST cases; native audio is unsupported. "
+            if mnist.get("accuracy") is not None
+            else "The Clef protocol covers 32 MNIST cases and marks native audio unsupported; "
+            "no MNIST accuracy is recorded in this snapshot. "
+        )
         points.append(
             f"- Clef records {_pct(clef['boolq']['accuracy'])} BoolQ accuracy, "
             f"{_number(clef['boolq'].get('mean_ms'))} ms serial mean latency, and "
             f"{_memory(clef['memory']['peak_allocated_bytes'])} GB (GiB) peak CUDA allocation. "
-            "Its image result is reported over the 32 MNIST cases; native audio is unsupported. "
-            "The matched BoolQ comparison against Gemma base is shown separately from media coverage."
+            + image_statement
+            + "The matched BoolQ comparison against Gemma base is shown separately from media coverage."
         )
     bf16 = groups.get("bf16", {})
     base, decider, laya = (
@@ -698,13 +760,26 @@ def render(
     for run in summary["runs"]:
         if run.get("reason"):
             lines.append(f"- `{_cell(run['model_id'])}`: {_cell(run['reason'])}.")
-    if any(run["model_id"] == "clef-local" for run in summary["runs"]):
+    clef_run = next((run for run in summary["runs"] if run["model_id"] == "clef-local"), None)
+    if clef_run:
+        completed_measurement = clef_run.get("status") in (
+            "completed",
+            "completed_with_errors",
+        ) and any(
+            observed.get(key) is not None
+            for observed in (clef_run["boolq"], clef_run["media"])
+            for key in ("accuracy", "supported_accuracy")
+        )
         lines.extend(
             [
                 "Clef is the pinned full 27B release, evaluated in the shared PyTorch reference "
                 "runtime without optional flash-linear-attention or causal-conv1d acceleration. "
                 "These timings describe this local runtime, not an optimized hosted Clef service "
-                "or the smaller Clef-Flash model.",
+                "or the smaller Clef-Flash model."
+                if completed_measurement
+                else "The Clef protocol targets the pinned full 27B release in the shared "
+                "PyTorch reference runtime. This snapshot has no completed measured Clef run; "
+                "the configured protocol is not evidence of runtime execution.",
                 "",
             ]
         )

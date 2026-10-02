@@ -60,6 +60,9 @@ def load_publisher_module(directory):
 def request_record(request):
     if any(isinstance(media, AudioInput) for media in request.media):
         raise RequestValidationError("Clef supports text and images, not audio")
+    timestamped = [media.timestamp_seconds is not None for media in request.media]
+    if any(timestamped) and not all(timestamped):
+        raise RequestValidationError("Clef images must either all have timestamps or all omit them")
     questions = request.named_questions_payload()
     for question in request.questions:
         if question.type == "score":
