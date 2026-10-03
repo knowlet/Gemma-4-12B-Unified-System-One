@@ -8,7 +8,31 @@ This project extends [system-one-open](https://github.com/mithalouni/system-one-
 The original E2B experiments and demos remain available; their historical results
 are not measurements of this Unified model. See [upstream notes](docs/upstream.md).
 
-## Latest measured results — October 1, 2026
+## BoolQ specialist training — October 2, 2026
+
+A complete 2,048-update LoRA pass has been merged into standalone BF16 12B
+weights, retaining the native image/audio modules. This is LoRA fine-tuning
+followed by a full-model merge, not optimization of every base parameter.
+
+On a fresh, balanced 256-case BoolQ validation subset, accuracy increased from
+**80.08% to 89.84%** and NLL decreased from **0.441 to 0.273**. Both models use
+separate temperatures fitted on 256 disjoint calibration cases. Training took
+22.49 minutes on A100-SXM4-80GB. The merged BF16 model's historical media
+accuracy stayed at 34/52, while NLL, Brier and ECE worsened; general multimodal
+quality is not established.
+
+The full multimodal **MLX 8-bit export is 12.75 GB** and also scores **89.84%**
+on all 256 fresh cases after independent calibration. All observed fresh-test
+predictions agree with BF16, but individual candidate probabilities differ by
+up to 27.48 percentage points. Eight synthetic MPS workloads also execute
+successfully; their timings are separate from accuracy evaluation.
+
+The [release protocol and raw results](docs/release.md) and
+[reproduction commands](docs/release-reproduce.md) include frozen datasets,
+exclusions, weight hashes and full validation. Hugging Face upload awaits a
+write-scoped credential; no published checkpoint is claimed yet.
+
+## Previous matched comparison — October 1, 2026
 
 The matched Modal campaign completed **17 model/format/seed configurations** on
 the same **128 BoolQ questions, 52 native media cases, and six HTTP load shapes**.

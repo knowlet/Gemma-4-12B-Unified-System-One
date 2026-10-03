@@ -1,0 +1,36 @@
+{
+  "scope": "Independently calibrated CUDA BF16 and MLX8 outputs on the complete fixed test populations; not raw-logit or global numerical equivalence",
+  "populations": {
+    "test": {
+      "matched_decisions": 256,
+      "argmax_agreement": 256,
+      "max_probability_difference": 0.27475074085357926,
+      "changed_decisions": []
+    },
+    "media": {
+      "matched_decisions": 52,
+      "argmax_agreement": 49,
+      "max_probability_difference": 0.31287067561318854,
+      "changed_decisions": [
+        {
+          "case_id": "fsdd-test-1_theo_0",
+          "question_id": "digit",
+          "cuda": "digit-1",
+          "mlx": "digit-7"
+        },
+        {
+          "case_id": "fsdd-test-1_nicolas_0",
+          "question_id": "digit",
+          "cuda": "digit-7",
+          "mlx": "digit-8"
+        },
+        {
+          "case_id": "fsdd-test-7_nicolas_4",
+          "question_id": "digit",
+          "cuda": "digit-5",
+          "mlx": "digit-7"
+        }
+      ]
+    }
+  }
+}

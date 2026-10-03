@@ -1,4 +1,10 @@
-# GGUF, MLX and Hugging Face release feasibility
+# GGUF, MLX and Hugging Face release paths
+
+The [October 2 BoolQ specialist release](release.md) now has a completed
+2,048-update LoRA run, a standalone merged BF16 checkpoint, independent
+calibration and full CUDA evaluation. That release and its trained MLX export
+are separate from the base-model conversion experiments below. Consult its
+release report for current conversion and publication status.
 
 Source inspection on **2026-10-02** confirms that Gemma 4 Unified weights have
 conversion paths to both GGUF and MLX. Shipping the weights is separate from
@@ -10,18 +16,19 @@ temperature used by `UnifiedDecisionModel`.
 
 | Artifact | Current evidence | Remaining work |
 | --- | --- | --- |
-| Hugging Face Transformers checkpoint | `UnifiedDecisionModel.save()` merges LoRA, saves safetensors and processor files, and writes `s1_config.json`. | Obtain the chosen trained weights, reload them and validate the release. |
+| Hugging Face Transformers checkpoint | October 2 training, full-model merge, reload, calibration and held-out CUDA evaluation completed. | Publish the verified artifact with a write-scoped Hugging Face credential. |
 | GGUF | llama.cpp registers `Gemma4UnifiedForConditionalGeneration` for both text and vision/audio conversion. | Convert the language model and its separate `mmproj`, then implement and validate an S1 runtime adapter. |
-| Full multimodal MLX | Local 4-bit and 8-bit exports loaded and ran all eight S1 workloads, including image/audio. | Prefer the 8-bit candidate; validate a production S1 adapter, quality and calibration before release. |
+| Full multimodal MLX | Trained 8-bit weights converted; 256 calibration, 256 fresh BoolQ and 52 media cases completed. Fresh accuracy matches trained BF16 at 89.84%. | Publish with a write credential; the S1 adapter remains experimental and individual probabilities differ materially. |
 | Text-only MLX | MLX-LM maps `gemma4_unified` to its Gemma 4 text wrapper and deliberately drops vision/audio tensors. | This is only suitable for an explicitly text-only distribution. |
 
-The local training artifacts contain adapter configuration, provenance and
+The historical local training artifacts contain adapter configuration, provenance and
 calibration metadata under
 `artifacts/live-validation/20261001-v2-live-04/training-full/checks/training-curve/`.
 They do **not** contain the corresponding adapter safetensors or merged model
 weights. Those metadata files alone cannot reconstruct a trained checkpoint.
-Recover the selected experiment's actual weights before publishing a fine-tuned
-S1 model. A conversion of Google's original weights must be described as a base
+Those historical runs must not be reconstructed from metadata alone. The new
+October 2 run saves both actual adapter weights and the complete merged model.
+A conversion of Google's original weights must be described as a base
 model conversion, without claiming S1 training or calibrated S1 accuracy.
 
 `apps/modal/hf_upload.py` handles the historical E2B/270m runs only. Its training
