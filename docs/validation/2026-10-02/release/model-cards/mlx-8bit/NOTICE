@@ -1,0 +1,27 @@
+Gemma 4 12B Unified System One
+
+Source model: google/gemma-4-12B-it by Google.
+Source revision: 707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7.
+Source repository: https://huggingface.co/google/gemma-4-12B-it
+The preserved source Apache License, Version 2.0, is included in LICENSE.
+
+This derivative was prepared by the knowlet/Gemma-4-12B-Unified-System-One
+project. It applies one epoch of LoRA fine-tuning on 2,048 English BoolQ
+examples and merges the learned adapter into a complete BF16 checkpoint.
+The package retains the source processor and native image/audio modules.
+A scalar temperature fitted on 256 separate BoolQ calibration cases is
+recorded in s1_config.json for the System One decision runtime.
+
+Training recipe identity:
+2a708e5f4acfea4b688e88ba338aa62991608db875fef039ee6b4f33c3a74d73
+
+The model card describes the modifications, evaluation scope, and separate
+dataset attributions. This notice records attribution and modifications;
+it does not change the accompanying license.
+
+This distribution additionally converts the merged checkpoint with MLX-VLM
+0.7.4 using affine 8-bit quantization, group size 64; some tensors remain BF16.
+It retains the native vision/audio components. A separate scalar temperature
+was fitted on the same 256 BoolQ calibration cases in the MLX runtime.
+See conversion-manifest.json and evaluation-report.json for the exact artifact
+and validation identities.

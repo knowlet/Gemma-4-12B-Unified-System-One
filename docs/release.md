@@ -222,6 +222,13 @@ The planned Hugging Face repositories are
 `knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit`.
 Publication remains pending: the active credential was rechecked on October 3
 and still has read-only access. No remote upload or Hub revision is claimed.
+The [publication receipt](validation/2026-10-02/release/publication-status.json)
+records both validated local packages. Their
+[BF16 model card](validation/2026-10-02/release/model-cards/bf16/README.md) and
+[MLX model card](validation/2026-10-02/release/model-cards/mlx-8bit/README.md)
+include usage, attribution and limitations. Each package's
+`artifact-manifest.json` hashes every packaged file except itself; final
+packaging rechecked all weight bytes against the training/conversion receipts.
 
 The [code validation receipt](validation/2026-10-02/release/code-validation.json)
 records **808 passed, 3 optional-dependency skips**, 44 additional checks in the
