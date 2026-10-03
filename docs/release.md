@@ -146,6 +146,15 @@ these results do not establish preservation of general multimodal quality or
 media calibration. NLL uses a probability floor of `1e-12`, Brier sums squared
 errors over legal candidates, and ECE uses 15 equal-width bins.
 
+Probability decimal length does not imply full-precision logits. The CUDA path
+projects and softcaps in BF16 before FP32 temperature scaling and softmax.
+Different inputs can share rounded logits or logit differences, producing exact
+probability repeats; equal candidate logits produce ties. The saved
+[base calibration logits](validation/2026-10-02/release/evaluate/base-calibration.json)
+include both repeated `[22.5, 27.625]` pairs and equal-logit pairs. Each case still
+runs inference separately. Held-out CUDA raw logits were not retained, so these
+calibration examples do not reconstruct every repeated held-out output.
+
 ## Apple Silicon execution
 
 The exact merged checkpoint passed all eight synthetic MPS workloads on the

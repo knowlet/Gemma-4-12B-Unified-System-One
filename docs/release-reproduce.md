@@ -1,10 +1,38 @@
 # Reproduce the trained MLX release
 
-Run from the repository root on Apple Silicon. The recorded runtime revision is
-`d4ea1ef79af2e22f666374e529fa56c1de9d3f53`; use its preparation, conversion-validation
-and summary scripts with the archived evidence linked in [release.md](release.md).
-The recorded machine was a 64 GiB M1 Max. Keep space for the approximately 24 GB
-BF16 source and 13 GB MLX export together.
+Start from the existing repository root on Apple Silicon. The recorded machine
+was a 64 GiB M1 Max. Keep space for the approximately 24 GB BF16 source and 13 GB
+MLX export together. The archived evidence is described in [release.md](release.md).
+
+## Pinned runtime and archived evidence
+
+Create a separate detached checkout at the exact recorded runtime revision.
+Choose a new sibling directory below; the check rejects an existing destination.
+Both pinned commits must already exist in the current repository.
+
+```bash
+set -euo pipefail
+release_runtime_revision=d4ea1ef79af2e22f666374e529fa56c1de9d3f53
+release_evidence_revision=5b3be13c3eacbd17913e5702bf33537886d56d4f
+release_worktree=../Gemma-4-12B-Unified-System-One-release-reproduce
+test ! -e "$release_worktree"
+git worktree add --detach "$release_worktree" "$release_runtime_revision"
+git archive --format=tar "$release_evidence_revision" \
+  docs/validation/2026-10-02/release-datasets.tar.gz \
+  docs/validation/2026-10-02/release/artifacts.json \
+  docs/validation/2026-10-02/release/manifest.json \
+  docs/validation/2026-10-02/release/evaluate \
+  docs/validation/2026-10-02/release/train-receipt.json \
+  docs/validation/2026-10-02/release/postmerge-calibration.json \
+  | tar -xf - -C "$release_worktree"
+cd "$release_worktree"
+test "$(git rev-parse HEAD)" = "$release_runtime_revision"
+```
+
+The evidence commit supplies only the required archive and original CUDA
+receipts, preserving their exact bytes. Runtime sources and the lockfile remain
+at `d4ea1ef79af2e22f666374e529fa56c1de9d3f53`. Run every command below from this
+new checkout; keep its source files unchanged throughout the reproduction.
 
 ## Source and environments
 
@@ -83,7 +111,18 @@ artifacts/mlx-env/bin/python - <<'PY'
 import importlib.metadata
 import json
 import runpy
+import subprocess
 from pathlib import Path
+
+runtime_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+if runtime_revision != "d4ea1ef79af2e22f666374e529fa56c1de9d3f53":
+    raise RuntimeError("conversion receipt requires the pinned historical runtime")
+source_changes = subprocess.check_output(
+    ["git", "status", "--porcelain", "--untracked-files=all", "--",
+     "src/s1", "scripts", "uv.lock", "pyproject.toml"], text=True,
+)
+if source_changes.strip():
+    raise RuntimeError("runtime sources or dependency definitions differ from the pinned revision")
 
 helper = runpy.run_path("scripts/prepare_mlx_validation.py")
 source = Path("artifacts/release/checkpoint")
@@ -102,7 +141,7 @@ manifest = {
     "quantization": {"bits": 8, "group_size": 64, "mode": "affine"},
     "versions": {name: importlib.metadata.version(name) for name in
                  ("mlx-vlm", "mlx", "transformers", "huggingface-hub", "numpy")},
-    "runtime_source_revision": "d4ea1ef79af2e22f666374e529fa56c1de9d3f53",
+    "runtime_source_revision": runtime_revision,
 }
 Path("artifacts/release/mlx-conversion-manifest.json").write_text(
     json.dumps(manifest, indent=2) + "\n")

@@ -24,20 +24,35 @@ Measured on Apple M1 Max with 64 GiB unified memory using the actual
 - Export provenance and SHA-256 hashes: [4-bit](mlx-4bit-manifest.json),
   [8-bit](mlx-8bit-manifest.json).
 
-The first SDPA report predates the profiler's addition of explicit warmup samples
-and planned-coverage fields. All eight cases completed with three measured
-requests and three separate phase measurements each. The FP16 report stopped at
-the fourth case (image warmup); remaining cases were unattempted, not successes.
-The summary records its denominator explicitly.
+The first BF16 SDPA and FP16 reports predate the profiler's planned-coverage
+fields. BF16 completed all eight cases with three measured requests and three
+separate phase measurements each. FP16 completed three cases (9/24 planned
+requests and 15/87 decisions), then failed image warmup. The audio, mixed,
+long-state and sixteen-question cases were unattempted. The summary records
+the planned/completed case counts and failure; original report bytes are retained.
+
+`dataset_sha256` is the canonical case fingerprint from
+`s1.evaluation.datasets.fingerprint`, not the raw JSONL file checksum. For
+`examples/benchmarks/mps.jsonl`, these are respectively
+`e642f9f113c7ec3fc291e342a43906b0740cc50fcc0c7aaa30747fc9488e6f63` and
+`23de11921c22807ef90841916a052b172a88667814239d30629ed2e71e1f971b`.
+The BF16/4-bit/8-bit MLX reports share `manifest_sha256` because all three use
+the same [captured-input manifest](base-mlx-input-manifest.json), whose original
+bytes hash to `e83360e68f5230532a0468fa7f6d254d159e82913ea2db46a03b175b08f69504`.
+This field identifies the input capture; separate export manifests above
+record each converted model's weight/configuration hashes.
 
 The MLX input capture and numerical verifier are experimental. All reports use
 synthetic smoke cases with temperature 1.0; no accuracy/calibration acceptance is
 claimed. MLX timings exclude HF preprocessing, I/O and model loading, unlike
 PyTorch end-to-end timings. Do not compare them as interchangeable latency figures.
 
-Local gates: **389 tests passed**, Ruff lint and formatting passed, and both source
-distribution and wheel built successfully. One existing Starlette/httpx
-deprecation warning remains. No Hub upload or cloud deployment was performed.
+At the earlier base-model profiling checkpoint, **389 tests passed**, Ruff lint
+and formatting passed, and both source distribution and wheel built successfully.
+The later trained release and main integration have separate source revisions
+and test counts in the [release report](../../release.md#publication-and-code-checks).
+One existing Starlette/httpx deprecation warning remains. These base-model
+profiling experiments performed no Hub upload or cloud deployment.
 
 These measurements concern original-base conversions. Their reports and
 manifests are retained; locally generated base weight shards were removed after
