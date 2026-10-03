@@ -6,6 +6,7 @@ import importlib.util
 import json
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -234,3 +235,175 @@ def test_budget_never_reports_unfinished_epoch_completed(tmp_path, monkeypatch):
         _model(), [_case(0)], tmp_path, _recipe(max_training_seconds=1), identity="limited"
     )
     assert result["status"] == "paused_budget" and result["step"] == 0
+
+
+def _snapshot(directory):
+    return {
+        str(path.relative_to(directory)): path.read_bytes()
+        for path in directory.rglob("*")
+        if path.is_file()
+    }
+
+
+@pytest.fixture
+def phase_run(tmp_path, monkeypatch):
+    """Exercise phase orchestration with no model loading or accelerator calls."""
+    recipe = _recipe(pilot_steps=1)
+    data = {"train": [_case(0)], "calibration": [_case(0, "calibration")]}
+    data_identity = {"calibration": {"dataset_sha256": "frozen-calibration"}}
+    implementation = {"trainer": "stub"}
+    identity = release.digest(
+        {
+            "recipe": release.asdict(recipe),
+            "datasets": data_identity,
+            "implementation": implementation,
+        }
+    )
+    output = tmp_path / "run"
+    calls = []
+    monkeypatch.setattr(release, "load_release_data", lambda _: (data, data_identity))
+    monkeypatch.setattr(release, "implementation_identity", lambda: implementation)
+    monkeypatch.setattr(release, "_runtime", lambda: {})
+    monkeypatch.setattr(release, "_memory", lambda: {})
+    monkeypatch.setattr(release, "_free_cuda", lambda: None)
+
+    def save_adapter(path):
+        path.mkdir()
+        (path / "adapter_model.safetensors").write_bytes(b"stub adapter")
+
+    lm = SimpleNamespace(
+        save_pretrained=lambda path, **_: (path / "model.safetensors").write_bytes(b"stub model")
+    )
+    lm.merge_and_unload = lambda **_: lm
+
+    def new_model(*args, **kwargs):
+        calls.append("model")
+        return SimpleNamespace(
+            lm=lm,
+            processor=SimpleNamespace(save_pretrained=lambda _: None),
+            save_adapter=save_adapter,
+            prepare=lambda _: ({"input_ids": SimpleNamespace(shape=(1, 4))}, None, None),
+        )
+
+    def epoch(model, cases, phase, recipe, *, identity, resume=False, **kwargs):
+        calls.append(("epoch", resume))
+        if (phase / "latest.json").exists() and not resume:
+            raise ValueError("checkpoint exists; explicitly enable resume")
+        release.write_json(phase / "latest.json", {"identity": identity})
+        return {"status": "completed", "step": 1, "identity": identity}
+
+    monkeypatch.setattr(release, "_new_model", new_model)
+    monkeypatch.setattr(release, "train_epoch", epoch)
+    monkeypatch.setattr(release, "capture_calibration_logits", lambda *args: [])
+    monkeypatch.setattr(
+        release, "calibrate", lambda *args: {"temperature": 1.0, "n": 1, "records": []}
+    )
+    monkeypatch.setattr(release, "merge_drift", lambda *args: {"decisions": 0, "records": []})
+
+    def evaluate(*args):
+        calls.append("evaluate")
+        return {"status": "completed"}
+
+    monkeypatch.setattr(release, "evaluate_release", evaluate)
+
+    def seed(stage, status="completed", *, receipt=True):
+        release.write_json(output / "manifest.json", {"identity": identity})
+        phase = output / stage
+        phase.mkdir(exist_ok=True)
+        (phase / "events.jsonl").write_text('{"event":"previous_attempt"}\n')
+        if stage in ("pilot", "train"):
+            release.write_json(phase / "latest.json", {"identity": identity})
+        previous = {
+            "stage": stage,
+            "identity": identity,
+            "status": status,
+            "runtime": {},
+            "result": {"status": status, "step": 1, "identity": identity},
+        }
+        if receipt:
+            release.write_json(phase / "receipt.json", previous)
+        return previous
+
+    def run(stage, *, resume=False):
+        return release.run_phase(
+            stage,
+            tmp_path / "data",
+            output,
+            recipe,
+            resume=resume,
+            commit=lambda: calls.append("commit"),
+        )
+
+    return SimpleNamespace(output=output, calls=calls, seed=seed, run=run)
+
+
+@pytest.mark.parametrize("stage", ["pilot", "train", "evaluate"])
+@pytest.mark.parametrize("resume", [False, True])
+def test_completed_phase_is_an_unchanged_noop(phase_run, stage, resume):
+    if stage == "train":
+        phase_run.seed("pilot")
+    expected = phase_run.seed(stage)
+    before = _snapshot(phase_run.output)
+    try:
+        actual = phase_run.run(stage, resume=resume)
+    finally:
+        assert _snapshot(phase_run.output) == before
+    assert actual == expected
+    assert phase_run.calls == []
+
+
+@pytest.mark.parametrize("stage", ["pilot", "train", "evaluate"])
+@pytest.mark.parametrize("status", ["running", "failed", "paused_budget", "no_receipt"])
+def test_unfinished_phase_requires_resume_before_any_writes(phase_run, stage, status):
+    phase_run.seed(stage, status, receipt=status != "no_receipt")
+    before = _snapshot(phase_run.output)
+    with pytest.raises(ValueError, match="--resume"):
+        phase_run.run(stage)
+    assert _snapshot(phase_run.output) == before
+    assert phase_run.calls == []
+
+
+@pytest.mark.parametrize("stage", ["pilot", "train", "evaluate"])
+@pytest.mark.parametrize("resume", [False, True])
+def test_initial_phase_and_explicit_resume_can_complete(phase_run, stage, resume):
+    if stage == "train":
+        phase_run.seed("pilot")
+    if resume:
+        phase_run.seed(stage, "failed")
+    result = phase_run.run(stage, resume=resume)
+    assert result["status"] == result["result"]["status"] == "completed"
+    assert json.loads((phase_run.output / stage / "receipt.json").read_text()) == result
+    expected_call = "evaluate" if stage == "evaluate" else ("epoch", resume)
+    assert expected_call in phase_run.calls
+
+
+def test_duplicate_completed_invocations_do_not_block_following_phases(phase_run):
+    for stage in ("pilot", "train", "evaluate"):
+        completed = phase_run.run(stage)
+        assert completed["status"] == "completed"
+        before = _snapshot(phase_run.output)
+        calls_before = list(phase_run.calls)
+        assert phase_run.run(stage) == completed
+        assert _snapshot(phase_run.output) == before
+        assert phase_run.calls == calls_before
+
+
+@pytest.mark.parametrize(
+    "damage", ["identity", "stage", "status", "not_object", "missing_result", "missing_manifest"]
+)
+def test_invalid_existing_phase_is_rejected_without_mutation(phase_run, damage):
+    previous = phase_run.seed("pilot")
+    if damage in ("identity", "stage", "status"):
+        previous[damage] = "invalid"
+    elif damage == "not_object":
+        previous = []
+    elif damage == "missing_result":
+        previous.pop("result")
+    else:
+        (phase_run.output / "manifest.json").unlink()
+    release.write_json(phase_run.output / "pilot/receipt.json", previous)
+    before = _snapshot(phase_run.output)
+    with pytest.raises(ValueError):
+        phase_run.run("pilot", resume=True)
+    assert _snapshot(phase_run.output) == before
+    assert phase_run.calls == []

@@ -529,7 +529,6 @@ def run_phase(stage, data_dir, output, recipe=None, *, commit=lambda: None, resu
         raise ValueError("stage must be pilot, train or evaluate")
     data, data_identity = load_release_data(data_dir)
     output = Path(output)
-    output.mkdir(parents=True, exist_ok=True)
     implementation = implementation_identity()
     identity = digest(
         {"recipe": asdict(recipe), "datasets": data_identity, "implementation": implementation}
@@ -538,7 +537,43 @@ def run_phase(stage, data_dir, output, recipe=None, *, commit=lambda: None, resu
     if manifest_path.exists():
         if json.loads(manifest_path.read_text())["identity"] != identity:
             raise ValueError("release recipe or datasets differ from the existing run")
-    else:
+    phase = output / stage
+    if phase.exists():
+        if not phase.is_dir():
+            raise ValueError("existing release phase must be a directory")
+        if any(phase.iterdir()):
+            if not manifest_path.exists():
+                raise ValueError("existing phase state requires a matching release manifest")
+            receipt_path = phase / "receipt.json"
+            if receipt_path.exists():
+                previous = json.loads(receipt_path.read_text())
+                if (
+                    not isinstance(previous, dict)
+                    or previous.get("stage") != stage
+                    or previous.get("identity") != identity
+                    or previous.get("status")
+                    not in (
+                        "running",
+                        "completed",
+                        "failed",
+                        "paused_budget",
+                        "completed_with_errors",
+                    )
+                ):
+                    raise ValueError("existing phase receipt has invalid state or identity")
+                if previous["status"] == "completed":
+                    if (
+                        not isinstance(previous.get("result"), dict)
+                        or previous["result"].get("status") != "completed"
+                    ):
+                        raise ValueError("completed phase receipt has an invalid result")
+                    # Preserve the receipt and ledger before events, model loading,
+                    # checkpoint validation, or any other phase mutation.
+                    return previous
+            if not resume:
+                raise ValueError(f"existing unfinished {stage} phase requires --resume")
+    output.mkdir(parents=True, exist_ok=True)
+    if not manifest_path.exists():
         write_json(
             manifest_path,
             {
@@ -552,7 +587,6 @@ def run_phase(stage, data_dir, output, recipe=None, *, commit=lambda: None, resu
             },
         )
         commit()
-    phase = output / stage
     phase.mkdir(exist_ok=True)
     event(phase, "phase_started", stage=stage, identity=identity)
     receipt = {"stage": stage, "identity": identity, "status": "running", "runtime": _runtime()}

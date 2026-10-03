@@ -61,9 +61,12 @@ uv run --no-sync modal run apps/modal/release.py --stage export-results --run yo
 ```
 
 Stages run sequentially; training requires a matching successful pilot, and
-evaluation requires completed training and calibrated merged weights. Use
-`--resume` only to continue an interrupted pilot/train with unchanged code,
-lockfile, data and recipe. The runtime binds all `src/s1` sources and the trainer
+evaluation requires completed training and calibrated merged weights. The
+current workflow returns a matching completed phase's saved receipt without
+rewriting it or loading a model. An interrupted stage requires explicit
+`--resume` with unchanged code, lockfile, data and recipe before it can change
+the phase state.
+The runtime binds all `src/s1` sources and the trainer
 to the run identity. Checkpoints preserve optimizer, RNG, sample order and the
 completed-update ledger; abandoned log tails are retained separately. The soft
 training budget is five hours and the Modal invocation cap is six hours.
@@ -74,6 +77,8 @@ lockfile and 55 S1 source hashes match the run. Later integration of the Clef
 benchmark changes the complete source identity even though it does not change
 the release execution paths. Use a fresh run name with newer code; do not alter
 the historical manifests to bypass the identity check.
+The pinned historical trainer predates the duplicate-invocation guard; do not
+invoke its already completed stages again.
 
 The recorded run is `20261002-boolq-release-01`, seed 42, with training code at
 `b2a46b1`. Its A100-SXM4-80GB pilot completed all eight updates in 10.41 training
@@ -252,8 +257,10 @@ contracts-only environment, Ruff, package build and all four source CI jobs.
 The runtime/evaluation code revision is
 `d4ea1ef79af2e22f666374e529fa56c1de9d3f53`.
 
-After integrating main revision `9bcf9db823b7e96bc62dc0bc9924fafb34835199`, the
-combined local suite passed **863 tests with 3 optional-dependency skips**.
+After integrating main revision `9bcf9db823b7e96bc62dc0bc9924fafb34835199` and
+adding completed-phase receipt protection, the combined local suite passed
+**894 tests with 3 optional-dependency skips**, including 39 focused training
+workflow tests. Ruff and the package build also passed.
 The release summary regenerated from the recorded CUDA/MLX reports is byte-for-byte
 identical. Historical training and model-package receipts retain their original
 source and artifact hashes.
