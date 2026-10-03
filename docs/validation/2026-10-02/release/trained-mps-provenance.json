@@ -1,0 +1,37 @@
+{
+  "source_checkpoint": {
+    "sha256": "fa96debc68209c193338d8edee4ec4258a9f603e4f2156d4688c16364703d15d",
+    "files": [
+      {
+        "path": "config.json",
+        "size_bytes": 4953,
+        "sha256": "b50e760a9107b629e1a140ab7a4392e875c37baefee022f27c98b90b9d947cf0"
+      },
+      {
+        "path": "model.safetensors",
+        "size_bytes": 23919549408,
+        "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53"
+      }
+    ]
+  },
+  "s1_config_sha256": "322ffa1c6bfa7c4069da43265be1e79071eee6fbcff07cd4a74f9ed04774b962",
+  "report_sha256": "9b505d7c59698010c46f3bcd451c332917fa1348d23c4e9e6a9d2958e7d68a25",
+  "command": [
+    ".venv/bin/python",
+    "scripts/benchmark_mps.py",
+    "--model",
+    "artifacts/release/checkpoint",
+    "--device",
+    "mps",
+    "--dtype",
+    "bfloat16",
+    "--attn-implementation",
+    "sdpa",
+    "--dataset",
+    "examples/benchmarks/mps.jsonl",
+    "--warmup",
+    "1",
+    "--repeat",
+    "3"
+  ]
+}

@@ -12,6 +12,12 @@ and Laya, Gemma BF16/INT8/NF4, and a separate NF4 training continuation. The
 [Modal reproduction guide](modal.md#reproduce-the-october-1-matched-comparison)
 describes that campaign; the v1 examples below are smaller standalone evaluations.
 
+For repeated, synchronized Apple Silicon latency measurements and separate
+preprocessing/backbone/projection diagnostics, see [MPS profiling](mps.md).
+The commands below measure task quality and one latency sample per case;
+the profiling harness repeats each workload without treating repeats as new
+independent accuracy examples.
+
 Every backend receives the same `DecisionRequest`, keyed question ids and candidate
 order. A JSONL row contains `id`, `split: test`, `request` and a `gold` map covering
 every question. Choice golds are option keys, Score golds are level keys and Noul

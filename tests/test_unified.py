@@ -153,7 +153,7 @@ def model():
 
 
 @pytest.mark.parametrize("modality", ["text", "image", "audio", "mixed"])
-@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16, torch.float16])
 def test_projection_matches_full_lm_head(model, decision_request, modality, dtype):
     model.lm.to(dtype=dtype)
     if modality in ("image", "mixed"):
@@ -321,6 +321,69 @@ def test_constructor_rejects_unsupported_cpu_precision_before_loading(monkeypatc
         UnifiedDecisionModel("owner/checkpoint", device="cpu", precision=precision, temperature=1.0)
 
 
+@pytest.mark.parametrize("dtype", [None, "auto", "float32", torch.float32])
+def test_legacy_precision_and_compatible_dtype_can_coexist(model, monkeypatch, dtype):
+    from transformers import AutoModelForMultimodalLM, AutoProcessor
+
+    calls = []
+
+    def load_model(name, **kwargs):
+        calls.append(kwargs)
+        return model.lm
+
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
+    monkeypatch.setattr(AutoModelForMultimodalLM, "from_pretrained", load_model)
+    UnifiedDecisionModel(
+        "owner/checkpoint", device="cpu", precision="float32", dtype=dtype, temperature=1.0
+    )
+    assert calls == [{"revision": None, "dtype": torch.float32}]
+
+
+def test_conflicting_precision_and_dtype_fail_before_loading(monkeypatch):
+    from transformers import AutoModelForMultimodalLM, AutoProcessor
+
+    def refuse_load(*args, **kwargs):
+        pytest.fail("contradictory precision must fail before processor/checkpoint access")
+
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", refuse_load)
+    monkeypatch.setattr(AutoModelForMultimodalLM, "from_pretrained", refuse_load)
+    with pytest.raises(ValueError, match="must agree"):
+        UnifiedDecisionModel(
+            "owner/checkpoint", device="cuda", precision="bfloat16", dtype="float32"
+        )
+
+
+@pytest.mark.parametrize("quantization", ["int8", "nf4"])
+@pytest.mark.parametrize(
+    "device,dtype", [("mps", "bfloat16"), ("cpu", "bfloat16"), ("cuda", "float16")]
+)
+def test_dtype_does_not_bypass_quantization_policy(monkeypatch, quantization, device, dtype):
+    from transformers import AutoModelForMultimodalLM, AutoProcessor
+
+    def refuse_load(*args, **kwargs):
+        pytest.fail("invalid quantization runtime must fail before checkpoint access")
+
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", refuse_load)
+    monkeypatch.setattr(AutoModelForMultimodalLM, "from_pretrained", refuse_load)
+    with pytest.raises(ValueError, match="CUDA and bfloat16"):
+        UnifiedDecisionModel(
+            "owner/checkpoint", device=device, dtype=dtype, quantization=quantization
+        )
+
+
+def test_quantized_initialization_preserves_existing_placement(model, monkeypatch):
+    def refuse_move(*args, **kwargs):
+        pytest.fail("quantized modules must retain their explicit device-map placement")
+
+    monkeypatch.setattr(model.lm, "to", refuse_move)
+    restored = UnifiedDecisionModel.__new__(UnifiedDecisionModel)
+    restored.quantization = "nf4"
+    restored._initialize(model.lm, Processor(), "cpu", 1.0, 1024)
+    assert restored.dtype == "float32"
+    assert restored.attn_implementation == "sdpa"
+    assert restored.device == "cpu"
+
+
 def test_explicit_float32_constructor_loads_actual_tiny_checkpoint(
     model, decision_request, tmp_path, monkeypatch
 ):
@@ -397,6 +460,55 @@ def test_real_quantized_cuda_adapter_preserves_multimodal_candidate_readout(
     assert receipt["model_footprint_bytes"] > 0
     with pytest.raises(ValueError, match="separately"):
         loaded.save(tmp_path / "unsafe-merge")
+
+
+@pytest.mark.parametrize("attention", [None, "eager", "sdpa"])
+def test_constructor_forwards_runtime_settings(model, monkeypatch, attention):
+    from transformers import AutoModelForMultimodalLM, AutoProcessor
+
+    calls = []
+
+    def load_model(name, **kwargs):
+        calls.append(kwargs)
+        model.lm.to(dtype=kwargs["dtype"])
+        if "attn_implementation" in kwargs:
+            model.lm.set_attn_implementation(kwargs["attn_implementation"])
+        return model.lm
+
+    monkeypatch.setattr(AutoProcessor, "from_pretrained", lambda *args, **kwargs: Processor())
+    monkeypatch.setattr(AutoModelForMultimodalLM, "from_pretrained", load_model)
+    restored = UnifiedDecisionModel(
+        "owner/checkpoint",
+        revision="test",
+        device="cpu",
+        dtype="float16",
+        attn_implementation=attention,
+        temperature=1.0,
+    )
+    expected = {"revision": "test", "dtype": torch.float16}
+    if attention is not None:
+        expected["attn_implementation"] = attention
+    assert calls == [expected]
+    assert restored.dtype == "float16"
+    assert restored.attn_implementation == (attention or "sdpa")
+
+
+def test_from_components_preserves_dtype_and_backend_reports_runtime(model, monkeypatch):
+    from importlib.metadata import version
+
+    from s1 import unified
+    from s1.backends import GemmaBackend
+
+    model.lm.to(dtype=torch.bfloat16)
+    restored = UnifiedDecisionModel.from_components(model.lm, Processor())
+    assert restored.head.weight.dtype == torch.bfloat16
+    assert restored.dtype == "bfloat16"
+    monkeypatch.setattr(unified, "UnifiedDecisionModel", lambda *args, **kwargs: restored)
+    backend = GemmaBackend("in-memory")
+    assert backend.metadata["dtype"] == "bfloat16"
+    assert backend.metadata["attn_implementation"] == "sdpa"
+    assert backend.metadata["torch_version"] == version("torch")
+    assert backend.metadata["transformers_version"] == version("transformers")
 
 
 def test_local_and_hub_checkpoint_calibration_match(model, decision_request, tmp_path, monkeypatch):

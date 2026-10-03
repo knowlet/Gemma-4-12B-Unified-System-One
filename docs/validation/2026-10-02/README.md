@@ -1,4 +1,65 @@
-# Clef matched benchmark — October 2, 2026
+# Validation — October 2, 2026
+
+## Trained BoolQ specialist release
+
+The [release report](../../release.md) covers the completed 2,048-update LoRA
+run, full BF16 merge, MPS execution and MLX 8-bit validation completed October 3.
+Its [raw results](release/summary/README.md) use a fresh 256-case BoolQ test;
+the base-model profiling and historical Clef comparison below use different
+workloads and must retain their own populations and timing scopes.
+
+## Base-model MPS and MLX validation
+
+Measured on Apple M1 Max with 64 GiB unified memory using the actual
+`google/gemma-4-12B-it` checkpoint at
+`707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7`.
+
+- [MPS protocol and interpretation](../../mps.md)
+- [Model conversion and release assessment](../../model-export.md)
+- [Machine-readable summary](summary.json)
+- PyTorch reports: [BF16 SDPA](bf16-sdpa.json), [BF16 eager](bf16-eager.json),
+  [BF16 prefer Metal](bf16-sdpa-metal.json), [FP16 failure](fp16-sdpa.json).
+- MLX comparisons: [unquantized BF16](mlx-bf16-validation.json),
+  [4-bit](mlx-4bit-validation.json), [8-bit](mlx-8bit-validation.json).
+- Export provenance and SHA-256 hashes: [4-bit](mlx-4bit-manifest.json),
+  [8-bit](mlx-8bit-manifest.json).
+
+The first BF16 SDPA and FP16 reports predate the profiler's planned-coverage
+fields. BF16 completed all eight cases with three measured requests and three
+separate phase measurements each. FP16 completed three cases (9/24 planned
+requests and 15/87 decisions), then failed image warmup. The audio, mixed,
+long-state and sixteen-question cases were unattempted. The summary records
+the planned/completed case counts and failure; original report bytes are retained.
+
+`dataset_sha256` is the canonical case fingerprint from
+`s1.evaluation.datasets.fingerprint`, not the raw JSONL file checksum. For
+`examples/benchmarks/mps.jsonl`, these are respectively
+`e642f9f113c7ec3fc291e342a43906b0740cc50fcc0c7aaa30747fc9488e6f63` and
+`23de11921c22807ef90841916a052b172a88667814239d30629ed2e71e1f971b`.
+The BF16/4-bit/8-bit MLX reports share `manifest_sha256` because all three use
+the same [captured-input manifest](base-mlx-input-manifest.json), whose original
+bytes hash to `e83360e68f5230532a0468fa7f6d254d159e82913ea2db46a03b175b08f69504`.
+This field identifies the input capture; separate export manifests above
+record each converted model's weight/configuration hashes.
+
+The MLX input capture and numerical verifier are experimental. All reports use
+synthetic smoke cases with temperature 1.0; no accuracy/calibration acceptance is
+claimed. MLX timings exclude HF preprocessing, I/O and model loading, unlike
+PyTorch end-to-end timings. Do not compare them as interchangeable latency figures.
+
+At the earlier base-model profiling checkpoint, **389 tests passed**, Ruff lint
+and formatting passed, and both source distribution and wheel built successfully.
+The later trained release and main integration have separate source revisions
+and test counts in the [release report](../../release.md#publication-and-code-checks).
+One existing Starlette/httpx deprecation warning remains. These base-model
+profiling experiments performed no Hub upload or cloud deployment.
+
+These measurements concern original-base conversions. Their reports and
+manifests are retained; locally generated base weight shards were removed after
+validation to make room for the trained release. The source conversions remain
+reproducible from their pinned checkpoint and commands.
+
+## Clef matched benchmark
 
 `Cloudflare/clef` revision `2f3de3dd85f379784083b0814d997ab627200f0c` completed
 the original 128 BoolQ cases, 52-case media eligibility evaluation, and all six
@@ -35,7 +96,7 @@ percentage points**, with a source-group bootstrap 95% CI of **[−3.90625,
 zero and is unadjusted for multiple comparisons. It does not establish a
 population-level accuracy advantage.
 
-## Published evidence
+### Published evidence
 
 The [combined summary](comparison-summary.json) retains **18 selected model
 configurations, 30 attempts, and 14 paired comparisons**. The
@@ -83,7 +144,7 @@ This replay was checked against the combined summary and gives the identical
 estimate and interval. Initial implementation checks are recorded in
 [clef-local-checks.json](clef-local-checks.json).
 
-## Full archive and fresh execution
+### Full archive and fresh execution
 
 The complete Clef archive includes request/error records and all six load-cell
 manifests and queueing observations. It remains in the
@@ -92,11 +153,15 @@ manifests and queueing observations. It remains in the
 published receipt. With access to that volume, download it to a fresh directory:
 
 ```bash
+mkdir -p artifacts/clef-full-archive
 uv run --no-sync modal volume get gemma-unified-system-one \
   /comparisons/20261002-clef-01/clef-local artifacts/clef-full-archive
 ```
 
-This retrieves saved files without launching a GPU. A fresh measured run uses the
+This retrieves saved files into `artifacts/clef-full-archive/clef-local` without
+launching a GPU. Precreate the destination directory: the observed Modal CLI
+treats a nonexistent destination as one file when downloading folder contents.
+A fresh measured run uses the
 [pinned Clef reproduction procedure](../../modal.md#reproduce-the-clef-comparison).
 The completed Modal app was `ap-dIEOA1B4rkxHIYU6JN2ueB`; its call was
 `fc-01M3XJCNTFREKQNA5D3EYYRN9H`.

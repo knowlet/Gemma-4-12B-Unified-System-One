@@ -1,0 +1,24 @@
+{
+  "temperature": 2.7144176165949068,
+  "source_model": "google/gemma-4-12B-it",
+  "source_revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+  "prompt_version": 1,
+  "training_recipe_sha256": "2a708e5f4acfea4b688e88ba338aa62991608db875fef039ee6b4f33c3a74d73",
+  "calibration_dataset_sha256": "2da1a6798b1638a7ff4dd336bdf3b7eebad7a9641ec71c6932f778d309860826",
+  "source_checkpoint_sha256": "fa96debc68209c193338d8edee4ec4258a9f603e4f2156d4688c16364703d15d",
+  "export_checkpoint_sha256": "7e81323f4bfcf98528d65e5abccb8a60fe7f83ecb0370ca88b32426cc66da000",
+  "mlx_calibration": {
+    "method": "s1.training.fit_temperature; 241 log-spaced temperatures [0.05,20] plus1",
+    "input": "raw legal selected logits after native softcap, before any temperature",
+    "case_count": 256,
+    "temperature": 2.7144176165949068,
+    "n": 256,
+    "nll_before": 0.5199250473058581,
+    "nll_after": 0.2847243872307045,
+    "split": "calibration",
+    "runtime": "mlx-vlm",
+    "manifest_sha256": "90e9fc465a6e372c81e1596e387fc7c62107730b41c4f3c1d5c7a8087a9bb51e",
+    "dataset_manifest_sha256": "e0ab28e3435a910c19abf3a9a7e58df8b5cff7a806b6c7f4f18021db1d3804dd",
+    "source_temperature": 2.7830344470383452
+  }
+}

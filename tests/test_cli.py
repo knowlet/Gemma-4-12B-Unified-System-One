@@ -96,6 +96,8 @@ def test_quantized_adapter_options_reach_gemma_backend(monkeypatch, tmp_path, co
         ["--quantization", "int8"],
         ["--adapter-path", "adapter"],
         ["--precision", "float32"],
+        ["--dtype", "float16"],
+        ["--attn-implementation", "sdpa"],
     ],
 )
 def test_non_gemma_rejects_gemma_inference_settings(monkeypatch, capsys, backend, option):
@@ -112,7 +114,16 @@ def test_non_gemma_rejects_gemma_inference_settings(monkeypatch, capsys, backend
     assert "require --backend gemma" in capsys.readouterr().err
 
 
-@pytest.mark.parametrize("option", [["--device", "cpu"], ["--precision", "float32"]])
+@pytest.mark.parametrize(
+    "option",
+    [
+        ["--device", "cpu"],
+        ["--device", "mps"],
+        ["--precision", "float32"],
+        ["--dtype", "float32"],
+        ["--dtype", "float16"],
+    ],
+)
 def test_invalid_quantized_precision_fails_before_loading(monkeypatch, capsys, option):
     from s1 import cli
 
@@ -142,3 +153,117 @@ def test_quantization_is_not_a_training_cli_option(capsys):
         )
     assert failure.value.code == 2
     assert "unrecognized arguments" in capsys.readouterr().err
+
+
+def test_gemma_cli_forwards_runtime_settings(tmp_path, decision_request, monkeypatch):
+    from s1 import cli
+    from s1.backends import UniformBackend
+
+    request_path = tmp_path / "request.json"
+    request_path.write_text(decision_request.model_dump_json())
+    calls = []
+
+    def backend(model, **kwargs):
+        calls.append((model, kwargs))
+        return UniformBackend()
+
+    monkeypatch.setattr(cli, "GemmaBackend", backend)
+    assert (
+        cli.main(
+            [
+                "decide",
+                "--model",
+                "owner/model",
+                "--device",
+                "mps",
+                "--dtype",
+                "float16",
+                "--attn-implementation",
+                "eager",
+                str(request_path),
+            ]
+        )
+        == 0
+    )
+    assert calls == [
+        (
+            "owner/model",
+            {
+                "revision": None,
+                "device": "mps",
+                "precision": None,
+                "quantization": "none",
+                "adapter_path": None,
+                "dtype": "float16",
+                "attn_implementation": "eager",
+            },
+        )
+    ]
+
+
+def test_conflicting_precision_aliases_fail_before_loading(monkeypatch, capsys):
+    from s1 import cli
+
+    monkeypatch.setattr(cli, "GemmaBackend", lambda *a, **kw: pytest.fail("must not load"))
+    with pytest.raises(SystemExit) as failure:
+        cli.main(
+            [
+                "decide",
+                "examples/request.json",
+                "--device",
+                "cuda",
+                "--precision",
+                "bfloat16",
+                "--dtype",
+                "float32",
+            ]
+        )
+    assert failure.value.code == 2
+    assert "must agree" in capsys.readouterr().err
+
+
+def test_training_cli_forwards_runtime_settings(tmp_path, benchmark_case, monkeypatch):
+    pytest.importorskip("torch")
+    from s1 import cli, training, unified
+
+    paths = {}
+    for split in ("train", "calibration"):
+        case = benchmark_case.model_copy(deep=True)
+        case.split = split
+        case.id = split
+        paths[split] = tmp_path / f"{split}.jsonl"
+        paths[split].write_text(case.model_dump_json() + "\n")
+    calls = []
+
+    class Model:
+        def __init__(self, name, **kwargs):
+            calls.append(kwargs)
+
+        def save(self, path):
+            path.mkdir(parents=True)
+
+    monkeypatch.setattr(unified, "UnifiedDecisionModel", Model)
+    monkeypatch.setattr(training, "train_model", lambda *args, **kwargs: {"steps": 0})
+    assert (
+        cli.main(
+            [
+                "train",
+                "--train-data",
+                str(paths["train"]),
+                "--calibration-data",
+                str(paths["calibration"]),
+                "--output",
+                str(tmp_path / "output"),
+                "--device",
+                "mps",
+                "--dtype",
+                "bfloat16",
+                "--attn-implementation",
+                "sdpa",
+            ]
+        )
+        == 0
+    )
+    assert calls[0]["device"] == "mps"
+    assert calls[0]["dtype"] == "bfloat16"
+    assert calls[0]["attn_implementation"] == "sdpa"

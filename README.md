@@ -8,7 +8,31 @@ This project extends [system-one-open](https://github.com/mithalouni/system-one-
 The original E2B experiments and demos remain available; their historical results
 are not measurements of this Unified model. See [upstream notes](docs/upstream.md).
 
-## Latest measured results — October 2, 2026
+## BoolQ specialist training — October 2, 2026
+
+A complete 2,048-update LoRA pass has been merged into standalone BF16 12B
+weights, retaining the native image/audio modules. This is LoRA fine-tuning
+followed by a full-model merge, not optimization of every base parameter.
+
+On a fresh, balanced 256-case BoolQ validation subset, accuracy increased from
+**80.08% to 89.84%** and NLL decreased from **0.441 to 0.273**. Both models use
+separate temperatures fitted on 256 disjoint calibration cases. Training took
+22.49 minutes on A100-SXM4-80GB. The merged BF16 model's historical media
+accuracy stayed at 34/52, while NLL, Brier and ECE worsened; general multimodal
+quality is not established.
+
+The full multimodal **MLX 8-bit export is 12.75 GB** and also scores **89.84%**
+on all 256 fresh cases after independent calibration. All observed fresh-test
+predictions agree with BF16, but individual candidate probabilities differ by
+up to 27.48 percentage points. Eight synthetic MPS workloads also execute
+successfully; their timings are separate from accuracy evaluation.
+
+The [release protocol and raw results](docs/release.md) and
+[reproduction commands](docs/release-reproduce.md) include frozen datasets,
+exclusions, weight hashes and full validation. Hugging Face upload awaits a
+write-scoped credential; no published checkpoint is claimed yet.
+
+## Matched model comparison — October 2, 2026
 
 Matched Modal runs now cover **18 model/format/seed configurations** on
 the same **128 BoolQ questions, 52 native media cases, and six HTTP load shapes**.
@@ -121,6 +145,11 @@ uv run --no-sync python scripts/benchmark_v2_acceptance.py \
   --output artifacts/evaluation/acceptance
 ```
 
+On Apple Silicon, Unified inference now selects MPS automatically and uses BF16
+on macOS 14 or newer (FP32 on older supported macOS). Use `--device cpu` or
+`--dtype float32` for an explicit reference configuration. See the
+[MPS measurements](docs/mps.md) and [GGUF / MLX release paths](docs/model-export.md).
+
 ## Layout
 
 | Path | Purpose |
@@ -129,7 +158,7 @@ uv run --no-sync python scripts/benchmark_v2_acceptance.py \
 | `apps/modal/` | Cloud entrypoints; retained upstream training and demos |
 | `tests/` | Offline contracts, numerical regression tests and tiny-model integration |
 | `examples/` | Requests and a small benchmark fixture, not an accuracy leaderboard |
-| `scripts/` | Dataset preparation, training checks, comparison collection and reports |
+| `scripts/` | Dataset preparation, training checks, MPS profiling, MLX validation and comparison reports |
 | `docs/` | Design, evaluation protocol and deployment instructions |
 | `results/`, `media/`, `report.html` | Historical upstream artifacts, retained unchanged |
 

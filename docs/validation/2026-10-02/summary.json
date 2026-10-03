@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "hardware": {
+    "chip": "Apple M1 Max",
+    "physical_memory_bytes": 68719476736,
+    "macos": "27.0.1"
+  },
+  "baseline_commit": "f8390676ae942699a71a85ae9a99cfcd7b9b3806",
+  "source_model": {
+    "name": "google/gemma-4-12B-it",
+    "resolved_revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+    "device": "mps",
+    "dtype": "bfloat16",
+    "attn_implementation": "sdpa",
+    "temperature": 1.0
+  },
+  "dataset_sha256": "e642f9f113c7ec3fc291e342a43906b0740cc50fcc0c7aaa30747fc9488e6f63",
+  "dataset": "examples/benchmarks/mps.jsonl",
+  "warmup_per_case": 1,
+  "repeat_per_case": 3,
+  "configurations": {
+    "bf16-sdpa": {
+      "status": "ok",
+      "report": "bf16-sdpa.json",
+      "planned_cases": 8,
+      "completed_cases": 8,
+      "summary": {
+        "request_count": 24,
+        "decision_count": 87,
+        "total_measured_ms": 45516.53870999871,
+        "latency_ms": {
+          "p50": 1376.0045839990198,
+          "p95": 4492.2830312512815
+        },
+        "requests_per_second": 0.5272808671351776,
+        "decisions_per_second": 1.9113931433650189,
+        "total_measured_input_tokens": 6861
+      },
+      "first_sample_argmax_agreement": {
+        "matching": 29,
+        "total": 29
+      },
+      "max_abs_probability_drift": 0.0,
+      "failure": null
+    },
+    "bf16-eager": {
+      "status": "ok",
+      "report": "bf16-eager.json",
+      "planned_cases": 8,
+      "completed_cases": 8,
+      "summary": {
+        "request_count": 24,
+        "decision_count": 87,
+        "total_measured_ms": 45303.193460997136,
+        "latency_ms": {
+          "p50": 1423.1866664995323,
+          "p95": 4455.294250049337
+        },
+        "requests_per_second": 0.5297639783531444,
+        "decisions_per_second": 1.9203944215301485,
+        "total_measured_input_tokens": 6861,
+        "request_coverage": 1.0,
+        "decision_coverage": 1.0,
+        "phase_request_count": 24,
+        "phase_coverage": 1.0
+      },
+      "first_sample_argmax_agreement": {
+        "matching": 29,
+        "total": 29
+      },
+      "max_abs_probability_drift": 0.0,
+      "failure": null
+    },
+    "bf16-sdpa-metal": {
+      "status": "ok",
+      "report": "bf16-sdpa-metal.json",
+      "planned_cases": 8,
+      "completed_cases": 8,
+      "summary": {
+        "request_count": 24,
+        "decision_count": 87,
+        "total_measured_ms": 48519.07966800354,
+        "latency_ms": {
+          "p50": 1401.5181249997113,
+          "p95": 4695.118532998822
+        },
+        "requests_per_second": 0.4946507675789051,
+        "decisions_per_second": 1.793109032473531,
+        "total_measured_input_tokens": 6861,
+        "request_coverage": 1.0,
+        "decision_coverage": 1.0,
+        "phase_request_count": 24,
+        "phase_coverage": 1.0
+      },
+      "first_sample_argmax_agreement": {
+        "matching": 29,
+        "total": 29
+      },
+      "max_abs_probability_drift": 0.0,
+      "failure": null
+    },
+    "fp16-sdpa": {
+      "status": "error",
+      "report": "fp16-sdpa.json",
+      "planned_cases": 8,
+      "completed_cases": 3,
+      "summary": {
+        "request_count": 9,
+        "decision_count": 15,
+        "total_measured_ms": 4523.517502995674,
+        "latency_ms": {
+          "p50": 485.30516699975124,
+          "p95": 712.0244003992411
+        },
+        "requests_per_second": 1.9896021169454525,
+        "decisions_per_second": 3.316003528242421,
+        "total_measured_input_tokens": 708
+      },
+      "first_sample_argmax_agreement": {
+        "matching": 5,
+        "total": 5
+      },
+      "max_abs_probability_drift": 0.03295630216598511,
+      "failure": {
+        "stage": "warmup",
+        "case_id": "synthetic-image",
+        "iteration": 0,
+        "type": "ValueError",
+        "message": "invalid probability distribution"
+      }
+    }
+  },
+  "mlx": {
+    "bf16": {
+      "report": "mlx-bf16-validation.json",
+      "status": "ok",
+      "summary": {
+        "case_count": 8,
+        "successful_case_count": 8,
+        "compared_question_count": 29,
+        "max_abs_probability_drift": 0.0341038852930069,
+        "argmax_agreement_count": 29,
+        "argmax_agreement_fraction": 1.0,
+        "acceptance_threshold": null
+      },
+      "parity_accepted": false
+    },
+    "4bit": {
+      "report": "mlx-4bit-validation.json",
+      "status": "ok",
+      "summary": {
+        "case_count": 8,
+        "successful_case_count": 8,
+        "compared_question_count": 29,
+        "max_abs_probability_drift": 0.8832609243690968,
+        "argmax_agreement_count": 25,
+        "argmax_agreement_fraction": 0.8620689655172413,
+        "acceptance_threshold": null
+      },
+      "parity_accepted": false
+    },
+    "8bit": {
+      "report": "mlx-8bit-validation.json",
+      "status": "ok",
+      "summary": {
+        "case_count": 8,
+        "successful_case_count": 8,
+        "compared_question_count": 29,
+        "max_abs_probability_drift": 0.09512263536453247,
+        "argmax_agreement_count": 29,
+        "argmax_agreement_fraction": 1.0,
+        "acceptance_threshold": null
+      },
+      "parity_accepted": false
+    }
+  },
+  "verification": {
+    "pytest": "389 passed, 1 existing Starlette/httpx deprecation warning",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "package_build": "sdist and wheel passed",
+    "publication": "not uploaded",
+    "fine_tuned_checkpoint": "no complete trained weights present locally"
+  }
+}
