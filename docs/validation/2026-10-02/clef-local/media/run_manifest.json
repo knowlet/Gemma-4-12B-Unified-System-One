@@ -1,0 +1,691 @@
+{
+  "schema_version": 2,
+  "status": "completed",
+  "plan": {
+    "schema_version": 2,
+    "kind": "plan",
+    "dry_run": true,
+    "created_at": "2026-10-02T05:51:06.410725+00:00",
+    "plan_id": "e342d9cd5d4d67c3447cfd4eff65f59c14c365922888c6892b6ee8938049cffc",
+    "profile_id": "media",
+    "dataset_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35",
+    "runtime": {
+      "source_sha256": "d9df49a67b13b8e7eecfeb6a60f2927f285e81429b0c8d9a3fc272e82b89b2fb",
+      "lock_sha256": "fb43de38bff10ccc91c11db31ebe6bfc7812c97def91243345e856887e7230cd",
+      "python": "3.12.10",
+      "platform": "Linux-4.19.0-gvisor-x86_64-with-glibc2.36",
+      "packages": {
+        "pydantic": "2.13.5",
+        "numpy": "2.5.3",
+        "httpx": "0.28.1",
+        "torch": "2.8.0",
+        "transformers": "5.17.0",
+        "accelerate": "1.15.0",
+        "laya": "0.3.21",
+        "peft": "0.21.0",
+        "scikit-learn": "1.9.1",
+        "sentence-transformers": null,
+        "setfit": null,
+        "datasets": "4.8.5"
+      }
+    },
+    "models": [
+      {
+        "model_id": "clef-local",
+        "experiment_id": "21a5b784a65c935c316376794d9691637414869d75d58885c07a3c7898dbb2ad",
+        "identity": {
+          "baseline_revision": "f8390676ae942699a71a85ae9a99cfcd7b9b3806",
+          "model": {
+            "id": "clef-local",
+            "adapter": "clef",
+            "enabled": true,
+            "model_id": "Cloudflare/clef",
+            "revision": "2f3de3dd85f379784083b0814d997ab627200f0c",
+            "processor_revision": null,
+            "precision": "bfloat16",
+            "quantization": "none",
+            "execution_mode": "sequential",
+            "calibration": "none",
+            "calibration_sha256": null,
+            "calibration_file": null,
+            "base_calibration": null,
+            "runtime": "reference",
+            "readout": "candidate",
+            "protocol": "compatible",
+            "preprocessing": "none",
+            "preprocessor_endpoint_env": null,
+            "preprocessor_token_env": null,
+            "preprocessor_revision": null,
+            "artifact_file": null,
+            "artifact_sha256": null,
+            "decision_adapter_path": null,
+            "decision_adapter_sha256": null,
+            "device": "cuda",
+            "subfolder": null,
+            "context_limit": 16384,
+            "http_timeout_seconds": 120.0,
+            "hardware_label": null,
+            "service_region": null,
+            "endpoint_env": null,
+            "token_env": null,
+            "cost_per_request_usd": 0.02,
+            "capabilities": {
+              "modalities": [
+                "text",
+                "image"
+              ],
+              "primitives": [
+                "choice",
+                "noul",
+                "score"
+              ],
+              "max_options": 52,
+              "max_questions": 64,
+              "probabilities": "complete",
+              "batch": "loop_emulated",
+              "concurrent_requests": false,
+              "independent_questions": false
+            },
+            "notes": "Pinned 27B BF16 multimodal backbone plus joint schema head; native text/images, no audio. Complete float32-softmax probabilities, strict full-input context rejection, no persistent cache or CUDA graphs."
+          },
+          "suite": {
+            "id": "media",
+            "dataset": "/workspace/artifacts/live-validation/datasets/media-test.jsonl",
+            "track": "native_multimodal",
+            "information_view": "native_media",
+            "dataset_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35",
+            "notes": ""
+          },
+          "dataset_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35",
+          "profile": {
+            "id": "media",
+            "suite": "media",
+            "split": "test",
+            "models": [
+              "clef-local"
+            ],
+            "repetitions": 1,
+            "warmup": 3,
+            "batch_size": 1,
+            "concurrency": 1,
+            "load_mode": "closed_loop",
+            "arrival_rate": null,
+            "slo_ms": null,
+            "require_native_batch": false,
+            "require_independent_questions": false,
+            "require_probabilities": false,
+            "seed": 0,
+            "budget": {
+              "max_requests": 200,
+              "max_estimated_cost_usd": 4.0
+            }
+          },
+          "runtime": {
+            "source_sha256": "d9df49a67b13b8e7eecfeb6a60f2927f285e81429b0c8d9a3fc272e82b89b2fb",
+            "lock_sha256": "fb43de38bff10ccc91c11db31ebe6bfc7812c97def91243345e856887e7230cd",
+            "python": "3.12.10",
+            "platform": "Linux-4.19.0-gvisor-x86_64-with-glibc2.36",
+            "packages": {
+              "pydantic": "2.13.5",
+              "numpy": "2.5.3",
+              "httpx": "0.28.1",
+              "torch": "2.8.0",
+              "transformers": "5.17.0",
+              "accelerate": "1.15.0",
+              "laya": "0.3.21",
+              "peft": "0.21.0",
+              "scikit-learn": "1.9.1",
+              "sentence-transformers": null,
+              "setfit": null,
+              "datasets": "4.8.5"
+            }
+          },
+          "service": {}
+        },
+        "status": "ready",
+        "reasons": [],
+        "coverage": {
+          "requests": {
+            "eligible": 32,
+            "unsupported": 20,
+            "unknown": 0
+          },
+          "decisions": {
+            "eligible": 32,
+            "unsupported": 20,
+            "unknown": 0
+          }
+        },
+        "cases": [
+          {
+            "case_id": "mnist-test-7806",
+            "group_id": "mnist-test-index-7806",
+            "request_sha256": "fe7595936a5df591e3f31ff23f1ea5761a64c0aa3d85b247c5d0685dacf58621",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-998",
+            "group_id": "mnist-test-index-998",
+            "request_sha256": "fa9e7aa067625f83ec53f89452e762821cbbb18509297529af11592fbf6de885",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-1233",
+            "group_id": "mnist-test-index-1233",
+            "request_sha256": "e24d900b342fefffa60268eba8a51b5ab4a296a9442587ad4b4a0a7a3155b600",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-8293",
+            "group_id": "mnist-test-index-8293",
+            "request_sha256": "0fd9794097da13bec5aead068a93127769be84fd72d924644c482ba102ec88d6",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-9335",
+            "group_id": "mnist-test-index-9335",
+            "request_sha256": "d584b7ea5c1f89488401c7b223d1a0912148a6645dc06854f41f87716f1cfc20",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-3106",
+            "group_id": "mnist-test-index-3106",
+            "request_sha256": "38132b49181ae6ef74bee44db438af8af3fd0432df23f7375e6c299a216bc664",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-2641",
+            "group_id": "mnist-test-index-2641",
+            "request_sha256": "a7987f9dccab5e73767c45d18d7ef671a7935442120d132daabafdd36f094802",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-8241",
+            "group_id": "mnist-test-index-8241",
+            "request_sha256": "4423d645d9c1f98c547e5800c1f989506bdab252aa522deeb7da7e7563281df4",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-5097",
+            "group_id": "mnist-test-index-5097",
+            "request_sha256": "26e73ee734dc90f1437efd87d483d7b7a30b7bc45151e6c52df9d6640400576e",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-5577",
+            "group_id": "mnist-test-index-5577",
+            "request_sha256": "1b29278538526b5da8ea92c6d5f3004733933583208f7eceab54442427c46116",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-9371",
+            "group_id": "mnist-test-index-9371",
+            "request_sha256": "31cb06978a82dc78cf77f631c9a7ad02195c4333ec6d077629c7451bcb1a1cb1",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-8801",
+            "group_id": "mnist-test-index-8801",
+            "request_sha256": "f101c450888eecdeb3c4ed80578932ca0fd146bc3945aaa94156635f9c087672",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-2321",
+            "group_id": "mnist-test-index-2321",
+            "request_sha256": "28ffdcbcda8a424cada39c244a26e5c9fc8c20924c5dd113db5e4f5a80e60fef",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-1517",
+            "group_id": "mnist-test-index-1517",
+            "request_sha256": "0770123ffc3b6fcc3b54a96b9102e761c81a599dbda6a46b19f05a4c692ce794",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-3093",
+            "group_id": "mnist-test-index-3093",
+            "request_sha256": "e30ce1f5251bbbaf6c80efb33ba628404e8f8c1f30e3df64a47c98d154ca7875",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-6158",
+            "group_id": "mnist-test-index-6158",
+            "request_sha256": "f08314a598d749691f2d1a2802879aae136f2050d1661cc3dc9f1cc90abc3cb5",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-5343",
+            "group_id": "mnist-test-index-5343",
+            "request_sha256": "2c5a961db773490c5c4aef4bb3d2e22bc678b70abefdc830de293576d27b2427",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-9093",
+            "group_id": "mnist-test-index-9093",
+            "request_sha256": "8b977b6d4aff1e1f60ef0f8987f2aec1acaddbea231cadec985e4a91b087b1ce",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-885",
+            "group_id": "mnist-test-index-885",
+            "request_sha256": "563d035067f82271a44b9d9b34f11b22fbbe4ea0777605483be8e852ca20368d",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-5452",
+            "group_id": "mnist-test-index-5452",
+            "request_sha256": "965f230e93a69dd6c20d81a83256b039fc374f6e47233bfd36106e1f1fdd12be",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-7860",
+            "group_id": "mnist-test-index-7860",
+            "request_sha256": "f00b201a7d0fb87d489f929fa0000069686408c40e1108e00c8df582df14e3c6",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-1476",
+            "group_id": "mnist-test-index-1476",
+            "request_sha256": "c3843bcdbfde2fb2a1e73bf29da20b728ea6fbb503654b26eff1fe83472ade46",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-6635",
+            "group_id": "mnist-test-index-6635",
+            "request_sha256": "c37dfe573781aeb91b66f0359f97d4d64065d16b9ae335f1e4f4c02a3f6ee342",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-1979",
+            "group_id": "mnist-test-index-1979",
+            "request_sha256": "5aa005ed783a9f00ed3938ea10ea432a5224867fdc8818de6ba22e3ba9f53e3b",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-9664",
+            "group_id": "mnist-test-index-9664",
+            "request_sha256": "c0fe8a2c3d96f7faf92dd38068dfaefeadae458d0ef6b1343c0ca22ab6bb3d88",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-274",
+            "group_id": "mnist-test-index-274",
+            "request_sha256": "e3c6e67468794152dc43e7be4d20a61cfbf4a6c9fbb04d9b344881ee8a5afb57",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-7516",
+            "group_id": "mnist-test-index-7516",
+            "request_sha256": "2ed48dbfc45ea9b47a3809d3d386a107812722ea5789fbb1e207c70c14fa98ad",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-2632",
+            "group_id": "mnist-test-index-2632",
+            "request_sha256": "a3db6e160f9972cb0e647d46cc0b227ee5ae25dbfbbdc93d230a53bbc569c07c",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-8304",
+            "group_id": "mnist-test-index-8304",
+            "request_sha256": "46644294764fe20be8d3111da649f47b18483569ba7f7d483c4607ac947d316a",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-1773",
+            "group_id": "mnist-test-index-1773",
+            "request_sha256": "8316537619447ca102a88d303997c59588b40d05a69ea4cb3dcdd5ab7f5378bd",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-8204",
+            "group_id": "mnist-test-index-8204",
+            "request_sha256": "72aa2cfcb266498a733c52a6487f18d03e324d6106ea565de20e9ef30cfcc0a5",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "mnist-test-5128",
+            "group_id": "mnist-test-index-5128",
+            "request_sha256": "f2e510f9b6ca2c0ebc9dfa9673cc525da1683e98e81f9f2b398420faf3c97730",
+            "decisions": 1,
+            "eligibility": "eligible",
+            "reasons": []
+          },
+          {
+            "case_id": "fsdd-test-0_jackson_4",
+            "group_id": "fsdd-speaker-jackson",
+            "request_sha256": "f1fa5915befffb45f01476a9ce5be8344d1c7f475404b6dc9c547626831cc76d",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-0_george_3",
+            "group_id": "fsdd-speaker-george",
+            "request_sha256": "8a314e1c82a774b5539b2c12c4226065796167b14954a26724f0b0f2d5fbca42",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-1_theo_0",
+            "group_id": "fsdd-speaker-theo",
+            "request_sha256": "3f1c0602ba55f437397e75ba229dd7a5ce0cfe71a452bc2b01981d6b1718af42",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-1_nicolas_0",
+            "group_id": "fsdd-speaker-nicolas",
+            "request_sha256": "6a018af2aa3db6747f3681911984ecb813b622217ff28ff2ded2da0c6cde5208",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-2_lucas_4",
+            "group_id": "fsdd-speaker-lucas",
+            "request_sha256": "898f69b43774b0be399ca01391b40593cfc49f21c5505599b74e52af51674692",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-2_yweweler_2",
+            "group_id": "fsdd-speaker-yweweler",
+            "request_sha256": "b900ef5ce9044f2ea934caf7eac1ef27a908f41530c5065e488267b13332ff12",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-3_jackson_3",
+            "group_id": "fsdd-speaker-jackson",
+            "request_sha256": "c8d032385ebfa90106043223caebddedd3281f377f0336641f2cd3874139b647",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-3_george_4",
+            "group_id": "fsdd-speaker-george",
+            "request_sha256": "18d24c279b30d3dfc38a807c266edd94c76693ed294fa6a44ebf0b7b8910ddc4",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-4_theo_3",
+            "group_id": "fsdd-speaker-theo",
+            "request_sha256": "d5a9d097cd1598d1ee1a60427b91a2490fe14d37a4f763e234a87ff64219acf6",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-4_nicolas_0",
+            "group_id": "fsdd-speaker-nicolas",
+            "request_sha256": "0b4cf660208fd9d783e047f3d7a34b9f1e8f300ca1ec1742154b07cd0d519f89",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-5_lucas_0",
+            "group_id": "fsdd-speaker-lucas",
+            "request_sha256": "16f6d89fa4a7ccc34d0928eb324abd2ebb324250b803ab85a3ceee8cdca7ec59",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-5_yweweler_3",
+            "group_id": "fsdd-speaker-yweweler",
+            "request_sha256": "41d7b98995e13a791e1cede538c09ebbbb9b35a4db28bde5de943cc66d0571ee",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-6_jackson_0",
+            "group_id": "fsdd-speaker-jackson",
+            "request_sha256": "d955d6eaf82e60120ab40301168b9e6e85d6627ed340aa6e2b1d509fdfeb0ebf",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-6_george_1",
+            "group_id": "fsdd-speaker-george",
+            "request_sha256": "fd1fa412407967f7fad523db067f9d127832bbc836f42b55d42594f296fd5aab",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-7_theo_4",
+            "group_id": "fsdd-speaker-theo",
+            "request_sha256": "e32dd53a020be0ad1336893a89a8d37a86e2367b222c0c7fe22c20e0d8a43bbc",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-7_nicolas_4",
+            "group_id": "fsdd-speaker-nicolas",
+            "request_sha256": "15d71f756c3b3ef501054fc928596f8c7f99af47202954d99a2ea19c91a72d04",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-8_lucas_2",
+            "group_id": "fsdd-speaker-lucas",
+            "request_sha256": "eb5349c83bd5c581f7e1482d3c2a59bd6f84ea39ee5d8c884633da5b5d541e26",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-8_yweweler_0",
+            "group_id": "fsdd-speaker-yweweler",
+            "request_sha256": "41a42a6d9fa09f17fd13fb8927d8e0fa024de368b92999a7e2f8ed2a12be3754",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-9_jackson_3",
+            "group_id": "fsdd-speaker-jackson",
+            "request_sha256": "40d455d00687ad5db6590139f646cf49cd8052aaf8c6cbe3c90c9a6c01631d24",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          },
+          {
+            "case_id": "fsdd-test-9_george_2",
+            "group_id": "fsdd-speaker-george",
+            "request_sha256": "5dd9c38cb7147f45915a4d0f3fb9d799e9e82b61d81ab4f1cb58c850934b5cd7",
+            "decisions": 1,
+            "eligibility": "unsupported",
+            "reasons": [
+              "unsupported_modality:audio"
+            ]
+          }
+        ],
+        "estimate": {
+          "measured_requests": 32,
+          "warmup_requests": 3,
+          "total_requests": 35,
+          "measured_decisions": 32,
+          "cost_usd": 0.7
+        }
+      }
+    ],
+    "status_counts": {
+      "ready": 1,
+      "blocked": 0,
+      "not_run": 0
+    },
+    "budget": {
+      "max_requests": 200,
+      "max_estimated_cost_usd": 4.0,
+      "candidate_requests": 35,
+      "candidate_cost_usd": 0.7,
+      "reasons": []
+    },
+    "can_execute": true,
+    "limitations": [
+      "Offline declaration checks only; no models loaded or endpoints contacted.",
+      "Context length, hardware and media decoding remain runtime checks.",
+      "Costs are operator estimates, not measured or provider-verified charges.",
+      "The request contract allows at most 52 options and 64 questions per request."
+    ]
+  },
+  "started_at": "2026-10-02T05:51:06.475590+00:00",
+  "finished_at": "2026-10-02T05:51:19.457157+00:00",
+  "timing": "monotonic seconds since run start; latency measured from scheduled arrival",
+  "execution_mode": "closed_loop",
+  "retries": 0,
+  "runner_result_cache": false,
+  "seed_policy": "recorded_only; no stochastic sampling or support selection in E1",
+  "execution": {
+    "clef-local": {
+      "status": "completed",
+      "reasons": [],
+      "telemetry": {
+        "revision": "2f3de3dd85f379784083b0814d997ab627200f0c",
+        "device": "cuda",
+        "precision": "bfloat16",
+        "temperature": 1.0,
+        "calibration_temperature": null,
+        "context_limit": 16384,
+        "context_policy": "reject",
+        "quantization": "none",
+        "quantization_details": null,
+        "runtime_package": "Cloudflare/clef/joint_schema_model.py",
+        "source_revision": "2f3de3dd85f379784083b0814d997ab627200f0c",
+        "base_model_id": null,
+        "base_revision": null,
+        "checkpoint_task": "multimodal_joint_typed_decisions",
+        "compute_precision": "bfloat16",
+        "compute_backend": "torch_reference",
+        "runtime_options": {
+          "publisher_source_sha256": "0e304cf7c6500e8bb59bef7e2afd2c6373f82596dfb3b57d1aa93c175e2dc3a3",
+          "joint_questions": true,
+          "probability_postprocessing": "float32_softmax_without_wire_rounding",
+          "cuda_graphs": false,
+          "torch_compile": false,
+          "persistent_prefix_cache": false,
+          "optional_kernel_packages": {
+            "causal-conv1d": null,
+            "flash-linear-attention": null
+          }
+        },
+        "temperatures_by_type": null
+      },
+      "setup_ms": 1.5813059999914003
+    }
+  }
+}

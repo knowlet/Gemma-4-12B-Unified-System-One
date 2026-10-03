@@ -367,3 +367,24 @@ probabilities = "complete"
 batch = "loop_emulated"
 concurrent_requests = false
 independent_questions = true
+
+[[models]]
+id = "clef-local"
+adapter = "clef"
+model_id = "Cloudflare/clef"
+revision = "2f3de3dd85f379784083b0814d997ab627200f0c"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "none"
+context_limit = 16384
+notes = "Pinned 27B BF16 multimodal backbone plus joint schema head; native text/images, no audio. Complete float32-softmax probabilities, strict full-input context rejection, no persistent cache or CUDA graphs."
+[models.capabilities]
+modalities = ["text", "image"]
+primitives = ["choice", "noul", "score"]
+max_options = 52
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = false

@@ -74,6 +74,29 @@ def test_uniform_records_and_summary_can_be_recomputed(registry, tmp_path):
         assert row["latency_ms"] >= 0
 
 
+def test_setup_timer_excludes_preloaded_model_work(registry, tmp_path, monkeypatch):
+    clock = [0.0]
+    monkeypatch.setattr("s1.evaluation.runner.time.perf_counter", lambda: clock[0])
+
+    class PreloadedAdapter(ReferenceAdapter):
+        def telemetry(self):
+            clock[0] += 0.002
+            return super().telemetry()
+
+    adapter = PreloadedAdapter(registry.models["uniform"], UniformBackend())
+    clock[0] += 240.0  # Work completed before the runner's factory is called.
+
+    def reuse_adapter(spec, environment):
+        clock[0] += 0.003
+        return adapter
+
+    result = run(no_warmup(registry), tmp_path, adapter_factory=reuse_adapter)
+    assert result["run_status"] == "completed"
+    manifest = json.loads((tmp_path / "run/run_manifest.json").read_text())
+    assert manifest["execution"]["uniform"]["setup_ms"] == pytest.approx(5.0)
+    assert "excludes model loading performed before execute" in manifest["setup_timing_scope"]
+
+
 @pytest.mark.parametrize(
     "failure,status",
     [

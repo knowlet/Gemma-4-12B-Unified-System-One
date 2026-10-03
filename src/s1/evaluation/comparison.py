@@ -108,7 +108,7 @@ def campaign_specs(registry, adapter_root, *, device="cuda"):
             }
         )
     )
-    for name in ("decider-local", "kev-local", "agentjev-local"):
+    for name in ("decider-local", "kev-local", "agentjev-local", "clef-local"):
         specs.append(registry.models[name].model_copy(update=common))
     return specs
 
@@ -146,17 +146,50 @@ def summarize_quality(output, cases):
     valid = [r for r in predictions if r["status"] == "ok"]
     correct = sum(r["actual_label"] == r["gold"] for r in valid)
     attempted = any(r["status"] in ("ok", "error", "timeout") for r in predictions)
+    unsupported = sum(r["eligibility"] == "unsupported" for r in predictions)
+    eligible = expected - unsupported
     metrics = quality_metrics(predictions)
+    by_task = {}
+    for task in sorted({c.task_id for c in cases}):
+        task_rows = [r for r in predictions if r["task_id"] == task]
+        task_expected = sum(len(c.request.questions) for c in cases if c.task_id == task)
+        task_unsupported = sum(r["eligibility"] == "unsupported" for r in task_rows)
+        task_valid = [r for r in task_rows if r["status"] == "ok"]
+        task_attempted = any(r["status"] in ("ok", "error", "timeout") for r in task_rows)
+        task_correct = sum(r["actual_label"] == r["gold"] for r in task_valid)
+        task_eligible = task_expected - task_unsupported
+        by_task[task] = {
+            "expected": task_expected,
+            "eligible": task_eligible,
+            "unsupported": task_unsupported,
+            "valid": len(task_valid),
+            "correct": task_correct if task_attempted else None,
+            "accuracy": task_correct / task_expected
+            if task_attempted and not task_unsupported
+            else None,
+            "supported_accuracy": task_correct / task_eligible
+            if task_attempted and task_eligible
+            else None,
+            "native_status": "unsupported"
+            if task_unsupported == task_expected
+            else "completed"
+            if len(task_valid) == task_expected
+            else "partial_support"
+            if len(task_valid) + task_unsupported == task_expected
+            else "partial",
+        }
     return {
         "expected": expected,
         "recorded": len(predictions),
         "valid": len(valid),
         "correct": correct if attempted else None,
-        "accuracy": correct / expected if attempted else None,
+        "accuracy": correct / expected if attempted and not unsupported else None,
+        "eligible": eligible,
+        "supported_accuracy": correct / eligible if attempted and eligible else None,
         "status": "completed" if len(valid) == expected else "partial" if attempted else "not_run",
         "dataset_sha256": fingerprint(cases),
         "errors": sum(r["status"] in ("error", "timeout") for r in predictions),
-        "unsupported": sum(r["eligibility"] == "unsupported" for r in predictions),
+        "unsupported": unsupported,
         "nll": metrics.get("nll"),
         "brier_sum": metrics.get("brier_sum"),
         "ece_15": metrics.get("ece_15"),
@@ -168,18 +201,7 @@ def summarize_quality(output, cases):
             ]
         ),
         "latency_scope": "CUDA-synchronized adapter wall time; excludes setup and warmup",
-        "by_task": {
-            task: {
-                "expected": sum(r["task_id"] == task for r in predictions),
-                "valid": sum(r["task_id"] == task for r in valid),
-                "correct": sum(
-                    r["task_id"] == task and r["actual_label"] == r["gold"] for r in valid
-                )
-                if attempted
-                else None,
-            }
-            for task in sorted({c.task_id for c in cases})
-        },
+        "by_task": by_task,
     }
 
 
@@ -243,7 +265,7 @@ def run_quality(registry, spec, shared, data, output, lockfile):
             else "generalist",
             information_view="native_media" if media else "raw_text",
         )
-        native = not media or {"image", "audio"}.issubset(spec.capabilities.modalities or ())
+        native = not media or bool({"image", "audio"} & set(spec.capabilities.modalities or ()))
         profile = ProfileSpec(
             id=name,
             suite=name,
@@ -263,7 +285,15 @@ def run_quality(registry, spec, shared, data, output, lockfile):
         )
         result[name] = summarize_quality(output / name, load_cases(data / filename))
         if media:
-            result[name]["native_status"] = result[name]["status"] if native else "unsupported"
+            quality = result[name]
+            quality["native_status"] = (
+                "unsupported"
+                if quality["unsupported"] == quality["expected"]
+                else "partial_support"
+                if quality["unsupported"] > 0
+                and quality["valid"] + quality["unsupported"] == quality["expected"]
+                else quality["status"]
+            )
     return result
 
 
@@ -414,7 +444,7 @@ def run_cell(registry, spec, data, output, lockfile, serve, *, count=128, arriva
             "completed"
             if row["boolq"]["valid"] == 128
             and all(c["successful"] == c["requests"] for c in row["load"])
-            and row["media"].get("native_status") in ("completed", "unsupported")
+            and row["media"].get("native_status") in ("completed", "partial_support", "unsupported")
             else "completed_with_errors"
         )
     except Exception as exc:

@@ -124,7 +124,15 @@ def test_complete_measured_row_keeps_latency_and_memory_boundaries():
     data["dataset"]["media_sha256"] = "media-fixed-hash"
     run = data["runs"][0]
     run["boolq"].update(mean_ms=105.0, p99_ms=207.0)
-    run["media"] = {"recorded": 52, "valid": 52, "correct": 34}
+    run["media"] = {
+        "recorded": 52,
+        "valid": 52,
+        "correct": 34,
+        "by_task": {
+            "mnist": {"expected": 32, "valid": 32, "correct": 28},
+            "fsdd": {"expected": 20, "valid": 20, "correct": 6},
+        },
+    }
     run["memory"] = {
         "model_footprint_bytes": 7_000_000_000,
         "peak_allocated_bytes": 9_000_000_000,
@@ -136,6 +144,222 @@ def test_complete_measured_row_keeps_latency_and_memory_boundaries():
     assert result["load"][0]["p99_ms"] == 999.0
     assert result["memory"]["peak_allocated_bytes"] == 9_000_000_000
     assert result["memory"]["model_footprint_bytes"] == 7_000_000_000
+    assert result["media"]["eligible"] == 52
+    assert result["media"]["by_task"]["fsdd"]["accuracy"] == 6 / 20
+
+
+def partial_media_campaign():
+    data = campaign()
+    data["dataset"]["media_sha256"] = "media-fixed-hash"
+    data["runs"][0]["model_id"] = "clef-local"
+    data["runs"][0]["media"] = {
+        "expected": 52,
+        "recorded": 52,
+        "eligible": 32,
+        "unsupported": 20,
+        "valid": 32,
+        "correct": 28,
+        "accuracy": None,
+        "supported_accuracy": 28 / 32,
+        "native_status": "partial_support",
+        "by_task": {
+            "mnist": {
+                "expected": 32,
+                "eligible": 32,
+                "unsupported": 0,
+                "valid": 32,
+                "correct": 28,
+                "accuracy": 28 / 32,
+                "native_status": "completed",
+            },
+            "fsdd": {
+                "expected": 20,
+                "eligible": 0,
+                "unsupported": 20,
+                "valid": 0,
+                "correct": None,
+                "accuracy": None,
+                "native_status": "unsupported",
+            },
+        },
+    }
+    return data
+
+
+def test_partial_media_support_reports_image_quality_and_no_audio_accuracy(tmp_path):
+    data = partial_media_campaign()
+    original = json.loads(json.dumps(data))
+    history = historical()
+    source = tmp_path / "historical.json"
+    source.write_text(json.dumps(history))
+    summary = REPORT.build_summary(history, data)
+    media = summary["runs"][0]["media"]
+    assert media["accuracy"] is None
+    assert media["supported_accuracy"] == 28 / 32
+    assert media["by_task"]["fsdd"]["accuracy"] is None
+    assert data == original
+    rendered = REPORT.render(summary, history, source, None, tmp_path / "report.md")
+    assert "28/32 (87.50%) | unsupported (20 cases)" in rendered
+    assert "supported subset 87.50% (28/32; valid 32); 20/52 unsupported" in rendered
+    assert "0/20 (0.00%)" not in rendered
+    assert "28/52" not in rendered
+
+
+def test_supported_media_errors_remain_in_eligible_denominator():
+    data = partial_media_campaign()
+    media = data["runs"][0]["media"]
+    media["valid"] = media["by_task"]["mnist"]["valid"] = 31
+    media["native_status"] = media["by_task"]["mnist"]["native_status"] = "partial"
+    summary = REPORT.build_summary(historical(), data)
+    assert summary["runs"][0]["media"]["supported_accuracy"] == 28 / 32
+    assert summary["runs"][0]["media"]["by_task"]["mnist"]["accuracy"] == 28 / 32
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"accuracy": 28 / 52},
+        {"eligible": 31},
+        {"valid": 33},
+        {"supported_accuracy": 28 / 31},
+        {"correct": None},
+    ],
+)
+def test_partial_media_rejects_wrong_denominators_or_missing_evidence(changes):
+    data = partial_media_campaign()
+    data["runs"][0]["media"].update(changes)
+    with pytest.raises(ValueError):
+        REPORT.build_summary(historical(), data)
+
+
+def test_partial_media_quality_still_requires_original_media_fingerprint():
+    data = partial_media_campaign()
+    del data["dataset"]["media_sha256"]
+    with pytest.raises(ValueError, match="media dataset hash"):
+        REPORT.build_summary(historical(), data)
+
+
+@pytest.mark.parametrize("missing", ["mnist", "fsdd", "both"])
+def test_measured_media_requires_both_fixed_tasks(missing):
+    data = partial_media_campaign()
+    tasks = data["runs"][0]["media"]["by_task"]
+    if missing == "both":
+        tasks.clear()
+    else:
+        del tasks[missing]
+    with pytest.raises(ValueError, match="requires both fixed tasks"):
+        REPORT.build_summary(historical(), data)
+
+
+@pytest.mark.parametrize(
+    ("changes", "mismatch"),
+    [
+        ({"correct": 0, "accuracy": 0}, "correct"),
+        ({"valid": 31}, "valid"),
+        ({"recorded": 31, "valid": 31}, "recorded"),
+        (
+            {"eligible": 31, "unsupported": 1, "valid": 31, "accuracy": None},
+            "eligible",
+        ),
+    ],
+)
+def test_media_task_counts_must_reconcile_with_aggregate(changes, mismatch):
+    data = partial_media_campaign()
+    data["runs"][0]["media"]["by_task"]["mnist"].update(changes)
+    with pytest.raises(ValueError, match=f"task {mismatch} total differs from aggregate"):
+        REPORT.build_summary(historical(), data)
+
+
+@pytest.mark.parametrize("media_hash", [None, "different-media-cases"])
+def test_task_only_media_cannot_bypass_dataset_identity(media_hash):
+    data = partial_media_campaign()
+    data["dataset"]["media_sha256"] = media_hash
+    data["runs"][0]["media"] = {"by_task": data["runs"][0]["media"]["by_task"]}
+    with pytest.raises(ValueError, match="media dataset hash"):
+        REPORT.build_summary(historical(), data)
+
+
+def test_task_only_media_requires_aggregate_counts_even_with_matching_fingerprint():
+    data = partial_media_campaign()
+    data["runs"][0]["media"] = {"by_task": data["runs"][0]["media"]["by_task"]}
+    with pytest.raises(ValueError, match="requires complete aggregate and task counts"):
+        REPORT.build_summary(historical(), data)
+
+
+def test_zero_task_accuracy_cannot_hide_missing_aggregate_correct_count():
+    data = partial_media_campaign()
+    media = data["runs"][0]["media"]
+    media.update(valid=0, correct=None, supported_accuracy=None)
+    media["by_task"]["mnist"].update(valid=0, correct=0, accuracy=0)
+    with pytest.raises(ValueError, match="requires an aggregate correct count"):
+        REPORT.build_summary(historical(), data)
+
+
+def test_legacy_unsupported_media_retains_unknown_accuracy():
+    data = partial_media_campaign()
+    data["runs"][0]["media"] = {
+        "recorded": 52,
+        "valid": 0,
+        "correct": None,
+        "unsupported": 52,
+        "native_status": "unsupported",
+        "by_task": {
+            "mnist": {"expected": 32, "valid": 0, "correct": None},
+            "fsdd": {"expected": 20, "valid": 0, "correct": None},
+        },
+    }
+    media = REPORT.build_summary(historical(), data)["runs"][0]["media"]
+    assert media["accuracy"] is None
+    assert all(task["eligible"] == 0 for task in media["by_task"].values())
+    assert all(task["accuracy"] is None for task in media["by_task"].values())
+
+
+@pytest.mark.parametrize("recorded", [-1, "unknown"])
+def test_unmeasured_media_still_validates_supplied_task_counts(recorded):
+    data = campaign()
+    data["runs"][0]["media"] = {
+        "by_task": {"mnist": {"recorded": recorded, "valid": 0, "correct": None}}
+    }
+    with pytest.raises(ValueError, match="counts must be nonnegative integers"):
+        REPORT.build_summary(historical(), data)
+
+
+def test_clef_boolq_only_takeaway_does_not_claim_measured_mnist():
+    data = campaign()
+    data["runs"][0].update(model_id="clef-local", media=None)
+    points = "\n".join(REPORT.practical_takeaways(REPORT.build_summary(historical(), data)))
+    assert "Clef records" in points
+    assert "no MNIST accuracy is recorded" in points
+    assert "Its image result is reported" not in points
+
+
+@pytest.mark.parametrize(
+    ("status", "measured", "claims_execution"),
+    [
+        ("planned", False, False),
+        ("failed", False, False),
+        ("failed", True, False),
+        ("completed", False, False),
+        ("completed", True, True),
+        ("completed_with_errors", True, True),
+    ],
+)
+def test_clef_runtime_prose_requires_completed_measurements(
+    tmp_path, status, measured, claims_execution
+):
+    data = campaign()
+    run = data["runs"][0]
+    run.update(model_id="clef-local", status=status, media=None)
+    run["boolq"] = {"recorded": 128, "valid": 128, "correct": 115} if measured else {}
+    if status == "completed_with_errors":
+        run["boolq"]["valid"] = 127
+    history = historical()
+    source = tmp_path / "history.json"
+    source.write_text(json.dumps(history))
+    summary = REPORT.build_summary(history, data)
+    rendered = REPORT.render(summary, history, source, None, tmp_path / "report.md")
+    assert ("27B release, evaluated in the shared" in rendered) is claims_execution
+    assert ("no completed measured Clef run" in rendered) is not claims_execution
 
 
 def seeded_campaign(quantized_mode="nf4"):

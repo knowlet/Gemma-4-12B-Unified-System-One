@@ -88,6 +88,50 @@ sample counts matched and the largest float32 sample difference was
 `apps/modal/prepare_comparison_data.py` is an optional CPU reconstruction
 diagnostic; it refuses to replace files when historical hashes differ.
 
+## Reproduce the Clef comparison
+
+The `clef-local` registry entry uses the full 27B
+[Cloudflare/Clef checkpoint](https://huggingface.co/Cloudflare/clef/tree/2f3de3dd85f379784083b0814d997ab627200f0c),
+with weights and custom model code pinned to
+`2f3de3dd85f379784083b0814d997ab627200f0c`. This is distinct from Clef-Flash.
+Prepare and restore the original datasets as above, then run only the new model:
+
+```bash
+uv run --no-sync modal run apps/modal/compare.py \
+  --run <unique-clef-run> --models clef-local
+```
+
+Clef uses the same locked base image as Gemma and Laya: PyTorch 2.8.0 and
+Transformers 5.17.0, with one A100-80GB GPU, four CPU cores and a requested 48 GiB
+host-memory reservation. The reservation is not a measured process limit; reported
+peak RSS can exceed it.
+Its worker allows 7,200 seconds to accommodate the larger checkpoint download;
+this is a job timeout, not a per-request latency target. The 27B release's tensor
+payload is estimated at approximately 54.97 decimal GB, before activations,
+allocator reserves and other runtime state. This estimate is not measured peak
+VRAM or a minimum GPU-capacity claim; use the run receipt for those observations.
+The shared image does not install the optional `flash-linear-attention` or
+`causal-conv1d` acceleration packages. Timings describe this reference PyTorch
+runtime and must not be substituted for an optimized Clef provider's latency.
+
+The harness keeps the original 128 BoolQ cases and all 52 media case identities.
+Clef accepts the 32 MNIST images; the 20 FSDD audio cases are explicitly
+unsupported. Image accuracy uses the supported 32-case denominator, including any
+image errors. Audio receives no fabricated zero accuracy, and image accuracy is
+not presented as a 52-case image/audio result. No OCR, ASR or oracle description
+is substituted for the raw media.
+Media latency covers successful image requests; it is not directly equivalent to
+Gemma's combined image/audio latency over both supported modalities.
+
+The same six loopback HTTP load shapes run 128 requests each: closed-loop
+concurrency 1, 4, 16 and 64, plus fixed and Poisson arrivals at five requests per
+second with at most 16 outstanding requests. One model process serializes
+inference; no batching or result cache is added. Receipts and predictions download
+to `artifacts/comparison/<unique-clef-run>/`, and the temporary worker stops after
+the run. Add this campaign to the existing campaign paths when using
+`scripts/collect_comparison.py`; the collector adds a paired Clef-versus-Gemma-base
+BoolQ comparison without treating Clef as missing from older snapshots.
+
 ## Reproduce the fixed NF4 LoRA recovery
 
 The original CE adapters lose accuracy when directly loaded in NF4. The separate

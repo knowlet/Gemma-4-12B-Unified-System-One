@@ -68,6 +68,13 @@ to the run identity. Checkpoints preserve optimizer, RNG, sample order and the
 completed-update ledger; abandoned log tails are retained separately. The soft
 training budget is five hours and the Modal invocation cap is six hours.
 
+Historical train/evaluate/resume stages for this release must use runtime
+revision `d4ea1ef79af2e22f666374e529fa56c1de9d3f53`, whose recorded trainer,
+lockfile and 55 S1 source hashes match the run. Later integration of the Clef
+benchmark changes the complete source identity even though it does not change
+the release execution paths. Use a fresh run name with newer code; do not alter
+the historical manifests to bypass the identity check.
+
 The recorded run is `20261002-boolq-release-01`, seed 42, with training code at
 `b2a46b1`. Its A100-SXM4-80GB pilot completed all eight updates in 10.41 training
 seconds; the longest of all 2,048 prepared training inputs was 656 tokens, and
@@ -235,3 +242,9 @@ records **808 passed, 3 optional-dependency skips**, 44 additional checks in the
 contracts-only environment, Ruff, package build and all four source CI jobs.
 The runtime/evaluation code revision is
 `d4ea1ef79af2e22f666374e529fa56c1de9d3f53`.
+
+After integrating main revision `9bcf9db823b7e96bc62dc0bc9924fafb34835199`, the
+combined local suite passed **863 tests with 3 optional-dependency skips**.
+The release summary regenerated from the recorded CUDA/MLX reports is byte-for-byte
+identical. Historical training and model-package receipts retain their original
+source and artifact hashes.

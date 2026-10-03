@@ -173,6 +173,51 @@ def test_latest_incomplete_attempt_selected_only_when_none_completed(tmp_path):
     assert result["unresolved_models"] == ["gemma-base-bf16"]
 
 
+def test_clef_is_optional_for_old_seventeen_model_campaigns(tmp_path):
+    original = [*COLLECT.EXPECTED_MODELS, *COLLECT.RECOVERY_MODELS]
+    path = campaign(tmp_path, "historical", 1, [(model, "failed", None) for model in original])
+    result = COLLECT.collect([path], tmp_path / "summary.json", resamples=100)
+    assert len(result["expected_models"]) == 17
+    assert "clef-local" not in result["expected_models"]
+    assert "clef-local" not in result["missing_models"]
+    assert all(pair["right"] != "clef-local" for pair in result["comparisons"])
+
+
+def test_clef_campaign_adds_expected_model_and_exact_input_base_comparison(tmp_path):
+    path = campaign(
+        tmp_path,
+        "clef",
+        2,
+        [("gemma-base-bf16", "completed", 111), ("clef-local", "completed", 114)],
+    )
+    result = COLLECT.collect([path], tmp_path / "summary.json", resamples=100)
+    assert "clef-local" in result["expected_models"]
+    assert "clef-local" not in result["missing_models"]
+    pair = next(c for c in result["comparisons"] if c["right"] == "clef-local")
+    assert pair["left"] == "gemma-base-bf16"
+    assert pair["kind"] == "same_input_generalist"
+    assert pair["status"] == "computed"
+    assert pair["common_decisions"] == 128
+    assert pair["operational_accuracy_delta"]["estimate"] == 3 / 128
+
+
+def test_failed_clef_attempt_remains_required_without_publishing_a_score(tmp_path):
+    path = campaign(
+        tmp_path,
+        "clef-failed",
+        2,
+        [("gemma-base-bf16", "completed", 111), ("clef-local", "failed", None)],
+    )
+    result = COLLECT.collect([path], tmp_path / "summary.json", resamples=100)
+    assert "clef-local" in result["expected_models"]
+    assert "clef-local" in result["unresolved_models"]
+    assert result["status"] == "incomplete"
+    pair = next(c for c in result["comparisons"] if c["right"] == "clef-local")
+    assert pair["status"] == "not_available"
+    assert pair["reason"] == "saved BoolQ predictions or run manifest unavailable"
+    assert "operational_accuracy_delta" not in pair
+
+
 def test_pre_execution_bad_dataset_retained_but_evaluated_mismatch_rejected(tmp_path):
     failed = campaign(
         tmp_path, "failed", 1, [("gemma-base-bf16", "failed", None)], media_hash="other"

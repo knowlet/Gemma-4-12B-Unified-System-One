@@ -126,6 +126,22 @@ def competitor_cell(run, spec_data, count, arrival_rate):
     return evaluate(run, spec_data, count, arrival_rate)
 
 
+@app.function(
+    image=sources(base_image),
+    gpu="A100-80GB",
+    cpu=4,
+    memory=49152,
+    volumes={"/vol": volume},
+    timeout=7200,
+    max_containers=1,
+    single_use_containers=True,
+    scaledown_window=2,
+)
+def clef_cell(run, spec_data, count, arrival_rate):
+    # Keep the same package/hardware baseline; allow time for the 27B download.
+    return evaluate(run, spec_data, count, arrival_rate)
+
+
 @app.local_entrypoint()
 def main(
     run: str,
@@ -173,7 +189,13 @@ def main(
     persist()
     for index, spec in enumerate(specs):
         print(f"Starting {spec.id}", flush=True)
-        fn = gemma_cell if spec.adapter in ("gemma", "laya") else competitor_cell
+        fn = (
+            clef_cell
+            if spec.adapter == "clef"
+            else gemma_cell
+            if spec.adapter in ("gemma", "laya")
+            else competitor_cell
+        )
         try:
             result = fn.remote(run, spec.model_dump(mode="json"), count, arrival_rate)
             target = destination / spec.id

@@ -6,9 +6,9 @@ v1 interfaces. V2 runs are separate, reproducible artifacts. The supplied datase
 are contract fixtures, **not evidence of pretrained model quality**.
 
 The [latest measured comparison](comparison.md) is the authoritative result table:
-17 completed model/precision configurations, 29 retained attempts, the same 128
+18 completed model/precision configurations, 30 retained attempts, the same 128
 BoolQ cases and 52 native-media cases, and matched serving-load measurements. It
-covers local Decider, Kev, AgentJev and Laya, plus Gemma BF16, INT8, NF4 and a
+covers local Clef, Decider, Kev, AgentJev and Laya, plus Gemma BF16, INT8, NF4 and a
 separately labeled NF4 training continuation. Historical results remain below.
 
 ## Start with the offline acceptance run
@@ -87,6 +87,7 @@ quality profiles require test-only data.
 | Local Decider | `adapter = "decider"`; pinned checkpoint and eager runtime with checkpoint calibration; text-only |
 | Local Kev | `adapter = "kev"`; pinned checkpoint, merged LoRA and pointer head with checkpoint calibration; text-only |
 | Local AgentJev | `adapter = "agentjev"`; pinned current coding checkpoint, FP32 weights with BF16 CUDA autocast; text-only, Score ≤10 levels |
+| Local Clef | `adapter = "clef"`; pinned full 27B checkpoint and joint schema head; text and images, native audio unsupported |
 | TF-IDF + LR / prior | JSON classifier artifact, fixed schema, training-only fit, complete distributions |
 | Embedding / NLI / cross-encoder | Candidate ranking with hard labels; similarity/entailment scores are not converted into fake candidate probabilities |
 | SetFit | Local trained checkpoint plus hashed training/class-label artifact; complete classifier distribution |
@@ -102,6 +103,11 @@ pins the local competitors' runtime dependencies. Baseline
 encoders use float32; TF-IDF/prior math uses float64. Embedding/SetFit context
 truncation is disclosed. NLI/cross-encoder reject excess context. NLI checkpoints
 must identify their entailment class; cross-encoders must return a scalar score.
+
+The [Clef reproduction guide](modal.md#reproduce-the-clef-comparison) uses the same
+128 BoolQ and 52 media case identities. Its supported image score covers 32 MNIST
+cases; 20 unsupported audio cases remain explicit and have no accuracy value.
+This supported-subset result is separate from Gemma's complete image/audio score.
 
 Local HF checkpoints need immutable 40/64-character hex revisions. HTTP versions
 are operator assertions: record the deployed weights **and runtime** in `revision`,
@@ -383,14 +389,14 @@ An unknown bill from any executed stage keeps the reported total unknown, includ
 downstream failures after successful preprocessing. `workflow_comparison.json` pairs
 policy deltas by source group. Provider cache carryover is unknown and disclosed.
 
-## Recorded live results (2026-10-01)
+## Recorded live results
 
 The [latest comparison](comparison.md) and its
-[combined receipt](validation/2026-10-01/comparison-summary.json) include the completed
-local competitor and quantization campaign. Use those tables for current accuracy,
+[combined receipt](validation/2026-10-02/comparison-summary.json) include the completed
+local competitor and quantization campaigns, including the October 2 Clef run. Use those tables for current accuracy,
 measured memory, per-workload latency and three-seed acceptance results.
 
-The earlier measurements below come from actual CPU/A100 Modal runs, not the
+The earlier October 1 measurements below come from actual CPU/A100 Modal runs, not the
 offline fixtures.
 The [full live-validation report](validation/2026-10-01/live-validation.md) includes
 the run receipts, pinned data/model identities, per-task slices and limitations; the

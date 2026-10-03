@@ -32,6 +32,7 @@ EXPECTED_MODELS = (
 
 
 RECOVERY_MODELS = tuple(f"gemma-ce128-s{seed}-nf4-recovered" for seed in range(3))
+OPTIONAL_MODELS = ("clef-local",)
 RECOVERY_TRAIN_SHA256 = "4bc27d96d998ef02137e58e2c8b5d4f928dafc9db03476d436a13acddf35decb"
 RECOVERY_CALIBRATION_SHA256 = "2d919497859b47f55aaaf6e67a63e8f2141877f77cacc0625dd59d3e67add9b8"
 
@@ -280,6 +281,11 @@ def compare_selected(selected, output, *, seed, resamples):
         ("gemma-base-bf16", name, "same_input_generalist")
         for name in ("laya-general", "decider-local", "kev-local", "agentjev-local")
     ]
+    pairs.extend(
+        ("gemma-base-bf16", name, "same_input_generalist")
+        for name in OPTIONAL_MODELS
+        if name in selected
+    )
     if any(name in selected for name in RECOVERY_MODELS):
         pairs.extend(
             (
@@ -414,8 +420,12 @@ def collect(paths, output, *, campaign_id="matched-comparison", seed=20260930, r
         if candidates:
             # ID is a stable tie-breaker only, never score or file modification time.
             selected[model] = max(candidates, key=lambda a: (a["timestamp"], a["id"]))
-    expected = EXPECTED_MODELS + (
-        RECOVERY_MODELS if any(name in selected for name in RECOVERY_MODELS) else ()
+    expected = (
+        EXPECTED_MODELS
+        + (RECOVERY_MODELS if any(name in selected for name in RECOVERY_MODELS) else ())
+        + tuple(
+            name for name in OPTIONAL_MODELS if any(a["row"]["model_id"] == name for a in attempts)
+        )
     )
     runs, audit = [], []
     for model in (*expected, *sorted(set(selected) - set(expected))):
