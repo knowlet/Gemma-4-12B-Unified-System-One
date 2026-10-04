@@ -37,20 +37,28 @@ new checkout; keep its source files unchanged throughout the reproduction.
 ## Source and environments
 
 The source must be the **complete trained, merged BF16 checkpoint**, including
-processor files and `s1_config.json`, at `artifacts/release/checkpoint`. Hugging
-Face publication is pending. The recorded source remains on the existing Modal
-volume; with access to that volume, download it as follows:
+processor files and `s1_config.json`, at `artifacts/release/checkpoint`. Download
+the public package's exact verified weight revision below. Its
+[publication evidence](validation/2026-10-04/README.md) is separate from the
+historical runtime and evaluation records.
 
 ```bash
-uv sync --locked --extra inference --extra train --extra modal
-mkdir -p artifacts/release/checkpoint
-for name in chat_template.jinja config.json generation_config.json \
-  model.safetensors processor_config.json s1_config.json \
-  tokenizer.json tokenizer_config.json; do
-  uv run --no-sync modal volume get gemma-unified-system-one \
-    "/releases/20261002-boolq-release-01/merged/$name" \
-    "artifacts/release/checkpoint/$name" || exit 1
-done
+uv sync --locked --extra inference --extra train
+uv run --no-sync python - <<'PY'
+from huggingface_hub import snapshot_download
+
+snapshot_download(
+    repo_id="knowlet/Gemma-4-12B-Unified-System-One",
+    revision="66626de5cbcf8c5fecb8e9b58710805a02a42f67",
+    local_dir="artifacts/release/checkpoint",
+    allow_patterns=[
+        "chat_template.jinja", "config.json", "generation_config.json",
+        "model.safetensors", "processor_config.json", "s1_config.json",
+        "tokenizer.json", "tokenizer_config.json",
+    ],
+    token=False,
+)
+PY
 
 mkdir -p artifacts/release/datasets
 tar -xzf docs/validation/2026-10-02/release-datasets.tar.gz \
@@ -62,12 +70,12 @@ uv pip install --python artifacts/mlx-env/bin/python -e . \
   transformers==5.18.0 huggingface-hub==1.33.0 numpy==2.5.3
 ```
 
-The eight filenames match the archived artifact receipt. Use these explicit
-per-file destinations: a directory download into an existing `checkpoint`
-directory creates `checkpoint/merged/`, while a nonexistent destination could
-be treated as one output file by concurrent downloads. The dataset archive and
-manifest hashes are listed in [release.md](release.md); retain the complete
-extracted directory.
+The eight filenames match the archived artifact receipt; the conversion-receipt
+step below checks their exact hashes. `token=False` uses public access without a
+Hub credential. The dataset archive and manifest hashes are listed in
+[release.md](release.md); retain the complete extracted directory. This procedure
+creates a fresh MLX conversion. The already-published MLX package is linked in
+the release report for users who want to download that artifact directly.
 
 ## Capture inputs and convert
 

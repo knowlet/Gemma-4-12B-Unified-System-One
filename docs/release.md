@@ -233,23 +233,33 @@ so their ratios are not end-to-end speedups.
 
 ## Publication and code checks
 
-Both complete model packages are prepared locally:
+Both complete model packages were published on October 4, 2026:
+
+| Format | Published package | Immutable weights revision | Published model card |
+| --- | --- | --- | --- |
+| BF16 | [Public snapshot](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/a66f836b56605039fe040f330180e336d19b3362) | [`66626de5cbcf8c5fecb8e9b58710805a02a42f67`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/66626de5cbcf8c5fecb8e9b58710805a02a42f67) | [BF16 card](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/blob/a66f836b56605039fe040f330180e336d19b3362/README.md) |
+| MLX 8-bit | [Public snapshot](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/a5f89b400f7ef63e162f22866c206ed67cf8f282) | [`e304ce0b87148933ce43d5ef9bed779f048accc8`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/e304ce0b87148933ce43d5ef9bed779f048accc8) | [MLX card](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/blob/a5f89b400f7ef63e162f22866c206ed67cf8f282/README.md) |
+
+The [October 4 publication evidence](validation/2026-10-04/README.md) and
+[publication receipt](validation/2026-10-04/publication-status.json) record
+matching remote file sizes, LFS SHA-256 and Git blob identities, anonymous weight
+metadata access, and downloaded public cards, manifests and calibration sidecars.
+This verification did not redownload complete weight files or run new inference.
+Each published package's `artifact-manifest.json` hashes its packaged files
+except itself. Final cards and manifests were published after the weight commits;
+the table keeps those revisions distinct.
+
+The reproduction commands use these local paths:
 
 - BF16: `artifacts/release/checkpoint` (adapter retained separately).
 - MLX: `artifacts/exports/s1-boolq-mlx-8bit`.
 
-The planned Hugging Face repositories are
-`knowlet/Gemma-4-12B-Unified-System-One` and
-`knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit`.
-Publication remains pending: the active credential was rechecked on October 3
-and still has read-only access. No remote upload or Hub revision is claimed.
-The [publication receipt](validation/2026-10-02/release/publication-status.json)
-records both validated local packages. Their
-[BF16 model card](validation/2026-10-02/release/model-cards/bf16/README.md) and
-[MLX model card](validation/2026-10-02/release/model-cards/mlx-8bit/README.md)
-include usage, attribution and limitations. Each package's
-`artifact-manifest.json` hashes every packaged file except itself; final
-packaging rechecked all weight bytes against the training/conversion receipts.
+The [October 3 preparation receipt](validation/2026-10-02/release/publication-status.json)
+and archived [BF16 card](validation/2026-10-02/release/model-cards/bf16/README.md)
+and [MLX card](validation/2026-10-02/release/model-cards/mlx-8bit/README.md) retain
+their original pending-publication status. These historical records are unchanged;
+the October 4 evidence records the completed publication separately. Published
+weights retain the training/conversion hashes and the measured results above.
 
 The [code validation receipt](validation/2026-10-02/release/code-validation.json)
 records **808 passed, 3 optional-dependency skips**, 44 additional checks in the

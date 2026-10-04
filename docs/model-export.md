@@ -14,12 +14,15 @@ temperature used by `UnifiedDecisionModel`.
 
 ## What is available
 
-| Artifact | Current evidence | Remaining work |
+| Artifact | Current evidence | Availability and remaining work |
 | --- | --- | --- |
-| Hugging Face Transformers checkpoint | October 2 training, full-model merge, reload, calibration and held-out CUDA evaluation completed. | Publish the verified artifact with a write-scoped Hugging Face credential. |
+| Hugging Face Transformers checkpoint | October 2 training, full-model merge, reload, calibration and held-out CUDA evaluation completed. | [BF16 package published October 4](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/a66f836b56605039fe040f330180e336d19b3362); use the pinned S1 runtime in the [release instructions](release-reproduce.md). |
 | GGUF | llama.cpp registers `Gemma4UnifiedForConditionalGeneration` for both text and vision/audio conversion. | Convert the language model and its separate `mmproj`, then implement and validate an S1 runtime adapter. |
-| Full multimodal MLX | Trained 8-bit weights converted; 256 calibration, 256 fresh BoolQ and 52 media cases completed. Fresh accuracy matches trained BF16 at 89.84%. | Publish with a write credential; the S1 adapter remains experimental and individual probabilities differ materially. |
+| Full multimodal MLX | Trained 8-bit weights converted; 256 calibration, 256 fresh BoolQ and 52 media cases completed. Fresh accuracy matches trained BF16 at 89.84%. | [MLX 8-bit package published October 4](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/a5f89b400f7ef63e162f22866c206ed67cf8f282); the S1 adapter remains experimental and individual probabilities differ materially. |
 | Text-only MLX | MLX-LM maps `gemma4_unified` to its Gemma 4 text wrapper and deliberately drops vision/audio tensors. | This is only suitable for an explicitly text-only distribution. |
+
+The [October 4 publication evidence](validation/2026-10-04/README.md) records
+the immutable trained-model revisions, file verification and public access checks.
 
 The historical local training artifacts contain adapter configuration, provenance and
 calibration metadata under
@@ -198,9 +201,10 @@ larger 4-bit drift is not intrinsic to the multi-slot adapter alone; runtime
 arithmetic and quantization both contribute to differences. No universal speedup
 is claimed for MLX: timings vary by workload and exclude preprocessing.
 
-All results use eight synthetic performance cases. Model cards and provenance
-are prepared locally; neither artifact has been uploaded to Hugging Face.
-Raw results are in [`validation/2026-10-02`](validation/2026-10-02/).
+These original-base conversion results use eight synthetic performance cases;
+those experimental exports were not published to Hugging Face. Raw results remain
+in [`validation/2026-10-02`](validation/2026-10-02/). The trained derivative's
+[October 4 publication](validation/2026-10-04/README.md) is a separate release.
 
 ## Preserve the decision contract
 

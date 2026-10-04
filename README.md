@@ -29,8 +29,12 @@ successfully; their timings are separate from accuracy evaluation.
 
 The [release protocol and raw results](docs/release.md) and
 [reproduction commands](docs/release-reproduce.md) include frozen datasets,
-exclusions, weight hashes and full validation. Hugging Face upload awaits a
-write-scoped credential; no published checkpoint is claimed yet.
+exclusions, weight hashes and full validation. The
+[BF16](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/a66f836b56605039fe040f330180e336d19b3362)
+and [MLX 8-bit](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/a5f89b400f7ef63e162f22866c206ed67cf8f282)
+packages were published on October 4, 2026. The
+[publication evidence](docs/validation/2026-10-04/README.md) records immutable
+revisions, matching remote file identities and public access checks.
 
 ## Matched model comparison — October 2, 2026
 
