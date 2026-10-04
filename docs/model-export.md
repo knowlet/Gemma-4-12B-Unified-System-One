@@ -17,7 +17,7 @@ temperature used by `UnifiedDecisionModel`.
 | Artifact | Current evidence | Availability and remaining work |
 | --- | --- | --- |
 | Hugging Face Transformers checkpoint | October 2 training, full-model merge, reload, calibration and held-out CUDA evaluation completed. | [BF16 package published October 4](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/a66f836b56605039fe040f330180e336d19b3362); use the pinned S1 runtime in the [release instructions](release-reproduce.md). |
-| GGUF | llama.cpp registers `Gemma4UnifiedForConditionalGeneration` for both text and vision/audio conversion. | Convert the language model and its separate `mmproj`, then implement and validate an S1 runtime adapter. |
+| GGUF | Trained Q8_0 language weights plus F16 vision/audio `mmproj`; native S1 adapter, independent calibration and all 564 evaluation cases completed. Fresh BoolQ accuracy is 90.23%; media is 33/52. | [GGUF package published October 4](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-GGUF/tree/c418d37a17689fae554f7fc7d78db05ff7d52cfb); use the [pinned native S1 runtime](gguf-release.md). It projects the full vocabulary before selecting legal candidates; numerical parity is not established. |
 | Full multimodal MLX | Trained 8-bit weights converted; 256 calibration, 256 fresh BoolQ and 52 media cases completed. Fresh accuracy matches trained BF16 at 89.84%. | [MLX 8-bit package published October 4](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/a5f89b400f7ef63e162f22866c206ed67cf8f282); the S1 adapter remains experimental and individual probabilities differ materially. |
 | Text-only MLX | MLX-LM maps `gemma4_unified` to its Gemma 4 text wrapper and deliberately drops vision/audio tensors. | This is only suitable for an explicitly text-only distribution. |
 
@@ -40,8 +40,10 @@ claims, usage example and historical results are not a Unified 12B release card.
 ## Revisions checked
 
 The source table establishes converter support. The live MLX experiments below
-provide separate conversion/inference evidence; GGUF has not been executed in
-this session. Keep the runtime revision in each conversion manifest.
+provide separate base-model conversion/inference evidence. The trained
+[GGUF release report](gguf-release.md) records the October 4 Q8_0/F16 conversion
+and its separate native S1 runtime. Keep the runtime revision in each conversion
+manifest.
 
 | Source | Pinned revision | Evidence |
 | --- | --- | --- |
@@ -65,46 +67,48 @@ adapter, retain the matching `s1_config.json`, and use the existing
 an adapter-only directory to a full-model converter. Confirm that reloading the
 merged checkpoint reproduces the unmerged adapter's candidate logits first.
 
-The following examples use `artifacts/checkpoint` as that complete local source.
+The MLX examples use `artifacts/checkpoint` as that complete local source;
+the trained GGUF commands use `artifacts/release/checkpoint`, matching the
+download path in the GGUF reproduction guide.
 For an original Google model conversion, replace it with the local snapshot of
 the pinned base revision and use names containing `base`, not `finetuned`.
 
 ## GGUF conversion
 
-Use an isolated tool environment; do not change the project's inference lockfile.
-The commands below are checked against the pinned upstream converter's argument
-definitions. They are a reproducible recipe, not a recorded successful run.
+The October 4 trained conversion uses the pinned upstream source and the existing
+locked inference environment (Python 3.12, Torch 2.8.0, Transformers 5.17.0).
+It converts directly to Q8_0 without a separate BF16 GGUF intermediate. The
+[GGUF guide](gguf-release.md) records the complete build, calibration and
+evaluation procedure, including its frozen source revision.
 
 ```bash
-mkdir -p artifacts/export-tools artifacts/exports/s1-gguf
+mkdir -p artifacts/export-tools artifacts/exports/s1-boolq-gguf
 git clone https://github.com/ggml-org/llama.cpp artifacts/export-tools/llama.cpp
 git -C artifacts/export-tools/llama.cpp checkout 5fc4f3c8c7103ffd0b7ff5ee4855bcc78a3ed5cd
-uv venv --python 3.12 artifacts/gguf-env
-uv pip install --python artifacts/gguf-env/bin/python \
-  -r artifacts/export-tools/llama.cpp/requirements/requirements-convert_hf_to_gguf.txt
-
-artifacts/gguf-env/bin/python artifacts/export-tools/llama.cpp/convert_hf_to_gguf.py \
-  artifacts/checkpoint --outtype bf16 \
-  --outfile artifacts/exports/s1-gguf/s1-bf16.gguf
-artifacts/gguf-env/bin/python artifacts/export-tools/llama.cpp/convert_hf_to_gguf.py \
-  artifacts/checkpoint --mmproj --outtype f16 \
-  --outfile artifacts/exports/s1-gguf/mmproj-s1-f16.gguf
+uv sync --locked --extra inference --extra api
+.venv/bin/python artifacts/export-tools/llama.cpp/convert_hf_to_gguf.py \
+  artifacts/release/checkpoint --outtype q8_0 \
+  --outfile artifacts/exports/s1-boolq-gguf/s1-boolq-Q8_0.gguf \
+  --model-name Gemma-4-12B-Unified-System-One
+.venv/bin/python artifacts/export-tools/llama.cpp/convert_hf_to_gguf.py \
+  artifacts/release/checkpoint --mmproj --outtype f16 \
+  --outfile artifacts/exports/s1-boolq-gguf/mmproj-s1-boolq-f16.gguf
 
 cmake -S artifacts/export-tools/llama.cpp -B artifacts/export-tools/llama.cpp/build \
   -DGGML_METAL=ON -DLLAMA_CURL=OFF
-cmake --build artifacts/export-tools/llama.cpp/build --config Release \
-  --target llama-quantize -j 4
-artifacts/export-tools/llama.cpp/build/bin/llama-quantize \
-  artifacts/exports/s1-gguf/s1-bf16.gguf \
-  artifacts/exports/s1-gguf/s1-Q4_K_M.gguf Q4_K_M
-cp artifacts/checkpoint/s1_config.json artifacts/exports/s1-gguf/
+cmake --build artifacts/export-tools/llama.cpp/build --config Release -j 4
+cmake -S tools/gguf -B artifacts/gguf-runtime \
+  -DLLAMA_CPP_DIR="$PWD/artifacts/export-tools/llama.cpp"
+cmake --build artifacts/gguf-runtime -j 4
 ```
 
 Distribute the `mmproj` alongside the language-model GGUF for image/audio use.
 Retain the processor/tokenizer files used for parity testing and document their
 source revision. A text GGUF by itself does not contain the full multimodal
-preprocessing and projector path. Budget disk space for source weights, the
-intermediate BF16 GGUF and the quantized output before starting.
+preprocessing and projector path. Budget disk space for the approximately
+24 GB BF16 source and 12.79 GB combined GGUF outputs. Preserve the BF16
+temperature separately as `base_s1_config.json`; the GGUF evaluator writes its
+own calibrated `s1_config.json` after complete validation.
 
 The llama.cpp C API supports requesting outputs at several positions with
 `llama_batch.logits` and reading them with `llama_get_logits_ith()`.

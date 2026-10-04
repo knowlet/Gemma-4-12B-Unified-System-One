@@ -6,15 +6,23 @@ Face. The [publication receipt](publication-status.json) records both as
 [October 2/3 release measurements](../../release.md); publication adds file and
 access verification, with no new inference results.
 
+The separate [GGUF release evidence](gguf/README.md) adds October 4 Q8_0/F16
+conversion, native S1 execution, independent calibration, complete evaluation
+and [verified public publication](gguf/hub-gguf-publication.json). It preserves
+the BF16/MLX receipts below unchanged and records its own new measurements.
+The [combined publication status](gguf/all-publication-status.json) lists all
+three verified public packages with their separate immutable revisions.
+
 | Format | Immutable weights revision | Published package revision | Weight bytes |
 | --- | --- | --- | ---: |
 | BF16 | [`66626de5cbcf8c5fecb8e9b58710805a02a42f67`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/66626de5cbcf8c5fecb8e9b58710805a02a42f67) | [`a66f836b56605039fe040f330180e336d19b3362`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/a66f836b56605039fe040f330180e336d19b3362) | 23,919,549,408 |
 | MLX 8-bit | [`e304ce0b87148933ce43d5ef9bed779f048accc8`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/e304ce0b87148933ce43d5ef9bed779f048accc8) | [`a5f89b400f7ef63e162f22866c206ed67cf8f282`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/a5f89b400f7ef63e162f22866c206ed67cf8f282) | 12,754,909,484 |
+| GGUF Q8_0 + F16 projector | [`5940bdbe292b33ac86450093a528d39b13c3a8f4`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-GGUF/tree/5940bdbe292b33ac86450093a528d39b13c3a8f4) | [`c418d37a17689fae554f7fc7d78db05ff7d52cfb`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-GGUF/tree/c418d37a17689fae554f7fc7d78db05ff7d52cfb) | 12,791,679,008 |
 
 Final cards and package manifests were committed after the core weights. The
 [published BF16 card](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/blob/a66f836b56605039fe040f330180e336d19b3362/README.md)
 and [published MLX card](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/blob/a5f89b400f7ef63e162f22866c206ed67cf8f282/README.md)
-use the package revisions above. The inference/evaluation source remains
+use their package revisions above. The BF16/MLX inference/evaluation source remains
 `d4ea1ef79af2e22f666374e529fa56c1de9d3f53`, a separate identity from either Hub
 revision. The [reproduction guide](../../release-reproduce.md) downloads the
 pinned BF16 weight revision while retaining that historical runtime.

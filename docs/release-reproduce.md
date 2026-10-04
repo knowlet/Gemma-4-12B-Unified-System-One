@@ -1,5 +1,10 @@
 # Reproduce the trained MLX release
 
+For the separate GGUF Q8_0 language model, F16 image/audio projector and native
+S1 runtime, use the [GGUF reproduction guide](gguf-release.md). It pins its own
+adapter revision and calibration; the historical MLX runtime below does not
+contain that adapter.
+
 Start from the existing repository root on Apple Silicon. The recorded machine
 was a 64 GiB M1 Max. Keep space for the approximately 24 GB BF16 source and 13 GB
 MLX export together. The archived evidence is described in [release.md](release.md).

@@ -1,0 +1,29 @@
+{
+  "temperature": 2.7830344470383452,
+  "source_model": "google/gemma-4-12B-it",
+  "source_revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+  "prompt_version": 1,
+  "training_recipe_sha256": "2a708e5f4acfea4b688e88ba338aa62991608db875fef039ee6b4f33c3a74d73",
+  "calibration_dataset_sha256": "2da1a6798b1638a7ff4dd336bdf3b7eebad7a9641ec71c6932f778d309860826",
+  "runtime": "llama.cpp",
+  "runtime_format": "gguf",
+  "runtime_source_revision": "bcf829acc111fd8054987b1519b8181835f1dfed",
+  "conversion_manifest_sha256": "464874bc51e8ee21ab56f34a4bf7d22b1fb83299a277cbcf966b42c5fc7802b7",
+  "source_checkpoint_sha256": "fa96debc68209c193338d8edee4ec4258a9f603e4f2156d4688c16364703d15d",
+  "export_checkpoint_sha256": "3609c57ec4985fe65062bd490631aedb9bbe5039c622ac8e98e774b2053f93f4",
+  "gguf_calibration": {
+    "method": "s1.training.fit_temperature; 241 log-spaced temperatures [0.05,20] plus1",
+    "input": "raw legal selected logits after native softcap, before any temperature",
+    "case_count": 256,
+    "temperature": 2.7830344470383452,
+    "n": 256,
+    "nll_before": 0.538595354508613,
+    "nll_after": 0.2904123939299567,
+    "split": "calibration",
+    "runtime": "llama.cpp",
+    "manifest_sha256": "90e9fc465a6e372c81e1596e387fc7c62107730b41c4f3c1d5c7a8087a9bb51e",
+    "dataset_manifest_sha256": "e0ab28e3435a910c19abf3a9a7e58df8b5cff7a806b6c7f4f18021db1d3804dd",
+    "runtime_implementation_sha256": "4934e364ac1bb8faaf0815c92cda76c015f2289b9d67441633df62672103c816",
+    "source_temperature": 2.7830344470383452
+  }
+}

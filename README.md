@@ -1,8 +1,11 @@
 # Gemma 4 Unified System One
 
 Native text, image and audio decisions from `google/gemma-4-12B-it`:
-one multimodal backbone forward, multiple answer slots, selected LM-head rows,
-and typed Choice / Noul / Score probabilities. No text generation or JSON parsing.
+multiple answer slots and typed Choice / Noul / Score probabilities.
+The PyTorch and MLX paths use one multimodal backbone forward and selected
+LM-head rows. The experimental GGUF path uses native llama.cpp prefills and
+full-vocabulary projection before selecting legal candidates.
+No text generation or JSON parsing is needed for decisions.
 
 This project extends [system-one-open](https://github.com/mithalouni/system-one-open).
 The original E2B experiments and demos remain available; their historical results
@@ -27,11 +30,20 @@ predictions agree with BF16, but individual candidate probabilities differ by
 up to 27.48 percentage points. Eight synthetic MPS workloads also execute
 successfully; their timings are separate from accuracy evaluation.
 
+The native **GGUF Q8_0 language model plus F16 image/audio projector is 12.79 GB**.
+Its independently calibrated fresh BoolQ accuracy is **90.23% (231/256)**;
+255/256 predictions agree with trained BF16, with up to 32.89 percentage points
+of candidate-probability difference. Historical media accuracy is 33/52,
+including 28/32 images and 5/20 audio recordings. The
+[GGUF runtime and reproduction guide](docs/gguf-release.md) records the complete
+564-case evaluation and the separately verified calibrated decision interface.
+
 The [release protocol and raw results](docs/release.md) and
 [reproduction commands](docs/release-reproduce.md) include frozen datasets,
 exclusions, weight hashes and full validation. The
-[BF16](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/a66f836b56605039fe040f330180e336d19b3362)
-and [MLX 8-bit](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/a5f89b400f7ef63e162f22866c206ed67cf8f282)
+[BF16](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/a66f836b56605039fe040f330180e336d19b3362),
+[MLX 8-bit](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/a5f89b400f7ef63e162f22866c206ed67cf8f282)
+and [GGUF Q8_0 + F16 projector](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-GGUF/tree/c418d37a17689fae554f7fc7d78db05ff7d52cfb)
 packages were published on October 4, 2026. The
 [publication evidence](docs/validation/2026-10-04/README.md) records immutable
 revisions, matching remote file identities and public access checks.

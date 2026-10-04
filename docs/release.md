@@ -110,8 +110,11 @@ candidate probabilities.
 
 The [MPS report](mps.md) and [format validation](model-export.md) describe the
 separate base-model performance experiments. Those eight synthetic workloads
-are not the accuracy evaluation for this trained release. GGUF conversion has
-not been executed; the documented recipe remains a feasibility path.
+are not the accuracy evaluation for this trained release. The separate
+[October 4 GGUF report](gguf-release.md) records the trained Q8_0 language model,
+F16 vision/audio projector and native S1 runtime. That runtime projects the full
+vocabulary at each answer slot before selecting legal candidates, and can use
+multiple native prefill calls for one decision sequence.
 
 ## Completed BF16 training and evaluation
 
@@ -231,14 +234,52 @@ and one measured forward per case; other input shapes may incur compilation.
 CUDA and MPS tables have different hardware or workloads and timing scopes,
 so their ratios are not end-to-end speedups.
 
+## Trained GGUF Q8_0 validation — October 4
+
+The trained source was converted directly to Q8_0 language-model weights and
+a separate F16 vision/audio projector with llama.cpp revision
+`5fc4f3c8c7103ffd0b7ff5ee4855bcc78a3ed5cd`. Together they contain
+12,791,679,008 bytes. The [GGUF guide](gguf-release.md) includes the pinned native
+S1 adapter, build and inference commands, frozen population identities and
+[complete evaluation](validation/2026-10-04/gguf/evaluation.json).
+
+All 256 calibration, 256 fresh BoolQ and 52 historical media cases completed
+successfully. GGUF independently fits temperature 2.7830344470 from its own
+calibration logits; the numerical grid value happens to match trained BF16.
+Calibration NLL falls from 0.5386 to 0.2904 in sample.
+
+| Dataset | Correct / scored | Accuracy | NLL | Brier | ECE |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Fresh BoolQ | 231 / 256 | 90.23% | 0.2722 | 0.1569 | 0.0466 |
+| Prior media | 33 / 52 | 63.46% | 1.1118 | 0.4363 | 0.1923 |
+| MNIST images | 28 / 32 | 87.50% | 0.5212 | 0.2086 | 0.2075 |
+| FSDD audio | 5 / 20 | 25.00% | 2.0568 | 0.8008 | 0.1993 |
+
+The [independent audit and paired comparison](validation/2026-10-04/gguf/cross-runtime-comparison.json)
+verifies the complete populations, calibration-only temperature fit and exact
+runtime/artifact bindings. Fresh GGUF/BF16 argmax agreement is 255/256, with one
+wrong-to-correct change; the +0.39-point accuracy estimate has a paired bootstrap
+95% interval of 0.00 to +1.17 points and does not establish general superiority.
+Maximum candidate-probability difference is 32.89 percentage points. On prior
+media, agreement is 47/52 and maximum difference is 43.27 points: one decision
+improves and two regress. These independently calibrated runtime comparisons do
+not isolate quantization alone or establish numerical parity.
+
+The calibrated public interface also completed all eight synthetic workloads
+and 29 typed Choice/Noul/Score answers. Separate native boundary checks preserve
+early-slot logits across an 8,192-token batch boundary. These are execution
+checks, not accuracy evidence. Native logits use the full-vocabulary projection;
+this runtime does not provide the PyTorch/MLX selected-head compute saving.
+
 ## Publication and code checks
 
-Both complete model packages were published on October 4, 2026:
+All three complete model packages were published on October 4, 2026:
 
 | Format | Published package | Immutable weights revision | Published model card |
 | --- | --- | --- | --- |
 | BF16 | [Public snapshot](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/a66f836b56605039fe040f330180e336d19b3362) | [`66626de5cbcf8c5fecb8e9b58710805a02a42f67`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/tree/66626de5cbcf8c5fecb8e9b58710805a02a42f67) | [BF16 card](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One/blob/a66f836b56605039fe040f330180e336d19b3362/README.md) |
 | MLX 8-bit | [Public snapshot](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/a5f89b400f7ef63e162f22866c206ed67cf8f282) | [`e304ce0b87148933ce43d5ef9bed779f048accc8`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/tree/e304ce0b87148933ce43d5ef9bed779f048accc8) | [MLX card](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-MLX-8bit/blob/a5f89b400f7ef63e162f22866c206ed67cf8f282/README.md) |
+| GGUF Q8_0 + F16 projector | [Public snapshot](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-GGUF/tree/c418d37a17689fae554f7fc7d78db05ff7d52cfb) | [`5940bdbe292b33ac86450093a528d39b13c3a8f4`](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-GGUF/tree/5940bdbe292b33ac86450093a528d39b13c3a8f4) | [GGUF card](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-GGUF/blob/c418d37a17689fae554f7fc7d78db05ff7d52cfb/README.md) |
 
 The [October 4 publication evidence](validation/2026-10-04/README.md) and
 [publication receipt](validation/2026-10-04/publication-status.json) record
@@ -248,11 +289,15 @@ This verification did not redownload complete weight files or run new inference.
 Each published package's `artifact-manifest.json` hashes its packaged files
 except itself. Final cards and manifests were published after the weight commits;
 the table keeps those revisions distinct.
+The BF16/MLX publication receipt is unchanged; the separate
+[GGUF publication evidence](validation/2026-10-04/gguf/README.md) records its
+completed conversion, new October 4 evaluation and anonymous file verification.
 
 The reproduction commands use these local paths:
 
 - BF16: `artifacts/release/checkpoint` (adapter retained separately).
 - MLX: `artifacts/exports/s1-boolq-mlx-8bit`.
+- GGUF: `artifacts/exports/s1-boolq-gguf` (both language-model and projector files).
 
 The [October 3 preparation receipt](validation/2026-10-02/release/publication-status.json)
 and archived [BF16 card](validation/2026-10-02/release/model-cards/bf16/README.md)
@@ -274,3 +319,9 @@ workflow tests. Ruff and the package build also passed.
 The release summary regenerated from the recorded CUDA/MLX reports is byte-for-byte
 identical. Historical training and model-package receipts retain their original
 source and artifact hashes.
+
+The GGUF implementation at `bcf829acc111fd8054987b1519b8181835f1dfed` adds the
+native adapter, strict release evaluator and conversion recorder. The complete
+local suite passed **957 tests with 3 optional-dependency skips**; Ruff and the
+package build also passed. Its [validation receipt](validation/2026-10-04/gguf/code-validation.json)
+keeps these new checks separate from the historical BF16/MLX code results.
