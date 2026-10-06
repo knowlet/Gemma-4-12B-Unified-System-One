@@ -44,7 +44,9 @@ def tiny_runtime(tmp_path):
         (root / "scripts" / name).write_text("# fixture\n")
     (root / "uv.lock").write_text("version = 1\n")
     adapter = root / "scripts/adapter.py"
-    adapter.write_text("raise RuntimeError('adapter must not launch in provenance preflight tests')\n")
+    adapter.write_text(
+        "raise RuntimeError('adapter must not launch in provenance preflight tests')\n"
+    )
 
     def git(*args):
         return subprocess.check_output(
