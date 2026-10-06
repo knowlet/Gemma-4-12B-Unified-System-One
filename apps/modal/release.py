@@ -2,7 +2,8 @@
 
 uv run --extra modal modal run apps/modal/release.py --stage pilot --run <name>
 Then: --stage train, --stage evaluate, --stage export-results. Use --resume only
-for a same-recipe interrupted pilot/train. Weights stay on the existing Volume.
+for a same-recipe interrupted pilot/train/evaluate, including evaluation ending
+with completed_with_errors. Weights stay on the existing Volume.
 """
 
 from __future__ import annotations
@@ -90,8 +91,8 @@ def train(run: str, resume: bool = False):
     timeout=7200,
     max_containers=1,
 )
-def evaluate(run: str):
-    return _phase("evaluate", run, False)
+def evaluate(run: str, resume: bool = False):
+    return _phase("evaluate", run, resume)
 
 
 @app.function(
@@ -134,7 +135,7 @@ def main(
         if stage == "pilot"
         else train.remote(run, resume)
         if stage == "train"
-        else evaluate.remote(run)
+        else evaluate.remote(run, resume)
     )
     (destination / f"{stage}-receipt.json").write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result, indent=2), flush=True)
