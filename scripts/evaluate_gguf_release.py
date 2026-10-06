@@ -413,10 +413,31 @@ def make_payload(role, case, *, directories, manifests, population):
     }
 
 
+def capture_python_environment(interpreter, root):
+    """Probe with the same executable spelling as the adapter (preserve venvs)."""
+    helper = Path(__file__).resolve().with_name("runtime_dependencies.py")
+    result = subprocess.run(
+        [interpreter, str(helper), "--root", str(root)],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=600,
+    )
+    if result.returncode:
+        raise ValueError(f"cannot inventory adapter Python environment: {result.stderr.strip()}")
+    try:
+        environment = json.loads(result.stdout)
+    except (ValueError, TypeError) as exc:
+        raise ValueError("invalid adapter Python environment inventory") from exc
+    if not isinstance(environment, dict) or environment.get("schema_version") != 1:
+        raise ValueError("unsupported adapter Python environment inventory")
+    return environment
+
+
 class RuntimeGuard:
     """Freeze actual code/interpreter/native bytes independently from conversion provenance."""
 
-    def __init__(self, revision, command, extra_files=(), *, root=None):
+    def __init__(self, revision, command, extra_files=(), *, root=None, python=None):
         self.root = Path(root or Path(__file__).resolve().parents[1]).resolve()
         self.revision = revision
         if (
@@ -425,7 +446,26 @@ class RuntimeGuard:
             or self.git("rev-parse", "HEAD").decode().strip() != revision
         ):
             raise ValueError("runtime source revision must equal the current full Git HEAD")
-        paths = {Path(__file__).resolve(), Path(sys.executable).resolve()}
+        if not command:
+            raise ValueError("an adapter command is required")
+        # Verified Python adapters must be direct invocations, not uv/shell wrappers.
+        # A different venv may resolve to the same binary: never compare only realpaths.
+        executable = shutil.which(command[0])
+        selected_python = shutil.which(python) if python else executable
+        if (
+            not executable
+            or not selected_python
+            or Path(executable).absolute() != Path(selected_python).absolute()
+        ):
+            raise ValueError("runtime Python must be the directly invoked adapter interpreter")
+        if not python and (len(command) < 2 or Path(command[1]).name != "gguf_adapter.py"):
+            raise ValueError("custom adapters require an explicit --runtime-python")
+        self.python = selected_python
+        lockfile = self.root / "uv.lock"
+        if not lockfile.is_file():
+            raise ValueError("runtime dependency lockfile is required")
+        helper = Path(__file__).resolve().with_name("runtime_dependencies.py")
+        paths = {Path(__file__).resolve(), Path(sys.executable).resolve(), helper, lockfile}
         paths.update((self.root / "src" / "s1").rglob("*.py"))
         paths.update(
             self.root / "scripts" / name
@@ -505,7 +545,10 @@ class RuntimeGuard:
                 if exists:
                     if hashlib.sha256(self.git("show", f"HEAD:{relative}")).hexdigest() != actual:
                         raise ValueError(f"runtime file differs from pinned Git HEAD: {relative}")
-                elif relative.suffix in (".py", ".cpp", ".h") or relative.name == "CMakeLists.txt":
+                elif relative.suffix in (".py", ".cpp", ".h") or relative.name in (
+                    "CMakeLists.txt",
+                    "uv.lock",
+                ):
                     raise ValueError(f"runtime source file must be committed: {relative}")
             self.files.append(
                 {
@@ -516,6 +559,12 @@ class RuntimeGuard:
                 }
             )
 
+        self.environment = capture_python_environment(self.python, self.root)
+        self.source_file_count = len(self.files)
+        for item in self.environment["files"]:
+            self.files.append({**item, "tracked_at_runtime_revision": False})
+        self.environment_sha256 = digest(self.environment)
+
     def git(self, *args):
         return subprocess.check_output(
             ["git", "-c", "core.fsmonitor=false", "-C", str(self.root), *args]
@@ -524,14 +573,27 @@ class RuntimeGuard:
     def check(self):
         if self.git("rev-parse", "HEAD").decode().strip() != self.revision:
             raise ValueError("Git HEAD changed during evaluation")
-        for item in self.files:
+        for item in self.files[: self.source_file_count]:
             path = Path(item["path"])
             if path.stat().st_size != item["size_bytes"] or file_sha256(path) != item["sha256"]:
                 raise ValueError(f"runtime file changed during evaluation: {path}")
 
+        if digest(capture_python_environment(self.python, self.root)) != self.environment_sha256:
+            raise ValueError("adapter Python environment changed during evaluation")
+
     def receipt(self):
+        files_sha256 = digest(self.files)
         return {
+            "schema_version": 2,
             "source_revision": self.revision,
+            "python_environment": self.environment,
+            "python_environment_sha256": self.environment_sha256,
+            "implementation_sha256": digest(
+                {
+                    "files_sha256": files_sha256,
+                    "python_environment_sha256": self.environment_sha256,
+                }
+            ),
             "files": self.files,
             "files_sha256": digest(self.files),
         }
@@ -622,6 +684,10 @@ def parse_args(argv=None):
         parser.add_argument(f"--{kind}-manifest", type=Path, required=True)
         parser.add_argument(f"--{kind}-manifest-sha256", required=True)
     parser.add_argument("--runtime-source-revision", required=True)
+    parser.add_argument(
+        "--runtime-python",
+        help="Direct adapter interpreter; required for custom Python adapters (no shell/uv wrappers)",
+    )
     parser.add_argument("--runtime-file", action="append", default=[], type=Path)
     parser.add_argument("--adapter-timeout", type=float, default=300)
     parser.add_argument("--context-size", type=int, default=16384)
@@ -637,9 +703,40 @@ def parse_args(argv=None):
     return parser.parse_args(argv)
 
 
+def validate_output_path(args):
+    """An error report must never overwrite the inputs that failed validation.
+
+    This is a preflight for a controlled local workspace, not a defense against
+    concurrent filesystem modification by another process.
+    """
+    output = args.output.resolve()
+    directories = [args.model]
+    directories.extend(getattr(args, f"{role}_inputs") for role in EXPECTED_CASES)
+    directories.append(args.dataset_manifest.parent)
+    if any(output.is_relative_to(root.resolve()) for root in directories):
+        raise ValueError("output must be outside the model package and input directories")
+    source_root = Path(__file__).resolve().parents[1]
+    inputs = {args.dataset_manifest, args.conversion_manifest, source_root / "uv.lock"}
+    inputs.update((source_root / "scripts").glob("*.py"))
+    inputs.update((source_root / "src" / "s1").rglob("*.py"))
+    if getattr(args, "runtime_python", None):
+        executable = shutil.which(args.runtime_python)
+        if executable:
+            inputs.add(Path(executable))
+    inputs.update(path for root in directories for path in root.rglob("*") if path.is_file())
+    inputs.update(path for path in args.runtime_file if path.is_file())
+    inputs.update(Path(arg) for arg in args.adapter_command if Path(arg).is_file())
+    for path in inputs:
+        if output == path.resolve() or (args.output.exists() and args.output.samefile(path)):
+            raise ValueError(f"output aliases an evaluation input: {path}")
+
+
 def main(argv=None):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
     args = parse_args(argv)
+    # Outside the report-writing try block: even the failure report must not
+    # be written to a package/input path, including symlink and hardlink aliases.
+    validate_output_path(args)
     report = {
         "schema_version": 1,
         "status": "error",
@@ -715,7 +812,12 @@ def main(argv=None):
                 )
                 if payload["source_input_token_count"] > args.context_size:
                     raise ValueError(f"{case['id']}: captured input exceeds context size")
-        guard = RuntimeGuard(args.runtime_source_revision, args.adapter_command, args.runtime_file)
+        guard = RuntimeGuard(
+            args.runtime_source_revision,
+            args.adapter_command,
+            args.runtime_file,
+            python=args.runtime_python,
+        )
         report["runtime_source_revision"] = args.runtime_source_revision
         report["runtime_implementation"] = guard.receipt()
         guard.check()
@@ -764,7 +866,9 @@ def main(argv=None):
                 "runtime": "llama.cpp",
                 "manifest_sha256": pins["calibration"],
                 "dataset_manifest_sha256": args.dataset_manifest_sha256,
-                "runtime_implementation_sha256": report["runtime_implementation"]["files_sha256"],
+                "runtime_implementation_sha256": report["runtime_implementation"][
+                    "implementation_sha256"
+                ],
                 "source_temperature": base.get("temperature"),
             },
         }

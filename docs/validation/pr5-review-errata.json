@@ -1,0 +1,159 @@
+{
+  "status": "source_bound_annotations",
+  "review_head": "6d8d07971dd63e63ad4be040fb3172f2d5094fda",
+  "historical_artifacts_modified": false,
+  "hash_chain_policy": "Append a new source-hash-bound index. Never change pinned JSON in place without versioning every transitive reference. Do not invent missing historical measurements/dependency bytes.",
+  "errata": [
+    {
+      "id": "E01",
+      "groups": [
+        "G21"
+      ],
+      "source_artifacts": [
+        {
+          "path": "docs/validation/2026-10-04/gguf/hardware.json",
+          "sha256": "a0bff54ed2ce5085a6b30aabca0fe20bb46d9d093daebfbf13b3acf482ef0750"
+        },
+        {
+          "path": "docs/validation/2026-10-04/gguf/code-validation.json",
+          "sha256": "ef337023607cadf5173775309e54af02bd8fb52549b1ec70beddeba6036c1ac0"
+        }
+      ],
+      "rerun_policy": "No numeric rerun needed for path-only corrections. In a full checkout, the published-log regression verifies complete bytes against the original receipt digests.",
+      "annotations": {
+        "path_aliases": {
+          "gguf-boundary-smoke.log": "boundary-smoke.log",
+          "gguf-full-pytest.log": "full-pytest.log",
+          "gguf-code-build.log": "package-build.log"
+        }
+      },
+      "verification_scope": "Aliases checked against GitHub paths; complete log SHA verification is performed by the repository test in a full checkout. Source distributions may omit .log files."
+    },
+    {
+      "id": "E02",
+      "groups": [
+        "G23"
+      ],
+      "source_artifacts": [
+        {
+          "path": "docs/validation/2026-10-04/gguf/boundary-smoke-receipt.json",
+          "sha256": "fc1025d2df2e6839677a6b6429ae73d54d33f4923d77089affc780018245386c"
+        }
+      ],
+      "rerun_policy": "Do not overwrite historical execution_head. For clean-HEAD validation, rerun boundary smoke with committed sources.",
+      "annotations": {
+        "recorded_execution_head": "18ecf7bcc92cde91d3a4bbfc92a178b075061605",
+        "verified_source_files_revision": "bcf829acc111fd8054987b1519b8181835f1dfed",
+        "actual_execution_dirty_state": "unknown"
+      }
+    },
+    {
+      "id": "E03",
+      "groups": [
+        "G22"
+      ],
+      "source_artifacts": [
+        {
+          "path": "docs/validation/2026-10-04/gguf/conversion-manifest.json",
+          "sha256": "464874bc51e8ee21ab56f34a4bf7d22b1fb83299a277cbcf966b42c5fc7802b7"
+        },
+        {
+          "path": "docs/validation/2026-10-04/gguf/tensor-inventory.json",
+          "sha256": "aea1828d797f22d15d54a681297a0efbfd87bdf8f6ba3698017751bdbf1d8b54"
+        }
+      ],
+      "rerun_policy": "No reconversion solely for this count. Add generated-tensor mapping to derived explanation.",
+      "annotations": {
+        "source_tensors": 677,
+        "language_source_tensors": 666,
+        "generated_tensor": "rope_freqs.weight",
+        "language_output_tensors": 667,
+        "projector_output_tensors": 11,
+        "total_output_tensors": 678
+      }
+    },
+    {
+      "id": "E04",
+      "groups": [
+        "G24"
+      ],
+      "source_artifacts": [
+        {
+          "path": "docs/validation/2026-10-04/gguf/build-reproduction.json",
+          "sha256": "e589309be9dc3f2846078524525b62a0395fd7cdd0d8eab4588b5f491b7f637e"
+        },
+        {
+          "path": "docs/validation/2026-10-04/gguf/boundary-smoke-receipt.json",
+          "sha256": "fc1025d2df2e6839677a6b6429ae73d54d33f4923d77089affc780018245386c"
+        }
+      ],
+      "rerun_policy": "Different binaries need independent validation before new runtime claims; do not replace evaluated identity with rebuilt identity.",
+      "annotations": {
+        "claim": "compile-only / recipe buildability",
+        "byte_reproduction_claimed": false,
+        "evaluated_binary_sha256": "3201968ccdc7ad1ea6fa1ae926e050e9b4af300735885ab365d14c8422b3388e",
+        "rebuilt_binary_sha256": "4dc67fd8decf5298865ab7b7aaf075e4a9271b9bb1b2b150bf0e88df82e2b57c",
+        "hashes_match": false
+      }
+    },
+    {
+      "id": "E05",
+      "groups": [
+        "G25"
+      ],
+      "source_artifacts": [
+        {
+          "path": "docs/validation/2026-10-04/gguf/hub-gguf-publication.json",
+          "sha256": "84b3c89268234debb6422ac9cad49c0bc729f94249bf84eec2f0809eb8fe397a"
+        },
+        {
+          "path": "docs/validation/2026-10-04/gguf/all-publication-status.json",
+          "sha256": "9a05ec8dafb60f018b52bdf98ee503d071bc13a5472d15e67de7afe42cc3ea9b"
+        }
+      ],
+      "rerun_policy": "Use portable paths in a new derived index and future serialization, retaining historical original digests.",
+      "annotations": {
+        "portable_local_path": "artifacts/exports/s1-boolq-gguf"
+      }
+    },
+    {
+      "id": "E06",
+      "groups": [
+        "G26"
+      ],
+      "source_artifacts": [
+        {
+          "path": "docs/validation/2026-10-04/gguf/boundary-smoke-output.jsonl",
+          "sha256": "c8d51304ffa084adcc2f00da7786033e479fd450b311f3850089eaf8fe15e359"
+        }
+      ],
+      "rerun_policy": "Annotate original wall time. Do not subtract guessed initialization time; measure warm latency separately.",
+      "annotations": {
+        "first_request_wall_time_includes_startup": true,
+        "steady_state_latency_claimed": false
+      }
+    },
+    {
+      "id": "E07",
+      "groups": [
+        "G20"
+      ],
+      "source_artifacts": [
+        {
+          "path": "docs/validation/2026-10-02/release/evaluate/receipt.json",
+          "sha256": "07da695983a341ed1b488dedb7edd610b426fc86681a9fb45fbf9fe29f6fc280"
+        },
+        {
+          "path": "docs/validation/2026-10-02/release/evaluate-receipt.json",
+          "sha256": "07da695983a341ed1b488dedb7edd610b426fc86681a9fb45fbf9fe29f6fc280"
+        }
+      ],
+      "rerun_policy": "Keep published links working; verify alias equality until intentional migration.",
+      "annotations": {
+        "canonical_receipt": "docs/validation/2026-10-02/release/evaluate/receipt.json",
+        "flat_copy": "historical alias, not independent evidence"
+      }
+    }
+  ],
+  "schema_version": 1
+}

@@ -365,11 +365,15 @@ def test_conversion_receipt_binds_source_and_export_bytes(
     tmp_path, model_config, release_evaluator
 ):
     _, preparation = release_evaluator["shared_scripts"]()
-    model_config["quantization"] = {"bits": 4, "group_size": 64}
+    model_config["quantization"] = {"bits": 4, "group_size": 64, "mode": "affine"}
     (tmp_path / "config.json").write_text(json.dumps(model_config))
     (tmp_path / "model.safetensors").write_bytes(b"packed fixture weights")
     exported = preparation["checkpoint_identity"](tmp_path)
-    receipt = {"source_checkpoint_sha256": "c" * 64, "files": exported["files"]}
+    receipt = {
+        "source_checkpoint_sha256": "c" * 64,
+        "files": exported["files"],
+        "quantization": model_config["quantization"],
+    }
     identity = {"source_checkpoint_sha256": "c" * 64}
     assert release_evaluator["validate_conversion"](tmp_path, receipt, identity)[0] == exported
     (tmp_path / "model.safetensors").write_bytes(b"modified packed weights")

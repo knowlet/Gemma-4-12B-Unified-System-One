@@ -98,3 +98,33 @@ The exact [published card](model-card/README.md), [artifact manifest](model-card
 for byte. The final manifest hashes every packaged file except itself and the
 Hub-managed `.gitattributes`. Verification did not redownload the complete
 weights or run remote inference. Historical BF16/MLX receipts remain unchanged.
+
+## Review annotations without rewriting recorded evidence
+
+The [source-bound errata](../../pr5-review-errata.json) identify every affected
+original artifact by SHA256. Published logs are `boundary-smoke.log`,
+`full-pytest.log` and `package-build.log`; the old `gguf-*` receipt paths are
+aliases to those files. A full-checkout regression checks their complete bytes
+against the original receipts. Source distributions may omit logs, so that
+specific check is explicitly skipped there rather than reported as verified.
+
+The boundary receipt records execution HEAD `18ecf7bc`, while its four recorded
+source-file hashes match files introduced in `bcf829ac`. The latter identifies
+the recoverable source bytes; it does not prove that the historical execution
+used a pristine `bcf829ac` checkout. Dirty state at execution is unknown.
+Clean-HEAD validation requires a new run and a new receipt.
+
+The separate recipe build only verifies compilation and `--help`. Its rebuilt
+binary hash (`4dc67fd8...`) differs from the evaluated binary (`3201968c...`);
+neither byte reproducibility nor inference with that rebuilt binary is claimed.
+The first boundary request includes native startup in wall latency, so it is
+not a steady-state latency observation. No guessed startup duration is subtracted.
+
+The 677 source tensors legitimately become 678 outputs: 666 language tensors
+plus generated `rope_freqs.weight` produce 667 language outputs, alongside the
+11 projector tensors. Keep the original source count. Portable publication
+location is `artifacts/exports/s1-boolq-gguf`; absolute historical paths identify
+the original machine, not a location that readers should reproduce.
+
+Current-source guard requirements and remaining verifier findings are recorded
+in the [PR review status](../../../pr5-review-status.md).

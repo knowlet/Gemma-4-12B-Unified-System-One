@@ -338,6 +338,14 @@ def train_epoch(
             updates.write_text("".join(json.dumps(row) + "\n" for row in rows))
     elif latest.exists():
         raise ValueError("checkpoint exists; explicitly enable resume")
+    elif resume:
+        # No durable checkpoint means the canonical boundary is step zero.
+        # Preserve even a partially written final line without treating it as an update.
+        updates = output / "updates.jsonl"
+        if updates.exists():
+            previous = updates.read_bytes()
+            (output / f"attempt-{uuid.uuid4().hex}.jsonl").write_bytes(previous)
+            updates.write_bytes(b"")
     model.lm.train()
     start = time.monotonic()
     previous_seconds = state["training_seconds"]
