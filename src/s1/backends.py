@@ -267,3 +267,19 @@ class GemmaBackend:
 
     def predict(self, request):
         return self.model.predict(request)
+
+    def predict_batch(self, requests):
+        """Batched decisions via native G4 batching (one forward per bucket).
+
+        Falls back to per-request predict for backends without native batching.
+        Keeps per-request normalize_response semantics; callers validate each.
+        """
+        try:
+            from .evaluation.gemma import predict_batch as _predict_batch
+        except Exception:
+            return [self.predict(r) for r in requests]
+        if not requests:
+            raise ValueError("empty batch")
+        if len(requests) == 1:
+            return [self.predict(requests[0])]
+        return _predict_batch(self.model, requests, independent=True, readout="candidate")

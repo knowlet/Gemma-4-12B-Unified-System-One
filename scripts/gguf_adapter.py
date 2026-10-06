@@ -289,6 +289,13 @@ def main(argv=None):
     parser.add_argument("--batch-size", type=int, default=8192)
     parser.add_argument("--gpu-layers", type=int, default=99)
     parser.add_argument("--threads", type=int, default=8)
+    parser.add_argument(
+        "--image-max-tokens",
+        type=int,
+        default=None,
+        help="Override native image_max_tokens; defaults to processor max_soft_tokens (280). "
+        "Use 140/70 for the image-token sweep; payload expected_tokens must be regenerated per setting.",
+    )
     args = parser.parse_args(argv)
     if args.evaluation and args.predict:
         parser.error("choose prediction or evaluation mode")
@@ -326,6 +333,13 @@ def main(argv=None):
         processor=processor, tok=processor.tokenizer, device="cpu", max_context=args.ctx_size
     )
     letters = candidate_ids(processor.tokenizer)
+    image_max_tokens = (
+        args.image_max_tokens
+        if args.image_max_tokens is not None
+        else processor.image_processor.max_soft_tokens
+    )
+    if image_max_tokens <= 0:
+        raise ValueError("--image-max-tokens must be positive")
     native = NativeProcess(
         [
             str(args.native_runner.resolve()),
@@ -342,7 +356,7 @@ def main(argv=None):
             "--threads",
             str(args.threads),
             "--image-max-tokens",
-            str(processor.image_processor.max_soft_tokens),
+            str(image_max_tokens),
         ]
     )
     try:

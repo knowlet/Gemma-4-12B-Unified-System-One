@@ -19,10 +19,11 @@ def make_backend(args):
         or args.precision is not None
         or args.dtype is not None
         or args.attn_implementation is not None
+        or getattr(args, "compile_mode", None) not in (None, "none")
     ):
         raise ValueError(
-            "--quantization, --adapter-path, --precision, --dtype and --attn-implementation "
-            "require --backend gemma"
+            "--quantization, --adapter-path, --precision, --dtype, --attn-implementation "
+            "and --compile-mode require --backend gemma"
         )
     if args.backend == "uniform":
         return UniformBackend()
@@ -40,6 +41,9 @@ def make_backend(args):
             runtime_options["dtype"] = args.dtype
         if args.attn_implementation is not None:
             runtime_options["attn_implementation"] = args.attn_implementation
+        compile_mode = getattr(args, "compile_mode", None)
+        if compile_mode not in (None, "none"):
+            runtime_options["compile_mode"] = compile_mode
         return GemmaBackend(
             args.model,
             revision=args.revision,
@@ -99,6 +103,13 @@ def main(argv=None):
             "--attn-implementation",
             choices=["eager", "sdpa"],
             help="Gemma attention implementation; default: Transformers selection",
+        )
+        sub.add_argument(
+            "--compile-mode",
+            choices=["none", "decoder-max-autotune-no-cudagraphs", "decoder-default-dynamic"],
+            default="none",
+            help="Opt-in torch.compile for text decoder only (research; default none). "
+            "Do not use reduce-overhead/CUDA-graphs on 60-716 tok dynamic shapes.",
         )
         sub.add_argument("--subfolder")
         sub.add_argument("--max-len", type=int, default=512)

@@ -62,8 +62,9 @@ static options parse_options(int argc, char ** argv) {
         else throw std::runtime_error("unknown argument " + key);
     }
     require(!out.model.empty() && !out.mmproj.empty(), "model and mmproj are required");
-    require(out.ctx > 0 && out.ctx <= 16384 && out.batch >= 8192 && out.batch <= 16384,
-            "context must be 1..16384; batch must be 8192..16384");
+    require(out.ctx > 0 && out.ctx <= 16384 && out.batch >= 512 && out.batch <= 16384,
+            "context must be 1..16384; batch must be 512..16384 (default 8192; "
+            "values below 8192 are research-only for the batch-size sweep)");
     require(out.threads > 0 && out.image_max_tokens > 0, "invalid thread/image token limit");
     return out;
 }

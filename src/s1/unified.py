@@ -70,6 +70,7 @@ class UnifiedDecisionModel:
         lora=None,
         adapter_path=None,
         quantization="none",
+        compile_mode=None,
     ):
         from transformers import AutoModelForMultimodalLM, AutoProcessor
 
@@ -118,8 +119,45 @@ class UnifiedDecisionModel:
         self.quantization = quantization
         self.quantization_details = inspect_quantization(lm, quantization)
         self._initialize(lm, processor, str(device), temperature, max_context)
+        self.compile_mode = None
+        if compile_mode is not None:
+            self.enable_compile(compile_mode)
         self.name = name
         self.revision = resolved_revision
+
+    def enable_compile(self, mode="decoder-max-autotune-no-cudagraphs"):
+        """Opt-in torch.compile for the text decoder only (research, off by default).
+
+        Rationale (see artifacts/optimization/compile-int8-analysis.md): full-model
+        reduce-overhead hits dynamo recompile_limit on 60-716 tok + 4 modality
+        branches. This compiles only the language_model submodule with
+        max-autotune-no-cudagraphs + dynamic=True + fullgraph=False, keeping
+        vision/audio encoders eager. Quantized (bnb) + compile is untested;
+        prefer quantization="none" + torchao weight-only for compile experiments.
+        """
+        import torch
+
+        allowed = ("decoder-max-autotune-no-cudagraphs", "decoder-default-dynamic")
+        if mode not in allowed:
+            raise ValueError(f"compile_mode must be one of {allowed}")
+        if self.quantization != "none":
+            raise ValueError(
+                "compile with bitsandbytes quantization is unsupported; use none + torchao"
+            )
+        target = getattr(getattr(self, "backbone", None), "language_model", None) or getattr(
+            self, "backbone", None
+        )
+        if target is None:
+            raise ValueError("compile target unavailable")
+        torch_mode = "max-autotune-no-cudagraphs" if "no-cudagraphs" in mode else "default"
+        compiled = torch.compile(target, mode=torch_mode, dynamic=True, fullgraph=False)
+        # Rebind: backbone.language_model if present, else whole backbone.
+        if getattr(getattr(self, "backbone", None), "language_model", None) is not None:
+            self.backbone.language_model = compiled
+        else:
+            self.backbone = compiled
+        self.compile_mode = mode
+        return mode
 
     @classmethod
     def from_components(cls, lm, processor, *, device="cpu", temperature=1.0, max_context=16384):
