@@ -201,6 +201,21 @@ def validate_processor_identity(processor_path, package):
             )
 
 
+def configure_image_budget(processor, requested, *, evaluation):
+    """Keep HF resizing and native projection on the same research token budget."""
+    original = processor.image_processor.max_soft_tokens
+    budget = original if requested is None else requested
+    if budget not in (70, 140, 280, 560, 1120):
+        raise ValueError("--image-max-tokens must be one of 70, 140, 280, 560, 1120")
+    if budget != original and not evaluation:
+        raise ValueError(
+            "image token sweeps require --evaluation and newly captured inputs; "
+            "the published calibration applies to the original image budget"
+        )
+    processor.image_processor.max_soft_tokens = budget
+    return budget
+
+
 def prediction_from_logits(request, response, temperature, model):
     if response.get("status") != "ok":
         return response
@@ -296,8 +311,8 @@ def main(argv=None):
         "--image-max-tokens",
         type=int,
         default=None,
-        help="Override native image_max_tokens; defaults to processor max_soft_tokens (280). "
-        "Use 140/70 for the image-token sweep; payload expected_tokens must be regenerated per setting.",
+        help="Research --evaluation: override both HF and native image budgets. "
+        "Defaults to processor max_soft_tokens (280); captures must match the requested setting.",
     )
     args = parser.parse_args(argv)
     if args.evaluation and args.predict:
@@ -336,13 +351,9 @@ def main(argv=None):
         processor=processor, tok=processor.tokenizer, device="cpu", max_context=args.ctx_size
     )
     letters = candidate_ids(processor.tokenizer)
-    image_max_tokens = (
-        args.image_max_tokens
-        if args.image_max_tokens is not None
-        else processor.image_processor.max_soft_tokens
+    image_max_tokens = configure_image_budget(
+        processor, args.image_max_tokens, evaluation=args.evaluation
     )
-    if image_max_tokens <= 0:
-        raise ValueError("--image-max-tokens must be positive")
     native = NativeProcess(
         [
             str(args.native_runner.resolve()),

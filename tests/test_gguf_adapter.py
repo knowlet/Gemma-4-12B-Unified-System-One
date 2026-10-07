@@ -4,6 +4,7 @@ import hashlib
 import json
 import runpy
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -14,6 +15,28 @@ from s1.contracts import DecisionRequest
 @pytest.fixture(scope="module")
 def adapter():
     return runpy.run_path(str(Path(__file__).resolve().parents[1] / "scripts/gguf_adapter.py"))
+
+
+@pytest.mark.parametrize("budget", [70, 140, 280, 560, 1120])
+def test_research_budget_updates_authoritative_hf_and_native_limit(adapter, budget):
+    processor = SimpleNamespace(image_processor=SimpleNamespace(max_soft_tokens=280))
+    assert adapter["configure_image_budget"](processor, budget, evaluation=True) == budget
+    assert processor.image_processor.max_soft_tokens == budget
+
+
+def test_prediction_budget_preserves_published_calibration(adapter):
+    processor = SimpleNamespace(image_processor=SimpleNamespace(max_soft_tokens=280))
+    assert adapter["configure_image_budget"](processor, None, evaluation=False) == 280
+    with pytest.raises(ValueError, match="published calibration"):
+        adapter["configure_image_budget"](processor, 140, evaluation=False)
+    assert processor.image_processor.max_soft_tokens == 280
+
+
+@pytest.mark.parametrize("budget", [0, 1, 141, 8192])
+def test_unsupported_image_budget_rejected_before_native_launch(adapter, budget):
+    processor = SimpleNamespace(image_processor=SimpleNamespace(max_soft_tokens=280))
+    with pytest.raises(ValueError, match="must be one of"):
+        adapter["configure_image_budget"](processor, budget, evaluation=True)
 
 
 def patches_for(rgb):
