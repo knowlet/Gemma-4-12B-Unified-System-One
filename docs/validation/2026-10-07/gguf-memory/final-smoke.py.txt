@@ -1,0 +1,93 @@
+import hashlib
+import json
+import runpy
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+from types import SimpleNamespace
+
+import numpy as np
+from transformers import AutoProcessor
+
+ROOT = Path.cwd()
+sys.path.insert(0, str(ROOT / "scripts"))
+from gguf_adapter import configure_image_budget, load_calibration, make_native_payload
+from s1.contracts import DecisionRequest
+from s1.unified import UnifiedDecisionModel, candidate_ids
+
+directory = ROOT / "artifacts/research/gguf-memory"
+package = ROOT / "artifacts/exports/s1-boolq-gguf"
+binary = ROOT / "artifacts/gguf-runtime/bin/s1-gguf"
+harness = runpy.run_path(str(directory / "benchmark.py"))
+report = json.loads((directory / "reserve-comparison.json").read_text())
+reference = report["variants"]["output64"]
+smokes = [json.loads(line) for line in (ROOT / "artifacts/release/gguf-runtime-smoke-inputs.jsonl").read_text().splitlines()]
+processor = AutoProcessor.from_pretrained(package, local_files_only=True)
+context = SimpleNamespace(processor=processor, tok=processor.tokenizer, device="cpu", max_context=16384)
+letters = candidate_ids(context.tok)
+# This rehashes both weights and validates the unchanged published sidecar.
+temperature = load_calibration(package / "s1_config.json", model=package / "s1-boolq-Q8_0.gguf", mmproj=package / "mmproj-s1-boolq-f16.gguf")
+result = {"status": "verified", "temperature": temperature, "weight_hashes_verified": True,
+          "binary_sha256": harness["sha"](binary), "cpp_sha256": harness["sha"](ROOT / "tools/gguf/s1_gguf.cpp"),
+          "program_sha256": harness["sha"](__file__)}
+with tempfile.TemporaryDirectory(prefix="final-s1-", dir=directory) as tmp:
+    def prepare(request, case_id):
+        inputs, slots, counts = UnifiedDecisionModel.prepare(context, request)
+        payload = make_native_payload(None, request, inputs, slots.tolist(), counts.tolist(), letters, tmp)
+        payload["case_id"] = case_id
+        return inputs, payload
+    short_request = DecisionRequest.model_validate(smokes[0]["request"])
+    _, short = prepare(short_request, smokes[0]["case_id"])
+    request64 = DecisionRequest.model_validate({"state": "The number two is even.", "questions": [
+        {"id": f"q{i}", "type": "noul", "instructions": "Is two even?"} for i in range(64)]})
+    _, slots64 = prepare(request64, "slots-64")
+    invalid65 = json.loads(json.dumps(slots64))
+    invalid65["case_id"] = "valid-in-range-slots65"
+    invalid65["slots"].insert(1, invalid65["slots"][0] + 1)
+    invalid65["nopts"].insert(1, 2)
+    invalid65["question_ids"].insert(1, "extra-question")
+    assert len(invalid65["slots"]) == 65
+    assert invalid65["slots"] == sorted(set(invalid65["slots"]))
+    assert max(invalid65["slots"]) < invalid65["source_input_token_count"]
+    command = [str(binary), "--model", str(package / "s1-boolq-Q8_0.gguf"), "--mmproj", str(package / "mmproj-s1-boolq-f16.gguf")]
+    with (directory / "final-native-smoke.log").open("w") as stderr:
+        process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=stderr, text=True, bufsize=1)
+        try:
+            outputs = [harness["exchange"](process, p) for p in (short, slots64, invalid65, short)]
+            assert outputs[2]["response"]["status"] == "error"
+            assert outputs[2]["response"]["error"] == "inconsistent question metadata"
+            expected64 = reference["cases"][-1]["measured"][0]["response"]["raw_logits"]
+            assert outputs[1]["response"]["raw_logits"] == expected64
+            for index in (0, 3):
+                assert outputs[index]["response"]["raw_logits"] == reference["first"]["response"]["raw_logits"]
+            assert all(o["response"]["runtime"]["max_output_slots"] == 64 for o in (outputs[0],outputs[1],outputs[3]))
+            result["slot_boundary"] = {"outputs": outputs, "invalid65_input_sha256": hashlib.sha256(json.dumps(invalid65,sort_keys=True).encode()).hexdigest(),
+                                      "all65_slots_within_context": True, "exact_raw_match_to_prototype": True}
+        finally:
+            process.stdin.close()
+            assert process.wait(timeout=10) == 0
+    image_request = DecisionRequest.model_validate(next(s["request"] for s in smokes if s["case_id"] == "synthetic-image"))
+    budgets = {}
+    for budget in (140, 70):
+        configure_image_budget(processor, budget, evaluation=True)
+        inputs, payload = prepare(image_request, f"image-budget-{budget}")
+        envelope = {"case_id": payload["case_id"], "request": image_request.model_dump(mode="json"),
+                    "question_ids": payload["question_ids"], "slots": payload["slots"], "nopts": payload["nopts"],
+                    "letters": letters, "input_ids": inputs["input_ids"][0].tolist(), "has_media": True,
+                    "source_input_token_count": payload["source_input_token_count"]}
+        command = [sys.executable, str(ROOT / "scripts/gguf_adapter.py"), "--model", str(package), "--native-runner", str(binary), "--evaluation", "--image-max-tokens", str(budget)]
+        with (directory / f"image-budget-{budget}.log").open("w") as stderr:
+            completed = subprocess.run(command, input=json.dumps(envelope)+"\n", stdout=subprocess.PIPE, stderr=stderr, text=True, timeout=300)
+        assert completed.returncode == 0
+        response = json.loads(completed.stdout)
+        assert response["status"] == "ok", response
+        assert response["native_token_count"] == len(envelope["input_ids"])
+        assert response["runtime_slots"] == envelope["slots"]
+        assert np.isfinite(response["raw_logits"]).all()
+        budgets[budget] = {"hf_patch_shape": list(inputs["pixel_values"].shape), "expected_media_tokens": next(p["expected_tokens"] for p in payload["parts"] if p["type"]=="image"),
+                           "response": response, "envelope_sha256": hashlib.sha256(json.dumps(envelope,sort_keys=True).encode()).hexdigest()}
+        print(json.dumps({"event":"budget", "budget":budget, "status":"ok", "native_tokens":response["native_token_count"]}), flush=True)
+    result["image_budget_pipeline"] = budgets
+(directory / "final-native-smoke.json").write_text(json.dumps(result,indent=2)+"\n")
+print(json.dumps({"event":"complete", "status":result["status"]}), flush=True)

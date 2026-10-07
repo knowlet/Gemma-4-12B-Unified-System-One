@@ -1,0 +1,100 @@
+{
+  "status": "verified_bounded_equivalence",
+  "report_sha256": "2b07d3c0821f2b67a8ef86107ac0cafeafe015418ab41b55de700a3a5019adab",
+  "scope": "Every stored successful cold, warmup, measured and recovery output; 13 distinct cases. Not a full 564-case release qualification.",
+  "comparison": {
+    "baseline": {
+      "successful_calls_compared": 44,
+      "decision_comparisons": 258,
+      "argmax_agreements": 258,
+      "max_abs_raw_logit_difference": 0.0,
+      "max_abs_probability_difference": 0.0,
+      "metal_compute_buffer_mib": 8432.0,
+      "rss_kib_at_end": 12980112,
+      "native_latency_median_by_case": {
+        "billing-en": 356.974792,
+        "technical-en": 523.198375,
+        "sentiment-score": 762.905625,
+        "synthetic-image": 3084.311208,
+        "synthetic-audio": 1125.835125,
+        "synthetic-mixed": 2733.561459,
+        "long-state": 4388.571625,
+        "sixteen-questions": 2935.569917,
+        "boolq-validation-1324": 679.462,
+        "boolq-validation-3154": 7048.52375,
+        "cross-batch-full": 62100.836959,
+        "cross-batch-prefix": 333.104083,
+        "slots-64": 9950.692917
+      }
+    },
+    "output64": {
+      "successful_calls_compared": 44,
+      "decision_comparisons": 258,
+      "argmax_agreements": 258,
+      "max_abs_raw_logit_difference": 0.0,
+      "max_abs_probability_difference": 0.0,
+      "metal_compute_buffer_mib": 2192.28,
+      "rss_kib_at_end": 19235968,
+      "native_latency_median_by_case": {
+        "billing-en": 365.846,
+        "technical-en": 528.602709,
+        "sentiment-score": 401.564,
+        "synthetic-image": 1991.259,
+        "synthetic-audio": 899.670167,
+        "synthetic-mixed": 2191.285333,
+        "long-state": 5180.500208,
+        "sixteen-questions": 3904.787333,
+        "boolq-validation-1324": 1019.564,
+        "boolq-validation-3154": 10646.453167,
+        "cross-batch-full": 87894.936292,
+        "cross-batch-prefix": 497.790459,
+        "slots-64": 14971.155875
+      }
+    },
+    "baseline-repeat": {
+      "successful_calls_compared": 44,
+      "decision_comparisons": 258,
+      "argmax_agreements": 258,
+      "max_abs_raw_logit_difference": 0.0,
+      "max_abs_probability_difference": 0.0,
+      "metal_compute_buffer_mib": 8432.0,
+      "rss_kib_at_end": 19235408,
+      "native_latency_median_by_case": {
+        "billing-en": 972.426417,
+        "technical-en": 685.012834,
+        "sentiment-score": 445.944541,
+        "synthetic-image": 2476.629042,
+        "synthetic-audio": 990.355167,
+        "synthetic-mixed": 2510.756709,
+        "long-state": 4183.09825,
+        "sixteen-questions": 3421.418084,
+        "boolq-validation-1324": 1165.776458,
+        "boolq-validation-3154": 9024.796375,
+        "cross-batch-full": 73068.187875,
+        "cross-batch-prefix": 425.261459,
+        "slots-64": 12930.749625
+      }
+    }
+  },
+  "original65_test_limitation": "Recorded invalid65 also has an out-of-range slot; all three executions return the slot-count metadata error. A separate valid-in-range65 test is required for final native executable.",
+  "buffers_are_not_peak_memory": true,
+  "latency_conclusion": "No accepted speedup; baseline-repeat differs substantially from baseline.",
+  "source_files": [
+    {
+      "path": "artifacts/research/gguf-memory/benchmark.py",
+      "sha256": "4b4c91ca211896d1ad8594bcb24a988bd37185bd0fec3ebdfae3d73f06e0304c"
+    },
+    {
+      "path": "artifacts/research/gguf-memory/baseline-src/s1_gguf.cpp",
+      "sha256": "108f4b973920f147b08e8bb2a102977dd779d1d92763a7d369924cc8a6f11639"
+    },
+    {
+      "path": "artifacts/research/gguf-memory/output64-src/s1_gguf.cpp",
+      "sha256": "77c569a7b2afbd090bc0c57bf28eafa1584a4dd10a89a9c71bde0d4f7b80918b"
+    },
+    {
+      "path": "artifacts/research/gguf-memory/baseline-src/CMakeLists.txt",
+      "sha256": "a4dc6f4cd7e64d55bf12e2fcb82cf5040878165dfddc4ce1c69b303a884f67ea"
+    }
+  ]
+}

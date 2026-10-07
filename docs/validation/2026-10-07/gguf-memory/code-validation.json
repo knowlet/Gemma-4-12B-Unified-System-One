@@ -1,0 +1,72 @@
+{
+  "status": "passed",
+  "source_revision": "6df1e36b814fc925746711b1af0d58d990fe6746",
+  "pytest": {
+    "passed": 1034,
+    "skipped": 3,
+    "optional_missing": [
+      "sentence_transformers",
+      "bitsandbytes"
+    ]
+  },
+  "ruff": {
+    "check": "passed",
+    "format_checked_files": 128
+  },
+  "build": {
+    "native": "passed",
+    "wheel": "passed",
+    "source_distribution": "passed"
+  },
+  "native_equivalence": {
+    "unique_cases": 13,
+    "successful_calls_per_variant": 44,
+    "measured_decisions": 156,
+    "all_stored_decisions": 258,
+    "max_abs_legal_logit_difference": 0.0,
+    "max_abs_calibrated_probability_difference": 0.0
+  },
+  "qualification_scope": "Bounded real native runtime and image-budget pipeline regression; not full-population release qualification or a peak-memory/speedup measurement.",
+  "source_files": [
+    {
+      "path": "src/s1/api.py",
+      "sha256": "d9c5a043c05aa9cc3080303d28ee25aa2477f437b035612d25ff8c5adee286f5"
+    },
+    {
+      "path": "src/s1/backends.py",
+      "sha256": "1c2954710c61ad3ab5b366d94511efd55d8f34010fe01a50964087806b6de289"
+    },
+    {
+      "path": "scripts/gguf_adapter.py",
+      "sha256": "95e9343ead0656f13197c4371ab48b445826d48bd37f8cc9f03b94ae926351c1"
+    },
+    {
+      "path": "scripts/record_gguf_conversion.py",
+      "sha256": "ed808e1d670466b96c439175c952d10823651d71ed993861dbfc923ae3ffbb88"
+    },
+    {
+      "path": "tools/gguf/s1_gguf.cpp",
+      "sha256": "8dd7f74a3ba38fda24d305c2bcbb7793d23eb38011ccb58f4f0230f677caa70e"
+    },
+    {
+      "path": "tests/test_api.py",
+      "sha256": "32af3fe5ec12e76947d073492188b3319335e8ed6542c00cef4465c942aaf9e7"
+    },
+    {
+      "path": "tests/test_unified.py",
+      "sha256": "f8ff7e66523cbdf1f5f5d46b29c450df47435e12a786d5d7cf139b195c9090f4"
+    },
+    {
+      "path": "tests/test_runtime_dependencies.py",
+      "sha256": "a63ed934892897a4501f1e1305f9d5fd66e0ca9f87bb9e7d29007beaa5615838"
+    },
+    {
+      "path": "tests/test_gguf_adapter.py",
+      "sha256": "93849c35cd09403322508af00407e2b8586d1704584c35842164dd585af41f32"
+    },
+    {
+      "path": "tests/test_gguf_conversion_settings.py",
+      "sha256": "04ce890a621cb67ed2ffaa03ff74736ef767b97317375e9760b9da5d8bcf2ce5"
+    }
+  ]
+}

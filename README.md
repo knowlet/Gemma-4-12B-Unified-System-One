@@ -166,6 +166,11 @@ on macOS 14 or newer (FP32 on older supported macOS). Use `--device cpu` or
 `--dtype float32` for an explicit reference configuration. See the
 [MPS measurements](docs/mps.md) and [GGUF / MLX release paths](docs/model-export.md).
 
+The [October 7 runtime optimization](docs/runtime-optimization.md) reduces the
+GGUF Metal compute buffer by 6.09 GiB while retaining the 64-slot decision
+contract. Its bounded native equivalence checks and remaining MLX experiments
+are recorded separately from the published model-quality measurements.
+
 ## Layout
 
 | Path | Purpose |
