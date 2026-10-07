@@ -388,3 +388,26 @@ probabilities = "complete"
 batch = "loop_emulated"
 concurrent_requests = false
 independent_questions = false
+
+
+[[models]]
+id = "jev-omni-local"
+adapter = "jev_omni"
+enabled = false
+model_id = "akhilaaa3/Jev-Omni"
+revision = "5addda86ddee081a68fb067477ea100c221b8917"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "checkpoint"
+context_limit = 16384
+notes = "Pinned native merged BF16 multimodal backbone and FP32 decision head, BF16 autocast, float32 candidate softmax. One forward per question. At most one image or 30-second audio input; timestamped frames unsupported. Publisher quality support is limited to 20 options. No test fitting, generation, compilation or prefix cache."
+[models.capabilities]
+modalities = ["text", "image", "audio"]
+primitives = ["choice", "noul", "score"]
+max_options = 20
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true

@@ -1,0 +1,29 @@
+Gemma 4 12B Unified System One
+
+Source model: google/gemma-4-12B-it by Google.
+Source revision: 707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7.
+Source repository: https://huggingface.co/google/gemma-4-12B-it
+The preserved source Apache License, Version 2.0, is included in LICENSE.
+
+This derivative was prepared by the knowlet/Gemma-4-12B-Unified-System-One
+project. It applies one epoch of LoRA fine-tuning on 2,048 English BoolQ
+examples and merges the learned adapter into a complete BF16 checkpoint.
+The package retains the source processor and native image/audio modules.
+A scalar temperature fitted on 256 separate BoolQ calibration cases is
+recorded in s1_config.json for the System One decision runtime.
+
+Training recipe identity:
+2a708e5f4acfea4b688e88ba338aa62991608db875fef039ee6b4f33c3a74d73
+
+The model card describes the modifications, evaluation scope, and separate
+dataset attributions. This notice records attribution and modifications;
+it does not change the accompanying license.
+
+NVFP4 derivative (October 7, 2026): the trained merged BF16 source was converted
+into packed native NVFP4 language-model linear weights using the pinned
+Transformers kernel. Input embeddings, candidate readout, and native image/audio
+modules remain BF16. The s1-transformers-nvfp4-v1 artifact preserves both scale
+layouts and tied-weight aliases. A new scalar temperature uses only the separate
+256-case calibration population. The bundled MIT-licensed S1 runtime is required
+to restore this custom packed format. Source and evaluation identities are
+recorded in conversion-manifest.json and evaluation.json.

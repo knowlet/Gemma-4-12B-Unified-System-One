@@ -34,7 +34,7 @@ def make_backend(args):
             or args.precision == "float32"
             or args.dtype in ("float32", "float16")
         ):
-            raise ValueError("--quantization int8/nf4 requires CUDA and bfloat16 precision")
+            raise ValueError("--quantization int8/nf4/nvfp4 requires CUDA and bfloat16 precision")
         runtime_options = {}
         if args.dtype is not None:
             runtime_options["dtype"] = args.dtype
@@ -83,7 +83,7 @@ def main(argv=None):
         )
         sub.add_argument(
             "--quantization",
-            choices=["none", "int8", "nf4"],
+            choices=["none", "int8", "nf4", "nvfp4"],
             default="none",
             help="Gemma CUDA inference weight format; keeps the candidate head dense",
         )

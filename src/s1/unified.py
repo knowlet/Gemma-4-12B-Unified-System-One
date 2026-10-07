@@ -97,11 +97,24 @@ class UnifiedDecisionModel:
             raise ValueError("choose a new LoRA or an existing adapter, not both")
         if lora and quantization != "none":
             raise ValueError("quantized inference supports existing adapters; train LoRA in BF16")
+        if quantization == "nvfp4" and adapter_path:
+            raise ValueError("NVFP4 requires a merged checkpoint; merge adapters in BF16 first")
         processor = AutoProcessor.from_pretrained(name, revision=revision)
         kwargs = {"revision": revision, "dtype": selected_dtype, **quantized_loading}
         if attn_implementation is not None:
             kwargs["attn_implementation"] = attn_implementation
-        lm = AutoModelForMultimodalLM.from_pretrained(name, **kwargs)
+        if quantization == "nvfp4":
+            from .nvfp4 import load_nvfp4
+
+            lm = load_nvfp4(
+                name,
+                revision=revision,
+                device=device,
+                precision=str(selected_dtype).removeprefix("torch."),
+                attn_implementation=attn_implementation,
+            )
+        else:
+            lm = AutoModelForMultimodalLM.from_pretrained(name, **kwargs)
         if lm.config.model_type != "gemma4_unified":
             raise ValueError("UnifiedDecisionModel requires a Gemma 4 Unified checkpoint")
         resolved_revision = getattr(lm.config, "_commit_hash", None) or revision

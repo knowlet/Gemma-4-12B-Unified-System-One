@@ -42,6 +42,10 @@ competitor_image = (
     .env({"PYTHONPATH": "/opt/agentjev"})
 )
 
+# Jev-Omni publishes torch>=2.10. Keep its declared runtime separate from the
+# older project's pinned stack and persist installed package versions in telemetry.
+jev_omni_image = base_image.uv_pip_install("torch==2.10.0", "torchvision==0.25.0")
+
 
 def sources(image):
     return (
@@ -142,6 +146,21 @@ def clef_cell(run, spec_data, count, arrival_rate):
     return evaluate(run, spec_data, count, arrival_rate)
 
 
+@app.function(
+    image=sources(jev_omni_image),
+    gpu="A100-80GB",
+    cpu=4,
+    memory=49152,
+    volumes={"/vol": volume},
+    timeout=7200,
+    max_containers=1,
+    single_use_containers=True,
+    scaledown_window=2,
+)
+def jev_omni_cell(run, spec_data, count, arrival_rate):
+    return evaluate(run, spec_data, count, arrival_rate)
+
+
 @app.local_entrypoint()
 def main(
     run: str,
@@ -190,7 +209,9 @@ def main(
     for index, spec in enumerate(specs):
         print(f"Starting {spec.id}", flush=True)
         fn = (
-            clef_cell
+            jev_omni_cell
+            if spec.adapter == "jev_omni"
+            else clef_cell
             if spec.adapter == "clef"
             else gemma_cell
             if spec.adapter in ("gemma", "laya")
