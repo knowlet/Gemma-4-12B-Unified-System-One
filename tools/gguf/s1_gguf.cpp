@@ -20,6 +20,7 @@ using json = nlohmann::json;
 using chunks_ptr = std::unique_ptr<mtmd_input_chunks, decltype(&mtmd_input_chunks_free)>;
 using bitmap_ptr = std::unique_ptr<mtmd_bitmap, decltype(&mtmd_bitmap_free)>;
 static constexpr const char * LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+static constexpr uint32_t MAX_ANSWER_SLOTS = 64;
 
 static void require(bool ok, const std::string & message) {
     if (!ok) throw std::runtime_error(message);
@@ -179,6 +180,8 @@ public:
         cp.n_ctx = opts.ctx;
         cp.n_batch = opts.batch;
         cp.n_ubatch = opts.batch;
+        // Reserve logits for the S1 answer-slot bound, rather than every input token.
+        cp.n_outputs_max = MAX_ANSWER_SLOTS;
         cp.n_seq_max = 1;
         cp.n_threads = cp.n_threads_batch = opts.threads;
         cp.flash_attn_type = LLAMA_FLASH_ATTN_TYPE_ENABLED;
@@ -207,7 +210,7 @@ public:
         auto counts = integers(request.at("nopts"), "nopts");
         auto letters = integers(request.at("letters"), "letters");
         const auto & question_ids = request.at("question_ids");
-        require(!slots.empty() && slots.size() <= 64 && counts.size() == slots.size() &&
+        require(!slots.empty() && slots.size() <= MAX_ANSWER_SLOTS && counts.size() == slots.size() &&
                 question_ids.is_array() && question_ids.size() == slots.size(), "inconsistent question metadata");
         require(std::is_sorted(slots.begin(), slots.end()) &&
                 std::adjacent_find(slots.begin(), slots.end()) == slots.end(), "slots must be strictly increasing");
@@ -285,6 +288,7 @@ public:
                     {"cache_scope", "one_request_cleared_between_requests"},
                     {"media_projection", "native_mtmd"}, {"image_preprocessing", "hf_processed_rgb_roundtrip"},
                     {"context_size", llama_n_ctx(ctx.get())}, {"batch_size", llama_n_batch(ctx.get())},
+                    {"max_output_slots", MAX_ANSWER_SLOTS},
                     {"microbatch_size", llama_n_ubatch(ctx.get())}, {"gpu_layers_requested", opts.gpu_layers}}}};
     }
 };
