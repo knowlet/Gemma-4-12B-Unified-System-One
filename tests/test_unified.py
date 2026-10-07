@@ -70,6 +70,44 @@ def test_native_batch_independence(model, decision_request, dtype, modality):
         )
 
 
+def test_backend_batch_retains_each_complete_multislot_prompt(model, decision_request, monkeypatch):
+    from s1.backends import GemmaBackend
+
+    backend = GemmaBackend.__new__(GemmaBackend)
+    backend.model = model
+    changed = decision_request.model_copy(deep=True)
+    changed.questions[0].instructions = "A different and longer first question"
+    requests = [decision_request, changed]
+    preparations = []
+    prepare = model.prepare
+
+    def record_prepare(request):
+        inputs, slots, counts = prepare(request)
+        preparations.append((inputs["input_ids"].clone(), slots.clone(), counts.clone()))
+        return inputs, slots, counts
+
+    monkeypatch.setattr(model, "prepare", record_prepare)
+    references = [backend.predict_batch([request])[0] for request in requests]
+    full_prompts = preparations[:]
+    preparations.clear()
+    actual = backend.predict_batch(requests)
+
+    assert len(preparations) == len(full_prompts) == len(requests)
+    for got, expected in zip(preparations, full_prompts):
+        for got_tensor, expected_tensor in zip(got, expected):
+            torch.testing.assert_close(got_tensor, expected_tensor, atol=0, rtol=0)
+    for request, response, expected in zip(requests, actual, references):
+        assert response["execution"]["independent_questions"] is False
+        assert response["execution"]["batch_sizes"] == [len(requests)]
+        for question in request.questions:
+            torch.testing.assert_close(
+                torch.tensor(list(response["answers"][question.id]["probabilities"].values())),
+                torch.tensor(list(expected["answers"][question.id]["probabilities"].values())),
+                atol=1e-5,
+                rtol=1e-5,
+            )
+
+
 def test_generation_is_one_hard_label_per_question(model, decision_request):
     from s1.evaluation.gemma import predict_generated
     from s1.evaluation.responses import normalize

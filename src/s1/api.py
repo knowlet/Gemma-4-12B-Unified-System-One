@@ -58,6 +58,10 @@ def create_app(backend, *, api_key=None, max_batch=16):
                     raw = backend.predict_batch(requests)
                 else:
                     raw = [backend.predict(r) for r in requests]
+                if not isinstance(raw, list) or len(raw) != len(requests):
+                    raise BackendResponseError(
+                        "batch backend must return one response per request as a list"
+                    )
                 return [normalize_response(req, resp) for req, resp in zip(requests, raw)]
         except RequestValidationError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc

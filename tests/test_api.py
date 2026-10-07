@@ -231,3 +231,48 @@ def test_http_and_api_preserve_or_derive_choice(
     normalized = response.json()["answers"]["route"]
     assert normalized["choice"] == expected
     assert list(normalized["probabilities"]) == ["billing", "technical"]
+
+
+@pytest.mark.parametrize("endpoint", ["/decide/batch", "/v1/systemone/batch"])
+@pytest.mark.parametrize("kind", ["empty", "short", "extra", "none", "object", "tuple"])
+def test_batch_backend_requires_one_response_per_request(request_data, endpoint, kind):
+    class BrokenBatchBackend:
+        name = "malformed-batch"
+
+        def predict_batch(self, requests):
+            responses = [UniformBackend().predict(request) for request in requests]
+            return {
+                "empty": [],
+                "short": responses[:1],
+                "extra": [*responses, responses[0]],
+                "none": None,
+                "object": {},
+                "tuple": tuple(responses),
+            }[kind]
+
+    with TestClient(create_app(BrokenBatchBackend()), raise_server_exceptions=False) as client:
+        response = client.post(endpoint, json=[request_data, request_data])
+    assert response.status_code == 502
+    assert response.json() == {
+        "detail": "batch backend must return one response per request as a list"
+    }
+
+
+@pytest.mark.parametrize("endpoint", ["/decide/batch", "/v1/systemone/batch"])
+@pytest.mark.parametrize("native_batch", [False, True])
+def test_complete_batch_preserves_each_request_answers(request_data, endpoint, native_batch):
+    class BatchedUniformBackend(UniformBackend):
+        def predict_batch(self, requests):
+            return [self.predict(request) for request in requests]
+
+    backend = BatchedUniformBackend() if native_batch else UniformBackend()
+    second = {
+        "state": "another request",
+        "questions": {"approve": {"type": "noul", "instructions": "Approve?"}},
+    }
+    with TestClient(create_app(backend)) as client:
+        response = client.post(endpoint, json=[request_data, second])
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+    assert set(response.json()[0]["answers"]) == set(request_data["questions"])
+    assert set(response.json()[1]["answers"]) == {"approve"}
