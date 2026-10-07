@@ -171,8 +171,11 @@ def load_calibration(path, *, model=None, mmproj=None):
             raise ValueError(f"selected {key} differs from calibrated conversion manifest")
         if expected.stat().st_size != files[name].get("size_bytes"):
             raise ValueError(f"calibrated {key} size differs from conversion manifest")
-    # Full tensor-file hashes are checked by the release evaluator/publication
-    # receipt. Startup binds calibration and selected files without rereading 12 GB.
+        # Stream the multi-GB files: equal sizes do not identify calibrated weights.
+        with expected.open("rb") as stream:
+            actual_hash = hashlib.file_digest(stream, "sha256").hexdigest()
+        if actual_hash != files[name].get("sha256"):
+            raise ValueError(f"calibrated {key} SHA256 differs from conversion manifest")
     return float(temperature)
 
 

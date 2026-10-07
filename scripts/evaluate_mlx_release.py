@@ -196,8 +196,24 @@ def validate_conversion(model_path, conversion, identity):
         raise ValueError("conversion export checkpoint digest is inconsistent")
     config = json.loads((Path(model_path) / "config.json").read_text())
     softcap = verifier["validate_model_config"](config)
-    if not (config.get("quantization") or config.get("quantization_config")):
+    declared = conversion.get("quantization")
+    if not isinstance(declared, dict) or not all(
+        key in declared for key in ("bits", "group_size", "mode")
+    ):
+        raise ValueError("conversion receipt requires an explicit quantization recipe")
+    recipes = [config[key] for key in ("quantization", "quantization_config") if key in config]
+    if not recipes:
         raise ValueError("release calibration requires an explicitly quantized MLX export")
+    expected = {key: declared[key] for key in ("bits", "group_size", "mode")}
+    for recipe in [expected, *recipes]:
+        if (
+            not isinstance(recipe, dict)
+            or type(recipe.get("bits")) is not int
+            or type(recipe.get("group_size")) is not int
+            or not isinstance(recipe.get("mode"), str)
+            or {key: recipe.get(key) for key in expected} != expected
+        ):
+            raise ValueError("export quantization differs from the declared conversion recipe")
     return actual, config, softcap
 
 

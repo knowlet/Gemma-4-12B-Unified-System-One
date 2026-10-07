@@ -17,6 +17,9 @@ if(NOT dirty_result EQUAL 0)
 endif()
 foreach(lib llama mtmd ggml ggml-base)
   string(REPLACE "-" "_" variable "${lib}")
+  # Reconfiguration must not reuse libraries from a previous LLAMA_CPP_DIR.
+  unset(${variable}_LIBRARY CACHE)
+  unset(${variable}_LIBRARY)
   find_library(${variable}_LIBRARY NAMES ${lib}
     PATHS "${LLAMA_CPP_DIR}/build/bin" NO_DEFAULT_PATH REQUIRED)
   list(APPEND native_libraries "${${variable}_LIBRARY}")

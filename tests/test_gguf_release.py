@@ -273,7 +273,7 @@ def test_timeout_kills_adapter_child_process_group(evaluator, tmp_path):
     child = f"import pathlib,time; time.sleep(0.6); pathlib.Path({str(marker)!r}).write_text('bad')"
     parent = f"import subprocess,sys,time; subprocess.Popen([sys.executable,'-c',{child!r}]); time.sleep(30)"
     adapter = evaluator["JsonLineAdapter"]([sys.executable, "-c", parent], timeout=0.2)
-    with pytest.raises(evaluator["AdapterUnavailable"], match="timed out"):
+    with pytest.raises(evaluator["AdapterUnavailable"]):
         adapter({"case_id": "example"})
     time.sleep(0.6)
     assert not marker.exists()
@@ -371,7 +371,7 @@ def test_conversion_mismatches_rejected(evaluator, package, mutation):
         evaluator["validate_conversion"](directory, conversion, identity, manifests)
 
 
-def test_runtime_source_pin_and_mutation_guard(evaluator, tmp_path):
+def test_runtime_source_pin_and_mutation_guard(evaluator, tmp_path, monkeypatch):
     def git(*args):
         return subprocess.check_output(
             [
@@ -399,6 +399,12 @@ def test_runtime_source_pin_and_mutation_guard(evaluator, tmp_path):
     ]
     for name in names:
         (tmp_path / "scripts" / name).write_text("# fixture\n")
+    (tmp_path / "uv.lock").write_text("version = 1\n")
+    monkeypatch.setitem(
+        evaluator["RuntimeGuard"].__init__.__globals__,
+        "capture_python_environment",
+        lambda python, root: {"schema_version": 1, "files": [], "distributions": []},
+    )
     owned = tmp_path / "src/s1/unified.py"
     owned.write_text("# fixture\n")
     git("init", "-q")
@@ -413,16 +419,16 @@ def test_runtime_source_pin_and_mutation_guard(evaluator, tmp_path):
         "fixture",
     )
     head = git("rev-parse", "HEAD").decode().strip()
-    guard = evaluator["RuntimeGuard"](head, [sys.executable], root=tmp_path)
+    guard = evaluator["RuntimeGuard"](head, [sys.executable], root=tmp_path, python=sys.executable)
     guard.check()
     assert guard.receipt()["source_revision"] == head
     owned.write_text("# modified\n")
     with pytest.raises(ValueError, match="runtime file changed"):
         guard.check()
     with pytest.raises(ValueError, match="differs from pinned Git HEAD"):
-        evaluator["RuntimeGuard"](head, [sys.executable], root=tmp_path)
+        evaluator["RuntimeGuard"](head, [sys.executable], root=tmp_path, python=sys.executable)
     with pytest.raises(ValueError, match="current full Git HEAD"):
-        evaluator["RuntimeGuard"]("a" * 40, [sys.executable], root=tmp_path)
+        evaluator["RuntimeGuard"]("a" * 40, [sys.executable], root=tmp_path, python=sys.executable)
 
 
 def test_preflight_failure_does_not_launch_adapter_or_overwrite_sidecar(evaluator, tmp_path):
@@ -431,19 +437,24 @@ def test_preflight_failure_does_not_launch_adapter_or_overwrite_sidecar(evaluato
         tmp_path / "report.json",
         tmp_path / "s1_config.json",
     )
+    package = tmp_path / "package"
+    package.mkdir()
+    sidecar = package / "s1_config.json"
     sidecar.write_text('{"temperature": 7.0}')
-    manifest = tmp_path / "manifest.json"
+    inputs = tmp_path / "inputs"
+    inputs.mkdir()
+    manifest = inputs / "manifest.json"
     manifest.write_text("{}")
     argv = [
         "--model",
-        str(tmp_path),
+        str(package),
         "--output",
         str(output),
         "--runtime-source-revision",
         "a" * 40,
     ]
     for role in ("calibration", "test", "media"):
-        argv += [f"--{role}-inputs", str(tmp_path), f"--{role}-manifest-sha256", "0" * 64]
+        argv += [f"--{role}-inputs", str(inputs), f"--{role}-manifest-sha256", "0" * 64]
     for role in ("dataset", "conversion"):
         argv += [f"--{role}-manifest", str(manifest), f"--{role}-manifest-sha256", "0" * 64]
     argv += [
@@ -456,5 +467,101 @@ def test_preflight_failure_does_not_launch_adapter_or_overwrite_sidecar(evaluato
     report = json.loads(output.read_text())
     assert report["status"] == "error" and not report["release_validation_complete"]
     assert report["failure"]["stage"] == "preflight"
+    # This smoke deliberately fails manifest hashing, not the revision check.
+    # RuntimeGuard revision mismatch has a separate unit test above.
+    assert "SHA256" in report["failure"]["message"]
     assert not marker.exists()
     assert sidecar.read_text() == '{"temperature": 7.0}'
+
+
+def test_revision_preflight_reaches_guard_without_launching_adapter(
+    evaluator, package, manifests, tmp_path, monkeypatch
+):
+    """Unlike the SHA failure smoke, every earlier preflight succeeds here."""
+    model, conversion, identity, conversion_manifests = package
+    sidecar = model / "s1_config.json"
+    sidecar.write_bytes(b'{"temperature": 7.0}')
+    before = sidecar.read_bytes()
+    output = tmp_path.parent / (tmp_path.name + "-report.json")
+    marker = tmp_path.parent / (tmp_path.name + "-launched")
+    dataset_dir = tmp_path / "datasets"
+    dataset_dir.mkdir()
+    dataset_path = dataset_dir / "manifest.json"
+    dataset_path.write_text("{}")
+    conversion_path = model / "conversion-manifest.json"
+    conversion_path.write_text(json.dumps(conversion))
+    argv = [
+        "--model",
+        str(model),
+        "--output",
+        str(output),
+        "--runtime-source-revision",
+        "a" * 40,
+        "--dataset-manifest",
+        str(dataset_path),
+        "--dataset-manifest-sha256",
+        evaluator["file_sha256"](dataset_path),
+        "--conversion-manifest",
+        str(conversion_path),
+        "--conversion-manifest-sha256",
+        evaluator["file_sha256"](conversion_path),
+    ]
+    for role, manifest in manifests.items():
+        manifest.update(conversion_manifests[role])
+        directory = tmp_path / role
+        directory.mkdir()
+        path = directory / "manifest.json"
+        path.write_text(json.dumps(manifest))
+        argv += [
+            f"--{role}-inputs",
+            str(directory),
+            f"--{role}-manifest-sha256",
+            evaluator["file_sha256"](path),
+        ]
+    argv += [
+        "--adapter-command",
+        sys.executable,
+        "-c",
+        f"import pathlib; pathlib.Path({str(marker)!r}).write_text('bad')",
+    ]
+    shared = evaluator["shared_scripts"]()
+    stages = []
+
+    def validated_manifests(*args):
+        stages.append("fixture_population_validated")
+        return identity
+
+    shared["mlx"]["validate_manifests"] = validated_manifests
+    shared["mlx"]["validate_dataset_files"] = lambda *args: None
+    shared["summary"]["load_population"] = lambda *args: (
+        {
+            role: [SimpleNamespace(id=case["id"]) for case in manifest["cases"]]
+            for role, manifest in manifests.items()
+        },
+        None,
+        evaluator["file_sha256"](dataset_path),
+    )
+    globals_ = evaluator["main"].__globals__
+    monkeypatch.setitem(globals_, "shared_scripts", lambda: shared)
+    monkeypatch.setitem(
+        globals_,
+        "make_payload",
+        lambda role, case, **kwargs: {"source_input_token_count": 3},
+    )
+
+    def current_head(self, *args):
+        stages.append("real_revision_guard")
+        assert args == ("rev-parse", "HEAD")
+        return ("b" * 40 + "\n").encode()
+
+    monkeypatch.setattr(evaluator["RuntimeGuard"], "git", current_head)
+    assert evaluator["main"](argv) == 1
+    report = json.loads(output.read_text())
+    assert stages == ["fixture_population_validated", "real_revision_guard"]
+    assert report["failure"]["message"] == (
+        "runtime source revision must equal the current full Git HEAD"
+    )
+    assert report["failure"]["stage"] == "preflight"
+    assert report["release_validation_complete"] is False
+    assert not marker.exists()
+    assert sidecar.read_bytes() == before

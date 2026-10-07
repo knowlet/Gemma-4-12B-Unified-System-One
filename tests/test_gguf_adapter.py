@@ -170,8 +170,16 @@ def calibration_fixture(directory):
         "model_file": "model.gguf",
         "mmproj_file": "mmproj.gguf",
         "files": [
-            {"path": "model.gguf", "size_bytes": 5},
-            {"path": "mmproj.gguf", "size_bytes": 5},
+            {
+                "path": "model.gguf",
+                "size_bytes": 5,
+                "sha256": hashlib.sha256(b"model").hexdigest(),
+            },
+            {
+                "path": "mmproj.gguf",
+                "size_bytes": 5,
+                "sha256": hashlib.sha256(b"media").hexdigest(),
+            },
         ],
     }
     manifest = directory / "conversion-manifest.json"

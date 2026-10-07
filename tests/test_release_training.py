@@ -353,7 +353,9 @@ def test_completed_phase_is_an_unchanged_noop(phase_run, stage, resume):
 
 
 @pytest.mark.parametrize("stage", ["pilot", "train", "evaluate"])
-@pytest.mark.parametrize("status", ["running", "failed", "paused_budget", "no_receipt"])
+@pytest.mark.parametrize(
+    "status", ["running", "failed", "paused_budget", "completed_with_errors", "no_receipt"]
+)
 def test_unfinished_phase_requires_resume_before_any_writes(phase_run, stage, status):
     phase_run.seed(stage, status, receipt=status != "no_receipt")
     before = _snapshot(phase_run.output)
@@ -407,3 +409,11 @@ def test_invalid_existing_phase_is_rejected_without_mutation(phase_run, damage):
         phase_run.run("pilot", resume=True)
     assert _snapshot(phase_run.output) == before
     assert phase_run.calls == []
+
+
+def test_completed_with_errors_evaluation_retries_only_evaluation(phase_run):
+    phase_run.seed("evaluate", "completed_with_errors")
+    result = phase_run.run("evaluate", resume=True)
+    assert result["status"] == result["result"]["status"] == "completed"
+    assert "evaluate" in phase_run.calls
+    assert not any(isinstance(call, tuple) and call[0] == "epoch" for call in phase_run.calls)
