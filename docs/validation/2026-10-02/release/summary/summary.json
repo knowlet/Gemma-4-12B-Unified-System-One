@@ -1,0 +1,397 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "release_identity": "2a708e5f4acfea4b688e88ba338aa62991608db875fef039ee6b4f33c3a74d73",
+  "source_model": "google/gemma-4-12B-it",
+  "source_revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+  "dataset_manifest_sha256": "e0ab28e3435a910c19abf3a9a7e58df8b5cff7a806b6c7f4f18021db1d3804dd",
+  "inputs": {
+    "run_manifest_sha256": "66d396615db1b8659912dd80698a13324a9085c76a1ccd0f66c42c686c7af8b1",
+    "artifacts_receipt_sha256": "3a8370774f9898d50de4446d8443835578bc08634929673882a0d0cd27f6d3cb",
+    "cuda_reports": {
+      "base-test.json": "9b193a9ce4bbd163295b219e1b9edd8d2422ab711f71c7eccd1d7d3cc267487d",
+      "base-media.json": "ae4bdf37a0e3917af940f5147ecd5cd49c00c022262757652f2090b5c5901a69",
+      "base-regression_text.json": "f9d79ca599cd402403bed1573d3a18e608901bd03db43981762a39698043ee04",
+      "trained-test.json": "f0d758cc07d7173a654c5e0bc2d74564bd70256b9cc1b1656eac0d4e61aa21d8",
+      "trained-media.json": "fc4f1bd28a9c0085b824a8cb121ef1487fd4f0bd27f98daa59bbb1da5d36c2dd",
+      "trained-regression_text.json": "dcdf1e5860823243c74ea2da0dfd935e71a734159af064f50f9a81952105078e"
+    },
+    "mlx_report_sha256": "e783bc1bf4b9361ff5fd6d9397362c0515b8f6ec2455f2688385d0727cc21f00"
+  },
+  "calibration": {
+    "base_cuda": {
+      "temperature": 2.51855196090726,
+      "n": 256,
+      "nll_before": 0.5803064820890396,
+      "nll_after": 0.39462288693971515
+    },
+    "trained_cuda": {
+      "temperature": 2.7830344470383452,
+      "n": 256,
+      "nll_before": 0.541142439494455,
+      "nll_after": 0.29150529005643105
+    },
+    "trained_mlx": {
+      "temperature": 2.7144176165949068,
+      "n": 256,
+      "nll_before": 0.5199250473058581,
+      "nll_after": 0.2847243872307045
+    }
+  },
+  "populations": {
+    "fresh_boolq": {
+      "cases": 256,
+      "decisions": 256,
+      "source_groups": 256,
+      "dataset_sha256": "62f004b4d9b8e9e683f5b9b851074c64ad6ec557ae99b0040a688489a550e527",
+      "backends": {
+        "base_cuda": {
+          "status": "complete",
+          "cases": 256,
+          "decisions": 256,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.80078125,
+            "nll": 0.4409177109481807,
+            "brier": 0.2873746594162786,
+            "ece_15": 0.06706537601712625
+          },
+          "latency_ms": {
+            "scope": "CUDA end-to-end backend request",
+            "requests": 256,
+            "samples": 256,
+            "p50": 88.98743649999119,
+            "p95": 92.86682599999452
+          }
+        },
+        "trained_cuda": {
+          "status": "complete",
+          "cases": 256,
+          "decisions": 256,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.8984375,
+            "nll": 0.27265925257139423,
+            "brier": 0.15802665422576334,
+            "ece_15": 0.052127212140476296
+          },
+          "latency_ms": {
+            "scope": "CUDA end-to-end backend request",
+            "requests": 256,
+            "samples": 256,
+            "p50": 88.95964849999416,
+            "p95": 92.59851350000758
+          }
+        },
+        "trained_mlx": {
+          "status": "complete",
+          "cases": 256,
+          "decisions": 256,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.8984375,
+            "nll": 0.2704756988520658,
+            "brier": 0.15640467191285956,
+            "ece_15": 0.045502473123969524
+          },
+          "latency_ms": {
+            "scope": "MLX synchronized prepared tensors to candidate logits",
+            "requests": 256,
+            "samples": 256,
+            "p50": 1506.8684170037159,
+            "p95": 2854.650093755481
+          }
+        }
+      }
+    },
+    "old_boolq": {
+      "cases": 128,
+      "decisions": 128,
+      "source_groups": 128,
+      "dataset_sha256": "7bdb25dc3d8a0371bb73909fe55597de86f66e808bc42d1a5a1cb17d08f44d41",
+      "backends": {
+        "base_cuda": {
+          "status": "complete",
+          "cases": 128,
+          "decisions": 128,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.8671875,
+            "nll": 0.3316252698659832,
+            "brier": 0.19834894461538785,
+            "ece_15": 0.07994484985829331
+          },
+          "latency_ms": {
+            "scope": "CUDA end-to-end backend request",
+            "requests": 128,
+            "samples": 128,
+            "p50": 87.9586690000167,
+            "p95": 91.72299050000561
+          }
+        },
+        "trained_cuda": {
+          "status": "complete",
+          "cases": 128,
+          "decisions": 128,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.921875,
+            "nll": 0.24983612085978724,
+            "brier": 0.1373107669157203,
+            "ece_15": 0.05856590357143431
+          },
+          "latency_ms": {
+            "scope": "CUDA end-to-end backend request",
+            "requests": 128,
+            "samples": 128,
+            "p50": 90.25179249999837,
+            "p95": 93.35350180001001
+          }
+        },
+        "trained_mlx": {
+          "status": "not_run",
+          "reason": "no complete report provided"
+        }
+      }
+    },
+    "media_all": {
+      "cases": 52,
+      "decisions": 52,
+      "source_groups": 38,
+      "dataset_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35",
+      "backends": {
+        "base_cuda": {
+          "status": "complete",
+          "cases": 52,
+          "decisions": 52,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.6538461538461539,
+            "nll": 1.0499822335691549,
+            "brier": 0.416844066128642,
+            "ece_15": 0.15740925947653017
+          },
+          "latency_ms": {
+            "scope": "CUDA end-to-end backend request",
+            "requests": 52,
+            "samples": 52,
+            "p50": 112.26441549999322,
+            "p95": 113.98421630000541
+          }
+        },
+        "trained_cuda": {
+          "status": "complete",
+          "cases": 52,
+          "decisions": 52,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.6538461538461539,
+            "nll": 1.0726309377798149,
+            "brier": 0.4235648051345038,
+            "ece_15": 0.21836763161893985
+          },
+          "latency_ms": {
+            "scope": "CUDA end-to-end backend request",
+            "requests": 52,
+            "samples": 52,
+            "p50": 111.58791499998699,
+            "p95": 113.64598099998915
+          }
+        },
+        "trained_mlx": {
+          "status": "complete",
+          "cases": 52,
+          "decisions": 52,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.6538461538461539,
+            "nll": 1.0819980166037813,
+            "brier": 0.42576923435614433,
+            "ece_15": 0.1309703835403965
+          },
+          "latency_ms": {
+            "scope": "MLX synchronized prepared tensors to candidate logits",
+            "requests": 52,
+            "samples": 52,
+            "p50": 3282.418103510281,
+            "p95": 3471.4382686055615
+          }
+        }
+      }
+    },
+    "mnist": {
+      "cases": 32,
+      "decisions": 32,
+      "source_groups": 32,
+      "dataset_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35",
+      "backends": {
+        "base_cuda": {
+          "status": "complete",
+          "cases": 32,
+          "decisions": 32,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.875,
+            "nll": 0.4641421538018463,
+            "brier": 0.1876701234705952,
+            "ece_15": 0.17785328821747268
+          },
+          "latency_ms": {
+            "scope": "CUDA end-to-end backend request",
+            "requests": 32,
+            "samples": 32,
+            "p50": 112.73368300000186,
+            "p95": 115.03429569999639
+          }
+        },
+        "trained_cuda": {
+          "status": "complete",
+          "cases": 32,
+          "decisions": 32,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.875,
+            "nll": 0.5260693436375106,
+            "brier": 0.2073447307758528,
+            "ece_15": 0.2146330497324242
+          },
+          "latency_ms": {
+            "scope": "CUDA end-to-end backend request",
+            "requests": 32,
+            "samples": 32,
+            "p50": 112.42060550002009,
+            "p95": 113.80877184998326
+          }
+        },
+        "trained_mlx": {
+          "status": "complete",
+          "cases": 32,
+          "decisions": 32,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.875,
+            "nll": 0.518181877448149,
+            "brier": 0.20590539027036767,
+            "ece_15": 0.19818735034619794
+          },
+          "latency_ms": {
+            "scope": "MLX synchronized prepared tensors to candidate logits",
+            "requests": 32,
+            "samples": 32,
+            "p50": 3323.08762500179,
+            "p95": 3533.9513204977266
+          }
+        }
+      }
+    },
+    "fsdd": {
+      "cases": 20,
+      "decisions": 20,
+      "source_groups": 6,
+      "dataset_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35",
+      "backends": {
+        "base_cuda": {
+          "status": "complete",
+          "cases": 20,
+          "decisions": 20,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.3,
+            "nll": 1.9873263611968486,
+            "brier": 0.7835223743815168,
+            "ece_15": 0.1824311507741242
+          },
+          "latency_ms": {
+            "scope": "CUDA end-to-end backend request",
+            "requests": 20,
+            "samples": 20,
+            "p50": 88.7213120000041,
+            "p95": 93.70845830001002
+          }
+        },
+        "trained_cuda": {
+          "status": "complete",
+          "cases": 20,
+          "decisions": 20,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.3,
+            "nll": 1.947129488407502,
+            "brier": 0.7695169241083454,
+            "ece_15": 0.2806172085490321
+          },
+          "latency_ms": {
+            "scope": "CUDA end-to-end backend request",
+            "requests": 20,
+            "samples": 20,
+            "p50": 91.04026850000935,
+            "p95": 93.28128979999235
+          }
+        },
+        "trained_mlx": {
+          "status": "complete",
+          "cases": 20,
+          "decisions": 20,
+          "coverage": 1.0,
+          "metrics": {
+            "accuracy": 0.3,
+            "nll": 1.9841038392527932,
+            "brier": 0.777551384893387,
+            "ece_15": 0.15057110942969565
+          },
+          "latency_ms": {
+            "scope": "MLX synchronized prepared tensors to candidate logits",
+            "requests": 20,
+            "samples": 20,
+            "p50": 1528.553562500747,
+            "p95": 1719.4042755916598
+          }
+        }
+      }
+    }
+  },
+  "fresh_boolq_paired_accuracy": {
+    "base_to_trained_cuda": {
+      "status": "estimated",
+      "direction": "target minus reference",
+      "decisions": 256,
+      "coverage": 1.0,
+      "delta": 0.09765625,
+      "ci_95": [
+        0.05859375,
+        0.140625
+      ],
+      "source_groups": 256,
+      "method": "paired source-group percentile bootstrap",
+      "seed": 42,
+      "resamples": 10000
+    },
+    "trained_cuda_to_mlx": {
+      "status": "estimated",
+      "direction": "target minus reference",
+      "decisions": 256,
+      "coverage": 1.0,
+      "delta": 0.0,
+      "ci_95": [
+        0.0,
+        0.0
+      ],
+      "source_groups": 256,
+      "method": "paired source-group percentile bootstrap",
+      "seed": 42,
+      "resamples": 10000
+    }
+  },
+  "metric_definitions": {
+    "nll_probability_floor": 1e-12,
+    "ece_equal_width_bins": 15,
+    "brier": "sum over all legal candidates; mean over decisions"
+  },
+  "scope": "descriptive fixed-population results; no test-selected acceptance gate",
+  "latency_caveat": "CUDA includes backend preprocessing and response construction; MLX uses prepared tensors. These timings do not establish a cross-runtime speedup.",
+  "mlx_quantization": {
+    "group_size": 64,
+    "bits": 8,
+    "mode": "affine"
+  }
+}

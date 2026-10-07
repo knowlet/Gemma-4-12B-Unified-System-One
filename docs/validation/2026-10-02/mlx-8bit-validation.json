@@ -1,0 +1,830 @@
+{
+  "schema_version": 1,
+  "experimental": true,
+  "status": "ok",
+  "parity_accepted": false,
+  "scope": "numerical measurements only; no production, calibration or performance claim",
+  "created_at": "2026-10-02T05:32:43.271719+00:00",
+  "model_path": "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/exports/base-gemma4-12b-mlx-8bit",
+  "reference_path": "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/mps/bf16-sdpa.json",
+  "library_versions": {
+    "python": "3.12.11",
+    "mlx": "0.32.3",
+    "mlx-metal": "0.32.3",
+    "mlx-vlm": "0.7.4",
+    "transformers": "5.18.0",
+    "huggingface-hub": "1.33.0",
+    "numpy": "2.5.3"
+  },
+  "reference_strategy": "first end_to_end_samples entry, matched by case/question/label ids",
+  "head_projection": "dequantize selected tied embedding rows; native softcap once",
+  "measurement": {
+    "warmup_per_case": 1,
+    "repeat_per_case": 3,
+    "scope": "prepared tensors to validated CPU probabilities, synchronized MLX calls",
+    "includes": "array transfer, backbone, selected-row projection, softmax and CPU copy",
+    "excludes": "HF preprocessing, file I/O and model loading; not end-to-end request latency"
+  },
+  "cases": [
+    {
+      "id": "billing-en",
+      "question_count": 2,
+      "input_tokens": 86,
+      "tensor_file_sha256": "11803ed1e651854c2c2af28c081dfc2172922d9d762d16e7e0a9bbdee22f9697",
+      "tensor_shapes": {
+        "input_ids": [
+          1,
+          86
+        ],
+        "attention_mask": [
+          1,
+          86
+        ],
+        "mm_token_type_ids": [
+          1,
+          86
+        ]
+      },
+      "tensor_dtypes": {
+        "input_ids": "int64",
+        "attention_mask": "int64",
+        "mm_token_type_ids": "int64"
+      },
+      "status": "ok",
+      "finite_probabilities": true,
+      "answers": {
+        "team": {
+          "probabilities": {
+            "billing": 0.9998205304145813,
+            "technical": 0.0001795279240468517
+          },
+          "argmax_label": "billing"
+        },
+        "refund": {
+          "probabilities": {
+            "false": 0.09534946829080582,
+            "true": 0.9046505093574524
+          },
+          "argmax_label": "true"
+        }
+      },
+      "comparisons": [
+        {
+          "id": "team",
+          "max_abs_probability_drift": 2.9103830456733704e-11,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "refund",
+          "max_abs_probability_drift": 0.023853451013565063,
+          "argmax_agreement": true,
+          "reference_argmax_label": "true"
+        }
+      ],
+      "prepared_forward_samples_ms": [
+        436.1554580027587,
+        426.32591699657496,
+        426.6613329964457
+      ],
+      "prepared_forward_p50_ms": 426.6613329964457,
+      "max_repeat_probability_drift": 0.0,
+      "max_abs_probability_drift": 0.023853451013565063,
+      "argmax_agreement_count": 2
+    },
+    {
+      "id": "technical-en",
+      "question_count": 2,
+      "input_tokens": 90,
+      "tensor_file_sha256": "fd1dca3f15ecf26368adf98e863df5bf0ef5edd6f9361484f66ff744a5627ef3",
+      "tensor_shapes": {
+        "input_ids": [
+          1,
+          90
+        ],
+        "attention_mask": [
+          1,
+          90
+        ],
+        "mm_token_type_ids": [
+          1,
+          90
+        ]
+      },
+      "tensor_dtypes": {
+        "input_ids": "int64",
+        "attention_mask": "int64",
+        "mm_token_type_ids": "int64"
+      },
+      "status": "ok",
+      "finite_probabilities": true,
+      "answers": {
+        "team": {
+          "probabilities": {
+            "billing": 1.3007137567910831e-05,
+            "technical": 0.999987006187439
+          },
+          "argmax_label": "technical"
+        },
+        "refund": {
+          "probabilities": {
+            "false": 0.8933094143867493,
+            "true": 0.10669058561325073
+          },
+          "argmax_label": "false"
+        }
+      },
+      "comparisons": [
+        {
+          "id": "team",
+          "max_abs_probability_drift": 1.000444171950221e-11,
+          "argmax_agreement": true,
+          "reference_argmax_label": "technical"
+        },
+        {
+          "id": "refund",
+          "max_abs_probability_drift": 0.09512263536453247,
+          "argmax_agreement": true,
+          "reference_argmax_label": "false"
+        }
+      ],
+      "prepared_forward_samples_ms": [
+        427.40695900283754,
+        447.8052909980761,
+        513.7311250000494
+      ],
+      "prepared_forward_p50_ms": 447.8052909980761,
+      "max_repeat_probability_drift": 0.0,
+      "max_abs_probability_drift": 0.09512263536453247,
+      "argmax_agreement_count": 2
+    },
+    {
+      "id": "sentiment-score",
+      "question_count": 1,
+      "input_tokens": 60,
+      "tensor_file_sha256": "406e0129892c9991fe0ff8e616763b83f30faa1c3c68c99c465797e30454bfdb",
+      "tensor_shapes": {
+        "input_ids": [
+          1,
+          60
+        ],
+        "attention_mask": [
+          1,
+          60
+        ],
+        "mm_token_type_ids": [
+          1,
+          60
+        ]
+      },
+      "tensor_dtypes": {
+        "input_ids": "int64",
+        "attention_mask": "int64",
+        "mm_token_type_ids": "int64"
+      },
+      "status": "ok",
+      "finite_probabilities": true,
+      "answers": {
+        "rating": {
+          "probabilities": {
+            "0": 1.6701367712812498e-05,
+            "1": 0.9999799728393555,
+            "2": 3.2886923690966796e-06
+          },
+          "argmax_label": "1"
+        }
+      },
+      "comparisons": [
+        {
+          "id": "rating",
+          "max_abs_probability_drift": 6.782270247640554e-07,
+          "argmax_agreement": true,
+          "reference_argmax_label": "1"
+        }
+      ],
+      "prepared_forward_samples_ms": [
+        469.7404589969665,
+        524.7566670004744,
+        512.3651250032708
+      ],
+      "prepared_forward_p50_ms": 512.3651250032708,
+      "max_repeat_probability_drift": 0.0,
+      "max_abs_probability_drift": 6.782270247640554e-07,
+      "argmax_agreement_count": 1
+    },
+    {
+      "id": "synthetic-image",
+      "question_count": 2,
+      "input_tokens": 344,
+      "tensor_file_sha256": "b8430fb39b7195b4e1f00b18a866bc318b6a1983e4c0e799cee4d284e336d74d",
+      "tensor_shapes": {
+        "input_ids": [
+          1,
+          344
+        ],
+        "attention_mask": [
+          1,
+          344
+        ],
+        "mm_token_type_ids": [
+          1,
+          344
+        ],
+        "pixel_values": [
+          1,
+          280,
+          6912
+        ],
+        "image_position_ids": [
+          1,
+          280,
+          2
+        ]
+      },
+      "tensor_dtypes": {
+        "input_ids": "int64",
+        "attention_mask": "int64",
+        "mm_token_type_ids": "int64",
+        "pixel_values": "float32",
+        "image_position_ids": "int64"
+      },
+      "status": "ok",
+      "finite_probabilities": true,
+      "answers": {
+        "team": {
+          "probabilities": {
+            "billing": 0.9999545812606812,
+            "technical": 4.539786095847376e-05
+          },
+          "argmax_label": "billing"
+        },
+        "refund": {
+          "probabilities": {
+            "false": 0.042087726294994354,
+            "true": 0.957912266254425
+          },
+          "argmax_label": "true"
+        }
+      },
+      "comparisons": [
+        {
+          "id": "team",
+          "max_abs_probability_drift": 6.079673767089844e-06,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "refund",
+          "max_abs_probability_drift": 0.017998933792114258,
+          "argmax_agreement": true,
+          "reference_argmax_label": "true"
+        }
+      ],
+      "prepared_forward_samples_ms": [
+        1744.549791997997,
+        1768.0735000030836,
+        1874.2126669967547
+      ],
+      "prepared_forward_p50_ms": 1768.0735000030836,
+      "max_repeat_probability_drift": 0.0,
+      "max_abs_probability_drift": 0.017998933792114258,
+      "argmax_agreement_count": 2
+    },
+    {
+      "id": "synthetic-audio",
+      "question_count": 2,
+      "input_tokens": 91,
+      "tensor_file_sha256": "da563c05cced60fbd295d829b35b8eee4376202c0d6dcf8975ae2b2b12a15ed8",
+      "tensor_shapes": {
+        "input_ids": [
+          1,
+          91
+        ],
+        "attention_mask": [
+          1,
+          91
+        ],
+        "mm_token_type_ids": [
+          1,
+          91
+        ],
+        "input_features": [
+          1,
+          3,
+          640
+        ],
+        "input_features_mask": [
+          1,
+          3
+        ]
+      },
+      "tensor_dtypes": {
+        "input_ids": "int64",
+        "attention_mask": "int64",
+        "mm_token_type_ids": "int64",
+        "input_features": "float32",
+        "input_features_mask": "bool"
+      },
+      "status": "ok",
+      "finite_probabilities": true,
+      "answers": {
+        "team": {
+          "probabilities": {
+            "billing": 0.9999517202377319,
+            "technical": 4.832565173273906e-05
+          },
+          "argmax_label": "billing"
+        },
+        "refund": {
+          "probabilities": {
+            "false": 0.562176525592804,
+            "true": 0.4378235340118408
+          },
+          "argmax_label": "false"
+        }
+      },
+      "comparisons": [
+        {
+          "id": "team",
+          "max_abs_probability_drift": 3.2186508178710938e-06,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "refund",
+          "max_abs_probability_drift": 0.060282886028289795,
+          "argmax_agreement": true,
+          "reference_argmax_label": "false"
+        }
+      ],
+      "prepared_forward_samples_ms": [
+        561.5127499986556,
+        542.9584169978625,
+        534.434749999491
+      ],
+      "prepared_forward_p50_ms": 542.9584169978625,
+      "max_repeat_probability_drift": 0.0,
+      "max_abs_probability_drift": 0.060282886028289795,
+      "argmax_agreement_count": 2
+    },
+    {
+      "id": "synthetic-mixed",
+      "question_count": 2,
+      "input_tokens": 349,
+      "tensor_file_sha256": "889dc9115ee36abebba96c57be132fb045d3a810f906df0465015ca3ca17af80",
+      "tensor_shapes": {
+        "input_ids": [
+          1,
+          349
+        ],
+        "attention_mask": [
+          1,
+          349
+        ],
+        "mm_token_type_ids": [
+          1,
+          349
+        ],
+        "pixel_values": [
+          1,
+          280,
+          6912
+        ],
+        "image_position_ids": [
+          1,
+          280,
+          2
+        ],
+        "input_features": [
+          1,
+          3,
+          640
+        ],
+        "input_features_mask": [
+          1,
+          3
+        ]
+      },
+      "tensor_dtypes": {
+        "input_ids": "int64",
+        "attention_mask": "int64",
+        "mm_token_type_ids": "int64",
+        "pixel_values": "float32",
+        "image_position_ids": "int64",
+        "input_features": "float32",
+        "input_features_mask": "bool"
+      },
+      "status": "ok",
+      "finite_probabilities": true,
+      "answers": {
+        "team": {
+          "probabilities": {
+            "billing": 0.9999687671661377,
+            "technical": 3.120190012850799e-05
+          },
+          "argmax_label": "billing"
+        },
+        "refund": {
+          "probabilities": {
+            "false": 0.09534946829080582,
+            "true": 0.9046505093574524
+          },
+          "argmax_label": "true"
+        }
+      },
+      "comparisons": [
+        {
+          "id": "team",
+          "max_abs_probability_drift": 7.275957614183426e-12,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "refund",
+          "max_abs_probability_drift": 7.450580596923828e-09,
+          "argmax_agreement": true,
+          "reference_argmax_label": "true"
+        }
+      ],
+      "prepared_forward_samples_ms": [
+        2141.6772920056246,
+        2145.335374996648,
+        2135.742416001449
+      ],
+      "prepared_forward_p50_ms": 2141.6772920056246,
+      "max_repeat_probability_drift": 0.0,
+      "max_abs_probability_drift": 7.450580596923828e-09,
+      "argmax_agreement_count": 2
+    },
+    {
+      "id": "long-state",
+      "question_count": 2,
+      "input_tokens": 716,
+      "tensor_file_sha256": "acc5396c6cfde3a37270cb38b8703eabf5e7c790fab613cb832163ebb60b1178",
+      "tensor_shapes": {
+        "input_ids": [
+          1,
+          716
+        ],
+        "attention_mask": [
+          1,
+          716
+        ],
+        "mm_token_type_ids": [
+          1,
+          716
+        ]
+      },
+      "tensor_dtypes": {
+        "input_ids": "int64",
+        "attention_mask": "int64",
+        "mm_token_type_ids": "int64"
+      },
+      "status": "ok",
+      "finite_probabilities": true,
+      "answers": {
+        "team": {
+          "probabilities": {
+            "billing": 0.9999251365661621,
+            "technical": 7.48462334740907e-05
+          },
+          "argmax_label": "billing"
+        },
+        "refund": {
+          "probabilities": {
+            "false": 0.06754668802022934,
+            "true": 0.9324532747268677
+          },
+          "argmax_label": "true"
+        }
+      },
+      "comparisons": [
+        {
+          "id": "team",
+          "max_abs_probability_drift": 1.0013580322265625e-05,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "refund",
+          "max_abs_probability_drift": 0.017552345991134644,
+          "argmax_agreement": true,
+          "reference_argmax_label": "true"
+        }
+      ],
+      "prepared_forward_samples_ms": [
+        4310.532082999998,
+        5403.826665999077,
+        5747.011750005186
+      ],
+      "prepared_forward_p50_ms": 5403.826665999077,
+      "max_repeat_probability_drift": 0.0,
+      "max_abs_probability_drift": 0.017552345991134644,
+      "argmax_agreement_count": 2
+    },
+    {
+      "id": "sixteen-questions",
+      "question_count": 16,
+      "input_tokens": 551,
+      "tensor_file_sha256": "7fe3dabc2cb0c1a0513c1d087eb8fa6c790c92eafb982dd0fa86fd58f76ee0c4",
+      "tensor_shapes": {
+        "input_ids": [
+          1,
+          551
+        ],
+        "attention_mask": [
+          1,
+          551
+        ],
+        "mm_token_type_ids": [
+          1,
+          551
+        ]
+      },
+      "tensor_dtypes": {
+        "input_ids": "int64",
+        "attention_mask": "int64",
+        "mm_token_type_ids": "int64"
+      },
+      "status": "ok",
+      "finite_probabilities": true,
+      "answers": {
+        "q0": {
+          "probabilities": {
+            "billing": 0.9998205304145813,
+            "technical": 0.0001795279240468517
+          },
+          "argmax_label": "billing"
+        },
+        "q1": {
+          "probabilities": {
+            "billing": 0.9953904151916504,
+            "technical": 0.004609572235494852
+          },
+          "argmax_label": "billing"
+        },
+        "q2": {
+          "probabilities": {
+            "billing": 0.970687747001648,
+            "technical": 0.029312225058674812
+          },
+          "argmax_label": "billing"
+        },
+        "q3": {
+          "probabilities": {
+            "billing": 0.957912266254425,
+            "technical": 0.042087726294994354
+          },
+          "argmax_label": "billing"
+        },
+        "q4": {
+          "probabilities": {
+            "billing": 0.957912266254425,
+            "technical": 0.042087726294994354
+          },
+          "argmax_label": "billing"
+        },
+        "q5": {
+          "probabilities": {
+            "billing": 0.9669140577316284,
+            "technical": 0.03308597579598427
+          },
+          "argmax_label": "billing"
+        },
+        "q6": {
+          "probabilities": {
+            "billing": 0.9399133324623108,
+            "technical": 0.06008664891123772
+          },
+          "argmax_label": "billing"
+        },
+        "q7": {
+          "probabilities": {
+            "billing": 0.9669140577316284,
+            "technical": 0.03308597579598427
+          },
+          "argmax_label": "billing"
+        },
+        "q8": {
+          "probabilities": {
+            "billing": 0.9669140577316284,
+            "technical": 0.03308597579598427
+          },
+          "argmax_label": "billing"
+        },
+        "q9": {
+          "probabilities": {
+            "billing": 0.9740425944328308,
+            "technical": 0.02595735900104046
+          },
+          "argmax_label": "billing"
+        },
+        "q10": {
+          "probabilities": {
+            "billing": 0.9740425944328308,
+            "technical": 0.02595735900104046
+          },
+          "argmax_label": "billing"
+        },
+        "q11": {
+          "probabilities": {
+            "billing": 0.9648551344871521,
+            "technical": 0.03514484316110611
+          },
+          "argmax_label": "billing"
+        },
+        "q12": {
+          "probabilities": {
+            "billing": 0.9626730680465698,
+            "technical": 0.037326879799366
+          },
+          "argmax_label": "billing"
+        },
+        "q13": {
+          "probabilities": {
+            "billing": 0.957912266254425,
+            "technical": 0.042087726294994354
+          },
+          "argmax_label": "billing"
+        },
+        "q14": {
+          "probabilities": {
+            "billing": 0.957912266254425,
+            "technical": 0.042087726294994354
+          },
+          "argmax_label": "billing"
+        },
+        "q15": {
+          "probabilities": {
+            "billing": 0.9525741338729858,
+            "technical": 0.047425877302885056
+          },
+          "argmax_label": "billing"
+        }
+      },
+      "comparisons": [
+        {
+          "id": "q0",
+          "max_abs_probability_drift": 2.396106719970703e-05,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q1",
+          "max_abs_probability_drift": 4.656612873077393e-10,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q2",
+          "max_abs_probability_drift": 0.0033548716455698013,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q3",
+          "max_abs_probability_drift": 0.016130372881889343,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q4",
+          "max_abs_probability_drift": 0.016130372881889343,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q5",
+          "max_abs_probability_drift": 0.01010860875248909,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q6",
+          "max_abs_probability_drift": 0.017998933792114258,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q7",
+          "max_abs_probability_drift": 0.012753624469041824,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q8",
+          "max_abs_probability_drift": 0.01010860875248909,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q9",
+          "max_abs_probability_drift": 0.01005101203918457,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q10",
+          "max_abs_probability_drift": 0.00797116756439209,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q11",
+          "max_abs_probability_drift": 0.013529598712921143,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q12",
+          "max_abs_probability_drift": 0.012903809547424316,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q13",
+          "max_abs_probability_drift": 0.016130372881889343,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q14",
+          "max_abs_probability_drift": 0.016130372881889343,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        },
+        {
+          "id": "q15",
+          "max_abs_probability_drift": 0.014339923858642578,
+          "argmax_agreement": true,
+          "reference_argmax_label": "billing"
+        }
+      ],
+      "prepared_forward_samples_ms": [
+        3515.9894169992185,
+        3405.5736659938702,
+        3432.4027090042364
+      ],
+      "prepared_forward_p50_ms": 3432.4027090042364,
+      "max_repeat_probability_drift": 0.0,
+      "max_abs_probability_drift": 0.017998933792114258,
+      "argmax_agreement_count": 16
+    }
+  ],
+  "source_model": "google/gemma-4-12B-it",
+  "source_revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+  "dataset_sha256": "e642f9f113c7ec3fc291e342a43906b0740cc50fcc0c7aaa30747fc9488e6f63",
+  "temperature": 1.0,
+  "prompt_version": 1,
+  "quantization": {
+    "group_size": 64,
+    "bits": 8,
+    "mode": "affine"
+  },
+  "quantization_config": {
+    "group_size": 64,
+    "bits": 8,
+    "mode": "affine"
+  },
+  "softcap": 30.0,
+  "manifest_sha256": "e83360e68f5230532a0468fa7f6d254d159e82913ea2db46a03b175b08f69504",
+  "reference_sha256": "f763cf40315a3109efc0840c08b95ccf40ff1d3b82e570c095768e7750d963f6",
+  "config_sha256": "281693a9f29adc471bf6f39660f74bac3bbf06737ee06df6be09a475d48af388",
+  "s1_config": {
+    "temperature": 1.0,
+    "source_model": "google/gemma-4-12B-it",
+    "source_revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+    "prompt_version": 1
+  },
+  "modality_weight_inventory": {
+    "vision_embedder": [
+      "vision_embedder.patch_ln1.weight",
+      "vision_embedder.patch_ln1.bias",
+      "vision_embedder.patch_dense.weight",
+      "vision_embedder.patch_dense.bias",
+      "vision_embedder.patch_ln2.weight",
+      "vision_embedder.patch_ln2.bias",
+      "vision_embedder.pos_embedding",
+      "vision_embedder.pos_norm.weight",
+      "vision_embedder.pos_norm.bias"
+    ],
+    "embed_vision": [
+      "embed_vision.embedding_projection.weight"
+    ],
+    "embed_audio": [
+      "embed_audio.embedding_projection.weight",
+      "embed_audio.embedding_projection.scales",
+      "embed_audio.embedding_projection.biases"
+    ]
+  },
+  "loaded_parameter_tensor_count": 1337,
+  "summary": {
+    "case_count": 8,
+    "successful_case_count": 8,
+    "compared_question_count": 29,
+    "max_abs_probability_drift": 0.09512263536453247,
+    "argmax_agreement_count": 29,
+    "argmax_agreement_fraction": 1.0,
+    "acceptance_threshold": null
+  }
+}

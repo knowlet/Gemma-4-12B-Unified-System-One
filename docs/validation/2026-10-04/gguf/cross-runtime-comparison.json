@@ -1,0 +1,469 @@
+{
+  "schema_version": 1,
+  "status": "verified",
+  "verified_at": "2026-10-04T11:12:42.914048+00:00",
+  "gguf_evaluation_sha256": "c812265d0f4b62cbf69a774c728c0c59d1912f259993ca78c38a04f51bfa5fbb",
+  "source_hashes": {
+    "gguf_evaluation": {
+      "path": "artifacts/release/gguf-release-evaluation.json",
+      "sha256": "c812265d0f4b62cbf69a774c728c0c59d1912f259993ca78c38a04f51bfa5fbb"
+    },
+    "conversion_manifest": {
+      "path": "artifacts/exports/s1-boolq-gguf/conversion-manifest.json",
+      "sha256": "464874bc51e8ee21ab56f34a4bf7d22b1fb83299a277cbcf966b42c5fc7802b7"
+    },
+    "dataset_manifest": {
+      "path": "artifacts/release/datasets/manifest.json",
+      "sha256": "e0ab28e3435a910c19abf3a9a7e58df8b5cff7a806b6c7f4f18021db1d3804dd"
+    },
+    "gguf_s1_config": {
+      "path": "artifacts/exports/s1-boolq-gguf/s1_config.json",
+      "sha256": "24882a49f5440412a63aecb7e446274d4ba6a4f8bb28930ddc4eaf1922d2863c"
+    },
+    "mlx_evaluation": {
+      "path": "artifacts/release/mlx-release-evaluation.json",
+      "sha256": "e783bc1bf4b9361ff5fd6d9397362c0515b8f6ec2455f2688385d0727cc21f00"
+    },
+    "bf16_training_manifest": {
+      "path": "artifacts/release/runs/20261002-boolq-release-01/manifest.json",
+      "sha256": "66d396615db1b8659912dd80698a13324a9085c76a1ccd0f66c42c686c7af8b1"
+    },
+    "bf16_artifacts_receipt": {
+      "path": "artifacts/release/runs/20261002-boolq-release-01/artifacts.json",
+      "sha256": "3a8370774f9898d50de4446d8443835578bc08634929673882a0d0cd27f6d3cb"
+    },
+    "bf16_postmerge_calibration": {
+      "path": "artifacts/release/runs/20261002-boolq-release-01/train/postmerge-calibration.json",
+      "sha256": "7c65d012529f9cb4d10e609dcb603ba2db6ad779f077f6c9da741f60fa7c0531"
+    },
+    "bf16_test": {
+      "path": "artifacts/release/runs/20261002-boolq-release-01/evaluate/trained-test.json",
+      "sha256": "f0d758cc07d7173a654c5e0bc2d74564bd70256b9cc1b1656eac0d4e61aa21d8"
+    },
+    "bf16_media": {
+      "path": "artifacts/release/runs/20261002-boolq-release-01/evaluate/trained-media.json",
+      "sha256": "fc4f1bd28a9c0085b824a8cb121ef1487fd4f0bd27f98daa59bbb1da5d36c2dd"
+    },
+    "audit_helpers": {
+      "path": "scripts/summarize_release.py",
+      "sha256": "7f8b352dc34285e6253fc21e0598375adeb6dd4f2714c3f163264e568701f922"
+    }
+  },
+  "population": {
+    "total_cases": 564,
+    "calibration": 256,
+    "fresh_boolq_test": 256,
+    "historical_media": 52,
+    "mnist_images": 32,
+    "fsdd_audio": 20,
+    "coverage": 1.0
+  },
+  "calibration": {
+    "method": "independent vectorized log-sum-exp search over exact fixed grid; calibration rows only",
+    "temperature": 2.7830344470383452,
+    "n": 256,
+    "nll_before": 0.538595354508613,
+    "nll_after": 0.2904123939299567,
+    "reported_fit_matches": true,
+    "same_numeric_grid_value_as_bf16": true
+  },
+  "metrics": {
+    "calibration": {
+      "n": 256,
+      "correct": 227,
+      "accuracy": 0.88671875,
+      "nll": 0.2904123939299567,
+      "brier": 0.16990211957453163,
+      "ece_15": 0.06303373066291393
+    },
+    "test": {
+      "n": 256,
+      "correct": 231,
+      "accuracy": 0.90234375,
+      "nll": 0.2721515843879538,
+      "brier": 0.1568639451461463,
+      "ece_15": 0.046608128195996676
+    },
+    "media": {
+      "n": 52,
+      "correct": 33,
+      "accuracy": 0.6346153846153846,
+      "nll": 1.1118413018013624,
+      "brier": 0.43634115696171705,
+      "ece_15": 0.1922555761617249
+    },
+    "mnist": {
+      "n": 32,
+      "correct": 28,
+      "accuracy": 0.875,
+      "nll": 0.5212109082223164,
+      "brier": 0.20857983251793877,
+      "ece_15": 0.20753474890296952
+    },
+    "fsdd": {
+      "n": 20,
+      "correct": 5,
+      "accuracy": 0.25,
+      "nll": 2.0568499315278364,
+      "brier": 0.8007592760717623,
+      "ece_15": 0.1993235807935648
+    }
+  },
+  "comparisons": {
+    "trained_bf16_to_gguf": {
+      "test": {
+        "status": "complete",
+        "decisions": 256,
+        "coverage": 1.0,
+        "argmax_agreement": 255,
+        "argmax_disagreement": 1,
+        "argmax_agreement_rate": 0.99609375,
+        "reference_correct": 230,
+        "gguf_correct": 231,
+        "improved": 1,
+        "regressed": 0,
+        "max_absolute_probability_difference": 0.32892460379108357,
+        "changed_predictions": [
+          {
+            "case_id": "boolq-validation-751",
+            "question_id": "answer",
+            "gold": "true",
+            "reference_prediction": "false",
+            "gguf_prediction": "true",
+            "reference_correct": false,
+            "gguf_correct": true,
+            "max_absolute_probability_difference": 0.32892460379108357
+          }
+        ],
+        "paired_accuracy": {
+          "status": "estimated",
+          "direction": "target minus reference",
+          "decisions": 256,
+          "coverage": 1.0,
+          "delta": 0.00390625,
+          "ci_95": [
+            0.0,
+            0.01171875
+          ],
+          "source_groups": 256,
+          "method": "paired source-group percentile bootstrap",
+          "seed": 42,
+          "resamples": 10000
+        }
+      },
+      "media": {
+        "status": "complete",
+        "decisions": 52,
+        "coverage": 1.0,
+        "argmax_agreement": 47,
+        "argmax_disagreement": 5,
+        "argmax_agreement_rate": 0.9038461538461539,
+        "reference_correct": 34,
+        "gguf_correct": 33,
+        "improved": 1,
+        "regressed": 2,
+        "max_absolute_probability_difference": 0.43274453900554805,
+        "changed_predictions": [
+          {
+            "case_id": "mnist-test-8241",
+            "question_id": "digit",
+            "gold": "digit-8",
+            "reference_prediction": "digit-9",
+            "gguf_prediction": "digit-8",
+            "reference_correct": false,
+            "gguf_correct": true,
+            "max_absolute_probability_difference": 0.17603686634636675
+          },
+          {
+            "case_id": "mnist-test-9664",
+            "question_id": "digit",
+            "gold": "digit-2",
+            "reference_prediction": "digit-2",
+            "gguf_prediction": "digit-7",
+            "reference_correct": true,
+            "gguf_correct": false,
+            "max_absolute_probability_difference": 0.2623775878312715
+          },
+          {
+            "case_id": "fsdd-test-0_jackson_4",
+            "question_id": "digit",
+            "gold": "digit-0",
+            "reference_prediction": "digit-0",
+            "gguf_prediction": "digit-7",
+            "reference_correct": true,
+            "gguf_correct": false,
+            "max_absolute_probability_difference": 0.43274453900554805
+          },
+          {
+            "case_id": "fsdd-test-1_nicolas_0",
+            "question_id": "digit",
+            "gold": "digit-1",
+            "reference_prediction": "digit-7",
+            "gguf_prediction": "digit-8",
+            "reference_correct": false,
+            "gguf_correct": false,
+            "max_absolute_probability_difference": 0.009104574916548036
+          },
+          {
+            "case_id": "fsdd-test-3_george_4",
+            "question_id": "digit",
+            "gold": "digit-3",
+            "reference_prediction": "digit-7",
+            "gguf_prediction": "digit-2",
+            "reference_correct": false,
+            "gguf_correct": false,
+            "max_absolute_probability_difference": 0.0354670452212037
+          }
+        ]
+      }
+    },
+    "trained_mlx_to_gguf": {
+      "test": {
+        "status": "complete",
+        "decisions": 256,
+        "coverage": 1.0,
+        "argmax_agreement": 255,
+        "argmax_disagreement": 1,
+        "argmax_agreement_rate": 0.99609375,
+        "reference_correct": 230,
+        "gguf_correct": 231,
+        "improved": 1,
+        "regressed": 0,
+        "max_absolute_probability_difference": 0.0913227723513127,
+        "changed_predictions": [
+          {
+            "case_id": "boolq-validation-751",
+            "question_id": "answer",
+            "gold": "true",
+            "reference_prediction": "false",
+            "gguf_prediction": "true",
+            "reference_correct": false,
+            "gguf_correct": true,
+            "max_absolute_probability_difference": 0.054173862937504313
+          }
+        ],
+        "paired_accuracy": {
+          "status": "estimated",
+          "direction": "target minus reference",
+          "decisions": 256,
+          "coverage": 1.0,
+          "delta": 0.00390625,
+          "ci_95": [
+            0.0,
+            0.01171875
+          ],
+          "source_groups": 256,
+          "method": "paired source-group percentile bootstrap",
+          "seed": 42,
+          "resamples": 10000
+        }
+      },
+      "media": {
+        "status": "complete",
+        "decisions": 52,
+        "coverage": 1.0,
+        "argmax_agreement": 46,
+        "argmax_disagreement": 6,
+        "argmax_agreement_rate": 0.8846153846153846,
+        "reference_correct": 34,
+        "gguf_correct": 33,
+        "improved": 2,
+        "regressed": 3,
+        "max_absolute_probability_difference": 0.3510347357754983,
+        "changed_predictions": [
+          {
+            "case_id": "mnist-test-8241",
+            "question_id": "digit",
+            "gold": "digit-8",
+            "reference_prediction": "digit-9",
+            "gguf_prediction": "digit-8",
+            "reference_correct": false,
+            "gguf_correct": true,
+            "max_absolute_probability_difference": 0.17062881710564917
+          },
+          {
+            "case_id": "mnist-test-9664",
+            "question_id": "digit",
+            "gold": "digit-2",
+            "reference_prediction": "digit-2",
+            "gguf_prediction": "digit-7",
+            "reference_correct": true,
+            "gguf_correct": false,
+            "max_absolute_probability_difference": 0.25834222336899826
+          },
+          {
+            "case_id": "fsdd-test-0_jackson_4",
+            "question_id": "digit",
+            "gold": "digit-0",
+            "reference_prediction": "digit-0",
+            "gguf_prediction": "digit-7",
+            "reference_correct": true,
+            "gguf_correct": false,
+            "max_absolute_probability_difference": 0.3385828596970545
+          },
+          {
+            "case_id": "fsdd-test-1_theo_0",
+            "question_id": "digit",
+            "gold": "digit-1",
+            "reference_prediction": "digit-7",
+            "gguf_prediction": "digit-1",
+            "reference_correct": false,
+            "gguf_correct": true,
+            "max_absolute_probability_difference": 0.01910805463456157
+          },
+          {
+            "case_id": "fsdd-test-3_george_4",
+            "question_id": "digit",
+            "gold": "digit-3",
+            "reference_prediction": "digit-7",
+            "gguf_prediction": "digit-2",
+            "reference_correct": false,
+            "gguf_correct": false,
+            "max_absolute_probability_difference": 0.07038924486744702
+          },
+          {
+            "case_id": "fsdd-test-7_nicolas_4",
+            "question_id": "digit",
+            "gold": "digit-7",
+            "reference_prediction": "digit-7",
+            "gguf_prediction": "digit-5",
+            "reference_correct": true,
+            "gguf_correct": false,
+            "max_absolute_probability_difference": 0.3510347357754983
+          }
+        ]
+      }
+    }
+  },
+  "reference_metrics": {
+    "trained_bf16": {
+      "test": {
+        "n": 256,
+        "correct": 230,
+        "accuracy": 0.8984375,
+        "nll": 0.2726592525713943,
+        "brier": 0.15802665422576334,
+        "ece_15": 0.052127212140476296
+      },
+      "media": {
+        "n": 52,
+        "correct": 34,
+        "accuracy": 0.6538461538461539,
+        "nll": 1.0726309377798149,
+        "brier": 0.4235648051345038,
+        "ece_15": 0.21836763161893985
+      }
+    },
+    "trained_mlx": {
+      "calibration": {
+        "n": 256,
+        "correct": 229,
+        "accuracy": 0.89453125,
+        "nll": 0.2847243872307043,
+        "brier": 0.1648901344676638,
+        "ece_15": 0.05617556711970859
+      },
+      "test": {
+        "n": 256,
+        "correct": 230,
+        "accuracy": 0.8984375,
+        "nll": 0.2704756988520658,
+        "brier": 0.15640467191285956,
+        "ece_15": 0.04550247312396945
+      },
+      "media": {
+        "n": 52,
+        "correct": 34,
+        "accuracy": 0.6538461538461539,
+        "nll": 1.0819980166037815,
+        "brier": 0.4257692343561444,
+        "ece_15": 0.1309703835403965
+      }
+    }
+  },
+  "identity_checks": {
+    "dataset_manifest_sha256": "e0ab28e3435a910c19abf3a9a7e58df8b5cff7a806b6c7f4f18021db1d3804dd",
+    "input_manifest_sha256": {
+      "calibration": "90e9fc465a6e372c81e1596e387fc7c62107730b41c4f3c1d5c7a8087a9bb51e",
+      "test": "588a47a136392f341bfc02e1d30c55e542248317d6b5d398d9dde4d22ed00cc5",
+      "media": "61ccd5e903fa5616b648c755b215fbfa04d526cb0de4abe5199c0d927f3e7344"
+    },
+    "source_checkpoint_sha256": "fa96debc68209c193338d8edee4ec4258a9f603e4f2156d4688c16364703d15d",
+    "export_checkpoint_sha256": "3609c57ec4985fe65062bd490631aedb9bbe5039c622ac8e98e774b2053f93f4",
+    "runtime_source_revision": "bcf829acc111fd8054987b1519b8181835f1dfed",
+    "runtime_implementation_sha256": "4934e364ac1bb8faaf0815c92cda76c015f2289b9d67441633df62672103c816",
+    "runtime_files_rehashed": 78,
+    "runtime_file_bytes_rehashed": 26199210,
+    "small_export_files_rehashed": 7,
+    "large_gguf_weights_rehashed_by_independent_auditor": false,
+    "weight_verification_basis": "full-run evaluator verified all weight hashes before and after execution; audit matched exact report/conversion inventories and current sizes",
+    "captured_tensor_files_rehashed": 564,
+    "captured_tensor_bytes_rehashed": 251699426,
+    "source_input_tokens_checked": 113866,
+    "candidate_token_ids": [
+      236776,
+      236799,
+      236780,
+      236796,
+      236788,
+      236811,
+      236823,
+      236814,
+      236777,
+      236863,
+      236855,
+      236798,
+      236792,
+      236797,
+      236806,
+      236791,
+      236935,
+      236794,
+      236773,
+      236774,
+      236836,
+      236847,
+      236824,
+      236917,
+      236874,
+      236953,
+      236746,
+      236763,
+      236755,
+      236753,
+      236744,
+      236760,
+      236759,
+      236754,
+      236747,
+      236804,
+      236767,
+      236752,
+      236757,
+      236749,
+      236748,
+      236758,
+      236809,
+      236750,
+      236751,
+      236745,
+      236756,
+      236766,
+      236765,
+      236781,
+      236762,
+      236802
+    ],
+    "candidate_ids_independently_checked_against_saved_tokenizer": true,
+    "all_source_and_native_slots_and_counts_match": true,
+    "all_564_captured_slot_tokens_are_answer_boundary_568": true,
+    "all_question_labels_golds_and_probabilities_match_frozen_population": true
+  },
+  "scope": {
+    "native_projection": "full vocabulary then legal candidate selection; not selected-head compute optimization",
+    "media": "52 historical regression cases, not fresh held-out evidence",
+    "probability_comparison": "independently calibrated runtime probabilities; no cross-runtime numerical-equivalence claim",
+    "latency": "GGUF adapter request scope differs from BF16/MLX; no speed comparison inferred"
+  },
+  "issues": []
+}

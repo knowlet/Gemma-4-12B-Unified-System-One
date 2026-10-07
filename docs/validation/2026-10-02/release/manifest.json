@@ -1,0 +1,122 @@
+{
+  "identity": "2a708e5f4acfea4b688e88ba338aa62991608db875fef039ee6b4f33c3a74d73",
+  "recipe": {
+    "model": "google/gemma-4-12B-it",
+    "revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+    "seed": 42,
+    "learning_rate": 2e-05,
+    "brier_weight": 0.0,
+    "rank": 8,
+    "alpha": 16,
+    "max_context": 4096,
+    "checkpoint_every": 128,
+    "progress_every": 32,
+    "pilot_steps": 8,
+    "max_training_seconds": 18000
+  },
+  "datasets": {
+    "train": {
+      "cases": 2048,
+      "dataset_sha256": "8b5588e0274ea9ac61ed522e383a3ad805b275e44a2331cb3b726861347bc434",
+      "file_sha256": "149f5df87d8282475ce0e8265f2cecf2e6d2f6b101662f7705a4bafeb1dc4c21"
+    },
+    "calibration": {
+      "cases": 256,
+      "dataset_sha256": "2da1a6798b1638a7ff4dd336bdf3b7eebad7a9641ec71c6932f778d309860826",
+      "file_sha256": "fb1c6a301bd1c551d0a6a4b4a478d264cf4db4099266f0e06801a44260d7ee7d"
+    },
+    "test": {
+      "cases": 256,
+      "dataset_sha256": "62f004b4d9b8e9e683f5b9b851074c64ad6ec557ae99b0040a688489a550e527",
+      "file_sha256": "a36df8f953cdb856b64274eb482f9877b49bdd4c1d2fce1c9b1f4da43828f044"
+    },
+    "media": {
+      "cases": 52,
+      "dataset_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35",
+      "file_sha256": "e6f0806c1e625f1ecf4ca8430f0660358c08009233f832e53e24a8a23151865b"
+    },
+    "regression_text": {
+      "cases": 128,
+      "dataset_sha256": "7bdb25dc3d8a0371bb73909fe55597de86f66e808bc42d1a5a1cb17d08f44d41",
+      "file_sha256": "6456bb99b63d6f73f863623f94b0369b0230194025565f2e063af52071069775"
+    },
+    "preparation_manifest_sha256": "e0ab28e3435a910c19abf3a9a7e58df8b5cff7a806b6c7f4f18021db1d3804dd"
+  },
+  "epochs": 1,
+  "pilot_policy": "discard; full pass restarts from pinned base",
+  "runtime": {
+    "packages": {
+      "torch": "2.8.0",
+      "transformers": "5.17.0",
+      "peft": "0.21.0"
+    },
+    "gpu": "NVIDIA A100-SXM4-80GB",
+    "gpu_memory_bytes": 85094825984
+  },
+  "implementation": {
+    "trainer_sha256": "9dc1279fc4c725bd45475a5c33eb8b49ab31673ab85ee1f72fc23b4b78accd70",
+    "uv_lock_sha256": "fb43de38bff10ccc91c11db31ebe6bfc7812c97def91243345e856887e7230cd",
+    "s1_sources": {
+      "__init__.py": "c9c7ba0ea4cc81609fcf1f0ff2a853243a173a994257e0b9dd19be1a2e6dd52e",
+      "api.py": "31c46050761d6000f80087ac0c4682a4ce37a2aa9f6861c8f32d617f1d53bf8a",
+      "backends.py": "156c4eac3b1a1a9f87325642f94f004beef46ee3f6dc6f5cfdee60d70e14e9d4",
+      "benchmark.py": "4aef45f3d1607821d5041de5c972d6c586c61c4047373376bee028631739ed18",
+      "checkpoint.py": "d26007c4e1cf691d041549fac4440dbdc2d77ee6b2376a62fc06bde632fa3ef6",
+      "cli.py": "f50d4d984ceed1527597fc5243e030266023794276c2f19aa45e5b3d764b6dee",
+      "contracts.py": "24c24c3ded9c35bfd263a4488bf88916a8960fa0b79283ccedbac232983f8a0a",
+      "data_real.py": "33e4c09f7c4519edef2661c1332cbf0cf1c91df7bbebc313227157690533bb49",
+      "data_synth.py": "d364c7a24e42c687d1c388868939d201bddfc9bcf81ccefbb336eba3b9ff7afa",
+      "demo_page.py": "228d842a83d28917d735c04122b8b81f8269ee60227ab470bb54752d1720fd56",
+      "demo_pages2.py": "b4c7433c4c5c96217e6555ad6db74e2a3b6a7ce8ab62b0be0fa0c39a13f8d605",
+      "demo_pages3.py": "87f3ae5e1b6f5510a0f579fe339eeab906db5688ee044a3c25d1ed745c15a095",
+      "demo_presets.py": "578c782c595fa49443440e42c2555ad09ec8dbea2151951f8b9314696250d151",
+      "demo_race.py": "beed0f607adbf787ff9ace4d3305e36a42144273d4881591b5bcc85375b58368",
+      "doom_sim.py": "b189a2e1501286c9143f795cd06cd8023c45f512ebd8f9c9bd1a152142546de2",
+      "engine.py": "38c236e53c31cd9e2299967f0d61874760a2fa0fe752ff4dd1b11d4b18e42ec5",
+      "errors.py": "e5ad1d9b7e700f07a704d74d3e4ade7156c7a9eaad304d3fe4296bad0dc8c997",
+      "evaluation/__init__.py": "127cf68d534aa63995896f51d47ff5015c1d8fcb3563914752aa130f5ff25f51",
+      "evaluation/adapters.py": "6898fb6f3bda0c2822a5ff5dce5e2ff85901625b227c1ec98c731092bb4dc3f0",
+      "evaluation/artifacts.py": "dd72c4aeb68de32cf5a58db81eac259422c30d46a09dbbda081d109418df6ec5",
+      "evaluation/baselines.py": "837a9ff84630ce90d1673459cb0f957535533ef3ce44ef8aab0abf8614e9b02d",
+      "evaluation/calibration.py": "73937b8f82479c8c919c1568e9174498e83f5413ec2b260e2abbb832b758aca1",
+      "evaluation/checkpoints.py": "54e0a9cb08689bd1e3b5c822baef62ef102acce1c6547c75850ecd7c7f55aaf0",
+      "evaluation/comparison.py": "5063eb8b5a3f80ec47421a71a25ee7a3e72822dc53da3a557e7cc53a9c491e2b",
+      "evaluation/contracts.py": "32800c272fcc9e32f62a430c3191f0a1f4ed538fec5ab47822f73f9635552ba4",
+      "evaluation/datasets.py": "4ad11baf145443441b4c726efc32c484681edcbe8621a657c9756ca98d3ecbf8",
+      "evaluation/experiments.py": "b1d8932fb3a5273ca68da93ab2b5a336d56c230852af7e90051eb8aa320e9ddf",
+      "evaluation/gates.py": "c6a70fa18c916c7871f51d5f1610239c43c86ec492437ad6b5be922a8c7d2087",
+      "evaluation/gemma.py": "6379989aa36857709860711a6c17ad2140cb17419c097ecf2f85ca66501c2025",
+      "evaluation/importing.py": "8363a6c57093a5c428b2603bd6f322ead992fd6d00daebe73403503f597724ad",
+      "evaluation/integrity.py": "9cbdf5d7cf95f7879918ed451178b2bbfbe547c9990541a14e9347b41c0e9254",
+      "evaluation/loadgen.py": "1cd4ff55c5bfbc52191158668ba7e22c62028c5b8c82ff2294bb27283769b525",
+      "evaluation/local_competitors.py": "2c0e81ac596c4de56fa53539b0a243d4a62f29260e7eb88778b76a14270379a0",
+      "evaluation/metrics.py": "f15a8aed6c5b47ecd2b3d872a23df381f2ccd44b730df79870052d3e72065a5f",
+      "evaluation/multimodal.py": "5528319227dda4d4b2652d0abbfc27634b4f97dc172affe228d5aac62fa6dd40",
+      "evaluation/planning.py": "13ab44b0da9cb9e799ca5ddd2382fbd0bfa1f074f9fa6a4b572eed24e3128ab6",
+      "evaluation/providers.py": "94890151fe3e9b02a4677af5cfc5aad3959ba6c31675c2dda689fb0c5a3fd025",
+      "evaluation/registry.py": "1e996388fbd57f312b90446f429f0a104d6609be6d059085c640f4699c8130bc",
+      "evaluation/reporting.py": "f523fe7ceb3d69621de1ac084ab7015756e5e10a1a7dec0126507e5362ded95a",
+      "evaluation/reports.py": "1f910ca0296852e73c330db900621f34eccb73de708a1aa67ff19574ed546e09",
+      "evaluation/responses.py": "e758340749f32e90d816fb8c7d35c845f6773a64de156eff0a5b86e9abcee3e9",
+      "evaluation/runner.py": "156222849efd53a6f49dd6566f732d8e51d2bc6ed6f394c955e00b9bbf031860",
+      "evaluation/statistics.py": "0b9372e103f94d5c37d119e57e2f821c3e2c006ff97c222cacb8d372665b2e45",
+      "evaluation/supervision.py": "588f088c911ac5c17712fa25bba44766ca28b3aba1e77221c5d51373e6fe6928",
+      "evaluation/training_curve.py": "58cd81d637ca3cf6a8197678b605cd3167d95fef7675208764df05834df77609",
+      "evaluation/workflow.py": "7fa074dad866657ac803930715715703f7ba4a849faa5307f146eb4ab60468c7",
+      "metrics.py": "a75b865f707218ce8c2a18f89770397bf026e488e7f40b1dc528aa0b138143c8",
+      "modal_common.py": "1eb852d6f6da87a22f659710b3bc93c26c46be41608426df076214368eff573c",
+      "profiling.py": "4bfbcf641f81ee2ff3746ed89c136ba05b9ee87ebbec51ff70913feb0161f1c0",
+      "quantization.py": "c86789352372b0a4500090c012b0777db4de85caa32764d8cd904da85d4a9317",
+      "resources.py": "47e05dfa91980ae1e7a0b3f725db5847fc81a1296c4f75d39477696b0ee2c33f",
+      "runtime.py": "8f6103c600f73b64adc8186cf0c081475e69e891eb1d3d7e89c36c2e5417abda",
+      "schema.py": "995cac528f3b5579dd7d9a12146fc69c335853e62e5063b1a5471645c12242d2",
+      "training.py": "bcfe70c0c775af4f46bd61149858cebcfc642b8f9fd9e4349f9997c66fa42c65",
+      "unified.py": "77cce3c93745544e057204841e0185f97dc8b5920717a26768e7c8c4c4fbd25c"
+    },
+    "packages": {
+      "torch": "2.8.0",
+      "transformers": "5.17.0",
+      "peft": "0.21.0"
+    }
+  }
+}

@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "status": "verified",
+  "started_at": "2026-10-04T11:19:42.572213+00:00",
+  "scope": "Isolated CPU compilation of exact minimal model-card native recipe; no GPU inference, network fetch, model copy or original build mutation",
+  "directory": "artifacts/gguf-clean-reproduce",
+  "llama_cpp_revision": "5fc4f3c8c7103ffd0b7ff5ee4855bcc78a3ed5cd",
+  "source_repository_head_at_start": "bcf829acc111fd8054987b1519b8181835f1dfed",
+  "source_files": [
+    {
+      "path": "tools/gguf/s1_gguf.cpp",
+      "sha256": "80f221df83b204185a7ae5111b75a5d1fdab8b9a95be14a05dc63878dbc2adea",
+      "size_bytes": 16219
+    },
+    {
+      "path": "tools/gguf/CMakeLists.txt",
+      "sha256": "76b186db95eb7e4899bdf0901ccbcf6a540bdfd2bba6e206903ce46255956fff",
+      "size_bytes": 1749
+    }
+  ],
+  "platform": {
+    "system": "Darwin",
+    "release": "27.0.0",
+    "machine": "arm64",
+    "cmake": "cmake version 4.4.3",
+    "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin27.0.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "clone",
+        "--shared",
+        "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/export-tools/llama.cpp",
+        "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/gguf-clean-reproduce/llama.cpp"
+      ],
+      "started_at": "2026-10-04T11:19:42.636209+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.0067224160011392
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-C",
+        "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/gguf-clean-reproduce/llama.cpp",
+        "checkout",
+        "--detach",
+        "5fc4f3c8c7103ffd0b7ff5ee4855bcc78a3ed5cd"
+      ],
+      "started_at": "2026-10-04T11:19:43.643435+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.3628176670172252
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/cmake",
+        "-S",
+        "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/gguf-clean-reproduce/llama.cpp",
+        "-B",
+        "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/gguf-clean-reproduce/llama.cpp/build",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DBUILD_SHARED_LIBS=ON",
+        "-DGGML_METAL=ON",
+        "-DLLAMA_BUILD_COMMON=OFF",
+        "-DLLAMA_BUILD_TESTS=OFF",
+        "-DLLAMA_BUILD_EXAMPLES=OFF",
+        "-DLLAMA_BUILD_TOOLS=OFF",
+        "-DLLAMA_BUILD_MTMD=ON"
+      ],
+      "started_at": "2026-10-04T11:19:44.006729+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.459578125010012
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/cmake",
+        "--build",
+        "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/gguf-clean-reproduce/llama.cpp/build",
+        "--target",
+        "llama",
+        "mtmd",
+        "-j",
+        "4"
+      ],
+      "started_at": "2026-10-04T11:19:49.466994+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 45.36334362500929
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/cmake",
+        "-S",
+        "/Users/knowlet/Gemma-4-12B-Unified-System-One/tools/gguf",
+        "-B",
+        "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/gguf-clean-reproduce/runtime",
+        "-DLLAMA_CPP_DIR=/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/gguf-clean-reproduce/llama.cpp"
+      ],
+      "started_at": "2026-10-04T11:20:34.831310+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.4269792080158368
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/cmake",
+        "--build",
+        "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/gguf-clean-reproduce/runtime",
+        "-j",
+        "4"
+      ],
+      "started_at": "2026-10-04T11:20:35.258884+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.4126155420090072
+    }
+  ],
+  "log_path": "artifacts/release/gguf-build-reproduction.log",
+  "configured_flags": {
+    "CMAKE_BUILD_TYPE": "Release",
+    "BUILD_SHARED_LIBS": "ON",
+    "GGML_METAL": "ON",
+    "LLAMA_BUILD_COMMON": "OFF",
+    "LLAMA_BUILD_TESTS": "OFF",
+    "LLAMA_BUILD_EXAMPLES": "OFF",
+    "LLAMA_BUILD_TOOLS": "OFF",
+    "LLAMA_BUILD_MTMD": "ON",
+    "CMAKE_C_COMPILER": "/usr/bin/cc",
+    "CMAKE_CXX_COMPILER": "/usr/bin/c++",
+    "CMAKE_GENERATOR": "Unix Makefiles"
+  },
+  "outputs": [
+    {
+      "path": "artifacts/gguf-clean-reproduce/runtime/bin/s1-gguf",
+      "size_bytes": 1243720,
+      "sha256": "4dc67fd8decf5298865ab7b7aaf075e4a9271b9bb1b2b150bf0e88df82e2b57c"
+    },
+    {
+      "path": "artifacts/gguf-clean-reproduce/llama.cpp/build/bin/libggml-base.0.25.3.dylib",
+      "size_bytes": 736408,
+      "sha256": "3e7740334804821e2e24861597ec3594c958ca6fe09acc14b2bbce44e7547976"
+    },
+    {
+      "path": "artifacts/gguf-clean-reproduce/llama.cpp/build/bin/libggml-blas.0.25.3.dylib",
+      "size_bytes": 58776,
+      "sha256": "40975effa45ed1e4da35487563130763008e810f434018bb76ac9dcaa4b08207"
+    },
+    {
+      "path": "artifacts/gguf-clean-reproduce/llama.cpp/build/bin/libggml-cpu.0.25.3.dylib",
+      "size_bytes": 990672,
+      "sha256": "bb4e8fca9b43da30c93bd343cf1594fe22b78f474508c34b41af9d33bc7e42a5"
+    },
+    {
+      "path": "artifacts/gguf-clean-reproduce/llama.cpp/build/bin/libggml-metal.0.25.3.dylib",
+      "size_bytes": 5289464,
+      "sha256": "c0df6405b95b0046ab0d256216574d94c4264bb49e6682f9308af3d758f69124"
+    },
+    {
+      "path": "artifacts/gguf-clean-reproduce/llama.cpp/build/bin/libggml.0.25.3.dylib",
+      "size_bytes": 60224,
+      "sha256": "fd49cc6c654dc3955dda5d83a80e4307a6249341a6ec3c63f31b873ed9f685e6"
+    },
+    {
+      "path": "artifacts/gguf-clean-reproduce/llama.cpp/build/bin/libllama.0.5.0.dylib",
+      "size_bytes": 3338640,
+      "sha256": "4d5935ccb0097bb180a2584985ddac6d0ee3182cf2b5fd488e7d46ffe0be1369"
+    },
+    {
+      "path": "artifacts/gguf-clean-reproduce/llama.cpp/build/bin/libmtmd.0.5.0.dylib",
+      "size_bytes": 1390128,
+      "sha256": "dafba55918623eb7a0e990361c7be2f3dcabc64a357bad6fe7cf62d6f4f93895"
+    }
+  ],
+  "source_repository_head_at_end": "bcf829acc111fd8054987b1519b8181835f1dfed",
+  "isolated_clone_pristine": true,
+  "no_inference_executed": true,
+  "completed_at": "2026-10-04T11:20:36.725271+00:00",
+  "elapsed_seconds": 54.08914854199975,
+  "log_sha256": "0025cf65ce71c1dbee5952f5258ba77511a523b191af4cbebd0cb1c5c6fb763f",
+  "binary_help_check": {
+    "argv": [
+      "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/gguf-clean-reproduce/runtime/bin/s1-gguf",
+      "--help"
+    ],
+    "exit_code": 0,
+    "stdout": "s1-gguf --model FILE --mmproj FILE [--ctx-size 16384 --batch-size 8192 --gpu-layers 99 --threads 8 --image-max-tokens 280]",
+    "stderr": "",
+    "model_or_gpu_inference": false
+  },
+  "dynamic_library_linkage": {
+    "exit_code": 0,
+    "output": "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/gguf-clean-reproduce/runtime/bin/s1-gguf:\n\t@rpath/libllama.0.dylib (compatibility version 0.0.0, current version 0.0.0)\n\t@rpath/libmtmd.0.dylib (compatibility version 0.0.0, current version 0.0.0)\n\t@rpath/libggml.0.dylib (compatibility version 0.0.0, current version 0.25.3)\n\t@rpath/libggml-base.0.dylib (compatibility version 0.0.0, current version 0.25.3)\n\t/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 2200.27.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)"
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "scope": "Functional boundary checks; no accuracy or temperature tuning",
+  "source_git_revision": "18ecf7bcc92cde91d3a4bbfc92a178b075061605",
+  "source_files": [
+    {
+      "path": "scripts/gguf_adapter.py",
+      "sha256": "bc07ac9c1b6c3c6ed8bbe8fbacfc5049b03162339073128ded2154e1c9d7a003",
+      "size_bytes": 17242
+    },
+    {
+      "path": "tools/gguf/s1_gguf.cpp",
+      "sha256": "80f221df83b204185a7ae5111b75a5d1fdab8b9a95be14a05dc63878dbc2adea",
+      "size_bytes": 16219
+    },
+    {
+      "path": "tools/gguf/CMakeLists.txt",
+      "sha256": "76b186db95eb7e4899bdf0901ccbcf6a540bdfd2bba6e206903ce46255956fff",
+      "size_bytes": 1749
+    },
+    {
+      "path": "tests/test_gguf_adapter.py",
+      "sha256": "5a19ca9eb50926f8b7dbd456fa23b323c9e8c057a0c1a93b3c67f28c78edcbf2",
+      "size_bytes": 9117
+    },
+    {
+      "path": "artifacts/gguf-runtime/bin/s1-gguf",
+      "sha256": "3201968ccdc7ad1ea6fa1ae926e050e9b4af300735885ab365d14c8422b3388e",
+      "size_bytes": 1243720
+    },
+    {
+      "path": "artifacts/exports/s1-boolq-gguf/conversion-manifest.json",
+      "sha256": "b9e732ad92d6c9bef37952a888eb7d03262cfd217c7ce592f60c45907467268a",
+      "size_bytes": 4060
+    },
+    {
+      "path": "artifacts/release/datasets/calibration.jsonl",
+      "sha256": "fb1c6a301bd1c551d0a6a4b4a478d264cf4db4099266f0e06801a44260d7ee7d",
+      "size_bytes": 259893
+    },
+    {
+      "path": "artifacts/release/datasets/test.jsonl",
+      "sha256": "a36df8f953cdb856b64274eb482f9877b49bdd4c1d2fce1c9b1f4da43828f044",
+      "size_bytes": 273569
+    }
+  ],
+  "input_path": "artifacts/release/gguf-boundary-smoke-inputs.jsonl",
+  "input_sha256": "081a5c38506c63132b49f96fcfba87fccffee8f361723da42c959982068e8c68",
+  "cases": [
+    {
+      "case_id": "boolq-validation-1324",
+      "token_count": 139,
+      "slots": [
+        138
+      ],
+      "token_source_sha256": "f923dea5126d0c88da05e5535c1841d6d95d8dfcbf2f92e9f0a7c4d211b1700f"
+    },
+    {
+      "case_id": "boolq-validation-3154",
+      "token_count": 1299,
+      "slots": [
+        1298
+      ],
+      "token_source_sha256": "b369db78e6b97272b557c997f6b1888dd1a5c4d5a97195cb61063f725dcd1516"
+    },
+    {
+      "case_id": "cross-batch-full",
+      "token_count": 8481,
+      "slots": [
+        48,
+        8480
+      ],
+      "token_source_sha256": "a1a1d1cc04b3b8cdc3934b774862d8655ef4ed2abeed7aa667934e0fb016c2f5"
+    },
+    {
+      "case_id": "cross-batch-prefix",
+      "token_count": 49,
+      "slots": [
+        48
+      ],
+      "token_source_sha256": "0bb378669bb21c39eb731df41ce1e8ade0e84be6fdd7b332c2b05f03784c1d65"
+    }
+  ],
+  "prefix_identity_verified": true,
+  "batch_size": 8192,
+  "status": "passed",
+  "output_path": "artifacts/release/gguf-boundary-smoke-output.jsonl",
+  "output_sha256": "c8d51304ffa084adcc2f00da7786033e479fd450b311f3850089eaf8fe15e359",
+  "log_sha256": "bcb9a52511a0a477d308738f1942ed4749273b1701f4156d50eeca1ebecf8812",
+  "first_slot_comparison": {
+    "full_first_slot_logits": [
+      18.977399826049805,
+      26.949125289916992
+    ],
+    "identical_prefix_first_slot_logits": [
+      18.977399826049805,
+      26.949125289916992
+    ],
+    "absolute_differences": [
+      0.0,
+      0.0
+    ],
+    "max_absolute_difference": 0.0,
+    "same_argmax": true,
+    "full_decode_calls": 2,
+    "prefix_decode_calls": 1
+  },
+  "cases_completed": [
+    {
+      "case_id": "boolq-validation-1324",
+      "status": "ok",
+      "token_count": 139,
+      "slots": [
+        138
+      ],
+      "decode_calls": 1,
+      "latency_ms": 18474.463291990105
+    },
+    {
+      "case_id": "boolq-validation-3154",
+      "status": "ok",
+      "token_count": 1299,
+      "slots": [
+        1298
+      ],
+      "decode_calls": 1,
+      "latency_ms": 8662.48137500952
+    },
+    {
+      "case_id": "cross-batch-full",
+      "status": "ok",
+      "token_count": 8481,
+      "slots": [
+        48,
+        8480
+      ],
+      "decode_calls": 2,
+      "latency_ms": 61922.38370797713
+    },
+    {
+      "case_id": "cross-batch-prefix",
+      "status": "ok",
+      "token_count": 49,
+      "slots": [
+        48
+      ],
+      "decode_calls": 1,
+      "latency_ms": 372.1537920064293
+    }
+  ]
+}

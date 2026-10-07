@@ -14,17 +14,32 @@ from .contracts import DecisionRequest
 
 def make_backend(args):
     if args.backend != "gemma" and (
-        args.quantization != "none" or args.adapter_path or args.precision
+        args.quantization != "none"
+        or args.adapter_path
+        or args.precision is not None
+        or args.dtype is not None
+        or args.attn_implementation is not None
     ):
-        raise ValueError("--quantization, --adapter-path and --precision require --backend gemma")
+        raise ValueError(
+            "--quantization, --adapter-path, --precision, --dtype and --attn-implementation "
+            "require --backend gemma"
+        )
     if args.backend == "uniform":
         return UniformBackend()
     if args.backend == "gemma":
+        if args.precision is not None and args.dtype not in (None, "auto", args.precision):
+            raise ValueError("--precision and --dtype must agree when both are specified")
         if args.quantization != "none" and (
-            (args.device is not None and not args.device.startswith("cuda"))
+            (args.device not in (None, "auto") and not args.device.startswith("cuda"))
             or args.precision == "float32"
+            or args.dtype in ("float32", "float16")
         ):
             raise ValueError("--quantization int8/nf4 requires CUDA and bfloat16 precision")
+        runtime_options = {}
+        if args.dtype is not None:
+            runtime_options["dtype"] = args.dtype
+        if args.attn_implementation is not None:
+            runtime_options["attn_implementation"] = args.attn_implementation
         return GemmaBackend(
             args.model,
             revision=args.revision,
@@ -32,6 +47,7 @@ def make_backend(args):
             precision=args.precision,
             quantization=args.quantization,
             adapter_path=str(args.adapter_path) if args.adapter_path else None,
+            **runtime_options,
         )
     if args.backend == "laya":
         return LayaBackend(
@@ -59,11 +75,11 @@ def main(argv=None):
         sub.add_argument("--backend", choices=["gemma", "laya", "http", "uniform"], default="gemma")
         sub.add_argument("--model")
         sub.add_argument("--revision")
-        sub.add_argument("--device")
+        sub.add_argument("--device", help="Torch device; default: CUDA, MPS, then CPU")
         sub.add_argument(
             "--precision",
             choices=["float32", "bfloat16"],
-            help="Gemma floating precision; defaults to BF16 on CUDA, FP32 on CPU",
+            help="Legacy Gemma precision selector; use --dtype for MPS or FP16",
         )
         sub.add_argument(
             "--quantization",
@@ -73,6 +89,16 @@ def main(argv=None):
         )
         sub.add_argument(
             "--adapter-path", type=Path, help="existing Gemma PEFT decision adapter directory"
+        )
+        sub.add_argument(
+            "--dtype",
+            choices=["auto", "float32", "float16", "bfloat16"],
+            help="Gemma weight dtype; auto selects precision for the device and OS",
+        )
+        sub.add_argument(
+            "--attn-implementation",
+            choices=["eager", "sdpa"],
+            help="Gemma attention implementation; default: Transformers selection",
         )
         sub.add_argument("--subfolder")
         sub.add_argument("--max-len", type=int, default=512)
@@ -195,7 +221,11 @@ def main(argv=None):
     train.add_argument("--output", type=Path, required=True)
     train.add_argument("--model", default="google/gemma-4-12B-it")
     train.add_argument("--revision")
-    train.add_argument("--device")
+    train.add_argument("--device", help="Torch device; default: CUDA, MPS, then CPU")
+    train.add_argument(
+        "--dtype", choices=["auto", "float32", "float16", "bfloat16"], default="auto"
+    )
+    train.add_argument("--attn-implementation", choices=["eager", "sdpa"])
     train.add_argument("--steps", type=int, default=100)
     train.add_argument("--seed", type=int, default=0)
     train.add_argument("--brier-weight", type=float, default=0.1)
@@ -398,6 +428,8 @@ def main(argv=None):
                 args.model,
                 revision=args.revision,
                 device=args.device,
+                dtype=args.dtype,
+                attn_implementation=args.attn_implementation,
                 lora={
                     "r": 8,
                     "lora_alpha": 16,
