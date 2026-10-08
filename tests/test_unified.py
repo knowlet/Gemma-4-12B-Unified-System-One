@@ -244,6 +244,133 @@ def test_bfloat16_softcap_preserves_native_tie_and_mask(softcap):
     assert actual.argmax(-1).tolist() == expected.argmax(-1).tolist()
 
 
+@pytest.mark.parametrize("modality", ["text", "image", "audio", "mixed"])
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+def test_candidate_cache_reuses_rows_with_exact_inference_results(
+    model, decision_request, dtype, modality
+):
+    model.lm.to(dtype=dtype)
+    if modality in ("image", "mixed"):
+        buffer = io.BytesIO()
+        Image.new("RGB", (4, 4), "red").save(buffer, format="PNG")
+        decision_request.media.append(ImageInput(data=base64.b64encode(buffer.getvalue()).decode()))
+    if modality in ("audio", "mixed"):
+        decision_request.media.append(AudioInput(samples=[0.1] * 16))
+    reference = model.predict(decision_request)["answers"]
+    assert model._candidate_cache is None
+    model.enable_candidate_cache()
+    assert model.predict(decision_request)["answers"] == reference
+    first_rows = model._candidate_cache[1]
+    assert first_rows[0].requires_grad is False
+    assert model.predict(decision_request)["answers"] == reference
+    assert model._candidate_cache[1] is first_rows
+    model.enable_candidate_cache(False)
+    assert model._candidate_cache is None
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ["weight", "bias", "parameter", "head", "ids", "ids_tensor", "dtype", "storage"],
+)
+def test_candidate_cache_invalidates_changed_projection(model, decision_request, mutation):
+    head = torch.nn.Linear(32, 256, bias=True)
+    with torch.no_grad():
+        head.weight.copy_(model.head.weight)
+        head.bias.zero_()
+    model.head = head.eval()
+    model.enable_candidate_cache()
+    model.predict(decision_request)
+    original_rows = model._candidate_cache[1]
+    with torch.no_grad():
+        if mutation == "weight":
+            model.head.weight[model.letters[0]].add_(1)
+        elif mutation == "bias":
+            model.head.bias[model.letters[0]].add_(3)
+        elif mutation == "parameter":
+            model.head.weight = torch.nn.Parameter(model.head.weight.detach() + 1)
+        elif mutation == "head":
+            model.head = torch.nn.Linear(32, 256, bias=True).eval()
+        elif mutation == "ids":
+            model.letters[0] = 1
+        elif mutation == "ids_tensor":
+            model.letters = model.letters.roll(1)
+        elif mutation == "dtype":
+            model.head.to(dtype=torch.float64)
+        else:
+            model.head.weight.data = model.head.weight.detach().clone() + 1
+    with torch.inference_mode():
+        actual = model.logits(decision_request)
+        inputs, slots, counts = model.prepare(decision_request)
+        hidden = model.backbone(**inputs, use_cache=False, return_dict=True).last_hidden_state[
+            0, slots
+        ]
+        expected = project_candidates(hidden, model.head, model.letters, counts, model.softcap)
+    assert model._candidate_cache[1] is not original_rows
+    torch.testing.assert_close(actual, expected, atol=0, rtol=0)
+
+
+def test_candidate_cache_bypasses_training_and_preserves_head_gradients(model, decision_request):
+    model.enable_candidate_cache()
+    model.predict(decision_request)
+    model.lm.zero_grad(set_to_none=True)
+    logits = model.logits(decision_request)
+    assert model._candidate_cache is None
+    logits[torch.isfinite(logits)].sum().backward()
+    assert model.head.weight.grad is not None
+    assert model.head.weight.grad[model.letters].abs().sum() > 0
+    model.predict(decision_request)
+    model.lm.train()
+    with torch.no_grad():
+        model.logits(decision_request)
+    assert model._candidate_cache is None
+
+
+def test_candidate_cache_does_not_persist_in_saved_checkpoint(model, decision_request, tmp_path):
+    model.enable_candidate_cache()
+    expected = model.predict(decision_request)["answers"]
+    model.save(tmp_path)
+    saved = Gemma4UnifiedForConditionalGeneration.from_pretrained(tmp_path)
+    restored = UnifiedDecisionModel.from_components(saved, Processor())
+    assert restored.candidate_cache_enabled is False
+    assert restored._candidate_cache is None
+    assert restored.predict(decision_request)["answers"] == expected
+    explicit = UnifiedDecisionModel.from_components(saved, Processor(), enable_candidate_cache=True)
+    assert explicit.predict(decision_request)["answers"] == expected
+    assert explicit._candidate_cache is not None
+
+
+def test_candidate_cache_does_not_reuse_unversioned_or_peft_weights(model, decision_request):
+    model.enable_candidate_cache()
+    with torch.inference_mode():
+        model.head.weight = torch.nn.Parameter(model.head.weight.clone())
+    model.predict(decision_request)
+    assert model._candidate_cache is None
+    # A PEFT head may have adapter-specific behavior beyond the base weight's
+    # version counter. Opt-in caching does not add assumptions about those heads.
+    model.lm.peft_config = {}
+    model.head.weight = torch.nn.Parameter(model.head.weight.clone())
+    model.predict(decision_request)
+    assert model._candidate_cache is None
+
+
+def test_candidate_cache_explicit_refresh_after_untracked_write(model, decision_request):
+    model.enable_candidate_cache()
+    model.predict(decision_request)
+    rows = model._candidate_cache[1]
+    # PyTorch intentionally does not increment the Parameter's version for a
+    # .data write. The documented explicit refresh discards these stale rows.
+    model.head.weight.data[model.letters[0]].add_(2)
+    model.enable_candidate_cache()
+    assert model._candidate_cache is None
+    model.predict(decision_request)
+    assert model._candidate_cache[1] is not rows
+    torch.testing.assert_close(
+        model._candidate_cache[1][0], model.head.weight[model.letters], atol=0, rtol=0
+    )
+    with pytest.raises(ValueError, match="boolean"):
+        model.enable_candidate_cache("true")
+
+
 def test_context_rejection_and_temperature(model, decision_request):
     model.max_context = 5
     with pytest.raises(RequestValidationError, match="nothing was truncated"):
