@@ -244,7 +244,12 @@ class HTTPBackend:
 
 
 class GemmaBackend:
-    def __init__(self, model=None, **kwargs):
+    question_mode = "causal_multislot"
+
+    def __init__(self, model=None, *, question_mode="causal_multislot", **kwargs):
+        if question_mode not in ("causal_multislot", "independent"):
+            raise ValueError("question_mode must be causal_multislot or independent")
+        self.question_mode = question_mode
         from .unified import DEFAULT_MODEL, UnifiedDecisionModel
 
         self.model = UnifiedDecisionModel(model or DEFAULT_MODEL, **kwargs)
@@ -252,6 +257,7 @@ class GemmaBackend:
         self.metadata = {
             "model": self.model.name,
             "revision": self.model.revision,
+            "question_mode": self.question_mode,
             "temperature": self.model.temperature,
             "device": self.model.device,
             "dtype": self.model.dtype,
@@ -266,15 +272,23 @@ class GemmaBackend:
         }
 
     def predict(self, request):
+        if self.question_mode == "independent":
+            from .evaluation.gemma import predict_batch as _predict_batch
+
+            return _predict_batch(self.model, [request], independent=True, readout="candidate")[0]
         return self.model.predict(request)
 
     def predict_batch(self, requests):
-        """Batch complete multi-slot requests with one forward per shape bucket.
+        """Batch requests with the configured question context.
 
-        Falls back to per-request predict for backends without native batching.
-        Preserve the ordered question context used by predict; callers normalize
-        and validate each response.
+        Causal mode preserves the ordered question context used by predict and
+        its single-request path. Independent mode uses native per-question
+        prompts for every batch size; its inference errors propagate.
         """
+        if self.question_mode == "independent":
+            from .evaluation.gemma import predict_batch as _predict_batch
+
+            return _predict_batch(self.model, requests, independent=True, readout="candidate")
         try:
             from .evaluation.gemma import predict_batch as _predict_batch
         except Exception:

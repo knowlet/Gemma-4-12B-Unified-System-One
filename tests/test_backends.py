@@ -1,9 +1,12 @@
 import json
+import sys
+from types import SimpleNamespace
 
 import httpx
 import pytest
 
 from s1.backends import (
+    GemmaBackend,
     HTTPBackend,
     LayaBackend,
     UniformBackend,
@@ -17,6 +20,162 @@ from s1.errors import (
     BackendTransportError,
     RequestValidationError,
 )
+
+
+@pytest.fixture
+def gemma_runtime(monkeypatch):
+    calls = []
+    model = SimpleNamespace(
+        name="test/model",
+        revision="pinned",
+        temperature=2.5,
+        device="cpu",
+        dtype="float32",
+        attn_implementation="sdpa",
+        max_context=1024,
+        head=SimpleNamespace(weight=SimpleNamespace(dtype="torch.float32")),
+        quantization="none",
+        quantization_details={},
+    )
+
+    def load(name, **kwargs):
+        calls.append((name, kwargs))
+        return model
+
+    monkeypatch.setitem(
+        sys.modules,
+        "s1.unified",
+        SimpleNamespace(DEFAULT_MODEL="test/model", UnifiedDecisionModel=load),
+    )
+    monkeypatch.setattr("s1.backends.version", lambda package: "test")
+    return model, calls
+
+
+@pytest.mark.parametrize("mode", [None, "causal_multislot", "independent"])
+def test_gemma_question_mode_is_recorded_without_reaching_model_loader(gemma_runtime, mode):
+    model, calls = gemma_runtime
+    options = {} if mode is None else {"question_mode": mode}
+    backend = GemmaBackend(revision="pinned", temperature=None, **options)
+    assert calls == [("test/model", {"revision": "pinned", "temperature": None})]
+    assert backend.question_mode == (mode or "causal_multislot")
+    assert backend.metadata["question_mode"] == backend.question_mode
+    assert backend.metadata["temperature"] == model.temperature == 2.5
+
+
+def test_invalid_gemma_question_mode_fails_before_loading(gemma_runtime):
+    _, calls = gemma_runtime
+    with pytest.raises(ValueError, match="question_mode"):
+        GemmaBackend(question_mode="generated")
+    assert calls == []
+
+
+@pytest.mark.parametrize("entry", ["predict", "single_batch", "batch"])
+def test_gemma_independent_preserves_native_request_and_response(
+    monkeypatch, gemma_runtime, decision_request, entry
+):
+    model, _ = gemma_runtime
+    model.predict = lambda request: pytest.fail("independent mode must use native question prompts")
+    backend = GemmaBackend(question_mode="independent")
+    decision_request.media.append(AudioInput(samples=[0.1, 0.2]))
+    original = decision_request.model_dump()
+    requests = [decision_request]
+    if entry == "batch":
+        other = decision_request.model_copy(deep=True)
+        other.state = "another state"
+        other.questions.reverse()
+        requests.append(other)
+    responses = [UniformBackend().predict(request) for request in requests]
+    execution = {
+        "forward_calls": 1,
+        "batch_sizes": [sum(len(request.questions) for request in requests)],
+        "sequence_tokens": [7, 11, 13] * len(requests),
+        "scope": "whole_adapter_batch",
+        "readout": "candidate",
+        "independent_questions": True,
+    }
+    for response in responses:
+        response["execution"] = execution
+        response["answers"]["route"]["probabilities"] = {"billing": 0.125, "technical": 0.875}
+        response["answers"]["route"]["choice"] = "technical"
+    calls = []
+
+    def native_batch(actual_model, actual_requests, **kwargs):
+        calls.append((actual_model, actual_requests, kwargs))
+        return responses
+
+    monkeypatch.setitem(
+        sys.modules, "s1.evaluation.gemma", SimpleNamespace(predict_batch=native_batch)
+    )
+    if entry == "predict":
+        actual = backend.predict(decision_request)
+        assert actual is responses[0]
+    else:
+        actual = backend.predict_batch(requests)
+        assert actual is responses
+    assert len(calls) == 1
+    actual_model, actual_requests, options = calls[0]
+    assert actual_model is model
+    assert len(actual_requests) == len(requests)
+    assert all(actual is expected for actual, expected in zip(actual_requests, requests))
+    assert options == {"independent": True, "readout": "candidate"}
+    assert decision_request.model_dump() == original
+    assert model.temperature == 2.5
+
+
+@pytest.mark.parametrize("mode", [None, "causal_multislot"])
+def test_gemma_default_keeps_serial_single_request_and_causal_batch(
+    monkeypatch, gemma_runtime, decision_request, mode
+):
+    model, _ = gemma_runtime
+    response = UniformBackend().predict(decision_request)
+    serial = []
+    model.predict = lambda request: serial.append(request) or response
+    backend = GemmaBackend(**({"question_mode": mode} if mode else {}))
+    batches = []
+
+    def native_batch(actual_model, requests, **kwargs):
+        batches.append((actual_model, requests, kwargs))
+        return [response] * len(requests)
+
+    monkeypatch.setitem(
+        sys.modules, "s1.evaluation.gemma", SimpleNamespace(predict_batch=native_batch)
+    )
+    assert backend.predict(decision_request) is response
+    assert backend.predict_batch([decision_request]) == [response]
+    assert serial == [decision_request, decision_request]
+    assert batches == []
+    requests = [decision_request, decision_request.model_copy(deep=True)]
+    assert backend.predict_batch(requests) == [response, response]
+    assert batches == [(model, requests, {"independent": False, "readout": "candidate"})]
+    assert len(serial) == 2
+
+
+@pytest.mark.parametrize("entry", ["predict", "single_batch", "batch"])
+@pytest.mark.parametrize("failure_kind", ["import", "inference"])
+def test_gemma_independent_errors_do_not_fall_back_to_causal(
+    monkeypatch, gemma_runtime, decision_request, entry, failure_kind
+):
+    model, _ = gemma_runtime
+    model.predict = lambda request: pytest.fail("must not fall back to causal inference")
+    backend = GemmaBackend(question_mode="independent")
+    failure = RuntimeError("native inference failed")
+
+    def fail(*args, **kwargs):
+        raise failure
+
+    monkeypatch.setitem(
+        sys.modules,
+        "s1.evaluation.gemma",
+        None if failure_kind == "import" else SimpleNamespace(predict_batch=fail),
+    )
+    expected = ModuleNotFoundError if failure_kind == "import" else RuntimeError
+    with pytest.raises(expected) as caught:
+        if entry == "predict":
+            backend.predict(decision_request)
+        else:
+            backend.predict_batch([decision_request] * (2 if entry == "batch" else 1))
+    if failure_kind == "inference":
+        assert caught.value is failure
 
 
 @pytest.mark.parametrize("status", [301, 307, 400, 422, 429, 500, 503, 504])

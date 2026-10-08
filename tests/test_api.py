@@ -1,3 +1,7 @@
+import copy
+import sys
+from types import SimpleNamespace
+
 import httpx
 import pytest
 
@@ -5,7 +9,8 @@ pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient
 
 from s1.api import create_app
-from s1.backends import HTTPBackend, UniformBackend, UnsupportedRequest
+from s1.backends import GemmaBackend, HTTPBackend, UniformBackend, UnsupportedRequest
+from s1.contracts import AudioInput
 from s1.errors import (
     BackendResponseError,
     BackendTimeoutError,
@@ -276,3 +281,83 @@ def test_complete_batch_preserves_each_request_answers(request_data, endpoint, n
     assert len(response.json()) == 2
     assert set(response.json()[0]["answers"]) == set(request_data["questions"])
     assert set(response.json()[1]["answers"]) == {"approve"}
+
+
+@pytest.mark.parametrize(
+    "endpoint", ["/decide", "/v1/systemone", "/decide/batch", "/v1/systemone/batch"]
+)
+@pytest.mark.parametrize("mode", [None, "independent"])
+def test_gemma_api_question_mode_preserves_probabilities_media_and_execution(
+    monkeypatch, request_data, endpoint, mode
+):
+    request_data["media"] = [AudioInput(samples=[0.1, 0.2]).model_dump()]
+    requests = [request_data]
+    batched = endpoint.endswith("/batch")
+    if batched:
+        other = copy.deepcopy(request_data)
+        other["state"] = "another request"
+        other["questions"] = dict(reversed(list(other["questions"].items())))
+        requests.append(other)
+    calls = []
+    execution = {
+        "forward_calls": 1,
+        "batch_sizes": [3 * len(requests)],
+        "sequence_tokens": [7, 11, 13] * len(requests),
+        "scope": "whole_adapter_batch",
+        "readout": "candidate",
+        "independent_questions": True,
+    }
+
+    def answer(request):
+        result = UniformBackend().predict(request)
+        result["answers"]["route"].update(
+            choice="technical", probabilities={"billing": 0.125, "technical": 0.875}
+        )
+        return result
+
+    def serial(request):
+        calls.append(("serial", [request]))
+        return answer(request)
+
+    def native_batch(model, actual_requests, **kwargs):
+        assert model is backend.model
+        assert kwargs == {"independent": True, "readout": "candidate"}
+        calls.append(("native", actual_requests))
+        return [{**answer(request), "execution": execution} for request in actual_requests]
+
+    monkeypatch.setitem(
+        sys.modules, "s1.evaluation.gemma", SimpleNamespace(predict_batch=native_batch)
+    )
+    backend = GemmaBackend.__new__(GemmaBackend)
+    backend.name = "gemma:test"
+    backend.model = SimpleNamespace(predict=serial)
+    if mode is not None:
+        backend.question_mode = mode
+    # The default batch route calls the causal native helper only for 2+ items.
+    # Use one request here to assert the unchanged serial default over HTTP.
+    if batched and mode is None:
+        requests = requests[:1]
+    with TestClient(create_app(backend)) as client:
+        response = client.post(endpoint, json=requests if batched else requests[0])
+    assert response.status_code == 200
+    results = response.json() if batched else [response.json()]
+    assert len(results) == len(requests)
+    for expected, result in zip(requests, results):
+        assert list(result["answers"]) == list(expected["questions"])
+        assert result["answers"]["route"]["probabilities"] == {
+            "billing": 0.125,
+            "technical": 0.875,
+        }
+        assert result["answers"]["route"]["choice"] == "technical"
+        assert result["answers"]["refund"]["probabilities"] == {"false": 0.5, "true": 0.5}
+        assert result["answers"]["urgency"]["probabilities"] == {"10": 0.5, "20": 0.5}
+        if mode == "independent":
+            assert result["execution"] == execution
+        else:
+            assert "execution" not in result
+    assert [kind for kind, _ in calls] == ["native" if mode == "independent" else "serial"]
+    actual_requests = calls[0][1]
+    assert [request.state for request in actual_requests] == [
+        request["state"] for request in requests
+    ]
+    assert all(request.media[0].samples == [0.1, 0.2] for request in actual_requests)
