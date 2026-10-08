@@ -11,8 +11,12 @@ import argparse
 import hashlib
 import json
 import math
+import random
 import re
+import subprocess
 import sys
+import tempfile
+import zipfile
 from collections import Counter
 from pathlib import Path
 
@@ -20,18 +24,23 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL_SHA256 = "3a8dcceba9fbc0c7ce31bddbb85c0d10acdfa855ddf237f4d5e81982ec6a926d"
+PUBLIC_REPLAY_EXECUTION = "raw-logit calibration replay; recorded durations are CPU replay only, NOT model inference latency"
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from run_jevbench_public import load_public  # noqa: E402
 from summarize_jevbench_campaign import (  # noqa: E402
+    COHERENCE_SETTINGS,
+    _bytes,
+    _freeze_coherence_source,
     _metric_equal,
     audit_public,
     paired_accuracy,
     replay_coherence,
 )
 
-from s1.evaluation.datasets import load_cases  # noqa: E402
+from s1.contracts import DecisionRequest, answer_from_probabilities  # noqa: E402
+from s1.evaluation.datasets import fingerprint, load_cases, request_fingerprint  # noqa: E402
 from s1.evaluation.statistics import cluster_interval  # noqa: E402
 
 
@@ -173,9 +182,14 @@ def validate_soft_records(rows, cases, split):
     return observed
 
 
-def audit_synthetic(directory, calibration_cases, test_cases):
+def audit_synthetic(directory, calibration_cases, test_cases, *, receipt=None):
     root = Path(directory)
     cal, heldout = read(root / "calibration.json"), read(root / "heldout.json")
+    if receipt is not None:
+        require(
+            receipt["identity"].get("calibration") == cal["temperatures"],
+            "child identity/calibration file differ",
+        )
     validate_soft_records(cal["records"], calibration_cases, "calibration")
     rows = heldout["records"]
     validate_soft_records(rows, test_cases, "test")
@@ -473,10 +487,22 @@ def paired_native(reference, candidate, *, seed=42, samples=2000):
     }
 
 
-def audit_coherence(path, cache_root, *, source_root=None, backend=None):
+def audit_coherence(path, cache_root, *, source_root=None, backend=None, receipt=None):
     report = read(path)
     scores, result = report["scores"], report["result"]
     require(backend is None or result["backend"] == backend, "coherence backend identity differs")
+    if receipt is not None:
+        require(
+            receipt.get("coherence")
+            == {
+                "overall": scores.get("overall"),
+                "interval": (scores.get("ci") or {}).get("overall"),
+                "dimensions": scores.get("pillars"),
+                "errors": result.get("errors"),
+                "scores": scores,
+            },
+            "child coherence receipt/report differ",
+        )
     checks = scores.get("checks", {})
     paths = sorted(Path(cache_root).glob("*.json"))
     hashes = {p.name: digest(p) for p in paths if p.is_file() and not p.is_symlink()}
@@ -551,9 +577,18 @@ def audit_coherence(path, cache_root, *, source_root=None, backend=None):
     }
 
 
-def coherence_effect(calibrated, unit):
+def coherence_effect(calibrated, unit, linkage=None):
     if not calibrated.get("complete") or not unit.get("complete"):
         return {"status": "inconclusive", "reason": "both complete coherence policies required"}
+    if (
+        not linkage
+        or linkage.get("status") != "verified_same_raw_logits"
+        or linkage.get("complete") is not True
+    ):
+        return {
+            "status": "inconclusive_calibration_linkage",
+            "reason": "same raw logits and both complete temperature transforms must be verified",
+        }
     require(set(calibrated["checks"]) == set(unit["checks"]), "coherence check plans differ")
     return {
         "status": "computed",
@@ -574,7 +609,30 @@ def coherence_effect(calibrated, unit):
     }
 
 
-def audit_public_profile(path, public_source):
+def audit_public_identity(result, receipt, policy, protocol):
+    """Bind a verified bundle to this child, permitting only fixed replay fields."""
+    identity = receipt["identity"]
+    if policy == "calibrated":
+        expected = identity
+    else:
+        require(policy in ("unit", "published_global"), "unknown public replay policy")
+        temperature = protocol["calibration"][f"{policy}_temperature"]
+        expected = {
+            **identity,
+            "variant": f"{identity['variant']}-{policy}",
+            "calibration": {kind: temperature for kind in ("choice", "noul", "score")},
+            "execution": PUBLIC_REPLAY_EXECUTION,
+        }
+    require(
+        result["manifest"]["identity"] == expected,
+        "child receipt/public manifest identity differs",
+    )
+    if policy == "calibrated":
+        require(receipt.get("public") == result["summary"], "child receipt/public summary differs")
+    return {"status": "verified_child_identity", "policy": policy}
+
+
+def audit_public_profile(path, public_source, *, receipt=None, policy="calibrated", protocol=None):
     if public_source is None:
         return {
             "status": "not_audited",
@@ -583,6 +641,9 @@ def audit_public_profile(path, public_source):
         }
     tasks, official, config = public_source
     result = audit_public(path, tasks, official, config)
+    identity_integrity = (
+        audit_public_identity(result, receipt, policy, protocol) if receipt is not None else None
+    )
     summary = result["summary"]
     require(
         summary.get("n_planned") == summary.get("n_attempted") == len(tasks),
@@ -599,6 +660,7 @@ def audit_public_profile(path, public_source):
     return {
         "status": "verified_official_raw",
         "complete": True,
+        "child_identity_integrity": identity_integrity,
         "summary": summary,
         "by_type": result["by_type"],
         "errors": errors,
@@ -608,6 +670,13 @@ def audit_public_profile(path, public_source):
         "records": result["records"],
         "manifest": result["manifest"],
         "raw_answers": result["raw_answers"],
+        "raw_requests": {
+            task.id: {
+                "state": task.state,
+                "questions": {"decision": official.base.build_question(task)},
+            }
+            for task in tasks
+        },
         "raw_runtime": {
             row["task_id"]: read(Path(path) / row["raw_path"])
             .get("response", {})
@@ -619,12 +688,138 @@ def audit_public_profile(path, public_source):
     }
 
 
+def verify_temperature_answers(request, raw_rows, answers, temperatures):
+    """Match every native field to the recorded logits, without any model call."""
+    import torch
+
+    require(
+        isinstance(raw_rows, list)
+        and [row.get("id") for row in raw_rows] == [q.id for q in request.questions]
+        and isinstance(answers, dict)
+        and set(answers) == {q.id for q in request.questions},
+        "raw-logit/answer full question population or order differs",
+    )
+    maximum = 0.0
+    for question, raw in zip(request.questions, raw_rows, strict=True):
+        require(
+            raw.get("labels") == question.labels(), "raw-logit ordered labels differ from request"
+        )
+        logits = np.asarray(raw.get("logits"), dtype=float)
+        require(
+            logits.ndim == 1
+            and len(logits) == len(question.labels())
+            and np.isfinite(logits).all(),
+            "raw-logit candidate values must be aligned and finite",
+        )
+        temperature = temperatures[question.type]
+        require(
+            type(temperature) in (int, float) and math.isfinite(temperature) and temperature > 0,
+            "positive finite type temperature required",
+        )
+        # The frozen Predictor constructs CPU FP32 tensors and softmax. Reproduce
+        # that arithmetic, allowing one FP32 epsilon across local torch versions.
+        transformed = torch.tensor(raw["logits"], dtype=torch.float32) / temperature
+        require(bool(torch.isfinite(transformed).all()), "nonfinite FP32 temperature transform")
+        expected = transformed.softmax(-1).tolist()
+        answer = answers[question.id]
+        actual = answer_probabilities(answer, question)
+        values = [actual[label] for label in question.labels()]
+        require(
+            answer == answer_from_probabilities(question, values),
+            "native answer fields differ from probabilities/request",
+        )
+        error = max(
+            abs(observed - predicted) for observed, predicted in zip(values, expected, strict=True)
+        )
+        maximum = max(maximum, error)
+        require(
+            error <= float(np.finfo(np.float32).eps),
+            "probabilities do not match type temperature/raw logits",
+        )
+    return {"questions": len(request.questions), "max_probability_error": maximum}
+
+
+def public_calibration_identity(native, receipt=None):
+    if not native.get("complete"):
+        return {
+            "status": "inconclusive",
+            "complete": False,
+            "reason": "audited public policy required",
+        }
+    records = native["records"]
+    require(
+        len(records) == 231 and len({r["task_id"] for r in records}) == 231,
+        "public calibration requires complete 231 task population",
+    )
+    calibration = native["manifest"]["identity"]["calibration"]
+    if receipt is not None:
+        require(
+            calibration == receipt["identity"]["calibration"],
+            "native public/child fitted temperatures differ",
+        )
+    require(
+        set(calibration) == {"choice", "noul", "score"},
+        "fitted temperature primitive population differs",
+    )
+    temperatures = {kind: value["temperature"] for kind, value in calibration.items()}
+    valid = {row["task_id"] for row in records if row.get("ok") is True}
+    require(
+        set(native["raw_runtime"]) == valid
+        and set(native["raw_requests"]) == {row["task_id"] for row in records}
+        and len(native["raw_answers"]) == 231,
+        "public calibration runtime/request/answer population differs",
+    )
+    count, maximum = 0, 0.0
+    for index, row in enumerate(records):
+        if row.get("ok") is not True:
+            continue
+        task_id = row["task_id"]
+        request = DecisionRequest(**native["raw_requests"][task_id])
+        runtime = native["raw_runtime"][task_id]
+        require(
+            runtime.get("calibration_replay") is False
+            and runtime.get("forward_calls") == len(request.questions)
+            and runtime.get("sequential_independent_questions") is True,
+            "native public forward/replay declaration differs",
+        )
+        verified = verify_temperature_answers(
+            request, runtime.get("raw_logits"), native["raw_answers"][index], temperatures
+        )
+        count += 1
+        maximum = max(maximum, verified["max_probability_error"])
+    return {
+        "status": "verified_fitted_temperature" if count == 231 else "inconclusive_failed_answers",
+        "complete": count == 231,
+        "expected_tasks": 231,
+        "verified_tasks": count,
+        "failed_or_unmatched_tasks": 231 - count,
+        "temperatures": temperatures,
+        "max_probability_error": maximum,
+        "probability_absolute_tolerance": float(np.finfo(np.float32).eps),
+        "scope": "Complete native public answers, fitted type temperatures, full raw-logit question/label identities and derived answer fields; CPU FP32 reconstruction, no model call",
+    }
+
+
 def public_replay_identity(native, replay):
     if not native.get("complete") or not replay.get("complete"):
         return {"status": "inconclusive", "reason": "both audited public policies required"}
     require(
         [r["task_id"] for r in native["records"]] == [r["task_id"] for r in replay["records"]],
         "public replay task identity differs",
+    )
+    calibration = public_calibration_identity(native)
+    if calibration.get("complete") is not True:
+        return {
+            "status": "inconclusive_native_calibration",
+            "complete": False,
+            "native_calibration": calibration,
+        }
+    require(
+        set(replay["raw_runtime"])
+        == {row["task_id"] for row in replay["records"] if row.get("ok") is True}
+        and set(replay["raw_requests"]) == set(native["raw_requests"])
+        and len(replay["raw_answers"]) == 231,
+        "public replay runtime/request/answer population differs",
     )
     manifest = replay["manifest"]
     require(
@@ -646,26 +841,250 @@ def public_replay_identity(native, replay):
             second.get("calibration_replay") is True and second.get("forward_calls") == 0,
             "public replay unexpectedly invoked native model",
         )
-        for raw in second["raw_logits"]:
-            answer = replay["raw_answers"][index][raw["id"]]
-            t = manifest["identity"]["calibration"][answer["type"]]
-            values = np.asarray(raw["logits"], dtype=float) / t
-            values = np.exp(values - values.max())
-            values /= values.sum()
-            require(
-                set(answer["probabilities"]) == set(raw["labels"])
-                and all(
-                    math.isclose(answer["probabilities"][label], float(p), abs_tol=1e-6)
-                    for label, p in zip(raw["labels"], values, strict=True)
-                ),
-                "public replay probabilities do not match fixed temperature/raw logits",
-            )
+        require(
+            native["raw_requests"][task_id] == replay["raw_requests"][task_id],
+            "public replay changed request",
+        )
+        verify_temperature_answers(
+            DecisionRequest(**native["raw_requests"][task_id]),
+            second["raw_logits"],
+            replay["raw_answers"][index],
+            manifest["identity"]["calibration"],
+        )
         count += 1
     return {
         "status": "verified_same_raw_logits" if not failed else "inconclusive_failed_answers",
+        "complete": not failed,
         "n_tasks": count,
         "failed_or_unmatched_tasks": failed,
         "timing_scope": "CPU raw-logit replay; not GPU model inference latency",
+        "native_calibration": calibration,
+    }
+
+
+COHERENCE_LINKAGE_PLAN = r"""
+import hashlib, json, socket, sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import jevbench as jb
+def deny_network(*args, **kwargs):
+    raise RuntimeError("offline coherence linkage cannot use network")
+socket.create_connection = deny_network
+data = json.loads(Path(sys.argv[2]).read_text())
+requests, missing = [], set()
+def answer(state, questions):
+    blob = json.dumps({"b": data["backend"], "s": state, "q": questions, "r": 0},
+                      ensure_ascii=False, separators=(",", ":"))
+    filename = hashlib.sha256(blob.encode()).hexdigest() + ".json"
+    requests.append({"state": state, "questions": questions, "cache_file": filename})
+    if filename not in data["answers"]:
+        missing.add(filename)
+        raise RuntimeError("missing original cached answer: " + filename)
+    return data["answers"][filename]
+settings = data["settings"]
+report = jb.evaluate(jb.from_callable(answer, name=data["backend"]), suite="jevbench-mini",
+                     cache=":memory:", concurrency=1, progress=False,
+                     tolerance=settings["tolerance"], min_n=settings["min_n"],
+                     bootstrap=settings["bootstrap"])
+print(json.dumps({"requests": requests, "missing": sorted(missing),
+                  "errors": report.result.get("errors", [])}, ensure_ascii=False, allow_nan=False))
+"""
+
+
+def coherence_linkage_requests(report, cache, source_root):
+    require(report.get("settings") == COHERENCE_SETTINGS, "coherence linkage settings differ")
+    with tempfile.TemporaryDirectory(prefix="s1-temperature-linkage-") as temporary:
+        directory = Path(temporary)
+        source = _freeze_coherence_source(source_root, directory)
+        inputs = directory / "inputs.json"
+        inputs.write_bytes(
+            _bytes(
+                {
+                    "backend": report["result"]["backend"],
+                    "settings": report["settings"],
+                    "answers": cache,
+                }
+            )
+        )
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-I",
+                    "-c",
+                    COHERENCE_LINKAGE_PLAN,
+                    str(directory / "src"),
+                    str(inputs),
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=120,
+            )
+        except subprocess.SubprocessError as exc:
+            raise AuditError(
+                "offline coherence linkage request reconstruction did not complete"
+            ) from exc
+        require(
+            result.returncode == 0,
+            "offline coherence linkage request reconstruction failed: " + result.stderr[-1000:],
+        )
+        rebuilt = json.loads(result.stdout)
+    require(
+        not rebuilt["missing"] and not rebuilt["errors"],
+        "coherence linkage request reconstruction is incomplete",
+    )
+    return rebuilt["requests"], source
+
+
+def audit_coherence_linkage(directory, calibrated, unit, receipt, *, source_root=None):
+    root = Path(directory)
+    raw_file = root / "raw-logits.json"
+    if (
+        source_root is None
+        or not raw_file.is_file()
+        or raw_file.is_symlink()
+        or any(
+            policy.get("status") != "verified_raw_replay" or policy.get("complete") is not True
+            for policy in (calibrated, unit)
+        )
+    ):
+        return {
+            "status": "calibration_linkage_unverified",
+            "complete": False,
+            "expected_requests": 1248,
+            "reason": "pinned source, raw-logits.json and both complete official cache replays are required",
+            "scope": "No temperature attribution from saved policy scores alone",
+        }
+    reports = {
+        policy: read(root / filename)
+        for policy, filename in (
+            ("calibrated", "coherence-mini.json"),
+            ("unit", "coherence-unit.json"),
+        )
+    }
+    identity = receipt["identity"]
+    require(
+        reports["calibrated"]["result"]["backend"]
+        == f"{identity['variant']}@{identity['revision']}"
+        and reports["unit"]["result"]["backend"]
+        == f"{identity['variant']}-unit-replay@{identity['revision']}",
+        "coherence temperature linkage backend/child identity differs",
+    )
+    caches, cache_hashes = {}, {}
+    for policy, folder, audited in (
+        ("calibrated", "coherence-cache", calibrated),
+        ("unit", "coherence-cache-unit", unit),
+    ):
+        require(
+            digest(
+                root / ("coherence-mini.json" if policy == "calibrated" else "coherence-unit.json")
+            )
+            == audited["sha256"],
+            "coherence report changed since official replay",
+        )
+        paths = list((root / folder).iterdir())
+        require(
+            all(
+                path.is_file()
+                and not path.is_symlink()
+                and re.fullmatch(r"[0-9a-f]{64}\.json", path.name)
+                for path in paths
+            ),
+            "unsafe coherence linkage cache entry",
+        )
+        cache_hashes[policy] = {path.name: digest(path) for path in paths}
+        require(
+            cache_hashes[policy] == audited["raw_cache_sha256"],
+            "coherence cache changed since official replay",
+        )
+        caches[policy] = {path.name: read(path) for path in paths}
+        require(
+            len(caches[policy]) == 1248,
+            "coherence linkage requires each full 1248 cache population",
+        )
+    plan, source = coherence_linkage_requests(
+        reports["calibrated"], caches["calibrated"], source_root
+    )
+    require(len(plan) == 1248, "coherence linkage request plan population differs")
+    require(
+        hashlib.sha256(_bytes([row["cache_file"] for row in plan])).hexdigest()
+        == calibrated["replay"]["ordered_request_fingerprints_sha256"],
+        "coherence linkage request plan differs from official replay",
+    )
+    raw = read(raw_file)
+    require(
+        isinstance(raw, dict) and all(re.fullmatch(r"[0-9a-f]{64}", key) for key in raw),
+        "invalid raw-logits request inventory",
+    )
+    temperatures = {
+        kind: value["temperature"] for kind, value in receipt["identity"]["calibration"].items()
+    }
+    require(
+        set(temperatures) == {"choice", "noul", "score"},
+        "coherence fitted primitive temperatures differ",
+    )
+    files, raw_keys, questions, maximum = {"calibrated": [], "unit": []}, [], 0, 0.0
+    for row in plan:
+        request = DecisionRequest(state=row["state"], questions=row["questions"])
+        key = hashlib.sha256(request.model_dump_json().encode()).hexdigest()
+        require(key in raw, "coherence request lacks raw logits")
+        raw_keys.append(key)
+        for policy, temperature in (
+            ("calibrated", temperatures),
+            ("unit", {kind: 1.0 for kind in temperatures}),
+        ):
+            blob = json.dumps(
+                {
+                    "b": reports[policy]["result"]["backend"],
+                    "s": row["state"],
+                    "q": row["questions"],
+                    "r": 0,
+                },
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+            name = hashlib.sha256(blob.encode()).hexdigest() + ".json"
+            files[policy].append(name)
+            require(
+                name in caches[policy], "coherence policy lacks reconstructed request/cache key"
+            )
+            verified = verify_temperature_answers(
+                request, raw[key], caches[policy][name], temperature
+            )
+            maximum = max(maximum, verified["max_probability_error"])
+            if policy == "calibrated":
+                questions += verified["questions"]
+    require(len(set(raw_keys)) == 1248, "coherence native raw-logit request keys are not unique")
+    for policy, audited in (("calibrated", calibrated), ("unit", unit)):
+        require(
+            set(files[policy]) == set(caches[policy]),
+            "coherence linkage has missing/unexpected request population",
+        )
+        require(
+            hashlib.sha256(_bytes(files[policy])).hexdigest()
+            == audited["replay"]["ordered_request_fingerprints_sha256"],
+            "coherence policy request order differs from official replay",
+        )
+    return {
+        "status": "verified_same_raw_logits",
+        "complete": True,
+        "expected_requests": 1248,
+        "verified_requests_per_policy": 1248,
+        "verified_question_records_per_policy": questions,
+        "raw_logits_sha256": digest(raw_file),
+        "raw_logits_saved_requests": len(raw),
+        "used_raw_request_keys_sha256": hashlib.sha256(_bytes(raw_keys)).hexdigest(),
+        "source": source,
+        "request_plan_sha256": hashlib.sha256(_bytes(plan)).hexdigest(),
+        "cache_inventory_sha256": {
+            policy: hashlib.sha256(_bytes(hashes)).hexdigest()
+            for policy, hashes in cache_hashes.items()
+        },
+        "temperatures": {"calibrated": temperatures, "unit": {kind: 1.0 for kind in temperatures}},
+        "max_probability_error": maximum,
+        "probability_absolute_tolerance": float(np.finfo(np.float32).eps),
+        "scope": "Pinned official full request/cache plan and each native answer recomputed from the same recorded raw logits at fitted type-T or unit-T; CPU FP32 only, no model call. Saved raw-logits.json may include non-coherence requests",
     }
 
 
@@ -808,10 +1227,201 @@ def audit_identity(receipt, declaration, stage_result, protocol):
     }
 
 
+def training_data_identity(cases):
+    require(
+        len(cases) == 1024
+        and len({case.id for case in cases}) == 1024
+        and all(case.split == "train" for case in cases)
+        and sum(len(case.request.questions) for case in cases) == 1024,
+        "training reference must contain 1024 unique frozen train cases/questions",
+    )
+    return {
+        "cases": len(cases),
+        "question_records": 1024,
+        "dataset_sha256": fingerprint(cases),
+        "ordered_requests_sha256": hashlib.sha256(
+            json.dumps([request_fingerprint(case.request) for case in cases]).encode()
+        ).hexdigest(),
+        "type_counts": dict(Counter(q.type for case in cases for q in case.request.questions)),
+        "scope": "Reference cases loaded from the verified prospective synthetic manifest",
+    }
+
+
+def load_research_tensors(path, *, max_bytes):
+    """Inspect small torch.save research artifacts on CPU; never load base weights."""
+    import torch
+
+    path = Path(path)
+    require(
+        path.is_file() and not path.is_symlink() and 0 < path.stat().st_size <= max_bytes,
+        "research tensor file is missing, unsafe or exceeds the size limit",
+    )
+    # The frozen app uses modern torch.save ZIP archives. Bound uncompressed storage
+    # as well as the file size before weights_only parsing allocates any tensors.
+    try:
+        with zipfile.ZipFile(path) as archive:
+            require(
+                sum(entry.file_size for entry in archive.infolist()) <= max_bytes,
+                "research tensor archive exceeds the uncompressed size limit",
+            )
+        return torch.load(path, map_location="cpu", weights_only=True)
+    except AuditError:
+        raise
+    except Exception as exc:
+        raise AuditError(
+            f"cannot safely read research tensor artifact: {type(exc).__name__}"
+        ) from exc
+
+
+def finite_fp32_tensor(value, shape, message):
+    import torch
+
+    require(
+        torch.is_tensor(value)
+        and value.device.type == "cpu"
+        and value.dtype == torch.float32
+        and tuple(value.shape) == tuple(shape)
+        and bool(torch.isfinite(value).all()),
+        message,
+    )
+
+
+def inspect_head_binary(path):
+    import torch
+
+    head = load_research_tensors(path, max_bytes=8 * 1024 * 1024)
+    require(
+        isinstance(head, dict) and set(head) == {"weight", "bias"}, "head tensor schema differs"
+    )
+    weight = head["weight"]
+    require(
+        torch.is_tensor(weight)
+        and weight.ndim == 2
+        and weight.shape[0] == 52
+        and 0 < weight.shape[1] <= 16384,
+        "head must contain 52 bounded candidate rows",
+    )
+    finite_fp32_tensor(weight, weight.shape, "head weight must be finite CPU FP32")
+    finite_fp32_tensor(head["bias"], (52,), "head bias must be 52 finite CPU FP32 values")
+    return {
+        "status": "verified",
+        "weight_shape": list(weight.shape),
+        "bias_shape": [52],
+        "dtype": "float32",
+    }
+
+
+def inspect_train_features(path, cases, *, hidden_size=None):
+    import torch
+
+    saved = load_research_tensors(path, max_bytes=128 * 1024 * 1024)
+    require(
+        isinstance(saved, dict) and set(saved) == {"features", "records"},
+        "training feature artifact schema differs",
+    )
+    rows, features = saved["records"], saved["features"]
+    require(isinstance(rows, list) and len(rows) == 1024, "training feature row count differs")
+    validate_soft_records(rows, cases, "train")
+    require(
+        [(row["case_id"], row["question_id"]) for row in rows]
+        == [(case.id, q.id) for case in cases for q in case.request.questions],
+        "training feature row order differs from frozen train data",
+    )
+    require(
+        torch.is_tensor(features)
+        and features.ndim == 2
+        and features.shape[0] == 1024
+        and 0 < features.shape[1] <= 16384
+        and (hidden_size is None or features.shape[1] == hidden_size),
+        "training feature shape differs from rows/final head",
+    )
+    finite_fp32_tensor(features, features.shape, "training features must be finite CPU FP32")
+    return {
+        "status": "verified",
+        "sha256": digest(path),
+        "shape": list(features.shape),
+        "dtype": "float32",
+        "frozen_rows_verified": len(rows),
+        "scope": "Exact source/group/split/type/label/soft-target/ordinal identities and order; native feature computation is not numerically rerun",
+    }
+
+
+def inspect_adapter_binary(directory, trainable_parameters):
+    """Verify final saved adapters without constructing or loading the 12B model."""
+    from safetensors import safe_open
+
+    config = read(Path(directory) / "adapter_config.json")
+    projections = {"q_proj", "k_proj", "v_proj", "o_proj"}
+    require(
+        config.get("peft_type") == "LORA"
+        and config.get("r") == 8
+        and config.get("lora_alpha") == 16
+        and set(config.get("target_modules", [])) == projections
+        and config.get("bias") == "none"
+        and config.get("lora_dropout", 0) == 0
+        and config.get("use_dora", False) is False
+        and config.get("use_rslora", False) is False
+        and not config.get("rank_pattern")
+        and not config.get("alpha_pattern")
+        and not config.get("modules_to_save")
+        and not config.get("lora_bias", False),
+        "final adapter config differs from fixed attention LoRA recipe",
+    )
+    path = Path(directory) / "adapter_model.safetensors"
+    require(0 < path.stat().st_size <= 512 * 1024 * 1024, "adapter exceeds the size limit")
+    pairs, shapes, count, found = {}, {}, 0, set()
+    try:
+        with safe_open(path, framework="pt", device="cpu") as saved:
+            for name in saved.keys():
+                match = re.fullmatch(
+                    r"(?P<module>.+\.(?P<projection>q_proj|k_proj|v_proj|o_proj))\.lora_(?P<side>A|B)\.weight",
+                    name,
+                )
+                require(match is not None, "unexpected non-attention adapter tensor")
+                shape = saved.get_slice(name).get_shape()
+                side, module = match["side"], match["module"]
+                require(
+                    len(shape) == 2
+                    and all(0 < axis <= 65536 for axis in shape)
+                    and shape[0 if side == "A" else 1] == 8,
+                    "adapter tensor rank/shape differs",
+                )
+                require(saved.get_slice(name).get_dtype() == "F32", "adapter tensor must be FP32")
+                tensor = saved.get_tensor(name)
+                finite_fp32_tensor(tensor, shape, "adapter tensor must be finite CPU FP32")
+                pairs.setdefault(module, set()).add(side)
+                shapes[name] = shape
+                count += tensor.numel()
+                found.add(match["projection"])
+    except AuditError:
+        raise
+    except Exception as exc:
+        raise AuditError(f"cannot safely read final adapter tensors: {type(exc).__name__}") from exc
+    require(
+        bool(pairs)
+        and found == projections
+        and all(sides == {"A", "B"} for sides in pairs.values()),
+        "final attention adapter A/B pairs or projection support are incomplete",
+    )
+    require(
+        type(trainable_parameters) is int and trainable_parameters == count,
+        "final adapter parameter count differs from training receipt",
+    )
+    return {
+        "status": "verified",
+        "tensors": len(shapes),
+        "tensor_shapes": shapes,
+        "parameters": count,
+        "dtype": "float32",
+        "scope": "Final unmerged attention A/B tensors and config; no requirement that unused media branches received gradients; no optimizer replay",
+    }
+
+
 def audit_training(root, kind, train_cases, receipt):
     if kind not in ("head", "attention_lora"):
-        return {"status": "not_run", "scope": "Declared non-training control"}
+        return {"status": "not_run", "complete": True, "scope": "Declared non-training control"}
     root = Path(root)
+    data_identity = training_data_identity(train_cases)
     if kind == "head":
         saved = read(root / "head-training.json")
         require(
@@ -825,14 +1435,40 @@ def audit_training(root, kind, train_cases, receipt):
         require(all(math.isfinite(v) for v in saved["losses"]), "nonfinite head losses")
         file = root / "decision-head.pt"
         expected = receipt["identity"]["research_head_sha256"]
-        if file.is_file():
+        require(
+            bool(re.fullmatch(r"[0-9a-f]{64}", expected)), "invalid trained head binary identity"
+        )
+        present = file.is_file() and not file.is_symlink()
+        if present:
             require(digest(file) == expected, "trained head binary hash differs")
+        tensors = inspect_head_binary(file) if present else {"status": "not_downloaded"}
+        feature_file = root / "train-features.pt"
+        feature_present = feature_file.is_file() and not feature_file.is_symlink()
+        features = (
+            inspect_train_features(
+                feature_file,
+                train_cases,
+                hidden_size=tensors["weight_shape"][1] if present else None,
+            )
+            if feature_present
+            else {"status": "not_downloaded"}
+        )
+        complete = present and feature_present
         return {
-            "status": "recipe_verified",
+            "status": "recipe_verified" if complete else "incomplete_missing_binary",
+            "complete": complete,
+            "recipe_verified": True,
             "steps": 128,
+            "training_receipt_sha256": digest(root / "head-training.json"),
+            "training_data": data_identity,
             "binary_sha256": expected,
-            "binary_status": "verified" if file.is_file() else "not_downloaded",
-            "scope": "CPU final head; absence of exported binary is not weight verification",
+            "binary_status": "verified" if present else "not_downloaded",
+            "final_tensors": tensors,
+            "features": features,
+            "finite_loss_updates": 128,
+            "gradient_trace": {"status": "unrecorded", "recorded_updates": 0},
+            "sampled_batch_ids": {"status": "unrecorded"},
+            "scope": "CPU final head and complete frozen feature population. Frozen helper enforces finite losses/gradient clipping/weights, but no raw gradient norms or sampled batch IDs were recorded; no optimizer replay",
         }
     directory = root / "mixed-lora"
     saved = read(directory / "training.json")
@@ -861,22 +1497,76 @@ def audit_training(root, kind, train_cases, receipt):
         and Counter(ids) == Counter(case.id for case in train_cases),
         "LoRA updates do not cover train exactly once",
     )
+    expected_order = list(train_cases)
+    random.Random(42).shuffle(expected_order)
+    require(
+        ids == [case.id for case in expected_order]
+        and all(row.get("case_id") == row["case_ids"][-1] for row in updates),
+        "LoRA seeded micro-batch order/last case identity differs",
+    )
+    require(saved.get("losses") == updates, "LoRA final loss trace differs from update log")
+    require(
+        all(
+            type(row.get("gradient_norm")) in (int, float)
+            and math.isfinite(row["gradient_norm"])
+            and row["gradient_norm"] >= 0
+            for row in updates
+        ),
+        "LoRA gradient norms must be recorded finite nonnegative values",
+    )
+    require(
+        isinstance(saved["adapter_files"], dict)
+        and "adapter_model.safetensors" in saved["adapter_files"]
+        and "adapter_config.json" in saved["adapter_files"],
+        "final adapter weight/config inventory missing",
+    )
+    require(
+        receipt["identity"].get("research_adapter_files") == saved["adapter_files"],
+        "child identity/final adapter inventory differ",
+    )
     artifacts = {}
     for name, declared in saved["adapter_files"].items():
         require(Path(name).name == name, "unsafe adapter file path")
+        require(
+            bool(re.fullmatch(r"[0-9a-f]{64}", declared["sha256"]))
+            and type(declared["bytes"]) is int
+            and declared["bytes"] > 0,
+            "invalid final adapter file identity",
+        )
         file = directory / "adapter" / name
-        if file.is_file():
+        present = file.is_file() and not file.is_symlink()
+        if present:
             require(
                 digest(file) == declared["sha256"] and file.stat().st_size == declared["bytes"],
                 "adapter binary hash/size differs",
             )
-        artifacts[name] = {**declared, "status": "verified" if file.is_file() else "not_downloaded"}
+        artifacts[name] = {**declared, "status": "verified" if present else "not_downloaded"}
+    complete = all(file["status"] == "verified" for file in artifacts.values())
+    tensors = (
+        inspect_adapter_binary(directory / "adapter", saved.get("trainable_parameters"))
+        if complete
+        else {"status": "not_downloaded"}
+    )
     return {
-        "status": "recipe_verified",
+        "status": "recipe_verified" if complete else "incomplete_missing_binary",
+        "complete": complete,
+        "recipe_verified": True,
         "updates": len(updates),
         "training_cases": len(ids),
+        "training_data": data_identity,
+        "training_receipt_sha256": digest(directory / "training.json"),
+        "update_log_sha256": digest(directory / "updates.jsonl"),
+        "update_order": "verified_seed42_one_epoch_accum8",
+        "gradient_trace": {
+            "status": "verified_finite_recorded_norms",
+            "recorded_updates": len(updates),
+            "minimum": min(row["gradient_norm"] for row in updates),
+            "maximum": max(row["gradient_norm"] for row in updates),
+            "scope": "Recorded total pre-clipping norms, not per-parameter gradients or a requirement that every media adapter was used",
+        },
         "adapter_files": artifacts,
-        "scope": "Final update only; no public checkpoint selection",
+        "final_tensors": tensors,
+        "scope": "Final update 128 only; full recorded update/data-identity trace and final tensor schema, no optimizer replay or public checkpoint selection",
     }
 
 
@@ -920,11 +1610,17 @@ def analyze_profile(root, declaration, stage_result, data, public_source, cohere
         )
     }
     result["synthetic"] = guarded(
-        lambda: audit_synthetic(directory, data["calibration"], data["test"])
+        lambda: audit_synthetic(directory, data["calibration"], data["test"], receipt=receipt)
     )
     result["public"] = {
         policy: guarded(
-            lambda folder=folder: audit_public_profile(directory / folder, public_source)
+            lambda folder=folder, policy=policy: audit_public_profile(
+                directory / folder,
+                public_source,
+                receipt=receipt,
+                policy=policy,
+                protocol=data["protocol"],
+            )
         )
         for policy, folder in (
             ("calibrated", "public231"),
@@ -940,6 +1636,9 @@ def analyze_profile(root, declaration, stage_result, data, public_source, cohere
         )
         for policy in ("unit", "published_global")
     }
+    result["public_calibration_linkage"] = guarded(
+        lambda: public_calibration_identity(result["public"]["calibrated"], receipt)
+    )
     regression = (
         read(directory / "regression.json") if (directory / "regression.json").is_file() else {}
     )
@@ -958,6 +1657,7 @@ def analyze_profile(root, declaration, stage_result, data, public_source, cohere
                 directory / "coherence-cache",
                 source_root=coherence_root,
                 backend=f"{name}@{revision}",
+                receipt=receipt,
             )
         ),
         "unit": guarded(
@@ -969,8 +1669,21 @@ def analyze_profile(root, declaration, stage_result, data, public_source, cohere
             )
         ),
     }
+    result["coherence_calibration_linkage"] = guarded(
+        lambda: audit_coherence_linkage(
+            directory,
+            result["coherence"]["calibrated"],
+            result["coherence"]["unit"],
+            receipt,
+            source_root=coherence_root,
+        )
+    )
     result["coherence_effect"] = guarded(
-        lambda: coherence_effect(result["coherence"]["calibrated"], result["coherence"]["unit"])
+        lambda: coherence_effect(
+            result["coherence"]["calibrated"],
+            result["coherence"]["unit"],
+            result["coherence_calibration_linkage"],
+        )
     )
     result["training"] = guarded(
         lambda: audit_training(directory.parent, declaration["training"], data["train"], receipt)
@@ -990,7 +1703,10 @@ def analyze_profile(root, declaration, stage_result, data, public_source, cohere
         and all(
             r.get("status") == "verified_same_raw_logits" for r in result["public_replay"].values()
         )
+        and result["public_calibration_linkage"].get("complete") is True
+        and result["coherence_calibration_linkage"].get("complete") is True
         and result["training"].get("status") in ("not_run", "recipe_verified")
+        and result["training"].get("complete") is True
         and result["identity_integrity"].get("status") == "metadata_verified"
     )
     result["status"] = "complete_outcome_audit" if result["complete"] else "incomplete_or_failed"
@@ -1005,7 +1721,7 @@ def strip_records(value):
         return {
             key: strip_records(item)
             for key, item in value.items()
-            if key not in {"records", "raw_answers", "raw_runtime", "manifest"}
+            if key not in {"records", "raw_answers", "raw_runtime", "raw_requests", "manifest"}
         }
     if isinstance(value, list):
         return [strip_records(item) for item in value]
@@ -1293,7 +2009,7 @@ def markdown(report):
         )
     lines += [
         "",
-        "The JSON retains per-type/template metrics, paired source-group intervals, all raw hashes, errors and unexecuted populations. Coherence outcome rows are not independent denominators. Raw-logit replay latency is CPU replay, not GPU latency. Historical Jev-Omni is reported separately.",
+        "The JSON retains per-type/template metrics, paired source-group intervals, all raw hashes, errors and unexecuted populations. Native public and both coherence temperature policies require full raw-logit linkage for a complete profile; missing linkage prevents temperature attribution. Coherence outcome rows are not independent denominators. Raw-logit replay latency is CPU replay, not GPU latency. Historical Jev-Omni is reported separately. Native media52/fixture answers have no saved logits, so their temperature linkage is not claimed.",
         "",
     ]
     return "\n".join(lines)
