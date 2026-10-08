@@ -290,7 +290,7 @@ def test_paired_interval_preserves_source_group_cluster(audit):
     assert pair["ci95"] == [0.5, 0.5]
 
 
-def test_hardware_mismatch_keeps_accuracy_pair_inconclusive(audit, evidence):
+def test_hardware_mismatch_keeps_observed_quality_pair_and_records_confound(audit, evidence):
     evidence.create("a")
     directory, summary, _, identity = evidence.create("b")
     identity["gpu"] = "different GPU"
@@ -303,7 +303,33 @@ def test_hardware_mismatch_keeps_accuracy_pair_inconclusive(audit, evidence):
     report = audit.summarize_campaign(
         evidence.root, "unused", model_names=("a", "b"), bootstrap_samples=100
     )
-    assert report["paired_accuracy"][0]["status"] == "inconclusive"
+    pair = report["paired_accuracy"][0]
+    assert pair["status"] == "computed" and pair["delta_accuracy"] == 0
+    assert pair["hardware"] == {
+        "reference_gpu": "same A100",
+        "candidate_gpu": "different GPU",
+        "same_gpu_label": False,
+    }
+    assert "gpu" in pair["configuration_differences"]
+    assert "does not establish a causal change or latency speedup" in pair["comparison_scope"]
+
+
+def test_unknown_hardware_does_not_suppress_valid_paired_quality(audit, evidence):
+    directory, summary, _, identity = evidence.create("a")
+    evidence.create("b")
+    identity.pop("gpu")
+    manifest = json.loads((directory / "manifest.json").read_text())
+    manifest["identity"] = identity
+    write_json(directory / "manifest.json", manifest)
+    summary["identity"] = identity
+    write_json(directory / "summary.json", summary)
+    refresh_hashes(directory)
+    report = audit.summarize_campaign(
+        evidence.root, "unused", model_names=("a", "b"), bootstrap_samples=100
+    )
+    pair = report["paired_accuracy"][0]
+    assert pair["status"] == "computed"
+    assert pair["hardware"]["reference_gpu"] is None and not pair["hardware"]["same_gpu_label"]
 
 
 def test_cache_requires_all_valid_exact_distributions_not_only_same_labels(audit, evidence):

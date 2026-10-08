@@ -808,11 +808,33 @@ def summarize_campaign(
         pair = {"reference": reference, "candidate": candidate, "status": "inconclusive"}
         if reference in audited and candidate in audited:
             try:
-                _require(
-                    audited[reference]["manifest"]["identity"].get("gpu")
-                    == audited[candidate]["manifest"]["identity"].get("gpu")
-                    and audited[reference]["manifest"]["identity"].get("gpu") is not None,
-                    "paired hardware labels missing or different",
+                reference_identity = audited[reference]["manifest"]["identity"]
+                candidate_identity = audited[candidate]["manifest"]["identity"]
+                pair["hardware"] = {
+                    "reference_gpu": reference_identity.get("gpu"),
+                    "candidate_gpu": candidate_identity.get("gpu"),
+                    "same_gpu_label": reference_identity.get("gpu") is not None
+                    and reference_identity.get("gpu") == candidate_identity.get("gpu"),
+                }
+                pair["configuration_differences"] = [
+                    key
+                    for key in (
+                        "model_id",
+                        "revision",
+                        "variant",
+                        "gpu",
+                        "precision",
+                        "execution",
+                        "candidate_cache",
+                        "processor_files",
+                        "source_files",
+                        "versions",
+                    )
+                    if _bytes(reference_identity.get(key)) != _bytes(candidate_identity.get(key))
+                ]
+                pair["comparison_scope"] = (
+                    "Observed quality across recorded named profiles and hardware; configuration differences "
+                    "may be confounded. This quality interval does not establish a causal change or latency speedup."
                 )
                 pair.update(
                     status="computed",
@@ -897,6 +919,10 @@ def markdown(report):
             lines.append(
                 f"- {pair['candidate']} minus {pair['reference']}: {100 * pair['delta_accuracy']:+.2f} percentage points; descriptive 95% CI [{100 * lo:+.2f}, {100 * hi:+.2f}]."
             )
+            if not pair["hardware"]["same_gpu_label"]:
+                lines.append(
+                    f"  Recorded hardware: {pair['hardware']['reference_gpu']} versus {pair['hardware']['candidate_gpu']}; observed quality only, with hardware/configuration confounding."
+                )
         else:
             lines.append(f"- {pair['candidate']} vs {pair['reference']}: inconclusive.")
     for name, row in report["models"].items():
