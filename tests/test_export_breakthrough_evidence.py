@@ -239,3 +239,17 @@ def test_failed_gpu_stage_can_be_archived_without_relabeling_it_completed(tmp_pa
     assert result["download_status"] == "completed"
     assert result["gpu_receipt_status"] == "failed"
     assert (output / "receipt.json").read_bytes() == volume.files["receipt.json"]
+
+
+def test_declared_maximum_32_concurrency_preserves_every_byte_and_bounded_io(tmp_path):
+    volume, output = Volume(), tmp_path / "recovered"
+    volume.files.update({f"raw/case-{index:03}.json": raw({"case": index}) for index in range(96)})
+    result = asyncio.run(export.download(volume, RUN, "ablate", output, concurrency=32))
+    assert volume.peak == 32
+    assert result["verified"] is True and result["files"] == len(volume.files)
+    for name, data in volume.files.items():
+        assert (output / name).read_bytes() == data
+    state = json.loads((output / export.METADATA / "receipt.json").read_text())
+    assert state["settings"]["concurrency"] == 32
+    assert state["settings"]["remote_mutations"] is False
+    assert all(member["attempts"] == 1 for member in state["members"])
