@@ -11,6 +11,32 @@ This project extends [system-one-open](https://github.com/mithalouni/system-one-
 The original E2B experiments and demos remain available; their historical results
 are not measurements of this Unified model. See [upstream notes](docs/upstream.md).
 
+## Public JevBench screening — October 8, 2026
+
+The [audited campaign](docs/validation/2026-10-08/jevbench/campaign-audit.md)
+compares the released S1 checkpoint with OneJev-4B, Decider-2B and Jev-Omni on
+all 231 pinned public tasks, retaining native probabilities and official scoring.
+S1 scores 197/231 (85.28%); Jev-Omni scores 203/231 (87.88%), with a paired
+difference interval that includes zero. These exposed public tasks are screening
+evidence; official ranking still requires the maintainer's current sealed evaluation.
+
+An opt-in `--question-mode independent` is available for Gemma `decide`,
+`benchmark` and `serve` in this repository's current runtime. On the separate
+JevBench mini coherence protocol, it scores 71.96% versus the default causal
+multislot profile's 40.50%, retaining identical public231 probabilities. The
+profiles used different A100 boards; this is an observed quality comparison,
+not a controlled speed measurement. Native image/audio batching retains all
+29 regression labels, with nonzero probability drift. The default remains
+`causal_multislot`; previously published wheels do not include the new CLI flag.
+
+The [evidence index](docs/validation/2026-10-08/jevbench/README.md) links the
+raw archive, source hashes and reproduction instructions; the
+[evaluation plan](docs/jevbench-plan.md) separates task accuracy, coherence,
+latency and cost. The [submission draft](docs/validation/2026-10-08/jevbench/submission-draft.md)
+has not been sent. Candidate caching has no demonstrated speed gain on the
+measured sample; decoder compilation changes four public predictions and
+remains experimental.
+
 ## NVFP4 release — October 7, 2026
 
 The trained checkpoint now has a native packed **NVFP4** export for Blackwell,
