@@ -65,6 +65,212 @@ def digest(path):
     return result.hexdigest()
 
 
+def arithmetic_bytes(value):
+    """Serialization used by the independently archived CPU arithmetic proof."""
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode()
+
+
+def load_arithmetic_proof(path, proof_sha256, verifier_sha256, roots, protocol):
+    """Bind optional same-environment evidence; default local arithmetic stays strict.
+
+    The two explicit digests are review inputs, not values inferred from the
+    certificate. They bind the independently executed verifier and output bytes.
+    Every original input is also checked here; vector checks occur per profile.
+    """
+    path = Path(path)
+    require(
+        all(
+            isinstance(v, str) and re.fullmatch(r"[0-9a-f]{64}", v)
+            for v in (proof_sha256, verifier_sha256)
+        )
+        and path.is_file()
+        and not path.is_symlink()
+        and 0 < path.stat().st_size <= 128 * 1024 * 1024
+        and digest(path) == proof_sha256,
+        "CPU arithmetic proof requires independently reviewed output/source SHA256",
+    )
+    source = path.parent / "verifier.py.txt"
+    require(
+        source.is_file()
+        and not source.is_symlink()
+        and source.stat().st_size <= 1024 * 1024
+        and digest(source) == verifier_sha256,
+        "CPU arithmetic verifier bytes differ",
+    )
+    proof = read(path)
+    require(
+        proof.get("schema_version") == 1
+        and proof.get("status") == "completed"
+        and isinstance(proof.get("run"), str)
+        and re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,79}", proof["run"])
+        and proof.get("verifier_source_sha256") == verifier_sha256
+        and proof.get("original_image_id") == "im-hWNAPF8eRYjs4tA8VG582u",
+        "CPU arithmetic proof run/source/image differs",
+    )
+    env = proof.get("environment", {})
+    require(
+        env.get("python") == "3.12.10"
+        and env.get("torch") == "2.10.0"
+        and env.get("numpy") == "2.5.3"
+        and env.get("machine") in {"x86_64", "amd64"}
+        and str(env.get("platform", "")).startswith("Linux-")
+        and env.get("visible_gpu_count") == 0,
+        "CPU arithmetic pinned environment differs",
+    )
+    execution = proof.get("execution", {})
+    require(
+        all(
+            execution.get(k) == v
+            for k, v in {
+                "cpu_only": True,
+                "no_model_call": True,
+                "volume_read_only": True,
+                "cpu": 2,
+                "memory_mib": 4096,
+                "timeout_seconds": 600,
+                "network_blocked": True,
+                "model_forwards": 0,
+                "training_updates": 0,
+                "hf_downloads": 0,
+                "volume_writes": 0,
+            }.items()
+        ),
+        "CPU arithmetic execution scope differs",
+    )
+    require(
+        proof.get("public_replay") == "not_replayed; already independently strict-verified locally",
+        "CPU proof scope must preserve separately verified local public population",
+    )
+    expected_members, expected_profiles, sources = {}, {}, {}
+    for stage in protocol["stages"]:
+        stage_id = stage["id"]
+        root = Path(roots[stage_id])
+        receipt = read(root / "receipt.json")
+        require(
+            receipt["status"] == "completed"
+            and receipt["run"] == proof["run"]
+            and receipt["stage"] == stage_id,
+            "CPU proof requires completed original stages",
+        )
+        require(
+            receipt["versions"]["torch"] == env["torch"]
+            and receipt["versions"]["numpy"] == env["numpy"],
+            "CPU/GPU arithmetic versions differ",
+        )
+        sources[stage_id] = receipt["source_files"]
+        names = {"receipt.json"} | {f"sources/{name}.txt" for name in receipt["source_files"]}
+        for declared in stage["profiles"]:
+            profile = declared["id"]
+            expected_profiles[profile] = stage_id
+            names |= {
+                f"{profile}/{name}"
+                for name in (
+                    "receipt.json",
+                    "calibration.json",
+                    "raw-logits.json",
+                    "coherence-mini.json",
+                    "coherence-unit.json",
+                )
+            }
+            for folder in ("coherence-cache", "coherence-cache-unit"):
+                cache = root / profile / folder
+                paths = list(cache.iterdir())
+                require(
+                    len(paths) == 1248
+                    and all(
+                        p.is_file()
+                        and not p.is_symlink()
+                        and re.fullmatch(r"[0-9a-f]{64}\.json", p.name)
+                        for p in paths
+                    ),
+                    "CPU proof requires full original cache inventories",
+                )
+                names |= {f"{profile}/{folder}/{p.name}" for p in paths}
+        for name in sorted(names):
+            member = root / name
+            require(
+                member.is_file()
+                and not member.is_symlink()
+                and member.resolve().is_relative_to(root.resolve()),
+                "unsafe CPU proof input",
+            )
+            expected_members[f"{stage_id}/{name}"] = {
+                "sha256": digest(member),
+                "size_bytes": member.stat().st_size,
+            }
+    require(
+        set(sources) == {"ablate", "train"} and len(expected_profiles) == 8,
+        "CPU proof requires both stages and all eight profiles",
+    )
+    require(
+        proof.get("source_files") == sources and proof.get("input_members") == expected_members,
+        "CPU arithmetic source/input byte inventory differs",
+    )
+    manifest = path.parent / "input-manifest.json"
+    app_file = path.parent / "modal-app.json"
+    require(
+        manifest.is_file()
+        and not manifest.is_symlink()
+        and read(manifest) == expected_members
+        and digest(manifest)
+        == hashlib.sha256(arithmetic_bytes(expected_members)).hexdigest()
+        == proof.get("input_manifest_sha256"),
+        "CPU arithmetic input manifest differs",
+    )
+    require(app_file.is_file() and not app_file.is_symlink(), "CPU arithmetic app receipt missing")
+    app = read(app_file)
+    require(
+        app.get("image_id") == proof["original_image_id"]
+        and app.get("verifier_source_sha256") == verifier_sha256
+        and isinstance(app.get("app_id"), str)
+        and app["app_id"].startswith("ap-")
+        and isinstance(app.get("function_id"), str)
+        and app["function_id"].startswith("fu-"),
+        "CPU arithmetic app/source/image receipt differs",
+    )
+    require(
+        isinstance(proof.get("profiles"), dict)
+        and set(proof["profiles"]) == set(expected_profiles),
+        "CPU arithmetic full eight-profile population differs",
+    )
+    for name, stage_id in expected_profiles.items():
+        profile = proof["profiles"][name]
+        prefix = f"{stage_id}/{name}/"
+        require(
+            profile.get("stage") == stage_id
+            and profile.get("public") == {}
+            and profile.get("file_sha256")
+            == {
+                key.removeprefix(prefix): value["sha256"]
+                for key, value in expected_members.items()
+                if key.startswith(prefix)
+            },
+            "CPU arithmetic profile byte inventory or scope differs",
+        )
+        require(
+            profile.get("identity")
+            == read(Path(roots[stage_id]) / name / "receipt.json")["identity"],
+            "CPU arithmetic child identity differs",
+        )
+    return {
+        "proof": proof,
+        "metadata": {
+            "status": "input_bytes_verified",
+            "proof_sha256": proof_sha256,
+            "verifier_source_sha256": verifier_sha256,
+            "path": str(path),
+            "input_manifest_sha256": digest(manifest),
+            "modal_app_sha256": digest(app_file),
+            "input_files": len(expected_members),
+            "input_bytes": sum(v["size_bytes"] for v in expected_members.values()),
+            "environment": env,
+            "execution": execution,
+            "public_scope": proof["public_replay"],
+            "scope": "Reviewed source/output digests, pinned CPU environment and complete original byte inventories; expected vectors independently checked for all coherence requests below. This is separate from strict local macOS parity.",
+        },
+    }
+
+
 def inventory(directory):
     root = Path(directory)
     return {
@@ -182,6 +388,41 @@ def validate_soft_records(rows, cases, split):
     return observed
 
 
+def calibration_grid_match(saved_temperature, grid, losses):
+    """Bind the minimizing grid index despite one binary64 libm rounding ULP.
+
+    The frozen x86 and local ARM NumPy geomspace can differ by one ULP at an
+    interior point. This never admits a different grid index or an endpoint
+    change; the caller also replays both saved losses at the executed value.
+    """
+    require(
+        type(saved_temperature) in (int, float)
+        and math.isfinite(saved_temperature)
+        and saved_temperature > 0,
+        "calibration temperature/population differs from fixed soft-CE grid",
+    )
+    index = int(np.argmin(losses))
+    expected = float(grid[index])
+    nearest = min(range(len(grid)), key=lambda i: abs(float(grid[i]) - saved_temperature))
+    delta = abs(saved_temperature - expected)
+    require(
+        nearest == index
+        and delta <= math.ulp(expected)
+        and math.nextafter(expected, -math.inf)
+        <= saved_temperature
+        <= math.nextafter(expected, math.inf)
+        and (index not in (0, len(grid) - 1) or delta == 0),
+        "calibration temperature/population differs from fixed soft-CE grid",
+    )
+    return {
+        "minimizing_grid_index": index,
+        "local_grid_temperature": expected,
+        "executed_temperature": saved_temperature,
+        "absolute_difference": delta,
+        "float64_ulp_bound": math.ulp(expected),
+    }
+
+
 def audit_synthetic(directory, calibration_cases, test_cases, *, receipt=None):
     root = Path(directory)
     cal, heldout = read(root / "calibration.json"), read(root / "heldout.json")
@@ -193,7 +434,7 @@ def audit_synthetic(directory, calibration_cases, test_cases, *, receipt=None):
     validate_soft_records(cal["records"], calibration_cases, "calibration")
     rows = heldout["records"]
     validate_soft_records(rows, test_cases, "test")
-    temperatures = {}
+    temperatures, grid_verification = {}, {}
     for kind in ("choice", "noul", "score"):
         selected = [row for row in cal["records"] if row["type"] == kind]
         require(bool(selected), "calibration does not cover all types")
@@ -201,26 +442,32 @@ def audit_synthetic(directory, calibration_cases, test_cases, *, receipt=None):
         losses = [
             np.mean([row_metrics(row, float(t))["soft_ce"] for row in selected]) for t in grid
         ]
-        expected = float(grid[int(np.argmin(losses))])
         saved = cal["temperatures"][kind]
+        matched = calibration_grid_match(saved["temperature"], grid, losses)
         require(
-            saved["temperature"] == expected and saved["n"] == len(selected),
+            saved["n"] == len(selected),
             "calibration temperature/population differs from fixed soft-CE grid",
+        )
+        saved_loss = float(
+            np.mean([row_metrics(row, saved["temperature"])["soft_ce"] for row in selected])
         )
         require(
             math.isclose(
                 saved["soft_ce_before"],
                 float(np.mean([row_metrics(row, 1.0)["soft_ce"] for row in selected])),
                 abs_tol=1e-12,
+                rel_tol=0,
             )
-            and math.isclose(saved["soft_ce_after"], float(min(losses)), abs_tol=1e-12),
+            and math.isclose(saved["soft_ce_after"], saved_loss, abs_tol=1e-12, rel_tol=0)
+            and math.isclose(saved_loss, float(min(losses)), abs_tol=1e-12, rel_tol=0),
             "saved calibration losses differ",
         )
         require(
-            saved["boundary"] == (expected in (float(grid[0]), float(grid[-1]))),
+            saved["boundary"] == (matched["minimizing_grid_index"] in (0, len(grid) - 1)),
             "calibration boundary status differs",
         )
-        temperatures[kind] = expected
+        temperatures[kind] = saved["temperature"]
+        grid_verification[kind] = {**matched, "loss_at_executed_temperature": saved_loss}
     raw, calibrated = (
         soft_summary(rows, {k: 1.0 for k in temperatures}),
         soft_summary(rows, temperatures),
@@ -241,6 +488,7 @@ def audit_synthetic(directory, calibration_cases, test_cases, *, receipt=None):
         "n_calibration": len(cal["records"]),
         "n_test": len(rows),
         "temperatures": cal["temperatures"],
+        "calibration_grid_verification": grid_verification,
         "raw": raw,
         "calibrated": calibrated,
         "by_template": by_template,
@@ -582,7 +830,8 @@ def coherence_effect(calibrated, unit, linkage=None):
         return {"status": "inconclusive", "reason": "both complete coherence policies required"}
     if (
         not linkage
-        or linkage.get("status") != "verified_same_raw_logits"
+        or linkage.get("status")
+        not in ("verified_same_raw_logits", "verified_same_raw_logits_pinned_cpu")
         or linkage.get("complete") is not True
     ):
         return {
@@ -737,6 +986,159 @@ def verify_temperature_answers(request, raw_rows, answers, temperatures):
             "probabilities do not match type temperature/raw logits",
         )
     return {"questions": len(request.questions), "max_probability_error": maximum}
+
+
+def compare_pinned_cpu_answers(request, raw_rows, answers, temperatures, evidence):
+    """Check complete byte-bound expected vectors; never trust certificate booleans."""
+    minimal = set(evidence) == {"raw_key", "cache_file", "expected_answers"}
+    require(
+        (minimal or evidence.get("raw_rows") == raw_rows)
+        and isinstance(raw_rows, list)
+        and [r.get("id") for r in raw_rows] == [q.id for q in request.questions],
+        "CPU proof raw question population or logits differ",
+    )
+    expected = evidence.get("expected_answers")
+    rows = evidence.get("questions")
+    require(
+        (
+            minimal
+            or (
+                isinstance(rows, list)
+                and [r.get("id") for r in rows] == [q.id for q in request.questions]
+            )
+        )
+        and isinstance(expected, dict)
+        and isinstance(answers, dict)
+        and set(expected) == set(answers) == {q.id for q in request.questions},
+        "CPU proof expected answer population/order differs",
+    )
+    maximum, mismatch_count, field_count, count = 0.0, 0, 0, 0
+    for index, (question, raw) in enumerate(zip(request.questions, raw_rows, strict=True)):
+        labels = question.labels()
+        require(
+            raw.get("labels") == labels
+            and len(raw.get("logits", [])) == len(labels)
+            and all(type(v) in (int, float) and math.isfinite(v) for v in raw["logits"]),
+            "CPU proof raw candidate labels/values differ",
+        )
+        if not minimal:
+            row = rows[index]
+            require(
+                row.get("type") == question.type
+                and row.get("labels") == labels
+                and row.get("temperature") == temperatures[question.type],
+                "CPU proof primitive labels or temperature differ",
+            )
+        reference = answer_probabilities(expected[question.id], question)
+        predicted = [reference[label] for label in labels]
+        require(
+            (
+                minimal
+                or (
+                    row.get("expected_probabilities") == predicted
+                    and row.get("expected_answer") == expected[question.id]
+                )
+            )
+            and expected[question.id] == answer_from_probabilities(question, predicted),
+            "CPU proof expected native fields differ from full vectors",
+        )
+        observed = answer_probabilities(answers[question.id], question)
+        values = [observed[label] for label in labels]
+        require(
+            answers[question.id] == answer_from_probabilities(question, values),
+            "native answer fields differ from probabilities/request",
+        )
+        error = max(abs(x - y) for x, y in zip(values, predicted, strict=True))
+        require(
+            error <= float(np.finfo(np.float32).eps), "CPU proof temperature probabilities differ"
+        )
+        maximum = max(maximum, error)
+        mismatch_count += sum(x != y for x, y in zip(values, predicted, strict=True))
+        field_count += answers[question.id] != expected[question.id]
+        count += len(labels)
+    return {
+        "questions": len(request.questions),
+        "probabilities": count,
+        "max_abs_error": maximum,
+        "mismatch_count": mismatch_count,
+        "native_field_mismatch_count": field_count,
+        "max_probability_error": maximum,
+    }
+
+
+def audit_pinned_cpu_calibration(directory, evidence, receipt):
+    cal = read(Path(directory) / "calibration.json")
+    proof = evidence.get("calibration", {})
+    rows = cal["records"]
+    require(
+        len(rows) == 192
+        and proof.get("cases") == proof.get("record_count") == 192
+        and proof.get("records") == rows
+        and cal["temperatures"] == receipt["identity"]["calibration"],
+        "CPU proof full calibration records/identity differ",
+    )
+    require(
+        proof.get("record_identity_order_sha256")
+        == hashlib.sha256(
+            arithmetic_bytes(
+                [[r["case_id"], r["question_id"], r["type"], r["labels"]] for r in rows]
+            )
+        ).hexdigest(),
+        "CPU proof calibration record order differs",
+    )
+    grid = proof.get("grid")
+    local_grid = np.geomspace(0.1, 10.0, 81)
+    require(
+        isinstance(grid, list)
+        and len(grid) == 81
+        and all(type(t) in (int, float) and math.isfinite(t) and t > 0 for t in grid)
+        and grid[0] == float(local_grid[0])
+        and grid[-1] == float(local_grid[-1])
+        and all(
+            abs(t - float(v)) <= math.ulp(float(v))
+            and math.nextafter(float(v), -math.inf) <= t <= math.nextafter(float(v), math.inf)
+            for t, v in zip(grid, local_grid, strict=True)
+        ),
+        "CPU proof fixed calibration grid differs",
+    )
+    require(
+        set(proof.get("types", {})) == {"choice", "noul", "score"},
+        "CPU proof calibration primitive population differs",
+    )
+    for kind, type_evidence in proof["types"].items():
+        selected = [row for row in rows if row["type"] == kind]
+        losses = [float(np.mean([row_metrics(r, t)["soft_ce"] for r in selected])) for t in grid]
+        declared = type_evidence.get("losses")
+        require(
+            type_evidence.get("n") == len(selected) == 64
+            and isinstance(declared, list)
+            and len(declared) == 81
+            and all(
+                type(v) in (int, float)
+                and math.isfinite(v)
+                and math.isclose(v, actual, abs_tol=1e-12, rel_tol=0)
+                for v, actual in zip(declared, losses, strict=True)
+            ),
+            "CPU proof full calibration grid losses differ",
+        )
+        index = int(np.argmin(losses))
+        saved = cal["temperatures"][kind]
+        require(
+            type_evidence.get("argmin_index") == index
+            and grid[index] == saved["temperature"]
+            and type_evidence.get("saved_metadata")
+            == type_evidence.get("expected_metadata")
+            == saved
+            and type_evidence.get("exact_metadata_match") is True,
+            "CPU proof selected calibration index/executed metadata differ",
+        )
+    return {
+        "status": "verified_pinned_cpu_grid",
+        "complete": True,
+        "calibration_cases": 192,
+        "grid_points_per_type": 81,
+        "scope": "Complete saved records, exact executed grid index/temperature/metadata and independently recomputed full soft-CE grid; no fitting or recipe selection",
+    }
 
 
 def public_calibration_identity(native, receipt=None):
@@ -937,7 +1339,9 @@ def coherence_linkage_requests(report, cache, source_root):
     return rebuilt["requests"], source
 
 
-def audit_coherence_linkage(directory, calibrated, unit, receipt, *, source_root=None):
+def audit_coherence_linkage(
+    directory, calibrated, unit, receipt, *, source_root=None, cpu_evidence=None
+):
     root = Path(directory)
     raw_file = root / "raw-logits.json"
     if (
@@ -1024,8 +1428,32 @@ def audit_coherence_linkage(directory, calibrated, unit, receipt, *, source_root
         set(temperatures) == {"choice", "noul", "score"},
         "coherence fitted primitive temperatures differ",
     )
+    if cpu_evidence is not None:
+        require(
+            set(cpu_evidence.get("coherence", {})) == {"calibrated", "unit"},
+            "CPU proof full coherence policy population differs",
+        )
+        for policy in ("calibrated", "unit"):
+            policy_evidence = cpu_evidence["coherence"][policy]
+            require(
+                policy_evidence.get("backend") == reports[policy]["result"]["backend"]
+                and policy_evidence.get("cache_sha256") == cache_hashes[policy]
+                and isinstance(policy_evidence.get("requests"), list)
+                and len(policy_evidence["requests"]) == 1248,
+                "CPU proof coherence backend/cache/request population differs",
+            )
+    totals = {
+        policy: {
+            "questions": 0,
+            "probabilities": 0,
+            "max_abs_error": 0.0,
+            "mismatch_count": 0,
+            "native_field_mismatch_count": 0,
+        }
+        for policy in ("calibrated", "unit")
+    }
     files, raw_keys, questions, maximum = {"calibrated": [], "unit": []}, [], 0, 0.0
-    for row in plan:
+    for index, row in enumerate(plan):
         request = DecisionRequest(state=row["state"], questions=row["questions"])
         key = hashlib.sha256(request.model_dump_json().encode()).hexdigest()
         require(key in raw, "coherence request lacks raw logits")
@@ -1049,9 +1477,36 @@ def audit_coherence_linkage(directory, calibrated, unit, receipt, *, source_root
             require(
                 name in caches[policy], "coherence policy lacks reconstructed request/cache key"
             )
-            verified = verify_temperature_answers(
-                request, raw[key], caches[policy][name], temperature
-            )
+            if cpu_evidence is None:
+                verified = verify_temperature_answers(
+                    request, raw[key], caches[policy][name], temperature
+                )
+            else:
+                evidence = cpu_evidence["coherence"][policy]["requests"][index]
+                minimal = set(evidence) == {"raw_key", "cache_file", "expected_answers"}
+                require(
+                    (
+                        minimal
+                        or (
+                            evidence.get("state") == row["state"]
+                            and evidence.get("request_questions") == row["questions"]
+                            and evidence.get("request")
+                            == {"state": row["state"], "questions": row["questions"]}
+                        )
+                    )
+                    and evidence.get("raw_key") == key
+                    and evidence.get("cache_file") == name,
+                    "CPU proof official ordered request/cache/raw identities differ",
+                )
+                verified = compare_pinned_cpu_answers(
+                    request, raw[key], caches[policy][name], temperature, evidence
+                )
+                for metric in totals[policy]:
+                    totals[policy][metric] = (
+                        max(totals[policy][metric], verified[metric])
+                        if metric == "max_abs_error"
+                        else totals[policy][metric] + verified[metric]
+                    )
             maximum = max(maximum, verified["max_probability_error"])
             if policy == "calibrated":
                 questions += verified["questions"]
@@ -1066,8 +1521,21 @@ def audit_coherence_linkage(directory, calibrated, unit, receipt, *, source_root
             == audited["replay"]["ordered_request_fingerprints_sha256"],
             "coherence policy request order differs from official replay",
         )
+        if cpu_evidence is not None:
+            evidence = cpu_evidence["coherence"][policy]
+            require(
+                evidence.get("ordered_cache_files") == files[policy]
+                and evidence.get("ordered_cache_sha256")
+                == hashlib.sha256(arithmetic_bytes(files[policy])).hexdigest()
+                and evidence.get("ordered_raw_keys_sha256")
+                == hashlib.sha256(arithmetic_bytes(raw_keys)).hexdigest()
+                and all(evidence.get(k) == v for k, v in totals[policy].items()),
+                "CPU proof request order or independently recomputed counters differ",
+            )
     return {
-        "status": "verified_same_raw_logits",
+        "status": "verified_same_raw_logits"
+        if cpu_evidence is None
+        else "verified_same_raw_logits_pinned_cpu",
         "complete": True,
         "expected_requests": 1248,
         "verified_requests_per_policy": 1248,
@@ -1084,7 +1552,8 @@ def audit_coherence_linkage(directory, calibrated, unit, receipt, *, source_root
         "temperatures": {"calibrated": temperatures, "unit": {kind: 1.0 for kind in temperatures}},
         "max_probability_error": maximum,
         "probability_absolute_tolerance": float(np.finfo(np.float32).eps),
-        "scope": "Pinned official full request/cache plan and each native answer recomputed from the same recorded raw logits at fitted type-T or unit-T; CPU FP32 only, no model call. Saved raw-logits.json may include non-coherence requests",
+        "pinned_cpu_comparison": totals if cpu_evidence is not None else None,
+        "scope": "Pinned official full request/cache plan and each native answer recomputed from the same recorded raw logits at fitted type-T or unit-T; CPU FP32 only, no model call. Saved raw-logits.json may include non-coherence requests. Optional pinned Linux CPU evidence verifies archived full expected vectors separately from strict local macOS parity.",
     }
 
 
@@ -1570,7 +2039,9 @@ def audit_training(root, kind, train_cases, receipt):
     }
 
 
-def analyze_profile(root, declaration, stage_result, data, public_source, coherence_root):
+def analyze_profile(
+    root, declaration, stage_result, data, public_source, coherence_root, cpu_evidence=None
+):
     name = declaration["id"]
     directory = Path(root) / name if root is not None else None
     if directory is None or not directory.is_dir():
@@ -1678,6 +2149,26 @@ def analyze_profile(root, declaration, stage_result, data, public_source, cohere
             source_root=coherence_root,
         )
     )
+    if cpu_evidence is not None:
+        strict = result["coherence_calibration_linkage"]
+        result["pinned_cpu_calibration"] = guarded(
+            lambda: audit_pinned_cpu_calibration(directory, cpu_evidence, receipt)
+        )
+        alternate = guarded(
+            lambda: audit_coherence_linkage(
+                directory,
+                result["coherence"]["calibrated"],
+                result["coherence"]["unit"],
+                receipt,
+                source_root=coherence_root,
+                cpu_evidence=cpu_evidence,
+            )
+        )
+        result["coherence_calibration_linkage"] = {
+            **alternate,
+            "strict_local_replay": strict,
+            "verification_runtime": "separate pinned Linux x86 CPU proof; strict local macOS result preserved",
+        }
     result["coherence_effect"] = guarded(
         lambda: coherence_effect(
             result["coherence"]["calibrated"],
@@ -1708,6 +2199,7 @@ def analyze_profile(root, declaration, stage_result, data, public_source, cohere
         and result["training"].get("status") in ("not_run", "recipe_verified")
         and result["training"].get("complete") is True
         and result["identity_integrity"].get("status") == "metadata_verified"
+        and (cpu_evidence is None or result["pinned_cpu_calibration"].get("complete") is True)
     )
     result["status"] = "complete_outcome_audit" if result["complete"] else "incomplete_or_failed"
     result["official_replay_complete"] = result["complete"] and all(
@@ -1736,6 +2228,9 @@ def analyze(
     public_root=None,
     coherence_root=None,
     historical_jev=None,
+    arithmetic_proof=None,
+    arithmetic_proof_sha256=None,
+    arithmetic_verifier_sha256=None,
     seed=42,
     samples=2000,
 ):
@@ -1793,6 +2288,18 @@ def analyze(
     public_source = load_public(public_root) if public_root is not None else None
     stages, profiles = {}, {}
     roots = {"ablate": ablate, "train": train}
+    require(
+        arithmetic_proof is not None
+        or (arithmetic_proof_sha256 is None and arithmetic_verifier_sha256 is None),
+        "CPU arithmetic SHA inputs require proof path",
+    )
+    arithmetic = (
+        load_arithmetic_proof(
+            arithmetic_proof, arithmetic_proof_sha256, arithmetic_verifier_sha256, roots, protocol
+        )
+        if arithmetic_proof is not None
+        else None
+    )
     for stage in protocol["stages"]:
         name, root = stage["id"], roots[stage["id"]]
         stages[name] = guarded(
@@ -1804,7 +2311,15 @@ def analyze(
                 "expected_populations": expected_populations(),
                 **guarded(
                     lambda declaration=declaration: analyze_profile(
-                        root, declaration, stages[name], data, public_source, coherence_root
+                        root,
+                        declaration,
+                        stages[name],
+                        data,
+                        public_source,
+                        coherence_root,
+                        arithmetic["proof"]["profiles"][declaration["id"]]
+                        if arithmetic is not None
+                        else None,
                     )
                 ),
             }
@@ -1939,6 +2454,49 @@ def analyze(
     complete = all(p.get("complete") for p in profiles.values()) and all(
         s.get("complete") for s in stages.values()
     )
+    arithmetic_metadata = None
+    if arithmetic is not None:
+        linked = [p.get("coherence_calibration_linkage", {}) for p in profiles.values()]
+        verified = all(
+            p.get("pinned_cpu_calibration", {}).get("complete") is True
+            and p.get("coherence_calibration_linkage", {}).get("status")
+            == "verified_same_raw_logits_pinned_cpu"
+            and p["coherence_calibration_linkage"].get("complete") is True
+            for p in profiles.values()
+        )
+        exact = (
+            all(
+                not policy["mismatch_count"] and not policy["native_field_mismatch_count"]
+                for row in linked
+                for policy in row.get("pinned_cpu_comparison", {}).values()
+            )
+            if verified
+            else None
+        )
+        require(
+            not verified or arithmetic["proof"].get("exact_arithmetic_match") is exact,
+            "CPU proof headline differs from independently verified complete vectors",
+        )
+        arithmetic_metadata = {
+            **arithmetic["metadata"],
+            "status": "all_expected_vectors_verified"
+            if verified
+            else "incomplete_vector_verification",
+            "complete": verified,
+            "exact_expected_vectors": exact,
+            "verified_requests": sum(
+                2 * row.get("verified_requests_per_policy", 0) for row in linked
+            ),
+            "verified_question_records": sum(
+                2 * row.get("verified_question_records_per_policy", 0) for row in linked
+            ),
+            "strict_local_status_counts": dict(
+                Counter(
+                    row.get("strict_local_replay", {}).get("status", "missing") for row in linked
+                )
+            ),
+            "strict_local_parity": "Preserved per profile; pinned CPU verification does not turn local macOS numeric mismatches into strict parity",
+        }
     return {
         "schema_version": 1,
         "experiment_id": protocol["experiment_id"],
@@ -1956,6 +2514,7 @@ def analyze(
         "historical_jev_omni": historical,
         "official_raw_replay_complete": complete
         and all(p.get("official_replay_complete") for p in profiles.values()),
+        "pinned_cpu_arithmetic": arithmetic_metadata,
         "formal_acceptance": "not_assessed",
         "rank": None,
         "cost_usd": None,
@@ -2010,8 +2569,17 @@ def markdown(report):
     lines += [
         "",
         "The JSON retains per-type/template metrics, paired source-group intervals, all raw hashes, errors and unexecuted populations. Native public and both coherence temperature policies require full raw-logit linkage for a complete profile; missing linkage prevents temperature attribution. Coherence outcome rows are not independent denominators. Raw-logit replay latency is CPU replay, not GPU latency. Historical Jev-Omni is reported separately. Native media52/fixture answers have no saved logits, so their temperature linkage is not claimed.",
+        "Optional independently archived Linux x86 CPU arithmetic evidence is explicitly separate from strict local macOS parity. Its complete expected vectors are checked against original raw logits, fitted temperatures, official request/cache order, source/input byte inventories and native answer fields; original strict results remain in the JSON.",
         "",
     ]
+    proof = report.get("pinned_cpu_arithmetic")
+    if proof is not None:
+        lines += [
+            f"Pinned CPU arithmetic: `{proof['status']}`; {proof['verified_requests']} verified requests and {proof['verified_question_records']} question records. Proof SHA256 `{proof['proof_sha256']}`; verifier SHA256 `{proof['verifier_source_sha256']}`.",
+            "",
+            f"Strict local coherence linkage status counts remain `{proof['strict_local_status_counts']}`. Pinned CPU evidence verifies the original Linux x86 arithmetic separately; it does not establish strict macOS parity.",
+            "",
+        ]
     return "\n".join(lines)
 
 
@@ -2023,6 +2591,9 @@ def main(argv=None):
     parser.add_argument("--public-root", type=Path)
     parser.add_argument("--coherence-root", type=Path)
     parser.add_argument("--historical-jev", type=Path)
+    parser.add_argument("--arithmetic-proof", type=Path)
+    parser.add_argument("--arithmetic-proof-sha256")
+    parser.add_argument("--arithmetic-verifier-sha256")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     require(
@@ -2036,6 +2607,9 @@ def main(argv=None):
         public_root=args.public_root,
         coherence_root=args.coherence_root,
         historical_jev=args.historical_jev,
+        arithmetic_proof=args.arithmetic_proof,
+        arithmetic_proof_sha256=args.arithmetic_proof_sha256,
+        arithmetic_verifier_sha256=args.arithmetic_verifier_sha256,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n")

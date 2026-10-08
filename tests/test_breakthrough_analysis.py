@@ -313,12 +313,68 @@ def test_synthetic_calibration_and_heldout_metrics_are_recomputed(analyzer, tmp_
         analyzer["audit_synthetic"](
             tmp_path, populations["calibration"][0], populations["test"][0], receipt=receipt
         )
+    temperatures["score"]["temperature"] = math.nextafter(1.0, math.inf)
+    (tmp_path / "calibration.json").write_text(
+        json.dumps({"records": rows, "temperatures": temperatures})
+    )
+    replayed = analyzer["audit_synthetic"](
+        tmp_path,
+        populations["calibration"][0],
+        populations["test"][0],
+        receipt={"identity": {"calibration": copy.deepcopy(temperatures)}},
+    )
+    assert replayed["complete"]
+    assert replayed["calibration_grid_verification"]["score"]["minimizing_grid_index"] == 40
+    assert (
+        replayed["calibration_grid_verification"]["score"]["executed_temperature"]
+        == temperatures["score"]["temperature"]
+    )
+    tampered = copy.deepcopy(temperatures)
+    tampered["score"]["soft_ce_after"] += 2e-12
+    (tmp_path / "calibration.json").write_text(
+        json.dumps({"records": rows, "temperatures": tampered})
+    )
+    with pytest.raises(ValueError, match="saved calibration losses"):
+        analyzer["audit_synthetic"](tmp_path, populations["calibration"][0], populations["test"][0])
     temperatures["choice"]["temperature"] = 2.0
     (tmp_path / "calibration.json").write_text(
         json.dumps({"records": rows, "temperatures": temperatures})
     )
     with pytest.raises(ValueError, match="fixed soft-CE grid"):
         analyzer["audit_synthetic"](tmp_path, populations["calibration"][0], populations["test"][0])
+
+
+def test_calibration_grid_accepts_one_interior_ulp_but_preserves_grid_selection(analyzer):
+    import numpy as np
+
+    grid = np.geomspace(0.1, 10.0, 81)
+    # The archived x86 score temperature and ARM replay occupy adjacent binary64
+    # values at the same interior grid point. The minimizing index remains 32.
+    losses = np.square(np.log(grid) - np.log(grid[32]))
+    expected = float(grid[32])
+    saved = math.nextafter(expected, -math.inf)
+    result = analyzer["calibration_grid_match"](saved, grid, losses)
+    assert result["minimizing_grid_index"] == 32
+    assert result["executed_temperature"] == saved
+    assert result["absolute_difference"] <= math.ulp(expected)
+    for changed in (
+        math.nextafter(saved, -math.inf),
+        float(grid[31]),
+        float(grid[33]),
+        expected * 1.000001,
+        float("nan"),
+    ):
+        with pytest.raises(ValueError, match="fixed soft-CE grid"):
+            analyzer["calibration_grid_match"](changed, grid, losses)
+    # At a power-of-two boundary, two smaller binary64 steps still fit within
+    # math.ulp(1); require adjacent representations as well as the absolute bound.
+    losses = np.square(np.log(grid))
+    twice = math.nextafter(math.nextafter(1.0, -math.inf), -math.inf)
+    with pytest.raises(ValueError, match="fixed soft-CE grid"):
+        analyzer["calibration_grid_match"](twice, grid, losses)
+    losses = np.arange(len(grid), dtype=float)
+    with pytest.raises(ValueError, match="fixed soft-CE grid"):
+        analyzer["calibration_grid_match"](math.nextafter(float(grid[0]), math.inf), grid, losses)
 
 
 def temperature_fixture(request, temperatures):
@@ -721,6 +777,365 @@ def test_coherence_without_frozen_logit_evidence_is_explicitly_unverified(analyz
     assert result["status"] == "calibration_linkage_unverified" and not result["complete"]
     assert result["expected_requests"] == 1248
     assert "No temperature attribution" in result["scope"]
+
+
+@pytest.fixture
+def pinned_cpu_temperature_evidence(analyzer, coherence_temperature_evidence):
+    evidence = coherence_temperature_evidence
+    raw = json.loads((evidence["root"] / "raw-logits.json").read_text())
+    fitted = {
+        k: v["temperature"] for k, v in evidence["receipt"]["identity"]["calibration"].items()
+    }
+    output = {"coherence": {}}
+    for policy, folder, backend in (
+        ("calibrated", "coherence-cache", "profile@pin"),
+        ("unit", "coherence-cache-unit", "profile-unit-replay@pin"),
+    ):
+        ts = fitted if policy == "calibrated" else {k: 1.0 for k in fitted}
+        rows, raw_keys, questions, probabilities = [], [], 0, 0
+        for index, name in enumerate(evidence["keys"][policy]):
+            state, request_questions = str(index), linkage_questions(index)
+            request = DecisionRequest(state=state, questions=request_questions)
+            key = hashlib.sha256(request.model_dump_json().encode()).hexdigest()
+            answers = json.loads((evidence["root"] / folder / name).read_text())
+            metadata = []
+            for question in request.questions:
+                values = [
+                    answers[question.id]["probabilities"][label] for label in question.labels()
+                ]
+                metadata.append(
+                    {
+                        "id": question.id,
+                        "type": question.type,
+                        "labels": question.labels(),
+                        "temperature": ts[question.type],
+                        "expected_probabilities": values,
+                        "expected_answer": answers[question.id],
+                    }
+                )
+                questions += 1
+                probabilities += len(values)
+            raw_keys.append(key)
+            rows.append(
+                {
+                    "raw_key": key,
+                    "cache_file": name,
+                    "state": state,
+                    "request_questions": request_questions,
+                    "request": {"state": state, "questions": request_questions},
+                    "raw_rows": raw[key],
+                    "questions": metadata,
+                    "expected_answers": answers,
+                }
+            )
+        output["coherence"][policy] = {
+            "backend": backend,
+            "cache_sha256": evidence["policies"][policy]["raw_cache_sha256"],
+            "ordered_cache_files": evidence["keys"][policy],
+            "ordered_cache_sha256": hashlib.sha256(
+                analyzer["arithmetic_bytes"](evidence["keys"][policy])
+            ).hexdigest(),
+            "ordered_raw_keys_sha256": hashlib.sha256(
+                analyzer["arithmetic_bytes"](raw_keys)
+            ).hexdigest(),
+            "requests": rows,
+            "questions": questions,
+            "probabilities": probabilities,
+            "max_abs_error": 0.0,
+            "mismatch_count": 0,
+            "native_field_mismatch_count": 0,
+        }
+    return evidence, output
+
+
+def run_pinned_coherence(analyzer, evidence, proof):
+    return analyzer["audit_coherence_linkage"](
+        evidence["root"],
+        evidence["policies"]["calibrated"],
+        evidence["policies"]["unit"],
+        evidence["receipt"],
+        source_root=evidence["source"],
+        cpu_evidence=proof,
+    )
+
+
+def test_pinned_cpu_full_vectors_do_not_relax_default_local_arithmetic(
+    analyzer, pinned_cpu_temperature_evidence, monkeypatch
+):
+    evidence, proof = pinned_cpu_temperature_evidence
+
+    def unavailable(*args, **kwargs):
+        raise ValueError("strict local numeric mismatch remains visible")
+
+    monkeypatch.setitem(
+        analyzer["audit_coherence_linkage"].__globals__, "verify_temperature_answers", unavailable
+    )
+    with pytest.raises(ValueError, match="strict local numeric mismatch"):
+        run_coherence_linkage(analyzer, evidence)
+    checked = run_pinned_coherence(analyzer, evidence, proof)
+    assert checked["complete"] and checked["status"] == "verified_same_raw_logits_pinned_cpu"
+    assert checked["verified_requests_per_policy"] == 1248
+    assert checked["verified_question_records_per_policy"] == 1249
+    assert checked["pinned_cpu_comparison"]["calibrated"]["mismatch_count"] == 0
+    for policy in proof["coherence"].values():
+        policy["requests"] = [
+            {k: r[k] for k in ("raw_key", "cache_file", "expected_answers")}
+            for r in policy["requests"]
+        ]
+    minimal = run_pinned_coherence(analyzer, evidence, proof)
+    assert (
+        minimal["complete"] and minimal["pinned_cpu_comparison"] == checked["pinned_cpu_comparison"]
+    )
+    proof["coherence"]["unit"]["requests"][0]["raw_key"] = "0" * 64
+    with pytest.raises(ValueError, match="ordered request/cache/raw identities"):
+        run_pinned_coherence(analyzer, evidence, proof)
+
+
+@pytest.mark.parametrize(
+    "changed", ["population", "order", "raw", "temperature", "vector", "field", "counter"]
+)
+def test_pinned_cpu_requires_full_bound_vectors_and_native_fields(
+    analyzer, pinned_cpu_temperature_evidence, changed
+):
+    evidence, proof = pinned_cpu_temperature_evidence
+    policy = proof["coherence"]["calibrated"]
+    row = policy["requests"][0]
+    if changed == "population":
+        policy["requests"].pop()
+    elif changed == "order":
+        policy["requests"][:2] = reversed(policy["requests"][:2])
+    elif changed == "raw":
+        row["raw_rows"][0]["logits"][0] += 0.001
+    elif changed == "temperature":
+        row["questions"][0]["temperature"] = 1.0
+    elif changed == "vector":
+        request = DecisionRequest(state=row["state"], questions=row["request_questions"])
+        answer = answer_from_probabilities(request.questions[0], [0.5, 0.5])
+        row["expected_answers"]["decision"] = answer
+        row["questions"][0]["expected_answer"] = answer
+        row["questions"][0]["expected_probabilities"] = [0.5, 0.5]
+    elif changed == "field":
+        row["expected_answers"]["decision"]["margin"] = 0.0
+    else:
+        policy["questions"] -= 1
+    with pytest.raises(ValueError, match="CPU proof"):
+        run_pinned_coherence(analyzer, evidence, proof)
+
+
+def test_cpu_proof_review_digests_cannot_be_inferred_from_certificate(analyzer, tmp_path):
+    proof = tmp_path / "proof.json"
+    proof.write_text("{}")
+    with pytest.raises(ValueError, match="reviewed output/source SHA256"):
+        analyzer["load_arithmetic_proof"](proof, None, None, {}, {})
+    with pytest.raises(ValueError, match="reviewed output/source SHA256"):
+        analyzer["load_arithmetic_proof"](proof, "0" * 64, "0" * 64, {}, {})
+    source = tmp_path / "verifier.py.txt"
+    source.write_text('print("bounded verifier")')
+    with pytest.raises(ValueError, match="verifier bytes differ"):
+        analyzer["load_arithmetic_proof"](proof, analyzer["digest"](proof), "0" * 64, {}, {})
+
+
+def test_cpu_proof_binds_all_inputs_environment_and_child_identity(analyzer, tmp_path):
+    # A complete eight-profile byte inventory, without any model/media loading.
+    roots, stages, members, sources, profiles = {}, [], {}, {}, {}
+    for stage_index, stage in enumerate(("ablate", "train")):
+        root = tmp_path / stage
+        roots[stage] = root
+        (root / "sources/s1").mkdir(parents=True)
+        source = root / "sources/s1/contracts.py.txt"
+        source.write_text("frozen fixture contract source")
+        sources[stage] = {"s1/contracts.py": analyzer["digest"](source)}
+        receipt = {
+            "status": "completed",
+            "stage": stage,
+            "run": "fixed-run",
+            "versions": {"torch": "2.10.0", "numpy": "2.5.3"},
+            "source_files": sources[stage],
+        }
+        (root / "receipt.json").write_text(json.dumps(receipt))
+        declarations = []
+        for index in range(4):
+            name = f"profile-{4 * stage_index + index}"
+            declarations.append({"id": name})
+            directory = root / name
+            directory.mkdir()
+            identity = {"variant": name, "calibration": {"choice": {"temperature": 1.0}}}
+            for filename in (
+                "receipt.json",
+                "calibration.json",
+                "raw-logits.json",
+                "coherence-mini.json",
+                "coherence-unit.json",
+            ):
+                (directory / filename).write_text(
+                    json.dumps({"identity": identity}) if filename == "receipt.json" else "{}"
+                )
+            for folder in ("coherence-cache", "coherence-cache-unit"):
+                cache = directory / folder
+                cache.mkdir()
+                for case_index in range(1248):
+                    (
+                        cache / (hashlib.sha256(str(case_index).encode()).hexdigest() + ".json")
+                    ).write_text("{}")
+            profiles[name] = {"stage": stage, "identity": identity, "public": {}}
+        stages.append({"id": stage, "profiles": declarations})
+        for path in sorted(root.rglob("*")):
+            if path.is_file():
+                members[f"{stage}/{path.relative_to(root).as_posix()}"] = {
+                    "sha256": analyzer["digest"](path),
+                    "size_bytes": path.stat().st_size,
+                }
+    members = dict(sorted(members.items()))
+    for name, profile in profiles.items():
+        prefix = f"{profile['stage']}/{name}/"
+        profile["file_sha256"] = {
+            key.removeprefix(prefix): value["sha256"]
+            for key, value in members.items()
+            if key.startswith(prefix)
+        }
+    folder = tmp_path / "proof"
+    folder.mkdir()
+    verifier = folder / "verifier.py.txt"
+    verifier.write_text("reviewed CPU-only verifier fixture")
+    verifier_sha = analyzer["digest"](verifier)
+    manifest = folder / "input-manifest.json"
+    manifest.write_bytes(analyzer["arithmetic_bytes"](members))
+    (folder / "modal-app.json").write_text(
+        json.dumps(
+            {
+                "app_id": "ap-fixture",
+                "function_id": "fu-fixture",
+                "image_id": "im-hWNAPF8eRYjs4tA8VG582u",
+                "verifier_source_sha256": verifier_sha,
+            }
+        )
+    )
+    proof = {
+        "schema_version": 1,
+        "status": "completed",
+        "run": "fixed-run",
+        "verifier_source_sha256": verifier_sha,
+        "original_image_id": "im-hWNAPF8eRYjs4tA8VG582u",
+        "source_files": sources,
+        "input_members": members,
+        "input_manifest_sha256": analyzer["digest"](manifest),
+        "environment": {
+            "python": "3.12.10",
+            "torch": "2.10.0",
+            "numpy": "2.5.3",
+            "machine": "x86_64",
+            "platform": "Linux-fixture",
+            "visible_gpu_count": 0,
+        },
+        "execution": {
+            "cpu_only": True,
+            "no_model_call": True,
+            "volume_read_only": True,
+            "cpu": 2,
+            "memory_mib": 4096,
+            "timeout_seconds": 600,
+            "network_blocked": True,
+            "model_forwards": 0,
+            "training_updates": 0,
+            "hf_downloads": 0,
+            "volume_writes": 0,
+        },
+        "public_replay": "not_replayed; already independently strict-verified locally",
+        "profiles": profiles,
+    }
+    path = folder / "proof.json"
+
+    def verify(value):
+        path.write_bytes(analyzer["arithmetic_bytes"](value))
+        return analyzer["load_arithmetic_proof"](
+            path, analyzer["digest"](path), verifier_sha, roots, {"stages": stages}
+        )
+
+    result = verify(proof)
+    assert result["metadata"]["input_files"] == 20012
+    changed = copy.deepcopy(proof)
+    changed["environment"]["torch"] = "2.8.0"
+    with pytest.raises(ValueError, match="pinned environment"):
+        verify(changed)
+    changed = copy.deepcopy(proof)
+    changed["profiles"]["profile-0"]["identity"] = changed["profiles"]["profile-1"]["identity"]
+    with pytest.raises(ValueError, match="child identity differs"):
+        verify(changed)
+    (roots["train"] / "profile-7/raw-logits.json").write_text('{"altered":true}')
+    with pytest.raises(ValueError, match="input byte inventory differs"):
+        verify(proof)
+
+
+def test_cpu_calibration_proof_replays_full_grid_and_exact_executed_metadata(analyzer, tmp_path):
+    import numpy as np
+
+    rows = []
+    for kind in ("choice", "noul", "score"):
+        for index in range(64):
+            r = row(
+                case=f"{kind}-{index}",
+                kind=kind,
+                probs=[0.2, 0.8] if kind != "score" else [0.2, 0.2, 0.6],
+            )
+            r["split"] = "calibration"
+            rows.append(r)
+    grid = np.geomspace(0.1, 10.0, 81).tolist()
+    types, temperatures = {}, {}
+    for kind in ("choice", "noul", "score"):
+        selected = [r for r in rows if r["type"] == kind]
+        losses = [
+            float(np.mean([analyzer["row_metrics"](r, t)["soft_ce"] for r in selected]))
+            for t in grid
+        ]
+        index = int(np.argmin(losses))
+        saved = {
+            "n": 64,
+            "temperature": grid[index],
+            "boundary": index in (0, 80),
+            "soft_ce_before": losses[40],
+            "soft_ce_after": losses[index],
+        }
+        temperatures[kind] = saved
+        types[kind] = {
+            "n": 64,
+            "argmin_index": index,
+            "losses": losses,
+            "expected_metadata": copy.deepcopy(saved),
+            "saved_metadata": copy.deepcopy(saved),
+            "exact_metadata_match": True,
+        }
+    (tmp_path / "calibration.json").write_text(
+        json.dumps({"records": rows, "temperatures": temperatures})
+    )
+    proof = {
+        "calibration": {
+            "cases": 192,
+            "record_count": 192,
+            "records": copy.deepcopy(rows),
+            "grid": grid,
+            "types": types,
+            "record_identity_order_sha256": hashlib.sha256(
+                analyzer["arithmetic_bytes"](
+                    [[r["case_id"], r["question_id"], r["type"], r["labels"]] for r in rows]
+                )
+            ).hexdigest(),
+        }
+    }
+    receipt = {"identity": {"calibration": temperatures}}
+    assert analyzer["audit_pinned_cpu_calibration"](tmp_path, proof, receipt)["complete"]
+    for changed in ("record_order", "grid_loss", "selected_index", "expected_metadata"):
+        altered = copy.deepcopy(proof)
+        cal = altered["calibration"]
+        if changed == "record_order":
+            cal["records"][:2] = reversed(cal["records"][:2])
+        elif changed == "grid_loss":
+            cal["types"]["score"]["losses"][32] += 2e-12
+        elif changed == "selected_index":
+            cal["types"]["score"]["argmin_index"] += 1
+        else:
+            cal["types"]["score"]["expected_metadata"]["temperature"] = grid[41]
+        with pytest.raises(ValueError, match="CPU proof"):
+            analyzer["audit_pinned_cpu_calibration"](tmp_path, altered, receipt)
 
 
 @pytest.mark.parametrize("policy", ["calibrated", "unit", "published_global"])
