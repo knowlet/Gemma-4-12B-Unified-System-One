@@ -175,6 +175,33 @@ def test_questions_are_inside_user_and_readout_is_after_assistant(model, case_re
     assert counts.tolist() == [2]
 
 
+def test_user_state_question_separator_survives_native_per_block_trimming(model, case_request):
+    class NativeTrimmingProcessor(Processor):
+        def apply_chat_template(self, messages, **kwargs):
+            # The real Gemma template strips each individual text block before
+            # concatenation; a newline in a separate block cannot separate it.
+            messages = copy.deepcopy(messages)
+            for message in messages:
+                for entry in message["content"]:
+                    if entry["type"] == "text":
+                        entry["text"] = entry["text"].strip()
+            return super().apply_chat_template(messages, **kwargs)
+
+    model.processor = NativeTrimmingProcessor()
+    model.tok = model.processor.tokenizer
+    request = case_request.model_copy(
+        update={"state": "Please refund the duplicate.", "questions": case_request.questions[:1]}
+    )
+    inputs, slots, _ = research.wrap_model(model, "user_question").prepare(request)
+    rendered = model.processor.calls[-1]["text"]
+    user, assistant = rendered.split("</user><assistant>")
+    assert "Please refund the duplicate.\nQuestion (choice):" in user
+    assert request.questions[0].instructions in user
+    assert ".Question" not in user and assistant == ""
+    assert model.processor.messages[-1][0]["role"] == "user"
+    assert inputs["input_ids"][0, slots[0]].item() == ord("(")
+
+
 @pytest.mark.parametrize("modality", ["text", "image", "audio", "mixed"])
 def test_native_tensors_and_expanded_media_slots_are_retained(model, case_request, modality):
     case_request = with_media(case_request, modality).model_copy(

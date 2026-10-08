@@ -21,7 +21,7 @@ from types import SimpleNamespace
 import pytest
 
 from s1.contracts import DecisionRequest, answer_from_probabilities
-from s1.evaluation.datasets import EvaluationCase
+from s1.evaluation.datasets import EvaluationCase, load_cases
 
 torch = pytest.importorskip("torch")
 pytestmark = pytest.mark.inference
@@ -476,6 +476,8 @@ def test_full_frozen_populations_and_executed_helpers_are_recorded_before_load(s
         "test": 384,
     }
     assert receipt["release_data"]["train"]["cases"] == 2048
+    assert receipt["release_data"]["media"]["cases"] == 52
+    assert receipt["release_data"]["regression_text"]["cases"] == 128
     for key in ("release_data_loader", "checkpoint_identity_helper", "prospective_protocol"):
         archived = setup_preflight.output / "sources" / f"{key}.txt"
         assert hashlib.sha256(archived.read_bytes()).hexdigest() == receipt["source_files"][key]
@@ -494,6 +496,13 @@ def test_full_frozen_populations_and_executed_helpers_are_recorded_before_load(s
     assert (
         hashlib.sha256(setup_preflight.native.read_bytes()).hexdigest()
         == protocol["data"]["native_fixture"]["file_sha256"]
+    )
+    native_cases = load_cases(setup_preflight.native)
+    assert len(native_cases) == protocol["data"]["native_fixture"]["cases"] == 8
+    assert (
+        sum(len(case.request.questions) for case in native_cases)
+        == protocol["data"]["native_fixture"]["questions"]
+        == 29
     )
     assert not setup_preflight.downloads
 

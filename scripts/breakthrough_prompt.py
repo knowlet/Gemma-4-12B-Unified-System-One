@@ -62,7 +62,13 @@ def prepare_user_question(model, request):
     lines = [f"\nQuestion ({question.type}): {question.instructions}\n"]
     for letter, label, description in zip(LETTERS, question.labels(), question.descriptions()):
         lines.append(f"({letter}) {label}: {description}\n")
-    content.append({"type": "text", "text": "".join(lines)})
+    question_text = "".join(lines)
+    # Gemma's real template trims each text block separately. Keep a text-only
+    # state/question delimiter inside one block so it survives rendering.
+    if content[-1]["type"] == "text":
+        content[-1]["text"] += question_text
+    else:
+        content.append({"type": "text", "text": question_text})
     text = model.processor.apply_chat_template(
         [{"role": "user", "content": content}],
         tokenize=False,
