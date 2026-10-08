@@ -87,6 +87,12 @@ def case_eligibility(model: ModelSpec, case) -> dict:
         q.type == "score" and len(q.labels()) > 10 for q in case.request.questions
     ):
         unsupported.append("max_score_levels_exceeded")
+    if model.adapter == "jev_omni":
+        from .jev_omni import request_blockers
+
+        unsupported.extend(
+            reason for reason in request_blockers(case.request) if reason not in unsupported
+        )
     if model.adapter in ("tfidf", "prior", "setfit") and model.artifact_file:
         from .baselines import schema_key
 
@@ -131,6 +137,7 @@ def _configuration_blockers(
         "kev",
         "agentjev",
         "clef",
+        "jev_omni",
         "embedding",
         "nli",
         "cross_encoder",

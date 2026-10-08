@@ -17,7 +17,7 @@ from s1.quantization import (
 from s1.resources import memory_snapshot, reset_memory_peak
 
 
-@pytest.mark.parametrize("mode", ["int8", "nf4"])
+@pytest.mark.parametrize("mode", ["int8", "nf4", "nvfp4"])
 @pytest.mark.parametrize("device,precision", [("cpu", "bfloat16"), ("cuda", "float32")])
 def test_invalid_quantization_runtime_fails_before_loading(mode, device, precision):
     with pytest.raises(ValueError, match="CUDA and bfloat16"):

@@ -1,0 +1,44 @@
+{
+  "status": "ok",
+  "repository": "knowlet/Gemma-4-12B-Unified-System-One-NVFP4",
+  "revision": "5c4f3c2cb5de2be66b9e51160613e868b33c311f",
+  "quantization": {
+    "method": "transformers_native_nvfp4",
+    "mode": "nvfp4",
+    "format": "s1-transformers-nvfp4-v1",
+    "quantized_linear_modules": 328,
+    "packed_tensor_bytes": 6812468512,
+    "dense_modules": [
+      "lm_head",
+      "model.embed_vision",
+      "model.embed_audio"
+    ],
+    "head_dtype": "bfloat16",
+    "weight_format": "E2M1",
+    "block_scale_format": "E4M3",
+    "block_size": 16,
+    "global_scale_dtype": "float32",
+    "activation_quantization": "dynamic_nvfp4_prefill",
+    "small_batch_compute": "W4A16_GEMV_for_1_or_2_rows",
+    "cpu_offload": false,
+    "kernel": {
+      "repo_id": "kernels-community/nvfp4-gemm",
+      "revision": "a66348abcb8cc22da69f2b77a3f5d4e01748f495"
+    }
+  },
+  "records": [
+    {
+      "case_id": "boolq-validation-2355",
+      "max_absolute_probability_difference": 2.9802322387695312e-08
+    },
+    {
+      "case_id": "mnist-test-7806",
+      "max_absolute_probability_difference": 3.802048798018376e-08
+    },
+    {
+      "case_id": "fsdd-test-9_george_2",
+      "max_absolute_probability_difference": 7.564987136721157e-09
+    }
+  ],
+  "scope": "anonymous pinned Hub load with native text/image/audio forwards"
+}

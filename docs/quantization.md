@@ -1,6 +1,11 @@
 # Quantized Gemma inference
 
-The public CLI and Modal inference app support `none`, `int8`, and `nf4`, with
+The public CLI also supports native Blackwell **`nvfp4`**, including direct
+loading of the packed trained release. It uses a separate PyTorch 2.10 runtime
+and B200 conversion/validation workflow; see [the NVFP4 guide](nvfp4-release.md).
+Merge adapters into BF16 before NVFP4 conversion.
+
+The historical Modal inference app and the CLI support `none`, `int8`, and `nf4`, with
 an optional existing CE decision adapter. They use the same multimodal processor
 and candidate-only decision readout as BF16 inference. See the
 [measured comparison](comparison.md) for accuracy, memory, and latency results.

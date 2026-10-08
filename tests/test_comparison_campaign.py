@@ -171,8 +171,8 @@ def test_every_predeclared_model_has_executable_precision_policy():
         config / "models.toml", config / "suites.toml", config / "profiles.toml"
     )
     specs = campaign_specs(registry, "/saved-adapters")
-    assert len(specs) == 15
-    assert len({spec.id for spec in specs}) == 15
+    assert len(specs) == 16
+    assert len({spec.id for spec in specs}) == 16
     for spec in specs:
         ModelSpec.model_validate(spec.model_dump())
         profile = ProfileSpec(id="quality", suite="boolq", models=(spec.id,))
