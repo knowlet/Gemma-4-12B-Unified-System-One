@@ -160,6 +160,25 @@ def default_support_files():
     return support
 
 
+def default_outcome_reports(directory=None):
+    """Capture available current reports separately from frozen/executed source."""
+    directory = (
+        Path(directory)
+        if directory is not None
+        else ROOT / "docs/validation/2026-10-08/breakthrough"
+    )
+    if directory.is_symlink() or (directory.exists() and not directory.is_dir()):
+        raise ValueError("ordinary outcome report directory required")
+    reports = {}
+    for name in ("README.md", "results.md"):
+        path = directory / name
+        if path.is_symlink() or (path.exists() and not path.is_file()):
+            raise ValueError(f"regular outcome report required: {path}")
+        if path.exists():
+            reports[name] = path.read_bytes()
+    return reports
+
+
 def _hash_check(files, name, expected, scope):
     _safe_name(name)
     if name not in files or sha256(files[name]) != expected:
@@ -478,7 +497,13 @@ def _zip_bytes(members):
 
 
 def archive_breakthrough(
-    artifact_root, output, *, source_commit=SOURCE_COMMIT, package_sources=None, support_files=None
+    artifact_root,
+    output,
+    *,
+    source_commit=SOURCE_COMMIT,
+    package_sources=None,
+    support_files=None,
+    outcome_reports=None,
 ):
     artifact_root, output = Path(artifact_root), Path(output)
     manifest_path = output.with_suffix(".manifest.json")
@@ -495,12 +520,19 @@ def archive_breakthrough(
     sources = frozen_sources(source_commit) if package_sources is None else package_sources
     support_from_disk = support_files is None
     support = default_support_files() if support_from_disk else support_files
+    reports_from_disk = outcome_reports is None
+    reports = default_outcome_reports() if reports_from_disk else outcome_reports
     protocol_raw = sources[PROTOCOL]
     protocol = _json(protocol_raw)
     input_checks = _input_checks(files, support, protocol)
     execution = _execution(files, omitted, protocol, sources, protocol_raw)
     members = {}
-    for prefix, collection in (("research", files), ("inputs", support), ("preflight", sources)):
+    for prefix, collection in (
+        ("research", files),
+        ("inputs", support),
+        ("preflight", sources),
+        ("reports", reports),
+    ):
         for name, raw in collection.items():
             _safe_name(name)
             member = f"{prefix}/{name}" + (
@@ -530,6 +562,12 @@ def archive_breakthrough(
         "preflight_source_commit": source_commit,
         "preflight_source_scope": "Immutable prospective source snapshot; execution proof only comes from saved stage sources and matching receipts",
         "archive_tool_scope": "Current offline archive tool saved under inputs/tools; it is not a model-cell executed source",
+        "outcome_reports": {
+            "scope": "Current outcome reports captured at archival time; not executed or frozen model source",
+            "members": [
+                record for record in member_records if record["path"].startswith("reports/")
+            ],
+        },
         "input_checks": input_checks,
         "execution": execution,
         "omitted_files": omitted,
@@ -547,6 +585,8 @@ def archive_breakthrough(
         raise ValueError("evidence changed while archiving")
     if support_from_disk and default_support_files() != support:
         raise ValueError("support files changed while archiving")
+    if reports_from_disk and default_outcome_reports() != reports:
+        raise ValueError("outcome reports changed while archiving")
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output.parent) as temporary:
         temporary = Path(temporary)
@@ -582,6 +622,10 @@ def verify_archive(output, manifest_path=None):
     names = [_safe_name(member["path"]) for member in expected]
     if names != sorted(set(names)):
         raise ValueError("manifest members must be sorted and unique")
+    if "outcome_reports" in manifest and manifest["outcome_reports"]["members"] != [
+        record for record in expected if record["path"].startswith("reports/")
+    ]:
+        raise ValueError("outcome report manifest index differs from hashed members")
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
         if archive.namelist() != names or archive.testzip() is not None:
             raise ValueError("ZIP member population or CRC differs")

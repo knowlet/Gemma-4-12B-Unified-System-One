@@ -120,6 +120,7 @@ def evidence(tmp_path):
 
 
 def build(evidence, output, **kwargs):
+    kwargs.setdefault("outcome_reports", {})
     return archive.archive_breakthrough(
         evidence.root,
         output,
@@ -127,6 +128,59 @@ def build(evidence, output, **kwargs):
         support_files=evidence.support,
         **kwargs,
     )
+
+
+def test_current_outcome_reports_are_optional_and_separate_from_frozen_source(evidence, tmp_path):
+    report_directory = tmp_path / "current-docs"
+    assert archive.default_outcome_reports(report_directory) == {}
+    save(report_directory, "README.md", b"Current execution status\n")
+    save(report_directory, "results.md", b"Current audited results\n")
+    evidence.sources["README.md"] = b"Historical frozen status\n"
+    reports = archive.default_outcome_reports(report_directory)
+    output = tmp_path / "evidence.zip"
+    manifest = build(evidence, output, outcome_reports=reports)
+    index = manifest["outcome_reports"]
+    assert "not executed or frozen" in index["scope"]
+    assert [record["path"] for record in index["members"]] == [
+        "reports/README.md",
+        "reports/results.md",
+    ]
+    assert index["members"][0]["sha256"] == archive.sha256(reports["README.md"])
+    assert index["members"][0]["size_bytes"] == len(reports["README.md"])
+    with zipfile.ZipFile(output) as zipped:
+        assert zipped.read("reports/README.md") == reports["README.md"]
+        assert zipped.read("reports/results.md") == reports["results.md"]
+        assert zipped.read("preflight/README.md") == b"Historical frozen status\n"
+    assert archive.verify_archive(output)["verified"] is True
+    manifest_path = output.with_suffix(".manifest.json")
+    manifest = json.loads(manifest_path.read_text())
+    manifest["outcome_reports"]["members"][0]["sha256"] = "0" * 64
+    manifest_path.write_bytes(encoded(manifest))
+    with pytest.raises(ValueError, match="outcome report manifest index"):
+        archive.verify_archive(output)
+
+
+@pytest.mark.parametrize("kind", ["symlink", "directory"])
+def test_current_outcome_report_collector_requires_regular_files(tmp_path, kind):
+    report_directory = tmp_path / "reports"
+    report_directory.mkdir()
+    if kind == "symlink":
+        target = tmp_path / "real-report.md"
+        target.write_bytes(b"report")
+        (report_directory / "README.md").symlink_to(target)
+    else:
+        (report_directory / "README.md").mkdir()
+    with pytest.raises(ValueError, match="regular outcome report"):
+        archive.default_outcome_reports(report_directory)
+
+
+def test_changing_current_reports_prevents_publication(evidence, tmp_path, monkeypatch):
+    captures = iter([{"README.md": b"initial report"}, {"README.md": b"updated report"}])
+    monkeypatch.setattr(archive, "default_outcome_reports", lambda: next(captures))
+    output = tmp_path / "evidence.zip"
+    with pytest.raises(ValueError, match="outcome reports changed"):
+        build(evidence, output, outcome_reports=None)
+    assert not output.exists()
 
 
 def executed(evidence, *, stage="train", status="completed"):
