@@ -93,7 +93,7 @@ def _read_tree(root, *, allow_research=False):
             and path.name in RESEARCH_BINARIES
             and len(PurePosixPath(name).parts) >= 4
             and PurePosixPath(name).parts[0] == "runs"
-            and PurePosixPath(name).parts[2] == "train"
+            and PurePosixPath(name).parts[2] in {"train", "train-recovered"}
         ):
             reason = "baseline or unrecognized model weights; not research head/features/adapter"
         if reason:
@@ -259,6 +259,107 @@ def _source_checks(files, prefix, receipt, sources, protocol_raw):
     return checks
 
 
+def _recovered_transport(files, omitted, prefix, run, receipt_raw):
+    """Prove the one supported physical alias is an exact completed download."""
+    metadata = prefix + ".evidence-download/"
+    transport_raw = files.get(metadata + "receipt.json")
+    if transport_raw is None:
+        raise ValueError("train-recovered requires a completed transport receipt")
+    transport = _json(transport_raw)
+    receipt = _json(receipt_raw)
+    if (
+        receipt.get("status") not in {"completed", "failed"}
+        or transport.get("status") != "completed"
+        or transport.get("run") != run
+        or transport.get("stage") != "train"
+        or transport.get("volume") != "gemma-unified-system-one"
+        or transport.get("remote_prefix") != f"breakthrough/{run}/train"
+        or transport.get("gpu_receipt_sha256") != sha256(receipt_raw)
+        or transport.get("gpu_receipt_status") != receipt.get("status")
+        or transport.get("errors") != []
+    ):
+        raise ValueError("train-recovered terminal receipt/transport identity differs")
+    payload = {
+        name.removeprefix(prefix): raw
+        for name, raw in files.items()
+        if name.startswith(prefix) and not name.startswith(metadata)
+    }
+    if any(name.startswith(prefix) for name in omitted):
+        raise ValueError("train-recovered transport payload cannot contain omitted files")
+    checks = {}
+    for field, collection in (
+        ("members", payload),
+        (
+            "metadata_members",
+            {
+                name.removeprefix(metadata): raw
+                for name, raw in files.items()
+                if name.startswith(metadata) and name != metadata + "receipt.json"
+            },
+        ),
+    ):
+        records = transport.get(field)
+        if not isinstance(records, list):
+            raise ValueError("train-recovered transport member list missing")
+        names = [_safe_name(record["path"]) for record in records]
+        if len(set(names)) != len(names) or set(names) != set(collection):
+            raise ValueError("train-recovered transport member population differs")
+        for record in records:
+            name = record["path"]
+            if sha256(collection[name]) != record.get("sha256") or len(
+                collection[name]
+            ) != record.get("size_bytes"):
+                raise ValueError("train-recovered transport member checksum/size differs")
+        checks[field] = len(records)
+    if (
+        transport.get("expected_files") != len(payload)
+        or transport.get("expected_size_bytes") != sum(map(len, payload.values()))
+        or transport.get("executed_sources_verified") != len(receipt.get("source_files", {}))
+        or sha256(files.get(metadata + "export_breakthrough_evidence.py.txt", b""))
+        != transport.get("source_sha256")
+    ):
+        raise ValueError("train-recovered transport totals/helper source differ")
+    failure = transport.get("original_export_failure")
+    failure_raw = files.get(metadata + "original-export-failure.txt")
+    if failure != (
+        {"sha256": sha256(failure_raw), "size_bytes": len(failure_raw)}
+        if failure_raw is not None
+        else {"status": "not_supplied"}
+    ):
+        raise ValueError("train-recovered original export failure record differs")
+    canonical_prefix = f"runs/{run}/train/"
+    canonical = {
+        name.removeprefix(canonical_prefix): raw
+        for name, raw in files.items()
+        if name.startswith(canonical_prefix)
+        and not name.startswith(canonical_prefix + ".evidence-download/")
+    }
+    common = sorted(set(canonical) & set(payload))
+    if any(canonical[name] != payload[name] for name in common):
+        raise ValueError("canonical train and train-recovered common member bytes differ")
+    return {
+        "logical_stage": "train",
+        "physical_directory": "train-recovered",
+        "transport_status": "completed",
+        "transport_receipt_sha256": sha256(transport_raw),
+        "gpu_receipt_sha256": transport["gpu_receipt_sha256"],
+        "remote_prefix": transport["remote_prefix"],
+        "member_checks": checks,
+        "canonical_transport_status": "evidence_present"
+        if canonical or any(name.startswith(canonical_prefix) for name in omitted)
+        else "not_downloaded",
+        "canonical_common_members": len(common),
+        "canonical_common_bytes": "all_identical",
+        "canonical_only_members": sorted(set(canonical) - set(payload)),
+        "recovered_only_members": sorted(set(payload) - set(canonical)),
+        "original_cpu_export": {
+            "status": "not_assessed_by_archiver",
+            "transport_failure_record": transport.get("original_export_failure"),
+            "scope": "Original CPU export pending/failure is separate from GPU and recovery status; consult preserved diagnostics and outcome reports",
+        },
+    }
+
+
 def _execution(files, omitted, protocol, sources, protocol_raw):
     planned = {
         stage["id"]: [profile["id"] for profile in stage["profiles"]]
@@ -276,7 +377,7 @@ def _execution(files, omitted, protocol, sources, protocol_raw):
             if name.startswith("runs/") and len(name.split("/")) >= 4
         }
     )
-    cells = {}
+    cells, recoveries = {}, {}
     for run in runs:
         if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,79}", run):
             raise ValueError("invalid run directory")
@@ -285,10 +386,16 @@ def _execution(files, omitted, protocol, sources, protocol_raw):
             for name in all_names
             if name.startswith(f"runs/{run}/") and len(name.split("/")) >= 4
         }
-        if actual_stages - set(planned):
+        allowed = set(planned) | ({"train-recovered"} if "train" in planned else set())
+        if actual_stages - allowed:
             raise ValueError(f"unplanned stage directory: {run}")
-        for stage, profiles in planned.items():
-            prefix = f"runs/{run}/{stage}/"
+        physical_stages = list(planned)
+        if "train-recovered" in actual_stages:
+            physical_stages.append("train-recovered")
+        for physical_stage in physical_stages:
+            stage = "train" if physical_stage == "train-recovered" else physical_stage
+            profiles = planned[stage]
+            prefix = f"runs/{run}/{physical_stage}/"
             stage_files = {name: raw for name, raw in files.items() if name.startswith(prefix)}
             stage_omitted = sum(name.startswith(prefix) for name in omitted)
             receipt_raw = files.get(prefix + "receipt.json")
@@ -301,6 +408,14 @@ def _execution(files, omitted, protocol, sources, protocol_raw):
                 "files": len(stage_files),
                 "omitted_files": stage_omitted,
             }
+            if physical_stage == "train-recovered":
+                if receipt_raw is None:
+                    raise ValueError("train-recovered requires a terminal GPU receipt")
+                recoveries[f"{run}/{physical_stage}"] = _recovered_transport(
+                    files, omitted, prefix, run, receipt_raw
+                )
+                cell["logical_stage"] = stage
+                cell["physical_directory"] = physical_stage
             if not receipt_raw:
                 cell["evidence_status"] = (
                     "missing_receipt" if stage_files or stage_omitted else "not_run"
@@ -343,7 +458,15 @@ def _execution(files, omitted, protocol, sources, protocol_raw):
                 )
                 cell["gpu"] = receipt.get("gpu")
                 cell["research_binary_checks"] = _binary_checks(files, prefix, receipt)
-            cells[f"{run}/{stage}"] = cell
+            cells[f"{run}/{physical_stage}"] = cell
+        if "train-recovered" in actual_stages:
+            canonical = cells[f"{run}/train"]
+            if canonical["evidence_status"] == "not_run":
+                canonical.update(
+                    declared_status="not_observed_in_this_directory",
+                    evidence_status="not_downloaded",
+                    recovered_by=f"{run}/train-recovered",
+                )
     execution_status = (
         _json(files["execution-status.json"]) if "execution-status.json" in files else None
     )
@@ -367,6 +490,7 @@ def _execution(files, omitted, protocol, sources, protocol_raw):
         "state_scope": "Frozen Modal A100 stages only; no_gpu does not describe separate local MPS hardware use",
         "planned_stages": planned,
         "stage_receipts": cells,
+        "recovery_transfers": recoveries,
         "local_experiments": _local_execution(files, protocol, sources),
         "local_status_record": execution_status,
         "population_validation": "not_performed_by_archiver; receipt_completed does not certify complete benchmark support or improvement",

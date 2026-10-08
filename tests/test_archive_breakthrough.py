@@ -315,6 +315,186 @@ def test_executed_sources_raw_cache_and_trained_binaries_are_preserved(evidence,
         assert any("public231/raw/request.json" in name for name in zipped.namelist())
 
 
+def recovered(evidence, *, status="completed"):
+    prefix, receipt = executed(evidence, status=status)
+    canonical = evidence.root / prefix
+    target = canonical.with_name("train-recovered")
+    canonical.rename(target)
+    prefix = "runs/trial01/train-recovered/"
+    research = {
+        "decision-head.pt": b"exact trained head",
+        "train-features.pt": b"exact detached features",
+        "mixed-lora/adapter/adapter_model.safetensors": b"exact trained adapter",
+        "mixed-lora/adapter/README.md": b"PEFT documentation absent from original ZIP filter\n",
+    }
+    for name, raw in research.items():
+        save(evidence.root, prefix + name, raw)
+    payload = {
+        path.relative_to(target).as_posix(): path.read_bytes()
+        for path in sorted(target.rglob("*"))
+        if path.is_file()
+    }
+    helper = b"# actual read-only download helper\n"
+    listing = encoded({name: {"size_bytes": len(raw)} for name, raw in payload.items()})
+    metadata = {
+        "export_breakthrough_evidence.py.txt": helper,
+        "remote-listing.json": listing,
+        "original-export-failure.txt": b"Original CPU export timed out; GPU remained completed\n",
+    }
+    for name, raw in metadata.items():
+        save(evidence.root, prefix + ".evidence-download/" + name, raw)
+    transport = {
+        "status": "completed",
+        "run": "trial01",
+        "stage": "train",
+        "volume": "gemma-unified-system-one",
+        "remote_prefix": "breakthrough/trial01/train",
+        "gpu_receipt_status": status,
+        "gpu_receipt_sha256": archive.sha256(payload["receipt.json"]),
+        "source_sha256": archive.sha256(helper),
+        "expected_files": len(payload),
+        "expected_size_bytes": sum(map(len, payload.values())),
+        "executed_sources_verified": len(receipt["source_files"]),
+        "members": [
+            {"path": name, "sha256": archive.sha256(raw), "size_bytes": len(raw)}
+            for name, raw in payload.items()
+        ],
+        "metadata_members": [
+            {"path": name, "sha256": archive.sha256(raw), "size_bytes": len(raw)}
+            for name, raw in metadata.items()
+        ],
+        "original_export_failure": {
+            "sha256": archive.sha256(metadata["original-export-failure.txt"]),
+            "size_bytes": len(metadata["original-export-failure.txt"]),
+        },
+        "errors": [],
+    }
+    save(evidence.root, prefix + ".evidence-download/receipt.json", encoded(transport))
+    return prefix, payload, metadata, transport
+
+
+def test_recovered_train_preserves_all_bytes_and_discloses_original_missing_download(
+    evidence, tmp_path
+):
+    prefix, payload, metadata, _ = recovered(evidence)
+    manifest = build(evidence, tmp_path / "evidence.zip")
+    execution = manifest["execution"]
+    cell = execution["stage_receipts"]["trial01/train-recovered"]
+    assert cell["logical_stage"] == "train"
+    assert cell["evidence_status"] == "receipt_completed"
+    assert len(cell["source_checks"]) == len(archive.ALIASES) + 2
+    assert execution["stage_receipts"]["trial01/train"]["evidence_status"] == "not_downloaded"
+    recovery = execution["recovery_transfers"]["trial01/train-recovered"]
+    assert recovery["canonical_transport_status"] == "not_downloaded"
+    assert recovery["member_checks"] == {"members": len(payload), "metadata_members": 3}
+    assert recovery["original_cpu_export"]["status"] == "not_assessed_by_archiver"
+    assert recovery["original_cpu_export"]["transport_failure_record"]["sha256"] == archive.sha256(
+        metadata["original-export-failure.txt"]
+    )
+    with zipfile.ZipFile(tmp_path / "evidence.zip") as zipped:
+        for name, raw in payload.items():
+            assert zipped.read("research/" + prefix + name) == raw
+        for name, raw in metadata.items():
+            assert zipped.read("research/" + prefix + ".evidence-download/" + name) == raw
+    assert archive.verify_archive(tmp_path / "evidence.zip")["verified"] is True
+
+
+def test_canonical_and_recovered_common_bytes_are_verified_without_discarding_extras(
+    evidence, tmp_path
+):
+    prefix, payload, _, _ = recovered(evidence)
+    canonical_prefix = "runs/trial01/train/"
+    for name, raw in payload.items():
+        if not name.endswith("README.md"):
+            save(evidence.root, canonical_prefix + name, raw)
+    save(evidence.root, canonical_prefix + "original-main.log", b"original stdout exact bytes\n")
+    manifest = build(evidence, tmp_path / "evidence.zip")
+    recovery = manifest["execution"]["recovery_transfers"]["trial01/train-recovered"]
+    assert recovery["canonical_transport_status"] == "evidence_present"
+    assert recovery["canonical_common_members"] == len(payload) - 1
+    assert recovery["canonical_common_bytes"] == "all_identical"
+    assert recovery["canonical_only_members"] == ["original-main.log"]
+    assert recovery["recovered_only_members"] == ["mixed-lora/adapter/README.md"]
+    with zipfile.ZipFile(tmp_path / "evidence.zip") as zipped:
+        assert (
+            zipped.read("research/" + canonical_prefix + "receipt.json") == payload["receipt.json"]
+        )
+        assert zipped.read("research/" + prefix + "receipt.json") == payload["receipt.json"]
+        assert zipped.read("research/" + canonical_prefix + "original-main.log") == (
+            b"original stdout exact bytes\n"
+        )
+
+
+def test_recovery_completed_transport_does_not_promote_failed_gpu_execution(evidence, tmp_path):
+    recovered(evidence, status="failed")
+    manifest = build(evidence, tmp_path / "evidence.zip")
+    cell = manifest["execution"]["stage_receipts"]["trial01/train-recovered"]
+    assert cell["declared_status"] == "failed"
+    assert cell["evidence_status"] == "failed"
+
+
+@pytest.mark.parametrize(
+    "kind",
+    [
+        "missing_transport",
+        "running_gpu",
+        "partial_transport",
+        "wrong_run",
+        "wrong_stage",
+        "wrong_prefix",
+        "receipt_hash",
+        "payload_hash",
+        "payload_size",
+        "extra_payload",
+        "metadata_hash",
+        "helper_hash",
+        "original_failure_hash",
+        "canonical_conflict",
+    ],
+)
+def test_recovery_requires_exact_terminal_completed_transport_and_matching_bytes(
+    evidence, tmp_path, kind
+):
+    prefix, payload, _, transport = recovered(evidence)
+    transport_path = prefix + ".evidence-download/receipt.json"
+    if kind == "missing_transport":
+        (evidence.root / transport_path).unlink()
+    elif kind == "running_gpu":
+        receipt = json.loads(payload["receipt.json"])
+        receipt["status"] = "running"
+        save(evidence.root, prefix + "receipt.json", encoded(receipt))
+    elif kind == "partial_transport":
+        transport["status"] = "running"
+    elif kind == "wrong_run":
+        transport["run"] = "other01"
+    elif kind == "wrong_stage":
+        transport["stage"] = "ablate"
+    elif kind == "wrong_prefix":
+        transport["remote_prefix"] = "breakthrough/trial01/ablate"
+    elif kind == "receipt_hash":
+        transport["gpu_receipt_sha256"] = "0" * 64
+    elif kind == "payload_hash":
+        save(evidence.root, prefix + "decision-head.pt", b"different trained head")
+    elif kind == "payload_size":
+        transport["members"][0]["size_bytes"] += 1
+    elif kind == "extra_payload":
+        save(evidence.root, prefix + "not-declared.json", b"{}")
+    elif kind == "metadata_hash":
+        save(evidence.root, prefix + ".evidence-download/remote-listing.json", b"{}")
+    elif kind == "helper_hash":
+        transport["source_sha256"] = "0" * 64
+    elif kind == "original_failure_hash":
+        transport["original_export_failure"]["sha256"] = "0" * 64
+    else:
+        save(evidence.root, "runs/trial01/train/decision-head.pt", b"conflicting canonical head")
+    if kind != "missing_transport":
+        save(evidence.root, transport_path, encoded(transport))
+    output = tmp_path / "evidence.zip"
+    with pytest.raises(ValueError, match="train-recovered|canonical train"):
+        build(evidence, output)
+    assert not output.exists()
+
+
 def test_baseline_weights_and_redundant_zip_are_explicitly_omitted_without_reading(
     evidence, tmp_path, monkeypatch
 ):
