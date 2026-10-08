@@ -554,6 +554,23 @@ def practical_takeaways(summary: dict) -> list[str]:
             + image_statement
             + "The matched BoolQ comparison against Gemma base is shown separately from media coverage."
         )
+    jev = runs.get("jev-omni-local")
+    if jev and jev["boolq"].get("accuracy") is not None:
+        media = jev["media"]
+        media_statement = (
+            f"Native media records {_pct(media['accuracy'])} "
+            f"({media['correct']}/{media['expected']}) across images and audio. "
+            if media.get("accuracy") is not None
+            else "Native media accuracy is not recorded in this snapshot. "
+        )
+        points.append(
+            f"- Jev-Omni records {_pct(jev['boolq']['accuracy'])} BoolQ accuracy, "
+            f"{_number(jev['boolq'].get('mean_ms'))} ms serial mean latency, and "
+            f"{_memory(jev['memory']['peak_allocated_bytes'])} GB (GiB) peak CUDA allocation. "
+            + media_statement
+            + "The report retains the paired BoolQ interval and runtime differences; "
+            "the point estimate alone does not establish an accuracy ordering."
+        )
     bf16 = groups.get("bf16", {})
     base, decider, laya = (
         runs.get(name, {}) for name in ("gemma-base-bf16", "decider-local", "laya-general")
@@ -780,6 +797,36 @@ def render(
                 else "The Clef protocol targets the pinned full 27B release in the shared "
                 "PyTorch reference runtime. This snapshot has no completed measured Clef run; "
                 "the configured protocol is not evidence of runtime execution.",
+                "",
+            ]
+        )
+    jev_run = next((run for run in summary["runs"] if run["model_id"] == "jev-omni-local"), None)
+    if jev_run:
+        measured = jev_run.get("status") in ("completed", "completed_with_errors") and any(
+            observed.get(key) is not None
+            for observed in (jev_run["boolq"], jev_run["media"])
+            for key in ("accuracy", "supported_accuracy")
+        )
+        packages = jev_run["telemetry"].get("runtime_options", {}).get("packages", {})
+        lines.extend(
+            [
+                (
+                    "Jev-Omni uses the pinned merged BF16 multimodal backbone and FP32 stored "
+                    "decision head, with BF16 autocast and one native forward per question. "
+                    f"Its recorded runtime is PyTorch {packages.get('torch', 'not recorded')} / "
+                    f"Transformers {packages.get('transformers', 'not recorded')}; "
+                    "older campaign rows retain their own package versions. The adapter computes "
+                    "softmax in float32 to preserve a complete normalized candidate distribution "
+                    "and passes existing 16 kHz float32 audio directly, avoiding the publisher's "
+                    "temporary WAV/ffmpeg roundtrip. Source code, weights and processor share the "
+                    "same immutable revision. No test fitting, CUDA graphs, compilation or prefix "
+                    "cache is used. These measurements include native media preprocessing and "
+                    "must not be compared as identical runtimes to the publisher's optimized H200 timings."
+                    if measured
+                    else "The Jev-Omni protocol targets its pinned native multimodal checkpoint. "
+                    "This snapshot has no completed measured Jev-Omni run; no runtime or latency "
+                    "claim follows from its configuration."
+                ),
                 "",
             ]
         )
@@ -1233,6 +1280,20 @@ def render(
                     f"{_link(campaign_path.parent / 'README.md', output, 'Evidence and replay instructions')} "
                     "show how to recompute the paired interval without Modal access and retrieve "
                     "the full load archive separately.",
+                    "",
+                ]
+            )
+        jev_index = campaign_path.parent / "jev-omni-evidence.json"
+        if jev_index.exists():
+            lines.extend(
+                [
+                    "Jev-Omni's complete receipt, BoolQ/media predictions and manifests, request "
+                    "records, and all six raw HTTP load cells are published with "
+                    f"{_link(jev_index, output, 'verified source hashes')}. "
+                    f"{_link(campaign_path.parent / 'jev-omni.md', output, 'Jev-Omni evidence and replay instructions')} "
+                    "record the native-runtime policy and exact paired confidence interval. "
+                    "Earlier Clef evidence remains in the "
+                    "[October 2 archive](validation/2026-10-02/clef-evidence.json).",
                     "",
                 ]
             )

@@ -509,3 +509,19 @@ def test_selected_score_requires_saved_hashes_even_without_a_comparison_partner(
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError, match="missing BoolQ"):
         COLLECT.collect([path], tmp_path / "summary.json", resamples=100)
+
+
+def test_jev_omni_adds_a_verified_same_input_pair_only_when_attempted(tmp_path):
+    path = campaign(
+        tmp_path,
+        "jev-omni",
+        1,
+        [("gemma-base-bf16", "completed", 111), ("jev-omni-local", "completed", 116)],
+    )
+    result = COLLECT.collect([path], tmp_path / "summary.json", resamples=100)
+    assert "jev-omni-local" in result["expected_models"]
+    assert "jev-omni-local" not in result["missing_models"]
+    comparison = next(row for row in result["comparisons"] if row["right"] == "jev-omni-local")
+    assert comparison["status"] == "computed"
+    assert comparison["kind"] == "same_input_generalist"
+    assert comparison["operational_accuracy_delta"]["estimate"] == 5 / 128

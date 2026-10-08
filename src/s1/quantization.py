@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import threading
 
-QUANTIZATION_MODES = ("none", "int8", "nf4")
+QUANTIZATION_MODES = ("none", "int8", "nf4", "nvfp4")
 # The readout indexes dense LM-head rows directly. These lightweight media
 # projections are also kept dense to preserve the existing processor contract.
 DENSE_MODULES = ("lm_head", "model.embed_vision", "model.embed_audio")
@@ -58,11 +58,14 @@ def limit_expected_int8_cast_warning():
 def loading_kwargs(mode, *, device, precision):
     """Return from_pretrained kwargs, validating before checkpoint downloads."""
     if mode not in QUANTIZATION_MODES:
-        raise ValueError("quantization must be none, int8, or nf4")
+        raise ValueError("quantization must be none, int8, nf4, or nvfp4")
     if mode == "none":
         return {}
     if not str(device).startswith("cuda") or precision != "bfloat16":
-        raise ValueError("int8/nf4 quantization requires CUDA and bfloat16 precision")
+        raise ValueError("int8/nf4/nvfp4 quantization requires CUDA and bfloat16 precision")
+    if mode == "nvfp4":
+        # The dedicated loader handles source conversion and packed restoration.
+        return {}
     import torch
     from transformers import BitsAndBytesConfig
 
@@ -91,6 +94,10 @@ def loading_kwargs(mode, *, device, precision):
 
 def inspect_quantization(lm, mode):
     """Verify actual conversion and keep an auditable, compact runtime receipt."""
+    if mode == "nvfp4":
+        from .nvfp4 import inspect_nvfp4
+
+        return inspect_nvfp4(lm)
     if mode == "none":
         if getattr(lm, "is_quantized", False):
             raise ValueError("pre-quantized checkpoint requires an explicit quantization mode")

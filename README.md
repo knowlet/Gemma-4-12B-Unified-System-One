@@ -11,6 +11,30 @@ This project extends [system-one-open](https://github.com/mithalouni/system-one-
 The original E2B experiments and demos remain available; their historical results
 are not measurements of this Unified model. See [upstream notes](docs/upstream.md).
 
+## NVFP4 release — October 7, 2026
+
+The trained checkpoint now has a native packed **NVFP4** export for Blackwell,
+with its candidate head and image/audio modules retained in BF16. The same B200
+and PyTorch 2.10 runtime measured both formats on the frozen release datasets:
+
+| Format | Weight files | Peak CUDA allocated | Fresh BoolQ (256 cases) | Median request latency |
+| --- | ---: | ---: | ---: | ---: |
+| Trained BF16 | 23.92 GB | 24.19 GB | 89.84% | 38.68 ms |
+| Trained NVFP4 | **8.93 GB** | **9.14 GB** | 88.67% | 45.44 ms |
+
+NVFP4 reduces memory in this runtime; it is slower on the measured workload.
+Historical native media scores are 31/52 for NVFP4 and 32/52 for the same B200
+BF16 reference. These measurements retain their own hardware/runtime scope;
+the older A100 results below remain unchanged. All 436 release decisions were
+replayed using the exact bundled runtime, with identical candidate probabilities.
+
+The [NVFP4 package is published on Hugging Face](https://huggingface.co/knowlet/Gemma-4-12B-Unified-System-One-NVFP4/tree/5c4f3c2cb5de2be66b9e51160613e868b33c311f),
+including the verified runtime wheel and Jev-Omni benchmark evidence.
+Use the [NVFP4 runtime and reproduction guide](docs/nvfp4-release.md) and
+[complete measured evidence](docs/validation/2026-10-07/nvfp4/README.md).
+The `s1-transformers-nvfp4-v1` package requires its bundled S1 loader;
+stock Transformers, vLLM and TensorRT-LLM compatibility is not claimed.
+
 ## BoolQ specialist training — October 2, 2026
 
 A complete 2,048-update LoRA pass has been merged into standalone BF16 12B
@@ -48,9 +72,9 @@ packages were published on October 4, 2026. The
 [publication evidence](docs/validation/2026-10-04/README.md) records immutable
 revisions, matching remote file identities and public access checks.
 
-## Matched model comparison — October 2, 2026
+## Matched model comparison — October 7, 2026
 
-Matched Modal runs now cover **18 model/format/seed configurations** on
+Matched Modal runs now cover **19 model/format/seed configurations** on
 the same **128 BoolQ questions, 52 native media cases, and six HTTP load shapes**.
 The [full comparison](docs/comparison.md) includes per-seed accuracy, media results,
 memory, latency percentiles, paired confidence intervals, and historical A100 runs.
@@ -63,6 +87,7 @@ memory, latency percentiles, paired confidence intervals, and historical A100 ru
 | Gemma NF4 + 100 additional training updates | **90.36%** | **8.34 GB** | 173–192 ms |
 | Gemma base BF16 | 86.72% | 24.45 GB | 88 ms |
 | Cloudflare Clef-27B | **89.84%** | 55.66 GB | 185 ms |
+| Jev-Omni-12B BF16 | 87.50% | 24.38 GB | 81 ms |
 | Decider-2B | 88.28% | 4.25 GB | 76 ms |
 | Laya | 82.03% | 2.77 GB | 33 ms |
 | AgentJev-0.6B | 72.66% | 3.70 GB | 41 ms |
@@ -91,13 +116,19 @@ minimum GPU capacity needed for deployment.
   (95% CI −3.906 to +10.156), which does not establish a statistical advantage.
   Clef uses the full pinned 27B release and shared reference runtime, not Clef-Flash
   or an optimized hosted service.
+- **Jev-Omni scores 112/128**, with a paired difference versus Gemma base of
+  +0.781 percentage points (95% CI −6.250 to +7.812). Native media scores 30/52:
+  28/32 images and 2/20 audio recordings. It uses PyTorch 2.10, its native
+  decision head, and float32 softmax; older rows use PyTorch 2.8. The interval
+  does not establish an accuracy advantage.
 - **Smaller models offer useful tradeoffs.** Decider scores 88.28% with 4.25 GB
   peak allocation; Laya has the lowest measured mean latency at 33 ms and 82.03%
   accuracy. Decider/Kev use eager reference kernels; AgentJev uses its current
   coding checkpoint. Their optimized or older published runs are different tests.
 
-See the [latest saved result summary](docs/validation/2026-10-02/comparison-summary.json)
-for 30 retained attempts and 14 paired comparisons, the
+See the [latest saved result summary](docs/validation/2026-10-07/comparison-summary.json)
+for 31 retained attempts and 15 paired comparisons, the
+[Jev-Omni report and raw evidence](docs/validation/2026-10-07/jev-comparison.md), the
 [Clef evidence and replay commands](docs/validation/2026-10-02/README.md) for published
 predictions and manifests, the
 [quantization guide](docs/quantization.md) for inference commands, and

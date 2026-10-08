@@ -32,7 +32,7 @@ EXPECTED_MODELS = (
 
 
 RECOVERY_MODELS = tuple(f"gemma-ce128-s{seed}-nf4-recovered" for seed in range(3))
-OPTIONAL_MODELS = ("clef-local",)
+OPTIONAL_MODELS = ("clef-local", "jev-omni-local")
 RECOVERY_TRAIN_SHA256 = "4bc27d96d998ef02137e58e2c8b5d4f928dafc9db03476d436a13acddf35decb"
 RECOVERY_CALIBRATION_SHA256 = "2d919497859b47f55aaaf6e67a63e8f2141877f77cacc0625dd59d3e67add9b8"
 

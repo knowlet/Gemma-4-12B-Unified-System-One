@@ -1,0 +1,344 @@
+{
+  "schema_version": 1,
+  "evaluation_sha256": "e93126fee52afd2a651ddd9951db61b8354be322725a22d892820e2d16cf09e0",
+  "conversion_manifest_sha256": "7e810837f152462f8e091153c8d1c8b5fc01464a8e8c168465322643c7329e0e",
+  "request_identity_audit_sha256": "cfc7d6f63017b9ed37777d37211fac886ca7cabbdd5649bcf88dc3a7dd27d8a0",
+  "method": {
+    "prediction": "argmax of original candidate probability dictionary in its recorded order",
+    "accuracy": "correct divided by all expected cases; every case completed successfully",
+    "bootstrap": "s1.evaluation.statistics.cluster_interval, resampling whole source groups",
+    "seed": 20260930,
+    "resamples": 2000,
+    "confidence": 0.95,
+    "paired_direction": "NVFP4 minus named reference",
+    "multiple_comparisons_adjusted": false,
+    "scope": "descriptive screening only",
+    "latency": "mean and percentiles of per-request latency_ms from archived records, one question per request; excludes model setup and one warmup",
+    "memory": "GPU peak reset once per model before ordered test/media/regression evaluation; later split peaks are cumulative. Host peak is shared process lifetime, not a model-specific peak."
+  },
+  "measurements": [
+    {
+      "model": "bf16",
+      "split": "test",
+      "cases": 256,
+      "correct": 230,
+      "accuracy": 0.8984375,
+      "metrics": {
+        "n": 256,
+        "acc": 0.8984375,
+        "nll": 0.2733794104492637,
+        "brier": 0.1584459819008323,
+        "ece": 0.05457319715060294,
+        "aurc": 0.024795451811340612,
+        "acc_at_80": 0.9560975609756097,
+        "acc_at_50": 0.984375,
+        "chance": 0.5,
+        "mean_conf": 0.90484736522194
+      },
+      "mean_ms": 37.76818091015632,
+      "p50_ms": 38.675688499999694,
+      "p95_ms": 46.923679249998074,
+      "p99_ms": 57.946423100000985,
+      "memory": {
+        "process_peak_scope": "process_lifetime",
+        "process_peak_rss_bytes": 29895053312,
+        "process_peak_rss_kib": 29194388.0,
+        "model_footprint_bytes": 23919463522,
+        "model_footprint_scope": "registered_parameters_and_buffers",
+        "gpu_name": "NVIDIA B200",
+        "gpu_total_bytes": 191503138816,
+        "device_used_bytes": 25448611840,
+        "allocated_bytes": 24004554752,
+        "reserved_bytes": 24620564480,
+        "peak_allocated_bytes": 24187527168,
+        "peak_reserved_bytes": 24620564480,
+        "cuda_peak_scope": "since_last_reset_or_process_start"
+      },
+      "media_tasks": null
+    },
+    {
+      "model": "nvfp4",
+      "split": "test",
+      "cases": 256,
+      "correct": 227,
+      "accuracy": 0.88671875,
+      "metrics": {
+        "n": 256,
+        "acc": 0.88671875,
+        "nll": 0.3000831908648617,
+        "brier": 0.17801386646348874,
+        "ece": 0.04583743725379463,
+        "aurc": 0.03058724067091859,
+        "acc_at_80": 0.9365853658536586,
+        "acc_at_50": 0.984375,
+        "chance": 0.5,
+        "mean_conf": 0.8929877262708033
+      },
+      "mean_ms": 45.8730058593751,
+      "p50_ms": 45.4410784999979,
+      "p95_ms": 49.63609150000181,
+      "p99_ms": 51.57866920000131,
+      "memory": {
+        "process_peak_scope": "process_lifetime",
+        "process_peak_rss_bytes": 31128289280,
+        "process_peak_rss_kib": 30398720.0,
+        "model_footprint_bytes": 8932036994,
+        "model_footprint_scope": "registered_parameters_and_buffers",
+        "gpu_name": "NVIDIA B200",
+        "gpu_total_bytes": 191503138816,
+        "device_used_bytes": 10602872832,
+        "allocated_bytes": 8959819776,
+        "reserved_bytes": 9770631168,
+        "peak_allocated_bytes": 9142883840,
+        "peak_reserved_bytes": 9770631168,
+        "cuda_peak_scope": "since_last_reset_or_process_start"
+      },
+      "media_tasks": null
+    },
+    {
+      "model": "bf16",
+      "split": "regression_text",
+      "cases": 128,
+      "correct": 118,
+      "accuracy": 0.921875,
+      "metrics": {
+        "n": 128,
+        "acc": 0.921875,
+        "nll": 0.2483820919299807,
+        "brier": 0.13647551908722383,
+        "ece": 0.06317339057568462,
+        "aurc": 0.02774468186220556,
+        "acc_at_80": 0.9607843137254902,
+        "acc_at_50": 0.96875,
+        "chance": 0.5,
+        "mean_conf": 0.9041267464635894
+      },
+      "mean_ms": 32.94635614843755,
+      "p50_ms": 30.527434999996217,
+      "p95_ms": 42.9253590500025,
+      "p99_ms": 43.797292870001954,
+      "memory": {
+        "process_peak_scope": "process_lifetime",
+        "process_peak_rss_bytes": 29895053312,
+        "process_peak_rss_kib": 29194388.0,
+        "model_footprint_bytes": 23919463522,
+        "model_footprint_scope": "registered_parameters_and_buffers",
+        "gpu_name": "NVIDIA B200",
+        "gpu_total_bytes": 191503138816,
+        "device_used_bytes": 25450708992,
+        "allocated_bytes": 24005603328,
+        "reserved_bytes": 24622661632,
+        "peak_allocated_bytes": 24187527168,
+        "peak_reserved_bytes": 24622661632,
+        "cuda_peak_scope": "since_last_reset_or_process_start"
+      },
+      "media_tasks": null
+    },
+    {
+      "model": "nvfp4",
+      "split": "regression_text",
+      "cases": 128,
+      "correct": 114,
+      "accuracy": 0.890625,
+      "metrics": {
+        "n": 128,
+        "acc": 0.890625,
+        "nll": 0.27651842020156675,
+        "brier": 0.1612934577912591,
+        "ece": 0.07045290706446398,
+        "aurc": 0.02751364472282431,
+        "acc_at_80": 0.9607843137254902,
+        "acc_at_50": 0.984375,
+        "chance": 0.5,
+        "mean_conf": 0.8982202613842674
+      },
+      "mean_ms": 46.03997386718739,
+      "p50_ms": 45.71889649999861,
+      "p95_ms": 47.963141849998436,
+      "p99_ms": 49.654200629998265,
+      "memory": {
+        "process_peak_scope": "process_lifetime",
+        "process_peak_rss_bytes": 31128289280,
+        "process_peak_rss_kib": 30398720.0,
+        "model_footprint_bytes": 8932036994,
+        "model_footprint_scope": "registered_parameters_and_buffers",
+        "gpu_name": "NVIDIA B200",
+        "gpu_total_bytes": 191503138816,
+        "device_used_bytes": 10602872832,
+        "allocated_bytes": 8959819776,
+        "reserved_bytes": 9770631168,
+        "peak_allocated_bytes": 9142883840,
+        "peak_reserved_bytes": 9770631168,
+        "cuda_peak_scope": "since_last_reset_or_process_start"
+      },
+      "media_tasks": null
+    },
+    {
+      "model": "bf16",
+      "split": "media",
+      "cases": 52,
+      "correct": 32,
+      "accuracy": 0.6153846153846154,
+      "metrics": {
+        "n": 52,
+        "acc": 0.6153846153846154,
+        "nll": 1.0833736577934543,
+        "brier": 0.42673854336072053,
+        "ece": 0.2036475661323081,
+        "aurc": 0.09982827218974424,
+        "acc_at_80": 0.7619047619047619,
+        "acc_at_50": 0.9615384615384616,
+        "chance": 0.09090909090909091,
+        "mean_conf": 0.5435142488544167
+      },
+      "mean_ms": 42.57840313461546,
+      "p50_ms": 46.94900349999642,
+      "p95_ms": 48.631958500001105,
+      "p99_ms": 50.29542239999835,
+      "memory": {
+        "process_peak_scope": "process_lifetime",
+        "process_peak_rss_bytes": 29895053312,
+        "process_peak_rss_kib": 29194388.0,
+        "model_footprint_bytes": 23919463522,
+        "model_footprint_scope": "registered_parameters_and_buffers",
+        "gpu_name": "NVIDIA B200",
+        "gpu_total_bytes": 191503138816,
+        "device_used_bytes": 25448611840,
+        "allocated_bytes": 24005603328,
+        "reserved_bytes": 24620564480,
+        "peak_allocated_bytes": 24187527168,
+        "peak_reserved_bytes": 24620564480,
+        "cuda_peak_scope": "since_last_reset_or_process_start"
+      },
+      "media_tasks": {
+        "mnist": {
+          "cases": 32,
+          "correct": 28
+        },
+        "fsdd": {
+          "cases": 20,
+          "correct": 4
+        }
+      }
+    },
+    {
+      "model": "nvfp4",
+      "split": "media",
+      "cases": 52,
+      "correct": 31,
+      "accuracy": 0.5961538461538461,
+      "metrics": {
+        "n": 52,
+        "acc": 0.5961538461538461,
+        "nll": 1.3276123877307024,
+        "brier": 0.5185332144215885,
+        "ece": 0.1523745122535011,
+        "aurc": 0.13965806713408102,
+        "acc_at_80": 0.7142857142857143,
+        "acc_at_50": 0.9230769230769231,
+        "chance": 0.09090909090909091,
+        "mean_conf": 0.4828169860519387
+      },
+      "mean_ms": 52.62430001923125,
+      "p50_ms": 56.51640849999495,
+      "p95_ms": 57.25853405000905,
+      "p99_ms": 57.45126313999819,
+      "memory": {
+        "process_peak_scope": "process_lifetime",
+        "process_peak_rss_bytes": 31128289280,
+        "process_peak_rss_kib": 30398720.0,
+        "model_footprint_bytes": 8932036994,
+        "model_footprint_scope": "registered_parameters_and_buffers",
+        "gpu_name": "NVIDIA B200",
+        "gpu_total_bytes": 191503138816,
+        "device_used_bytes": 10602872832,
+        "allocated_bytes": 8959819776,
+        "reserved_bytes": 9770631168,
+        "peak_allocated_bytes": 9142883840,
+        "peak_reserved_bytes": 9770631168,
+        "cuda_peak_scope": "since_last_reset_or_process_start"
+      },
+      "media_tasks": {
+        "mnist": {
+          "cases": 32,
+          "correct": 28
+        },
+        "fsdd": {
+          "cases": 20,
+          "correct": 3
+        }
+      }
+    }
+  ],
+  "comparisons": {
+    "nvfp4_minus_bf16_test": {
+      "estimate": -0.01171875,
+      "groups": 256,
+      "observations": 256,
+      "confidence": 0.95,
+      "seed": 20260930,
+      "resamples": 2000,
+      "interval": [
+        -0.0390625,
+        0.015625
+      ],
+      "status": "estimated"
+    },
+    "nvfp4_minus_bf16_regression_text": {
+      "estimate": -0.03125,
+      "groups": 128,
+      "observations": 128,
+      "confidence": 0.95,
+      "seed": 20260930,
+      "resamples": 2000,
+      "interval": [
+        -0.0625,
+        -0.0078125
+      ],
+      "status": "estimated"
+    },
+    "nvfp4_minus_bf16_media": {
+      "estimate": -0.019230769230769232,
+      "groups": 38,
+      "observations": 52,
+      "confidence": 0.95,
+      "seed": 20260930,
+      "resamples": 2000,
+      "interval": [
+        -0.15626531862745097,
+        0.09803921568627451
+      ],
+      "status": "estimated"
+    },
+    "nvfp4_minus_jev_historical128": {
+      "estimate": 0.015625,
+      "groups": 128,
+      "observations": 128,
+      "confidence": 0.95,
+      "seed": 20260930,
+      "resamples": 2000,
+      "interval": [
+        -0.0390625,
+        0.0703125
+      ],
+      "status": "estimated"
+    }
+  },
+  "cross_model_hardware": {
+    "trained_bf16": "NVIDIA B200",
+    "trained_nvfp4": "NVIDIA B200",
+    "jev_omni": "NVIDIA A100-SXM4-80GB"
+  },
+  "temperatures": {
+    "bf16": 2.7830344470383452,
+    "nvfp4": 2.51855196090726
+  },
+  "publication_status_at_review": "pending; see root publication receipt when available",
+  "runtime_wheel_verification": {
+    "sha256": "b7e39edf182d9e4a94dd5d7ad030435ad9493219593c2f8d877e583ee5fbcfdc",
+    "wheel_sha256": "5844540ed6e95cf872ab457d7e7793f860d31fae1b09f37a5cfdbada4a290f51",
+    "verified_cases": 436,
+    "max_absolute_probability_difference": 0.0,
+    "conversion_and_evaluation_binding_verified": true
+  }
+}

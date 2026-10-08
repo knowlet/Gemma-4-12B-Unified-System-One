@@ -108,7 +108,7 @@ def campaign_specs(registry, adapter_root, *, device="cuda"):
             }
         )
     )
-    for name in ("decider-local", "kev-local", "agentjev-local", "clef-local"):
+    for name in ("decider-local", "kev-local", "agentjev-local", "clef-local", "jev-omni-local"):
         specs.append(registry.models[name].model_copy(update=common))
     return specs
 

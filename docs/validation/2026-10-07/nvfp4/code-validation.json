@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "offline_tests": {
+    "passed": 965,
+    "skipped": 18,
+    "warnings": 1,
+    "log_sha256": "7548a1a85a459a269b938f0c7285386c67c83c54a2a0f4436ccc38982b67e70a",
+    "skip_reason": "optional local torch/Pillow/sklearn dependencies unavailable; real B200/A100 inference validated separately"
+  },
+  "lint": "ruff check . passed",
+  "format": "ruff format --check . passed",
+  "runtime_wheel": {
+    "filename": "gemma_system_one-0.1.0-py3-none-any.whl",
+    "sha256": "5844540ed6e95cf872ab457d7e7793f860d31fae1b09f37a5cfdbada4a290f51"
+  },
+  "live_validation": {
+    "gpu": "NVIDIA B200",
+    "release": "20261007-nvfp4-02",
+    "bf16_evaluations": 436,
+    "nvfp4_evaluations": 436,
+    "nvfp4_wheel_replay_evaluations": 436,
+    "maximum_replay_probability_difference": 0.0
+  },
+  "jev_live_validation": {
+    "gpu": "NVIDIA A100-SXM4-80GB",
+    "quality_cases": 180,
+    "http_load_requests": 768,
+    "successful_http_load_requests": 768
+  }
+}

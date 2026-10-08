@@ -42,6 +42,7 @@ class ModelSpec(ConfigModel):
         "kev",
         "agentjev",
         "clef",
+        "jev_omni",
         "http",
         "tfidf",
         "prior",
@@ -58,7 +59,7 @@ class ModelSpec(ConfigModel):
     precision: Literal[
         "float64", "float32", "bfloat16", "float16", "quantized", "provider", "unknown"
     ] = "unknown"
-    quantization: Literal["none", "int8", "nf4"] = "none"
+    quantization: Literal["none", "int8", "nf4", "nvfp4"] = "none"
     execution_mode: Literal[
         "sequential", "causal_multislot", "independent_batch", "provider", "unknown"
     ] = "unknown"

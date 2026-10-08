@@ -37,6 +37,7 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
         "kev",
         "agentjev",
         "clef",
+        "jev_omni",
     ):
         reasons.append("local_model_concurrency_unavailable")
     if spec.runtime != "reference":
@@ -101,6 +102,10 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
             reasons.append("local_competitor_requires_complete_probabilities")
         if spec.subfolder or (spec.processor_revision and spec.processor_revision != spec.revision):
             reasons.append("local_competitor_processor_override_unavailable")
+    elif spec.adapter == "jev_omni":
+        from .jev_omni import configuration_blockers
+
+        reasons.extend(configuration_blockers(spec))
     elif spec.adapter == "clef":
         from .clef import configuration_blockers
 
@@ -174,7 +179,7 @@ class ReferenceAdapter:
                 "quantization": model.quantization,
                 "quantization_details": model.quantization_details,
             }
-        if self.spec.adapter in ("decider", "kev", "agentjev", "clef"):
+        if self.spec.adapter in ("decider", "kev", "agentjev", "clef", "jev_omni"):
             return self.backend.telemetry()
         if self.spec.adapter == "laya":
             return {
@@ -200,7 +205,7 @@ class ReferenceAdapter:
     def resources(self):
         if self.spec.adapter == "gemma":
             return self.backend.model.memory_snapshot()
-        if self.spec.adapter in ("decider", "kev", "agentjev", "clef"):
+        if self.spec.adapter in ("decider", "kev", "agentjev", "clef", "jev_omni"):
             return self.backend.resources()
         import resource
         import sys
@@ -276,6 +281,10 @@ def load_adapter(spec: ModelSpec, environment) -> Adapter:
         from .local_competitors import LocalCompetitorBackend
 
         backend = LocalCompetitorBackend(spec)
+    elif spec.adapter == "jev_omni":
+        from .jev_omni import JevOmniBackend
+
+        backend = JevOmniBackend(spec)
     elif spec.adapter == "clef":
         from .clef import ClefBackend
 
