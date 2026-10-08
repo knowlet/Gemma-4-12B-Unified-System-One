@@ -219,7 +219,7 @@ def _input_checks(files, support, protocol):
     }
 
 
-def _source_checks(files, prefix, receipt, sources, protocol_raw):
+def _source_checks(files, prefix, receipt, sources, protocol_raw, *, recovery_prefix=None):
     declared = receipt.get("source_files", {})
     if not isinstance(declared, dict):
         raise ValueError("receipt source_files must be a mapping")
@@ -238,11 +238,15 @@ def _source_checks(files, prefix, receipt, sources, protocol_raw):
         for name, raw in files.items()
         if name.startswith(prefix + "sources/")
     }
-    if set(saved) != {f"{_safe_name(key)}.txt" for key in declared}:
+    expected_saved = {f"{_safe_name(key)}.txt" for key in declared}
+    if not set(saved).issubset(expected_saved) or (
+        recovery_prefix is None and set(saved) != expected_saved
+    ):
         raise ValueError(f"receipt and saved executed source population differ: {prefix}")
     checks = {}
     for key, digest in sorted(declared.items()):
-        raw = saved[f"{key}.txt"]
+        name = f"{key}.txt"
+        raw = saved[name] if name in saved else files[recovery_prefix + "sources/" + name]
         if sha256(raw) != digest:
             raise ValueError(f"receipt/executed source checksum mismatch: {prefix}{key}")
         if key in expected and raw != sources[expected[key]]:
@@ -252,9 +256,10 @@ def _source_checks(files, prefix, receipt, sources, protocol_raw):
             if key in expected
             else "receipt_hash_verified; no_preflight_alias"
         )
-    if saved["prospective_protocol.txt"] != protocol_raw or receipt.get(
-        "prospective_protocol"
-    ) != _json(protocol_raw):
+        if name not in saved:
+            checks[key] += "; missing_in_canonical_verified_in_train-recovered"
+    saved_protocol = saved.get("prospective_protocol.txt", protocol_raw)
+    if saved_protocol != protocol_raw or receipt.get("prospective_protocol") != _json(protocol_raw):
         raise ValueError(f"receipt prospective protocol differs: {prefix}")
     return checks
 
@@ -389,6 +394,15 @@ def _execution(files, omitted, protocol, sources, protocol_raw):
         allowed = set(planned) | ({"train-recovered"} if "train" in planned else set())
         if actual_stages - allowed:
             raise ValueError(f"unplanned stage directory: {run}")
+        recovery_prefix = None
+        if "train-recovered" in actual_stages:
+            recovery_prefix = f"runs/{run}/train-recovered/"
+            recovered_receipt_raw = files.get(recovery_prefix + "receipt.json")
+            if recovered_receipt_raw is None:
+                raise ValueError("train-recovered requires a terminal GPU receipt")
+            recoveries[f"{run}/train-recovered"] = _recovered_transport(
+                files, omitted, recovery_prefix, run, recovered_receipt_raw
+            )
         physical_stages = list(planned)
         if "train-recovered" in actual_stages:
             physical_stages.append("train-recovered")
@@ -409,11 +423,6 @@ def _execution(files, omitted, protocol, sources, protocol_raw):
                 "omitted_files": stage_omitted,
             }
             if physical_stage == "train-recovered":
-                if receipt_raw is None:
-                    raise ValueError("train-recovered requires a terminal GPU receipt")
-                recoveries[f"{run}/{physical_stage}"] = _recovered_transport(
-                    files, omitted, prefix, run, receipt_raw
-                )
                 cell["logical_stage"] = stage
                 cell["physical_directory"] = physical_stage
             if not receipt_raw:
@@ -430,7 +439,12 @@ def _execution(files, omitted, protocol, sources, protocol_raw):
                 cell["declared_status"] = status
                 if status in {"running", "completed", "failed"}:
                     cell["source_checks"] = _source_checks(
-                        files, prefix, receipt, sources, protocol_raw
+                        files,
+                        prefix,
+                        receipt,
+                        sources,
+                        protocol_raw,
+                        recovery_prefix=recovery_prefix if physical_stage == "train" else None,
                     )
                 reported = [profile["name"] for profile in receipt.get("profiles", [])]
                 if len(reported) != len(set(reported)) or set(reported) - set(profiles):
@@ -457,7 +471,12 @@ def _execution(files, omitted, protocol, sources, protocol_raw):
                     else status
                 )
                 cell["gpu"] = receipt.get("gpu")
-                cell["research_binary_checks"] = _binary_checks(files, prefix, receipt)
+                cell["research_binary_checks"] = _binary_checks(
+                    files,
+                    prefix,
+                    receipt,
+                    recovery_prefix=recovery_prefix if physical_stage == "train" else None,
+                )
             cells[f"{run}/{physical_stage}"] = cell
         if "train-recovered" in actual_stages:
             canonical = cells[f"{run}/train"]
@@ -467,6 +486,9 @@ def _execution(files, omitted, protocol, sources, protocol_raw):
                     evidence_status="not_downloaded",
                     recovered_by=f"{run}/train-recovered",
                 )
+            elif recoveries[f"{run}/train-recovered"]["recovered_only_members"]:
+                canonical["evidence_status"] = "incomplete_canonical_export"
+                canonical["recovered_by"] = f"{run}/train-recovered"
     execution_status = (
         _json(files["execution-status.json"]) if "execution-status.json" in files else None
     )
@@ -584,28 +606,49 @@ def _local_execution(files, protocol, sources):
     return experiments
 
 
-def _binary_checks(files, prefix, receipt):
+def _binary_checks(files, prefix, receipt, *, recovery_prefix=None):
     checks = {}
+
+    def material(name):
+        path = prefix + name
+        recovered = path not in files and recovery_prefix is not None
+        return (recovery_prefix + name if recovered else path), recovered
+
     for profile in receipt.get("profiles", []):
         identity = profile.get("identity", {})
         if "research_head_sha256" in identity:
-            name = prefix + "decision-head.pt"
-            _hash_check(files, name, identity["research_head_sha256"], "trained decision head")
-            checks[name.removeprefix(prefix)] = "receipt_hash_verified"
+            path, recovered = material("decision-head.pt")
+            _hash_check(files, path, identity["research_head_sha256"], "trained decision head")
+            checks["decision-head.pt"] = (
+                "missing_in_canonical; recovered_receipt_hash_verified"
+                if recovered
+                else "receipt_hash_verified"
+            )
         for name, spec in identity.get("research_adapter_files", {}).items():
-            path = prefix + "mixed-lora/adapter/" + _safe_name(name)
+            name = "mixed-lora/adapter/" + _safe_name(name)
+            path, recovered = material(name)
             _hash_check(files, path, spec["sha256"], "trained adapter")
             if len(files[path]) != spec["bytes"]:
                 raise ValueError(f"trained adapter size differs: {path}")
-            checks[path.removeprefix(prefix)] = "receipt_hash_and_size_verified"
-    training_raw = files.get(prefix + "mixed-lora/training.json")
+            checks[name] = (
+                "missing_in_canonical; recovered_receipt_hash_and_size_verified"
+                if recovered
+                else "receipt_hash_and_size_verified"
+            )
+    training_path, _ = material("mixed-lora/training.json")
+    training_raw = files.get(training_path)
     if training_raw:
         for name, spec in _json(training_raw).get("adapter_files", {}).items():
-            path = prefix + "mixed-lora/adapter/" + _safe_name(name)
+            name = "mixed-lora/adapter/" + _safe_name(name)
+            path, recovered = material(name)
             _hash_check(files, path, spec["sha256"], "training adapter")
             if len(files[path]) != spec["bytes"]:
                 raise ValueError(f"training adapter size differs: {path}")
-            checks[path.removeprefix(prefix)] = "training_hash_and_size_verified"
+            checks[name] = (
+                "missing_in_canonical; recovered_training_hash_and_size_verified"
+                if recovered
+                else "training_hash_and_size_verified"
+            )
     return checks
 
 

@@ -315,7 +315,7 @@ def test_executed_sources_raw_cache_and_trained_binaries_are_preserved(evidence,
         assert any("public231/raw/request.json" in name for name in zipped.namelist())
 
 
-def recovered(evidence, *, status="completed"):
+def recovered(evidence, *, status="completed", declared_binaries=False):
     prefix, receipt = executed(evidence, status=status)
     canonical = evidence.root / prefix
     target = canonical.with_name("train-recovered")
@@ -329,6 +329,25 @@ def recovered(evidence, *, status="completed"):
     }
     for name, raw in research.items():
         save(evidence.root, prefix + name, raw)
+    if declared_binaries:
+        adapter_files = {
+            name.removeprefix("mixed-lora/adapter/"): {
+                "sha256": archive.sha256(raw),
+                "bytes": len(raw),
+            }
+            for name, raw in research.items()
+            if name.startswith("mixed-lora/adapter/")
+        }
+        receipt["profiles"][0]["identity"] = {
+            "research_head_sha256": archive.sha256(research["decision-head.pt"]),
+            "research_adapter_files": adapter_files,
+        }
+        save(evidence.root, prefix + "receipt.json", encoded(receipt))
+        save(
+            evidence.root,
+            prefix + "mixed-lora/training.json",
+            encoded({"adapter_files": adapter_files}),
+        )
     payload = {
         path.relative_to(target).as_posix(): path.read_bytes()
         for path in sorted(target.rglob("*"))
@@ -423,6 +442,74 @@ def test_canonical_and_recovered_common_bytes_are_verified_without_discarding_ex
         assert zipped.read("research/" + canonical_prefix + "original-main.log") == (
             b"original stdout exact bytes\n"
         )
+
+
+def test_original_export_filter_missing_declared_adapter_readme_is_explicitly_recovered(
+    evidence, tmp_path
+):
+    prefix, payload, _, _ = recovered(evidence, declared_binaries=True)
+    canonical_prefix = "runs/trial01/train/"
+    for name, raw in payload.items():
+        if not name.endswith(".md"):
+            save(evidence.root, canonical_prefix + name, raw)
+    manifest = build(evidence, tmp_path / "evidence.zip")
+    cells = manifest["execution"]["stage_receipts"]
+    canonical = cells["trial01/train"]
+    assert canonical["declared_status"] == "completed"
+    assert canonical["evidence_status"] == "incomplete_canonical_export"
+    assert canonical["research_binary_checks"]["mixed-lora/adapter/README.md"] == (
+        "missing_in_canonical; recovered_training_hash_and_size_verified"
+    )
+    assert cells["trial01/train-recovered"]["evidence_status"] == "receipt_completed"
+    assert (
+        cells["trial01/train-recovered"]["research_binary_checks"]["mixed-lora/adapter/README.md"]
+        == "training_hash_and_size_verified"
+    )
+    with zipfile.ZipFile(tmp_path / "evidence.zip") as zipped:
+        assert (
+            "research/" + canonical_prefix + "mixed-lora/adapter/README.md" not in zipped.namelist()
+        )
+        assert (
+            zipped.read("research/" + prefix + "mixed-lora/adapter/README.md")
+            == payload["mixed-lora/adapter/README.md"]
+        )
+
+
+def test_partial_canonical_export_keeps_present_bytes_and_borrows_explicit_source_proof(
+    evidence, tmp_path
+):
+    _, payload, _, _ = recovered(evidence, declared_binaries=True)
+    canonical_prefix = "runs/trial01/train/"
+    for name in ("receipt.json", "sources/campaign.txt"):
+        save(evidence.root, canonical_prefix + name, payload[name])
+    manifest = build(evidence, tmp_path / "evidence.zip")
+    canonical = manifest["execution"]["stage_receipts"]["trial01/train"]
+    assert canonical["evidence_status"] == "incomplete_canonical_export"
+    assert canonical["source_checks"]["campaign"] == "receipt_hash_and_frozen_bytes_verified"
+    assert canonical["source_checks"]["s1/unified.py"] == (
+        "receipt_hash_and_frozen_bytes_verified; missing_in_canonical_verified_in_train-recovered"
+    )
+    assert canonical["research_binary_checks"]["decision-head.pt"] == (
+        "missing_in_canonical; recovered_receipt_hash_verified"
+    )
+    with zipfile.ZipFile(tmp_path / "evidence.zip") as zipped:
+        assert (
+            zipped.read("research/" + canonical_prefix + "sources/campaign.txt")
+            == payload["sources/campaign.txt"]
+        )
+        assert "research/" + canonical_prefix + "decision-head.pt" not in zipped.namelist()
+
+
+def test_canonical_missing_declared_readme_is_still_rejected_without_valid_recovery(
+    evidence, tmp_path
+):
+    prefix, receipt = executed(evidence)
+    receipt["profiles"][0]["identity"]["research_adapter_files"] = {
+        "README.md": {"sha256": archive.sha256(b"missing adapter README"), "bytes": 22}
+    }
+    save(evidence.root, prefix + "receipt.json", encoded(receipt))
+    with pytest.raises(ValueError, match="trained adapter checksum mismatch or missing"):
+        build(evidence, tmp_path / "evidence.zip")
 
 
 def test_recovery_completed_transport_does_not_promote_failed_gpu_execution(evidence, tmp_path):
