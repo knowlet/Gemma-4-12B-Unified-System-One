@@ -13,6 +13,15 @@ are not measurements of this Unified model. See [upstream notes](docs/upstream.m
 
 ## Public JevBench screening — October 8, 2026
 
+The [October 10 research prerelease](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/tag/research-2026-10-10-jevbench)
+adds the fixed eight-profile optimization study and complete downloadable evidence.
+A pinned Linux CPU replay reproduced all 529,136 coherence probabilities and native
+answer fields exactly; two calibration metadata records still differ by tiny
+binary64 amounts, so the complete audit retains six passing and two incomplete
+profiles. The [dated follow-up](docs/validation/2026-10-10/README.md) preserves
+the original strict Mac results, failed deliveries and unchanged model defaults.
+Use the [validation index](docs/validation/README.md) to find each evidence population.
+
 The [audited campaign](docs/validation/2026-10-08/jevbench/campaign-audit.md)
 compares the released S1 checkpoint with OneJev-4B, Decider-2B and Jev-Omni on
 all 231 pinned public tasks, retaining native probabilities and official scoring.
