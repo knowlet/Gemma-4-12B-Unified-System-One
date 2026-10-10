@@ -1,12 +1,16 @@
 """In-memory ZIP and local fixture checks; no cloud calls or model loading."""
 
+import copy
 import hashlib
 import importlib.util
 import io
 import json
 import stat
 import struct
+import sys
+import types
 import zipfile
+from contextlib import nullcontext
 from pathlib import Path
 
 import pytest
@@ -349,3 +353,392 @@ def test_zip_rejects_ambiguous_container_even_with_exact_members(files, bad):
         payload = buffer.getvalue()
     with pytest.raises(ValueError, match="unambiguous single ZIP container"):
         audit.validate_input_zip(payload, manifest(files))
+
+
+RUN = "20261008-breakthrough-01"
+SOURCE_SHA = identity(b"fixture verifier source")["sha256"]
+
+
+@pytest.fixture
+def large_result():
+    return bytes(range(256)) * (3 * 1024 * 1024 // 256) + b"complete result tail"
+
+
+def test_large_result_is_exact_with_bounded_byte_chunks_and_terminal_digest(large_result):
+    records = list(audit.result_stream(large_result, RUN, SOURCE_SHA))
+    assert len(large_result) > 2 * 1024 * 1024
+    assert audit.assemble_result_stream(records, RUN, SOURCE_SHA) == large_result
+    assert all(len(r["data"]) <= 256 * 1024 for r in records[1:-1])
+    assert records[-1]["sha256"] == identity(large_result)["sha256"]
+
+
+def test_each_optional_modal_serialized_yield_avoids_blob_upload(large_result):
+    serialize = pytest.importorskip("modal._serialization").serialize
+    maximum = pytest.importorskip("modal._utils.blob_utils").MAX_OBJECT_SIZE_BYTES
+    records = list(audit.result_stream(large_result, RUN, SOURCE_SHA))
+    assert len(serialize(large_result)) > maximum
+    for record in records:
+        assert len(serialize(record)) <= audit.RESULT_CHUNK_BYTES + 1024
+        assert len(serialize(record)) < maximum
+
+
+@pytest.mark.parametrize("size", [1, 256 * 1024 - 1, 256 * 1024, 256 * 1024 + 1])
+def test_result_stream_chunk_boundary_sizes_are_exact(size):
+    raw = b"X" * size
+    records = list(audit.result_stream(raw, RUN, SOURCE_SHA))
+    assert (
+        records[0]["chunk_count"]
+        == (size + audit.RESULT_CHUNK_BYTES - 1) // audit.RESULT_CHUNK_BYTES
+    )
+    assert audit.assemble_result_stream(records, RUN, SOURCE_SHA) == raw
+
+
+@pytest.mark.parametrize("bad", [b"", "not bytes", bytearray(b"bytes")])
+def test_result_stream_requires_bounded_nonempty_bytes(bad):
+    with pytest.raises(ValueError):
+        list(audit.result_stream(bad, RUN, SOURCE_SHA))
+
+
+def test_result_stream_rejects_result_total_bound_and_accepts_exact_bound(monkeypatch):
+    monkeypatch.setattr(audit, "MAX_RESULT_BYTES", 8)
+    records = list(audit.result_stream(b"exactly8", RUN, SOURCE_SHA))
+    assert audit.assemble_result_stream(records, RUN, SOURCE_SHA) == b"exactly8"
+    with pytest.raises(ValueError):
+        list(audit.result_stream(b"too large", RUN, SOURCE_SHA))
+    monkeypatch.setattr(audit, "MAX_RESULT_BYTES", 7)
+    with pytest.raises(ValueError):
+        audit.assemble_result_stream(records, RUN, SOURCE_SHA)
+
+
+def test_remote_wrapper_passes_every_audit_argument_unchanged(monkeypatch):
+    args = (RUN, {"input": "identity"}, SOURCE_SHA, b"input bytes", {"origin": "identity"}, True)
+    calls = []
+
+    def original(*values):
+        calls.append(values)
+        return b"exact original result bytes"
+
+    monkeypatch.setattr(audit, "audit_run", original)
+    records = list(audit.audit_run_stream(*args))
+    assert calls == [args]
+    assert audit.assemble_result_stream(records, RUN, SOURCE_SHA) == b"exact original result bytes"
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        "missing_header",
+        "missing_chunk",
+        "duplicate_chunk",
+        "out_of_order",
+        "missing_terminal",
+        "extra_chunk",
+        "extra_after_terminal",
+        "extra_header_field",
+        "wrong_protocol",
+        "wrong_run",
+        "wrong_source",
+        "header_count",
+        "header_count_bool",
+        "header_size",
+        "header_size_bool",
+        "header_chunk_bytes",
+        "header_chunk_bytes_bool",
+        "header_hash",
+        "header_hash_type",
+        "chunk_index",
+        "chunk_index_bool",
+        "chunk_size",
+        "chunk_size_bool",
+        "chunk_hash",
+        "chunk_data",
+        "chunk_data_type",
+        "chunk_extra",
+        "terminal_hash",
+        "terminal_count",
+        "terminal_count_bool",
+        "terminal_size",
+        "terminal_size_bool",
+        "terminal_extra",
+        "changed_whole_hash",
+        "header_not_dict",
+        "chunk_not_dict",
+        "terminal_not_dict",
+    ],
+)
+def test_result_assembler_rejects_partial_malicious_or_ambiguous_stream(large_result, bad):
+    records = list(audit.result_stream(large_result, RUN, SOURCE_SHA))
+    if bad == "missing_header":
+        records.pop(0)
+    elif bad == "missing_chunk":
+        records.pop(2)
+    elif bad == "duplicate_chunk":
+        records.insert(2, copy.deepcopy(records[1]))
+    elif bad == "out_of_order":
+        records[1], records[2] = records[2], records[1]
+    elif bad == "missing_terminal":
+        records.pop()
+    elif bad == "extra_chunk":
+        records.insert(-1, copy.deepcopy(records[1]))
+    elif bad == "extra_after_terminal":
+        records.append(copy.deepcopy(records[-1]))
+    elif bad == "extra_header_field":
+        records[0]["extra"] = "unexpected"
+    elif bad in {"wrong_protocol", "wrong_run", "wrong_source"}:
+        field = {
+            "wrong_protocol": "protocol",
+            "wrong_run": "run",
+            "wrong_source": "verifier_source_sha256",
+        }[bad]
+        records[0][field] = "other identity"
+    elif bad.startswith("header_"):
+        field = {
+            "header_count": "chunk_count",
+            "header_count_bool": "chunk_count",
+            "header_size": "size_bytes",
+            "header_size_bool": "size_bytes",
+            "header_chunk_bytes": "chunk_bytes",
+            "header_chunk_bytes_bool": "chunk_bytes",
+            "header_hash": "sha256",
+            "header_hash_type": "sha256",
+        }.get(bad)
+        if bad == "header_not_dict":
+            records[0] = []
+        else:
+            records[0][field] = (
+                True if bad.endswith("bool") else (None if bad.endswith("type") else -1)
+            )
+    elif bad.startswith("chunk_"):
+        if bad == "chunk_extra":
+            records[1]["extra"] = "unexpected"
+        elif bad == "chunk_data":
+            records[1]["data"] = b"changed bytes"
+        elif bad == "chunk_data_type":
+            records[1]["data"] = bytearray(records[1]["data"])
+        elif bad == "chunk_not_dict":
+            records[1] = []
+        else:
+            field = {
+                "chunk_index": "index",
+                "chunk_index_bool": "index",
+                "chunk_size": "size_bytes",
+                "chunk_size_bool": "size_bytes",
+                "chunk_hash": "sha256",
+            }[bad]
+            records[1][field] = True if bad.endswith("bool") else -1
+    elif bad == "changed_whole_hash":
+        records[0]["sha256"] = records[-1]["sha256"] = identity(b"other complete bytes")["sha256"]
+    elif bad == "terminal_not_dict":
+        records[-1] = []
+    elif bad == "terminal_extra":
+        records[-1]["extra"] = "unexpected"
+    else:
+        field = {
+            "terminal_hash": "sha256",
+            "terminal_count": "chunk_count",
+            "terminal_count_bool": "chunk_count",
+            "terminal_size": "size_bytes",
+            "terminal_size_bool": "size_bytes",
+        }[bad]
+        records[-1][field] = True if bad.endswith("bool") else -1
+    with pytest.raises(ValueError):
+        audit.assemble_result_stream(records, RUN, SOURCE_SHA)
+
+
+@pytest.mark.parametrize("cut", [0, 1, 2, -1])
+def test_truncated_stream_retains_only_verified_bytes_and_failure_receipt(
+    tmp_path, large_result, cut
+):
+    records = list(audit.result_stream(large_result, RUN, SOURCE_SHA))[:cut]
+    partial, receipt = tmp_path / "result.zip.partial", tmp_path / "result-stream.json"
+    with pytest.raises(ValueError, match="truncated"):
+        audit.assemble_result_stream(
+            records, RUN, SOURCE_SHA, partial_path=partial, receipt_path=receipt
+        )
+    retained = partial.read_bytes()
+    proof = json.loads(receipt.read_bytes())
+    assert proof["status"] == "failed"
+    assert proof["error_type"] == "ValueError"
+    assert proof["received_size_bytes"] == len(retained)
+    assert proof["received_sha256"] == identity(retained)["sha256"]
+    assert len(retained) == sum(r["size_bytes"] for r in records if r["kind"] == "chunk")
+    assert "data" not in str(proof["chunks"])
+
+
+@pytest.mark.parametrize("after_terminal", [False, True])
+def test_remote_error_is_propagated_with_partial_transport_evidence(
+    tmp_path, large_result, after_terminal
+):
+    records = list(audit.result_stream(large_result, RUN, SOURCE_SHA))
+
+    def failed():
+        yield from records if after_terminal else records[:2]
+        raise RuntimeError("remote generator delivery failed")
+
+    partial, receipt = tmp_path / "result.zip.partial", tmp_path / "result-stream.json"
+    with pytest.raises(RuntimeError, match="remote generator delivery failed"):
+        audit.assemble_result_stream(
+            failed(), RUN, SOURCE_SHA, partial_path=partial, receipt_path=receipt
+        )
+    proof = json.loads(receipt.read_bytes())
+    assert proof["status"] == "failed"
+    assert proof["error_type"] == "RuntimeError"
+    assert proof["error"] == "remote generator delivery failed"
+    assert partial.read_bytes() == (
+        large_result if after_terminal else large_result[: audit.RESULT_CHUNK_BYTES]
+    )
+
+
+def test_completed_stream_saves_all_bound_transport_metadata(tmp_path, large_result):
+    partial, receipt = tmp_path / "result.zip.partial", tmp_path / "result-stream.json"
+    records = list(audit.result_stream(large_result, RUN, SOURCE_SHA))
+    result = audit.assemble_result_stream(
+        records, RUN, SOURCE_SHA, partial_path=partial, receipt_path=receipt
+    )
+    assert result == partial.read_bytes() == large_result
+    proof = json.loads(receipt.read_bytes())
+    assert proof["status"] == "completed"
+    assert proof["header"] == records[0]
+    assert proof["terminal"] == records[-1]
+    assert proof["chunks"] == [{k: v for k, v in r.items() if k != "data"} for r in records[1:-1]]
+    assert proof["received_sha256"] == identity(large_result)["sha256"]
+
+
+@pytest.mark.parametrize("occupied", ["partial", "receipt"])
+def test_transport_evidence_paths_are_exclusive_and_existing_bytes_survive(tmp_path, occupied):
+    partial, receipt = tmp_path / "result.zip.partial", tmp_path / "result-stream.json"
+    existing = partial if occupied == "partial" else receipt
+    existing.write_bytes(b"prior evidence")
+    with pytest.raises(ValueError, match="exclusive new"):
+        audit.assemble_result_stream(
+            [], RUN, SOURCE_SHA, partial_path=partial, receipt_path=receipt
+        )
+    assert existing.read_bytes() == b"prior evidence"
+    assert not (receipt if occupied == "partial" else partial).exists()
+
+
+def test_mutated_previous_header_cannot_change_the_validated_total_or_hash(large_result):
+    records = list(audit.result_stream(large_result, RUN, SOURCE_SHA))
+
+    def malicious():
+        yield records[0]
+        records[0]["size_bytes"] = 1
+        records[0]["sha256"] = identity(b"X")["sha256"]
+        yield from records[1:]
+
+    assert audit.assemble_result_stream(malicious(), RUN, SOURCE_SHA) == large_result
+
+
+@pytest.mark.parametrize("failed", [False, True])
+def test_main_uses_generator_and_preserves_all_pinned_resource_guards(
+    tmp_path, roots, files, monkeypatch, failed
+):
+    observed = {}
+    source = SCRIPT.read_bytes()
+    proof = b'{"status":"completed","padding":"' + b"X" * (3 * 1024 * 1024) + b'"}'
+    result = make_zip([("proof.json", proof), ("verifier.py.txt", source)])
+    assert len(result) > 2 * 1024 * 1024
+
+    def original(*args):
+        observed["args"] = args
+        return result
+
+    class Remote:
+        object_id = "fake-function"
+
+        def __init__(self, function):
+            self.function = function
+
+        def remote_gen(self, *args):
+            observed["method"] = "remote_gen"
+            records = self.function(*args)
+            if failed:
+                yield next(records)
+                yield next(records)
+                raise RuntimeError("retained delivery failure")
+            yield from records
+
+    class App:
+        app_id = "fake-app"
+
+        def __init__(self, name):
+            observed["name"] = name
+
+        def function(self, **kwargs):
+            observed["resources"] = kwargs
+            return Remote
+
+        def run(self):
+            return nullcontext()
+
+    class Volume:
+        @classmethod
+        def from_name(cls, name, create_if_missing):
+            observed["volume"] = (name, create_if_missing)
+            return cls()
+
+        def with_mount_options(self, **options):
+            observed["mount_options"] = options
+            return self
+
+    fake_modal = types.SimpleNamespace(
+        App=App, Image=types.SimpleNamespace(from_id=lambda x: x), Volume=Volume
+    )
+    monkeypatch.setitem(sys.modules, "modal", fake_modal)
+    monkeypatch.setattr(audit, "audit_run", original)
+    monkeypatch.setattr(audit, "collect_input_manifest", lambda *args, **kwargs: manifest(files))
+    monkeypatch.setattr(audit, "snapshot_origin", lambda *args: {"fixture": "exact origin"})
+    output = tmp_path / "output"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            str(SCRIPT),
+            "--run",
+            RUN,
+            "--ablate",
+            str(roots["ablate"]),
+            "--train",
+            str(roots["train"]),
+            "--output",
+            str(output),
+        ],
+    )
+    if failed:
+        with pytest.raises(RuntimeError, match="retained delivery failure"):
+            audit.main()
+        assert not (output / "result.zip").exists()
+        assert not (output / "proof.json").exists()
+        assert (output / "result.zip.partial").read_bytes() == result[: audit.RESULT_CHUNK_BYTES]
+        assert (
+            json.loads((output / "failure.json").read_bytes())["error"]
+            == "retained delivery failure"
+        )
+        assert json.loads((output / "result-stream.json").read_bytes())["status"] == "failed"
+    else:
+        audit.main()
+        assert (output / "result.zip").read_bytes() == result
+        assert (output / "proof.json").read_bytes() == proof
+        assert not (output / "result.zip.partial").exists()
+        assert json.loads((output / "result-stream.json").read_bytes())["status"] == "completed"
+    assert observed["method"] == "remote_gen"
+    assert observed["args"] == (
+        RUN,
+        manifest(files),
+        identity(source)["sha256"],
+        (output / "input.zip").read_bytes(),
+        {"fixture": "exact origin"},
+        False,
+    )
+    assert observed["volume"] == (audit.VOLUME, False)
+    assert observed["mount_options"] == {"read_only": True}
+    assert observed["resources"] == {
+        "image": audit.IMAGE_ID,
+        "cpu": 2,
+        "memory": 4096,
+        "timeout": 600,
+        "volumes": {"/vol": observed["resources"]["volumes"]["/vol"]},
+        "block_network": True,
+        "max_containers": 1,
+        "single_use_containers": True,
+    }

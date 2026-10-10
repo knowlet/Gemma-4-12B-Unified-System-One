@@ -36,6 +36,9 @@ PROFILES = {
 MAX_MEMBER_BYTES = 16 * 1024 * 1024
 MAX_TOTAL_BYTES = 256 * 1024 * 1024
 MAX_ZIP_BYTES = 128 * 1024 * 1024
+MAX_RESULT_BYTES = 128 * 1024 * 1024
+RESULT_CHUNK_BYTES = 256 * 1024
+RESULT_STREAM_PROTOCOL = "s1-cpu-audit-result-v1"
 PARENT_ARITHMETIC_SOURCE_SHA256 = "b22966075af74816d03764cae47f1e210a400b9d06c1b79f38d9a51f5c03381d"
 _FROZEN_CONTRACTS = None
 
@@ -798,6 +801,170 @@ def audit_run(run, expected_inputs, source_sha256, input_zip, input_origin, incl
     return buffer.getvalue()
 
 
+def result_stream(payload, run, source_sha256):
+    """Keep every yielded serialized result safely below Modal's 2 MiB blob threshold."""
+    require(
+        isinstance(payload, bytes) and 0 < len(payload) <= MAX_RESULT_BYTES,
+        "bounded nonempty CPU result required",
+    )
+    header = {
+        "kind": "header",
+        "protocol": RESULT_STREAM_PROTOCOL,
+        "run": run,
+        "verifier_source_sha256": source_sha256,
+        "size_bytes": len(payload),
+        "sha256": digest(payload),
+        "chunk_bytes": RESULT_CHUNK_BYTES,
+        "chunk_count": (len(payload) + RESULT_CHUNK_BYTES - 1) // RESULT_CHUNK_BYTES,
+    }
+    yield header
+    for index, offset in enumerate(range(0, len(payload), RESULT_CHUNK_BYTES)):
+        raw = payload[offset : offset + RESULT_CHUNK_BYTES]
+        yield {
+            "kind": "chunk",
+            "index": index,
+            "size_bytes": len(raw),
+            "sha256": digest(raw),
+            "data": raw,
+        }
+    yield {
+        "kind": "complete",
+        "size_bytes": len(payload),
+        "sha256": header["sha256"],
+        "chunk_count": header["chunk_count"],
+    }
+
+
+def audit_run_stream(
+    run, expected_inputs, source_sha256, input_zip, input_origin, include_public=False
+):
+    """Only the delivery changes; the pinned audit computes the same complete result."""
+    payload = audit_run(
+        run, expected_inputs, source_sha256, input_zip, input_origin, include_public
+    )
+    yield from result_stream(payload, run, source_sha256)
+
+
+def assemble_result_stream(stream, run, source_sha256, *, partial_path=None, receipt_path=None):
+    """Require all ordered bounded bytes, hashes and terminal receipt; retain failed input."""
+    require(
+        (partial_path is None) == (receipt_path is None),
+        "partial bytes and transport receipt paths must be paired",
+    )
+    if partial_path is not None:
+        require(
+            all(
+                not Path(p).exists() and not Path(p).is_symlink()
+                for p in (partial_path, receipt_path)
+            ),
+            "exclusive new CPU transport evidence paths required",
+        )
+    stream = iter(stream)
+    buffer = io.BytesIO()
+    observed = {"protocol": RESULT_STREAM_PROTOCOL, "status": "incomplete", "chunks": []}
+    partial = None
+
+    def next_record():
+        try:
+            return next(stream)
+        except StopIteration as exc:
+            raise ValueError("truncated CPU result stream") from exc
+
+    try:
+        if partial_path is not None:
+            partial = Path(partial_path).open("xb")
+        header = next_record()
+        require(
+            isinstance(header, dict)
+            and set(header)
+            == {
+                "kind",
+                "protocol",
+                "run",
+                "verifier_source_sha256",
+                "size_bytes",
+                "sha256",
+                "chunk_bytes",
+                "chunk_count",
+            }
+            and header["kind"] == "header"
+            and header["protocol"] == RESULT_STREAM_PROTOCOL
+            and header["run"] == run
+            and header["verifier_source_sha256"] == source_sha256
+            and type(header["size_bytes"]) is int
+            and 0 < header["size_bytes"] <= MAX_RESULT_BYTES
+            and isinstance(header["sha256"], str)
+            and bool(re.fullmatch(r"[0-9a-f]{64}", header["sha256"]))
+            and type(header["chunk_bytes"]) is int
+            and header["chunk_bytes"] == RESULT_CHUNK_BYTES
+            and type(header["chunk_count"]) is int
+            and header["chunk_count"]
+            == (header["size_bytes"] + RESULT_CHUNK_BYTES - 1) // RESULT_CHUNK_BYTES,
+            "CPU result stream header identity/bounds differ",
+        )
+        header = dict(header)
+        observed["header"] = header
+        for index in range(header["chunk_count"]):
+            record = next_record()
+            size = min(RESULT_CHUNK_BYTES, header["size_bytes"] - buffer.tell())
+            require(
+                isinstance(record, dict)
+                and set(record) == {"kind", "index", "size_bytes", "sha256", "data"}
+                and record["kind"] == "chunk"
+                and type(record["index"]) is int
+                and record["index"] == index
+                and type(record["size_bytes"]) is int
+                and record["size_bytes"] == size
+                and isinstance(record["data"], bytes)
+                and len(record["data"]) == size
+                and record["sha256"] == digest(record["data"]),
+                "CPU result stream chunk order/size/hash differs",
+            )
+            buffer.write(record["data"])
+            if partial is not None:
+                partial.write(record["data"])
+                partial.flush()
+            observed["chunks"].append({k: v for k, v in record.items() if k != "data"})
+        terminal = next_record()
+        require(
+            isinstance(terminal, dict)
+            and set(terminal) == {"kind", "size_bytes", "sha256", "chunk_count"}
+            and terminal["kind"] == "complete"
+            and type(terminal["size_bytes"]) is int
+            and terminal["size_bytes"] == header["size_bytes"]
+            and type(terminal["chunk_count"]) is int
+            and terminal["chunk_count"] == header["chunk_count"]
+            and terminal["sha256"] == header["sha256"],
+            "CPU result stream terminal digest receipt differs",
+        )
+        observed["terminal"] = dict(terminal)
+        try:
+            next(stream)
+        except StopIteration:
+            pass
+        else:
+            raise ValueError("extra CPU result stream record")
+        payload = buffer.getvalue()
+        require(
+            len(payload) == header["size_bytes"] and digest(payload) == header["sha256"],
+            "CPU result stream complete byte hash differs",
+        )
+        observed["status"] = "completed"
+        return payload
+    except BaseException as exc:
+        observed.update({"status": "failed", "error_type": type(exc).__name__, "error": str(exc)})
+        raise
+    finally:
+        if partial is not None:
+            partial.close()
+        if receipt_path is not None:
+            observed.update(
+                {"received_size_bytes": buffer.tell(), "received_sha256": digest(buffer.getvalue())}
+            )
+            with Path(receipt_path).open("xb") as handle:
+                handle.write(encoded(observed))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", required=True)
@@ -861,7 +1028,7 @@ def main():
         block_network=True,
         max_containers=1,
         single_use_containers=True,
-    )(audit_run)
+    )(audit_run_stream)
     try:
         with app.run():
             (args.output / "modal-app.json").write_bytes(
@@ -874,13 +1041,19 @@ def main():
                     }
                 )
             )
-            payload = remote.remote(
+            payload = assemble_result_stream(
+                remote.remote_gen(
+                    args.run,
+                    expected_inputs,
+                    digest(source_raw),
+                    input_zip,
+                    input_origin,
+                    args.include_public,
+                ),
                 args.run,
-                expected_inputs,
                 digest(source_raw),
-                input_zip,
-                input_origin,
-                args.include_public,
+                partial_path=args.output / "result.zip.partial",
+                receipt_path=args.output / "result-stream.json",
             )
         with (args.output / "result.zip").open("xb") as handle:
             handle.write(payload)
@@ -894,6 +1067,7 @@ def main():
             )
             with (args.output / "proof.json").open("xb") as handle:
                 handle.write(zipped.read("proof.json"))
+        (args.output / "result.zip.partial").unlink()
     except BaseException as exc:
         (args.output / "failure.json").write_bytes(
             encoded(
