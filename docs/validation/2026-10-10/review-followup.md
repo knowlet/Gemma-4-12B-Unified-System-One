@@ -27,3 +27,9 @@ Compile wrapper 回歸驗證模式分派與原生契約，未執行真實 compil
 提交 `5f9efb71f6350f76b53ed58748eb7216325e9770` 的單次完整本機驗證為 **1735 passed、3 skipped、1 個既有 warning**。Ruff、格式與 diff check 全部成功；16 份相關來源的執行前後 SHA256 相同。最初沙盒執行有兩項本機 HTTP 測試在 socket bind 時因 PermissionError 被擋住（1,733 passed、2 failed）；完整紀錄保留，未修改來源即重新驗證。原始輸出另存於 [驗證日誌](review-followup-logs/)，受阻的完整 pytest 輸出以 gzip 無損保存；預設 export 的針對性日誌明示由原工具輸出事後保存，未假裝成新的測試執行。
 
 來源 push 與 PR CI 的八個 repository jobs 全部成功，包含各自的 contracts（Python 3.11／3.12／3.13）及 inference。此收據記錄受測來源提交；後續只整理文件的最終 head 檢查由 [PR 檢查頁](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/pull/7/checks)提供。外部 skipped／neutral 不視為完成審查。
+
+## 公開證據連結補正
+
+後續審查指出 10 月 8 日報告與協定的本機 `artifacts/…` 連結在 GitHub 無法開啟。目前文件僅補正為已公開的 Release ZIP 下載，並在連結標籤列出 exact member 路徑；原始報告仍完整保存在 immutable 研究 tag 和 ZIP 封存內；原始協定 Markdown 保存在固定研究 tag，ZIP 並未包含該 Markdown 的相同位元組。評測數值、實驗參數、GPU 執行來源、資料與五份 asset bodies 不變。每個原始／更新文件 SHA256、反向還原及 ZIP member 身分核對見 [公開連結修正收據](public-link-repair.json)。這是發布文件修正，沒有重新執行模型評測。
+
+另以本 PR 相對 main 的 Markdown 變更範圍核對，排除上述三篇後的 12 篇文件、115 個連結沒有額外本機 artifacts 連結或未提交的 ZIP 目標；兩個 campaign raw-evidence ZIP 連結及各自 manifest 皆有 Git 追蹤檔案。

@@ -1,5 +1,7 @@
 # JevBench breakthrough：執行前固定協定
 
+2026-10-10 僅補正公開下載連結；原始協定 bytes 在 immutable 研究 tag 保存，當時參數與數值不改寫，後續 CPU 證據見 [10/10 索引](../../2026-10-10/README.md)。
+
 本輪在 GPU 輸出出現前固定兩階段、八個 profile、資料與配方。機器可讀來源是 [experiment config](../../../../configs/experiments/jevbench-breakthrough-20261008.json)，凍結時間為 `2026-10-08T04:57:27Z`。目前全部 profile 為 `not_run`；沒有新分數、成本、排名或已通過的驗收。Preflight 可以修正實作與契約問題，但須在 GPU 執行前完成並保存實際 source/config bytes 與 SHA256；修正不得改變本輪宣告的資料、配方或比較選擇。
 
 目標是釐清 prompt、原 BoolQ 專項權重與 decision readout 的影響，再執行一次有界的通用型別 continuation。前一輪公開診斷已被看過；它們只能提供已揭露的研究背景，不得把公開錯題、答案、coherence case 或其分數拿來 fitting、tuning、改 recipe、挑 checkpoint。新的測試資料在本輪訓練前保留，但這不等於真實世界或 foundation pretraining 未見證據。
@@ -25,7 +27,7 @@ Published release 固定為 `knowlet/Gemma-4-12B-Unified-System-One@a66f836b5660
 
 ## 固定資料與目標
 
-合成資料由 [generator](../../../../scripts/prepare_breakthrough_data.py) 產生於 [data manifest](../../../../artifacts/jevbench/breakthrough-20261008/data/manifest.json)。Generator SHA256 是 `30c126df19772a34f41979b77e8afe176f29c121fde688dffb993316f07b9abf`，manifest SHA256 是 `f408124be6c60ba79983222d1bc64a8432733b7803b69046633fa3d403268d96`，seed 為 `20261008`。Config 保存所有檔案與 canonical dataset hashes；啟動前須重驗，不接受同路徑換 bytes。
+合成資料由 [generator](../../../../scripts/prepare_breakthrough_data.py) 產生於 [data manifest（ZIP：research/data/manifest.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip)。Generator SHA256 是 `30c126df19772a34f41979b77e8afe176f29c121fde688dffb993316f07b9abf`，manifest SHA256 是 `f408124be6c60ba79983222d1bc64a8432733b7803b69046633fa3d403268d96`，seed 為 `20261008`。Config 保存所有檔案與 canonical dataset hashes；啟動前須重驗，不接受同路徑換 bytes。
 
 | Split | Cases／questions | Choice | Noul | Score | JSONL SHA256 |
 | --- | ---: | ---: | ---: | ---: | --- |

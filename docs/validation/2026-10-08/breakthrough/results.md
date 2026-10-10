@@ -1,12 +1,14 @@
 # 八組固定優化實驗：完整結果與限制
 
-兩階段 GPU 執行與完整資料下載都已完成。此報告使用 [final-eight-profile-audit-v2.json](../../../../artifacts/jevbench/breakthrough-20261008/final-eight-profile-audit-v2.json)，六組完整通過結果稽核，head／LoRA 兩組的嚴格機率連結校驗未完成（JSON 狀態為 incomplete_or_not_run）。本輪不採用新 head／LoRA 權重，不改 SDK 預設，也未發布或提交排行榜。
+2026-10-10 僅補正公開下載連結；封存原始版本及當時數值不改寫，後續 CPU 證據見 [10/10 索引](../../2026-10-10/README.md)。
+
+兩階段 GPU 執行與完整資料下載都已完成。此報告使用 [final-eight-profile-audit-v2.json（ZIP：research/final-eight-profile-audit-v2.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip)，六組完整通過結果稽核，head／LoRA 兩組的嚴格機率連結校驗未完成（JSON 狀態為 incomplete_or_not_run）。本輪不採用新 head／LoRA 權重，不改 SDK 預設，也未發布或提交排行榜。
 
 原版 public231 為 197/231；未訓練 USER 提示對照為 200/231，historical Jev-Omni 為 203/231。訓練改善 raw-unit 合成 soft metrics，但各候選獨立校準後落後主要對照，且原生媒體與部分一致性退步。這些收益與代價各自列出，不由公開最好分數選 checkpoint。
 
 沿用 [執行前協定](protocol.md) 與 [固定 config](../../../../configs/experiments/jevbench-breakthrough-20261008.json)：config SHA256 3a8dcceba9fbc0c7ce31bddbb85c0d10acdfa855ddf237f4d5e81982ec6a926d；synthetic manifest SHA256 f408124be6c60ba79983222d1bc64a8432733b7803b69046633fa3d403268d96。實際 source commit 為 5a4319783026e32e4542b8d264b8bc9cb25b55ee，兩階段 66 個執行來源逐 byte／hash 相等。後來的 auditor 與 archive tool 另列 current tools。
 
-[PR #6](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/pull/6) 已於 2026-10-08T05:57:50Z 合併，upstream main 為 3023469aa2579aceeb5f05c496063fac50d20316。contracts 的 Python3.11／3.12／3.13 與 inference CI 成功；外部 reviewer neutral／skipped 不算測試通過。Reconciliation commit 3ed51bb 與 frozen 5a43197 的 tracked tree 都是 229971b08b207240a4fee80cb30241e022ed0c0f；[metadata](../../../../artifacts/jevbench/breakthrough-20261008/pr6-current.json) 與 [來源稽核](../../../../artifacts/jevbench/breakthrough-20261008/project-update-audit.json) 保留細節。本研究分支沒有新的 push／CI／發布證明。
+[PR #6](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/pull/6) 已於 2026-10-08T05:57:50Z 合併，upstream main 為 3023469aa2579aceeb5f05c496063fac50d20316。contracts 的 Python3.11／3.12／3.13 與 inference CI 成功；外部 reviewer neutral／skipped 不算測試通過。Reconciliation commit 3ed51bb 與 frozen 5a43197 的 tracked tree 都是 229971b08b207240a4fee80cb30241e022ed0c0f；[metadata（ZIP：research/pr6-current.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip) 與 [來源稽核（ZIP：research/project-update-audit.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip) 保留細節。本研究分支沒有新的 push／CI／發布證明。
 
 ## Fresh synthetic test384
 
@@ -105,7 +107,7 @@
 | released-user-lora | score_count_bands / 64 | 1.339918 / 0.201072 / 0.090336 | 0.353170 |
 | released-user-lora | score_damage_ledger / 64 | 1.347041 / 0.226418 / 0.103060 | 0.402295 |
 
-另有 [uniform reference](../../../../artifacts/jevbench/breakthrough-20261008/uniform-reference.json)：直接對 frozen labels 給等機率，沒有 fitting、模型呼叫或新 checkpoint，不是第九個模型 profile。整體 CE／KL／Brier 為 1.114748／0.136101／0.083021；Score128 EV-MAE 0.389499。兩個訓練候選的 calibrated Brier 都劣於此數學參考，raw-unit 收益仍單獨保留。
+另有 [uniform reference（ZIP：research/uniform-reference.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip)：直接對 frozen labels 給等機率，沒有 fitting、模型呼叫或新 checkpoint，不是第九個模型 profile。整體 CE／KL／Brier 為 1.114748／0.136101／0.083021；Score128 EV-MAE 0.389499。兩個訓練候選的 calibrated Brier 都劣於此數學參考，raw-unit 收益仍單獨保留。
 
 ## 主要訓練對照與配對區間
 
@@ -224,7 +226,7 @@ Historical Jev-Omni 是前一 campaign 的不同模型／prompt／calibration／
 
 所有 population 完整配對，不縮成人口交集作成功結論。Accuracy 相同也不等於 distributions 或 labels 全相同；完整 flips／drift 都保留。Formal noninferiority margin 未指定，保持 not_assessed。
 
-[完整訓練覆蓋與media分拆](../../../../artifacts/jevbench/breakthrough-20261008/final-coverage-diagnostic.json)：head-init→head 31→27，7個新錯／3個修正；gold0–7的42題27→27（3新錯／3修正），gold8／9的10題4→0（4新錯）。Image28→25，audio3→2。LoRA31→30只有1個新增錯誤，屬gold0–7音訊；gold8／9仍4→4。Head bias只有positions0–7非零，但初始W未獨立保存，不據此宣稱W parity或因果。覆蓋缺口不能解釋所有退步，也不能正當化事後fallback。
+[完整訓練覆蓋與media分拆（ZIP：research/final-coverage-diagnostic.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip)：head-init→head 31→27，7個新錯／3個修正；gold0–7的42題27→27（3新錯／3修正），gold8／9的10題4→0（4新錯）。Image28→25，audio3→2。LoRA31→30只有1個新增錯誤，屬gold0–7音訊；gold8／9仍4→4。Head bias只有positions0–7非零，但初始W未獨立保存，不據此宣稱W parity或因果。覆蓋缺口不能解釋所有退步，也不能正當化事後fallback。
 
 ## Strict coherence 與溫度
 
@@ -268,15 +270,15 @@ Head 最終52×3840 FP32 weights／52 bias與1024×3840 FP32 detached features�
 
 LoRA保存 final128 adapter（42,718,528 bytes）、config、README與完整updates/training；每32步覆寫同一adapter目錄，因此沒有全部中間 binary checkpoints。本輪只評宣告的final checkpoint。HF release為knowlet/Gemma-4-12B-Unified-System-One@a66f836b56605039fe040f330180e336d19b3362，base為google/gemma-4-12B-it@707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7。Offline確認其inventory/processor identities自洽，未重新讀取約24GB base權重；不將metadata核對說成完整獨立權重重hash。
 
-第一次 [八組嚴格 audit](../../../../artifacts/jevbench/breakthrough-20261008/final-eight-profile-audit.json) 保持不變，當時六組complete／兩組未通過：head校準點跨平台差一個binary64 ULP；head/LoRA各5/4個 coherence questions超過原1FP32-epsilon門檻，最大差異1.7881393433e-7。完整 [numeric diagnostic](../../../../artifacts/jevbench/breakthrough-20261008/final-audit-numeric-diagnostic.json) 保存全部差異、raw keys與alternate references；不選3ULP作事後放寬。頭部grid修正僅接受同index的相鄰interior representation，端點維持exact、CE abs1e-12/rel0，使用actual executed T重算。原macOS/ARM Torch2.8與雲端Linux/x86 Torch2.10校驗範圍需分別讀最終audit與CPU proof，不宣稱逐bit parity。
+第一次 [八組嚴格 audit（ZIP：research/final-eight-profile-audit.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip) 保持不變，當時六組complete／兩組未通過：head校準點跨平台差一個binary64 ULP；head/LoRA各5/4個 coherence questions超過原1FP32-epsilon門檻，最大差異1.7881393433e-7。完整 [numeric diagnostic（ZIP：research/final-audit-numeric-diagnostic.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip) 保存全部差異、raw keys與alternate references；不選3ULP作事後放寬。頭部grid修正僅接受同index的相鄰interior representation，端點維持exact、CE abs1e-12/rel0，使用actual executed T重算。原macOS/ARM Torch2.8與雲端Linux/x86 Torch2.10校驗範圍需分別讀最終audit與CPU proof，不宣稱逐bit parity。
 
 本輪沒有完成同環境CPU arithmetic proof。CPU01在讀檔校驗階段失敗（4.766秒），CPU02大量遠端讀檔在600秒上限逾時；兩次failure／source／image／resources／logs皆保存。新CPU03已準備同20,142members／84,335,351bytes的SHA-bound快照，壓縮28,341,101bytes，source2374721833911e7349f985928b070b3de937113ee418f79208bf6fe5196741c1，但上傳與作業在啟動前被自動審核拒絕，需要human consent，保持not_run。沒有藉此放寬原1FP32-epsilon門檻；head／LoRA兩個coherence temperature linkages保持inconclusive，不能聲稱完整8/8outcome audit或Mac嚴格parity。
 
-CPU03 [準備與來源綁定](../../../../artifacts/jevbench/breakthrough-20261008/cpu-arithmetic-03-preflight-v2.json) 可檢查原sameModalVolume的已完成transferreceipt、每檔size／SHA、原GPUterminalreceipt及唯一inputZIP；這是待批准的read-only CPU重播，未增加GPU訓練、HF下載、model forward或Volume write。
+CPU03 [準備與來源綁定（ZIP：research/cpu-arithmetic-03-preflight-v2.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip) 可檢查原sameModalVolume的已完成transferreceipt、每檔size／SHA、原GPUterminalreceipt及唯一inputZIP；這是待批准的read-only CPU重播，未增加GPU訓練、HF下載、model forward或Volume write。
 
-[完整本機驗證](../../../../artifacts/jevbench/breakthrough-20261008/local-validation-final-arithmetic.json)：單一process 1,652 passed／3 skipped／1 existing warning，93.54秒、exit0；source commit 6c3c4750fc428c034e8ae479989c75b7dafc783b。Skips為SentenceTransformer1個與bitsandbytes2個，warning為既有Starlette TestClient deprecation。Ruff check／format與diff check狀態同時保存。這是local tool/runtime測試，與GPU profiles品質結論分開。
+[完整本機驗證（ZIP：research/local-validation-final-arithmetic.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip)：單一process 1,652 passed／3 skipped／1 existing warning，93.54秒、exit0；source commit 6c3c4750fc428c034e8ae479989c75b7dafc783b。Skips為SentenceTransformer1個與bitsandbytes2個，warning為既有Starlette TestClient deprecation。Ruff check／format與diff check狀態同時保存。這是local tool/runtime測試，與GPU profiles品質結論分開。
 
-完整原始證據與當時reports收錄於 [newcloud-evidence.zip](newcloud-evidence.zip) 和 [逐檔SHA/size/CRC manifest](newcloud-evidence.manifest.json)，含兩階段raw/cal/public/coherence全人口、head/features/adapter、traces、sources、recoveries、失敗與最終稽核。舊授權前 [ZIP](raw-evidence.zip)／[manifest](raw-evidence.manifest.json) 不覆寫。
+完整原始證據與當時reports收錄於 [newcloud-evidence.zip](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip) 和 [逐檔SHA/size/CRC manifest](newcloud-evidence.manifest.json)，含兩階段raw/cal/public/coherence全人口、head/features/adapter、traces、sources、recoveries、失敗與最終稽核。舊授權前 [ZIP](raw-evidence.zip)／[manifest](raw-evidence.manifest.json) 不覆寫。
 
 ## 下一輪可驗證的優化方向
 
@@ -289,6 +291,6 @@ CPU03 [準備與來源綁定](../../../../artifacts/jevbench/breakthrough-202610
 
 ## 榜單參照更正（2026-10-09）
 
-Frozen protocol 中 current public300＋sealed1200 的參照文字不符合本次重新核對的官方方法；原config／protocol／舊archive保持不變，這是對外部榜單參照的更正，不是事後更改實驗人口或scorer。Benchmark Heaven [v1.5方法](https://github.com/fstandhartinger/jevbench/blob/bb05a335bc809e61b20c0f745d25499a82b326fc/docs/METHOD-v1.5.md) 為904題open（601公開）＋720題sealed＝1,624題；[headline amendment](https://github.com/fstandhartinger/jevbench/blob/bb05a335bc809e61b20c0f745d25499a82b326fc/docs/METHOD-v1.5-ADDENDUM-HEADLINE-A-EQUAL-TYPES.md) 改為四軸各25%、三型別各1/3。固定primary-source版本／SHA與對照見 [receipt](../../../../artifacts/jevbench/breakthrough-20261008/ranking-reference-20261009/receipt.json)。本輪沒有完整v1.5人口、正式速度或定價證據，不能推算該綜合榜名次。
+Frozen protocol 中 current public300＋sealed1200 的參照文字不符合本次重新核對的官方方法；原config／protocol／舊archive保持不變，這是對外部榜單參照的更正，不是事後更改實驗人口或scorer。Benchmark Heaven [v1.5方法](https://github.com/fstandhartinger/jevbench/blob/bb05a335bc809e61b20c0f745d25499a82b326fc/docs/METHOD-v1.5.md) 為904題open（601公開）＋720題sealed＝1,624題；[headline amendment](https://github.com/fstandhartinger/jevbench/blob/bb05a335bc809e61b20c0f745d25499a82b326fc/docs/METHOD-v1.5-ADDENDUM-HEADLINE-A-EQUAL-TYPES.md) 改為四軸各25%、三型別各1/3。固定primary-source版本／SHA與對照見 [receipt（ZIP：research/ranking-reference-20261009/receipt.json）](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/download/research-2026-10-10-jevbench/newcloud-evidence.zip)。本輪沒有完整v1.5人口、正式速度或定價證據，不能推算該綜合榜名次。
 
 另一套 [JevBench coherence榜](https://jevbench.github.io/) 比較240cases／1,200tests的五維一致性，並另報準確率；高coherence也可能來自uniform輸出，所以不能據本輪unit81.86%的點估計宣稱第二名或保證上榜。本輪八組已完成固定官方 mini 的 raw-answer 評分重算，但兩組 raw-logit 機率連結仍未完成；尚無榜單接納或提交證明。這兩套同名benchmark明確分開。
