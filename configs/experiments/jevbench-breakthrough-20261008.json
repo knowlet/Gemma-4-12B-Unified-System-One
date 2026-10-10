@@ -1,0 +1,423 @@
+{
+  "schema_version": 1,
+  "experiment_id": "jevbench-breakthrough-20261008",
+  "status": "prospective_frozen_before_gpu",
+  "frozen_at_utc": "2026-10-08T04:57:27Z",
+  "recipe_policy": "No public231/coherence fitting, tuning, recipe changes or checkpoint selection. Evaluate every declared final profile; no automatic default change or publication.",
+  "source": {
+    "repository": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One",
+    "entrypoint": "apps/modal/breakthrough.py",
+    "helpers": [
+      "scripts/breakthrough_prompt.py",
+      "scripts/breakthrough_training.py",
+      "scripts/prepare_breakthrough_data.py",
+      "scripts/run_jevbench_public.py",
+      "scripts/release_training.py",
+      "src/s1/unified.py"
+    ],
+    "executed_source_sha256": null,
+    "executed_source_status": "Record exact bytes and SHA256 for the app, helpers, complete s1 package and this configuration in each stage receipt before inference. Preflight fixes must precede GPU execution; never represent a later checkout as the executed source."
+  },
+  "weights": {
+    "released": {
+      "model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+      "revision": "a66f836b56605039fe040f330180e336d19b3362"
+    },
+    "base": {
+      "model_id": "google/gemma-4-12B-it",
+      "revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7"
+    },
+    "checkpoint_integrity": "Snapshot immutable revisions; record tokenizer, processor, configuration and every weight shard identity with hashes; preserve source checkpoints."
+  },
+  "runtime": {
+    "gpu_request": "A100-80GB",
+    "gpu_device_name": null,
+    "backbone_precision": "bfloat16",
+    "native_head_precision": "bfloat16",
+    "head_profiles_precision": "float32",
+    "adapter_trainable_precision": "float32",
+    "attention": "sdpa",
+    "question_mode": "sequential_independent",
+    "native_forwards_per_question": 1,
+    "native_processor": true,
+    "native_image_audio_video_tensors": true,
+    "max_context": 16384,
+    "context_overflow": "reject_without_truncation",
+    "max_questions_per_request": 64,
+    "max_candidates_per_question": 52,
+    "compile": false,
+    "cuda_graphs": false,
+    "candidate_cache": false,
+    "kv_cache": false,
+    "probability_constraints": false,
+    "same_cell_within_stage": true,
+    "cross_stage_same_gpu_guaranteed": false,
+    "latency_claim": "No accepted speedup. Record actual board and environment. Public raw-logit replay durations are CPU replay, never GPU inference latency.",
+    "dependencies": {
+      "python": "3.12",
+      "torch": "2.10.0",
+      "torchvision": "0.25.0",
+      "transformers": "5.17.0",
+      "accelerate": "1.15.0",
+      "huggingface-hub": "1.33.0",
+      "safetensors": "0.8.0",
+      "pillow": "12.3.0",
+      "soundfile": "0.14.0",
+      "librosa": "0.11.0",
+      "sentencepiece": "0.2.2",
+      "protobuf": "6.33.6",
+      "numpy": "2.5.3",
+      "pydantic": "2.13.5",
+      "httpx": "0.28.1",
+      "peft": "0.21.0"
+    }
+  },
+  "stages": [
+    {
+      "id": "ablate",
+      "status": "not_run",
+      "profiles": [
+        {
+          "id": "released-current",
+          "weights": "released",
+          "prompt": "current",
+          "readout": "native_bf16",
+          "training": "not_run"
+        },
+        {
+          "id": "released-user_question",
+          "weights": "released",
+          "prompt": "user_question",
+          "readout": "native_bf16",
+          "training": "not_run"
+        },
+        {
+          "id": "base-current",
+          "weights": "base",
+          "prompt": "current",
+          "readout": "native_bf16",
+          "training": "not_run"
+        },
+        {
+          "id": "base-user_question",
+          "weights": "base",
+          "prompt": "user_question",
+          "readout": "native_bf16",
+          "training": "not_run"
+        }
+      ]
+    },
+    {
+      "id": "train",
+      "status": "not_run",
+      "profiles": [
+        {
+          "id": "released-user-control",
+          "weights": "released",
+          "prompt": "user_question",
+          "readout": "native_bf16",
+          "training": "not_run"
+        },
+        {
+          "id": "released-user-head-init",
+          "weights": "released",
+          "prompt": "user_question",
+          "readout": "selected_52_rows_fp32",
+          "training": "not_run; precision/kernel control"
+        },
+        {
+          "id": "released-user-head",
+          "weights": "released",
+          "prompt": "user_question",
+          "readout": "selected_52_rows_fp32",
+          "training": "head"
+        },
+        {
+          "id": "released-user-lora",
+          "weights": "released",
+          "prompt": "user_question",
+          "readout": "native_bf16",
+          "training": "attention_lora"
+        }
+      ]
+    }
+  ],
+  "training": {
+    "seed": 42,
+    "head": {
+      "device": "cpu",
+      "optimizer": "AdamW",
+      "weight_decay": 0.0,
+      "steps": 128,
+      "batch_size": 64,
+      "learning_rate": 0.0001,
+      "sampling": "seeded sample without replacement within each batch; batches may revisit training cases",
+      "initialization": "Original selected 52 LM-head token rows and original bias, or zero bias if absent; immutable backbone and native head remain unchanged",
+      "precision": "float32",
+      "loss": {
+        "soft_cross_entropy": 1.0,
+        "brier": 0.1,
+        "mean_squared_weight_anchor_to_initial_rows": 0.01
+      },
+      "gradient_clip_norm": 1.0,
+      "feature_population": 1024,
+      "hidden_features": "One native user_question forward per training case; detached FP32 CPU features"
+    },
+    "attention_lora": {
+      "optimizer": "AdamW",
+      "weight_decay": 0.0,
+      "optimizer_updates": 128,
+      "gradient_accumulation": 8,
+      "micro_batch_cases": 1,
+      "training_forwards": 1024,
+      "unique_training_cases": 1024,
+      "epochs": 1,
+      "learning_rate": 1e-05,
+      "rank": 8,
+      "alpha": 16,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj"
+      ],
+      "bias": "none",
+      "adapter_precision": "float32",
+      "gradient_checkpointing": "non_reentrant",
+      "loss": {
+        "soft_cross_entropy": 1.0,
+        "brier": 0.1
+      },
+      "gradient_clip_norm": 1.0,
+      "selection": "Final update 128 only; intermediate adapter snapshots are recovery evidence, never public-selected candidates"
+    },
+    "immutability": "Never overwrite published weights; save research decision-head.pt and adapter files separately, recording their hashes. No merged release or automatic publication."
+  },
+  "calibration": {
+    "fit_population": "Independent synthetic calibration.jsonl only: 192 cases, 64 per primitive",
+    "per_profile": true,
+    "per_type": true,
+    "objective": "mean soft cross entropy against complete known probability targets",
+    "grid": {
+      "kind": "numpy.geomspace",
+      "start": 0.1,
+      "stop": 10.0,
+      "values": 81,
+      "tie_policy": "first minimum in ascending grid"
+    },
+    "report_boundary_selection": true,
+    "public_policies": [
+      "calibration_type_temperatures_native",
+      "unit_temperature_raw_logit_replay",
+      "published_global_temperature_raw_logit_replay"
+    ],
+    "unit_temperature": 1.0,
+    "published_global_temperature": 2.7830344470383452,
+    "published_global_scope": "Common fixed control copied from released checkpoint; it is not claimed to be the Google base's fitted calibration",
+    "coherence_policies": [
+      "calibration_type_temperatures_native",
+      "unit_temperature_raw_logit_replay"
+    ],
+    "replay_policy": "Identical recorded raw candidate logits and label identities; no further model call or fitting. Save both reports to expose any uniformizing effect."
+  },
+  "data": {
+    "synthetic": {
+      "directory": "artifacts/jevbench/breakthrough-20261008/data",
+      "mount": "/workspace/data",
+      "manifest_sha256": "f408124be6c60ba79983222d1bc64a8432733b7803b69046633fa3d403268d96",
+      "generator_version": "typed-finite-worlds-v1",
+      "generator_sha256": "30c126df19772a34f41979b77e8afe176f29c121fde688dffb993316f07b9abf",
+      "seed": 20261008,
+      "counts": {
+        "train": 1024,
+        "calibration": 192,
+        "test": 384
+      },
+      "type_counts": {
+        "train": {
+          "choice": 342,
+          "noul": 341,
+          "score": 341
+        },
+        "calibration": {
+          "choice": 64,
+          "noul": 64,
+          "score": 64
+        },
+        "test": {
+          "choice": 128,
+          "noul": 128,
+          "score": 128
+        }
+      },
+      "dataset_sha256": {
+        "train.jsonl": "5784eca5c58f6a378084242ef6fc693cee67583fa75d98db12c5734079c36a3a",
+        "calibration.jsonl": "ef3e970487fc1022309126e6af09eb0c81cba4a04f89da7687c41d1cb1895e89",
+        "test.jsonl": "61b68dff6360b9d9e67336ff43a6fdf3d2d80080bab46d01cb99fd97fc14a198"
+      },
+      "files": {
+        "ATTRIBUTION.md": "da56a6857215afc85653aae5a588330d8763341df9b52a86ca8661f3f6e82f10",
+        "calibration.jsonl": "7500565b2e380849af3f4c29c9e7917f55a690419de3f24edc05123ed9812f76",
+        "provenance.json": "e35488d054ffd9279dfef18e4e6dfc826963a61e3d744922b4d714f80aca4dc9",
+        "split-audit.json": "ff9ed7e618f133230f77a5738a035793285f8c0b24b6bc4f09bf27fd0a8a4667",
+        "test.jsonl": "db6cf2214832fd13289170f00e1b9e3d060373f468cf4cd264b8f27a0477c889",
+        "train.jsonl": "c61d407f5decc76f9a53c2f8315e30a5aa278569a685187114ce2023f82f9f23"
+      },
+      "source": "Locally generated finite populations with exact integer enumeration. No corpus download, model-generated answers, public231 or coherence content.",
+      "holdout": "Globally distinct canonical finite worlds, case IDs and request fingerprints across all splits; test template families reserved before generation. Shared primitive logic operations and level sets mean template transfer, not unseen-rule or real-world proof.",
+      "target_semantics": "soft_gold is the known full sampling distribution; hard gold is oracle most-likely only, not the realized outcome of a random draw; exact masses, denominators and expected scores live outside inference requests in provenance."
+    },
+    "release_regression": {
+      "directory": "artifacts/release/datasets",
+      "mount": "/workspace/release-data",
+      "manifest_sha256": "e0ab28e3435a910c19abf3a9a7e58df8b5cff7a806b6c7f4f18021db1d3804dd",
+      "loader": "scripts/release_training.py:load_release_data; validates complete release manifest and split/source/request integrity",
+      "source": "Pinned Google Research BoolQ validation, excluding complete training and prior passage source groups; original native MNIST/FSDD test population. Already observed release regressions, not newly unseen after prior validation.",
+      "boolq_revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+      "boolq_upstream_revision": "90af34107399cc7a446b373dc4ee35b8001da7c2",
+      "evaluation_files": {
+        "test.jsonl": {
+          "cases": 256,
+          "file_sha256": "a36df8f953cdb856b64274eb482f9877b49bdd4c1d2fce1c9b1f4da43828f044",
+          "dataset_sha256": "62f004b4d9b8e9e683f5b9b851074c64ad6ec557ae99b0040a688489a550e527"
+        },
+        "media-test.jsonl": {
+          "cases": 52,
+          "image_cases": 32,
+          "audio_cases": 20,
+          "file_sha256": "e6f0806c1e625f1ecf4ca8430f0660358c08009233f832e53e24a8a23151865b",
+          "dataset_sha256": "7f3dff9c8fcfb164df5f8ca05b0fdaadbfb3a84812bfbe4c9b1906b6954d9f35"
+        },
+        "regression-text.jsonl": {
+          "cases": 128,
+          "file_sha256": "6456bb99b63d6f73f863623f94b0369b0230194025565f2e063af52071069775",
+          "dataset_sha256": "7bdb25dc3d8a0371bb73909fe55597de86f66e808bc42d1a5a1cb17d08f44d41"
+        }
+      },
+      "fitting_use": "none; neither old release train/calibration nor these regressions are continuation fitting or calibration inputs"
+    },
+    "native_fixture": {
+      "path": "examples/benchmarks/mps.jsonl",
+      "mount": "/workspace/native-regression.jsonl",
+      "file_sha256": "23de11921c22807ef90841916a052b172a88667814239d30629ed2e71e1f971b",
+      "cases": 8,
+      "questions": 29,
+      "scope": "Text, image, audio and mixed native contract regression; no fitting; separate from all 52 release media cases"
+    },
+    "public231": {
+      "source_repository": "https://github.com/fstandhartinger/jevbench",
+      "revision": "bb05a335bc809e61b20c0f745d25499a82b326fc",
+      "cases": 231,
+      "canonical_dataset_sha256": "dc3995d8ae1e2fc8e81ce38431add509eb8bb39b85aadfd0c7c32079382dde51",
+      "source_contract": "configs/benchmarks/jevbench-public.json",
+      "source_contract_sha256": "206ca6745290cc4bc5c577d64addad7814381cdc6d336b5b7c09cb8992af8754",
+      "fitting_use": "none; previously exposed public development screening"
+    },
+    "coherence": {
+      "source_repository": "https://github.com/JevBench/jevbench",
+      "revision": "e18733694623aa93058e279c3534f8b8e2edefa3",
+      "suite": "jevbench-mini",
+      "cases": 240,
+      "checks": 50,
+      "tests": 1200,
+      "cached_answers_per_policy": 1248,
+      "scoring": "Pinned official strict overall and outcomes; never substitute graded score or calibration for coherence",
+      "fitting_use": "none; previously exposed development checks"
+    }
+  },
+  "evaluation": {
+    "every_profile": [
+      "synthetic_test_384",
+      "legacy_public231",
+      "release_boolq_256",
+      "release_native_52",
+      "historic_text_128",
+      "native_fixture_8_cases_29_questions",
+      "coherence_mini_calibrated_1248_answers",
+      "coherence_mini_unit_replay_1248_answers"
+    ],
+    "fresh_metrics": [
+      "soft_cross_entropy",
+      "kl",
+      "brier",
+      "score_expected_mae",
+      "oracle_argmax_match_only"
+    ],
+    "type_and_template_strata": true,
+    "preservation_metrics": [
+      "release_boolq_accuracy",
+      "native_media_accuracy",
+      "historic_text_accuracy",
+      "native_fixture_label_flips_and_probability_drift",
+      "public_score_accuracy_and_expected_value_mae",
+      "noul_false_accepts_and_false_rejects_with_denominators",
+      "strict_coherence_overall_BAT_MEA_REP_LOG_CHO",
+      "official_per_check_outcomes_and_support"
+    ],
+    "primary_training_comparators": {
+      "released-user-head": "released-user-head-init",
+      "released-user-lora": "released-user-control"
+    },
+    "secondary_training_comparators": [
+      "released-user-control",
+      "released-current",
+      "released-user_question"
+    ],
+    "statistics": {
+      "unit": "paired source group; never treat repeated slots as independent",
+      "confidence": 0.95,
+      "resamples": 2000,
+      "seed": 42,
+      "multiple_comparisons": "Descriptive predeclared comparisons; no best-of-eight or multiplicity-adjusted superiority claim"
+    },
+    "complete_population_required": true,
+    "unsupported_missing_errors_policy": "Expose separately; missing, unsupported, unmatched, not-run or insufficient group support is inconclusive, never a pass",
+    "acceptance": {
+      "status": "not_assessed",
+      "requires": [
+        "Improvement in fresh heldout soft distribution metrics against the declared control, retaining per-type and Score expected-MAE evidence",
+        "No demonstrated regression on complete release BoolQ, native52, historic text and native fixture populations",
+        "Preserve Score and LOG strengths; inspect calibrated and unit coherence, false accepts and their full denominators",
+        "Audit source/model/data/raw responses and pinned official replay; require all declared profile populations complete"
+      ],
+      "formal_noninferiority": {
+        "implementation": "src/s1/evaluation/gates.py",
+        "population": "all_decisions",
+        "min_support_fraction": 1.0,
+        "min_groups": 30,
+        "accuracy_margin": null,
+        "status": "not_assessed; no arbitrary tolerated-loss margin supplied; without a prospectively defined explicit gate and full support, do not claim noninferiority passed"
+      },
+      "ambiguity": "Overlapping intervals, insufficient support, mixed improvements or missing formal gate remain inconclusive. A positive research candidate does not change the SDK default, publish weights or establish deployment readiness."
+    }
+  },
+  "outputs": {
+    "volume": "gemma-unified-system-one",
+    "remote_root": "/vol/breakthrough/<unique-run>/<stage>",
+    "local_root": "artifacts/jevbench/breakthrough-20261008/runs/<unique-run>/<stage>",
+    "required_evidence": [
+      "configuration bytes and SHA256",
+      "source bytes and SHA256",
+      "weight identities",
+      "data manifest and checksums",
+      "calibration records and per-type temperatures",
+      "heldout raw logits and targets",
+      "public raw responses and official summaries for all three temperature policies",
+      "release regression records",
+      "native fixture outputs",
+      "both coherence caches/reports/raw-logit replay audit",
+      "head training receipt and decision-head.pt hash",
+      "LoRA update log and adapter file hashes",
+      "actual GPU/dependency/environment receipts",
+      "complete failed/not-run status and export log"
+    ]
+  },
+  "official": {
+    "leaderboard_status": "not_submitted",
+    "sealed_evaluation": "not_run",
+    "rank": null,
+    "cost_usd_per_1000_decisions": null,
+    "latency_eligibility": "unknown; replay latency does not establish GPU latency or published cap eligibility",
+    "scope": "Legacy public231 and strict coherence-mini research only; not the current official public300 plus sealed1200 protocol"
+  }
+}

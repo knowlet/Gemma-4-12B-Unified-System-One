@@ -29,6 +29,7 @@ class Backend(Protocol):
 
 
 _ROUNDING_TOLERANCE = 0.000051
+GEMMA_MAX_FORWARD_BATCH_SIZE = 8
 
 
 def _probability(value):
@@ -244,7 +245,12 @@ class HTTPBackend:
 
 
 class GemmaBackend:
-    def __init__(self, model=None, **kwargs):
+    question_mode = "causal_multislot"
+
+    def __init__(self, model=None, *, question_mode="causal_multislot", **kwargs):
+        if question_mode not in ("causal_multislot", "independent"):
+            raise ValueError("question_mode must be causal_multislot or independent")
+        self.question_mode = question_mode
         from .unified import DEFAULT_MODEL, UnifiedDecisionModel
 
         self.model = UnifiedDecisionModel(model or DEFAULT_MODEL, **kwargs)
@@ -252,10 +258,14 @@ class GemmaBackend:
         self.metadata = {
             "model": self.model.name,
             "revision": self.model.revision,
+            "question_mode": self.question_mode,
             "temperature": self.model.temperature,
             "device": self.model.device,
             "dtype": self.model.dtype,
             "attn_implementation": self.model.attn_implementation,
+            "compile_mode": getattr(self.model, "compile_mode", None),
+            "max_forward_batch_size": GEMMA_MAX_FORWARD_BATCH_SIZE,
+            "max_prepared_prompts": GEMMA_MAX_FORWARD_BATCH_SIZE,
             "torch_version": version("torch"),
             "transformers_version": version("transformers"),
             "max_context": self.model.max_context,
@@ -266,4 +276,29 @@ class GemmaBackend:
         }
 
     def predict(self, request):
+        if self.question_mode == "independent":
+            from .evaluation.gemma import predict_batch as _predict_batch
+
+            return _predict_batch(self.model, [request], independent=True, readout="candidate")[0]
         return self.model.predict(request)
+
+    def predict_batch(self, requests):
+        """Batch requests with the configured question context.
+
+        Causal mode preserves the ordered question context used by predict and
+        its single-request path. Independent mode uses native per-question
+        prompts for every batch size; its inference errors propagate.
+        """
+        if self.question_mode == "independent":
+            from .evaluation.gemma import predict_batch as _predict_batch
+
+            return _predict_batch(self.model, requests, independent=True, readout="candidate")
+        try:
+            from .evaluation.gemma import predict_batch as _predict_batch
+        except Exception:
+            return [self.predict(r) for r in requests]
+        if not requests:
+            raise ValueError("empty batch")
+        if len(requests) == 1:
+            return [self.predict(requests[0])]
+        return _predict_batch(self.model, requests, independent=False, readout="candidate")

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from s1.backends import GEMMA_MAX_FORWARD_BATCH_SIZE
 from s1.contracts import answer_from_probabilities
 from s1.unified import project_candidates
 
@@ -44,7 +45,11 @@ def _collate(prepared, pad_id):
 
 
 def predict_batch(model, requests, *, independent=True, readout="candidate"):
-    """G1/G2/G3/G4, with full-head projection only at required answer positions."""
+    """Native prompts with bounded pending tensors and compatible forward groups.
+
+    Independent mode still uses one prompt per question. Causal mode retains
+    each complete ordered multislot request as one prompt.
+    """
     import torch
 
     if readout not in ("candidate", "full"):
@@ -52,20 +57,14 @@ def predict_batch(model, requests, *, independent=True, readout="candidate"):
     if not requests:
         raise ValueError("empty batch")
     buckets, answers = defaultdict(list), [{} for _ in requests]
+    batch_sizes, token_counts = [], []
     model.lm.eval()
     with torch.inference_mode():
-        for index, request in enumerate(requests):
-            groups = [[q] for q in request.questions] if independent else [request.questions]
-            for questions in groups:
-                part = request.model_copy(update={"questions": questions})
-                prepared = model.prepare(part)
-                buckets[_bucket_key(prepared[0])].append((index, questions, prepared))
-        batch_sizes, token_counts = [], []
-        for items in buckets.values():
+
+        def forward_group(items):
             prepared = [item[2] for item in items]
             inputs = _collate(prepared, getattr(model.tok, "pad_token_id", None) or 0)
             batch_sizes.append(len(items))
-            token_counts.extend(p[0]["input_ids"].shape[1] for p in prepared)
             out = model.backbone(**inputs, use_cache=False, return_dict=True)
             hidden = torch.cat(
                 [out.last_hidden_state[i, slots] for i, (_, slots, _) in enumerate(prepared)]
@@ -92,11 +91,32 @@ def predict_batch(model, requests, *, independent=True, readout="candidate"):
                         question, probabilities[offset][: len(question.labels())]
                     )
                     offset += 1
+
+        pending = 0
+        for index, request in enumerate(requests):
+            groups = [[q] for q in request.questions] if independent else [request.questions]
+            for questions in groups:
+                part = request.model_copy(update={"questions": questions})
+                prepared = model.prepare(part)
+                token_counts.append(prepared[0]["input_ids"].shape[1])
+                buckets[_bucket_key(prepared[0])].append((index, questions, prepared))
+                pending += 1
+                # Clear this extra reference before flushing; removed groups must
+                # not keep native media/sequence tensors alive until the next prepare.
+                prepared = None
+                if pending == GEMMA_MAX_FORWARD_BATCH_SIZE:
+                    key = max(buckets, key=lambda key: len(buckets[key]))
+                    pending -= len(buckets[key])
+                    forward_group(buckets.pop(key))
+        while buckets:
+            forward_group(buckets.pop(next(iter(buckets))))
     return [
         {
-            "answers": result,
+            "answers": {question.id: result[question.id] for question in request.questions},
             "execution": {
-                "forward_calls": len(buckets),
+                "forward_calls": len(batch_sizes),
+                "max_forward_batch_size": GEMMA_MAX_FORWARD_BATCH_SIZE,
+                "max_prepared_prompts": GEMMA_MAX_FORWARD_BATCH_SIZE,
                 "batch_sizes": batch_sizes,
                 "sequence_tokens": token_counts,
                 "scope": "whole_adapter_batch",
@@ -104,7 +124,7 @@ def predict_batch(model, requests, *, independent=True, readout="candidate"):
                 "independent_questions": independent,
             },
         }
-        for result in answers
+        for request, result in zip(requests, answers, strict=True)
     ]
 
 

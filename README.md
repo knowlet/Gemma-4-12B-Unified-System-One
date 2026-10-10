@@ -11,6 +11,41 @@ This project extends [system-one-open](https://github.com/mithalouni/system-one-
 The original E2B experiments and demos remain available; their historical results
 are not measurements of this Unified model. See [upstream notes](docs/upstream.md).
 
+## Public JevBench screening — October 8, 2026
+
+The [October 10 research prerelease](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/tag/research-2026-10-10-jevbench)
+adds the fixed eight-profile optimization study and complete downloadable evidence.
+A pinned Linux CPU replay reproduced all 529,136 coherence probabilities and native
+answer fields exactly; two calibration metadata records still differ by tiny
+binary64 amounts, so the complete audit retains six passing and two incomplete
+profiles. The [dated follow-up](docs/validation/2026-10-10/README.md) preserves
+the original strict Mac results, failed deliveries and unchanged model defaults.
+Use the [validation index](docs/validation/README.md) to find each evidence population.
+
+The [audited campaign](docs/validation/2026-10-08/jevbench/campaign-audit.md)
+compares the released S1 checkpoint with OneJev-4B, Decider-2B and Jev-Omni on
+all 231 pinned public tasks, retaining native probabilities and official scoring.
+S1 scores 197/231 (85.28%); Jev-Omni scores 203/231 (87.88%), with a paired
+difference interval that includes zero. These exposed public tasks are screening
+evidence; official ranking still requires the maintainer's current sealed evaluation.
+
+An opt-in `--question-mode independent` is available for Gemma `decide`,
+`benchmark` and `serve` in this repository's current runtime. On the separate
+JevBench mini coherence protocol, it scores 71.96% versus the default causal
+multislot profile's 40.50%, retaining identical public231 probabilities. The
+profiles used different A100 boards; this is an observed quality comparison,
+not a controlled speed measurement. Native image/audio batching retains all
+29 regression labels, with nonzero probability drift. The default remains
+`causal_multislot`; previously published wheels do not include the new CLI flag.
+
+The [evidence index](docs/validation/2026-10-08/jevbench/README.md) links the
+raw archive, source hashes and reproduction instructions; the
+[evaluation plan](docs/jevbench-plan.md) separates task accuracy, coherence,
+latency and cost. The [submission draft](docs/validation/2026-10-08/jevbench/submission-draft.md)
+has not been sent. Candidate caching has no demonstrated speed gain on the
+measured sample; decoder compilation changes four public predictions and
+remains experimental.
+
 ## NVFP4 release — October 7, 2026
 
 The trained checkpoint now has a native packed **NVFP4** export for Blackwell,
@@ -196,6 +231,11 @@ On Apple Silicon, Unified inference now selects MPS automatically and uses BF16
 on macOS 14 or newer (FP32 on older supported macOS). Use `--device cpu` or
 `--dtype float32` for an explicit reference configuration. See the
 [MPS measurements](docs/mps.md) and [GGUF / MLX release paths](docs/model-export.md).
+
+The [October 7 runtime optimization](docs/runtime-optimization.md) reduces the
+GGUF Metal compute buffer by 6.09 GiB while retaining the 64-slot decision
+contract. Its bounded native equivalence checks and remaining MLX experiments
+are recorded separately from the published model-quality measurements.
 
 ## Layout
 

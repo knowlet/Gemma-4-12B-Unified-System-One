@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-10T02:04:46.176303+00:00",
+  "status": "focused_full_and_clean_api_only_checks_passed",
+  "source_commit": "a6372a91bf91bfc001aa1ceb629baca191f1aeb2",
+  "prior_research_tag_commit": "8c94514d7d0c341f7c4a9290c2ceac921c0cee8e",
+  "test_identity": [
+    {
+      "path": "tests/test_audit_breakthrough_arithmetic.py",
+      "before_sha256": "0815323014830f733b298ca856079d15847c7605800e8d39131d18efd109913f",
+      "after_sha256": "c2551be5516f1a2d9515092d7e2d125aebac2d60d5718c2eb48e7c70212ee5b8",
+      "after_size_bytes": 14866
+    },
+    {
+      "path": "tests/test_breakthrough_analysis.py",
+      "before_sha256": "7fdede84b1e34e578347330c65a95805398a3fc965a7d33d24f795ba51494d3f",
+      "after_sha256": "c48790fe66685eac1e585ddbcbfb06260a8370ece5d8f4e64c08f9d23d06c342",
+      "after_size_bytes": 72503
+    }
+  ],
+  "scope": "Two test files only; production arithmetic, research data, source-bound results, archives, model defaults and published tag unchanged.",
+  "reproduction": {
+    "environment": "locked API-only dependencies; no Torch, Modal or ignored research artifacts",
+    "selected_tests": 3,
+    "failed": 3,
+    "exit_code": 1,
+    "duration_seconds": 0.75,
+    "errors": [
+      "Torch ModuleNotFoundError",
+      "Missing ignored data/manifest.json in two analyzer failure-state tests"
+    ]
+  },
+  "fixes": [
+    "Skip only the 24 Torch-dependent arithmetic cases when optional Torch is absent; retain 40 non-Torch arithmetic cases",
+    "Generate independent SHA-bound tmp_path inputs for analyzer failure states; preserve all not_run, failed and source-tampered assertions"
+  ],
+  "checks": [
+    {
+      "environment": "full existing environment",
+      "command": "UV_CACHE_DIR=/private/tmp/s1-uv-cache uv run --frozen pytest -q tests/test_audit_breakthrough_arithmetic.py tests/test_breakthrough_analysis.py",
+      "passed": 144,
+      "skipped": 0,
+      "duration_seconds": 56.06,
+      "exit_code": 0,
+      "raw_summary": "144 passed in 56.06s"
+    },
+    {
+      "environment": "clean tracked-helper checkout from 8c94514 with reviewed two test files; API-only locked dependencies",
+      "command": "/private/tmp/s1-ci-api-only-20261010/bin/python -m pytest -q tests/test_audit_breakthrough_arithmetic.py tests/test_breakthrough_analysis.py",
+      "working_directory": "/private/tmp/s1-ci-clean-repro-20261010",
+      "torch_present": false,
+      "modal_present": false,
+      "research_artifacts_present": false,
+      "passed": 67,
+      "skipped": 77,
+      "duration_seconds": 36.7,
+      "exit_code": 0,
+      "raw_summary": "67 passed, 77 skipped in 36.70s"
+    },
+    {
+      "command": "ruff check tests/test_audit_breakthrough_arithmetic.py tests/test_breakthrough_analysis.py",
+      "exit_code": 0,
+      "raw_summary": "All checks passed!"
+    },
+    {
+      "command": "ruff format --check tests/test_audit_breakthrough_arithmetic.py tests/test_breakthrough_analysis.py",
+      "exit_code": 0,
+      "raw_summary": "2 files already formatted"
+    },
+    {
+      "command": "git -c core.fsmonitor=false diff --check",
+      "exit_code": 0,
+      "raw_summary": ""
+    }
+  ],
+  "evidence_provenance": "Completed execution and raw terminal summaries reported by independent stream_transport worker; no full log files were saved for these focused checks.",
+  "full_local_archive_validation": {
+    "source_commit": "0aa2b86445c7b214b34009d23bec4027103b495d",
+    "passed": 1712,
+    "skipped": 3,
+    "existing_warning": 1,
+    "source_bound_receipt": "cpu-replay-evidence-20261010.zip: execution/local-validation-20261010.json"
+  },
+  "github_ci": "Recorded separately on final PR head; focused checks do not imply completed CI."
+}

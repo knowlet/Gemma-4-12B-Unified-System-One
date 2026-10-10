@@ -39,11 +39,15 @@ def candidate_ids(tokenizer) -> list[int]:
 
 
 def project_candidates(hidden, head, ids, nopts, softcap=None):
+    weight = head.weight[ids]
+    bias = head.bias[ids] if getattr(head, "bias", None) is not None else None
+    return _project_candidate_rows(hidden, weight, bias, nopts, softcap)
+
+
+def _project_candidate_rows(hidden, weight, bias, nopts, softcap):
     import torch
     from torch.nn import functional as F
 
-    weight = head.weight[ids]
-    bias = head.bias[ids] if getattr(head, "bias", None) is not None else None
     logits = F.linear(hidden.to(weight.dtype), weight, bias)
     if softcap is not None:
         if not math.isfinite(softcap) or softcap <= 0:
@@ -51,7 +55,7 @@ def project_candidates(hidden, head, ids, nopts, softcap=None):
         logits = torch.tanh(logits / softcap) * softcap
     # Match the native LM head's softcap rounding before calibrating in float32.
     logits = logits.float()
-    mask = torch.arange(len(ids), device=logits.device)[None, :] >= nopts[:, None]
+    mask = torch.arange(len(weight), device=logits.device)[None, :] >= nopts[:, None]
     return logits.masked_fill(mask, float("-inf"))
 
 
@@ -70,6 +74,8 @@ class UnifiedDecisionModel:
         lora=None,
         adapter_path=None,
         quantization="none",
+        compile_mode=None,
+        enable_candidate_cache=False,
     ):
         from transformers import AutoModelForMultimodalLM, AutoProcessor
 
@@ -131,16 +137,64 @@ class UnifiedDecisionModel:
         self.quantization = quantization
         self.quantization_details = inspect_quantization(lm, quantization)
         self._initialize(lm, processor, str(device), temperature, max_context)
+        self.enable_candidate_cache(enable_candidate_cache)
+        self.compile_mode = None
+        if compile_mode is not None:
+            self.enable_compile(compile_mode)
         self.name = name
         self.revision = resolved_revision
 
+    def enable_compile(self, mode="decoder-max-autotune-no-cudagraphs"):
+        """Opt-in torch.compile for the text decoder only (research, off by default).
+
+        Rationale (see artifacts/optimization/compile-int8-analysis.md): full-model
+        reduce-overhead hits dynamo recompile_limit on 60-716 tok + 4 modality
+        branches. This compiles only the language_model submodule with
+        max-autotune-no-cudagraphs + dynamic=True + fullgraph=False, keeping
+        vision/audio encoders eager. Quantized (bnb) + compile is untested;
+        prefer quantization="none" + torchao weight-only for compile experiments.
+        """
+        import torch
+
+        allowed = ("decoder-max-autotune-no-cudagraphs", "decoder-default-dynamic")
+        if mode not in allowed:
+            raise ValueError(f"compile_mode must be one of {allowed}")
+        if self.quantization != "none":
+            raise ValueError(
+                "compile with bitsandbytes quantization is unsupported; use none + torchao"
+            )
+        target = getattr(getattr(self, "backbone", None), "language_model", None) or getattr(
+            self, "backbone", None
+        )
+        if target is None:
+            raise ValueError("compile target unavailable")
+        torch_mode = "max-autotune-no-cudagraphs" if "no-cudagraphs" in mode else "default"
+        compiled = torch.compile(target, mode=torch_mode, dynamic=True, fullgraph=False)
+        # Rebind: backbone.language_model if present, else whole backbone.
+        if getattr(getattr(self, "backbone", None), "language_model", None) is not None:
+            self.backbone.language_model = compiled
+        else:
+            self.backbone = compiled
+        self.compile_mode = mode
+        return mode
+
     @classmethod
-    def from_components(cls, lm, processor, *, device="cpu", temperature=1.0, max_context=16384):
+    def from_components(
+        cls,
+        lm,
+        processor,
+        *,
+        device="cpu",
+        temperature=1.0,
+        max_context=16384,
+        enable_candidate_cache=False,
+    ):
         """Dependency injection for offline tests and already-loaded checkpoints."""
         self = cls.__new__(cls)
         self.quantization = "none"
         self.quantization_details = {"method": "none", "quantized_linear_modules": 0}
         self._initialize(lm, processor, device, temperature, max_context)
+        self.enable_candidate_cache(enable_candidate_cache)
         self.name = getattr(lm.config, "_name_or_path", "in-memory") or "in-memory"
         self.revision = getattr(lm.config, "_commit_hash", None)
         return self
@@ -166,6 +220,62 @@ class UnifiedDecisionModel:
         self.softcap = getattr(config, "final_logit_softcapping", None)
         self.max_context = min(max_context, getattr(config, "max_position_embeddings", max_context))
         self.letters = torch.tensor(candidate_ids(self.tok), device=device)
+        self.candidate_cache_enabled = False
+        self._candidate_cache = None
+
+    def enable_candidate_cache(self, enabled=True):
+        """Opt in to reusing selected head rows during eval without gradients.
+
+        The cache is transient and normal PyTorch in-place updates invalidate it.
+        Call this method again after updates that bypass tensor version counters
+        (for example, writes through ``.data``). PEFT heads remain uncached.
+        """
+        if not isinstance(enabled, bool):
+            raise ValueError("enable_candidate_cache must be boolean")
+        self.candidate_cache_enabled = enabled
+        self._candidate_cache = None
+        return enabled
+
+    def _inference_candidate_rows(self):
+        import torch
+
+        head = self.head
+        if (
+            not self.candidate_cache_enabled
+            or torch.is_grad_enabled()
+            or self.lm.training
+            or head.training
+            or hasattr(self.lm, "peft_config")
+        ):
+            self._candidate_cache = None
+            return None
+        weight, bias, ids = head.weight, getattr(head, "bias", None), self.letters
+        try:
+            signature = (id(head),) + tuple(
+                None
+                if tensor is None
+                else (
+                    id(tensor),
+                    tensor._version,
+                    tensor.data_ptr(),
+                    tensor.device,
+                    tensor.dtype,
+                    tuple(tensor.shape),
+                    tensor.stride(),
+                )
+                for tensor in (weight, bias, ids)
+            )
+        except RuntimeError:
+            # Inference tensors have no version counter, so mutation cannot be
+            # detected safely. Keep the original uncached projection for them.
+            self._candidate_cache = None
+            return None
+        if self._candidate_cache is None or self._candidate_cache[0] != signature:
+            rows = (weight[ids].detach(), None if bias is None else bias[ids].detach())
+            # Retain the source objects as well as their IDs to prevent identity
+            # reuse after a head or tensor is replaced and garbage collected.
+            self._candidate_cache = (signature, rows, (head, weight, bias, ids))
+        return self._candidate_cache[1]
 
     def reset_memory_peak(self):
         from .resources import reset_memory_peak
@@ -259,6 +369,9 @@ class UnifiedDecisionModel:
         inputs, slots, nopts = self.prepare(request)
         out = self.backbone(**inputs, use_cache=False, return_dict=True)
         hidden = out.last_hidden_state[0, slots]
+        rows = self._inference_candidate_rows()
+        if rows is not None:
+            return _project_candidate_rows(hidden, *rows, nopts, self.softcap)
         return project_candidates(hidden, self.head, self.letters, nopts, self.softcap)
 
     def predict(self, request: DecisionRequest) -> dict:

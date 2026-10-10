@@ -20,7 +20,10 @@ def tiny_runtime(tmp_path):
     root = tmp_path / "checkout"
     root.mkdir()
     env = tmp_path / "venv"
-    venv.EnvBuilder(with_pip=False).create(env)
+    # uv-managed macOS interpreters locate libpython relative to the real binary;
+    # copying that binary into this fixture loses its library location. Keep the
+    # venv executable path distinct while resolving the original binary via symlink.
+    venv.EnvBuilder(with_pip=False, symlinks=True).create(env)
     python = env / "bin/python"
     site = next((env / "lib").glob("python*/site-packages"))
     package = site / "proofdist"
@@ -83,7 +86,10 @@ def test_dependencies_same_version_changed_bytes_change_identity(tiny_runtime):
     command = [str(python), str(adapter)]
     first = guard_class(head, command, root=root, python=str(python))
     first.check()
-    assert first.receipt()["python_environment"]["prefix"] == str(python.parent.parent)
+    environment = first.receipt()["python_environment"]
+    assert environment["prefix"] == str(python.parent.parent)
+    assert environment["executable"] == str(python)
+    assert {item["name"] for item in environment["distributions"]} == {"proofdist"}
     payload.write_text("VALUE = 2\n")  # Same length, version, and untouched RECORD.
     with pytest.raises(ValueError, match="Python environment changed"):
         first.check()
@@ -124,5 +130,5 @@ def test_cannot_attribute_adapter_to_another_python(tiny_runtime):
 def test_missing_distribution_file_fails_closed(tiny_runtime):
     root, python, payload, _, _ = tiny_runtime
     payload.unlink()
-    with pytest.raises(ValueError, match="missing"):
+    with pytest.raises(ValueError, match="installed distribution file is missing: proofdist:"):
         script("evaluate_gguf_release.py")["capture_python_environment"](str(python), root)

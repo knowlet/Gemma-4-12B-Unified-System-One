@@ -1,0 +1,554 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-10T02:31:44.993791+00:00",
+  "status": "source_repairs_validated",
+  "source_commit": "5f9efb71f6350f76b53ed58748eb7216325e9770",
+  "export_commit": "1900d7e024463910531c2bffb2d95c834a630f01",
+  "research_tag": "research-2026-10-10-jevbench",
+  "research_tag_commit": "8c94514d7d0c341f7c4a9290c2ceac921c0cee8e",
+  "research_archives_unchanged": true,
+  "findings": [
+    {
+      "github_comment_id": 4235941717,
+      "priority": "P1",
+      "trigger": "16 independent requests with 64 questions each at actual API boundary",
+      "old_result": {
+        "forward_rows": 1024,
+        "prepared_prompts_alive": 1024
+      },
+      "new_result": {
+        "max_forward_rows": 8,
+        "max_prepared_prompts_alive": 8
+      },
+      "tested_contracts": [
+        "1024 matching shapes",
+        "1024 distinct media shapes",
+        "request and question ordering",
+        "causal full multislot context",
+        "native candidate and full vocabulary readout"
+      ]
+    },
+    {
+      "github_comment_id": 4235941721,
+      "priority": "P2",
+      "trigger": "requested compile mode can differ from actual loaded model mode",
+      "new_result": "Actual model.compile_mode and both batch bounds persist through benchmark evaluator and JSON report writer"
+    },
+    {
+      "github_comment_id": 4235970610,
+      "priority": "P1",
+      "trigger": "default remote serial ZIP export exceeds 600-second provider timeout after experiment",
+      "old_observed_timeout_seconds": [
+        600.001502,
+        600.001191
+      ],
+      "new_result": "Default entrypoint calls existing bounded local Volume downloader with per-file source/SHA verification",
+      "tested_contracts": [
+        "207 and 210 archive members",
+        "maximum sixteen concurrent file reads",
+        "train weights retained",
+        "partial download evidence retained",
+        "original GPU stage error preserved",
+        "dual-error exception chain",
+        "occupied destination rejected before GPU call",
+        "real Modal 1.6.0 CLI and synchronizer boundary with fake provider context and I/O"
+      ]
+    }
+  ],
+  "focused_checks": [
+    {
+      "name": "batch and metadata full environment",
+      "command": "UV_CACHE_DIR=/private/tmp/s1-uv-cache uv run --frozen pytest -q tests/test_backends.py tests/test_unified.py tests/test_benchmark.py tests/test_api.py",
+      "passed": 357,
+      "skipped": 2,
+      "warnings": 1,
+      "seconds": 13.69,
+      "exit_code": 0
+    },
+    {
+      "name": "batch and metadata API-only",
+      "command": "/private/tmp/s1-ci-api-only-20261010/bin/python -m pytest -q tests/test_backends.py tests/test_unified.py tests/test_benchmark.py tests/test_api.py",
+      "passed": 252,
+      "module_skipped": 1,
+      "warnings": 1,
+      "seconds": 2.28,
+      "torch_available": false,
+      "modal_available": false,
+      "exit_code": 0
+    },
+    {
+      "name": "default export full environment",
+      "command": ".venv/bin/python -m pytest tests/test_breakthrough_app.py tests/test_export_breakthrough_evidence.py -q",
+      "passed": 48,
+      "seconds": 8.71,
+      "exit_code": 0
+    },
+    {
+      "name": "default export API-only",
+      "command": "/private/tmp/s1-ci-api-only-20261010/bin/python -m pytest tests/test_breakthrough_app.py tests/test_export_breakthrough_evidence.py -q",
+      "passed": 33,
+      "skipped": 15,
+      "seconds": 3.06,
+      "torch_available": false,
+      "modal_available": false,
+      "exit_code": 0
+    }
+  ],
+  "old_source_red_reproduction": {
+    "batch_and_metadata": "5 failed, one existing warning, 6.25s; original output in tool record, no independent saved raw log",
+    "default_export": "4 failed and one passed against old entrypoint; original output in tool record"
+  },
+  "independent_source_review": "six changed files inspected without duplicate test runs; no actionable correctness, ordering or default CLI issue found",
+  "initial_sandbox_validation": {
+    "schema_version": 1,
+    "recorded_at_utc": "2026-10-10T02:28:36.455252+00:00",
+    "status": "failed",
+    "source_commit": "5f9efb71f6350f76b53ed58748eb7216325e9770",
+    "scope": "Single-process full local suite and repository checks after independent-batch bounds, compile metadata and default bounded export repair; no GPU inference, new experiment outcomes or cloud export execution is inferred",
+    "passed": 1733,
+    "skipped": 3,
+    "warnings": 1,
+    "single_process_full_suite": true,
+    "source_sha256_before": {
+      "apps/modal/breakthrough.py": "cb94054480212d5873b2900adab5a3b69af01c8f49d30eac750afe9331c0b896",
+      "scripts/analyze_breakthrough.py": "61a8db916a3dfce25873f7ecf9d46873ff47366c8cf1ba8bcdced6fd2d54304b",
+      "scripts/archive_breakthrough.py": "5108cd9d5e13e7e107c625765f7afef6b9f9f6575001d2ff342ed6586adc94da",
+      "scripts/audit_breakthrough_arithmetic.py": "b22966075af74816d03764cae47f1e210a400b9d06c1b79f38d9a51f5c03381d",
+      "scripts/audit_breakthrough_arithmetic_zip.py": "6bc29167a3f3fcbf891d94a5be5a90735432abafc0ec6e66d56558d7aeaffafb",
+      "scripts/export_breakthrough_evidence.py": "7a4b725ee85b1914564a037aada2c9b6f1c8b0d6dba25a6681625042f1f78111",
+      "src/s1/backends.py": "90c084fa5523dea71b49cf140ecfda1fd2165a9468368624bde6161e2dbf67bf",
+      "src/s1/evaluation/gemma.py": "02cf34e6be837ee3858e3e10ae0fd22d308fd66696d203e788b6d5fd334b9b96",
+      "tests/test_archive_breakthrough.py": "92e69e4feb24717417143628529565b7976f33c9f0620accf4aedda128bdae0d",
+      "tests/test_audit_breakthrough_arithmetic.py": "c2551be5516f1a2d9515092d7e2d125aebac2d60d5718c2eb48e7c70212ee5b8",
+      "tests/test_audit_breakthrough_arithmetic_zip.py": "d4606891392d4e85622e945bb3a0bb8589f6d1a1ca00108b127e3b6e565fbbae",
+      "tests/test_backends.py": "744444c17839eec53bf76112df8f1b2522f1824f68f1ce7565484cbb6c8d0faa",
+      "tests/test_breakthrough_analysis.py": "c48790fe66685eac1e585ddbcbfb06260a8370ece5d8f4e64c08f9d23d06c342",
+      "tests/test_breakthrough_app.py": "6b29b61ef63319be87d0166021435fc913521d47893b9dcf84eaa5be69b63b24",
+      "tests/test_export_breakthrough_evidence.py": "c677c9075b15728853ae1bb3563b47a4680aefb2c8e405fb2958803d6ead710b",
+      "tests/test_unified.py": "795e7e358110fa5b219bdf018d5875918da8d48d5d6bf4f395990f1621f4ccf0"
+    },
+    "source_sha256_after": {
+      "apps/modal/breakthrough.py": "cb94054480212d5873b2900adab5a3b69af01c8f49d30eac750afe9331c0b896",
+      "scripts/analyze_breakthrough.py": "61a8db916a3dfce25873f7ecf9d46873ff47366c8cf1ba8bcdced6fd2d54304b",
+      "scripts/archive_breakthrough.py": "5108cd9d5e13e7e107c625765f7afef6b9f9f6575001d2ff342ed6586adc94da",
+      "scripts/audit_breakthrough_arithmetic.py": "b22966075af74816d03764cae47f1e210a400b9d06c1b79f38d9a51f5c03381d",
+      "scripts/audit_breakthrough_arithmetic_zip.py": "6bc29167a3f3fcbf891d94a5be5a90735432abafc0ec6e66d56558d7aeaffafb",
+      "scripts/export_breakthrough_evidence.py": "7a4b725ee85b1914564a037aada2c9b6f1c8b0d6dba25a6681625042f1f78111",
+      "src/s1/backends.py": "90c084fa5523dea71b49cf140ecfda1fd2165a9468368624bde6161e2dbf67bf",
+      "src/s1/evaluation/gemma.py": "02cf34e6be837ee3858e3e10ae0fd22d308fd66696d203e788b6d5fd334b9b96",
+      "tests/test_archive_breakthrough.py": "92e69e4feb24717417143628529565b7976f33c9f0620accf4aedda128bdae0d",
+      "tests/test_audit_breakthrough_arithmetic.py": "c2551be5516f1a2d9515092d7e2d125aebac2d60d5718c2eb48e7c70212ee5b8",
+      "tests/test_audit_breakthrough_arithmetic_zip.py": "d4606891392d4e85622e945bb3a0bb8589f6d1a1ca00108b127e3b6e565fbbae",
+      "tests/test_backends.py": "744444c17839eec53bf76112df8f1b2522f1824f68f1ce7565484cbb6c8d0faa",
+      "tests/test_breakthrough_analysis.py": "c48790fe66685eac1e585ddbcbfb06260a8370ece5d8f4e64c08f9d23d06c342",
+      "tests/test_breakthrough_app.py": "6b29b61ef63319be87d0166021435fc913521d47893b9dcf84eaa5be69b63b24",
+      "tests/test_export_breakthrough_evidence.py": "c677c9075b15728853ae1bb3563b47a4680aefb2c8e405fb2958803d6ead710b",
+      "tests/test_unified.py": "795e7e358110fa5b219bdf018d5875918da8d48d5d6bf4f395990f1621f4ccf0"
+    },
+    "source_before_after_equal": true,
+    "checks": [
+      {
+        "name": "pytest",
+        "command": [
+          "uv",
+          "run",
+          "--frozen",
+          "pytest",
+          "-q"
+        ],
+        "exit_code": 1,
+        "seconds": 112.17716870794538,
+        "output_file": "local-pytest-reviewfixes-20261010.txt",
+        "output_sha256": "e532393075642cabf544d7cd1a44cfea1ac3faa31b0e8adccf0623ed90783642"
+      },
+      {
+        "name": "ruff_check",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "ruff",
+          "check",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 0.06821316597051919,
+        "output_file": "local-ruff-check-reviewfixes-20261010.txt",
+        "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "name": "ruff_format",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "ruff",
+          "format",
+          "--check",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 0.025390374939888716,
+        "output_file": "local-ruff-format-reviewfixes-20261010.txt",
+        "output_sha256": "dd6674ff09df8dc39f4f1c8c77a0ca82de8a341c19024598a98438e8cba05919"
+      },
+      {
+        "name": "diff_check",
+        "command": [
+          "git",
+          "-c",
+          "core.fsmonitor=false",
+          "diff",
+          "--no-ext-diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "seconds": 0.011843209038488567,
+        "output_file": "local-diff-check-reviewfixes-20261010.txt",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "initial_sandbox_failure_cause": "Exactly two loopback HTTP tests failed at socket.bind(127.0.0.1,0) with PermissionError Errno 1; preserved separately; no source changes before allowed-loopback rerun",
+  "full_local_validation": {
+    "schema_version": 1,
+    "recorded_at_utc": "2026-10-10T02:31:37.268454+00:00",
+    "status": "passed",
+    "source_commit": "5f9efb71f6350f76b53ed58748eb7216325e9770",
+    "scope": "Single-process full local suite with allowed loopback HTTP and repository checks after independent-batch bounds, compile metadata and default bounded export repair; no GPU inference, new experiment outcomes or cloud export execution is inferred",
+    "passed": 1735,
+    "skipped": 3,
+    "warnings": 1,
+    "single_process_full_suite": true,
+    "source_sha256_before": {
+      "apps/modal/breakthrough.py": "cb94054480212d5873b2900adab5a3b69af01c8f49d30eac750afe9331c0b896",
+      "scripts/analyze_breakthrough.py": "61a8db916a3dfce25873f7ecf9d46873ff47366c8cf1ba8bcdced6fd2d54304b",
+      "scripts/archive_breakthrough.py": "5108cd9d5e13e7e107c625765f7afef6b9f9f6575001d2ff342ed6586adc94da",
+      "scripts/audit_breakthrough_arithmetic.py": "b22966075af74816d03764cae47f1e210a400b9d06c1b79f38d9a51f5c03381d",
+      "scripts/audit_breakthrough_arithmetic_zip.py": "6bc29167a3f3fcbf891d94a5be5a90735432abafc0ec6e66d56558d7aeaffafb",
+      "scripts/export_breakthrough_evidence.py": "7a4b725ee85b1914564a037aada2c9b6f1c8b0d6dba25a6681625042f1f78111",
+      "src/s1/backends.py": "90c084fa5523dea71b49cf140ecfda1fd2165a9468368624bde6161e2dbf67bf",
+      "src/s1/evaluation/gemma.py": "02cf34e6be837ee3858e3e10ae0fd22d308fd66696d203e788b6d5fd334b9b96",
+      "tests/test_archive_breakthrough.py": "92e69e4feb24717417143628529565b7976f33c9f0620accf4aedda128bdae0d",
+      "tests/test_audit_breakthrough_arithmetic.py": "c2551be5516f1a2d9515092d7e2d125aebac2d60d5718c2eb48e7c70212ee5b8",
+      "tests/test_audit_breakthrough_arithmetic_zip.py": "d4606891392d4e85622e945bb3a0bb8589f6d1a1ca00108b127e3b6e565fbbae",
+      "tests/test_backends.py": "744444c17839eec53bf76112df8f1b2522f1824f68f1ce7565484cbb6c8d0faa",
+      "tests/test_breakthrough_analysis.py": "c48790fe66685eac1e585ddbcbfb06260a8370ece5d8f4e64c08f9d23d06c342",
+      "tests/test_breakthrough_app.py": "6b29b61ef63319be87d0166021435fc913521d47893b9dcf84eaa5be69b63b24",
+      "tests/test_export_breakthrough_evidence.py": "c677c9075b15728853ae1bb3563b47a4680aefb2c8e405fb2958803d6ead710b",
+      "tests/test_unified.py": "795e7e358110fa5b219bdf018d5875918da8d48d5d6bf4f395990f1621f4ccf0"
+    },
+    "source_sha256_after": {
+      "apps/modal/breakthrough.py": "cb94054480212d5873b2900adab5a3b69af01c8f49d30eac750afe9331c0b896",
+      "scripts/analyze_breakthrough.py": "61a8db916a3dfce25873f7ecf9d46873ff47366c8cf1ba8bcdced6fd2d54304b",
+      "scripts/archive_breakthrough.py": "5108cd9d5e13e7e107c625765f7afef6b9f9f6575001d2ff342ed6586adc94da",
+      "scripts/audit_breakthrough_arithmetic.py": "b22966075af74816d03764cae47f1e210a400b9d06c1b79f38d9a51f5c03381d",
+      "scripts/audit_breakthrough_arithmetic_zip.py": "6bc29167a3f3fcbf891d94a5be5a90735432abafc0ec6e66d56558d7aeaffafb",
+      "scripts/export_breakthrough_evidence.py": "7a4b725ee85b1914564a037aada2c9b6f1c8b0d6dba25a6681625042f1f78111",
+      "src/s1/backends.py": "90c084fa5523dea71b49cf140ecfda1fd2165a9468368624bde6161e2dbf67bf",
+      "src/s1/evaluation/gemma.py": "02cf34e6be837ee3858e3e10ae0fd22d308fd66696d203e788b6d5fd334b9b96",
+      "tests/test_archive_breakthrough.py": "92e69e4feb24717417143628529565b7976f33c9f0620accf4aedda128bdae0d",
+      "tests/test_audit_breakthrough_arithmetic.py": "c2551be5516f1a2d9515092d7e2d125aebac2d60d5718c2eb48e7c70212ee5b8",
+      "tests/test_audit_breakthrough_arithmetic_zip.py": "d4606891392d4e85622e945bb3a0bb8589f6d1a1ca00108b127e3b6e565fbbae",
+      "tests/test_backends.py": "744444c17839eec53bf76112df8f1b2522f1824f68f1ce7565484cbb6c8d0faa",
+      "tests/test_breakthrough_analysis.py": "c48790fe66685eac1e585ddbcbfb06260a8370ece5d8f4e64c08f9d23d06c342",
+      "tests/test_breakthrough_app.py": "6b29b61ef63319be87d0166021435fc913521d47893b9dcf84eaa5be69b63b24",
+      "tests/test_export_breakthrough_evidence.py": "c677c9075b15728853ae1bb3563b47a4680aefb2c8e405fb2958803d6ead710b",
+      "tests/test_unified.py": "795e7e358110fa5b219bdf018d5875918da8d48d5d6bf4f395990f1621f4ccf0"
+    },
+    "source_before_after_equal": true,
+    "checks": [
+      {
+        "name": "pytest",
+        "command": [
+          "uv",
+          "run",
+          "--frozen",
+          "pytest",
+          "-q"
+        ],
+        "exit_code": 0,
+        "seconds": 93.16105137497652,
+        "output_file": "local-pytest-reviewfixes-loopback-20261010.txt",
+        "output_sha256": "b95b5784b15fded052c63ef3337bacf5bc3f4f8116b29510e3c25bf98439d4b4"
+      },
+      {
+        "name": "ruff_check",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "ruff",
+          "check",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 0.06302674999460578,
+        "output_file": "local-ruff-check-reviewfixes-loopback-20261010.txt",
+        "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "name": "ruff_format",
+        "command": [
+          "uv",
+          "run",
+          "--no-sync",
+          "ruff",
+          "format",
+          "--check",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 0.028241208055987954,
+        "output_file": "local-ruff-format-reviewfixes-loopback-20261010.txt",
+        "output_sha256": "dd6674ff09df8dc39f4f1c8c77a0ca82de8a341c19024598a98438e8cba05919"
+      },
+      {
+        "name": "diff_check",
+        "command": [
+          "git",
+          "-c",
+          "core.fsmonitor=false",
+          "diff",
+          "--no-ext-diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "seconds": 0.016939666937105358,
+        "output_file": "local-diff-check-reviewfixes-loopback-20261010.txt",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "source_ci": {
+    "schema_version": 1,
+    "repository": "knowlet/Gemma-4-12B-Unified-System-One",
+    "source_head": "5f9efb71f6350f76b53ed58748eb7216325e9770",
+    "observed_at": "2026-10-10 02:29:55 UTC",
+    "workflow": ".github/workflows/ci.yml",
+    "expected_repository_jobs": [
+      "contracts (3.11)",
+      "contracts (3.12)",
+      "contracts (3.13)",
+      "inference"
+    ],
+    "repository_jobs_verified": 8,
+    "all_repository_jobs_success": true,
+    "scope": "push and pull_request CI runs for this source head; external commit checks excluded",
+    "runs": [
+      {
+        "conclusion": "success",
+        "createdAt": "2026-10-10T02:26:50Z",
+        "databaseId": 38016991124,
+        "event": "push",
+        "headSha": "5f9efb71f6350f76b53ed58748eb7216325e9770",
+        "jobs": [
+          {
+            "completedAt": "2026-10-10T02:28:08Z",
+            "conclusion": "success",
+            "databaseId": 114109354903,
+            "name": "contracts (3.11)",
+            "startedAt": "2026-10-10T02:26:53Z",
+            "status": "completed",
+            "url": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One/actions/runs/38016991124/job/114109354903"
+          },
+          {
+            "completedAt": "2026-10-10T02:28:04Z",
+            "conclusion": "success",
+            "databaseId": 114109355153,
+            "name": "contracts (3.12)",
+            "startedAt": "2026-10-10T02:26:53Z",
+            "status": "completed",
+            "url": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One/actions/runs/38016991124/job/114109355153"
+          },
+          {
+            "completedAt": "2026-10-10T02:28:04Z",
+            "conclusion": "success",
+            "databaseId": 114109355140,
+            "name": "contracts (3.13)",
+            "startedAt": "2026-10-10T02:26:53Z",
+            "status": "completed",
+            "url": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One/actions/runs/38016991124/job/114109355140"
+          },
+          {
+            "completedAt": "2026-10-10T02:28:40Z",
+            "conclusion": "success",
+            "databaseId": 114109355067,
+            "name": "inference",
+            "startedAt": "2026-10-10T02:26:57Z",
+            "status": "completed",
+            "url": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One/actions/runs/38016991124/job/114109355067"
+          }
+        ],
+        "name": "CI",
+        "status": "completed",
+        "updatedAt": "2026-10-10T02:28:41Z",
+        "url": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One/actions/runs/38016991124"
+      },
+      {
+        "conclusion": "success",
+        "createdAt": "2026-10-10T02:26:54Z",
+        "databaseId": 38016995049,
+        "event": "pull_request",
+        "headSha": "5f9efb71f6350f76b53ed58748eb7216325e9770",
+        "jobs": [
+          {
+            "completedAt": "2026-10-10T02:27:48Z",
+            "conclusion": "success",
+            "databaseId": 114109367957,
+            "name": "contracts (3.11)",
+            "startedAt": "2026-10-10T02:26:56Z",
+            "status": "completed",
+            "url": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One/actions/runs/38016995049/job/114109367957"
+          },
+          {
+            "completedAt": "2026-10-10T02:28:04Z",
+            "conclusion": "success",
+            "databaseId": 114109367916,
+            "name": "contracts (3.12)",
+            "startedAt": "2026-10-10T02:26:56Z",
+            "status": "completed",
+            "url": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One/actions/runs/38016995049/job/114109367916"
+          },
+          {
+            "completedAt": "2026-10-10T02:28:09Z",
+            "conclusion": "success",
+            "databaseId": 114109368019,
+            "name": "contracts (3.13)",
+            "startedAt": "2026-10-10T02:26:57Z",
+            "status": "completed",
+            "url": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One/actions/runs/38016995049/job/114109368019"
+          },
+          {
+            "completedAt": "2026-10-10T02:28:34Z",
+            "conclusion": "success",
+            "databaseId": 114109368012,
+            "name": "inference",
+            "startedAt": "2026-10-10T02:27:01Z",
+            "status": "completed",
+            "url": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One/actions/runs/38016995049/job/114109368012"
+          }
+        ],
+        "name": "CI",
+        "status": "completed",
+        "updatedAt": "2026-10-10T02:28:34Z",
+        "url": "https://github.com/knowlet/Gemma-4-12B-Unified-System-One/actions/runs/38016995049"
+      }
+    ]
+  },
+  "logs": [
+    {
+      "file": "review-followup-logs/forward-s1-pr7-forward-fix-focused-api.txt",
+      "bytes": 1058,
+      "sha256": "a1af4340288e525aec6a3fe9979f419b0fba68f3fd2328a78bc9737b1c3709d6",
+      "capture": "direct on-disk output from original run"
+    },
+    {
+      "file": "review-followup-logs/forward-s1-pr7-forward-fix-focused-full.txt",
+      "bytes": 1130,
+      "sha256": "eb7ea7eec1bf4abbbec1ac82de009d424b531f252d6ba759414f9e47ffc405d2",
+      "capture": "direct on-disk output from original run"
+    },
+    {
+      "file": "review-followup-logs/forward-s1-pr7-forward-fix-format.txt",
+      "bytes": 26,
+      "sha256": "177f260a5645724013185e4b140c7045cc39e56c0c97b120f5cb23599f85f0de",
+      "capture": "direct on-disk output from original run"
+    },
+    {
+      "file": "review-followup-logs/forward-s1-pr7-forward-fix-ruff.txt",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "capture": "direct on-disk output from original run"
+    },
+    {
+      "file": "review-followup-logs/export-capture-provenance.json",
+      "bytes": 2336,
+      "sha256": "0fd075d86909584cbf40b979881abb3e318162f94d6ac61693854fe6d4ddd232",
+      "capture": "capture provenance"
+    },
+    {
+      "file": "review-followup-logs/export-focused-api-only.tool-output.txt",
+      "bytes": 1074,
+      "sha256": "8f7129003acf4234e937d84244ef1b741bf526e6ae339feaf972cea77fe6ebf3",
+      "capture": "verbatim tool output saved after execution; not a rerun"
+    },
+    {
+      "file": "review-followup-logs/export-focused-full.tool-output.txt",
+      "bytes": 99,
+      "sha256": "2e86a548a5207f1bdffb9bd738642a15816e396afdb0a20c2da41ad89dfa5dc6",
+      "capture": "verbatim tool output saved after execution; not a rerun"
+    },
+    {
+      "file": "review-followup-logs/export-modal-cli-boundary.tool-output.txt",
+      "bytes": 113,
+      "sha256": "0cced51f5bc71cd4058634c6b6fb259c3831a4e03ce6f29b39c5061998c528f5",
+      "capture": "verbatim tool output saved after execution; not a rerun"
+    },
+    {
+      "file": "review-followup-logs/sandbox-local-pytest-reviewfixes-20261010.txt.gz",
+      "bytes": 1628,
+      "sha256": "7f8c9d9160cda355ad41c8c368da5ddfd23633066556722ff041b7080f50d568",
+      "capture": "direct on-disk output from initial sandbox run; original bytes losslessly compressed",
+      "encoding": "gzip",
+      "decoded_bytes": 8855,
+      "decoded_sha256": "e532393075642cabf544d7cd1a44cfea1ac3faa31b0e8adccf0623ed90783642"
+    },
+    {
+      "file": "review-followup-logs/sandbox-local-ruff-check-reviewfixes-20261010.txt",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "capture": "direct on-disk output from initial sandbox run"
+    },
+    {
+      "file": "review-followup-logs/sandbox-local-ruff-format-reviewfixes-20261010.txt",
+      "bytes": 28,
+      "sha256": "dd6674ff09df8dc39f4f1c8c77a0ca82de8a341c19024598a98438e8cba05919",
+      "capture": "direct on-disk output from initial sandbox run"
+    },
+    {
+      "file": "review-followup-logs/sandbox-local-diff-check-reviewfixes-20261010.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "capture": "direct on-disk output from initial sandbox run"
+    },
+    {
+      "file": "review-followup-logs/local-pytest-reviewfixes-loopback-20261010.txt",
+      "bytes": 2883,
+      "sha256": "b95b5784b15fded052c63ef3337bacf5bc3f4f8116b29510e3c25bf98439d4b4",
+      "capture": "direct on-disk output from single-process final run"
+    },
+    {
+      "file": "review-followup-logs/local-ruff-check-reviewfixes-loopback-20261010.txt",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "capture": "direct on-disk output from single-process final run"
+    },
+    {
+      "file": "review-followup-logs/local-ruff-format-reviewfixes-loopback-20261010.txt",
+      "bytes": 28,
+      "sha256": "dd6674ff09df8dc39f4f1c8c77a0ca82de8a341c19024598a98438e8cba05919",
+      "capture": "direct on-disk output from single-process final run"
+    },
+    {
+      "file": "review-followup-logs/local-diff-check-reviewfixes-loopback-20261010.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "capture": "direct on-disk output from single-process final run"
+    }
+  ],
+  "unverified_boundaries": [
+    "Real 12B CUDA/MPS peak memory and performance",
+    "Actual torch.compile kernel numerics and shape recompiles",
+    "New end-to-end live Modal export with actual provider I/O"
+  ],
+  "quality_and_publication_scope": {
+    "complete_profiles": 6,
+    "incomplete_calibration_profiles": 2,
+    "model_promotion": "not_performed",
+    "sealed_evaluation": "not_run",
+    "leaderboard_submission": "not_submitted",
+    "new_gpu_experiments": "not_run",
+    "asset_bodies_changed": false
+  }
+}

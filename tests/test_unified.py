@@ -2,6 +2,8 @@
 
 import base64
 import io
+import weakref
+from types import SimpleNamespace
 
 import pytest
 
@@ -10,11 +12,209 @@ pytest.importorskip("transformers")
 from PIL import Image
 from transformers import Gemma4UnifiedConfig, Gemma4UnifiedForConditionalGeneration
 
-from s1.contracts import AudioInput, ImageInput
+from s1.contracts import AudioInput, DecisionRequest, ImageInput
 from s1.errors import RequestValidationError
 from s1.unified import UnifiedDecisionModel, candidate_ids, project_candidates
 
 pytestmark = pytest.mark.inference
+
+
+@pytest.fixture
+def forward_boundary_model():
+    """Real tensor/projection boundary without checkpoint loading or large activations."""
+    sizes, inputs_seen, alive = [], [], []
+    head = torch.nn.Linear(1, 4, bias=False)
+    with torch.no_grad():
+        head.weight[:, 0] = torch.tensor([-1.0, 0.5, 1.0, 10.0])
+    peak_prepared = [0]
+
+    def prepare(request):
+        marker = request.state["request_index"] * 64
+        context = [0] * (request.state["request_index"] % 3)
+        ids = context + [marker + int(question.id[1:]) + 1 for question in request.questions]
+        inputs = {
+            "input_ids": torch.tensor([ids]),
+            "attention_mask": torch.ones((1, len(ids)), dtype=torch.long),
+            "mm_token_type_ids": torch.zeros((1, len(ids)), dtype=torch.long),
+        }
+        if request.state.get("unique_media_shapes"):
+            inputs["pixel_values"] = torch.ones((1, ids[-1], 1))
+        alive.append(weakref.ref(inputs["input_ids"]))
+        peak_prepared[0] = max(peak_prepared[0], sum(value() is not None for value in alive))
+        slots = torch.arange(len(context), len(ids))
+        counts = torch.tensor([len(question.labels()) for question in request.questions])
+        return inputs, slots, counts
+
+    def backbone(**inputs):
+        assert inputs.pop("use_cache") is False and inputs.pop("return_dict") is True
+        assert set(inputs) in (
+            {"input_ids", "attention_mask", "mm_token_type_ids"},
+            {"input_ids", "attention_mask", "mm_token_type_ids", "pixel_values"},
+        )
+        assert inputs["input_ids"].shape == inputs["attention_mask"].shape
+        if "pixel_values" in inputs:
+            for row, mask in zip(inputs["input_ids"], inputs["attention_mask"], strict=True):
+                assert inputs["pixel_values"].shape[1] == row[mask.bool()][-1].item()
+        sizes.append(inputs["input_ids"].shape[0])
+        inputs_seen.append(inputs["input_ids"].clone())
+        return SimpleNamespace(last_hidden_state=inputs["input_ids"].float().unsqueeze(-1) / 1024)
+
+    return SimpleNamespace(
+        lm=SimpleNamespace(eval=lambda: None),
+        tok=SimpleNamespace(pad_token_id=0),
+        prepare=prepare,
+        backbone=backbone,
+        head=head,
+        letters=torch.tensor([0, 1, 2]),
+        temperature=1.7,
+        softcap=2.0,
+        forward_sizes=sizes,
+        inputs_seen=inputs_seen,
+        peak_prepared=peak_prepared,
+    )
+
+
+def many_question_requests(count=16):
+    return [
+        DecisionRequest.model_validate(
+            {
+                "state": {"request_index": index},
+                "questions": [
+                    {
+                        "id": f"q{question:02}",
+                        "type": ("choice", "noul", "score")[question % 3],
+                        "instructions": "A deterministic CPU boundary fixture.",
+                        **(
+                            {"criteria": {"a": "A", "b": "B", "c": "C"}}
+                            if question % 3 == 0
+                            else {"criteria": {"0": "Low", "2": "Medium", "5": "High"}}
+                            if question % 3 == 2
+                            else {}
+                        ),
+                    }
+                    for question in range(64)
+                ],
+            }
+        )
+        for index in range(count)
+    ]
+
+
+@pytest.mark.parametrize("unique_media_shapes", [False, True])
+def test_api_independent_batch_bounds_actual_1024_prompt_forwards(
+    forward_boundary_model, unique_media_shapes
+):
+    from fastapi.testclient import TestClient
+
+    from s1.api import create_app
+    from s1.backends import GemmaBackend, normalize_response
+    from s1.evaluation.gemma import predict_batch
+
+    model = forward_boundary_model
+    backend = GemmaBackend.__new__(GemmaBackend)
+    backend.model, backend.name, backend.question_mode = model, "boundary-fixture", "independent"
+    requests = many_question_requests()
+    for request in requests:
+        request.state["unique_media_shapes"] = unique_media_shapes
+    with TestClient(create_app(backend)) as client:
+        response = client.post("/decide/batch", json=[request.model_dump() for request in requests])
+    assert response.status_code == 200
+    actual = response.json()
+    assert max(model.forward_sizes) <= 8, model.forward_sizes
+    sizes = [1] * 1024 if unique_media_shapes else [8] * 128
+    assert model.forward_sizes == sizes
+    assert model.peak_prepared[0] <= 8
+    for request, result in zip(requests, actual, strict=True):
+        assert list(result["answers"]) == [q.id for q in request.questions]
+        assert result["execution"]["forward_calls"] == len(sizes)
+        assert result["execution"]["max_forward_batch_size"] == 8
+        assert result["execution"]["max_prepared_prompts"] == 8
+        assert result["execution"]["batch_sizes"] == sizes
+        expected = {}
+        for question in request.questions:
+            part = request.model_copy(update={"questions": [question]})
+            expected.update(predict_batch(model, [part])[0]["answers"])
+        assert result["answers"] == normalize_response(request, {"answers": expected})["answers"]
+
+
+@pytest.mark.parametrize("readout", ["candidate", "full"])
+def test_bounded_causal_groups_preserve_complete_prompts_and_question_order(
+    forward_boundary_model, readout
+):
+    from s1.evaluation.gemma import predict_batch
+
+    model = forward_boundary_model
+    requests = many_question_requests()
+    actual = predict_batch(model, requests, independent=False, readout=readout)
+    assert model.forward_sizes == [8, 8]
+    assert model.peak_prepared[0] <= 8
+    assert [
+        row[mask.bool()].tolist()
+        for batch in model.inputs_seen
+        for row, mask in zip(batch, batch.ne(0), strict=True)
+    ] == [list(range(index * 64 + 1, (index + 1) * 64 + 1)) for index in range(16)]
+    expected = [
+        predict_batch(model, [request], independent=False, readout=readout)[0]
+        for request in requests
+    ]
+    for request, result, reference in zip(requests, actual, expected, strict=True):
+        assert list(result["answers"]) == [q.id for q in request.questions]
+        assert result["answers"] == reference["answers"]
+        assert result["execution"]["forward_calls"] == 2
+        assert result["execution"]["independent_questions"] is False
+
+
+@pytest.mark.parametrize("mode", ["decoder-default-dynamic", "decoder-max-autotune-no-cudagraphs"])
+@pytest.mark.parametrize("independent", [False, True])
+@pytest.mark.parametrize("readout", ["candidate", "full"])
+def test_compile_wrapper_route_preserves_native_batch_answers(
+    model, decision_request, monkeypatch, mode, independent, readout
+):
+    """Exercise compile selection/dispatch; this is not real compiler or hardware parity."""
+    from s1.evaluation.gemma import predict_batch
+
+    requests = [decision_request, decision_request.model_copy(deep=True)]
+    expected = predict_batch(model, requests, independent=independent, readout=readout)
+    target = model.backbone.language_model
+    compile_calls, forwards = [], []
+
+    class DecoderWrapper(torch.nn.Module):
+        def __init__(self, inner):
+            super().__init__()
+            self.inner = inner
+
+        def forward(self, *args, **kwargs):
+            forwards.append(1)
+            return self.inner(*args, **kwargs)
+
+        def __getattr__(self, name):
+            try:
+                return super().__getattr__(name)
+            except AttributeError:
+                return getattr(self.inner, name)
+
+    def compile_decoder(actual_target, **kwargs):
+        compile_calls.append((actual_target, kwargs))
+        return DecoderWrapper(actual_target)
+
+    monkeypatch.setattr(torch, "compile", compile_decoder)
+    assert model.enable_compile(mode) == mode
+    assert model.compile_mode == mode
+    assert compile_calls == [
+        (
+            target,
+            {
+                "mode": "default"
+                if mode == "decoder-default-dynamic"
+                else "max-autotune-no-cudagraphs",
+                "dynamic": True,
+                "fullgraph": False,
+            },
+        )
+    ]
+    actual = predict_batch(model, requests, independent=independent, readout=readout)
+    assert forwards == [1]
+    assert actual == expected
 
 
 @pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
@@ -42,7 +242,9 @@ def test_native_batch_independence(model, decision_request, dtype, modality):
         batch = predict_batch(model, [decision_request, changed, text_only])
     finally:
         hook.remove()
-    assert len(calls) == (1 if modality == "text" else 2)
+    assert len(calls) == 2
+    assert batch[0]["execution"]["forward_calls"] == 2
+    assert max(batch[0]["execution"]["batch_sizes"]) <= 8
     assert sum(batch[0]["execution"]["batch_sizes"]) == 9
     # Different BF16 GEMM shapes can round differently. This is a numerical
     # tolerance check, not a claim of bitwise batch parity.
@@ -68,6 +270,44 @@ def test_native_batch_independence(model, decision_request, dtype, modality):
             atol=1e-5,
             rtol=1e-5,
         )
+
+
+def test_backend_batch_retains_each_complete_multislot_prompt(model, decision_request, monkeypatch):
+    from s1.backends import GemmaBackend
+
+    backend = GemmaBackend.__new__(GemmaBackend)
+    backend.model = model
+    changed = decision_request.model_copy(deep=True)
+    changed.questions[0].instructions = "A different and longer first question"
+    requests = [decision_request, changed]
+    preparations = []
+    prepare = model.prepare
+
+    def record_prepare(request):
+        inputs, slots, counts = prepare(request)
+        preparations.append((inputs["input_ids"].clone(), slots.clone(), counts.clone()))
+        return inputs, slots, counts
+
+    monkeypatch.setattr(model, "prepare", record_prepare)
+    references = [backend.predict_batch([request])[0] for request in requests]
+    full_prompts = preparations[:]
+    preparations.clear()
+    actual = backend.predict_batch(requests)
+
+    assert len(preparations) == len(full_prompts) == len(requests)
+    for got, expected in zip(preparations, full_prompts):
+        for got_tensor, expected_tensor in zip(got, expected):
+            torch.testing.assert_close(got_tensor, expected_tensor, atol=0, rtol=0)
+    for request, response, expected in zip(requests, actual, references):
+        assert response["execution"]["independent_questions"] is False
+        assert response["execution"]["batch_sizes"] == [len(requests)]
+        for question in request.questions:
+            torch.testing.assert_close(
+                torch.tensor(list(response["answers"][question.id]["probabilities"].values())),
+                torch.tensor(list(expected["answers"][question.id]["probabilities"].values())),
+                atol=1e-5,
+                rtol=1e-5,
+            )
 
 
 def test_generation_is_one_hard_label_per_question(model, decision_request):
@@ -204,6 +444,133 @@ def test_bfloat16_softcap_preserves_native_tie_and_mask(softcap):
     actual = project_candidates(hidden, head, ids, counts, softcap)
     torch.testing.assert_close(actual, expected, atol=0, rtol=0)
     assert actual.argmax(-1).tolist() == expected.argmax(-1).tolist()
+
+
+@pytest.mark.parametrize("modality", ["text", "image", "audio", "mixed"])
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+def test_candidate_cache_reuses_rows_with_exact_inference_results(
+    model, decision_request, dtype, modality
+):
+    model.lm.to(dtype=dtype)
+    if modality in ("image", "mixed"):
+        buffer = io.BytesIO()
+        Image.new("RGB", (4, 4), "red").save(buffer, format="PNG")
+        decision_request.media.append(ImageInput(data=base64.b64encode(buffer.getvalue()).decode()))
+    if modality in ("audio", "mixed"):
+        decision_request.media.append(AudioInput(samples=[0.1] * 16))
+    reference = model.predict(decision_request)["answers"]
+    assert model._candidate_cache is None
+    model.enable_candidate_cache()
+    assert model.predict(decision_request)["answers"] == reference
+    first_rows = model._candidate_cache[1]
+    assert first_rows[0].requires_grad is False
+    assert model.predict(decision_request)["answers"] == reference
+    assert model._candidate_cache[1] is first_rows
+    model.enable_candidate_cache(False)
+    assert model._candidate_cache is None
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ["weight", "bias", "parameter", "head", "ids", "ids_tensor", "dtype", "storage"],
+)
+def test_candidate_cache_invalidates_changed_projection(model, decision_request, mutation):
+    head = torch.nn.Linear(32, 256, bias=True)
+    with torch.no_grad():
+        head.weight.copy_(model.head.weight)
+        head.bias.zero_()
+    model.head = head.eval()
+    model.enable_candidate_cache()
+    model.predict(decision_request)
+    original_rows = model._candidate_cache[1]
+    with torch.no_grad():
+        if mutation == "weight":
+            model.head.weight[model.letters[0]].add_(1)
+        elif mutation == "bias":
+            model.head.bias[model.letters[0]].add_(3)
+        elif mutation == "parameter":
+            model.head.weight = torch.nn.Parameter(model.head.weight.detach() + 1)
+        elif mutation == "head":
+            model.head = torch.nn.Linear(32, 256, bias=True).eval()
+        elif mutation == "ids":
+            model.letters[0] = 1
+        elif mutation == "ids_tensor":
+            model.letters = model.letters.roll(1)
+        elif mutation == "dtype":
+            model.head.to(dtype=torch.float64)
+        else:
+            model.head.weight.data = model.head.weight.detach().clone() + 1
+    with torch.inference_mode():
+        actual = model.logits(decision_request)
+        inputs, slots, counts = model.prepare(decision_request)
+        hidden = model.backbone(**inputs, use_cache=False, return_dict=True).last_hidden_state[
+            0, slots
+        ]
+        expected = project_candidates(hidden, model.head, model.letters, counts, model.softcap)
+    assert model._candidate_cache[1] is not original_rows
+    torch.testing.assert_close(actual, expected, atol=0, rtol=0)
+
+
+def test_candidate_cache_bypasses_training_and_preserves_head_gradients(model, decision_request):
+    model.enable_candidate_cache()
+    model.predict(decision_request)
+    model.lm.zero_grad(set_to_none=True)
+    logits = model.logits(decision_request)
+    assert model._candidate_cache is None
+    logits[torch.isfinite(logits)].sum().backward()
+    assert model.head.weight.grad is not None
+    assert model.head.weight.grad[model.letters].abs().sum() > 0
+    model.predict(decision_request)
+    model.lm.train()
+    with torch.no_grad():
+        model.logits(decision_request)
+    assert model._candidate_cache is None
+
+
+def test_candidate_cache_does_not_persist_in_saved_checkpoint(model, decision_request, tmp_path):
+    model.enable_candidate_cache()
+    expected = model.predict(decision_request)["answers"]
+    model.save(tmp_path)
+    saved = Gemma4UnifiedForConditionalGeneration.from_pretrained(tmp_path)
+    restored = UnifiedDecisionModel.from_components(saved, Processor())
+    assert restored.candidate_cache_enabled is False
+    assert restored._candidate_cache is None
+    assert restored.predict(decision_request)["answers"] == expected
+    explicit = UnifiedDecisionModel.from_components(saved, Processor(), enable_candidate_cache=True)
+    assert explicit.predict(decision_request)["answers"] == expected
+    assert explicit._candidate_cache is not None
+
+
+def test_candidate_cache_does_not_reuse_unversioned_or_peft_weights(model, decision_request):
+    model.enable_candidate_cache()
+    with torch.inference_mode():
+        model.head.weight = torch.nn.Parameter(model.head.weight.clone())
+    model.predict(decision_request)
+    assert model._candidate_cache is None
+    # A PEFT head may have adapter-specific behavior beyond the base weight's
+    # version counter. Opt-in caching does not add assumptions about those heads.
+    model.lm.peft_config = {}
+    model.head.weight = torch.nn.Parameter(model.head.weight.clone())
+    model.predict(decision_request)
+    assert model._candidate_cache is None
+
+
+def test_candidate_cache_explicit_refresh_after_untracked_write(model, decision_request):
+    model.enable_candidate_cache()
+    model.predict(decision_request)
+    rows = model._candidate_cache[1]
+    # PyTorch intentionally does not increment the Parameter's version for a
+    # .data write. The documented explicit refresh discards these stale rows.
+    model.head.weight.data[model.letters[0]].add_(2)
+    model.enable_candidate_cache()
+    assert model._candidate_cache is None
+    model.predict(decision_request)
+    assert model._candidate_cache[1] is not rows
+    torch.testing.assert_close(
+        model._candidate_cache[1][0], model.head.weight[model.letters], atol=0, rtol=0
+    )
+    with pytest.raises(ValueError, match="boolean"):
+        model.enable_candidate_cache("true")
 
 
 def test_context_rejection_and_temperature(model, decision_request):

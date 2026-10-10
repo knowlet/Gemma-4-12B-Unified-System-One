@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify and record a complete Gemma 4 Unified Q8_0 + F16 projector export."""
+"""Verify and record a complete Gemma 4 Unified GGUF + F16 projector export."""
 
 from __future__ import annotations
 
@@ -18,6 +18,15 @@ from prepare_mlx_validation import checkpoint_identity, file_sha256
 LLAMA_REVISION = "5fc4f3c8c7103ffd0b7ff5ee4855bcc78a3ed5cd"
 MODEL_FILE = "s1-boolq-Q8_0.gguf"
 MMPROJ_FILE = "mmproj-s1-boolq-f16.gguf"
+LANGUAGE_FILE_TYPES = {
+    "F16": 1,
+    "Q8_0": 7,
+    "Q4_K_S": 14,
+    "Q4_K_M": 15,
+    "Q5_K_S": 16,
+    "Q5_K_M": 17,
+    "Q6_K": 18,
+}
 SIDECARS = (
     "config.json",
     "tokenizer.json",
@@ -34,6 +43,26 @@ def git_revision(directory):
     ).strip()
 
 
+def validate_quantization_settings(
+    language_quant, projector_quant, direct_conversion, model_file, mmproj_file
+):
+    if language_quant not in LANGUAGE_FILE_TYPES or projector_quant != "F16":
+        raise ValueError("unsupported GGUF language/projector quantization")
+    if direct_conversion and language_quant not in ("Q8_0", "F16"):
+        raise ValueError("K-quants require --no-direct-conversion from an F16 intermediate")
+    for name in (model_file, mmproj_file):
+        if Path(name).name != name or not name.endswith(".gguf"):
+            raise ValueError("GGUF filenames must be local .gguf basenames")
+    if model_file == mmproj_file:
+        raise ValueError("language model and projector filenames must differ")
+
+
+def validate_file_type(metadata, quantization):
+    expected = LANGUAGE_FILE_TYPES[quantization]
+    if metadata.get("general.file_type") != expected:
+        raise ValueError(f"{quantization} model must have GGUF file_type {expected}")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, required=True)
@@ -41,7 +70,31 @@ def main(argv=None):
     parser.add_argument("--llama-cpp", type=Path, required=True)
     parser.add_argument("--source-capture", type=Path, required=True)
     parser.add_argument("--source-capture-sha256", required=True)
+    parser.add_argument("--model-file", type=str, default=MODEL_FILE)
+    parser.add_argument("--mmproj-file", type=str, default=MMPROJ_FILE)
+    parser.add_argument(
+        "--language-quant",
+        type=str,
+        default="Q8_0",
+        choices=tuple(LANGUAGE_FILE_TYPES),
+        help="Language quantization; checked against the actual GGUF file_type.",
+    )
+    parser.add_argument("--projector-quant", type=str, choices=("F16",), default="F16")
+    parser.add_argument(
+        "--direct-conversion",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="True for direct HF->target conversion; False for F16-intermediate + llama-quantize "
+        "(required for K-quants; prefer F16 source over Q8 requantize).",
+    )
     args = parser.parse_args(argv)
+    validate_quantization_settings(
+        args.language_quant,
+        args.projector_quant,
+        args.direct_conversion,
+        args.model_file,
+        args.mmproj_file,
+    )
     if git_revision(args.llama_cpp) != LLAMA_REVISION:
         raise ValueError("llama.cpp must be at the pinned conversion/runtime revision")
     subprocess.run(
@@ -86,7 +139,8 @@ def main(argv=None):
         source_keys = list(source.keys())
     source_counts = Counter(".".join(key.split(".")[:2]) for key in source_keys)
     inventory = {}
-    for filename in (MODEL_FILE, MMPROJ_FILE):
+    model_file, mmproj_file = args.model_file, args.mmproj_file
+    for filename in (model_file, mmproj_file):
         path = args.model / filename
         reader = GGUFReader(path)
         metadata = {
@@ -104,14 +158,14 @@ def main(argv=None):
             for tensor in reader.tensors
         ]
         inventory[filename] = {"metadata": metadata, "tensors": tensors}
-        if filename == MODEL_FILE:
+        if filename == model_file:
             if (
                 metadata["general.architecture"] != "gemma4"
-                or metadata["general.file_type"] != 7
                 or metadata["gemma4.block_count"] != config["text_config"]["num_hidden_layers"]
                 or len(tensors) != source_counts["model.language_model"] + 1
             ):
                 raise ValueError("GGUF language-model architecture/tensor count differs")
+            validate_file_type(metadata, args.language_quant)
             rope = [tensor for tensor in reader.tensors if tensor.name == "rope_freqs.weight"]
             if (
                 len(rope) != 1
@@ -128,6 +182,8 @@ def main(argv=None):
             or len(tensors) != len(source_keys) - source_counts["model.language_model"]
         ):
             raise ValueError("projector must retain both Unified vision and audio tensors")
+        else:
+            validate_file_type(metadata, args.projector_quant)
     (args.model / "tensor-inventory.json").write_text(json.dumps(inventory, indent=2) + "\n")
     files = [
         {
@@ -136,7 +192,7 @@ def main(argv=None):
             "sha256": file_sha256(args.model / name),
         }
         for name in sorted(
-            (*SIDECARS, MODEL_FILE, MMPROJ_FILE, "base_s1_config.json", "tensor-inventory.json")
+            (*SIDECARS, model_file, mmproj_file, "base_s1_config.json", "tensor-inventory.json")
         )
     ]
     receipt = {
@@ -156,12 +212,12 @@ def main(argv=None):
         "conversion_record_source_revision": git_revision(Path(__file__).resolve().parents[1]),
         "recording_program_sha256": file_sha256(Path(__file__)),
         "source_capture_manifest_sha256": args.source_capture_sha256,
-        "model_file": MODEL_FILE,
-        "mmproj_file": MMPROJ_FILE,
+        "model_file": model_file,
+        "mmproj_file": mmproj_file,
         "quantization": {
-            "language_model": "Q8_0",
-            "multimodal_projector": "F16",
-            "direct_conversion": True,
+            "language_model": args.language_quant,
+            "multimodal_projector": args.projector_quant,
+            "direct_conversion": args.direct_conversion,
         },
         "source_tensor_count": len(source_keys),
         "source_tensor_groups": dict(source_counts),
@@ -170,15 +226,15 @@ def main(argv=None):
             name: importlib.metadata.version(name)
             for name in ("torch", "transformers", "numpy", "safetensors")
         },
-        "commands": [
+        "commands": (
             [
                 ".venv/bin/python",
                 str(args.llama_cpp / "convert_hf_to_gguf.py"),
                 str(args.source),
                 "--outtype",
-                "q8_0",
+                args.language_quant.lower(),
                 "--outfile",
-                str(args.model / MODEL_FILE),
+                str(args.model / model_file),
                 "--model-name",
                 "Gemma-4-12B-Unified-System-One",
             ],
@@ -190,8 +246,15 @@ def main(argv=None):
                 "--outtype",
                 "f16",
                 "--outfile",
-                str(args.model / MMPROJ_FILE),
+                str(args.model / mmproj_file),
             ],
+        )
+        if args.direct_conversion
+        else [
+            f"convert {args.source} to F16 intermediate, then llama-quantize to "
+            f"{args.language_quant} (direct_conversion=False); see quant-sweep plan; "
+            f"prefer F16 source over Q8 requantize",
+            f"mmproj {args.projector_quant} -> {mmproj_file}",
         ],
         "scope": "Structural conversion receipt; runtime quality requires the separate full-population evaluation.",
     }

@@ -98,6 +98,7 @@ def test_quantized_adapter_options_reach_gemma_backend(monkeypatch, tmp_path, co
         ["--precision", "float32"],
         ["--dtype", "float16"],
         ["--attn-implementation", "sdpa"],
+        ["--question-mode", "independent"],
     ],
 )
 def test_non_gemma_rejects_gemma_inference_settings(monkeypatch, capsys, backend, option):
@@ -112,6 +113,43 @@ def test_non_gemma_rejects_gemma_inference_settings(monkeypatch, capsys, backend
         cli.main(["decide", "examples/request.json", "--backend", backend, *option])
     assert failure.value.code == 2
     assert "require --backend gemma" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("command", ["decide", "benchmark", "serve"])
+@pytest.mark.parametrize("mode", [None, "causal_multislot", "independent"])
+def test_question_mode_reaches_selected_gemma_commands(monkeypatch, tmp_path, command, mode):
+    from types import SimpleNamespace
+
+    from s1 import api, cli
+    from s1.backends import UniformBackend
+
+    calls = []
+
+    def gemma(model, **kwargs):
+        calls.append(kwargs)
+        return UniformBackend()
+
+    monkeypatch.setattr(cli, "GemmaBackend", gemma)
+    monkeypatch.setitem(sys.modules, "uvicorn", SimpleNamespace(run=lambda *a, **kw: None))
+    monkeypatch.setattr(api, "create_app", lambda *a, **kw: object())
+    argv = [command]
+    if mode is not None:
+        argv.extend(["--question-mode", mode])
+    if command == "decide":
+        argv.append("examples/request.json")
+    elif command == "benchmark":
+        argv.extend(["examples/benchmarks/smoke.jsonl", "--output", str(tmp_path / "run.json")])
+    assert cli.main(argv) == 0
+    expected = {
+        "revision": None,
+        "device": None,
+        "precision": None,
+        "quantization": "none",
+        "adapter_path": None,
+    }
+    if mode == "independent":
+        expected["question_mode"] = mode
+    assert calls == [expected]
 
 
 @pytest.mark.parametrize(

@@ -201,6 +201,21 @@ def validate_processor_identity(processor_path, package):
             )
 
 
+def configure_image_budget(processor, requested, *, evaluation):
+    """Keep HF resizing and native projection on the same research token budget."""
+    original = processor.image_processor.max_soft_tokens
+    budget = original if requested is None else requested
+    if budget not in (70, 140, 280, 560, 1120):
+        raise ValueError("--image-max-tokens must be one of 70, 140, 280, 560, 1120")
+    if budget != original and not evaluation:
+        raise ValueError(
+            "image token sweeps require --evaluation and newly captured inputs; "
+            "the published calibration applies to the original image budget"
+        )
+    processor.image_processor.max_soft_tokens = budget
+    return budget
+
+
 def prediction_from_logits(request, response, temperature, model):
     if response.get("status") != "ok":
         return response
@@ -292,6 +307,13 @@ def main(argv=None):
     parser.add_argument("--batch-size", type=int, default=8192)
     parser.add_argument("--gpu-layers", type=int, default=99)
     parser.add_argument("--threads", type=int, default=8)
+    parser.add_argument(
+        "--image-max-tokens",
+        type=int,
+        default=None,
+        help="Research --evaluation: override both HF and native image budgets. "
+        "Defaults to processor max_soft_tokens (280); captures must match the requested setting.",
+    )
     args = parser.parse_args(argv)
     if args.evaluation and args.predict:
         parser.error("choose prediction or evaluation mode")
@@ -329,6 +351,9 @@ def main(argv=None):
         processor=processor, tok=processor.tokenizer, device="cpu", max_context=args.ctx_size
     )
     letters = candidate_ids(processor.tokenizer)
+    image_max_tokens = configure_image_budget(
+        processor, args.image_max_tokens, evaluation=args.evaluation
+    )
     native = NativeProcess(
         [
             str(args.native_runner.resolve()),
@@ -345,7 +370,7 @@ def main(argv=None):
             "--threads",
             str(args.threads),
             "--image-max-tokens",
-            str(processor.image_processor.max_soft_tokens),
+            str(image_max_tokens),
         ]
     )
     try:
