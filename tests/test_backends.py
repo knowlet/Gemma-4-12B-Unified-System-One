@@ -36,6 +36,7 @@ def gemma_runtime(monkeypatch):
         head=SimpleNamespace(weight=SimpleNamespace(dtype="torch.float32")),
         quantization="none",
         quantization_details={},
+        compile_mode=None,
     )
 
     def load(name, **kwargs):
@@ -67,6 +68,36 @@ def test_invalid_gemma_question_mode_fails_before_loading(gemma_runtime):
     with pytest.raises(ValueError, match="question_mode"):
         GemmaBackend(question_mode="generated")
     assert calls == []
+
+
+@pytest.mark.parametrize(
+    ("requested", "effective"),
+    [
+        (None, None),
+        (None, "decoder-default-dynamic"),
+        ("decoder-default-dynamic", None),
+        ("decoder-default-dynamic", "decoder-max-autotune-no-cudagraphs"),
+    ],
+)
+def test_gemma_metadata_and_report_save_effective_compile_mode_and_forward_bound(
+    gemma_runtime, benchmark_case, tmp_path, requested, effective
+):
+    from s1.benchmark import evaluate, write_report
+
+    model, calls = gemma_runtime
+    model.compile_mode = effective
+    model.predict = UniformBackend().predict
+    backend = GemmaBackend(compile_mode=requested)
+    assert calls == [("test/model", {"compile_mode": requested})]
+    assert backend.metadata["compile_mode"] == effective
+    assert backend.metadata["max_forward_batch_size"] == 8
+    report = evaluate(backend, [benchmark_case])
+    path = tmp_path / "gemma-report.json"
+    write_report(report, path)
+    saved = json.loads(path.read_text())
+    assert saved["metadata"]["compile_mode"] == effective
+    assert saved["metadata"]["max_forward_batch_size"] == 8
+    assert saved["counts"] == {"ok": len(benchmark_case.request.questions)}
 
 
 @pytest.mark.parametrize("entry", ["predict", "single_batch", "batch"])

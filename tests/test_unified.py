@@ -2,6 +2,8 @@
 
 import base64
 import io
+import weakref
+from types import SimpleNamespace
 
 import pytest
 
@@ -10,11 +12,209 @@ pytest.importorskip("transformers")
 from PIL import Image
 from transformers import Gemma4UnifiedConfig, Gemma4UnifiedForConditionalGeneration
 
-from s1.contracts import AudioInput, ImageInput
+from s1.contracts import AudioInput, DecisionRequest, ImageInput
 from s1.errors import RequestValidationError
 from s1.unified import UnifiedDecisionModel, candidate_ids, project_candidates
 
 pytestmark = pytest.mark.inference
+
+
+@pytest.fixture
+def forward_boundary_model():
+    """Real tensor/projection boundary without checkpoint loading or large activations."""
+    sizes, inputs_seen, alive = [], [], []
+    head = torch.nn.Linear(1, 4, bias=False)
+    with torch.no_grad():
+        head.weight[:, 0] = torch.tensor([-1.0, 0.5, 1.0, 10.0])
+    peak_prepared = [0]
+
+    def prepare(request):
+        marker = request.state["request_index"] * 64
+        context = [0] * (request.state["request_index"] % 3)
+        ids = context + [marker + int(question.id[1:]) + 1 for question in request.questions]
+        inputs = {
+            "input_ids": torch.tensor([ids]),
+            "attention_mask": torch.ones((1, len(ids)), dtype=torch.long),
+            "mm_token_type_ids": torch.zeros((1, len(ids)), dtype=torch.long),
+        }
+        if request.state.get("unique_media_shapes"):
+            inputs["pixel_values"] = torch.ones((1, ids[-1], 1))
+        alive.append(weakref.ref(inputs["input_ids"]))
+        peak_prepared[0] = max(peak_prepared[0], sum(value() is not None for value in alive))
+        slots = torch.arange(len(context), len(ids))
+        counts = torch.tensor([len(question.labels()) for question in request.questions])
+        return inputs, slots, counts
+
+    def backbone(**inputs):
+        assert inputs.pop("use_cache") is False and inputs.pop("return_dict") is True
+        assert set(inputs) in (
+            {"input_ids", "attention_mask", "mm_token_type_ids"},
+            {"input_ids", "attention_mask", "mm_token_type_ids", "pixel_values"},
+        )
+        assert inputs["input_ids"].shape == inputs["attention_mask"].shape
+        if "pixel_values" in inputs:
+            for row, mask in zip(inputs["input_ids"], inputs["attention_mask"], strict=True):
+                assert inputs["pixel_values"].shape[1] == row[mask.bool()][-1].item()
+        sizes.append(inputs["input_ids"].shape[0])
+        inputs_seen.append(inputs["input_ids"].clone())
+        return SimpleNamespace(last_hidden_state=inputs["input_ids"].float().unsqueeze(-1) / 1024)
+
+    return SimpleNamespace(
+        lm=SimpleNamespace(eval=lambda: None),
+        tok=SimpleNamespace(pad_token_id=0),
+        prepare=prepare,
+        backbone=backbone,
+        head=head,
+        letters=torch.tensor([0, 1, 2]),
+        temperature=1.7,
+        softcap=2.0,
+        forward_sizes=sizes,
+        inputs_seen=inputs_seen,
+        peak_prepared=peak_prepared,
+    )
+
+
+def many_question_requests(count=16):
+    return [
+        DecisionRequest.model_validate(
+            {
+                "state": {"request_index": index},
+                "questions": [
+                    {
+                        "id": f"q{question:02}",
+                        "type": ("choice", "noul", "score")[question % 3],
+                        "instructions": "A deterministic CPU boundary fixture.",
+                        **(
+                            {"criteria": {"a": "A", "b": "B", "c": "C"}}
+                            if question % 3 == 0
+                            else {"criteria": {"0": "Low", "2": "Medium", "5": "High"}}
+                            if question % 3 == 2
+                            else {}
+                        ),
+                    }
+                    for question in range(64)
+                ],
+            }
+        )
+        for index in range(count)
+    ]
+
+
+@pytest.mark.parametrize("unique_media_shapes", [False, True])
+def test_api_independent_batch_bounds_actual_1024_prompt_forwards(
+    forward_boundary_model, unique_media_shapes
+):
+    from fastapi.testclient import TestClient
+
+    from s1.api import create_app
+    from s1.backends import GemmaBackend, normalize_response
+    from s1.evaluation.gemma import predict_batch
+
+    model = forward_boundary_model
+    backend = GemmaBackend.__new__(GemmaBackend)
+    backend.model, backend.name, backend.question_mode = model, "boundary-fixture", "independent"
+    requests = many_question_requests()
+    for request in requests:
+        request.state["unique_media_shapes"] = unique_media_shapes
+    with TestClient(create_app(backend)) as client:
+        response = client.post("/decide/batch", json=[request.model_dump() for request in requests])
+    assert response.status_code == 200
+    actual = response.json()
+    assert max(model.forward_sizes) <= 8, model.forward_sizes
+    sizes = [1] * 1024 if unique_media_shapes else [8] * 128
+    assert model.forward_sizes == sizes
+    assert model.peak_prepared[0] <= 8
+    for request, result in zip(requests, actual, strict=True):
+        assert list(result["answers"]) == [q.id for q in request.questions]
+        assert result["execution"]["forward_calls"] == len(sizes)
+        assert result["execution"]["max_forward_batch_size"] == 8
+        assert result["execution"]["max_prepared_prompts"] == 8
+        assert result["execution"]["batch_sizes"] == sizes
+        expected = {}
+        for question in request.questions:
+            part = request.model_copy(update={"questions": [question]})
+            expected.update(predict_batch(model, [part])[0]["answers"])
+        assert result["answers"] == normalize_response(request, {"answers": expected})["answers"]
+
+
+@pytest.mark.parametrize("readout", ["candidate", "full"])
+def test_bounded_causal_groups_preserve_complete_prompts_and_question_order(
+    forward_boundary_model, readout
+):
+    from s1.evaluation.gemma import predict_batch
+
+    model = forward_boundary_model
+    requests = many_question_requests()
+    actual = predict_batch(model, requests, independent=False, readout=readout)
+    assert model.forward_sizes == [8, 8]
+    assert model.peak_prepared[0] <= 8
+    assert [
+        row[mask.bool()].tolist()
+        for batch in model.inputs_seen
+        for row, mask in zip(batch, batch.ne(0), strict=True)
+    ] == [list(range(index * 64 + 1, (index + 1) * 64 + 1)) for index in range(16)]
+    expected = [
+        predict_batch(model, [request], independent=False, readout=readout)[0]
+        for request in requests
+    ]
+    for request, result, reference in zip(requests, actual, expected, strict=True):
+        assert list(result["answers"]) == [q.id for q in request.questions]
+        assert result["answers"] == reference["answers"]
+        assert result["execution"]["forward_calls"] == 2
+        assert result["execution"]["independent_questions"] is False
+
+
+@pytest.mark.parametrize("mode", ["decoder-default-dynamic", "decoder-max-autotune-no-cudagraphs"])
+@pytest.mark.parametrize("independent", [False, True])
+@pytest.mark.parametrize("readout", ["candidate", "full"])
+def test_compile_wrapper_route_preserves_native_batch_answers(
+    model, decision_request, monkeypatch, mode, independent, readout
+):
+    """Exercise compile selection/dispatch; this is not real compiler or hardware parity."""
+    from s1.evaluation.gemma import predict_batch
+
+    requests = [decision_request, decision_request.model_copy(deep=True)]
+    expected = predict_batch(model, requests, independent=independent, readout=readout)
+    target = model.backbone.language_model
+    compile_calls, forwards = [], []
+
+    class DecoderWrapper(torch.nn.Module):
+        def __init__(self, inner):
+            super().__init__()
+            self.inner = inner
+
+        def forward(self, *args, **kwargs):
+            forwards.append(1)
+            return self.inner(*args, **kwargs)
+
+        def __getattr__(self, name):
+            try:
+                return super().__getattr__(name)
+            except AttributeError:
+                return getattr(self.inner, name)
+
+    def compile_decoder(actual_target, **kwargs):
+        compile_calls.append((actual_target, kwargs))
+        return DecoderWrapper(actual_target)
+
+    monkeypatch.setattr(torch, "compile", compile_decoder)
+    assert model.enable_compile(mode) == mode
+    assert model.compile_mode == mode
+    assert compile_calls == [
+        (
+            target,
+            {
+                "mode": "default"
+                if mode == "decoder-default-dynamic"
+                else "max-autotune-no-cudagraphs",
+                "dynamic": True,
+                "fullgraph": False,
+            },
+        )
+    ]
+    actual = predict_batch(model, requests, independent=independent, readout=readout)
+    assert forwards == [1]
+    assert actual == expected
 
 
 @pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
@@ -42,7 +242,9 @@ def test_native_batch_independence(model, decision_request, dtype, modality):
         batch = predict_batch(model, [decision_request, changed, text_only])
     finally:
         hook.remove()
-    assert len(calls) == (1 if modality == "text" else 2)
+    assert len(calls) == 2
+    assert batch[0]["execution"]["forward_calls"] == 2
+    assert max(batch[0]["execution"]["batch_sizes"]) <= 8
     assert sum(batch[0]["execution"]["batch_sizes"]) == 9
     # Different BF16 GEMM shapes can round differently. This is a numerical
     # tolerance check, not a claim of bitwise batch parity.

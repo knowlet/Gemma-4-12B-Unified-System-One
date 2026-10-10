@@ -29,6 +29,7 @@ class Backend(Protocol):
 
 
 _ROUNDING_TOLERANCE = 0.000051
+GEMMA_MAX_FORWARD_BATCH_SIZE = 8
 
 
 def _probability(value):
@@ -262,6 +263,9 @@ class GemmaBackend:
             "device": self.model.device,
             "dtype": self.model.dtype,
             "attn_implementation": self.model.attn_implementation,
+            "compile_mode": getattr(self.model, "compile_mode", None),
+            "max_forward_batch_size": GEMMA_MAX_FORWARD_BATCH_SIZE,
+            "max_prepared_prompts": GEMMA_MAX_FORWARD_BATCH_SIZE,
             "torch_version": version("torch"),
             "transformers_version": version("transformers"),
             "max_context": self.model.max_context,
