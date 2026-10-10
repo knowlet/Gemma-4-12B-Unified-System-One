@@ -4,7 +4,7 @@
 
 | 日期 | 入口 | 範圍 |
 | --- | --- | --- |
-| 2026-10-10 | [本輪後續](2026-10-10/README.md) | 追蹤 CPU03 算術重播、證據發布與檔案整理；完成狀態以該日收據為準。 |
+| 2026-10-10 | [本輪後續](2026-10-10/README.md)、[公開發布與整理](2026-10-10/publication.md) | CPU03／CPU04 重播、五份公開證據下載核對、乾淨環境測試修正與 111.24 MiB 重複 ZIP 清理；實際狀態以該日收據為準。 |
 | 2026-10-08 | [八組優化實驗](2026-10-08/breakthrough/README.md)、[完整結果](2026-10-08/breakthrough/results.md) | Jev-Omni 差距、提示與 Head／LoRA 固定對照、完整人口與校驗限制；此封存保存當時六組完整稽核、兩組機率連結未完成的狀態。 |
 | 2026-10-08 | [JevBench campaign](2026-10-08/jevbench/README.md)、[campaign audit](2026-10-08/jevbench/campaign-audit.md) | 市面模型的公開 231 題 screening、獨立 coherence 評測及推論實驗；公開分數不代表正式榜單名次。 |
 | 2026-10-07 | [GGUF 記憶體優化](2026-10-07/gguf-memory/README.md) | 原發布模型的執行緩衝區量測與有界原生等價檢查，與模型品質評測分開記錄。 |
