@@ -64,6 +64,66 @@ def case(name="c1", *, questions=1, split="test"):
     )
 
 
+@pytest.fixture
+def analysis_inputs(analyzer, tmp_path, monkeypatch):
+    """Small SHA-bound inputs for failure-state tests; never use ignored research artifacts."""
+    root = tmp_path / "analysis-inputs"
+    protocol = json.loads(
+        (ROOT / "configs/experiments/jevbench-breakthrough-20261008.json").read_text()
+    )
+
+    def write(name, raw):
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(raw)
+        return hashlib.sha256(raw).hexdigest()
+
+    def case_bytes(name, split="test"):
+        return (case(name, split=split).model_dump_json() + "\n").encode()
+
+    synthetic = protocol["data"]["synthetic"]
+    synthetic["directory"] = "synthetic"
+    synthetic["files"] = {
+        f"{split}.jsonl": write(f"synthetic/{split}.jsonl", case_bytes(split, split))
+        for split in ("train", "calibration", "test")
+    }
+    synthetic["counts"] = {split: 1 for split in ("train", "calibration", "test")}
+    synthetic["type_counts"] = {
+        split: {"choice": 1, "noul": 0, "score": 0} for split in synthetic["counts"]
+    }
+    manifest = {"scope": "failure-state test fixture only", "counts": synthetic["counts"]}
+    synthetic["manifest_sha256"] = write(
+        "synthetic/manifest.json", (json.dumps(manifest, sort_keys=True) + "\n").encode()
+    )
+    release = protocol["data"]["release_regression"]
+    release["directory"] = "release"
+    release["manifest_sha256"] = write("release/manifest.json", b'{"fixture":true}\n')
+    release["evaluation_files"] = {
+        name: {"cases": 1, "file_sha256": write("release/" + name, case_bytes(name))}
+        for name in ("test.jsonl", "media-test.jsonl", "regression-text.jsonl")
+    }
+    native = protocol["data"]["native_fixture"]
+    native.update(
+        path="native.jsonl",
+        file_sha256=write("native.jsonl", case_bytes("native")),
+        cases=1,
+        questions=1,
+    )
+    public = protocol["data"]["public231"]
+    public.update(
+        source_contract="public-contract.json",
+        source_contract_sha256=write("public-contract.json", b'{"fixture":true}\n'),
+    )
+    protocol_path = root / "configs/experiments/jevbench-breakthrough-20261008.json"
+    protocol_hash = write(
+        protocol_path.relative_to(root), (json.dumps(protocol, sort_keys=True) + "\n").encode()
+    )
+    namespace = analyzer["analyze"].__globals__
+    monkeypatch.setitem(namespace, "ROOT", root)
+    monkeypatch.setitem(namespace, "PROTOCOL_SHA256", protocol_hash)
+    return {"root": root, "protocol_path": protocol_path, "manifest": manifest}
+
+
 def test_soft_metrics_have_known_probability_and_uneven_score_mean(analyzer):
     value = analyzer["row_metrics"](row(), 1.0)
     assert value["soft_ce"] == pytest.approx(math.log(2))
@@ -1628,7 +1688,7 @@ def test_profile_requires_binary_and_complete_native_temperature_linkages(
         assert result[f"{gap}_linkage"]["complete"] is False
 
 
-def test_unexecuted_plan_stays_eight_not_run_and_no_formal_pass(analyzer):
+def test_unexecuted_plan_stays_eight_not_run_and_no_formal_pass(analyzer, analysis_inputs):
     report = analyzer["analyze"]()
     assert report["status"] == "incomplete_or_not_run"
     assert report["declared_profiles"] == 8 and report["profile_counts"] == {"not_run": 8}
@@ -1639,8 +1699,8 @@ def test_unexecuted_plan_stays_eight_not_run_and_no_formal_pass(analyzer):
     assert "Historical Jev-Omni is reported separately" in analyzer["markdown"](report)
 
 
-def test_failed_stage_and_source_tampering_remain_visible(analyzer, tmp_path):
-    protocol_path = ROOT / "configs/experiments/jevbench-breakthrough-20261008.json"
+def test_failed_stage_and_source_tampering_remain_visible(analyzer, tmp_path, analysis_inputs):
+    protocol_path = analysis_inputs["protocol_path"]
     protocol = json.loads(protocol_path.read_text())
     stage = tmp_path / "ablate"
     sources = stage / "sources"
@@ -1675,9 +1735,7 @@ def test_failed_stage_and_source_tampering_remain_visible(analyzer, tmp_path):
         "prospective_protocol": protocol,
         "source_files": hashes,
         "profiles": [],
-        "dataset": json.loads(
-            (ROOT / protocol["data"]["synthetic"]["directory"] / "manifest.json").read_text()
-        ),
+        "dataset": analysis_inputs["manifest"],
         "training_recipe": {
             "steps": 128,
             "seed": 42,

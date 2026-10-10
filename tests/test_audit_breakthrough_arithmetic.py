@@ -53,6 +53,7 @@ def arithmetic_request():
 
 @pytest.fixture
 def arithmetic_rows(arithmetic_request):
+    pytest.importorskip("torch")
     logits = [[0.0] * 4, [0.0, 0.0], [0.0, 2.0, 4.0], [1.0, 0.0, -1.0]]
     return [
         {"id": question.id, "labels": question.labels(), "logits": values}
@@ -129,6 +130,7 @@ def test_cpu_fp32_probabilities_preserve_all_typed_derived_fields(
 
 
 def test_choice_and_noul_use_their_own_temperature(arithmetic_request):
+    pytest.importorskip("torch")
     data = arithmetic_request.model_dump()
     data["questions"] = data["questions"][:2]
     data["questions"][0]["criteria"] = {"a": "A", "b": "B"}
