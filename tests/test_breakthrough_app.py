@@ -6,6 +6,7 @@ are retained; no Modal connection or GPU inference is used.
 """
 
 import ast
+import asyncio
 import hashlib
 import importlib.metadata
 import importlib.util
@@ -13,8 +14,10 @@ import io
 import json
 import shutil
 import sys
+import threading
 import types
 import zipfile
+from contextlib import asynccontextmanager
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -23,12 +26,15 @@ import pytest
 from s1.contracts import DecisionRequest, answer_from_probabilities
 from s1.evaluation.datasets import EvaluationCase, load_cases
 
-torch = pytest.importorskip("torch")
-pytestmark = pytest.mark.inference
 ROOT = Path(__file__).parents[1]
 APP_PATH = ROOT / "apps/modal/breakthrough.py"
 PROTOCOL_PATH = ROOT / "configs/experiments/jevbench-breakthrough-20261008.json"
 PROTOCOL_SHA256 = "3a8dcceba9fbc0c7ce31bddbb85c0d10acdfa855ddf237f4d5e81982ec6a926d"
+
+
+@pytest.fixture
+def torch_module():
+    return pytest.importorskip("torch")
 
 
 def load_module(name, path):
@@ -86,7 +92,6 @@ def closure(app, **bindings):
         **app.__dict__,
         "hashlib": hashlib,
         "sys": sys,
-        "torch": torch,
         "DecisionRequest": DecisionRequest,
         "answer_from_probabilities": answer_from_probabilities,
         **bindings,
@@ -133,7 +138,8 @@ def annotated(split, state, *, media=False):
 
 
 @pytest.fixture
-def profile(app_module, monkeypatch, tmp_path):
+def profile(app_module, monkeypatch, tmp_path, torch_module):
+    torch = torch_module
     training = load_module(
         "breakthrough_training_preflight", ROOT / "scripts/breakthrough_training.py"
     )
@@ -208,6 +214,7 @@ def profile(app_module, monkeypatch, tmp_path):
     receipt = {"gpu": "CPU preflight mock", "execution": "independent native", "profiles": []}
     env = closure(
         app_module,
+        torch=torch,
         destination=tmp_path,
         source_hashes={"campaign": hashlib.sha256(APP_PATH.read_bytes()).hexdigest()},
         receipt=receipt,
@@ -235,6 +242,7 @@ def profile(app_module, monkeypatch, tmp_path):
     )
 
 
+@pytest.mark.inference
 def test_profile_has_auditable_identity_and_complete_native_media(profile):
     name, revision = "released-user-control", "a" * 40
     profile.env.evaluate(
@@ -264,6 +272,7 @@ def test_profile_has_auditable_identity_and_complete_native_media(profile):
     assert receipt["memory_peak_scope"].startswith("Whole profile")
 
 
+@pytest.mark.inference
 def test_all_primitive_calibration_replay_uses_frozen_logits_without_forward(profile):
     profile.env.evaluate(
         profile.model,
@@ -300,6 +309,7 @@ def test_all_primitive_calibration_replay_uses_frozen_logits_without_forward(pro
     assert "NOT model inference latency" in profile.benchmarks[1]["identity"]["execution"]
 
 
+@pytest.mark.inference
 @pytest.mark.parametrize("tamper", ["id", "labels", "count", "unseen"])
 def test_predictor_replay_rejects_wrong_request_or_label_identity(profile, tamper):
     predictor = profile.env.Predictor(
@@ -349,7 +359,9 @@ def test_export_retains_trained_weights_for_declared_hashes(app_module, monkeypa
             assert exported.read(name) == content
 
 
-def test_load_pins_processor_bytes_and_seeds_trainable_adapter(app_module, tmp_path):
+@pytest.mark.inference
+def test_load_pins_processor_bytes_and_seeds_trainable_adapter(app_module, tmp_path, torch_module):
+    torch = torch_module
     files = {
         "config.json": b"{}",
         "model.safetensors": b"frozen-backbone",
@@ -394,8 +406,9 @@ def test_load_pins_processor_bytes_and_seeds_trainable_adapter(app_module, tmp_p
 
 
 @pytest.fixture
-def setup_preflight(app_module, monkeypatch, tmp_path):
+def setup_preflight(app_module, monkeypatch, tmp_path, torch_module):
     """Execute real full-population validation, stopping before model loading."""
+    torch = torch_module
     if not (ROOT / "artifacts/release/datasets/manifest.json").is_file():
         pytest.skip("requires locally prepared, source-pinned native release datasets")
     monkeypatch.syspath_prepend(str(ROOT / "scripts"))
@@ -465,6 +478,7 @@ def setup_preflight(app_module, monkeypatch, tmp_path):
     )
 
 
+@pytest.mark.inference
 def test_full_frozen_populations_and_executed_helpers_are_recorded_before_load(setup_preflight):
     with pytest.raises(setup_preflight.complete):
         setup_preflight.run()
@@ -507,6 +521,7 @@ def test_full_frozen_populations_and_executed_helpers_are_recorded_before_load(s
     assert not setup_preflight.downloads
 
 
+@pytest.mark.inference
 def test_changed_synthetic_bytes_are_rejected_before_any_model_load(setup_preflight):
     with (setup_preflight.data / "calibration.jsonl").open("a") as stream:
         stream.write("\n")  # Same valid cases, changed frozen bytes.
@@ -515,6 +530,7 @@ def test_changed_synthetic_bytes_are_rejected_before_any_model_load(setup_prefli
     assert not setup_preflight.receipts and not setup_preflight.downloads
 
 
+@pytest.mark.inference
 @pytest.mark.parametrize(
     "target", ["synthetic_manifest", "release_manifest", "native_fixture", "synthetic_provenance"]
 )
@@ -535,6 +551,7 @@ def test_changed_frozen_manifest_fixture_or_auxiliary_bytes_fail_before_load(
     assert not setup_preflight.receipts and not setup_preflight.downloads
 
 
+@pytest.mark.inference
 def test_changed_prospective_protocol_bytes_fail_before_load(setup_preflight, tmp_path):
     configs = tmp_path / "configs"
     target = configs / "experiments" / PROTOCOL_PATH.name
@@ -546,3 +563,255 @@ def test_changed_prospective_protocol_bytes_fail_before_load(setup_preflight, tm
     with pytest.raises(ValueError, match="protocol|pin"):
         setup_preflight.run()
     assert not setup_preflight.receipts and not setup_preflight.downloads
+
+
+@pytest.fixture
+def entrypoint(app_module, monkeypatch, tmp_path, request):
+    """Run the actual local entrypoint and downloader with only provider I/O faked."""
+    run, stage = "cpu-entrypoint", getattr(request, "param", "ablate")
+    prefix = f"breakthrough/{run}/{stage}"
+    source = b"# preserved executed campaign\n"
+    gpu_receipt = {
+        "run": run,
+        "stage": stage,
+        "status": "completed",
+        "profiles": [{"name": "released-current"}],
+        "source_files": {"campaign": hashlib.sha256(source).hexdigest()},
+    }
+
+    class Volume:
+        def __init__(self):
+            self.files = {
+                "receipt.json": json.dumps(gpu_receipt).encode() + b"\n",
+                "sources/campaign.txt": source,
+                **{f"raw/{i:03}.json": json.dumps({"case": i}).encode() for i in range(205)},
+            }
+            if stage == "train":
+                self.files.update(
+                    {
+                        "decision-head.pt": b"preserved research head",
+                        "train-features.pt": b"preserved research features",
+                        "mixed-lora/adapter/adapter_model.safetensors": b"preserved research adapter",
+                    }
+                )
+            self.listdir = SimpleNamespace(aio=self.list)
+            self.read_file = SimpleNamespace(aio=self.read)
+            self.active, self.peak, self.lists = 0, 0, 0
+            self.fail_member = None
+
+        async def list(self, path, recursive):
+            assert path == prefix and recursive
+            self.lists += 1
+            return [
+                SimpleNamespace(path=f"{prefix}/{name}", size=len(data), type=1, mtime=1)
+                for name, data in self.files.items()
+            ]
+
+        async def read(self, path):
+            name = path.removeprefix(prefix + "/")
+            if name == self.fail_member:
+                raise FileExistsError("simulated exclusive-write failure")
+            self.active += 1
+            self.peak = max(self.peak, self.active)
+            try:
+                await asyncio.sleep(0)
+                yield self.files[name]
+            finally:
+                self.active -= 1
+
+        def commit(self):
+            raise AssertionError("local export must not mutate the Volume")
+
+    calls, volume = [], Volume()
+
+    def experiment(run_arg, stage_arg):
+        calls.append((run_arg, stage_arg))
+        assert volume.lists == 0  # A terminal GPU call precedes every read.
+        return gpu_receipt
+
+    def serial_export(*args):
+        raise AssertionError("default entrypoint must not launch the serial remote ZIP export")
+
+    monkeypatch.setattr(app_module, "ROOT", tmp_path)
+    monkeypatch.setattr(app_module, "volume", volume)
+    monkeypatch.setattr(app_module, "experiment", SimpleNamespace(remote=experiment))
+    monkeypatch.setattr(app_module, "export", SimpleNamespace(remote=serial_export))
+    destination = tmp_path / "artifacts/jevbench/breakthrough-20261008/runs" / run / stage
+    return SimpleNamespace(
+        app=app_module,
+        volume=volume,
+        receipt=gpu_receipt,
+        calls=calls,
+        destination=destination,
+        run=run,
+        stage=stage,
+    )
+
+
+@pytest.mark.parametrize("entrypoint", ["ablate", "train"], indirect=True)
+def test_default_entrypoint_downloads_complete_source_bound_evidence_without_remote_export(
+    entrypoint, capsys
+):
+    entrypoint.app.main(entrypoint.run, entrypoint.stage)
+    assert entrypoint.calls == [(entrypoint.run, entrypoint.stage)]
+    assert entrypoint.volume.peak == 16 and entrypoint.volume.lists == 2
+    for name, data in entrypoint.volume.files.items():
+        assert (entrypoint.destination / name).read_bytes() == data
+    assert not (entrypoint.destination / "results.zip").exists()
+    metadata = entrypoint.destination / ".evidence-download"
+    state = json.loads((metadata / "receipt.json").read_text())
+    assert state["status"] == "completed" and not state["errors"]
+    assert state["expected_files"] == len(state["members"]) == len(entrypoint.volume.files)
+    assert state["executed_sources_verified"] == 1
+    assert state["settings"] == {
+        "concurrency": 16,
+        "file_timeout_seconds": 120,
+        "attempts": 3,
+        "remote_mutations": False,
+        "gpu_calls": 0,
+    }
+    helper_source = (ROOT / "scripts/export_breakthrough_evidence.py").read_bytes()
+    assert (metadata / "export_breakthrough_evidence.py.txt").read_bytes() == helper_source
+    assert state["source_sha256"] == hashlib.sha256(helper_source).hexdigest()
+    assert (
+        state["gpu_receipt_sha256"]
+        == hashlib.sha256(entrypoint.volume.files["receipt.json"]).hexdigest()
+    )
+    for member in state["members"]:
+        data = entrypoint.volume.files[member["path"]]
+        assert member["sha256"] == hashlib.sha256(data).hexdigest()
+        assert member["size_bytes"] == len(data)
+    output = capsys.readouterr().out
+    assert '"downloaded_files": 200' in output and "Saved " in output
+
+
+def test_default_entrypoint_recovers_failed_gpu_evidence_and_reraises_original_error(
+    entrypoint, monkeypatch
+):
+    gpu_error = RuntimeError("original GPU-stage failure")
+    entrypoint.receipt["status"] = "failed"
+    entrypoint.receipt["error"] = str(gpu_error)
+    raw_receipt = json.dumps(entrypoint.receipt).encode() + b"\n"
+    entrypoint.volume.files["receipt.json"] = raw_receipt
+
+    def fail(*args):
+        raise gpu_error
+
+    monkeypatch.setattr(entrypoint.app, "experiment", SimpleNamespace(remote=fail))
+    with pytest.raises(RuntimeError) as caught:
+        entrypoint.app.main(entrypoint.run, entrypoint.stage)
+    assert caught.value is gpu_error
+    assert (entrypoint.destination / "receipt.json").read_bytes() == raw_receipt
+    state = json.loads((entrypoint.destination / ".evidence-download/receipt.json").read_text())
+    assert state["status"] == "completed" and state["gpu_receipt_status"] == "failed"
+
+
+def test_default_entrypoint_retains_partial_transfer_and_propagates_failure(entrypoint, capsys):
+    entrypoint.volume.fail_member = "raw/000.json"
+    with pytest.raises(ValueError, match="download incomplete"):
+        entrypoint.app.main(entrypoint.run, entrypoint.stage)
+    state = json.loads((entrypoint.destination / ".evidence-download/receipt.json").read_text())
+    assert state["status"] == "failed"
+    assert state["errors"] == [
+        {"path": "raw/000.json", "error_type": "FileExistsError", "attempts": 1}
+    ]
+    assert (entrypoint.destination / "receipt.json").read_bytes() == entrypoint.volume.files[
+        "receipt.json"
+    ]
+    assert "Saved " not in capsys.readouterr().out
+
+
+def test_default_entrypoint_preserves_gpu_error_when_recovery_also_fails(entrypoint, monkeypatch):
+    gpu_error = RuntimeError("original GPU-stage failure")
+    entrypoint.volume.fail_member = "raw/000.json"
+    entrypoint.receipt["status"] = "failed"
+    entrypoint.volume.files["receipt.json"] = json.dumps(entrypoint.receipt).encode() + b"\n"
+
+    def fail(*args):
+        raise gpu_error
+
+    monkeypatch.setattr(entrypoint.app, "experiment", SimpleNamespace(remote=fail))
+    with pytest.raises(RuntimeError) as caught:
+        entrypoint.app.main(entrypoint.run, entrypoint.stage)
+    assert caught.value is gpu_error
+    assert isinstance(caught.value.__cause__, ValueError)
+    assert "download incomplete" in str(caught.value.__cause__)
+
+
+def test_default_entrypoint_refuses_existing_destination_before_gpu_call(entrypoint):
+    entrypoint.destination.mkdir(parents=True)
+    existing = entrypoint.destination / "preserved.txt"
+    existing.write_bytes(b"keep existing evidence")
+    with pytest.raises(FileExistsError):
+        entrypoint.app.main(entrypoint.run, entrypoint.stage)
+    assert entrypoint.calls == [] and entrypoint.volume.lists == 0
+    assert existing.read_bytes() == b"keep existing evidence"
+
+
+@pytest.fixture
+def installed_modal():
+    """Load the optional real SDK before app_module temporarily installs its fake."""
+    sdk = pytest.importorskip("modal")
+    cli = importlib.import_module("modal.cli.run")
+    async_utils = importlib.import_module("modal._utils.async_utils")
+    click_testing = importlib.import_module("click.testing")
+    return SimpleNamespace(
+        sdk=sdk,
+        cli=cli,
+        synchronize_api=async_utils.synchronize_api,
+        CliRunner=click_testing.CliRunner,
+    )
+
+
+def test_actual_modal_cli_sync_entrypoint_download_runs_outside_provider_event_loop(
+    installed_modal, entrypoint, monkeypatch
+):
+    """Exercise the SDK's CLI and synchronizer while replacing only provider setup/I/O."""
+    monkeypatch.setitem(sys.modules, "modal", installed_modal.sdk)
+    sdk_app = installed_modal.sdk.App("offline-entrypoint-boundary")
+    sdk_entrypoint = sdk_app.local_entrypoint()(entrypoint.app.main)
+    observations = {}
+
+    @asynccontextmanager
+    async def provider_context(app, **kwargs):
+        assert app.name == "offline-entrypoint-boundary"
+        observations["provider_thread"] = threading.get_ident()
+        observations["provider_loop"] = asyncio.get_running_loop()
+        yield app
+
+    # Modal's real run_app also wraps an async context manager with this SDK API.
+    monkeypatch.setattr(
+        installed_modal.cli,
+        "run_app",
+        installed_modal.synchronize_api(provider_context),
+    )
+    download = entrypoint.app._download_evidence
+
+    def observed_download(*args):
+        observations["user_thread"] = threading.get_ident()
+        with pytest.raises(RuntimeError, match="no running event loop"):
+            asyncio.get_running_loop()
+        return download(*args)  # Real asyncio.run and complete bounded downloader.
+
+    monkeypatch.setattr(entrypoint.app, "_download_evidence", observed_download)
+    command = installed_modal.cli._get_click_command_for_local_entrypoint(sdk_app, sdk_entrypoint)
+    result = installed_modal.CliRunner().invoke(
+        command,
+        ["--run", entrypoint.run, "--stage", entrypoint.stage],
+        obj={
+            "detach": False,
+            "name": None,
+            "env": None,
+            "interactive": False,
+            "show_progress": False,
+            "show_timestamps": False,
+            "result_path": None,
+        },
+    )
+    assert result.exit_code == 0, result.output
+    assert result.exception is None and "Saved " in result.output
+    assert observations["provider_thread"] != observations["user_thread"]
+    assert entrypoint.calls == [(entrypoint.run, entrypoint.stage)]
+    assert entrypoint.volume.peak == 16 and entrypoint.volume.lists == 2
+    state = json.loads((entrypoint.destination / ".evidence-download/receipt.json").read_text())
+    assert state["status"] == "completed" and len(state["members"]) == 207

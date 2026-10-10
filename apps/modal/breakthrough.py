@@ -630,6 +630,20 @@ def export(run: str, stage: str):
     return buffer.getvalue()
 
 
+def _download_evidence(run: str, stage: str, destination: Path):
+    """Use bounded, source-verified local Volume reads after a terminal GPU call."""
+    import asyncio
+    import importlib.util
+
+    helper = Path(__file__).resolve().parents[2] / "scripts/export_breakthrough_evidence.py"
+    spec = importlib.util.spec_from_file_location("breakthrough_evidence_download", helper)
+    downloader = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(downloader)
+    return asyncio.run(
+        downloader.download(volume, run, stage, destination, allow_empty_output=True)
+    )
+
+
 @app.local_entrypoint()
 def main(run: str = "", stage: str = "ablate"):
     _path(run, stage)
@@ -646,10 +660,14 @@ def main(run: str = "", stage: str = "ablate"):
         )
     except Exception as exc:
         error = exc
-    payload = export.remote(run, stage)
-    (destination / "results.zip").write_bytes(payload)
-    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
-        archive.extractall(destination)
+    print(f"Downloading evidence to {destination}", flush=True)
+    try:
+        verification = _download_evidence(run, stage, destination)
+    except Exception as download_error:
+        if error is not None:
+            raise error from download_error
+        raise
+    print(json.dumps(verification, sort_keys=True), flush=True)
     print(f"Saved {destination}", flush=True)
     if error is not None:
         raise error
