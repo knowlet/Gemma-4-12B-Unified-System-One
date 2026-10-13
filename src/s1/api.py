@@ -14,7 +14,7 @@ from .errors import (
 )
 
 
-def create_app(backend, *, api_key=None, max_batch=16):
+def create_app(backend, *, api_key=None, max_batch=16, jev_compatible=False, model_identity=None):
     from fastapi import Depends, FastAPI, Header, HTTPException
 
     app = FastAPI(title="Gemma Unified System One", version="0.1.0")
@@ -28,20 +28,34 @@ def create_app(backend, *, api_key=None, max_batch=16):
     def health():
         return {"status": "ok", "model": backend.name}
 
-    @app.post("/decide", dependencies=[Depends(authorize)])
-    @app.post("/v1/systemone", dependencies=[Depends(authorize)])
-    def decide(request: DecisionRequest):
+    def invoke(request, *, compatible=False):
         from .backends import normalize_response
+
+        def error_detail(exc):
+            generation = getattr(exc, "generation", None)
+            if compatible and generation is not None:
+                return {"message": str(exc), "generation": generation}
+            return str(exc)
 
         try:
             with lock:
+                if compatible:
+                    from .jev import JevCompatibilityAdapter
+
+                    return JevCompatibilityAdapter(backend, model_identity=model_identity).predict(
+                        request
+                    )
                 return normalize_response(request, backend.predict(request))
         except RequestValidationError as exc:
-            raise HTTPException(status_code=422, detail=str(exc)) from exc
+            raise HTTPException(status_code=422, detail=error_detail(exc)) from exc
         except BackendTimeoutError as exc:
-            raise HTTPException(status_code=504, detail=str(exc)) from exc
+            raise HTTPException(status_code=504, detail=error_detail(exc)) from exc
         except (BackendResponseError, BackendTransportError) as exc:
-            raise HTTPException(status_code=502, detail=str(exc)) from exc
+            raise HTTPException(status_code=502, detail=error_detail(exc)) from exc
+        except Exception as exc:
+            if compatible and getattr(exc, "generation", None) is not None:
+                raise HTTPException(status_code=502, detail=error_detail(exc)) from exc
+            raise
 
     @app.post("/decide/batch", dependencies=[Depends(authorize)])
     @app.post("/v1/systemone/batch", dependencies=[Depends(authorize)])
@@ -69,5 +83,18 @@ def create_app(backend, *, api_key=None, max_batch=16):
             raise HTTPException(status_code=504, detail=str(exc)) from exc
         except (BackendResponseError, BackendTransportError) as exc:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/decide", dependencies=[Depends(authorize)])
+    def decide(request: DecisionRequest):
+        return invoke(request)
+
+    if jev_compatible:
+
+        @app.post("/v1/systemone", dependencies=[Depends(authorize)])
+        def jev_decide(request: dict):
+            return invoke(request, compatible=True)
+
+    else:
+        app.post("/v1/systemone", dependencies=[Depends(authorize)])(decide)
 
     return app

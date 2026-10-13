@@ -136,6 +136,15 @@ def main(argv=None):
         else:
             sub.add_argument("--host", default="127.0.0.1")
             sub.add_argument("--port", type=int, default=8000)
+            sub.add_argument(
+                "--jev-compatible",
+                action="store_true",
+                help="Accept the upstream Jev structured request on /v1/systemone",
+            )
+            sub.add_argument(
+                "--jev-model-identity",
+                help="Explicit wire model alias for Jev requests; defaults to the backend name",
+            )
     compare = commands.add_parser("compare")
     compare.add_argument("reports", nargs="+", type=Path)
     evaluation = commands.add_parser("eval", help="v2 evaluation planning and execution")
@@ -493,7 +502,12 @@ def main(argv=None):
                 from .api import create_app
 
                 uvicorn.run(
-                    create_app(backend, api_key=os.environ.get("S1_API_KEY")),
+                    create_app(
+                        backend,
+                        api_key=os.environ.get("S1_API_KEY"),
+                        jev_compatible=args.jev_compatible,
+                        model_identity=args.jev_model_identity,
+                    ),
                     host=args.host,
                     port=args.port,
                 )
