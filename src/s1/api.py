@@ -14,9 +14,22 @@ from .errors import (
 )
 
 
-def create_app(backend, *, api_key=None, max_batch=16, jev_compatible=False, model_identity=None):
+def create_app(
+    backend,
+    *,
+    api_key=None,
+    max_batch=16,
+    jev_compatible=False,
+    jev_hierarchical=False,
+    jev_hierarchical_batch=False,
+    model_identity=None,
+):
     from fastapi import Depends, FastAPI, Header, HTTPException
 
+    if jev_hierarchical and not jev_compatible:
+        raise ValueError("Jev hierarchical choices require the explicit compatible endpoint")
+    if jev_hierarchical_batch and not jev_hierarchical:
+        raise ValueError("Jev hierarchy batching requires hierarchical choices")
     app = FastAPI(title="Gemma Unified System One", version="0.1.0")
     lock = threading.Lock()
 
@@ -33,8 +46,14 @@ def create_app(backend, *, api_key=None, max_batch=16, jev_compatible=False, mod
 
         def error_detail(exc):
             generation = getattr(exc, "generation", None)
-            if compatible and generation is not None:
-                return {"message": str(exc), "generation": generation}
+            hierarchy = getattr(exc, "hierarchy", None)
+            if compatible and (generation is not None or hierarchy is not None):
+                detail = {"message": str(exc)}
+                if generation is not None and generation is not hierarchy:
+                    detail["generation"] = generation
+                if hierarchy is not None:
+                    detail["hierarchy"] = hierarchy
+                return detail
             return str(exc)
 
         try:
@@ -42,7 +61,14 @@ def create_app(backend, *, api_key=None, max_batch=16, jev_compatible=False, mod
                 if compatible:
                     from .jev import JevCompatibilityAdapter
 
-                    return JevCompatibilityAdapter(backend, model_identity=model_identity).predict(
+                    adapter = JevCompatibilityAdapter
+                    options = {}
+                    if jev_hierarchical:
+                        from .jev_hierarchy import JevHierarchicalAdapter
+
+                        adapter = JevHierarchicalAdapter
+                        options["batch_stages"] = jev_hierarchical_batch
+                    return adapter(backend, model_identity=model_identity, **options).predict(
                         request
                     )
                 return normalize_response(request, backend.predict(request))
@@ -53,7 +79,10 @@ def create_app(backend, *, api_key=None, max_batch=16, jev_compatible=False, mod
         except (BackendResponseError, BackendTransportError) as exc:
             raise HTTPException(status_code=502, detail=error_detail(exc)) from exc
         except Exception as exc:
-            if compatible and getattr(exc, "generation", None) is not None:
+            if compatible and (
+                getattr(exc, "generation", None) is not None
+                or getattr(exc, "hierarchy", None) is not None
+            ):
                 raise HTTPException(status_code=502, detail=error_detail(exc)) from exc
             raise
 

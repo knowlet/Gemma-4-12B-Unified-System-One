@@ -145,6 +145,16 @@ def main(argv=None):
                 "--jev-model-identity",
                 help="Explicit wire model alias for Jev requests; defaults to the backend name",
             )
+            sub.add_argument(
+                "--jev-hierarchical",
+                action="store_true",
+                help="Score every target with explicit hierarchical probabilities; requires Jev compatibility",
+            )
+            sub.add_argument(
+                "--jev-batch-stages",
+                action="store_true",
+                help="Batch hierarchical stage scoring when the backend supports it",
+            )
     compare = commands.add_parser("compare")
     compare.add_argument("reports", nargs="+", type=Path)
     evaluation = commands.add_parser("eval", help="v2 evaluation planning and execution")
@@ -261,6 +271,10 @@ def main(argv=None):
     train.add_argument("--brier-weight", type=float, default=0.1)
     train.add_argument("--lr", type=float, default=2e-5)
     args = parser.parse_args(argv)
+    if args.command == "serve" and args.jev_hierarchical and not args.jev_compatible:
+        parser.error("--jev-hierarchical requires --jev-compatible")
+    if args.command == "serve" and args.jev_batch_stages and not args.jev_hierarchical:
+        parser.error("--jev-batch-stages requires --jev-hierarchical")
     try:
         if args.command == "eval":
             if args.eval_command == "gate":
@@ -506,6 +520,8 @@ def main(argv=None):
                         backend,
                         api_key=os.environ.get("S1_API_KEY"),
                         jev_compatible=args.jev_compatible,
+                        jev_hierarchical=args.jev_hierarchical,
+                        jev_hierarchical_batch=args.jev_batch_stages,
                         model_identity=args.jev_model_identity,
                     ),
                     host=args.host,

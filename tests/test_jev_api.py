@@ -311,3 +311,106 @@ def test_jev_failure_preserves_incurred_generation_evidence(wire_payload, failur
         response = client.post("/v1/systemone", json=wire_payload)
     assert response.status_code == status
     assert response.json() == {"detail": {"message": str(failure), "generation": generation}}
+
+
+def test_hierarchical_endpoint_retains_every_original_target(wire_payload):
+    wire_payload["questions"]["click_target"]["criteria"] = {
+        str(index): {"element": f"[{index}] Item {index}"} for index in range(1, 81)
+    }
+    backend = CapturingBackend()
+    with TestClient(
+        create_app(
+            backend,
+            jev_compatible=True,
+            jev_hierarchical=True,
+            model_identity="gemma-browser",
+        )
+    ) as client:
+        response = client.post("/v1/systemone", json=wire_payload)
+        assert client.post("/decide", json=wire_payload).status_code == 422
+    assert response.status_code == 200, response.text
+    result = response.json()
+    assert list(result["answers"]["click_target"]["probabilities"]) == list(
+        wire_payload["questions"]["click_target"]["criteria"]
+    )
+    assert sum(result["answers"]["click_target"]["probabilities"].values()) == pytest.approx(1.0)
+    assert result["hierarchy"]["backend_predict_calls"] == len(backend.calls) == 6
+    assert result["hierarchy"]["status"] == "completed"
+
+
+def test_hierarchy_requires_explicit_compatible_endpoint():
+    with pytest.raises(ValueError, match="explicit compatible"):
+        create_app(CapturingBackend(), jev_hierarchical=True)
+
+
+def test_hierarchy_batching_requires_explicit_hierarchy():
+    with pytest.raises(ValueError, match="batching requires hierarchical"):
+        create_app(CapturingBackend(), jev_compatible=True, jev_hierarchical_batch=True)
+
+
+def test_hierarchy_api_uses_the_ordered_batch_backend(wire_payload):
+    wire_payload["questions"]["click_target"]["criteria"] = {
+        str(index): {"element": f"[{index}] Item {index}"} for index in range(1, 81)
+    }
+
+    class BatchBackend(CapturingBackend):
+        def __init__(self):
+            super().__init__()
+            self.batches = []
+
+        def predict_batch(self, requests):
+            self.batches.append(requests)
+            return [UniformBackend.predict(self, request) for request in requests]
+
+    backend = BatchBackend()
+    with TestClient(
+        create_app(
+            backend,
+            jev_compatible=True,
+            jev_hierarchical=True,
+            jev_hierarchical_batch=True,
+            model_identity="gemma-browser",
+        )
+    ) as client:
+        response = client.post("/v1/systemone", json=wire_payload)
+    assert response.status_code == 200, response.text
+    hierarchy = response.json()["hierarchy"]
+    assert hierarchy["backend_predict_batch_calls"] == len(backend.batches) == 1
+    assert hierarchy["backend_predict_calls"] == len(backend.calls) == 0
+    assert len(backend.batches[0]) == 6
+    assert hierarchy["stage_batching"]["used"] is True
+    assert len(response.json()["answers"]["click_target"]["probabilities"]) == 80
+
+
+def test_hierarchy_failure_keeps_prior_generation_and_full_stage_trace(wire_payload):
+    wire_payload["questions"]["click_target"]["criteria"] = {
+        str(index): {"element": f"[{index}] Item {index}"} for index in range(1, 54)
+    }
+    generation = {"raw_output": "Pending: choose a target.", "output_tokens": 8}
+
+    class Broken(CapturingBackend):
+        def predict(self, request):
+            self.calls.append(request)
+            if len(self.calls) == 3:
+                error = BackendResponseError("candidate scoring failed")
+                error.generation = generation
+                raise error
+            return UniformBackend.predict(self, request)
+
+    backend = Broken()
+    with TestClient(
+        create_app(
+            backend,
+            jev_compatible=True,
+            jev_hierarchical=True,
+            model_identity="gemma-browser",
+        )
+    ) as client:
+        response = client.post("/v1/systemone", json=wire_payload)
+    assert response.status_code == 502
+    detail = response.json()["detail"]
+    assert detail["generation"] == generation
+    assert detail["hierarchy"]["backend_predict_calls"] == 3
+    assert detail["hierarchy"]["status"] == "failed"
+    assert detail["hierarchy"]["stages"][2]["error_generation"] == generation
+    assert "answers" not in detail

@@ -48,3 +48,10 @@ def test_cli_serves_structured_jev_request_only_when_enabled(monkeypatch, compat
     if compatible:
         assert observed[0].json()["answers"]["click_target"]["choice"] == "1"
         assert observed[0].json()["model"] == "uniform"
+
+
+@pytest.mark.parametrize("option", ["--jev-hierarchical", "--jev-batch-stages"])
+def test_cli_rejects_missing_hierarchy_prerequisites_before_backend_loading(option):
+    with pytest.raises(SystemExit) as error:
+        main(["serve", "--backend", "uniform", option])
+    assert error.value.code == 2
