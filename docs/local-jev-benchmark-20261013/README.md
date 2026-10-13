@@ -2,8 +2,13 @@
 
 日期：2026-10-13（UTC）。既有訓練版 Gemma 4 12B System One 已透過真實
 S1 決策介面、同模型文字 helper 與隔離 Chromium 執行本機 fixture。
-獨立 DOM 驗證的任務成功率為 **travel 0/3、completion 0/5**；失敗任務的
+保留的 baseline 獨立 DOM 驗證成功率為 **travel 0/3、completion 0/5**；失敗任務的
 時間保留為失敗證據，不當作成功速度。
+
+後續 opt-in Noul policy 的單次 development click 已真正 **1/1 完成**：
+CLICK → DONE，fresh DOM 通過，2 次決策／9 次 native 推論，104.689 秒。
+[獨立報告與原始證據](noul-development/report.md)保留配對分數、source freeze、
+資源與限制；這不改寫 baseline，也不宣稱 heldout 泛化或穩定加速。
 
 固定輸入比較各有十次測量：Q4_K_M 決策 p50／p95 為 **6.294／8.289 秒**，
 Q8_0 為 **9.588／10.588 秒**。兩組依序執行，沒有控制熱狀態與 OS cache；
