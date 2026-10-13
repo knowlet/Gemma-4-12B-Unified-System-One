@@ -1,0 +1,238 @@
+#!/usr/bin/env python3
+"""Run pinned local Gemma decisions in Jev's actual Chromium agent loop."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import socket
+import threading
+import time
+from importlib import metadata
+from pathlib import Path
+
+from jev_browser_benchmark import TASK_IDS, run_benchmark, upstream_manifest
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--upstream-path", required=True)
+    parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--model", default="knowlet/Gemma-4-12B-Unified-System-One")
+    parser.add_argument("--revision", default="a66f836b56605039fe040f330180e336d19b3362")
+    parser.add_argument("--quantization", choices=["none", "nf4", "int8"], default="nf4")
+    parser.add_argument(
+        "--prompt-mode",
+        choices=["native", "user", "reasoned", "grounded", "goal-first"],
+        default="native",
+    )
+    parser.add_argument("--analysis-style", choices=["detailed", "compact"], default="detailed")
+    parser.add_argument("--hierarchical-candidates", action="store_true")
+    parser.add_argument("--batch-hierarchy-stages", action="store_true")
+    parser.add_argument(
+        "--competitor",
+        choices=["decider"],
+        help="Use the pinned competitor for decisions and the same Gemma checkpoint for text",
+    )
+    parser.add_argument("--suite-split", choices=["development", "holdout"], default="development")
+    parser.add_argument("--repeats", type=int, default=1)
+    parser.add_argument("--tasks", nargs="+")
+    parser.add_argument("--chromium-executable")
+    parser.add_argument("--live-url")
+    parser.add_argument("--live-goal")
+    parser.add_argument("--live-expected-title")
+    parser.add_argument("--live-only", action="store_true")
+    args = parser.parse_args()
+    if args.repeats < 1 or (args.tasks and set(args.tasks) - set(TASK_IDS)):
+        parser.error("repeats must be positive and every task must belong to the frozen suite")
+    if args.analysis_style == "compact" and args.prompt_mode != "reasoned":
+        parser.error("compact analysis-style requires reasoned prompt-mode")
+    if args.batch_hierarchy_stages and not args.hierarchical_candidates:
+        parser.error("batch-hierarchy-stages requires hierarchical-candidates")
+    if args.live_only and (not args.live_url or args.tasks):
+        parser.error("live-only requires live-url and cannot be combined with fixture tasks")
+    if args.live_url and not (args.live_goal and args.live_expected_title):
+        parser.error("live-url requires live-goal and live-expected-title")
+    upstream = upstream_manifest(args.upstream_path)
+    destination = Path(args.output_dir).resolve()
+    destination.mkdir(parents=True, exist_ok=False)
+    receipt = {
+        "model_requested": args.model,
+        "revision_requested": args.revision,
+        "quantization": args.quantization,
+        "prompt_mode": args.prompt_mode,
+        "analysis_style": args.analysis_style,
+        "hierarchical_candidates": args.hierarchical_candidates,
+        "batch_hierarchy_stages": args.batch_hierarchy_stages,
+        "competitor": args.competitor,
+        "live_url": args.live_url,
+        "live_goal": args.live_goal,
+        "live_expected_title": args.live_expected_title,
+        "text_helper_policy": "same pinned checkpoint, greedy native generation",
+        "stage": "dependencies",
+        "cost_usd": None,
+        "upstream": upstream,
+    }
+    (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    server, thread, listener = None, None, None
+    thread_started = False
+    source_manifest = None
+    source_files = {
+        "scripts/jev_local_model.py": Path(__file__),
+        "scripts/jev_browser_benchmark.py": Path(run_benchmark.__code__.co_filename),
+    }
+    started = time.perf_counter()
+    try:
+        from s1.browser_evidence import capture_runtime_sources, verify_runtime_sources
+
+        receipt["stage"] = "source_capture"
+        source_manifest = capture_runtime_sources(destination, additional_files=source_files)
+        receipt["source_manifest"] = source_manifest
+        receipt["stage"] = "dependencies"
+        import torch
+        import uvicorn
+
+        from s1.api import create_app
+        from s1.browser_policy import BrowserDecisionBackend
+        from s1.browser_text import generate_field_text
+        from s1.unified import UnifiedDecisionModel
+
+        receipt["versions"] = {
+            name: metadata.version(name)
+            for name in ("torch", "transformers", "bitsandbytes", "playwright")
+        }
+        receipt["gpu"] = torch.cuda.get_device_name()
+        torch.backends.cuda.enable_cudnn_sdp(False)
+        receipt["attention_policy"] = {
+            "implementation": "sdpa",
+            "cudnn_sdp_enabled": torch.backends.cuda.cudnn_sdp_enabled(),
+            "scope": "owned benchmark process, identical policy for every comparison arm",
+        }
+        receipt["stage"] = "model_load"
+        (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        load_started = time.perf_counter()
+        model = UnifiedDecisionModel(
+            args.model,
+            revision=args.revision,
+            device="cuda",
+            precision="bfloat16",
+            quantization=args.quantization,
+            max_context=8192,
+            attn_implementation="sdpa",
+        )
+        if model.revision != args.revision:
+            raise ValueError("loaded checkpoint revision differs from requested immutable revision")
+        receipt["model_reported"] = model.name
+        receipt["revision_reported"] = model.revision
+        receipt["model_load_ms"] = (time.perf_counter() - load_started) * 1000
+        receipt["setup_through_model_load_ms"] = (time.perf_counter() - started) * 1000
+        receipt["temperature"] = model.temperature
+        receipt["quantization_details"] = model.quantization_details
+        if args.competitor:
+            from s1.evaluation.local_competitors import (
+                LocalCompetitorBackend,
+                local_competitor_spec,
+            )
+
+            receipt["stage"] = "competitor_load"
+            (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+            spec = local_competitor_spec(args.competitor, device="cuda")
+            backend = LocalCompetitorBackend(spec)
+            backend.name = spec.id
+            receipt["decision_model"] = {
+                **backend.telemetry(),
+                "model": spec.model_id,
+                "model_identity": spec.id,
+            }
+            cell = spec.id
+        else:
+            backend = BrowserDecisionBackend(
+                model, prompt_mode=args.prompt_mode, analysis_style=args.analysis_style
+            )
+            receipt["decision_model"] = {
+                "model": model.name,
+                "revision": model.revision,
+                "prompt_mode": args.prompt_mode,
+                "analysis_style": args.analysis_style,
+                "prompt_variant": backend.prompt_variant,
+            }
+            cell = f"{args.prompt_mode}-{args.quantization}"
+        application = create_app(
+            backend,
+            jev_compatible=True,
+            jev_hierarchical=args.hierarchical_candidates,
+            jev_hierarchical_batch=args.batch_hierarchy_stages,
+            model_identity=cell,
+        )
+        listener = socket.socket()
+        listener.bind(("127.0.0.1", 0))
+        port = listener.getsockname()[1]
+        server = uvicorn.Server(uvicorn.Config(application, log_level="error"))
+        thread = threading.Thread(target=server.run, kwargs={"sockets": [listener]}, daemon=True)
+        receipt["stage"] = "server_start"
+        thread.start()
+        thread_started = True
+        deadline = time.monotonic() + 15
+        while not server.started and time.monotonic() < deadline:
+            time.sleep(0.02)
+        if not server.started:
+            raise RuntimeError("local model API failed to start")
+        receipt["stage"] = "browser_benchmark"
+        (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        receipt["summary"] = run_benchmark(
+            upstream_path=args.upstream_path,
+            endpoint=f"http://127.0.0.1:{port}/v1/systemone",
+            model=cell,
+            output_dir=destination / "benchmark",
+            repeats=args.repeats,
+            suite_split=args.suite_split,
+            task_ids=[] if args.live_only else args.tasks,
+            chromium_executable=args.chromium_executable,
+            live_url=args.live_url,
+            live_goal=args.live_goal,
+            live_expected_title=args.live_expected_title,
+            text_helper=lambda context: generate_field_text(model, context),
+        )
+        receipt["peak_cuda_allocated_bytes"] = torch.cuda.max_memory_allocated()
+        receipt["stage"] = "complete"
+    except (Exception, KeyboardInterrupt) as exc:
+        receipt["error"] = {"type": type(exc).__name__, "message": str(exc)}
+    finally:
+        cleanup_errors = []
+        if source_manifest is not None:
+            try:
+                receipt["source_verification"] = verify_runtime_sources(
+                    source_manifest, additional_files=source_files
+                )
+                if not receipt["source_verification"]["success"]:
+                    raise RuntimeError("runtime source changed during the model campaign")
+            except Exception as exc:
+                cleanup_errors.append({"stage": "source_verification", "message": str(exc)})
+        if server is not None:
+            try:
+                server.should_exit = True
+            except Exception as exc:
+                cleanup_errors.append({"stage": "server_shutdown", "message": str(exc)})
+        if thread_started:
+            try:
+                thread.join(timeout=10)
+                if thread.is_alive():
+                    raise RuntimeError("owned model API did not stop within 10 seconds")
+            except Exception as exc:
+                cleanup_errors.append({"stage": "thread_shutdown", "message": str(exc)})
+        if listener is not None:
+            try:
+                listener.close()
+            except Exception as exc:
+                cleanup_errors.append({"stage": "socket_shutdown", "message": str(exc)})
+        if cleanup_errors:
+            receipt["cleanup_errors"] = cleanup_errors
+        receipt["elapsed_ms"] = (time.perf_counter() - started) * 1000
+        (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    print(json.dumps(receipt, indent=2), flush=True)
+    if "error" in receipt or "cleanup_errors" in receipt:
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    main()
