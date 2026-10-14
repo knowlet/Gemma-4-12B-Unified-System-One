@@ -114,6 +114,27 @@ def test_unapplied_search_judge_respects_application_query_case_and_whitespace()
     assert HARNESS.verify_fixture(browser, case)["success"] is True
 
 
+@pytest.mark.parametrize(
+    ("query", "searched", "success"),
+    [("  qUiTo  ", True, True), ("Quito", False, False), ("Porto", True, False)],
+)
+def test_travel_query_equivalence_still_requires_correct_city_and_submission(query, searched, success):
+    case = HARNESS.FixtureCase(
+        case_id="travel-query-diagnostic",
+        task_id="upstream_travel",
+        goal="Search Quito and open Cedar Court",
+        html="",
+        expected={"name": "Cedar Court", "query": "Quito", "searched": True},
+    )
+    browser = SimpleNamespace(
+        evaluate=lambda _: {
+            "result": {"name": "Cedar Court", "query": query, "searched": searched},
+            "result_visible": True,
+        }
+    )
+    assert HARNESS.verify_fixture(browser, case)["success"] is success
+
+
 def test_exposed_travel_fixture_is_not_loaded_into_holdout(tmp_path, monkeypatch):
     # Even a supplied upstream path must not inject the exposed source into holdout.
     holdout = HARNESS.make_cases(seed=72, suite_split="holdout", upstream_path=tmp_path)
@@ -295,6 +316,121 @@ def test_simple_open_travel_goal_does_not_invent_search_or_filter_requirements(m
         }
     )
     assert HARNESS.verify_fixture(browser, simple)["success"] is True
+
+
+def test_transfer_catalogue_is_seeded_explicitly_derived_and_preserves_event_handlers(monkeypatch):
+    initial = 'let query = "",\n        category = "all",\n        free = false,\n        searched = false;'
+    page = initial + '\nconst places = [{name:"original"}];\nfunction travel(){nativeHandlers();}'
+    base = HARNESS.FixtureCase(
+        case_id="original",
+        task_id="upstream_travel",
+        goal="original",
+        html=page,
+        expected={},
+        query_string="scenario=travel",
+        source={"repository": "https://github.com/browser-use/jev-ultrafast"},
+    )
+    monkeypatch.setattr(HARNESS, "make_upstream_travel_case", lambda *_args: base)
+    first = HARNESS.make_travel_transfer_cases("unused", seed=83)
+    repeated = HARNESS.make_travel_transfer_cases("unused", seed=83)
+    other = HARNESS.make_travel_transfer_cases("unused", seed=84)
+    assert first == repeated and first != other
+    assert len(first) == 5 and len({case.case_id for case in first}) == 5
+    assert first[0].html == first[1].html == first[2].html == first[3].html
+    assert first[4].html != first[0].html
+    for case in first:
+        assert case.source["parent_sha256"] == HARNESS.UPSTREAM_TRAVEL_SHA256
+        assert case.source["sha256"] == hashlib.sha256(case.html.encode()).hexdigest()
+        assert case.source["scope"] == HARNESS.TRAVEL_TRANSFER_SCOPE
+        assert case.html.endswith("function travel(){nativeHandlers();}")
+        assert "Casa Flora" not in case.goal and "Lisbon" not in case.goal
+        assert "expected" not in case.html and "fixture_token" not in case.html
+    assert first[3].expected.keys() == {"hash", "name"}
+    assert first[0].expected["free"] is True
+    assert first[1].expected["free"] is first[4].expected["free"] is False
+    assert first[4].expected["searched"] is True
+    assert [c.needs_text for c in first] == [True, False, True, False, False]
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [
+        {"suite_split": "holdout"},
+        {"task_ids": []},
+        {"travel_challenges_only": True},
+        {"live_goal": "Open a page"},
+    ],
+)
+def test_transfer_scope_rejects_mixed_runs_before_creating_output(tmp_path, monkeypatch, settings):
+    monkeypatch.setattr(HARNESS, "upstream_manifest", lambda _path: {})
+    with pytest.raises(ValueError, match="Travel transfer"):
+        HARNESS.run_benchmark(
+            upstream_path="unused",
+            endpoint="http://localhost/policy",
+            model="diagnostic",
+            output_dir=tmp_path / "run",
+            travel_transfer_only=True,
+            **settings,
+        )
+    assert not (tmp_path / "run").exists()
+
+
+@pytest.mark.parametrize("index", range(5))
+@pytest.mark.integration
+def test_seeded_catalogue_transfer_is_reachable_without_changing_native_handlers(
+    real_browser_environment, index
+):
+    """Scripted reachability is a judge diagnostic, never a model score."""
+    upstream, chromium = real_browser_environment
+    original = HARNESS.upstream_manifest(upstream)
+    cases = HARNESS.make_travel_transfer_cases(upstream, seed=83)
+    case = cases[index]
+    transport = HARNESS.PlaywrightCDP(chromium)
+    with HARNESS.fixture_server(cases) as base:
+        with HARNESS.load_upstream(upstream, transport) as (agent_module, _model_module):
+            agent = agent_module.Agent(base + case.url_suffix, case.goal, screenshots=False)
+
+            def act(label, *, kind="click", text=None):
+                observed = agent.browser.observe(screenshot=False)
+                action = next(
+                    a for a in observed["actions"] if a["label"] == label and a["kind"] == kind
+                )
+                agent.browser.act(action, observed, text=text)
+
+            try:
+                assert not HARNESS.verify_fixture(agent.browser, case)["success"]
+                if index == 4:
+                    actions = agent.state["page"]["actions"]
+                    assert not any(
+                        a["label"] == "Stay category → " + case.expected["category"]
+                        for a in actions
+                    )
+                    before = HARNESS.verify_fixture(agent.browser, case)["observed"]
+                    assert before["typed_destination"] == case.expected["query"]
+                    assert before["result"]["category"] == case.expected["category"]
+                    assert before["result"]["searched"] is False
+                else:
+                    if "query" in case.expected:
+                        text = case.expected["query"]
+                        if index == 0:
+                            text = "  " + text.swapcase() + "  "
+                        act("Destination", kind="fill", text=text)
+                    if "category" in case.expected:
+                        act("Stay category → " + case.expected["category"], kind="select")
+                    if case.expected.get("free"):
+                        act("Free cancellation")
+                if case.expected.get("searched"):
+                    act("Find stays")
+                act("View " + case.expected["name"])
+                verified = HARNESS.verify_fixture(agent.browser, case)
+                assert verified["success"]
+                if index in (1, 3):
+                    assert verified["observed"]["result"]["searched"] is False
+                if index in (1, 3, 4):
+                    assert verified["observed"]["result"]["free"] is False
+            finally:
+                agent.close()
+    assert HARNESS.upstream_manifest(upstream) == original
 
 
 @pytest.mark.parametrize("index", range(3))

@@ -53,6 +53,7 @@ def test_incompatible_modes_fail_before_public_model_loading(tmp_path, monkeypat
         ["--live-goal", "Find a stay"],
         ["--live-expected-title", "Stay details"],
         ["--live-only"],
+        ["--travel-transfer-only"],
         [
             "--live-url",
             "https://example.test/travel",
@@ -87,9 +88,9 @@ def test_travel_challenges_reject_incompatible_scope_before_upstream_or_weights(
     assert not output.exists()
 
 
-@pytest.mark.parametrize("enabled", [False, True])
-def test_travel_challenges_default_and_flag_are_recorded_and_forwarded_without_real_runtime(
-    tmp_path, monkeypatch, enabled
+@pytest.mark.parametrize("mode", [None, "challenges", "transfer"])
+def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_runtime(
+    tmp_path, monkeypatch, mode
 ):
     import json
     from types import SimpleNamespace
@@ -203,17 +204,20 @@ def test_travel_challenges_default_and_flag_are_recorded_and_forwarded_without_r
         return {"scope": "mock forwarding only", "attempts": 0}
 
     monkeypatch.setattr(DRIVER, "run_benchmark", benchmark)
-    options = ["--travel-challenges-only", "--suite-split", "development"] if enabled else []
+    options = [f"--travel-{mode}-only", "--suite-split", "development"] if mode else []
     DRIVER.main(["--upstream-path", "unused", "--output-dir", str(output), *options])
     assert len(initial_receipts) == len(benchmark_calls) == len(model_calls) == 1
-    assert initial_receipts[0]["travel_challenges_only"] is enabled
-    assert benchmark_calls[0]["travel_challenges_only"] is enabled
+    assert initial_receipts[0]["travel_challenges_only"] is (mode == "challenges")
+    assert benchmark_calls[0]["travel_challenges_only"] is (mode == "challenges")
+    assert initial_receipts[0]["travel_transfer_only"] is (mode == "transfer")
+    assert benchmark_calls[0]["travel_transfer_only"] is (mode == "transfer")
     assert benchmark_calls[0]["suite_split"] == "development"
     assert benchmark_calls[0]["task_ids"] is None
     assert benchmark_calls[0]["live_url"] is None
     receipt = json.loads((output / "receipt.json").read_text())
     assert receipt["stage"] == "complete"
-    assert receipt["travel_challenges_only"] is enabled
+    assert receipt["travel_challenges_only"] is (mode == "challenges")
+    assert receipt["travel_transfer_only"] is (mode == "transfer")
     assert receipt["summary"] == {"scope": "mock forwarding only", "attempts": 0}
     assert "error" not in receipt and "cleanup_errors" not in receipt
     assert sockets[0].closed is True and threads[0].joined is True

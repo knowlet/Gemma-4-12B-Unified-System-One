@@ -42,6 +42,7 @@ def main(argv=None):
     parser.add_argument("--seed", type=int, default=20261014)
     parser.add_argument("--tasks", nargs="+")
     parser.add_argument("--travel-challenges-only", action="store_true")
+    parser.add_argument("--travel-transfer-only", action="store_true")
     parser.add_argument("--chromium-executable")
     parser.add_argument("--live-url")
     parser.add_argument("--live-goal")
@@ -50,6 +51,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.travel_challenges_only and (
         args.suite_split != "development"
+        or args.travel_transfer_only
         or args.tasks is not None
         or args.live_only
         or any(
@@ -58,6 +60,18 @@ def main(argv=None):
     ):
         parser.error(
             "travel-challenges-only requires development and cannot use tasks or live flags"
+        )
+    if args.travel_transfer_only and (
+        args.suite_split != "development"
+        or args.travel_challenges_only
+        or args.tasks is not None
+        or args.live_only
+        or any(
+            value is not None for value in (args.live_url, args.live_goal, args.live_expected_title)
+        )
+    ):
+        parser.error(
+            "travel-transfer-only requires development and cannot mix suites, tasks or live flags"
         )
     if args.repeats < 1 or (args.tasks and set(args.tasks) - set(TASK_IDS)):
         parser.error("repeats must be positive and every task must belong to the frozen suite")
@@ -95,6 +109,7 @@ def main(argv=None):
         "prefix_suffix_batch_size": args.prefix_suffix_batch_size,
         "seed": args.seed,
         "travel_challenges_only": args.travel_challenges_only,
+        "travel_transfer_only": args.travel_transfer_only,
         "competitor": args.competitor,
         "live_url": args.live_url,
         "live_goal": args.live_goal,
@@ -277,6 +292,7 @@ def main(argv=None):
             suite_split=args.suite_split,
             task_ids=[] if args.live_only else args.tasks,
             travel_challenges_only=args.travel_challenges_only,
+            travel_transfer_only=args.travel_transfer_only,
             chromium_executable=args.chromium_executable,
             live_url=args.live_url,
             live_goal=args.live_goal,

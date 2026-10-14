@@ -43,6 +43,10 @@ UPSTREAM_TRAVEL_SHA256 = "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f3
 TRAVEL_CHALLENGE_SCOPE = (
     "unseen goal requirements on exposed unchanged upstream HTML, not unseen website"
 )
+TRAVEL_TRANSFER_SCOPE = (
+    "seeded catalogue and initial-control variants derived from exposed upstream HTML; "
+    "new identities and requirements, not unseen websites or unchanged upstream fixtures"
+)
 SEEDED_TASK_IDS = (
     "filter_open",
     "search_filter_open",
@@ -157,6 +161,121 @@ def make_travel_goal_challenges(upstream_path: str | Path, repeat: int = 0) -> l
             source={**original.source, "scope": TRAVEL_CHALLENGE_SCOPE},
         )
         for index, (goal, expected, needs_text) in enumerate(specifications)
+    ]
+
+
+def make_travel_transfer_cases(
+    upstream_path: str | Path, *, seed: int, repeat: int = 0
+) -> list[FixtureCase]:
+    """Evaluation-only seeded catalogues; retain the native page's event handlers.
+
+    This is explicitly derived HTML. The original pinned regression and default
+    suites remain byte-identical. The collector must not call this factory.
+    """
+    original = make_upstream_travel_case(upstream_path, repeat)
+    rng = random.Random(f"jev-travel-transfer-v1:{seed}:{repeat}")
+    names = rng.sample(
+        [
+            "Linden House",
+            "Cedar Court",
+            "Meridian Loft",
+            "Harbor Rooms",
+            "Willow Retreat",
+            "Arden House",
+            "Birch Lodge",
+            "Copper Yard",
+        ],
+        3,
+    )
+    cities = rng.sample(
+        ["Porto", "Kyoto", "Utrecht", "Tainan", "Bergen", "Ljubljana", "Quito", "Tallinn"], 3
+    )
+    categories = rng.sample(["Design", "Nature", "Coastal"], 3)
+    places = [
+        {
+            "name": names[index],
+            "city": cities[index],
+            "category": categories[index],
+            "free": (True, False, bool(rng.getrandbits(1)))[index],
+            "price": rng.randrange(85, 260),
+            "description": "An independent stay with a quiet courtyard and room to unwind.",
+        }
+        for index in range(3)
+    ]
+    start = original.html.index("const places = [")
+    end = original.html.index("];", start) + 2
+    catalogue = "const places = " + json.dumps(places, ensure_ascii=False) + ";"
+    derived = original.html[:start] + catalogue + original.html[end:]
+    initial = 'let query = "",\n        category = "all",\n        free = false,\n        searched = false;'
+    if derived.count(initial) != 1:
+        raise ValueError("Pinned travel initial state cannot be derived unambiguously")
+    configured = derived.replace(
+        initial,
+        "let query = "
+        + json.dumps(cities[0])
+        + ", category = "
+        + json.dumps(categories[0])
+        + ", free = false, searched = false;",
+    )
+
+    def expected(index, **requirements):
+        return {
+            "hash": "#" + names[index].lower().replace(" ", "-"),
+            "name": names[index],
+            **requirements,
+        }
+
+    specifications = (
+        (
+            f"Search for {categories[0]} stays in {cities[0]}, enable Free cancellation, "
+            f"apply the search, and open {names[0]}'s details.",
+            expected(0, query=cities[0], category=categories[0], free=True, searched=True),
+            derived,
+            True,
+        ),
+        (
+            f"Show the {categories[1]} category, keep Free cancellation unchecked, "
+            f"and open {names[1]}. No destination search is requested.",
+            expected(1, category=categories[1], free=False),
+            derived,
+            False,
+        ),
+        (
+            f"Submit a destination search for {cities[2]} and then open {names[2]}. "
+            "There is no category or cancellation-filter requirement.",
+            expected(2, query=cities[2], searched=True),
+            derived,
+            True,
+        ),
+        (f"Show the detail page for {names[1]}.", expected(1), derived, False),
+        (
+            f"The {cities[0]} destination and {categories[0]} category are already filled in. "
+            f"Submit the search and open {names[0]}; leave Free cancellation unchecked.",
+            expected(0, query=cities[0], category=categories[0], free=False, searched=True),
+            configured,
+            False,
+        ),
+    )
+    return [
+        FixtureCase(
+            case_id=f"travel-transfer-{repeat:03d}-{index}",
+            task_id="upstream_travel",
+            goal=goal,
+            html=page,
+            expected=judge,
+            needs_text=needs_text,
+            query_string=original.query_string,
+            source={
+                "repository": original.source["repository"],
+                "revision": UPSTREAM_REVISION,
+                "parent_path": UPSTREAM_TRAVEL_SOURCE,
+                "parent_sha256": UPSTREAM_TRAVEL_SHA256,
+                "sha256": hashlib.sha256(page.encode()).hexdigest(),
+                "derivation": "replace catalogue data; final case also preconfigures form values",
+                "scope": TRAVEL_TRANSFER_SCOPE,
+            },
+        )
+        for index, (goal, judge, page, needs_text) in enumerate(specifications)
     ]
 
 
@@ -565,7 +684,11 @@ def verify_fixture(browser, case: FixtureCase) -> dict[str, Any]:
     result = observed.get("result") or {}
 
     def matches(key, actual, expected):
-        if case.task_id == "unapplied_search" and key == "query" and isinstance(actual, str):
+        if (
+            case.task_id in {"unapplied_search", "upstream_travel"}
+            and key == "query"
+            and isinstance(actual, str)
+        ):
             # The application's own search compares trimmed, case-insensitive text.
             return actual.strip().casefold() == expected.strip().casefold()
         return actual == expected
@@ -933,6 +1056,7 @@ def run_benchmark(
     suite_split="development",
     task_ids=None,
     travel_challenges_only=False,
+    travel_transfer_only=False,
     api_key=None,
     text_endpoint=None,
     text_model=None,
@@ -964,10 +1088,19 @@ def run_benchmark(
             value is not None for value in (live_url, live_goal, live_expected_title)
         ):
             raise ValueError("Travel goal challenges cannot be combined with tasks or live flags")
+    if travel_transfer_only and (
+        suite_split != "development"
+        or travel_challenges_only
+        or task_ids is not None
+        or any(value is not None for value in (live_url, live_goal, live_expected_title))
+    ):
+        raise ValueError(
+            "Travel transfer requires development and cannot mix suites, tasks or live flags"
+        )
     defaults = TASK_IDS if suite_split == "development" else SEEDED_TASK_IDS
     chosen = (
         {"upstream_travel"}
-        if travel_challenges_only
+        if travel_challenges_only or travel_transfer_only
         else set(defaults if task_ids is None else task_ids)
     )
     if chosen - set(TASK_IDS):
@@ -994,7 +1127,9 @@ def run_benchmark(
         case
         for repeat in range(repeats)
         for case in (
-            make_travel_goal_challenges(upstream_path, repeat)
+            make_travel_transfer_cases(upstream_path, seed=seed, repeat=repeat)
+            if travel_transfer_only
+            else make_travel_goal_challenges(upstream_path, repeat)
             if travel_challenges_only
             else make_cases(seed, repeat, suite_split, upstream_path=upstream_path)
         )
@@ -1010,7 +1145,10 @@ def run_benchmark(
         "suite_split": suite_split,
         "task_ids": sorted(chosen),
         "travel_challenges_only": travel_challenges_only,
-        "suite_scope": TRAVEL_CHALLENGE_SCOPE
+        "travel_transfer_only": travel_transfer_only,
+        "suite_scope": TRAVEL_TRANSFER_SCOPE
+        if travel_transfer_only
+        else TRAVEL_CHALLENGE_SCOPE
         if travel_challenges_only
         else "Nine resettable local DOM templates; holdout has disjoint seeded variants "
         "of the same nine templates, not unseen websites. The original exposed upstream_travel "
@@ -1263,6 +1401,7 @@ def main():
     parser.add_argument("--suite-split", choices=["development", "holdout"], default="development")
     parser.add_argument("--tasks", nargs="+", choices=TASK_IDS)
     parser.add_argument("--travel-challenges-only", action="store_true")
+    parser.add_argument("--travel-transfer-only", action="store_true")
     parser.add_argument("--api-key-env", default="S1_API_KEY")
     parser.add_argument("--text-endpoint")
     parser.add_argument("--text-model")
@@ -1274,6 +1413,7 @@ def main():
     args = parser.parse_args()
     if args.travel_challenges_only and (
         args.suite_split != "development"
+        or args.travel_transfer_only
         or args.tasks is not None
         or any(
             value is not None for value in (args.live_url, args.live_goal, args.live_expected_title)
@@ -1281,6 +1421,17 @@ def main():
     ):
         parser.error(
             "travel-challenges-only requires development and cannot use tasks or live flags"
+        )
+    if args.travel_transfer_only and (
+        args.suite_split != "development"
+        or args.travel_challenges_only
+        or args.tasks is not None
+        or any(
+            value is not None for value in (args.live_url, args.live_goal, args.live_expected_title)
+        )
+    ):
+        parser.error(
+            "travel-transfer-only requires development and cannot mix suites, tasks or live flags"
         )
     values = vars(args)
     values["task_ids"] = values.pop("tasks")
