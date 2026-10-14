@@ -433,13 +433,19 @@ exact requests are disjoint, but five goal strings repeat. The three exposed
 travel regression strings are absent; their semantic requirement combinations
 are deliberately trained and must no longer be treated as held out.
 
-The diverse fit is in progress with 512 CPU update steps, learning rate `0.001`
-and seed 42 after fresh model feature extraction. It explicitly selects
+The [diverse fit](../artifacts/jev-browser/20261014-browser-readout-diverse-fit-01/receipt.json)
+completes 512 CPU update steps, learning rate `0.001` and seed 42 after fresh
+model feature extraction. Its 388 genuine forwards capture 673 training and
+102 separate development question rows in 1,405.145 seconds including setup
+and fitting. The [independent fit audit](../artifacts/jev-browser/20261014-browser-readout-diverse-fit-01-audit.json)
+verifies source, original/frozen inputs, feature ordering and weights. Original
+LM-head selected rows remain unchanged. It explicitly selects
 `--feature-batch-size 2`; the default remains one. This option batches at most
 two grounded feature rows while retaining each row's actual hidden features
 and capture evidence. It applies to fresh extraction, not `--features-from`
-replay. No completed diverse-fit quality result or batching speed advantage is
-reported here. Use frozen sources and fresh output directories, for example:
+replay. These times are fitting costs, not browser inference latency or a
+matched batching speed comparison. Use frozen sources and fresh output
+directories, for example:
 
 ```bash
 python scripts/jev_browser_training_data.py \
@@ -452,6 +458,52 @@ python scripts/jev_browser_fit_readout.py \
   --steps 512 --learning-rate 0.001 --seed 42 --feature-batch-size 2 \
   --output-dir artifacts/jev-browser/your-diverse-fit
 ```
+
+The predeclared combined inference configuration uses grounded NF4, hierarchy,
+stage batching, prefix caching with two suffix rows, and server evidence.
+All arms use the same 16-decision budget and source identity
+`cc457cd15c343824b02c8ff40fb1fe1e35fe4d25f5a77709d21164c2a0823dc9`.
+
+| Readout | Ten development tasks | Three exposed regressions | False DONE | Policy / text calls |
+| --- | ---: | ---: | ---: | ---: |
+| [Untrained control](../artifacts/jev-browser/20261014-development-diverse-control-prefix2-01/receipt.json) | 9/10 | 2/3 | 2 | 50 / 6 |
+| [Diverse 512-step](../artifacts/jev-browser/20261014-development-diverse-learned-prefix2-01/receipt.json) | 9/10 | 2/3 | 2 | 50 / 6 |
+| [Diverse 1,024-step](../artifacts/jev-browser/20261014-development-diverse1024-learned-prefix2-01/receipt.json) | 9/10 | 2/3 | 2 | 50 / 6 |
+
+The [four-arm execution record](../artifacts/jev-browser/20261014-diverse-selection-state.json)
+and [longer-fit execution record](../artifacts/jev-browser/20261014-diverse1024-selection-state.json)
+retain every outcome. The 1,024-step candidate reuses identical verified
+features and control bytes in a 58.445-second CPU replay with zero new
+backbone forwards. Both candidates fail the predeclared 13/13 promotion rule.
+Neither is selected for fresh transfer testing.
+
+Both full-search travel goals still open the requested property without
+clicking Find stays. Fresh verification reads correct category/cancellation
+and detail, but `query=""` and `searched=false`, followed by false DONE.
+For the 512-step head, frozen-feature valid argmax is 658/673 on training
+questions and 101/102 on separate development questions. These high individual
+question scores therefore do not establish completion on actual model-driven
+trajectories. The [paired audit](../artifacts/jev-browser/20261014-diverse-control-learned512-paired-audit.json)
+checks actual artifact hashes, loaded identities and probability changes.
+All 13 initial requests match after substituting only the local fixture port;
+their literal URL inputs differ, so this is not an identical-input isolation
+of head-weight effects. Further diagnostics compare projections from the same
+actual hidden features and examine full-context versus prefix computation.
+
+The completed [same-hidden diagnostic](../artifacts/jev-browser/20261014-same-hidden-native-prefix2-01/receipt.json)
+replays two exact saved Lisbon failure requests without changing their URLs,
+goals or candidates. Four genuine predictions cover full context and prefix2;
+each captured hidden row is then projected through control, 512-step and
+1,024-step FP32 heads on CPU. Recomputed selected-head probabilities match
+actual returned probabilities within `1.63e-6`. All source/input/script/readout
+integrity checks pass. On the same full-context bad-open features, Find stays
+versus View Casa Flora is `0.047/0.855` for control, `0.208/0.782` at 512 steps,
+and `0.049/0.945` at 1,024. At the false-stop state, all three heads still
+choose DONE. Prefix2 changes the numbers but preserves these incorrect choices.
+The remaining two observed errors therefore also occur without caching;
+increasing optimization has not fixed their ranking. This diagnostic isolates
+head projections on identical features, not browser completion, unseen-goal
+generalization or a repeated speed comparison.
 
 The upcoming local `--travel-transfer-only --suite-split development` mode uses
 a separately seeded catalogue with new property/city mappings and an additional
@@ -483,6 +535,20 @@ requests contain a single question, so question coupling does not explain this
 specific stop failure. Positive scalar temperature changes cannot fix argmax.
 Checkbox `value="on"` and `checked="false"` are also potentially confusing: the
 HTML submission value is different from actual checked state.
+
+The [historical reasoning audit](../artifacts/jev-browser/20261014-historical-reasoned-travel-audit.json)
+finds that detailed analysis once correctly identifies Find stays as pending,
+but its candidate head prefers Open Destination (`0.266`) over submission
+(`0.159`). A later assessment invents a Find stays action absent from history.
+Compact analysis instead treats filled Lisbon, filters and visible results as
+sufficient. Both assessments are supplied alongside the original observation;
+both attempts finish with correct helper text but no submitted destination.
+Detailed and compact travel attempts take 100.014 and 36.158 seconds under
+older uncached implementations. Both explicitly disable thinking; the cause
+of repeated `thought` output in two detailed calls remains unresolved.
+Requirement assessment and binding it to a legal next action need separate
+verification. Appending prose has already failed here; the historical times
+do not predict current prefix performance.
 
 The `user` prompt variant moves instructions and all candidates inside the
 native user message, with a checked answer-letter boundary in the assistant
@@ -654,6 +720,22 @@ the learned-head 10/10 development run are separate results; they do not
 establish a single configuration that passes both.
 
 ## Run locally
+
+Add `--server-evidence` to `scripts/jev_local_model.py` for optional local
+server-side diagnostics. The initial receipt links `server-evidence/` before
+the server starts. Server-generated request IDs retain ordered payload hashes,
+inference-lock acquisition, actual adapter/stage inputs and raw returns before
+validation, and the terminal server result or error. Checkpoints use deltas;
+the complete terminal result is retained once. They do not change candidate
+coverage, prompts, model settings or timeouts.
+
+The final index is a point-in-time snapshot after the existing shutdown join.
+Pending requests stay explicitly unsealed and may append later; server completion
+does not establish that the HTTP client received a response. Journal and API
+observer failures remain separate from the original inference error. Callback
+time is recorded and synchronous hierarchy checkpoints consume its unchanged
+wall-clock budget. The browser's own HTTP attempt records still determine
+whether it received a usable response. No diagnostic file is written by default.
 
 ```bash
 uv sync --extra inference --extra api --extra quantization --extra browser
