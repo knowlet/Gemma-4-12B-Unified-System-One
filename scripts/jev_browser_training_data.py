@@ -283,6 +283,7 @@ def collect_episode(
     recovery_submitted=False,
     dynamic_travel=False,
     recovery_initialization=None,
+    counterfactual_initialization=None,
 ):
     phases = development_phases(case)
     if type(dynamic_travel) is not bool or (
@@ -296,10 +297,43 @@ def collect_episode(
         or any(not isinstance(action, TeachingAction) for action in recovery_initialization)
     ):
         raise ValueError("Dynamic recovery requires explicit guarded initialization actions")
+    if counterfactual_initialization is not None and (
+        not dynamic_travel
+        or recover_early_open
+        or recovery_initialization is not None
+        or recovery_prerequisites
+        or recovery_submitted
+        or not isinstance(counterfactual_initialization, tuple)
+        or not counterfactual_initialization
+        or any(not isinstance(action, TeachingAction) for action in counterfactual_initialization)
+    ):
+        raise ValueError("Counterfactual initialization requires an explicit train-only schedule")
     if recovery_prerequisites or recovery_submitted:
         if not recover_early_open:
             raise ValueError("Partial initialization requires exposed travel recovery")
-    if recover_early_open and dynamic_travel:
+    if counterfactual_initialization is not None:
+        initialization_history = []
+        for teaching_action in counterfactual_initialization:
+            before = agent.state["page"]
+            action = _available(before, teaching_action)
+            agent.browser.act(action, before, text=teaching_action.text)
+            agent.state["page"] = agent.browser.observe(screenshot=False)
+            history = {
+                "action": action["label"],
+                "kind": action["kind"],
+                "text": teaching_action.text,
+                "page_changed": before["fingerprint"] != agent.state["page"]["fingerprint"],
+            }
+            agent.state["history"].append(history)
+            initialization_history.append(copy.deepcopy(history))
+        # A no-query goal may already be satisfied after the same early open
+        # that is incomplete for its query-required partner.
+        initialization_dom = verify_fixture(agent.browser, case)
+        initialization_snapshot = copy.deepcopy(agent.state["page"])
+        initialization_html_sha256 = hashlib.sha256(
+            agent.browser.evaluate("document.documentElement.outerHTML").encode()
+        ).hexdigest()
+    elif recover_early_open and dynamic_travel:
         if (
             recovery_initialization is None
             or not {"query", "category", "free"} <= case.expected.keys()
@@ -506,7 +540,13 @@ def collect_episode(
         "scope": "scripted training collection, no model score",
         "initialization": "guarded early-open recovery" if recover_early_open else "fresh page",
     }
-    if recover_early_open and dynamic_travel:
+    if counterfactual_initialization is not None:
+        result["initialization"] = "guarded counterfactual training initialization"
+        result["initialization_history"] = initialization_history
+        result["initial_verified_dom"] = initialization_dom
+        result["initialization_snapshot"] = initialization_snapshot
+        result["initialization_html_sha256"] = initialization_html_sha256
+    elif recover_early_open and dynamic_travel:
         result["initialization"] = "guarded diversified travel-goal recovery"
         result["initialization_history"] = initialization_history
         result["initial_verified_dom"] = initialization_dom
@@ -530,6 +570,9 @@ def collect(
     task_ids=None,
     travel_recovery_mode="empty",
     travel_goal_variants=False,
+    travel_counterfactual_goals=False,
+    counterfactual_seed=None,
+    counterfactual_exclusions=None,
 ):
     if (
         type(repeats) is not int
@@ -561,6 +604,53 @@ def collect(
         raise ValueError(
             "Travel goal variants require train, at most four repeats, and their own recovery schedule"
         )
+    if (
+        type(travel_counterfactual_goals) is not bool
+        or (
+            travel_counterfactual_goals
+            and (
+                split != "train"
+                or repeats != 1
+                or travel_goal_variants
+                or travel_recovery_mode != "empty"
+                or (task_ids is not None and list(task_ids) != ["upstream_travel"])
+                or type(counterfactual_seed) is not int
+                or counterfactual_seed < 0
+                or counterfactual_seed == seed
+                or counterfactual_exclusions is None
+            )
+        )
+        or (
+            not travel_counterfactual_goals
+            and (counterfactual_seed is not None or counterfactual_exclusions is not None)
+        )
+    ):
+        raise ValueError(
+            "Counterfactual-only collection requires train, repeats=1, its own explicit seed "
+            "distinct from seed, and an exclusion-hash file; other travel modes cannot be combined"
+        )
+    effective_seed = counterfactual_seed if travel_counterfactual_goals else seed
+    if travel_counterfactual_goals:
+        from s1.browser_training_counterfactuals import (
+            GOAL_NORMALIZATION,
+            make_counterfactual_travel_episodes,
+            validate_excluded_goal_hashes,
+        )
+
+        exclusion_path = Path(counterfactual_exclusions).resolve()
+        exclusion_blob = exclusion_path.read_bytes()
+        exclusions = json.loads(exclusion_blob)
+        if (
+            not isinstance(exclusions, dict)
+            or set(exclusions) != {"schema_version", "normalization", "goal_sha256"}
+            or type(exclusions["schema_version"]) is not int
+            or exclusions["schema_version"] != 1
+            or exclusions["normalization"] != GOAL_NORMALIZATION
+        ):
+            raise ValueError(
+                "Counterfactual exclusions need schema 1 and declared goal normalization"
+            )
+        excluded_hashes = validate_excluded_goal_hashes(exclusions["goal_sha256"])
     manifest = upstream_manifest(upstream_path)
     output = Path(output_dir).resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -568,7 +658,7 @@ def collect(
         "schema_version": 1,
         "scope": "development-only scripted training collection; no model evaluation",
         "stage": "collection",
-        "seed": seed,
+        "seed": effective_seed,
         "split": split,
         "repeats": repeats,
         "upstream": manifest,
@@ -581,6 +671,23 @@ def collect(
     }
     if travel_goal_variants:
         receipt["travel_goal_variants"] = True
+    if travel_counterfactual_goals:
+        receipt.update(
+            travel_counterfactual_goals=True,
+            ordinary_seed=seed,
+            counterfactual_seed=counterfactual_seed,
+            effective_seed=effective_seed,
+            task_ids=["upstream_travel"],
+            counterfactual_exclusions={
+                "source_path": str(exclusion_path),
+                "artifact_path": "counterfactual_exclusions.json",
+                "sha256": hashlib.sha256(exclusion_blob).hexdigest(),
+                "normalization": GOAL_NORMALIZATION,
+                "goal_count": len(excluded_hashes),
+                "role": "exclusion-only hashes, never goals, teacher labels or policy inputs",
+                "preservation_timing": "before goal generation and browser collection",
+            },
+        )
     rows, wires = [], []
     source_manifest = None
     primary_error = None
@@ -601,25 +708,50 @@ def collect(
         receipt["collector_sha256"] = source_manifest["files"][
             "scripts/jev_browser_training_data.py"
         ]["sha256"]
+        if travel_counterfactual_goals:
+            (output / "counterfactual_exclusions.json").write_bytes(exclusion_blob)
         from playwright.sync_api import sync_playwright
 
         all_cases = []
-        for repeat in range(repeats):
-            generated = make_cases(seed, repeat, "development", upstream_path)
-            if travel_goal_variants:
-                generated = [case for case in generated if case.task_id != "upstream_travel"]
-                generated.extend(make_training_travel_cases(upstream_path, repeat))
-            all_cases.extend(
-                case
-                for case in generated
-                if (split == "train" or case.task_id != "upstream_travel")
-                and (task_ids is None or case.task_id in task_ids)
+        if travel_counterfactual_goals:
+            counterfactual_specs = make_counterfactual_travel_episodes(
+                seed=effective_seed, excluded_goal_hashes=excluded_hashes
             )
+            original = make_upstream_travel_case(upstream_path)
+            for spec in counterfactual_specs:
+                all_cases.append(
+                    FixtureCase(
+                        case_id=spec.case_id,
+                        task_id="upstream_travel",
+                        goal=spec.goal,
+                        html=original.html,
+                        expected=spec.expected,
+                        needs_text=spec.query_required,
+                        query_string=original.query_string,
+                        source={
+                            **original.source,
+                            "scope": "training-only counterfactual compositions on exposed HTML",
+                            "counterfactual_seed": effective_seed,
+                        },
+                    )
+                )
+        else:
+            for repeat in range(repeats):
+                generated = make_cases(seed, repeat, "development", upstream_path)
+                if travel_goal_variants:
+                    generated = [case for case in generated if case.task_id != "upstream_travel"]
+                    generated.extend(make_training_travel_cases(upstream_path, repeat))
+                all_cases.extend(
+                    case
+                    for case in generated
+                    if (split == "train" or case.task_id != "upstream_travel")
+                    and (task_ids is None or case.task_id in task_ids)
+                )
         fixtures = output / "fixtures"
         fixtures.mkdir()
         for index, case in enumerate(all_cases):
             (fixtures / f"{index:04d}.html").write_text(case.html)
-        if travel_goal_variants:
+        if travel_goal_variants or travel_counterfactual_goals:
             inventory = {
                 "scope": "development-only diversified travel supervision, no model evaluation",
                 "cases": [
@@ -636,6 +768,27 @@ def collect(
             inventory_blob = (
                 json.dumps(inventory, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
             ).encode()
+            if travel_counterfactual_goals:
+                inventory.update(
+                    scope="training-only counterfactual goals on exposed training HTML; no transfer",
+                    seed=effective_seed,
+                    episode_count=len(counterfactual_specs),
+                    initialization_preservation_timing="before browser collection",
+                )
+                for entry, spec in zip(inventory["cases"], counterfactual_specs, strict=True):
+                    entry.update(
+                        pair_id=spec.pair_id,
+                        family=spec.family,
+                        start=spec.start,
+                        query_required=spec.query_required,
+                        initialization=[
+                            {"label": label, "kind": kind, "text": text}
+                            for label, kind, text in spec.initialization
+                        ],
+                    )
+                inventory_blob = (
+                    json.dumps(inventory, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+                ).encode()
             (output / "training_goal_inventory.json").write_bytes(inventory_blob)
             receipt["training_goal_inventory"] = {
                 "artifact_path": "training_goal_inventory.json",
@@ -648,6 +801,7 @@ def collect(
             for recovery in (
                 [False, True]
                 if case.task_id == "upstream_travel"
+                and not travel_counterfactual_goals
                 and (
                     not travel_goal_variants
                     or {"query", "category", "free"} <= case.expected.keys()
@@ -666,15 +820,29 @@ def collect(
                     model_module,
                 ):
                     recovery_index = 0
+                    counterfactual_pairs = {}
                     for index, case, recovery in episode_specs:
                         variant = "recovery" if recovery else "fresh"
-                        episode_id = f"{split}-{seed}-{index:04d}-{case.task_id}-{variant}"
+                        if travel_counterfactual_goals:
+                            spec = counterfactual_specs[index]
+                            variant = "counterfactual-" + spec.start
+                        episode_id = (
+                            f"{split}-{effective_seed}-{index:04d}-{case.task_id}-{variant}"
+                        )
                         agent = agent_module.Agent(
                             base + case.url_suffix, case.goal, screenshots=False
                         )
                         try:
                             recovery_options = {}
-                            if travel_goal_variants and case.task_id == "upstream_travel":
+                            if travel_counterfactual_goals:
+                                recovery_options = {
+                                    "dynamic_travel": True,
+                                    "counterfactual_initialization": tuple(
+                                        TeachingAction(label, kind, text)
+                                        for label, kind, text in spec.initialization
+                                    ),
+                                }
+                            elif travel_goal_variants and case.task_id == "upstream_travel":
                                 recovery_options["dynamic_travel"] = True
                                 if recovery:
                                     repeat_index = int(case.case_id.split("-")[2])
@@ -702,7 +870,7 @@ def collect(
                                 agent_module,
                                 model_module,
                                 case,
-                                rng=random.Random(f"{seed}:{index}:{variant}"),
+                                rng=random.Random(f"{effective_seed}:{index}:{variant}"),
                                 split=split,
                                 episode_id=episode_id,
                                 rows=rows,
@@ -716,10 +884,39 @@ def collect(
                                 goal_sha256=hashlib.sha256(case.goal.encode()).hexdigest(),
                             )
                             receipt["episodes"].append(episode)
+                            if travel_counterfactual_goals:
+                                episode.update(
+                                    counterfactual_case_id=spec.case_id,
+                                    pair_id=spec.pair_id,
+                                    family=spec.family,
+                                    start=spec.start,
+                                    query_required=spec.query_required,
+                                )
+                                actual = episode["initial_verified_dom"]["observed"]
+                                signature = {
+                                    "html_sha256": episode["initialization_html_sha256"],
+                                    "history": episode["initialization_history"],
+                                    "result": actual["result"],
+                                    "typed_destination": actual.get("typed_destination"),
+                                }
+                                pair = counterfactual_pairs.setdefault(spec.pair_id, [])
+                                if pair and pair[0] != signature:
+                                    raise ValueError("Counterfactual pair initialization differs")
+                                pair.append(signature)
                         finally:
                             agent.close()
             finally:
                 browser.close()
+        if travel_counterfactual_goals:
+            if len(receipt["episodes"]) != 32 or any(
+                len(pair) != 2 for pair in counterfactual_pairs.values()
+            ):
+                raise ValueError("Counterfactual collection must preserve all 32 paired episodes")
+            receipt["counterfactual_pair_verification"] = {
+                "success": True,
+                "pairs": len(counterfactual_pairs),
+                "compared": "initial HTML, guarded history, actual application state, typed text",
+            }
         receipt["stage"] = "complete"
     except BaseException as exc:
         primary_error = exc
@@ -739,7 +936,9 @@ def collect(
         receipt["dataset_sha256"] = hashlib.sha256(cases_path.read_bytes()).hexdigest()
         receipt["wire_sha256"] = hashlib.sha256(wire_path.read_bytes()).hexdigest()
         integrity_errors = []
-        if travel_goal_variants and "training_goal_inventory" in receipt:
+        if (
+            travel_goal_variants or travel_counterfactual_goals
+        ) and "training_goal_inventory" in receipt:
             try:
                 frozen_inputs_valid = (
                     output / "training_goal_inventory.json"
@@ -754,6 +953,17 @@ def collect(
                 integrity_errors.append(
                     "Diversified training inventory or fixture bytes changed during collection"
                 )
+        if travel_counterfactual_goals:
+            try:
+                exclusion_valid = (
+                    exclusion_path.read_bytes() == exclusion_blob
+                    and (output / "counterfactual_exclusions.json").read_bytes() == exclusion_blob
+                )
+            except OSError:
+                exclusion_valid = False
+            receipt["counterfactual_exclusion_verification"] = {"success": exclusion_valid}
+            if not exclusion_valid:
+                integrity_errors.append("Counterfactual exclusion input changed during collection")
         if source_manifest is not None:
             try:
                 receipt["source_verification"] = verify_sources(
@@ -806,6 +1016,9 @@ def main():
     parser.add_argument("--tasks", dest="task_ids", nargs="+", choices=sorted(TASK_IDS))
     parser.add_argument("--travel-recovery-mode", choices=["empty", "partial"], default="empty")
     parser.add_argument("--travel-goal-variants", action="store_true")
+    parser.add_argument("--travel-counterfactual-goals", action="store_true")
+    parser.add_argument("--counterfactual-seed", type=int)
+    parser.add_argument("--counterfactual-exclusions")
     receipt = collect(**vars(parser.parse_args()))
     print(
         json.dumps(

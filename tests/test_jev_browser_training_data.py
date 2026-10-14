@@ -4,11 +4,18 @@ import importlib.util
 import json
 import os
 import sys
+from collections import Counter, defaultdict
 from contextlib import nullcontext
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
+from s1.browser_training_counterfactuals import (
+    GOAL_NORMALIZATION,
+    make_counterfactual_travel_episodes,
+    normalized_goal_sha256,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -164,6 +171,416 @@ def test_collector_keeps_primary_failure_when_source_also_changes(monkeypatch, t
     assert receipt["stage"] == "failed" and not receipt["source_verification"]["success"]
 
 
+def counterfactual_exclusions(tmp_path, *, values=None):
+    path = tmp_path / "excluded-goal-hashes.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "normalization": GOAL_NORMALIZATION,
+                "goal_sha256": values or [normalized_goal_sha256("Synthetic excluded goal")],
+            }
+        )
+    )
+    return path
+
+
+def counterfactual_plan(seed=20261006):
+    return make_counterfactual_travel_episodes(
+        seed=seed, excluded_goal_hashes=[normalized_goal_sha256("Synthetic excluded goal")]
+    )
+
+
+def test_counterfactual_plan_is_complete_balanced_feasible_and_paired():
+    specs = counterfactual_plan()
+    assert len(specs) == len({spec.case_id for spec in specs}) == 32
+    assert len({spec.goal for spec in specs}) == 16
+    assert Counter(spec.family for spec in specs) == {0: 8, 1: 8, 2: 8, 3: 8}
+    assert Counter(spec.query_required for spec in specs) == {False: 16, True: 16}
+    assert Counter(spec.free for spec in specs) == {False: 16, True: 16}
+    assert {spec.property.name for spec in specs} == {"Casa Flora", "The Glasshouse", "Serra Lodge"}
+    assert all(not spec.free or spec.property.free_available for spec in specs)
+    pairs = defaultdict(list)
+    for spec in specs:
+        pairs[spec.pair_id].append(spec)
+        if not spec.query_required:
+            assert "query" not in spec.expected and "searched" not in spec.expected
+        else:
+            assert spec.expected["query"] == spec.property.city
+            assert spec.expected["searched"] is True
+        if spec.start == "detail" and not spec.free:
+            assert spec.initialization == (
+                ("Stay category → " + spec.property.category, "select", None),
+                ("View " + spec.property.name, "click", None),
+            )
+    assert len(pairs) == 16
+    for pair in pairs.values():
+        assert {spec.query_required for spec in pair} == {True, False}
+        assert pair[0].initialization == pair[1].initialization
+        assert pair[0].property == pair[1].property
+        assert pair[0].free == pair[1].free
+
+
+def test_counterfactual_seed_and_exclusions_are_explicit_and_reproducible():
+    assert counterfactual_plan() == counterfactual_plan()
+    assert [s.case_id for s in counterfactual_plan()] != [
+        s.case_id for s in counterfactual_plan(20261007)
+    ]
+    excluded_goal = counterfactual_plan()[0].goal
+    assert normalized_goal_sha256("  " + excluded_goal.replace(" ", "\n") + "  ") == (
+        normalized_goal_sha256(excluded_goal)
+    )
+    with pytest.raises(ValueError, match="overlaps"):
+        make_counterfactual_travel_episodes(
+            seed=20261006, excluded_goal_hashes=[normalized_goal_sha256(excluded_goal)]
+        )
+
+
+def test_counterfactual_wording_varies_search_scope_and_local_cancellation_negation():
+    specs = counterfactual_plan()
+    required_by_family = {
+        spec.family: spec for spec in specs if spec.query_required and not spec.free
+    }
+    assert "using the destination search, without applying the free-cancellation filter" in (
+        required_by_family[0].goal
+    )
+    assert "Use destination search to locate" in required_by_family[1].goal
+    assert "Fill Destination" in required_by_family[2].goal
+    assert "apply Find stays" in required_by_family[2].goal
+    assert "with the destination controls" in required_by_family[3].goal
+    assert "when the search is applied" in required_by_family[3].goal
+    for spec in specs:
+        if not spec.query_required and spec.family in (0, 1):
+            assert "search" not in spec.goal.casefold()
+            assert "destination" not in spec.goal.casefold()
+        if not spec.query_required:
+            assert "query" not in spec.expected and "searched" not in spec.expected
+
+
+@pytest.mark.parametrize("seed", [None, True, -1, "20261006"])
+def test_counterfactual_factory_rejects_invalid_seeds(seed):
+    with pytest.raises(ValueError, match="explicit nonnegative"):
+        counterfactual_plan(seed)
+
+
+@pytest.mark.parametrize("hashes", [[], ["not-a-hash"], ["A" * 64], ["0" * 64, "0" * 64]])
+def test_counterfactual_factory_rejects_invalid_exclusion_hashes(hashes):
+    with pytest.raises(ValueError, match="exclusions"):
+        make_counterfactual_travel_episodes(seed=20261006, excluded_goal_hashes=hashes)
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"split": "development"},
+        {"repeats": 2},
+        {"counterfactual_seed": None},
+        {"counterfactual_seed": 20261001},
+        {"counterfactual_seed": True},
+        {"counterfactual_exclusions": None},
+        {"travel_goal_variants": True},
+        {"travel_recovery_mode": "partial"},
+        {"task_ids": ["filter_open"]},
+        {"travel_counterfactual_goals": False},
+    ],
+)
+def test_counterfactual_cli_configuration_fails_before_sources(tmp_path, overrides):
+    options = {
+        "travel_counterfactual_goals": True,
+        "counterfactual_seed": 20261006,
+        "counterfactual_exclusions": "unread-exclusion-input",
+        "repeats": 1,
+    }
+    options.update(overrides)
+    output = tmp_path / "never-created"
+    with pytest.raises(ValueError):
+        COLLECTOR.collect(upstream_path="unused", output_dir=output, **options)
+    assert not output.exists()
+
+
+def test_counterfactual_teacher_changes_with_goal_scope_on_the_same_actual_state():
+    specs = [s for s in counterfactual_plan() if s.property.name == "Serra Lodge"]
+    required = next(s for s in specs if s.query_required)
+    optional = next(s for s in specs if not s.query_required)
+    observed = {
+        "result": {"hash": "", "category": "Nature", "free": False, "query": "", "searched": False},
+        "typed_destination": "",
+    }
+
+    def case(spec):
+        return SimpleNamespace(expected=spec.expected)
+
+    first_required = COLLECTOR._remaining_travel_actions(
+        case(required), {"success": False, "observed": observed}
+    )
+    first_optional = COLLECTOR._remaining_travel_actions(
+        case(optional), {"success": False, "observed": observed}
+    )
+    assert first_required == [COLLECTOR.TeachingAction("Destination", "fill", "Lisbon")]
+    assert first_optional == [COLLECTOR.TeachingAction("View Serra Lodge")]
+    # Typed text is not an applied search; the same teacher must still submit.
+    observed["typed_destination"] = "Lisbon"
+    assert COLLECTOR._remaining_travel_actions(
+        case(required), {"success": False, "observed": observed}
+    ) == [COLLECTOR.TeachingAction("Find stays")]
+    observed["result"]["hash"] = "#serra-lodge"
+    assert COLLECTOR._remaining_travel_actions(
+        case(required), {"success": False, "observed": observed}
+    ) == [COLLECTOR.TeachingAction("← All stays")]
+    assert (
+        COLLECTOR._remaining_travel_actions(case(optional), {"success": True, "observed": observed})
+        == []
+    )
+    # Optional search also accepts an already-applied destination: its profile
+    # imposes no query/searched equality, rather than labeling such a state wrong.
+    observed["result"].update(query="Lisbon", searched=True)
+    assert all(observed["result"].get(k) == v for k, v in optional.expected.items() if k != "name")
+
+
+@pytest.mark.parametrize(
+    "query_required,operation,target", [(True, "CLICK", "back"), (False, "DONE", None)]
+)
+def test_same_guarded_early_open_teaches_back_or_done_without_policy_oracle_fields(
+    monkeypatch, query_required, operation, target
+):
+    """Exercise the real initialization/teacher closure with a tiny fake browser."""
+    import copy
+    import random
+
+    spec = next(
+        s
+        for s in counterfactual_plan()
+        if s.family == 0
+        and s.start == "detail"
+        and s.query_required == query_required
+        and s.property.name == "Serra Lodge"
+    )
+    case = SimpleNamespace(
+        task_id="upstream_travel", expected=spec.expected, html="training-owned", goal=spec.goal
+    )
+    actions = [
+        {"id": "select", "kind": "select", "label": "Stay category → Nature"},
+        {"id": "view", "kind": "click", "label": "View Serra Lodge"},
+        {"id": "back", "kind": "click", "label": "← All stays"},
+    ]
+    agent = SimpleNamespace(
+        state={"page": {"fingerprint": "initial", "actions": actions}, "history": []}
+    )
+    actual_actions = []
+
+    def act(action, _before, *, text=None):
+        actual_actions.append(action["label"])
+        agent.state["page"] = {"fingerprint": str(len(actual_actions)), "actions": actions}
+
+    agent.browser = SimpleNamespace(
+        act=act,
+        observe=lambda **_kw: copy.deepcopy(agent.state["page"]),
+        evaluate=lambda _expression: "<html>identical opened Serra Lodge</html>",
+    )
+    observation = {
+        "result": {
+            "hash": "#serra-lodge",
+            "name": "Serra Lodge",
+            "category": "Nature",
+            "free": False,
+            "query": "",
+            "searched": False,
+        },
+        "typed_destination": None,
+    }
+    monkeypatch.setattr(
+        COLLECTOR,
+        "verify_fixture",
+        lambda *_a: {"success": not query_required, "observed": observation},
+    )
+    module = SimpleNamespace(
+        action_space=lambda _actions: (None, {"CLICK": {"back": actions[2]}}, None)
+    )
+    helper_module = SimpleNamespace()
+    payloads = []
+
+    def row(payload, **options):
+        payloads.append(copy.deepcopy(payload))
+        return SimpleNamespace(id=options["case_id"])
+
+    monkeypatch.setattr(COLLECTOR, "training_case", row)
+
+    class FirstPolicyChoice(Exception):
+        pass
+
+    response = []
+
+    def command(_command):
+        response.append(
+            module.post_json(
+                "https://api.typesafe.ai/v1/systemone",
+                None,
+                {
+                    "model": "scripted-development-teacher",
+                    "state": {
+                        "page": copy.deepcopy(agent.state["page"]),
+                        "history": copy.deepcopy(agent.state["history"]),
+                    },
+                    "questions": {
+                        "operation": {
+                            "instructions": {"goal": case.goal},
+                            "criteria": {"CLICK": "Click", "DONE": "Finish"},
+                        },
+                        "click_target": {
+                            "instructions": {"goal": case.goal},
+                            "criteria": {"back": "← All stays"},
+                        },
+                    },
+                },
+            )
+        )
+        raise FirstPolicyChoice
+
+    agent.command = command
+    rows, wires = [], []
+    with pytest.raises(FirstPolicyChoice):
+        COLLECTOR.collect_episode(
+            agent,
+            helper_module,
+            module,
+            case,
+            rng=random.Random(0),
+            split="train",
+            episode_id="unit-counterfactual",
+            rows=rows,
+            wires=wires,
+            dynamic_travel=True,
+            counterfactual_initialization=tuple(
+                COLLECTOR.TeachingAction(*a) for a in spec.initialization
+            ),
+        )
+    assert actual_actions == ["Stay category → Nature", "View Serra Lodge"]
+    assert [h["action"] for h in agent.state["history"]] == actual_actions
+    assert wires[0]["teacher_choice"] == {"operation": operation, "target": target}
+    assert response[0]["answers"]["operation"]["choice"] == operation
+    assert set(payloads[0]) == {"model", "state", "questions"}
+    assert "expected" not in json.dumps(payloads[0])
+    assert "teacher_choice" not in json.dumps(payloads[0])
+
+
+def mock_counterfactual_collection(monkeypatch, tmp_path, *, drift=None, mismatch=False):
+    """Validate scheduling/preservation with fakes: no Chromium, trajectories or models."""
+    _source, output = isolated_collection(monkeypatch, tmp_path)
+    excluded = counterfactual_exclusions(tmp_path)
+    original = COLLECTOR.FixtureCase(
+        case_id="original-training-page",
+        task_id="upstream_travel",
+        goal="unused original goal",
+        html="<html>Owned exposed training HTML</html>",
+        expected={},
+        query_string="scenario=travel",
+        source={"owned": True},
+    )
+    monkeypatch.setattr(COLLECTOR, "make_upstream_travel_case", lambda *_args: original)
+
+    def forbidden_generator(*_args):
+        raise AssertionError("Counterfactual mode called the evaluation-goal generator")
+
+    forbidden_generator.__code__ = forbidden_generator.__code__.replace(
+        co_filename=str(ROOT / "scripts" / "jev_browser_benchmark.py")
+    )
+    monkeypatch.setattr(COLLECTOR, "make_cases", forbidden_generator)
+    monkeypatch.setattr(
+        COLLECTOR,
+        "load_upstream",
+        lambda *_args: nullcontext(
+            (SimpleNamespace(Agent=lambda *_a, **_k: SimpleNamespace(close=lambda: None)), None)
+        ),
+    )
+    calls = []
+
+    def episode(_agent, _agent_module, _model_module, case, **options):
+        inventory = json.loads((output / "training_goal_inventory.json").read_bytes())
+        assert inventory["seed"] == 20261006
+        assert inventory["episode_count"] == 32
+        assert len(inventory["cases"]) == 32
+        assert (output / "counterfactual_exclusions.json").read_bytes() == excluded.read_bytes()
+        assert all("initialization" in entry for entry in inventory["cases"])
+        assert options["dynamic_travel"] is True and not options["recover_early_open"]
+        init = options["counterfactual_initialization"]
+        history = [{"action": a.label, "kind": a.kind, "text": a.text} for a in init]
+        calls.append((case, options))
+        if drift and len(calls) == 32:
+            target = excluded if drift == "original" else output / "counterfactual_exclusions.json"
+            target.write_bytes(target.read_bytes() + b" ")
+        result = {
+            key: value for key, value in case.expected.items() if key not in {"query", "searched"}
+        }
+        result.update(query="", searched=False, hash="")
+        return {
+            "episode_id": options["episode_id"],
+            "initialization_history": history,
+            "initialization_html_sha256": "drift" if mismatch and case.needs_text else "same-html",
+            "initial_verified_dom": {"observed": {"result": result, "typed_destination": ""}},
+        }
+
+    monkeypatch.setattr(COLLECTOR, "collect_episode", episode)
+    return output, excluded, calls
+
+
+def test_counterfactual_only_schedule_preserves_inputs_before_mock_collection(
+    monkeypatch, tmp_path
+):
+    output, excluded, calls = mock_counterfactual_collection(monkeypatch, tmp_path)
+    receipt = COLLECTOR.collect(
+        upstream_path="unused",
+        output_dir=output,
+        repeats=1,
+        travel_counterfactual_goals=True,
+        counterfactual_seed=20261006,
+        counterfactual_exclusions=excluded,
+    )
+    assert receipt["stage"] == "complete" and len(calls) == 32
+    assert (
+        receipt["seed"] == receipt["effective_seed"] == receipt["counterfactual_seed"] == 20261006
+    )
+    assert receipt["ordinary_seed"] == 20261001
+    assert receipt["counterfactual_pair_verification"]["pairs"] == 16
+    assert receipt["counterfactual_exclusion_verification"]["success"]
+    assert receipt["training_goal_input_verification"]["success"]
+    assert {case.html for case, _ in calls} == {"<html>Owned exposed training HTML</html>"}
+    assert len({options["episode_id"] for _, options in calls}) == 32
+    assert all("20261006" in options["episode_id"] for _, options in calls)
+    assert "s1/browser_training_counterfactuals.py" in receipt["source_manifest"]["files"]
+
+
+@pytest.mark.parametrize("drift", ["original", "frozen"])
+def test_counterfactual_exclusion_drift_fails_and_preserves_receipt(monkeypatch, tmp_path, drift):
+    output, excluded, _calls = mock_counterfactual_collection(monkeypatch, tmp_path, drift=drift)
+    with pytest.raises(RuntimeError, match="exclusion input changed"):
+        COLLECTOR.collect(
+            upstream_path="unused",
+            output_dir=output,
+            repeats=1,
+            travel_counterfactual_goals=True,
+            counterfactual_seed=20261006,
+            counterfactual_exclusions=excluded,
+        )
+    receipt = json.loads((output / "receipt.json").read_bytes())
+    assert receipt["stage"] == "failed"
+    assert receipt["counterfactual_exclusion_verification"]["success"] is False
+
+
+def test_counterfactual_pair_state_drift_fails_without_silent_pruning(monkeypatch, tmp_path):
+    output, excluded, _calls = mock_counterfactual_collection(monkeypatch, tmp_path, mismatch=True)
+    with pytest.raises(ValueError, match="pair initialization differs"):
+        COLLECTOR.collect(
+            upstream_path="unused",
+            output_dir=output,
+            repeats=1,
+            travel_counterfactual_goals=True,
+            counterfactual_seed=20261006,
+            counterfactual_exclusions=excluded,
+        )
+    receipt = json.loads((output / "receipt.json").read_bytes())
+    assert receipt["stage"] == "failed" and receipt["episodes"]
+
+
 @pytest.mark.integration
 @pytest.mark.parametrize("split,expected_episodes", [("train", 11), ("calibration", 9)])
 def test_real_training_trajectories_use_guarded_actions_and_fresh_final_dom(
@@ -263,9 +680,7 @@ def test_partial_travel_recovery_collects_actual_missing_query_and_never_positiv
     assert "Design" in first.request.state["page"]["text"]
     assert "Free cancellation enabled" in first.request.state["page"]["text"]
     assert all(
-        row.gold["operation"] == "CLICK"
-        for row in rows
-        if row.id.endswith("recovery-step-000")
+        row.gold["operation"] == "CLICK" for row in rows if row.id.endswith("recovery-step-000")
     )
     assert sum(row.gold["operation"] == "DONE" for row in rows) == 30
     # Typing without submission is lost when the native detail/back path rerenders
@@ -273,8 +688,7 @@ def test_partial_travel_recovery_collects_actual_missing_query_and_never_positiv
     typed_unsubmitted = next(
         e
         for e in recovery
-        if e.get("initial_prerequisite_indices") == [0, 1, 2]
-        and not e["initial_search_submitted"]
+        if e.get("initial_prerequisite_indices") == [0, 1, 2] and not e["initial_search_submitted"]
     )
     episode_rows = [r for r in rows if r.id.startswith(typed_unsubmitted["episode_id"] + "-")]
     assert any(r.gold["operation"] == "TYPE_TEXT" for r in episode_rows)
