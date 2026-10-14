@@ -118,6 +118,353 @@ shorter Decider total includes its failures and fewer text calls, so this table
 is not a comparison of successful-task latency or model-only speed. It does
 not establish broad browser reliability or superiority on live websites.
 
+## Second pinned competitor: Jev-Omni
+
+The local native Jev-Omni comparison uses
+`akhilaaa3/Jev-Omni@5addda86ddee081a68fb067477ea100c221b8917`, its
+hash-checked publisher prompt and decision head, BF16 backbone and BF16
+autocast with FP32 head storage. It uses the same pinned Gemma NF4 field-text
+helper as the grounded arm. Neither hierarchy nor prefix caching is enabled.
+These are deployment configurations with different model weights and precision;
+the experiment does not isolate an architecture or quantization effect.
+
+| Policy / evidence | Successful tasks | Final goal satisfied | False DONE | Policy / text calls | Total attempt time (s) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| [Grounded V1 rerun](../artifacts/jev-browser/20261014-holdout-grounded-r2-02/receipt.json) | 18/18 | 18/18 | 0 | 67 / 6 | 126.143 |
+| [Native pinned Jev-Omni](../artifacts/jev-browser/20261014-holdout-jev-omni-r2-02/receipt.json) | 6/18 | 10/18 | 1 | 155 / 7 | 206.202 |
+
+The [paired audit](../artifacts/jev-browser/20261014-paired-grounded-jev-omni-holdout-audit.json)
+verifies identical fixture manifests, seed, 16-decision budget, 67 captured
+source files and all 18 first wire requests after normalizing only the model
+alias and local fixture-server port. Both source verifications pass with identity
+`245ceb608af2248b73cd863ffc507cf57cf58c900ac4ab476a518f8cc2b70f3d`.
+The nine shared template families and two seeded variants are the same holdout
+population used above. The original exposed travel goal is excluded. The
+grounded policy was not changed using these competitor outcomes. Four Jev-Omni
+attempts have satisfied final DOM requirements without a valid DONE; they
+remain unsuccessful under the same completion rule. The times include failed
+attempts and different action/text-call counts, so they do not establish
+model-only speed or successful-task latency.
+
+An earlier Jev-Omni attempt was interrupted during setup when its temporary
+runtime disappeared. Its [original receipt](../artifacts/jev-browser/20261014-holdout-jev-omni-r2-01/receipt.json)
+and [interruption observation](../artifacts/jev-browser/20261014-holdout-jev-omni-r2-01/interruption-observation.json)
+are preserved. It has no browser attempts and is not scored as 0/18. The completed
+rerun reconstructs its exact captured source bytes in project-owned storage.
+
+## Frozen-backbone readout development fit
+
+The [first readout fit](../artifacts/jev-browser/20261014-browser-readout-fit-01/receipt.json)
+extracts genuine grounded-V1 hidden states from the pinned Gemma NF4/BF16
+checkpoint, then optimizes detached copies of its 52 selected LM-head rows and
+bias in FP32. The optimizer updates only the sidecar, and the fit checks that
+the original 52 head rows remain unchanged. The backbone and full text-helper
+head are not replaced; the common field-text helper continues to use that original
+model. The untrained FP32 sidecar is the matched control, so both arms use the
+same projection precision, candidate IDs, softcap and deployment temperature
+`2.7830344470383452`.
+
+Training uses 368 scripted development states from 88 guarded browser episodes
+(seed `20261001`, eight repeats), producing 584 question features. It includes
+the exposed original travel goal and eight early-detail-opening recovery
+episodes. A separate 66-state, 18-episode development collection (seed
+`20261002`, two repeats) produces 102 features and excludes exposed travel.
+The recorded split audit finds no shared IDs, source groups or identical
+requests between these collections. Only the 584 training features enter the
+optimizer; the 102 development features are retained separately. These are supervised variants of known
+fixtures. They are not held-out website evaluations, and the original travel
+page and goal are already present in training.
+
+The fit performs 128 CPU optimizer steps with batch size 64, learning rate
+`0.001` and seed 42, using soft cross-entropy plus `0.1` Brier loss and a `0.01`
+selected-row anchor at objective temperature `1.0`. Feature extraction and fit
+setup are included in its 953.377-second receipt time; that is not browser
+inference latency. The fit's pre-load source capture and post-run source
+verification pass. Its exact case, wire, fixture and receipt copies were
+[preserved after fitting](../artifacts/jev-browser/20261014-browser-readout-fit-01/inputs-preserved-after-fit/manifest.json),
+with hashes matching the recorded collections. The matching collector source
+was also preserved retrospectively, before the audit fixes. These retrospective
+copies do not establish a pre-collection collector/harness source identity or
+pre-fit input preservation. Fit01's own runtime sources were separately captured
+before model loading. Future collectors capture their sources
+before collection; future fits freeze validated inputs before loading weights
+and fail if their originals, frozen copies or runtime sources change.
+
+The completed closed-loop development runs use all ten current tasks, seed
+`20261014`, one attempt per task and the same 16-decision budget. Hierarchy,
+stage batching and prefix caching are disabled.
+
+| Policy / evidence | Successful tasks | Final goal satisfied | False DONE | Policy / text calls | Total attempt time (s) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| [Untrained FP32 control](../artifacts/jev-browser/20261014-development-readout-control-01/receipt.json) | 8/10 | 8/10 | 1 | 45 / 3 | 202.506 |
+| [Learned FP32 readout, 128 steps](../artifacts/jev-browser/20261014-development-readout-learned-01/receipt.json) | 9/10 | 9/10 | 1 | 39 / 3 | 154.257 |
+| [Learned FP32 readout, 512 steps](../artifacts/jev-browser/20261014-development-readout512-01/receipt.json) | 10/10 | 10/10 | 0 | 39 / 4 | 114.628 |
+
+The control and 128-step arms retain identical fixture manifests and the same verified runtime
+source identity
+`a161b4a22dc18436c11e6dce39eed974551c79465e4c288ba7b6f058eacddaca`.
+Their sidecar weight hashes match the loaded manifests. The control exhausts
+the budget on search/filter/detail opening despite correctly generated search
+text; the learned arm completes that task and all nine seeded fixtures. Both
+still falsely complete the original upstream travel task. The three real helper
+outputs are correct in both arms: `Juniper Library`, `Osaka Riverside` and
+`Harbor District`. Neither travel attempt invokes the helper or types Lisbon.
+There is no held-out learned-readout result in this report.
+
+The [learned travel trace](../artifacts/jev-browser/20261014-development-readout-learned-01/benchmark/attempts/development-000-upstream-travel/model_calls.json)
+executes Free cancellation, the Find a stay navigation link, Design selection,
+Find stays, and View Casa Flora, then chooses DONE. Find stays submits an empty
+Destination. The fresh judge confirms Design, cancellation enabled and a
+submitted search, but reads `query=""`; Lisbon remains unmet. The
+[control trace](../artifacts/jev-browser/20261014-development-readout-control-01/benchmark/attempts/development-000-upstream-travel/model_calls.json)
+opens Casa Flora immediately and chooses DONE with all four search/filter
+requirements unmet.
+
+On their matching initial travel observations, the learned operation head gives
+CLICK `0.471885` versus TYPE_TEXT `0.424997`, a margin of `0.046888`, and its
+click head prefers Free cancellation with `0.954946`. The control prefers
+CLICK `0.273674` versus SELECT `0.216872`, and View Casa Flora with `0.595322`.
+At their different final detail states, learned DONE is `0.873468` versus CLICK
+`0.083619`; control DONE is `0.606754` versus CLICK `0.196141`. These observed
+probabilities show that the remaining omission and false stop occur in policy
+selection, with no helper or executor error. They do not identify a causal
+explanation for the learned policy's missed empty query or establish calibrated
+confidence on new goals.
+
+The table sums all ten attempts, including the control's budget failure,
+navigation, model/text work, verification and cleanup. Setup, checkpoint loading
+and fitting are excluded. These single runs take different action paths, and
+their model-loading times also differ, so the totals are not a successful-task
+latency comparison, a percentile or evidence of a general speed advantage.
+The 128-step result is development progress with a known travel failure.
+The longer fit below resolves that exposed task in one development run;
+learned generalization remains unestablished.
+
+## Longer readout fit on unchanged features
+
+The [512-step CPU replay](../artifacts/jev-browser/20261014-browser-readout-replay512-01/receipt.json)
+reuses the exact original feature archive and untrained FP32 control. It fits
+512 total steps from that control, with the same seed 42, learning rate `0.001`,
+objective and fixed deployment temperature. The optimizer receives the same
+584 training features from 368 states; the separate 102 development features
+remain excluded from optimization. The new 673-state partial-progress
+collection is not used. The longer-fit choice was fixed on development
+observations, before the new travel-goal outcomes, and selection remains
+restricted to the original development suite.
+
+This replay takes 9.509 seconds, loads no backbone and records zero new
+backbone forwards or GPU training. Its source, original/frozen collection,
+original/frozen replay-input and emitted-copy integrity checks all pass.
+The feature SHA
+`c8873a29a413c76815d6e4636c391a885d40f22108a8a4c1068cbef474b058d0`
+was captured retrospectively for replay: the original fit did not prospectively
+hash its feature archive or control manifest. Freezing these bytes now does
+not authenticate their identity at the original extraction time. The replay
+preserves original candidate-token IDs, softcap and deployment temperature;
+its inherited full-head verification is distinguished from the current
+CPU control-row check.
+
+The [completed 512-step browser run](../artifacts/jev-browser/20261014-development-readout512-01/receipt.json)
+passes all ten known development tasks with zero false DONE. All ten fixture
+manifests and initial wire requests match the control and 128-step runs after
+normalizing only model alias and the local server port. Browser budgets, seeds
+and timing boundaries also match. The decision
+backend, readout, text helper, backbone wrapper and batch-scoring source files
+are byte-identical; CLI and runner/case-builder sources differ. All 67 captured
+source files verify, with runtime identity
+`245ceb608af2248b73cd863ffc507cf57cf58c900ac4ab476a518f8cc2b70f3d`.
+The loaded readout matches the saved weight SHA
+`11b56c9da7750d4e748a2f0ade2befe1f9dbeb7522be0312b826647c423cd159`.
+
+Its [original travel trace](../artifacts/jev-browser/20261014-development-readout512-01/benchmark/attempts/development-000-upstream-travel/final_state.json)
+selects Design, correctly generates and types Lisbon, enables Free cancellation,
+clicks Find stays, opens Casa Flora and chooses DONE. Fresh verification reads
+`query="Lisbon"`, `searched=true`, Design and cancellation enabled, with the
+correct visible detail page. This uses five actions, six policy calls and one
+text call. All four helper outputs across the suite are correct. Hierarchy,
+stage batching and prefix caching remain disabled. The table's 114.628 seconds
+sums browser attempts and excludes fitting and setup. This is one successful
+development run on supervised known fixtures. The separate goal recheck below
+uses a changed combined inference configuration; this development result alone
+establishes no held-out learned-head, general reliability or speed advantage.
+
+## BF16 development check and travel goal variations
+
+The [unquantized BF16 grounded run](../artifacts/jev-browser/20261014-local-bf16-grounded-01/receipt.json)
+passes 9/10 development tasks, satisfies nine final goals and falsely declares
+DONE on upstream travel. It uses the original decision head, the same pinned
+checkpoint, grounded V1 prompt and deployment temperature, with BF16 for both
+decisions and the real text helper. It makes 38 policy and four text calls;
+the sum of all ten attempts is 64.719 seconds, excluding setup. Hierarchy,
+stage batching, readout replacement and prefix caching are disabled.
+
+Its [travel history](../artifacts/jev-browser/20261014-local-bf16-grounded-01/benchmark/attempts/development-000-upstream-travel/final_state.json)
+executes Free cancellation, types the helper's correct `Lisbon`, selects
+Design, opens Casa Flora and chooses DONE. The input still visibly contains
+Lisbon before opening the details, but Find stays is never clicked. The fresh
+judge reads Design and cancellation enabled, with applied `query=""` and
+`searched=false`. All four BF16 helper outputs are correct: `Lisbon`,
+`Juniper Library`, `Osaka Riverside` and `Harbor District`.
+
+These traces retain three different omissions on the exposed travel goal:
+the earlier NF4 grounded policy opens Casa Flora immediately, the learned
+128-step NF4 sidecar submits an empty destination, and BF16 types the right
+destination but omits submission. The original nine fixture/goal identities
+match the historical NF4 run, and all ten match the learned-readout development
+run. Runtime source versions differ between those historical runs, and helper
+precision changes with BF16. These observations do not isolate a causal effect
+of quantization or establish a speed ordering.
+
+The [three travel goal variations](../artifacts/jev-browser/20261014-travel-goal-challenges-readout128-01/receipt.json)
+use the same unchanged exposed upstream HTML with new requested requirements.
+They retain the 128-step learned sidecar, whose weight SHA is
+`fedb79fcc4924a4a024bc66ddd8971301087f12509f0961ad15fa7883a00f3d7`,
+the NF4 backbone/helper, one attempt per goal and the same 16-decision budget.
+They are new goals on a known page, not unseen websites or a matched competitor
+comparison.
+
+| Requested outcome | Successful | Policy / text calls | Attempt time (s) |
+| --- | ---: | ---: | ---: |
+| Design, Copenhagen, cancellation enabled; open The Glasshouse | 0/1 | 16 / 0 | 87.995 |
+| Nature, Lisbon, cancellation left off; open Serra Lodge | 1/1 | 9 / 1 | 23.790 |
+| Open Casa Flora details only | 1/1 | 2 / 0 | 4.044 |
+
+The Copenhagen attempt enables cancellation, then repeats Find stays six times
+and Find a stay navigation nine times until the budget expires. It
+never types Copenhagen, selects Design or opens The Glasshouse. The final
+applied destination is empty and category remains all. The Nature attempt
+selects Nature, correctly generates and types Lisbon, clicks Find stays five
+times, then opens Serra Lodge and stops with every requested property verified;
+cancellation stays off. The direct Casa Flora request succeeds without search
+or filters, which that goal does not require. Across these three attempts the
+result is 2/3 with zero false DONE, 27 policy calls, one correct helper output
+and 115.829 seconds of total attempt time, including the budget failure.
+Both new runs verify all 67 preserved runtime source files and share source
+identity `245ceb608af2248b73cd863ffc507cf57cf58c900ac4ab476a518f8cc2b70f3d`.
+The challenge outcomes are not used to retune the prompt or select a longer
+fit; selection remains on the original development suite.
+
+The [512-step readout with prefix caching and suffix batch size two](../artifacts/jev-browser/20261014-travel-goal-challenges-readout512-prefix2-01/receipt.json)
+subsequently passes only 1/3 on these same goal/HTML fixtures and budgets.
+Hierarchy and stage batching are also enabled. It makes 21 policy calls and
+one correct Lisbon helper call, with one false DONE and 52.153 seconds summed
+across all three attempts. All 67 captured source files verify. The Copenhagen
+attempt enables cancellation and opens The Glasshouse, then falsely stops
+with category all, empty destination and no submitted search. The Nature
+attempt selects Nature and eventually types/applies Lisbon, but repeatedly
+clicks Find stays, then wrongly enables cancellation on its final allowed
+action; it never opens Serra Lodge. Direct Casa Flora opening alone passes.
+
+An [uncached 512-step recheck](../artifacts/jev-browser/20261014-travel-goal-challenges-readout512-full-01/receipt.json)
+also scores 1/3, with the same 21 policy calls, one text call and one false DONE,
+in 116.311 seconds of summed attempt time. Hierarchy and stage batching remain
+enabled. Copenhagen again stops without its category, query or submission.
+Nature keeps cancellation off in this run but still exhausts the budget
+without opening Serra Lodge. Its 67 source files verify. The completion
+failure therefore persists without prefix caching; the two inference paths
+do not produce identical action histories.
+
+The [cached-versus-full audit](../artifacts/jev-browser/20261014-readout512-prefix-versus-full-goal-audit.json)
+finds identical initial wire inputs for all three goals, with maximum absolute
+probability differences of approximately `0.037`–`0.041`. On the Nature goal,
+the first operation changes from CLICK without caching to SELECT with caching;
+later observations therefore diverge. Both configurations fail that goal.
+Native prefix reuse has genuine numerical sensitivity on this NF4 deployment;
+the real-model runs do not establish bit-identical scores or action histories.
+
+This combined recheck falls below the 128-step run's 2/3 and shows that the
+512-step development 10/10 has not established reliable completion on changed
+goal requirements. Learned rows and the inference configuration both change,
+so this comparison does not isolate a cause. These three observed goals are
+now exposed development regressions; subsequent adaptations must not describe
+them as held-out tests.
+
+## Additional development recovery collection
+
+The [partial-progress training collection](../artifacts/jev-browser/20261014-training-partial-trajectories-01/receipt.json)
+contains 673 scripted states from 165 guarded episodes, using seed `20261003`
+and 15 repeats, with 1,064 supervised question rows. It retains fresh development
+episodes and adds 15 upstream travel recovery initializations covering every
+incomplete combination of typed destination, selected Design, enabled
+cancellation and submitted search.
+Initialization actions are executed through the guarded browser before the
+teacher observes and labels recovery states. These are 15 initialization
+configurations, with 11 distinct verifier result tuples: unsent destination
+text is lost when the detail page opens and is typed again during repair.
+
+This collection includes a recovery with Design and cancellation already set,
+an empty applied destination and `searched=true`, matching the missing-query
+prerequisite seen in the learned development failure. The teacher returns to
+all stays and supplies Lisbon. Its declared source is scripted development
+supervision, with no model score. There are also 54 observed travel states with
+Lisbon filled without a subsequent Find stays action, including 18 recovery
+states.
+In 27 of those states Design and cancellation are already correct; all 27
+teacher choices click Find stays. Dataset, wire, 150 fixture-file and 67
+prospective source hashes are retained and checked. The 673-state training
+and separate 66-state development inventories share no IDs, source groups or
+exact request fingerprints. These checks do not establish semantic independence
+between variants of a template. This is newly collected supervision, with no
+closed-loop quality improvement established by collection alone.
+
+The preserved collector explicitly generates the development split. Its case
+IDs and fixture HTML hashes do not overlap the recorded 18-case fixture
+holdout, and none of the three new travel challenge goals or IDs occurs in
+the emitted training supervision. Their literals are present in the preserved
+benchmark source, whose challenge-generation function the collector does not
+call. Seven exact goal strings do recur in the finite vocabulary of
+the shared holdout templates, so goal-string disjointness is not claimed.
+The exposed upstream travel HTML and original Lisbon goal are intentionally
+training data. This inventory audit establishes what was collected; it does
+not make these supervised templates an independent website population.
+
+## Diversified travel supervision and transfer scope
+
+The completed [diversified collection](../artifacts/jev-browser/20261014-training-diverse-goals-01/receipt.json)
+contains 425 states, 108 episodes and 673 supervised questions. Four repeats
+retain the nine seeded task families and add 60 travel goals plus 12 recovery
+episodes on the unchanged exposed HTML. Travel supervision covers direct
+opening, query only, category only, query plus category, and explicit
+cancellation settings. The [independent audit](../artifacts/jev-browser/20261014-training-diverse-goals-01-audit.json)
+checks all 67 source files, 96 fixture files and exact wire/label identities,
+including four real corrections from wrongly enabled cancellation to off.
+Against the separate 66-state development collection, IDs, source groups and
+exact requests are disjoint, but five goal strings repeat. The three exposed
+travel regression strings are absent; their semantic requirement combinations
+are deliberately trained and must no longer be treated as held out.
+
+The diverse fit is in progress with 512 CPU update steps, learning rate `0.001`
+and seed 42 after fresh model feature extraction. It explicitly selects
+`--feature-batch-size 2`; the default remains one. This option batches at most
+two grounded feature rows while retaining each row's actual hidden features
+and capture evidence. It applies to fresh extraction, not `--features-from`
+replay. No completed diverse-fit quality result or batching speed advantage is
+reported here. Use frozen sources and fresh output directories, for example:
+
+```bash
+python scripts/jev_browser_training_data.py \
+  --upstream-path /tmp/jev-pinned --split train --seed 20261005 --repeats 4 \
+  --travel-goal-variants --output-dir artifacts/jev-browser/your-training-goals
+
+python scripts/jev_browser_fit_readout.py \
+  --train-cases artifacts/jev-browser/your-training-goals/cases.jsonl \
+  --development-cases artifacts/jev-browser/20261014-development-trajectories-01/cases.jsonl \
+  --steps 512 --learning-rate 0.001 --seed 42 --feature-batch-size 2 \
+  --output-dir artifacts/jev-browser/your-diverse-fit
+```
+
+The upcoming local `--travel-transfer-only --suite-split development` mode uses
+a separately seeded catalogue with new property/city mappings and an additional
+already-filled-control case. Choose and record its `--seed` after training
+selection is frozen. It changes the catalogue and that initial form state,
+preserves the pinned page's event handlers, and records parent and derived HTML
+hashes. All eight available transfer property names and eight cities are absent
+from the actual training payloads; evaluation factory literals in preserved
+source files are not training payloads. This tests transfer within a known page
+and task structure, not unseen websites. Freeze the learned artifact before
+comparison, use the same fixtures and helper for other models, and retain
+failures as well as successes. No transfer model result is claimed here.
+
 ## Historical failure diagnosis
 
 The October 13 archive's 72 measured decisions retain the exact goal and stay
@@ -161,7 +508,9 @@ query alone cannot satisfy its independent judge.
 Completion has the historical button interlock: completing disables Mark
 complete and enables Reset; resetting reverses it. The travel
 judge checks applied search state rather than merely typed text or a property's
-cancellation badge.
+cancellation badge. Travel query verification accepts surrounding whitespace
+and case differences, matching the application's search semantics; a submitted
+search remains a separate required state.
 
 The nine seeded holdout templates use different values, DOM identifiers,
 candidate orders and confirmation wording. They are variants of the same
@@ -239,11 +588,70 @@ and no action or task success occurred. Whole hierarchy time is 24.327 seconds
 batched versus 22.769 seconds sequential; attempt time includes the browser and
 verification as well. This one matched snapshot shows no speed improvement.
 Per-chunk durations were not retained in this historical batch receipt; only
-shared time, references and counts are available. Making the candidate table
-representable has not yet made this larger-page navigation usable.
-The current backend additionally retains one shared chunk ledger on its first
-ordered response, so completed chunk results and timing survive a later adapter
-deadline. CPU diagnostics verify that retention; no new live result is implied.
+shared time, references and counts are available. These first two trials make
+the target table representable but do not complete the navigation.
+
+The [NF4 prefix-reuse trial with one suffix per forward](../artifacts/jev-browser/20261014-live-solar-sun-grounded-prefix-01/receipt.json)
+also fails 0/1: all six stage results return from the prefix utility in 20.954
+seconds, and whole hierarchy time is 21.333 seconds, exceeding the unchanged
+20-second budget. It executes no action. Its attempt
+takes 24.491 seconds. The [full-context BF16 batch trial](../artifacts/jev-browser/20261014-live-solar-sun-bf16-batch-01/receipt.json)
+likewise returns HTTP 504 with zero actions and fails 0/1 in 27.309 seconds.
+
+The later [NF4 prefix-reuse trial with two suffix rows per forward](../artifacts/jev-browser/20261014-live-solar-sun-grounded-prefix-batch2-01/receipt.json)
+**passes 1/1** in 34.890 seconds of attempt time, with three policy calls,
+one guarded click and no field-text calls. It opens target `44`, Sun, then
+predicts DONE twice: the upstream freshness guard rejects the first DONE after
+the page changes, re-observes, and accepts the next decision. Fresh independent
+verification confirms the Sun URL, heading and article content. All three HTTP
+responses succeed, and every hierarchy call stays below the same 20-second
+cooperative budget. The complete run, including setup, takes 49.074 seconds.
+
+| Policy call | Operation | Original click candidates | Policy time (s) | Full-context tokens | Physical computed tokens | Included padding tokens |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Solar System | CLICK Sun | 76 | 12.586 | 28,543 | 13,199 | 2,491 |
+| Sun, rejected stale decision | DONE | 71 | 8.835 | 26,459 | 12,360 | 2,341 |
+| Sun, accepted decision | DONE | 71 | 9.097 | 26,965 | 12,515 | 2,365 |
+
+Every call scores the operation, all four target groups and every within-group
+conditional, including when DONE wins. The original target orders are preserved;
+the served joint distributions cover all 76/71/71 candidates, exactly equal
+the recorded group-by-conditional products, and each sums to 1. The singleton
+text target retains its deterministic compatibility probability of 1. Each
+call makes four genuine backbone forwards: one shared-prefix prefill and three
+two-row suffix chunks, with one live cache fork at a time. No candidates or
+original question contexts are pruned.
+
+On the first call, the common prefix is 3,567 tokens. Its logical computed work
+is 10,708 tokens; the table's 13,199 physical positions also count 2,491 new
+padding positions. These counters sum consistently across the saved per-request
+allocations and forward ledger; full-context counts retain the six original
+question lengths. Cache-fork and backbone substep times are host measurements
+without explicit device synchronization. The policy/attempt totals include the
+completed probability work and the stale-page retry; substep times should not
+be treated as independent GPU kernel timings.
+
+The successful run's first saved request is identical to the sequential, NF4
+full-context batch and one-suffix prefix requests, including model alias,
+state, instructions and candidate order. The BF16 first request differs only
+in model alias. The success uses the pinned checkpoint's original decision
+head, grounded V1 prompt and NF4/BF16 computation; no learned readout is selected.
+All 67 copied runtime source files match their hashes, and final source
+verification passes with identity
+`1cec18f022d567f09d64006bd1817a2344a91cb34b6db0b581c68632b8638cee`.
+Runtime implementations differ across these historical runs. This is one
+successful navigation on a previously inspected task, with no matched live
+competitor for this target, no repeated latency distribution and no cross-site
+reliability claim. It establishes that this preserved request can finish within
+the existing policy-call budget using the explicit two-suffix setting.
+
+The subsequent [learned-512 readout plus the same prefix setting](../artifacts/jev-browser/20261014-live-solar-sun-readout512-prefix2-01/receipt.json)
+fails this live task with zero actions: the client reaches its unchanged
+25-second read timeout, and fresh verification still reads Solar System.
+No server-stage response or terminal server error is retained for that request,
+so its cause is unresolved. The successful original-head live navigation and
+the learned-head 10/10 development run are separate results; they do not
+establish a single configuration that passes both.
 
 ## Run locally
 
@@ -315,8 +723,35 @@ or add `--batch-hierarchy-stages` with `--hierarchical-candidates` in the local
 runner. This optional setting uses the backend's ordered batch method when
 supported; otherwise the receipt records the sequential fallback. It preserves
 every group and conditional decision, records shared inference time once, and
-keeps the same cooperative time budget. No successful live-model result for
-this batch setting is claimed yet.
+keeps the same cooperative time budget. The successful Solar-System-to-Sun
+trial above additionally enables prefix reuse and two-row suffix batching;
+ordinary full-context stage batching alone still timed out in its recorded trial.
+
+For owned text-only `user`, `grounded` or `goal-first` policies, opt into exact
+common-prefix caching with `--jev-prefix-cache` when serving, or `--prefix-cache`
+in the local runner. The default suffix batch size is 1. Select
+`--jev-prefix-suffix-batch-size 2` or local `--prefix-suffix-batch-size 2` to score
+two suffix rows per native cache fork; size 2 requires prefix caching. These
+flags do not enable hierarchy or stage batching implicitly. To reproduce the
+successful trial's complete combination:
+
+```bash
+python scripts/jev_local_model.py \
+  --upstream-path /tmp/jev-pinned \
+  --model knowlet/Gemma-4-12B-Unified-System-One \
+  --revision a66f836b56605039fe040f330180e336d19b3362 \
+  --quantization nf4 --prompt-mode grounded \
+  --hierarchical-candidates --batch-hierarchy-stages \
+  --prefix-cache --prefix-suffix-batch-size 2 \
+  --live-only --live-url https://en.wikipedia.org/wiki/Solar_System \
+  --live-goal 'Starting from the Solar System article, open Wikipedia’s article about the Sun. Stop only when the Sun article is open.' \
+  --live-expected-title Sun \
+  --output-dir artifacts/jev-browser/your-unique-solar-prefix-run
+```
+
+Keep the same checkpoint, compatible CUDA stack, viewport and recorded
+20-second policy-call budget. The live page and its target table can change;
+this command is a new trial, not a guarantee of the historical result.
 
 ```bash
 JEV_BROWSER_TESTS=1 JEV_UPSTREAM_PATH=/tmp/jev-pinned \
