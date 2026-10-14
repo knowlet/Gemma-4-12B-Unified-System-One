@@ -135,6 +135,221 @@ def test_exposed_travel_fixture_is_not_loaded_into_holdout(tmp_path, monkeypatch
         )
 
 
+def test_travel_goal_challenges_change_only_requirements_and_have_neutral_ids(monkeypatch):
+    base = HARNESS.FixtureCase(
+        case_id="original",
+        task_id="upstream_travel",
+        goal="original goal",
+        html="unchanged source\r\n",
+        expected={"query": "Lisbon"},
+        needs_text=True,
+        query_string="scenario=travel",
+        source={"sha256": "pinned", "scope": "exposed"},
+    )
+    monkeypatch.setattr(HARNESS, "make_upstream_travel_case", lambda _path, _repeat: base)
+    cases = HARNESS.make_travel_goal_challenges("unused")
+    assert [case.case_id for case in cases] == [
+        "travel-goal-000-0",
+        "travel-goal-000-1",
+        "travel-goal-000-2",
+    ]
+    assert all(case.task_id == "upstream_travel" and case.html == base.html for case in cases)
+    assert all(case.query_string == "scenario=travel" for case in cases)
+    assert all(
+        case.source == {**base.source, "scope": HARNESS.TRAVEL_CHALLENGE_SCOPE} for case in cases
+    )
+    assert [case.expected for case in cases] == [
+        {
+            "hash": "#the-glasshouse",
+            "name": "The Glasshouse",
+            "category": "Design",
+            "free": True,
+            "query": "Copenhagen",
+            "searched": True,
+        },
+        {
+            "hash": "#serra-lodge",
+            "name": "Serra Lodge",
+            "category": "Nature",
+            "free": False,
+            "query": "Lisbon",
+            "searched": True,
+        },
+        {"hash": "#casa-flora", "name": "Casa Flora"},
+    ]
+    assert [case.needs_text for case in cases] == [True, True, False]
+    assert [case.case_id for case in HARNESS.make_travel_goal_challenges("unused", 1)] == [
+        "travel-goal-001-0",
+        "travel-goal-001-1",
+        "travel-goal-001-2",
+    ]
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [
+        {"suite_split": "holdout"},
+        {"task_ids": ["upstream_travel"]},
+        {"task_ids": []},
+        {"live_url": "https://en.wikipedia.org/wiki/Spoon"},
+        {"live_goal": "Open Spoon"},
+        {"live_expected_title": "Spoon - Wikipedia"},
+    ],
+)
+def test_travel_goal_challenges_refuse_mixed_or_holdout_configuration(
+    tmp_path, monkeypatch, settings
+):
+    monkeypatch.setattr(HARNESS, "upstream_manifest", lambda _path: {})
+    with pytest.raises(ValueError, match="Travel goal challenges"):
+        HARNESS.run_benchmark(
+            upstream_path="unused",
+            endpoint="http://localhost/policy",
+            model="diagnostic",
+            output_dir=tmp_path / "run",
+            travel_challenges_only=True,
+            **settings,
+        )
+    assert not (tmp_path / "run").exists()
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        ["--suite-split", "holdout"],
+        ["--tasks", "upstream_travel"],
+        ["--live-url", "https://en.wikipedia.org/wiki/Spoon"],
+        ["--live-goal", "Open Spoon"],
+        ["--live-expected-title", "Spoon - Wikipedia"],
+    ],
+)
+def test_benchmark_cli_refuses_challenges_with_fixture_or_live_options(monkeypatch, extra):
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "benchmark",
+            "--upstream-path",
+            "unused",
+            "--endpoint",
+            "http://localhost/policy",
+            "--model",
+            "diagnostic",
+            "--output-dir",
+            "unused",
+            "--travel-challenges-only",
+            *extra,
+        ],
+    )
+    with pytest.raises(SystemExit) as caught:
+        HARNESS.main()
+    assert caught.value.code == 2
+
+
+def test_benchmark_cli_forwards_optional_challenge_selector(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "benchmark",
+            "--upstream-path",
+            "unused",
+            "--endpoint",
+            "http://localhost/policy",
+            "--model",
+            "diagnostic",
+            "--output-dir",
+            "unused",
+            "--travel-challenges-only",
+        ],
+    )
+    monkeypatch.setattr(
+        HARNESS, "run_benchmark", lambda **kwargs: calls.append(kwargs) or {"diagnostic": True}
+    )
+    HARNESS.main()
+    assert calls[0]["travel_challenges_only"] is True and calls[0]["task_ids"] is None
+
+
+def test_simple_open_travel_goal_does_not_invent_search_or_filter_requirements(monkeypatch):
+    base = HARNESS.FixtureCase(
+        case_id="original",
+        task_id="upstream_travel",
+        goal="original",
+        html="source",
+        expected={},
+        source={"scope": "original"},
+    )
+    monkeypatch.setattr(HARNESS, "make_upstream_travel_case", lambda _path, _repeat: base)
+    simple = HARNESS.make_travel_goal_challenges("unused")[2]
+    browser = SimpleNamespace(
+        evaluate=lambda _code: {
+            "result": {
+                "hash": "#casa-flora",
+                "name": "Casa Flora",
+                "category": "All",
+                "free": False,
+                "query": "",
+                "searched": False,
+            },
+            "result_visible": True,
+        }
+    )
+    assert HARNESS.verify_fixture(browser, simple)["success"] is True
+
+
+@pytest.mark.parametrize("index", range(3))
+@pytest.mark.integration
+def test_new_travel_requirements_are_reachable_through_guarded_actions(
+    real_browser_environment, index
+):
+    """Test-only diagnostic scripts establish reachability, never model performance."""
+    upstream, chromium = real_browser_environment
+    cases = HARNESS.make_travel_goal_challenges(upstream)
+    case = cases[index]
+    original = (upstream / HARNESS.UPSTREAM_TRAVEL_SOURCE).read_bytes()
+    assert all(candidate.html.encode() == original for candidate in cases)
+    assert hashlib.sha256(original).hexdigest() == HARNESS.UPSTREAM_TRAVEL_SHA256
+    transport = HARNESS.PlaywrightCDP(chromium)
+    with HARNESS.fixture_server(cases) as base:
+        with HARNESS.load_upstream(upstream, transport) as (agent_module, _model_module):
+            agent = agent_module.Agent(base + case.url_suffix, case.goal, screenshots=False)
+
+            def act(label, *, kind="click", text=None):
+                page = agent.browser.observe(screenshot=False)
+                action = next(
+                    action
+                    for action in page["actions"]
+                    if action["label"] == label and action["kind"] == kind
+                )
+                agent.browser.act(action, page, text=text)
+
+            try:
+                assert HARNESS.verify_fixture(agent.browser, case)["success"] is False
+                if index < 2:
+                    act("Destination", kind="fill", text=case.expected["query"])
+                    act("Stay category → " + case.expected["category"], kind="select")
+                    if case.expected["free"]:
+                        act("Free cancellation")
+                    # Even the correct details cannot satisfy an unsubmitted query.
+                    act("View " + case.expected["name"])
+                    failed = HARNESS.verify_fixture(agent.browser, case)
+                    assert failed["success"] is False
+                    assert failed["observed"]["result"]["hash"] == case.expected["hash"]
+                    assert failed["mismatches"]["searched"]["observed"] is False
+                    act("← All stays")
+                    act("Destination", kind="fill", text=case.expected["query"])
+                    act("Find stays")
+                act("View " + case.expected["name"])
+                verified = HARNESS.verify_fixture(agent.browser, case)
+                assert verified["success"] is True
+                if index == 1:
+                    assert verified["observed"]["result"]["free"] is False
+                if index == 2:
+                    assert verified["observed"]["result"]["searched"] is False
+            finally:
+                agent.close()
+
+
 def test_endpoint_rejects_embedded_credentials():
     for endpoint in (
         "https://name:secret@example.com/v1",
@@ -646,6 +861,37 @@ def test_real_runner_saves_false_done_requests_and_never_overwrites(
         saved_source = historical_output / "fixtures" / fixture["case_id"] / "page.html"
         assert saved_source.read_bytes() == (upstream / HARNESS.UPSTREAM_TRAVEL_SOURCE).read_bytes()
         assert historical_summary["premature_done_count"] == 1
+
+        challenge_arguments = {
+            **arguments,
+            "output_dir": tmp_path / "travel-goal-challenges",
+            "travel_challenges_only": True,
+        }
+        challenge_arguments.pop("task_ids")
+        challenge_start = len(incoming)
+        challenge_summary = HARNESS.run_benchmark(**challenge_arguments)
+        configuration = challenge_summary["configuration"]
+        assert configuration["travel_challenges_only"] is True
+        assert configuration["suite_scope"] == HARNESS.TRAVEL_CHALLENGE_SCOPE
+        assert challenge_summary["attempts"] == challenge_summary["premature_done_count"] == 3
+        assert challenge_summary["successes"] == 0
+        assert [fixture["case_id"] for fixture in configuration["fixture_manifest"]] == [
+            "travel-goal-000-0",
+            "travel-goal-000-1",
+            "travel-goal-000-2",
+        ]
+        assert all(
+            fixture["html_sha256"] == HARNESS.UPSTREAM_TRAVEL_SHA256
+            for fixture in configuration["fixture_manifest"]
+        )
+        assert len(incoming[challenge_start:]) == 3
+        assert all("expected" not in payload for payload in incoming[challenge_start:])
+        simple_judge = json.loads(
+            (
+                Path(challenge_arguments["output_dir"]) / "fixtures/travel-goal-000-2/judge.json"
+            ).read_bytes()
+        )
+        assert simple_judge["expected"] == {"hash": "#casa-flora", "name": "Casa Flora"}
 
         with monkeypatch.context() as faults:
 

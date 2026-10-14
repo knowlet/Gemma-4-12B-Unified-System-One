@@ -14,7 +14,7 @@ from pathlib import Path
 from jev_browser_benchmark import TASK_IDS, run_benchmark, upstream_manifest
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--upstream-path", required=True)
     parser.add_argument("--output-dir", required=True)
@@ -29,26 +29,52 @@ def main():
     parser.add_argument("--analysis-style", choices=["detailed", "compact"], default="detailed")
     parser.add_argument("--hierarchical-candidates", action="store_true")
     parser.add_argument("--batch-hierarchy-stages", action="store_true")
+    parser.add_argument("--decision-readout")
+    parser.add_argument("--prefix-cache", action="store_true")
+    parser.add_argument("--prefix-suffix-batch-size", type=int, choices=[1, 2], default=1)
     parser.add_argument(
         "--competitor",
-        choices=["decider"],
+        choices=["decider", "jev-omni"],
         help="Use the pinned competitor for decisions and the same Gemma checkpoint for text",
     )
     parser.add_argument("--suite-split", choices=["development", "holdout"], default="development")
     parser.add_argument("--repeats", type=int, default=1)
+    parser.add_argument("--seed", type=int, default=20261014)
     parser.add_argument("--tasks", nargs="+")
+    parser.add_argument("--travel-challenges-only", action="store_true")
     parser.add_argument("--chromium-executable")
     parser.add_argument("--live-url")
     parser.add_argument("--live-goal")
     parser.add_argument("--live-expected-title")
     parser.add_argument("--live-only", action="store_true")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    if args.travel_challenges_only and (
+        args.suite_split != "development"
+        or args.tasks is not None
+        or args.live_only
+        or any(
+            value is not None for value in (args.live_url, args.live_goal, args.live_expected_title)
+        )
+    ):
+        parser.error(
+            "travel-challenges-only requires development and cannot use tasks or live flags"
+        )
     if args.repeats < 1 or (args.tasks and set(args.tasks) - set(TASK_IDS)):
         parser.error("repeats must be positive and every task must belong to the frozen suite")
     if args.analysis_style == "compact" and args.prompt_mode != "reasoned":
         parser.error("compact analysis-style requires reasoned prompt-mode")
     if args.batch_hierarchy_stages and not args.hierarchical_candidates:
         parser.error("batch-hierarchy-stages requires hierarchical-candidates")
+    if args.decision_readout and (
+        args.competitor or args.prompt_mode not in {"user", "grounded", "goal-first"}
+    ):
+        parser.error("decision-readout requires an owned user/grounded/goal-first decision policy")
+    if args.prefix_cache and (
+        args.competitor or args.prompt_mode not in {"user", "grounded", "goal-first"}
+    ):
+        parser.error("prefix-cache requires an owned user/grounded/goal-first decision policy")
+    if args.prefix_suffix_batch_size != 1 and not args.prefix_cache:
+        parser.error("prefix-suffix-batch-size=2 requires prefix-cache")
     if args.live_only and (not args.live_url or args.tasks):
         parser.error("live-only requires live-url and cannot be combined with fixture tasks")
     if args.live_url and not (args.live_goal and args.live_expected_title):
@@ -64,6 +90,11 @@ def main():
         "analysis_style": args.analysis_style,
         "hierarchical_candidates": args.hierarchical_candidates,
         "batch_hierarchy_stages": args.batch_hierarchy_stages,
+        "decision_readout_requested": args.decision_readout,
+        "prefix_cache": args.prefix_cache,
+        "prefix_suffix_batch_size": args.prefix_suffix_batch_size,
+        "seed": args.seed,
+        "travel_challenges_only": args.travel_challenges_only,
         "competitor": args.competitor,
         "live_url": args.live_url,
         "live_goal": args.live_goal,
@@ -136,8 +167,42 @@ def main():
 
             receipt["stage"] = "competitor_load"
             (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
-            spec = local_competitor_spec(args.competitor, device="cuda")
-            backend = LocalCompetitorBackend(spec)
+            if args.competitor == "jev-omni":
+                from s1.evaluation.contracts import Capabilities, ModelSpec
+                from s1.evaluation.jev_omni import (
+                    CONTEXT_LIMIT,
+                    MAX_OPTIONS,
+                    MODEL_ID,
+                    REVISION,
+                    JevOmniBackend,
+                )
+
+                spec = ModelSpec(
+                    id="jev-omni-local",
+                    adapter="jev_omni",
+                    enabled=True,
+                    model_id=MODEL_ID,
+                    revision=REVISION,
+                    precision="bfloat16",
+                    device="cuda",
+                    execution_mode="sequential",
+                    calibration="checkpoint",
+                    context_limit=CONTEXT_LIMIT,
+                    capabilities=Capabilities(
+                        modalities=["text", "image", "audio"],
+                        primitives=["choice", "noul", "score"],
+                        max_options=MAX_OPTIONS,
+                        max_questions=64,
+                        probabilities="complete",
+                        batch="loop_emulated",
+                        concurrent_requests=False,
+                        independent_questions=True,
+                    ),
+                )
+                backend = JevOmniBackend(spec)
+            else:
+                spec = local_competitor_spec(args.competitor, device="cuda")
+                backend = LocalCompetitorBackend(spec)
             backend.name = spec.id
             receipt["decision_model"] = {
                 **backend.telemetry(),
@@ -146,8 +211,27 @@ def main():
             }
             cell = spec.id
         else:
+            decision_readout = None
+            if args.decision_readout:
+                from s1.browser_readout import load_readout
+
+                prompt_backend = BrowserDecisionBackend(
+                    model, prompt_mode=args.prompt_mode, analysis_style=args.analysis_style
+                )
+                decision_readout = load_readout(
+                    args.decision_readout, model, prompt_backend.prompt_variant
+                )
             backend = BrowserDecisionBackend(
-                model, prompt_mode=args.prompt_mode, analysis_style=args.analysis_style
+                model,
+                prompt_mode=args.prompt_mode,
+                analysis_style=args.analysis_style,
+                decision_readout=decision_readout,
+                prefix_cache=args.prefix_cache,
+                **(
+                    {"prefix_suffix_batch_size": args.prefix_suffix_batch_size}
+                    if args.prefix_suffix_batch_size != 1
+                    else {}
+                ),
             )
             receipt["decision_model"] = {
                 "model": model.name,
@@ -155,7 +239,11 @@ def main():
                 "prompt_mode": args.prompt_mode,
                 "analysis_style": args.analysis_style,
                 "prompt_variant": backend.prompt_variant,
+                "prefix_cache": args.prefix_cache,
+                "prefix_suffix_batch_size": args.prefix_suffix_batch_size,
             }
+            if decision_readout is not None:
+                receipt["decision_model"]["decision_readout"] = decision_readout.telemetry()
             cell = f"{args.prompt_mode}-{args.quantization}"
         application = create_app(
             backend,
@@ -185,8 +273,10 @@ def main():
             model=cell,
             output_dir=destination / "benchmark",
             repeats=args.repeats,
+            seed=args.seed,
             suite_split=args.suite_split,
             task_ids=[] if args.live_only else args.tasks,
+            travel_challenges_only=args.travel_challenges_only,
             chromium_executable=args.chromium_executable,
             live_url=args.live_url,
             live_goal=args.live_goal,

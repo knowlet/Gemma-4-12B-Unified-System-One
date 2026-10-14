@@ -40,6 +40,9 @@ UPSTREAM_FILES = (
 )
 UPSTREAM_TRAVEL_SOURCE = "jev_ultrafast/static/fixture.html"
 UPSTREAM_TRAVEL_SHA256 = "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe"
+TRAVEL_CHALLENGE_SCOPE = (
+    "unseen goal requirements on exposed unchanged upstream HTML, not unseen website"
+)
 SEEDED_TASK_IDS = (
     "filter_open",
     "search_filter_open",
@@ -104,6 +107,57 @@ def make_upstream_travel_case(upstream_path: str | Path, repeat: int = 0) -> Fix
             "scope": "known exposed development regression; excluded from holdout",
         },
     )
+
+
+def make_travel_goal_challenges(upstream_path: str | Path, repeat: int = 0) -> list[FixtureCase]:
+    """Evaluation-only requirements; never added to the default teaching fixtures."""
+    original = make_upstream_travel_case(upstream_path, repeat)
+    specifications = (
+        (
+            "Use the destination search and filters to find Design stays in Copenhagen with "
+            "Free cancellation, then open The Glasshouse.",
+            {
+                "hash": "#the-glasshouse",
+                "name": "The Glasshouse",
+                "category": "Design",
+                "free": True,
+                "query": "Copenhagen",
+                "searched": True,
+            },
+            True,
+        ),
+        (
+            "Use the destination search and filters to find Nature stays in Lisbon without "
+            "enabling Free cancellation, then open Serra Lodge.",
+            {
+                "hash": "#serra-lodge",
+                "name": "Serra Lodge",
+                "category": "Nature",
+                "free": False,
+                "query": "Lisbon",
+                "searched": True,
+            },
+            True,
+        ),
+        (
+            "Open the details for Casa Flora.",
+            {"hash": "#casa-flora", "name": "Casa Flora"},
+            False,
+        ),
+    )
+    return [
+        FixtureCase(
+            case_id=f"travel-goal-{repeat:03d}-{index}",
+            task_id="upstream_travel",
+            goal=goal,
+            html=original.html,
+            expected=expected,
+            needs_text=needs_text,
+            query_string=original.query_string,
+            source={**original.source, "scope": TRAVEL_CHALLENGE_SCOPE},
+        )
+        for index, (goal, expected, needs_text) in enumerate(specifications)
+    ]
 
 
 def _document(title: str, body: str, script: str) -> str:
@@ -878,6 +932,7 @@ def run_benchmark(
     seed=20261014,
     suite_split="development",
     task_ids=None,
+    travel_challenges_only=False,
     api_key=None,
     text_endpoint=None,
     text_model=None,
@@ -902,8 +957,19 @@ def run_benchmark(
     manifest = upstream_manifest(upstream_path)
     if suite_split not in {"development", "holdout"}:
         raise ValueError("suite_split must be development or holdout")
+    if travel_challenges_only:
+        if suite_split != "development":
+            raise ValueError("Travel goal challenges require the development split")
+        if task_ids is not None or any(
+            value is not None for value in (live_url, live_goal, live_expected_title)
+        ):
+            raise ValueError("Travel goal challenges cannot be combined with tasks or live flags")
     defaults = TASK_IDS if suite_split == "development" else SEEDED_TASK_IDS
-    chosen = set(defaults if task_ids is None else task_ids)
+    chosen = (
+        {"upstream_travel"}
+        if travel_challenges_only
+        else set(defaults if task_ids is None else task_ids)
+    )
     if chosen - set(TASK_IDS):
         raise ValueError(f"Unknown tasks: {sorted(chosen - set(TASK_IDS))}")
     if suite_split == "holdout" and chosen.intersection(DEVELOPMENT_ONLY_TASK_IDS):
@@ -927,7 +993,11 @@ def run_benchmark(
     cases = [
         case
         for repeat in range(repeats)
-        for case in make_cases(seed, repeat, suite_split, upstream_path=upstream_path)
+        for case in (
+            make_travel_goal_challenges(upstream_path, repeat)
+            if travel_challenges_only
+            else make_cases(seed, repeat, suite_split, upstream_path=upstream_path)
+        )
         if case.task_id in chosen
     ]
     configuration = {
@@ -939,7 +1009,10 @@ def run_benchmark(
         "seed": seed,
         "suite_split": suite_split,
         "task_ids": sorted(chosen),
-        "suite_scope": "Nine resettable local DOM templates; holdout has disjoint seeded variants "
+        "travel_challenges_only": travel_challenges_only,
+        "suite_scope": TRAVEL_CHALLENGE_SCOPE
+        if travel_challenges_only
+        else "Nine resettable local DOM templates; holdout has disjoint seeded variants "
         "of the same nine templates, not unseen websites. The original exposed upstream_travel "
         "regression is development only and excluded from holdout",
         "text_model_requested": text_model,
@@ -1189,6 +1262,7 @@ def main():
     parser.add_argument("--seed", type=int, default=20261014)
     parser.add_argument("--suite-split", choices=["development", "holdout"], default="development")
     parser.add_argument("--tasks", nargs="+", choices=TASK_IDS)
+    parser.add_argument("--travel-challenges-only", action="store_true")
     parser.add_argument("--api-key-env", default="S1_API_KEY")
     parser.add_argument("--text-endpoint")
     parser.add_argument("--text-model")
@@ -1198,6 +1272,16 @@ def main():
     parser.add_argument("--live-goal")
     parser.add_argument("--live-expected-title")
     args = parser.parse_args()
+    if args.travel_challenges_only and (
+        args.suite_split != "development"
+        or args.tasks is not None
+        or any(
+            value is not None for value in (args.live_url, args.live_goal, args.live_expected_title)
+        )
+    ):
+        parser.error(
+            "travel-challenges-only requires development and cannot use tasks or live flags"
+        )
     values = vars(args)
     values["task_ids"] = values.pop("tasks")
     values["api_key"] = os.environ.get(values.pop("api_key_env"))
