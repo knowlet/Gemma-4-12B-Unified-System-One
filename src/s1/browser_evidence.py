@@ -16,7 +16,15 @@ _DEFAULT_CALLERS = (
     "scripts/jev_browser_benchmark.py",
     "scripts/jev_local_model.py",
 )
-_ALLOWED_CALLERS = frozenset((*_DEFAULT_CALLERS, "apps/modal/jev_browser.py"))
+_ALLOWED_CALLERS = frozenset(
+    (
+        *_DEFAULT_CALLERS,
+        "apps/modal/jev_browser.py",
+        "scripts/jev_browser_fit_readout.py",
+        "scripts/jev_browser_training_data.py",
+        "scripts/breakthrough_training.py",
+    )
+)
 
 
 def _source_paths(additional_files=None):
