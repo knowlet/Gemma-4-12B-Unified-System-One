@@ -24,6 +24,7 @@ def create_app(
     jev_hierarchical=False,
     jev_hierarchical_batch=False,
     jev_generated_actions=False,
+    jev_generated_action_grammar=False,
     model_identity=None,
     request_evidence_sink=None,
 ):
@@ -35,6 +36,10 @@ def create_app(
         raise ValueError("Jev hierarchy batching requires hierarchical choices")
     if type(jev_generated_actions) is not bool:
         raise ValueError("Jev generated actions must be an explicit boolean")
+    if type(jev_generated_action_grammar) is not bool:
+        raise ValueError("Jev generated action grammar must be an explicit boolean")
+    if jev_generated_action_grammar and not jev_generated_actions:
+        raise ValueError("Jev generated action grammar requires generated actions")
     generated_adapter = None
     if jev_generated_actions:
         if not jev_compatible or jev_hierarchical or jev_hierarchical_batch:
@@ -43,7 +48,11 @@ def create_app(
             )
         from .jev_generated import JevGeneratedActionAdapter
 
-        generated_adapter = JevGeneratedActionAdapter(backend, model_identity=model_identity)
+        generated_adapter = JevGeneratedActionAdapter(
+            backend,
+            model_identity=model_identity,
+            constrain_actions=jev_generated_action_grammar,
+        )
     app = FastAPI(title="Gemma Unified System One", version="0.1.0")
     lock = threading.Lock()
     app.state.request_evidence_errors = []

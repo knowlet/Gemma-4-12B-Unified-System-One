@@ -98,7 +98,10 @@ class JevGeneratedActionAdapter:
     cancelled. A late returned decode is retained as evidence and never acted on.
     """
 
-    def __init__(self, backend, *, model_identity=None):
+    def __init__(self, backend, *, model_identity=None, constrain_actions=False):
+        if type(constrain_actions) is not bool:
+            raise ValueError("generated-action grammar must be an explicit boolean")
+        self.constrain_actions = constrain_actions
         self.model = getattr(backend, "model", None)
         self.identity = backend.name if model_identity is None else model_identity
         if not isinstance(self.identity, str) or not self.identity.strip():
@@ -152,6 +155,9 @@ class JevGeneratedActionAdapter:
             "enable_thinking": False,
             "do_sample": False,
             "num_beams": 1,
+            "decoding_constraint": (
+                "legal_action_token_trie_v1" if self.constrain_actions else "none"
+            ),
             "raw_output": None,
             "raw_token_ids": None,
             "usage": {"input_tokens": None, "output_tokens": None},
@@ -215,6 +221,36 @@ class JevGeneratedActionAdapter:
                 raise RequestValidationError(
                     "generated-action context exceeds budget; nothing truncated"
                 )
+            grammar, decode_options = None, {}
+            if self.constrain_actions:
+                from .jev_action_grammar import LegalActionTokenTrie
+
+                generation["phase"] = "grammar_preflight"
+                try:
+                    terminator = model.tok.encode("<turn|>", add_special_tokens=False)
+                    eos = getattr(
+                        getattr(model.lm, "generation_config", None), "eos_token_id", None
+                    )
+                    eos = eos if isinstance(eos, (list, tuple)) else [eos]
+                    if (
+                        len(terminator) != 1
+                        or type(terminator[0]) is not int
+                        or terminator[0] not in eos
+                    ):
+                        raise ValueError("native turn terminator must be a configured EOS token")
+                    grammar = LegalActionTokenTrie(
+                        labels,
+                        model.tok,
+                        prompt_length=count,
+                        eos_token_id=terminator[0],
+                        max_new_tokens=32,
+                    )
+                except (AttributeError, TypeError, ValueError) as exc:
+                    raise RequestValidationError(
+                        f"generated-action grammar preflight: {exc}"
+                    ) from exc
+                generation["grammar"] = grammar.telemetry()
+                decode_options["prefix_allowed_tokens_fn"] = grammar
             capture = _FieldTokenCapture(ids[0].tolist())
 
             def forward(_module, args, kwargs):
@@ -255,6 +291,7 @@ class JevGeneratedActionAdapter:
                             use_cache=True,
                             pad_token_id=model.tok.pad_token_id,
                             streamer=capture,
+                            **decode_options,
                         )
                 finally:
                     generation["generation_elapsed_ms"] = (
@@ -282,6 +319,13 @@ class JevGeneratedActionAdapter:
             )
             deadline()
             generation["phase"] = "output_validation"
+            if grammar is not None:
+                try:
+                    grammar.assert_complete(generation["raw_token_ids"])
+                except ValueError as exc:
+                    raise BackendResponseError(
+                        "generated action violated the configured token grammar"
+                    ) from exc
             try:
                 action = json.loads(
                     generation["raw_output"],

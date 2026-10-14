@@ -28,6 +28,7 @@ def main(argv=None):
     )
     parser.add_argument("--analysis-style", choices=["detailed", "compact"], default="detailed")
     parser.add_argument("--generated-actions", action="store_true")
+    parser.add_argument("--generated-action-grammar", action="store_true")
     parser.add_argument("--generated-action-adapter", type=Path)
     parser.add_argument("--hierarchical-candidates", action="store_true")
     parser.add_argument("--batch-hierarchy-stages", action="store_true")
@@ -54,6 +55,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.generated_action_adapter and not args.generated_actions:
         parser.error("generated-action-adapter requires --generated-actions")
+    if args.generated_action_grammar and not args.generated_actions:
+        parser.error("generated-action-grammar requires --generated-actions")
     if args.generated_actions and (
         args.competitor
         or args.prompt_mode != "native"
@@ -134,6 +137,7 @@ def main(argv=None):
         "prompt_mode": args.prompt_mode,
         "analysis_style": args.analysis_style,
         "generated_actions": args.generated_actions,
+        "generated_action_grammar": args.generated_action_grammar,
         "hierarchical_candidates": args.hierarchical_candidates,
         "batch_hierarchy_stages": args.batch_hierarchy_stages,
         "decision_readout_requested": args.decision_readout,
@@ -319,6 +323,9 @@ def main(argv=None):
                 cell = f"generated-actions-{args.quantization}"
                 receipt["decision_model"].update(
                     policy=POLICY,
+                    decoding_constraint=(
+                        "legal_action_token_trie_v1" if args.generated_action_grammar else "none"
+                    ),
                     probabilities_semantics=PROBABILITIES,
                     max_new_tokens=32,
                     budget_seconds=20,
@@ -333,6 +340,7 @@ def main(argv=None):
             jev_hierarchical=args.hierarchical_candidates,
             jev_hierarchical_batch=args.batch_hierarchy_stages,
             jev_generated_actions=args.generated_actions,
+            jev_generated_action_grammar=args.generated_action_grammar,
             model_identity=cell,
             request_evidence_sink=server_journal,
         )

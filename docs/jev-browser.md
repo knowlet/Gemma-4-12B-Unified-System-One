@@ -591,6 +591,39 @@ property and filters. This is an exposed development case, not a transfer
 result. The same frozen configuration must pass all ten development tasks and
 three exposed travel regressions before a new transfer seed is selected.
 
+The [matched 13-case selection](../artifacts/jev-browser/20261015-action-lora-selection-01/state.json)
+finishes at **11/13 for the action adapter versus 0/13 for unadapted v2
+generation**. The [independent full audit](../artifacts/jev-browser/20261015-action-lora-selection-01-full-independent-audit.json)
+requires and verifies equal initial observations in all 13 pairs after only
+transport alias and fixture-port normalization. It reconstructs fixture/judge
+bytes and checks sources, every client/server/raw-output binding, helper
+isolation and strict accepted-DONE accounting. Nine base outcomes reach the
+requested DOM state but fail accepted completion, mostly because DONE omits
+`target`. Its zero strict score therefore does not mean nine semantic failures.
+
+The adapted model fails native_select before executing an action: it generates
+the correct SELECT target inside Markdown fences preceded by a hyphen, which
+strict JSON rejects.
+The other failure is semantic: for Nature stays in Lisbon with Free cancellation
+off, it selects Nature, opens Serra Lodge and returns DONE. The fresh page shows
+the correct property/category/free flag, but an empty applied query and
+`searched=false`. Overall 11/13 also does not exceed the stronger earlier
+classification/readout results of 11/13. The promotion gate fails, every failure
+is retained, and no fresh transfer seed is selected.
+
+An optional `--generated-action-grammar` implementation addresses format
+reliability during generation. It enumerates every offered operation/target pair
+as a canonical JSON token path with the native terminator, then masks tokens
+outside those paths. It keeps the identical full prompt and all legal targets;
+it supplies no task-specific decisions and performs no output repair or retry.
+The returned raw tokens must independently match a complete legal path before
+JSON validation. CPU tests and the actual cached tokenizer verify all 5,605
+legal actions across 491 saved states, with at most 13 tokens including EOS.
+The full software suite passes 2025 checks with 275 dependency/browser opt-in
+skips; two separate genuine CPU generation checks pass with CUDA disabled.
+Its browser outcome is still unmeasured. It does not establish a fix for the
+separate missed-search requirement.
+
 ## Historical failure diagnosis
 
 The October 13 archive's 72 measured decisions retain the exact goal and stay

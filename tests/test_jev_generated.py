@@ -513,6 +513,43 @@ def test_api_rejects_mixed_policies_before_generation(backend, options):
     assert not backend.model.calls
 
 
+@pytest.mark.parametrize("value", [True, "yes", 1, None])
+def test_api_rejects_grammar_without_explicit_generated_policy(backend, value):
+    with pytest.raises(ValueError):
+        create_app(backend, jev_compatible=True, jev_generated_action_grammar=value)
+    assert not backend.model.calls
+
+
+def test_grammar_rejects_backend_that_ignores_token_constraint_and_retains_raw(backend, payload):
+    tok = backend.model.tok
+    tok.all_special_ids = [0, 9000]
+    tok.encode = lambda text, **_: [9000] if text == "<turn|>" else tok.pack(text, 3)
+    backend.model.lm.generation_config = SimpleNamespace(eos_token_id=[9000])
+    # This fake backend always ignores the supplied callback and issues fresh IDs.
+    with pytest.raises(BackendResponseError, match="violated.*token grammar") as caught:
+        JevGeneratedActionAdapter(
+            backend, model_identity="experiment", constrain_actions=True
+        ).predict(payload)
+    evidence = caught.value.generation
+    assert evidence["raw_output"] == backend.model.generated
+    assert evidence["grammar"]["legal_action_count"] == 10
+    assert evidence["decoding_constraint"] == "legal_action_token_trie_v1"
+    assert callable(backend.model.calls[0]["prefix_allowed_tokens_fn"])
+    assert not backend.native_calls and not backend.model.hooks
+
+
+@pytest.mark.parametrize("eos", [None, 50, [1, 50]])
+def test_grammar_requires_native_terminator_before_any_forward(backend, payload, eos):
+    backend.model.tok.encode = lambda *_args, **_kwargs: [106]
+    backend.model.lm.generation_config = SimpleNamespace(eos_token_id=eos)
+    with pytest.raises(RequestValidationError, match="native turn terminator") as caught:
+        JevGeneratedActionAdapter(
+            backend, model_identity="experiment", constrain_actions=True
+        ).predict(payload)
+    assert caught.value.generation["phase"] == "grammar_preflight"
+    assert not backend.model.forwards and not backend.model.calls
+
+
 @pytest.mark.parametrize(
     "key,value",
     [
@@ -671,6 +708,90 @@ def test_genuine_tiny_cpu_native_generate_retains_invalid_tokens_without_classif
     assert torch.equal(weight, lm.get_output_embeddings().weight)
     assert not lm.transformer._forward_pre_hooks
     assert not torch.cuda.is_initialized()
+
+
+@pytest.mark.inference
+def test_genuine_cpu_decode_masks_preferred_illegal_token_and_finishes_native_eos(payload):
+    torch = pytest.importorskip("torch")
+    transformers = pytest.importorskip("transformers")
+    torch.manual_seed(73)
+    config = transformers.GPT2Config(
+        vocab_size=64,
+        n_layer=1,
+        n_embd=16,
+        n_head=2,
+        n_positions=128,
+        bos_token_id=1,
+        eos_token_id=2,
+        pad_token_id=0,
+    )
+    lm = transformers.GPT2LMHeadModel(config).eval()
+    lm.generation_config.sequence_bias = {(63,): 10000.0}
+    weight = lm.get_output_embeddings().weight.detach().clone()
+
+    class ActionTokenizer:
+        pad_token_id, bos_token_id, eos_token_id = 0, 1, 2
+        all_special_ids = [0, 1, 2]
+
+        def __init__(self):
+            self.pieces = {}
+
+        def encode(self, text, *, add_special_tokens):
+            assert add_special_tokens is False
+            if text == "<turn|>":
+                return [2]
+            if text not in self.pieces:
+                self.pieces[text] = 10 + len(self.pieces)
+            return [self.pieces[text]]
+
+        def decode(self, tokens, *, skip_special_tokens):
+            assert skip_special_tokens is True
+            reverse = {value: key for key, value in self.pieces.items()}
+            return "".join(
+                reverse[int(token)] for token in tokens if int(token) not in self.all_special_ids
+            )
+
+    class NativeProcessor:
+        def apply_chat_template(self, messages, **kwargs):
+            assert json.loads(messages[0]["content"][0]["text"].split("\n", 1)[1]) == payload
+            assert kwargs == {
+                "tokenize": False,
+                "add_generation_prompt": True,
+                "enable_thinking": False,
+            }
+            return "unchanged native prompt"
+
+        def __call__(self, **_kwargs):
+            ids = torch.tensor([[1, 3, 4]])
+            return {"input_ids": ids, "attention_mask": torch.ones_like(ids)}
+
+    ids = torch.tensor([[1, 3, 4]])
+    with torch.inference_mode():
+        unconstrained = lm.generate(ids, attention_mask=torch.ones_like(ids), max_new_tokens=1)
+    assert unconstrained[0, -1].item() == 63
+    model = SimpleNamespace(
+        name="offline-tiny-native",
+        revision="test-in-memory",
+        quantization="none",
+        quantization_details={"mode": "none"},
+        lm=lm,
+        backbone=lm.transformer,
+        processor=NativeProcessor(),
+        device="cpu",
+        max_context=128,
+        tok=ActionTokenizer(),
+    )
+    result = JevGeneratedActionAdapter(
+        Backend(model), model_identity="experiment", constrain_actions=True
+    ).predict(payload)
+    evidence = result["generation"]
+    assert evidence["grammar"]["legal_action_count"] == 10
+    assert evidence["raw_token_ids"][-1] == 2 and 63 not in evidence["raw_token_ids"]
+    assert evidence["decoded_action"] == json.loads(evidence["raw_output"])
+    assert evidence["usage"] == {"input_tokens": 3, "output_tokens": 2}
+    assert evidence["forward_calls"] == 2 and len(evidence["forwards"]) == 2
+    assert torch.equal(weight, lm.get_output_embeddings().weight)
+    assert not lm.transformer._forward_pre_hooks and not torch.cuda.is_initialized()
 
 
 @pytest.mark.parametrize(

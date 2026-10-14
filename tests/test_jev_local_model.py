@@ -42,6 +42,7 @@ finally:
         ["--generated-actions", "--competitor", "decider"],
         ["--generated-actions", "--competitor", "jev-omni"],
         ["--generated-action-adapter", "unused"],
+        ["--generated-action-grammar"],
         ["--generated-actions", "--generated-action-adapter", "unused"],
     ],
 )
@@ -102,7 +103,7 @@ def test_travel_challenges_reject_incompatible_scope_before_upstream_or_weights(
 
 
 @pytest.mark.parametrize("mode", [None, "challenges", "transfer"])
-@pytest.mark.parametrize("policy", ["native", "generated", "adapted"])
+@pytest.mark.parametrize("policy", ["native", "generated", "adapted", "grammar"])
 @pytest.mark.parametrize(
     "journal_mode", ["off", "completed", "pending", "observer_failure", "snapshot_failure"]
 )
@@ -303,6 +304,8 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
         options.append("--server-evidence")
     if generated:
         options.append("--generated-actions")
+    if policy == "grammar":
+        options.append("--generated-action-grammar")
     if policy == "adapted":
         options.extend(["--generated-action-adapter", "test-adapter"])
     arguments = ["--upstream-path", "unused", "--output-dir", str(output), *options]
@@ -316,6 +319,8 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
     assert initial_receipts[0]["travel_challenges_only"] is (mode == "challenges")
     assert initial_receipts[0]["generated_actions"] is generated
     assert app_options[0]["jev_generated_actions"] is generated
+    assert app_options[0]["jev_generated_action_grammar"] is (policy == "grammar")
+    assert initial_receipts[0]["generated_action_grammar"] is (policy == "grammar")
     assert benchmark_calls[0]["model"] == ("generated-actions-nf4" if generated else "native-nf4")
     assert benchmark_calls[0]["travel_challenges_only"] is (mode == "challenges")
     assert initial_receipts[0]["travel_transfer_only"] is (mode == "transfer")
@@ -333,6 +338,9 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
         assert not adapter_calls and not helper_calls
     if generated:
         assert receipt["decision_model"]["policy"] == "greedy_legal_action_v2"
+        assert receipt["decision_model"]["decoding_constraint"] == (
+            "legal_action_token_trie_v1" if policy == "grammar" else "none"
+        )
         assert receipt["decision_model"]["max_new_tokens"] == 32
         assert receipt["decision_model"]["budget_seconds"] == 20
     assert receipt["stage"] == (
