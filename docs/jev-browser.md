@@ -569,12 +569,27 @@ implementation passes 1978 checks with 173 optional-dependency skips, including
 actual Chromium harness tests; separate native CPU generation checks pass.
 These test counts are software checks, not model task scores.
 
-The next implementation under review trains a small attention adapter on the
-existing audited training trajectories to generate the next legal action.
-It has no completed fitting or browser result yet. Its text helper will retain
-the original checkpoint behavior, and transfer identities remain excluded from
-fitting. The original diagnostic followed by all ten development and three
-exposed travel regressions must pass before a new transfer evaluation.
+The [native action adapter fit](../artifacts/jev-browser/20261015-action-lora-fit-01/receipt.json)
+completed one seeded epoch over the existing 425 audited training states. It
+updates 5,193,728 FP32 LoRA parameters in the text attention query/value
+projections of the BF16 backbone; the original backbone and full vocabulary
+head stay frozen. All 66 development states are evaluated without updates.
+The [independent final audit](../artifacts/jev-browser/20261015-action-lora-fit-01-final-independent-audit.json)
+checks the exact epoch, all frozen source/input bytes, sealed adapter binding,
+491 entered backbone calls and 952,322 input positions. The original head hashes
+match and the recorded frozen-base version check passes. These are training
+integrity checks, not browser success rates or an independent full-base hash.
+
+Deployment uses the same pinned NF4 base and v2 prompt, with the verified adapter
+enabled for action generation and disabled for the original text helper.
+The [first original-travel diagnostic](../artifacts/jev-browser/20261015-action-lora-selection-01/candidate-original/receipt.json)
+completes 1/1 in 36.841 seconds, with six policy calls, one text call and five
+executed actions. It enables Free cancellation, selects Design, types Lisbon,
+clicks Find stays, opens Casa Flora, and returns valid DONE. Fresh page checks
+confirm the applied query is Lisbon and `searched=true`, with the correct
+property and filters. This is an exposed development case, not a transfer
+result. The same frozen configuration must pass all ten development tasks and
+three exposed travel regressions before a new transfer seed is selected.
 
 ## Historical failure diagnosis
 
