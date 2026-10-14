@@ -559,6 +559,21 @@ def collect_episode(
     return result
 
 
+def _counterfactual_comparison_bytes(payload, goal):
+    """External pair comparison only; never return this copy to an inference path.
+
+    Replace exactly the native per-question user goal. Preserve URL, every
+    offered candidate and its order, state, history, rules and model identity.
+    """
+    compared = copy.deepcopy(payload)
+    for question in compared["questions"].values():
+        instructions = question["instructions"]
+        if instructions.get("goal") != goal:
+            raise ValueError("Counterfactual wire does not retain its entire user goal")
+        instructions["goal"] = "<same user goal for external pair comparison>"
+    return json.dumps(compared, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode()
+
+
 def collect(
     *,
     upstream_path,
@@ -718,6 +733,22 @@ def collect(
                 seed=effective_seed, excluded_goal_hashes=excluded_hashes
             )
             original = make_upstream_travel_case(upstream_path)
+            # All goals use exactly the same real browser URL. Internal profile
+            # IDs belong only to the external ledgers, never a served route.
+            public_fixture = FixtureCase(
+                case_id=hashlib.sha256(original.html.encode()).hexdigest()[:24],
+                task_id="upstream_travel",
+                goal="",
+                html=original.html,
+                expected={},
+                query_string=original.query_string,
+            )
+            receipt["counterfactual_public_fixture"] = {
+                "url_suffix": public_fixture.url_suffix,
+                "html_sha256": hashlib.sha256(original.html.encode()).hexdigest(),
+                "identity_source": "pinned HTML bytes only; independent of goal, scope and seed",
+                "served_pages": 1,
+            }
             for spec in counterfactual_specs:
                 all_cases.append(
                     FixtureCase(
@@ -785,6 +816,7 @@ def collect(
                             {"label": label, "kind": kind, "text": text}
                             for label, kind, text in spec.initialization
                         ],
+                        public_url_suffix=public_fixture.url_suffix,
                     )
                 inventory_blob = (
                     json.dumps(inventory, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
@@ -809,7 +841,8 @@ def collect(
                 else [False]
             )
         ]
-        with fixture_server(all_cases) as base, sync_playwright() as runtime:
+        served_cases = [public_fixture] if travel_counterfactual_goals else all_cases
+        with fixture_server(served_cases) as base, sync_playwright() as runtime:
             options = {"headless": True}
             if chromium_executable:
                 options["executable_path"] = chromium_executable
@@ -830,7 +863,14 @@ def collect(
                             f"{split}-{effective_seed}-{index:04d}-{case.task_id}-{variant}"
                         )
                         agent = agent_module.Agent(
-                            base + case.url_suffix, case.goal, screenshots=False
+                            base
+                            + (
+                                public_fixture.url_suffix
+                                if travel_counterfactual_goals
+                                else case.url_suffix
+                            ),
+                            case.goal,
+                            screenshots=False,
                         )
                         try:
                             recovery_options = {}
@@ -865,6 +905,7 @@ def collect(
                                     ),
                                     "recovery_submitted": submitted,
                                 }
+                            first_wire = len(wires)
                             episode = collect_episode(
                                 agent,
                                 agent_module,
@@ -893,11 +934,18 @@ def collect(
                                     query_required=spec.query_required,
                                 )
                                 actual = episode["initial_verified_dom"]["observed"]
+                                compared_wire = _counterfactual_comparison_bytes(
+                                    wires[first_wire]["payload"], case.goal
+                                )
+                                episode["first_wire_goal_comparison_sha256"] = hashlib.sha256(
+                                    compared_wire
+                                ).hexdigest()
                                 signature = {
                                     "html_sha256": episode["initialization_html_sha256"],
                                     "history": episode["initialization_history"],
                                     "result": actual["result"],
                                     "typed_destination": actual.get("typed_destination"),
+                                    "native_payload_goal_only_replaced": compared_wire,
                                 }
                                 pair = counterfactual_pairs.setdefault(spec.pair_id, [])
                                 if pair and pair[0] != signature:
@@ -915,7 +963,11 @@ def collect(
             receipt["counterfactual_pair_verification"] = {
                 "success": True,
                 "pairs": len(counterfactual_pairs),
-                "compared": "initial HTML, guarded history, actual application state, typed text",
+                "compared": (
+                    "initial HTML, guarded history, actual application state, typed text, "
+                    "complete first native payload bytes with only questions.*.instructions.goal "
+                    "replaced by a common placeholder; no field or candidate-order exclusions"
+                ),
             }
         receipt["stage"] = "complete"
     except BaseException as exc:

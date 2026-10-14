@@ -485,12 +485,23 @@ def mock_counterfactual_collection(monkeypatch, tmp_path, *, drift=None, mismatc
         co_filename=str(ROOT / "scripts" / "jev_browser_benchmark.py")
     )
     monkeypatch.setattr(COLLECTOR, "make_cases", forbidden_generator)
+    agent_urls = []
+
+    def agent(url, *_args, **_kwargs):
+        agent_urls.append(url)
+        return SimpleNamespace(url=url, close=lambda: None)
+
+    served = []
+
+    def serve(cases):
+        served.extend(cases)
+        return nullcontext("http://unit")
+
+    monkeypatch.setattr(COLLECTOR, "fixture_server", serve)
     monkeypatch.setattr(
         COLLECTOR,
         "load_upstream",
-        lambda *_args: nullcontext(
-            (SimpleNamespace(Agent=lambda *_a, **_k: SimpleNamespace(close=lambda: None)), None)
-        ),
+        lambda *_args: nullcontext((SimpleNamespace(Agent=agent), None)),
     )
     calls = []
 
@@ -501,6 +512,16 @@ def mock_counterfactual_collection(monkeypatch, tmp_path, *, drift=None, mismatc
         assert len(inventory["cases"]) == 32
         assert (output / "counterfactual_exclusions.json").read_bytes() == excluded.read_bytes()
         assert all("initialization" in entry for entry in inventory["cases"])
+        assert len(served) == 1
+        assert {entry["public_url_suffix"] for entry in inventory["cases"]} == {
+            served[0].url_suffix
+        }
+        assert set(agent_urls) == {"http://unit" + served[0].url_suffix}
+        assert all(
+            token not in _agent.url
+            for token in ("query0", "query1", "family", "listing", "detail", "free")
+        )
+        assert len(served[0].case_id) == 24
         assert options["dynamic_travel"] is True and not options["recover_early_open"]
         init = options["counterfactual_initialization"]
         history = [{"action": a.label, "kind": a.kind, "text": a.text} for a in init]
@@ -512,6 +533,20 @@ def mock_counterfactual_collection(monkeypatch, tmp_path, *, drift=None, mismatc
             key: value for key, value in case.expected.items() if key not in {"query", "searched"}
         }
         result.update(query="", searched=False, hash="")
+        options["wires"].append(
+            {
+                "payload": {
+                    "model": "unit-teacher",
+                    "state": {"page": {"url": _agent.url}, "recent_actions": history},
+                    "questions": {
+                        "operation": {
+                            "instructions": {"goal": case.goal},
+                            "criteria": {"DONE": "Finish"},
+                        }
+                    },
+                }
+            }
+        )
         return {
             "episode_id": options["episode_id"],
             "initialization_history": history,
@@ -541,12 +576,45 @@ def test_counterfactual_only_schedule_preserves_inputs_before_mock_collection(
     )
     assert receipt["ordinary_seed"] == 20261001
     assert receipt["counterfactual_pair_verification"]["pairs"] == 16
+    assert receipt["counterfactual_public_fixture"]["served_pages"] == 1
+    assert all("first_wire_goal_comparison_sha256" in e for e in receipt["episodes"])
     assert receipt["counterfactual_exclusion_verification"]["success"]
     assert receipt["training_goal_input_verification"]["success"]
     assert {case.html for case, _ in calls} == {"<html>Owned exposed training HTML</html>"}
     assert len({options["episode_id"] for _, options in calls}) == 32
     assert all("20261006" in options["episode_id"] for _, options in calls)
     assert "s1/browser_training_counterfactuals.py" in receipt["source_manifest"]["files"]
+
+
+def test_counterfactual_payload_comparison_replaces_only_goals_and_retains_candidate_order():
+    import copy
+
+    payload = {
+        "model": "native",
+        "state": {"page": {"url": "http://unit/tasks/opaque"}, "recent_actions": []},
+        "questions": {
+            "operation": {
+                "instructions": {"goal": "First goal", "rules": "Unchanged"},
+                "criteria": {"CLICK": "Click", "DONE": "Finish"},
+            },
+            "click_target": {
+                "instructions": {"goal": "First goal"},
+                "criteria": {"2": "Second", "1": "First"},
+            },
+        },
+    }
+    original = copy.deepcopy(payload)
+    baseline = COLLECTOR._counterfactual_comparison_bytes(payload, "First goal")
+    assert payload == original
+    changed = copy.deepcopy(payload)
+    for question in changed["questions"].values():
+        question["instructions"]["goal"] = "Second goal"
+    assert COLLECTOR._counterfactual_comparison_bytes(changed, "Second goal") == baseline
+    changed["state"]["page"]["url"] += "-query1"
+    assert COLLECTOR._counterfactual_comparison_bytes(changed, "Second goal") != baseline
+    changed = copy.deepcopy(payload)
+    changed["questions"]["click_target"]["criteria"] = {"1": "First", "2": "Second"}
+    assert COLLECTOR._counterfactual_comparison_bytes(changed, "First goal") != baseline
 
 
 @pytest.mark.parametrize("drift", ["original", "frozen"])
