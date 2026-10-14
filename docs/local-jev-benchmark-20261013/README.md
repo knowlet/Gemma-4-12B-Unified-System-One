@@ -39,3 +39,9 @@ Q8_0 為 **9.588／10.588 秒**。兩組依序執行，沒有控制熱狀態與 
 
 [所有日期的驗證索引](../validation/README.md)保留此前的公開 JevBench、
 coherence 與 CPU replay 證據；本機 fixture 不代表 sealed evaluation 或正式排名。
+
+[October 14 修正與真實 native parity](offline-optimization/report.md)保留原
+6/24 結果；deadline、中斷保存與 bridge lifecycle 修正通過 334 個離線測試。
+新授權的程序檢查與編譯後，完成 24 次真實 native score：關閉 prefix reuse
+與原版數值一致，開啟後四次重複輸入超出固定容差，因此未進入瀏覽器比較。
+批次邊界修正仍未編譯；尚無通過驗收的加速或完成率改善。
