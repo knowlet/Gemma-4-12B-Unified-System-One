@@ -147,7 +147,15 @@ class BrowserDecisionBackend:
         prompt_mode="native",
         analysis_style="detailed",
         decision_readout=None,
+        prefix_cache=False,
+        prefix_suffix_batch_size=1,
     ):
+        if type(prefix_cache) is not bool:
+            raise ValueError("prefix_cache must be an explicit boolean")
+        if type(prefix_suffix_batch_size) is not int or prefix_suffix_batch_size not in (1, 2):
+            raise ValueError("prefix_suffix_batch_size must be the integer 1 or 2")
+        if prefix_suffix_batch_size != 1 and not prefix_cache:
+            raise ValueError("prefix_suffix_batch_size=2 requires prefix_cache")
         if prompt_mode not in ("native", "user", "reasoned", "grounded", "goal-first"):
             raise ValueError("prompt_mode must be native, user, reasoned, grounded or goal-first")
         if analysis_style not in ("detailed", "compact"):
@@ -156,12 +164,16 @@ class BrowserDecisionBackend:
             raise ValueError("compact analysis_style requires reasoned prompt mode")
         if decision_readout is not None and prompt_mode not in ("user", "grounded", "goal-first"):
             raise ValueError("decision_readout supports only user, grounded and goal-first modes")
+        if prefix_cache and prompt_mode not in ("user", "grounded", "goal-first"):
+            raise ValueError("prefix_cache supports only user, grounded and goal-first modes")
         self.model = model
         self.name = model.name
         self.prompt_mode = prompt_mode
         self.analysis_style = analysis_style
         self.decision_readout = decision_readout
         self.decision_readout_metadata = None
+        self.prefix_cache = prefix_cache
+        self.prefix_suffix_batch_size = prefix_suffix_batch_size
         self.supports_stage_batching = prompt_mode != "reasoned"
         self.prompt_variant = {
             "native": "native",
@@ -180,6 +192,12 @@ class BrowserDecisionBackend:
             "research_prompt_mode": "current" if prompt_mode == "native" else "user_question",
             "independent_questions": prompt_mode != "native",
         }
+        if prefix_cache:
+            self.metadata.update(
+                prefix_cache=True,
+                prefix_cache_policy="shared_prefix_dynamic_cache_v1",
+                prefix_suffix_batch_size=prefix_suffix_batch_size,
+            )
         if prompt_mode == "reasoned":
             self.metadata["analysis_generation"] = "greedy_native_same_model"
             self.metadata["analysis_max_new_tokens"] = ANALYSIS_MAX_NEW_TOKENS
@@ -444,6 +462,8 @@ class BrowserDecisionBackend:
         return analysis
 
     def predict(self, request: DecisionRequest) -> dict:
+        if self.prefix_cache:
+            return self.predict_batch([request])[0]
         if self.prompt_mode == "native":
             return self.model.predict(request)
         if request.media:
@@ -545,6 +565,228 @@ class BrowserDecisionBackend:
         if self.decision_readout_metadata is not None:
             response["decision_readout"] = copy.deepcopy(self.decision_readout_metadata)
         return response
+
+    def _prefix_responses(self, requests, rows, indices, row_responses, prefix, started):
+        """Aggregate completed question rows into complete original requests only."""
+        from .backends import normalize_response
+
+        if not isinstance(indices, list) or not isinstance(row_responses, list):
+            raise BackendResponseError("prefix completed row indices and responses must be lists")
+        if len(indices) != len(row_responses) or len(set(indices)) != len(indices):
+            raise BackendResponseError("prefix row completion counts or indices differ")
+        answers, owned_tokens, context_tokens, allocations, refs, lengths, question_tokens = (
+            [{} for _ in requests],
+            [0 for _ in requests],
+            [0 for _ in requests],
+            [0 for _ in requests],
+            [[] for _ in requests],
+            [[] for _ in requests],
+            [{} for _ in requests],
+        )
+        reused = [0 for _ in requests]
+        logical_tokens, padding_tokens = [0 for _ in requests], [0 for _ in requests]
+        batch_id = prefix.get("batch_id")
+        if not isinstance(batch_id, str) or not batch_id:
+            raise BackendResponseError("prefix evidence must identify its actual shared batch")
+        for row_index, raw in zip(indices, row_responses, strict=True):
+            if type(row_index) is not int or not 0 <= row_index < len(rows):
+                raise BackendResponseError(
+                    "prefix completed row index is outside the original rows"
+                )
+            row = rows[row_index]
+            result = normalize_response(row["request"], raw)
+            if result.get("model") != self.model.name:
+                raise BackendResponseError("prefix row reported a different base model")
+            execution = result.get("execution")
+            if not isinstance(execution, dict) or execution.get("batch_id") != batch_id:
+                raise BackendResponseError("prefix rows reported different shared batches")
+            if execution.get("forward_calls_scope") != "allocated_once_per_shared_browser_batch":
+                raise BackendResponseError("prefix forward counts must have explicit ownership")
+            computed = result.get("usage", {}).get("input_tokens")
+            forwards = execution.get("forward_calls")
+            reused_tokens = execution.get("reused_prefix_tokens")
+            logical = execution.get("logical_computed_input_tokens", computed)
+            padding = execution.get("padding_input_tokens", 0)
+            if any(
+                type(value) is not int or value < 0
+                for value in (computed, forwards, reused_tokens, logical, padding)
+            ):
+                raise BackendResponseError(
+                    "prefix compute and forward ownership must be nonnegative integers"
+                )
+            if logical + padding != computed:
+                raise BackendResponseError(
+                    "prefix physical work differs from logical tokens plus padding"
+                )
+            index, length = row["request_index"], row["prepared"][0]["input_ids"].shape[1]
+            question = row["request"].questions[0]
+            if execution.get("context_input_tokens") != length or execution.get(
+                "question_input_tokens"
+            ) != {question.id: length}:
+                raise BackendResponseError(
+                    "prefix full-context accounting differs from the original row"
+                )
+            answers[index].update(result["answers"])
+            owned_tokens[index] += computed
+            logical_tokens[index] += logical
+            padding_tokens[index] += padding
+            context_tokens[index] += length
+            allocations[index] += forwards
+            reused[index] += reused_tokens
+            lengths[index].append(length)
+            question_tokens[index][question.id] = length
+            references = execution.get("forward_refs")
+            if not isinstance(references, list):
+                raise BackendResponseError("prefix forward references must be a list")
+            for ref in references:
+                if ref not in refs[index]:
+                    refs[index].append(copy.deepcopy(ref))
+        elapsed = (time.perf_counter() - started) * 1000
+        forward_calls = len(prefix.get("forwards", []))
+        completed = []
+        for index, request in enumerate(requests):
+            if set(answers[index]) != {question.id for question in request.questions}:
+                continue
+            execution = {
+                "batch_id": batch_id,
+                "forward_calls": allocations[index],
+                "forward_calls_scope": "allocated_once_per_shared_browser_batch",
+                "batch_forward_calls": forward_calls,
+                "batch_forward_calls_scope": "whole_browser_batch",
+                "batch_elapsed_ms": elapsed,
+                "latency_scope": "whole_browser_batch",
+                "forward_refs": refs[index],
+                "batch_chunk_ids": list(dict.fromkeys(ref["chunk_id"] for ref in refs[index])),
+                "max_forward_batch_size": max(
+                    (forward.get("batch_size", 1) for forward in prefix.get("forwards", [])),
+                    default=1,
+                ),
+                "prefix_suffix_batch_size": self.prefix_suffix_batch_size,
+                "max_live_cache_forks": 1,
+                "input_tokens": owned_tokens[index],
+                "computed_input_tokens": owned_tokens[index],
+                "logical_computed_input_tokens": logical_tokens[index],
+                "padding_input_tokens": padding_tokens[index],
+                "context_input_tokens": context_tokens[index],
+                "question_input_tokens": question_tokens[index],
+                "sequence_tokens": lengths[index],
+                "sequence_tokens_scope": "full_original_question_contexts",
+                "reused_prefix_tokens": reused[index],
+                "independent_questions": True,
+                "research_prompt_mode": "user_question",
+                "policy_variant": "shared_prefix_dynamic_cache_v1",
+                "batch_computed_input_tokens": prefix.get("computed_input_tokens"),
+                "batch_logical_computed_input_tokens": prefix.get("logical_computed_input_tokens"),
+                "batch_padding_input_tokens": prefix.get("padding_input_tokens"),
+                "batch_full_context_input_tokens": prefix.get("full_context_input_tokens"),
+            }
+            response = {
+                "answers": {
+                    question.id: answers[index][question.id] for question in request.questions
+                },
+                "model": self.name,
+                "revision": getattr(self.model, "revision", None),
+                "temperature": self.model.temperature,
+                "prompt_mode": self.prompt_mode,
+                "prompt_variant": self.prompt_variant,
+                "prefix_cache": True,
+                "prefix_suffix_batch_size": self.prefix_suffix_batch_size,
+                "passes": allocations[index],
+                "latency_ms": elapsed,
+                "batch_elapsed_ms": elapsed,
+                "latency_scope": "whole_browser_batch",
+                "execution": execution,
+                "usage": {"input_tokens": owned_tokens[index], "output_tokens": 0},
+            }
+            if self.decision_readout_metadata is not None:
+                response["decision_readout"] = copy.deepcopy(self.decision_readout_metadata)
+            completed.append((index, response))
+        return completed
+
+    def _predict_prefix_requests(self, requests, rows, started):
+        from .browser_prefix import predict_prefix
+
+        raw_rows, prefix = None, None
+        mapping = [row["request_index"] for row in rows]
+        try:
+            raw_rows = predict_prefix(
+                self.model,
+                rows,
+                prompt_mode=self.prompt_mode,
+                readout=self.decision_readout.project
+                if self.decision_readout is not None
+                else None,
+                **(
+                    {"max_suffix_batch_size": self.prefix_suffix_batch_size}
+                    if self.prefix_suffix_batch_size != 1
+                    else {}
+                ),
+            )
+            if not isinstance(raw_rows, list) or len(raw_rows) != len(rows):
+                raise BackendResponseError("prefix utility must return every original question row")
+            prefix = raw_rows[0].get("prefix") if isinstance(raw_rows[0], dict) else None
+            if not isinstance(prefix, dict):
+                raise BackendResponseError("prefix utility did not retain its shared ledger")
+            completed = self._prefix_responses(
+                requests, rows, list(range(len(rows))), raw_rows, prefix, started
+            )
+            if len(completed) != len(requests):
+                raise BackendResponseError(
+                    "prefix aggregation did not complete every original request"
+                )
+            ledger = copy.deepcopy(prefix)
+            ledger["row_to_request_index"] = mapping
+            ledger["request_aggregation"] = {
+                "index_scope": "original_backend_request_indices",
+                "completed_response_indices": [index for index, _response in completed],
+                "completed_responses": [copy.deepcopy(response) for _index, response in completed],
+            }
+            ordered = [response for _index, response in completed]
+            ordered[0]["prefix"] = ledger
+            return ordered
+        except Exception as exc:
+            original_prefix = getattr(exc, "prefix_evidence", None)
+            if original_prefix is not None:
+                prefix = original_prefix
+            if not isinstance(prefix, dict):
+                prefix = {
+                    "status": "failed",
+                    "failure_stage": "request_aggregation",
+                    "completed_response_indices": [],
+                    "completed_responses": [],
+                    "raw_row_responses": raw_rows,
+                }
+            indices = prefix.get("completed_response_indices", [])
+            partial = prefix.get("completed_responses", [])
+            try:
+                completed = self._prefix_responses(
+                    requests, rows, indices, partial, prefix, started
+                )
+                aggregation_error = None
+            except Exception as aggregation_exc:
+                completed = []
+                aggregation_error = f"{type(aggregation_exc).__name__}: {aggregation_exc}"
+            evidence = {
+                "version": "browser_prefix_request_batch_v1",
+                "index_scope": "original_backend_request_indices",
+                "status": "failed",
+                "failure_stage": prefix.get("failure_stage", "request_aggregation"),
+                "error": f"{type(exc).__name__}: {exc}",
+                "row_to_request_index": mapping,
+                "completed_row_response_indices": copy.deepcopy(indices),
+                "completed_row_responses": copy.deepcopy(partial),
+                "completed_response_indices": [index for index, _response in completed],
+                "completed_responses": [response for _index, response in completed],
+                "requests": [request.model_dump(exclude_none=True) for request in requests],
+                "prefix_evidence": copy.deepcopy(prefix),
+                "aggregation_error": aggregation_error,
+                "elapsed_ms": (time.perf_counter() - started) * 1000,
+            }
+            exc.prefix_evidence = prefix
+            exc.batch_evidence = evidence
+            if not hasattr(exc, "generation"):
+                exc.generation = evidence
+            raise
 
     def predict_batch(self, requests):
         """Preserve each prompt while forwarding at most two prepared rows together.
@@ -678,6 +920,8 @@ class BrowserDecisionBackend:
                     )
             trace.pop("preflight_request_index", None)
             trace["status"] = "forwarding"
+            if self.prefix_cache:
+                return self._predict_prefix_requests(requests, rows, started)
             # A chunk contains one compatible forward group. Keep incompatible
             # media rows in separate chunks so a later failure cannot obscure
             # the completed answer from an earlier genuine forward.
@@ -759,6 +1003,9 @@ class BrowserDecisionBackend:
             ordered[0]["browser_batch_evidence"] = trace
             return ordered
         except Exception as exc:
+            if self.prefix_cache and isinstance(getattr(exc, "batch_evidence", None), dict):
+                if exc.batch_evidence.get("index_scope") == "original_backend_request_indices":
+                    raise
             completed = responses()
             trace.update(
                 status="failed",
