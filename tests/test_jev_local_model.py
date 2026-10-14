@@ -89,16 +89,31 @@ def test_travel_challenges_reject_incompatible_scope_before_upstream_or_weights(
 
 
 @pytest.mark.parametrize("mode", [None, "challenges", "transfer"])
+@pytest.mark.parametrize(
+    "journal_mode", ["off", "completed", "pending", "observer_failure", "snapshot_failure"]
+)
 def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_runtime(
-    tmp_path, monkeypatch, mode
+    tmp_path, monkeypatch, mode, journal_mode
 ):
     import json
     from types import SimpleNamespace
 
     from s1 import api, browser_evidence, browser_policy, browser_text, unified
+    from s1.browser_server_evidence import ServerEvidenceJournal
+
+    if journal_mode == "snapshot_failure":
+
+        def broken_snapshot(_journal):
+            raise OSError("diagnostic index failure")
+
+        monkeypatch.setattr(ServerEvidenceJournal, "snapshot", broken_snapshot)
 
     output = tmp_path / "run"
     initial_receipts, benchmark_calls, model_calls, sockets, threads = [], [], [], [], []
+    application = SimpleNamespace(
+        state=SimpleNamespace(request_evidence_errors=[], request_evidence_timings=[])
+    )
+    sinks = []
 
     def capture(destination, **_kwargs):
         initial_receipts.append(json.loads((destination / "receipt.json").read_text()))
@@ -144,7 +159,12 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
         "BrowserDecisionBackend",
         lambda _model, **_kwargs: SimpleNamespace(prompt_variant="native"),
     )
-    monkeypatch.setattr(api, "create_app", lambda *_args, **_kwargs: "mock application")
+
+    def create_app(*_args, **kwargs):
+        sinks.append(kwargs["request_evidence_sink"])
+        return application
+
+    monkeypatch.setattr(api, "create_app", create_app)
     monkeypatch.setattr(
         browser_text,
         "generate_field_text",
@@ -167,12 +187,19 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
 
     class Server:
         def __init__(self, config):
-            assert config == "mock application"
+            assert config is application
             self.started = False
             self.should_exit = False
 
         def run(self, *, sockets):
             assert len(sockets) == 1
+            if journal_mode != "off":
+                assert (
+                    json.loads((output / "receipt.json").read_text())["server_evidence"][
+                        "artifact_path"
+                    ]
+                    == "server-evidence"
+                )
             self.started = True
 
     class Thread:
@@ -189,7 +216,7 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
             self.joined = True
 
         def is_alive(self):
-            return False
+            return journal_mode == "pending"
 
     monkeypatch.setattr(DRIVER, "socket", SimpleNamespace(socket=Listener))
     monkeypatch.setattr(DRIVER, "threading", SimpleNamespace(Thread=Thread))
@@ -201,11 +228,40 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
 
     def benchmark(**kwargs):
         benchmark_calls.append(kwargs)
+        if journal_mode != "off":
+            sink = sinks[0]
+            assert sink is not None
+            sink({"request_id": "b" * 32, "sequence": 0, "event": "request_started", "data": {}})
+            application.state.request_evidence_timings.append({"elapsed_ms": 1.25})
+            if journal_mode == "snapshot_failure":
+                raise RuntimeError("actual benchmark failure before index failure")
+            if journal_mode != "pending":
+                sink(
+                    {
+                        "request_id": "b" * 32,
+                        "sequence": 1,
+                        "event": "server_returned",
+                        "data": {"response": "mock computed result"},
+                    }
+                )
+                application.state.request_evidence_timings.append({"elapsed_ms": 2.5})
+            if journal_mode == "observer_failure":
+                application.state.request_evidence_errors.append(
+                    {"type": "OSError", "message": "diagnostic observer failure"}
+                )
         return {"scope": "mock forwarding only", "attempts": 0}
 
     monkeypatch.setattr(DRIVER, "run_benchmark", benchmark)
     options = [f"--travel-{mode}-only", "--suite-split", "development"] if mode else []
-    DRIVER.main(["--upstream-path", "unused", "--output-dir", str(output), *options])
+    if journal_mode != "off":
+        options.append("--server-evidence")
+    arguments = ["--upstream-path", "unused", "--output-dir", str(output), *options]
+    if journal_mode in {"pending", "observer_failure", "snapshot_failure"}:
+        with pytest.raises(SystemExit) as error:
+            DRIVER.main(arguments)
+        assert error.value.code == 1
+    else:
+        DRIVER.main(arguments)
     assert len(initial_receipts) == len(benchmark_calls) == len(model_calls) == 1
     assert initial_receipts[0]["travel_challenges_only"] is (mode == "challenges")
     assert benchmark_calls[0]["travel_challenges_only"] is (mode == "challenges")
@@ -215,9 +271,44 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
     assert benchmark_calls[0]["task_ids"] is None
     assert benchmark_calls[0]["live_url"] is None
     receipt = json.loads((output / "receipt.json").read_text())
-    assert receipt["stage"] == "complete"
+    assert receipt["stage"] == (
+        "browser_benchmark" if journal_mode == "snapshot_failure" else "complete"
+    )
     assert receipt["travel_challenges_only"] is (mode == "challenges")
     assert receipt["travel_transfer_only"] is (mode == "transfer")
+    if journal_mode == "snapshot_failure":
+        assert receipt["error"] == {
+            "type": "RuntimeError",
+            "message": "actual benchmark failure before index failure",
+        }
+        assert receipt["cleanup_errors"] == [
+            {"stage": "server_evidence", "message": "diagnostic index failure"}
+        ]
+        assert receipt["server_evidence"]["artifact_path"] == "server-evidence"
+        assert "index_path" not in receipt["server_evidence"]
+        assert sockets[0].closed is True and threads[0].joined is True
+        return
     assert receipt["summary"] == {"scope": "mock forwarding only", "attempts": 0}
-    assert "error" not in receipt and "cleanup_errors" not in receipt
+    assert "error" not in receipt
+    if journal_mode == "off":
+        assert sinks == [None]
+        assert "server_evidence" not in receipt and not (output / "server-evidence").exists()
+        assert "cleanup_errors" not in receipt
+    else:
+        evidence = receipt["server_evidence"]
+        assert evidence["index_path"] == "server-evidence/index.json"
+        index = json.loads((output / evidence["index_path"]).read_text())
+        assert index["requests"] == evidence["requests"]
+        assert index["pending_request_ids"] == (["b" * 32] if journal_mode == "pending" else [])
+        assert index["all_requests_sealed"] is (journal_mode == "completed")
+        assert evidence["observer_calls"] == (1 if journal_mode == "pending" else 2)
+        assert evidence["observer_elapsed_ms"] == (1.25 if journal_mode == "pending" else 3.75)
+        if journal_mode in {"pending", "observer_failure"}:
+            assert receipt["cleanup_errors"][0]["stage"] == (
+                "thread_shutdown" if journal_mode == "pending" else "server_evidence"
+            )
+        else:
+            assert "cleanup_errors" not in receipt
+        if journal_mode == "observer_failure":
+            assert evidence["observer_errors"] == application.state.request_evidence_errors
     assert sockets[0].closed is True and threads[0].joined is True

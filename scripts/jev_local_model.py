@@ -43,6 +43,7 @@ def main(argv=None):
     parser.add_argument("--tasks", nargs="+")
     parser.add_argument("--travel-challenges-only", action="store_true")
     parser.add_argument("--travel-transfer-only", action="store_true")
+    parser.add_argument("--server-evidence", action="store_true")
     parser.add_argument("--chromium-executable")
     parser.add_argument("--live-url")
     parser.add_argument("--live-goal")
@@ -120,9 +121,10 @@ def main(argv=None):
         "upstream": upstream,
     }
     (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
-    server, thread, listener = None, None, None
+    server, thread, listener, application = None, None, None, None
     thread_started = False
     source_manifest = None
+    server_journal = None
     source_files = {
         "scripts/jev_local_model.py": Path(__file__),
         "scripts/jev_browser_benchmark.py": Path(run_benchmark.__code__.co_filename),
@@ -130,10 +132,17 @@ def main(argv=None):
     started = time.perf_counter()
     try:
         from s1.browser_evidence import capture_runtime_sources, verify_runtime_sources
+        from s1.browser_server_evidence import ServerEvidenceJournal
 
         receipt["stage"] = "source_capture"
         source_manifest = capture_runtime_sources(destination, additional_files=source_files)
         receipt["source_manifest"] = source_manifest
+        if args.server_evidence:
+            server_journal = ServerEvidenceJournal(destination / "server-evidence")
+            receipt["server_evidence"] = {
+                "artifact_path": "server-evidence",
+                "scope": "server computation only; HTTP delivery unknown; unfinished requests remain unsealed",
+            }
         receipt["stage"] = "dependencies"
         import torch
         import uvicorn
@@ -266,6 +275,7 @@ def main(argv=None):
             jev_hierarchical=args.hierarchical_candidates,
             jev_hierarchical_batch=args.batch_hierarchy_stages,
             model_identity=cell,
+            request_evidence_sink=server_journal,
         )
         listener = socket.socket()
         listener.bind(("127.0.0.1", 0))
@@ -331,6 +341,36 @@ def main(argv=None):
                 listener.close()
             except Exception as exc:
                 cleanup_errors.append({"stage": "socket_shutdown", "message": str(exc)})
+        if server_journal is not None:
+            try:
+                index = server_journal.snapshot()
+                state = getattr(application, "state", None)
+                index["observer_errors"] = list(getattr(state, "request_evidence_errors", []))
+                failed_ids = {item.get("request_id") for item in index["observer_errors"]}
+                for row in index["requests"]:
+                    if row["request_id"] in failed_ids:
+                        row.update(observer_failed=True, sealed=False)
+                index["all_requests_sealed"] = not index["observer_errors"] and all(
+                    row["sealed"] for row in index["requests"]
+                )
+                timings = list(getattr(state, "request_evidence_timings", []))
+                index["observer_calls"] = len(timings)
+                index["observer_elapsed_ms"] = sum(item["elapsed_ms"] for item in timings)
+                index["observer_timing_scope"] = (
+                    "synchronous API observer callbacks; hierarchy checkpoints count toward its unchanged wall-clock budget"
+                )
+                index_path = destination / "server-evidence" / "index.json"
+                index_path.write_text(json.dumps(index, indent=2) + "\n")
+                receipt["server_evidence"].update(index_path="server-evidence/index.json", **index)
+                if index["errors"] or index["observer_errors"]:
+                    cleanup_errors.append(
+                        {
+                            "stage": "server_evidence",
+                            "message": "Server evidence writes failed; see journal index",
+                        }
+                    )
+            except Exception as exc:
+                cleanup_errors.append({"stage": "server_evidence", "message": str(exc)})
         if cleanup_errors:
             receipt["cleanup_errors"] = cleanup_errors
         receipt["elapsed_ms"] = (time.perf_counter() - started) * 1000

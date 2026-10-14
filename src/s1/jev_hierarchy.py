@@ -128,6 +128,7 @@ class JevHierarchicalAdapter:
         max_payload_bytes=1_000_000,
         budget_seconds=20,
         batch_stages=False,
+        evidence_sink=None,
     ):
         if type(batch_stages) is not bool:
             raise ValueError("batch_stages must be a boolean")
@@ -148,13 +149,104 @@ class JevHierarchicalAdapter:
         ):
             raise ValueError("budget_seconds must be positive and finite")
         self.backend = backend
-        self.compatible = JevCompatibilityAdapter(backend, model_identity=model_identity)
+        self.compatible = JevCompatibilityAdapter(
+            backend,
+            model_identity=model_identity,
+            **({"evidence_sink": evidence_sink} if evidence_sink is not None else {}),
+        )
         self.branch_width = branch_width
         self.max_targets = max_targets
         self.max_stage_calls = max_stage_calls
         self.max_payload_bytes = max_payload_bytes
         self.budget_seconds = budget_seconds
         self.batch_stages = batch_stages
+        self.evidence_sink = evidence_sink
+
+    def _emit(self, event, audit, stage_index=None):
+        if self.evidence_sink is not None:
+            # The API wraps this optional observer so I/O failures cannot alter
+            # inference or mask its original error. Direct callers get the same
+            # protection; errors remain inspectable separately.
+            try:
+                # Checkpoint deltas keep each native input/raw result once.
+                # The API separately journals one complete terminal result or
+                # exception; copying the growing audit here would be quadratic.
+                delta = {"status": audit["status"]}
+                if event == "planned":
+                    for key in (
+                        "original_request_sha256",
+                        "heads",
+                        "limits",
+                        "planned_backend_calls",
+                    ):
+                        if key in audit:
+                            delta[key] = audit[key]
+                    delta["stages"] = [
+                        {
+                            "stage_index": index,
+                            **{key: stage.get(key) for key in ("scope", "head", "group", "status")},
+                        }
+                        for index, stage in enumerate(audit["stages"])
+                    ]
+                elif event == "preflight_finished":
+                    delta["stages"] = [
+                        {
+                            "stage_index": index,
+                            **{
+                                key: stage[key]
+                                for key in ("preflight", "preflight_elapsed_ms")
+                                if key in stage
+                            },
+                        }
+                        for index, stage in enumerate(audit["stages"])
+                    ]
+                elif event.startswith("batch_"):
+                    execution = audit["batch_execution"]
+                    if event == "batch_started":
+                        delta["stages"] = [
+                            {"stage_index": index, "request": audit["stages"][index]["request"]}
+                            for index in execution["stage_indices"]
+                        ]
+                    if event == "batch_raw_returned":
+                        delta["batch_execution"] = {
+                            "stage_indices": execution["stage_indices"],
+                            "raw_responses": execution["raw_responses"],
+                        }
+                    else:
+                        delta["batch_execution"] = {
+                            key: value
+                            for key, value in execution.items()
+                            if key not in {"raw_responses", "backend_execution"}
+                        }
+                elif stage_index is not None:
+                    stage = audit["stages"][stage_index]
+                    keys = (
+                        ("request", "scope", "head", "group")
+                        if event == "stage_started"
+                        else ("raw_response",)
+                        if event == "stage_raw_returned"
+                        else ("status", "elapsed_ms", "latency_scope", "error", "error_stage")
+                    )
+                    delta["stages"] = [
+                        {
+                            "stage_index": stage_index,
+                            **{key: stage[key] for key in keys if key in stage},
+                        }
+                    ]
+                else:
+                    for key in (
+                        "elapsed_ms",
+                        "error",
+                        "backend_predict_calls",
+                        "backend_predict_batch_calls",
+                    ):
+                        if key in audit:
+                            delta[key] = audit[key]
+                self.evidence_sink({"event": event, "audit": _evidence(delta)})
+            except BaseException as exc:
+                audit.setdefault("evidence_sink_errors", []).append(
+                    {"type": type(exc).__name__, "message": str(exc)}
+                )
 
     def _deadline(self, started):
         if time.monotonic() - started >= self.budget_seconds:
@@ -547,6 +639,7 @@ class JevHierarchicalAdapter:
             audit["backend_predict_batch_calls"] += 1
             audit["stage_batching"]["used"] = True
             execution["backend_call_status"] = "running"
+            self._emit("batch_started", audit)
             raw_results = self.backend.predict_batch(
                 [stage.request.model_copy(deep=True) for _, stage in native]
             )
@@ -554,6 +647,7 @@ class JevHierarchicalAdapter:
             # Record the entire return before inspecting count, identity or
             # probabilities; later invalid rows must not erase genuine outputs.
             execution["raw_responses"] = _evidence(raw_results)
+            self._emit("batch_raw_returned", audit)
             if not isinstance(raw_results, list):
                 raise BackendResponseError("hierarchy predict_batch must return an ordered list")
             execution["response_count"] = len(raw_results)
@@ -585,6 +679,7 @@ class JevHierarchicalAdapter:
             raise
         finally:
             execution["elapsed_ms"] = (time.monotonic() - batch_started) * 1000
+            self._emit("batch_finished", audit)
 
     def predict(self, payload):
         started = time.monotonic()
@@ -611,6 +706,7 @@ class JevHierarchicalAdapter:
         }
         try:
             plan = self._plan(payload, audit)
+            self._emit("planned", audit)
             if plan is None:
                 return self.compatible.predict(payload)
             parsed, stages = plan
@@ -650,6 +746,7 @@ class JevHierarchicalAdapter:
                         stage.evidence["preflight_elapsed_ms"] = (
                             time.monotonic() - preflight_started
                         ) * 1000
+            self._emit("preflight_finished", audit)
             batch_results = self._predict_batch(stages, audit, started) if use_batch else None
             answers, identities, reported_usage = {}, set(), []
             for stage_index, stage in enumerate(stages):
@@ -665,11 +762,14 @@ class JevHierarchicalAdapter:
                     else:
                         if batch_results is None:
                             audit["backend_predict_calls"] += 1
+                            self._emit("stage_started", audit, stage_index)
                             raw_result = self.backend.predict(stage.request.model_copy(deep=True))
                         else:
                             raw_result = batch_results[stage_index]
                         stage.evidence["raw_response"] = _evidence(raw_result)
                         stage.evidence["response"] = _evidence(raw_result)
+                        if batch_results is None:
+                            self._emit("stage_raw_returned", audit, stage_index)
                         result = normalize_response(stage.request, raw_result)
                         if stage.forced_answer:
                             result["answers"].update(stage.forced_answer)
@@ -704,6 +804,7 @@ class JevHierarchicalAdapter:
                 finally:
                     if batch_results is None or stage.request is None:
                         stage.evidence["elapsed_ms"] = (time.monotonic() - stage_started) * 1000
+                    self._emit("stage_finished", audit, stage_index)
                 if stage.evidence["scope"] == "ordinary":
                     answers.update(result["answers"])
                 elif stage.evidence["scope"] == "group":
@@ -739,6 +840,7 @@ class JevHierarchicalAdapter:
                 self._deadline(started)
                 audit["batch_execution"]["status"] = "completed"
             audit.update(status="completed", elapsed_ms=(time.monotonic() - started) * 1000)
+            self._emit("hierarchy_returned", audit)
             usage = {}
             for key in ("input_tokens", "output_tokens"):
                 values = [
@@ -793,4 +895,5 @@ class JevHierarchicalAdapter:
             exc.hierarchy = audit
             if not hasattr(exc, "generation"):
                 exc.generation = audit
+            self._emit("hierarchy_failed", audit)
             raise

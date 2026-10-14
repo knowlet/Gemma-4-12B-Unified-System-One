@@ -124,11 +124,24 @@ class JevCompatibilityAdapter:
     singleton heads that are deliberately absent from the model input.
     """
 
-    def __init__(self, backend, *, model_identity=None):
+    def __init__(self, backend, *, model_identity=None, evidence_sink=None):
         self.backend = backend
+        self.evidence_sink = evidence_sink
+        self.evidence_sink_errors = []
         self.model_identity = backend.name if model_identity is None else model_identity
         if not isinstance(self.model_identity, str) or not self.model_identity.strip():
             raise ValueError("configured Jev model identity must be nonempty text")
+
+    def _emit(self, event, data):
+        if self.evidence_sink is not None:
+            from .browser_server_evidence import json_evidence
+
+            try:
+                self.evidence_sink({"event": event, "data": json_evidence(data)})
+            except BaseException as exc:
+                # API observers retain their own errors; logging must never
+                # replace a backend failure or change a selected action.
+                self.evidence_sink_errors.append({"type": type(exc).__name__, "message": str(exc)})
 
     def predict(self, payload):
         parsed = _parse_payload(payload, model_identity=self.model_identity)
@@ -140,7 +153,21 @@ class JevCompatibilityAdapter:
                 questions=[Question.model_validate(q.model_dump()) for q in model_questions],
                 media=parsed.media,
             )
-            result = normalize_response(request, self.backend.predict(request))
+            if self.evidence_sink is None:
+                result = normalize_response(request, self.backend.predict(request))
+            else:
+                self._emit("compatible_started", {"request": request.model_dump(exclude_none=True)})
+                try:
+                    raw = self.backend.predict(request)
+                    self._emit("compatible_raw_returned", {"raw_response": raw})
+                    result = normalize_response(request, raw)
+                except BaseException as exc:
+                    self._emit(
+                        "compatible_failed",
+                        {"error": {"type": type(exc).__name__, "message": str(exc)}},
+                    )
+                    raise
+                self._emit("compatible_finished", {})
         else:
             result = {"answers": {}, "usage": {"input_tokens": 0, "output_tokens": 0}}
         model = result.get("model", self.backend.name)

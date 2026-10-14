@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import secrets
 import threading
+import time
 
 from .contracts import DecisionRequest
 from .errors import (
@@ -23,6 +24,7 @@ def create_app(
     jev_hierarchical=False,
     jev_hierarchical_batch=False,
     model_identity=None,
+    request_evidence_sink=None,
 ):
     from fastapi import Depends, FastAPI, Header, HTTPException
 
@@ -32,6 +34,8 @@ def create_app(
         raise ValueError("Jev hierarchy batching requires hierarchical choices")
     app = FastAPI(title="Gemma Unified System One", version="0.1.0")
     lock = threading.Lock()
+    app.state.request_evidence_errors = []
+    app.state.request_evidence_timings = []
 
     def authorize(authorization: str | None = Header(default=None)):
         if api_key and not secrets.compare_digest(authorization or "", f"Bearer {api_key}"):
@@ -43,6 +47,64 @@ def create_app(
 
     def invoke(request, *, compatible=False):
         from .backends import normalize_response
+
+        emit = None
+        if compatible and request_evidence_sink is not None:
+            import hashlib
+            import json
+
+            from .browser_server_evidence import json_evidence
+
+            request_id, sequence, started = secrets.token_hex(16), 0, time.monotonic()
+
+            def emit(event, data):
+                nonlocal sequence
+                event_sequence = sequence
+                sequence += 1
+                observer_started = time.perf_counter()
+                try:
+                    entry = {
+                        "request_id": request_id,
+                        "sequence": event_sequence,
+                        "event": event,
+                        "recorded_unix": time.time(),
+                        "elapsed_ms": (time.monotonic() - started) * 1000,
+                        "data": json_evidence(data),
+                    }
+                    request_evidence_sink(entry)
+                except BaseException as exc:
+                    app.state.request_evidence_errors.append(
+                        {
+                            "request_id": request_id,
+                            "event": event,
+                            "type": type(exc).__name__,
+                            "message": str(exc),
+                        }
+                    )
+                finally:
+                    app.state.request_evidence_timings.append(
+                        {
+                            "request_id": request_id,
+                            "event": event,
+                            "elapsed_ms": (time.perf_counter() - observer_started) * 1000,
+                        }
+                    )
+
+            try:
+                encoded = json.dumps(
+                    request, ensure_ascii=False, separators=(",", ":"), allow_nan=False
+                ).encode()
+                request_sha = hashlib.sha256(encoded).hexdigest()
+            except (ValueError, TypeError, OverflowError):
+                request_sha = None
+            emit(
+                "request_started",
+                {
+                    "payload": request,
+                    "original_request_sha256": request_sha,
+                    "model_identity": model_identity,
+                },
+            )
 
         def error_detail(exc):
             generation = getattr(exc, "generation", None)
@@ -56,13 +118,19 @@ def create_app(
                 return detail
             return str(exc)
 
-        try:
+        def compute():
             with lock:
+                if emit is not None:
+                    emit("inference_lock_acquired", {})
                 if compatible:
                     from .jev import JevCompatibilityAdapter
 
                     adapter = JevCompatibilityAdapter
-                    options = {}
+                    options = (
+                        {"evidence_sink": lambda event: emit("hierarchy_checkpoint", event)}
+                        if emit is not None
+                        else {}
+                    )
                     if jev_hierarchical:
                         from .jev_hierarchy import JevHierarchicalAdapter
 
@@ -72,6 +140,21 @@ def create_app(
                         request
                     )
                 return normalize_response(request, backend.predict(request))
+
+        try:
+            try:
+                result = compute()
+            except BaseException as exc:
+                if emit is not None:
+                    details = {"error": {"type": type(exc).__name__, "message": str(exc)}}
+                    for key in ("hierarchy", "generation", "batch_evidence", "prefix_evidence"):
+                        if hasattr(exc, key):
+                            details[key] = getattr(exc, key)
+                    emit("server_failed", details)
+                raise
+            if emit is not None:
+                emit("server_returned", {"response": result})
+            return result
         except RequestValidationError as exc:
             raise HTTPException(status_code=422, detail=error_detail(exc)) from exc
         except BackendTimeoutError as exc:
