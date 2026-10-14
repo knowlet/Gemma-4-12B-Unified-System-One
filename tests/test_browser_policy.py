@@ -1389,3 +1389,190 @@ def test_late_hierarchy_deadline_keeps_successful_backend_chunk_ledger(
     assert caught.value.batch_evidence["completed_responses"][0]["browser_batch_evidence"] == ledger
     assert "joint_probabilities" not in audit["heads"]["click_target"]
     json.dumps(audit, allow_nan=False)
+
+
+def browser_sidecar(tmp_path, model, mode, *, learned=False):
+    torch = pytest.importorskip("torch")
+    from s1.browser_readout import load_readout, write_readout
+
+    model.revision = "a" * 40
+    variant = BrowserDecisionBackend(model, prompt_mode=mode).prompt_variant
+    provenance = {
+        "source_scope": "development_only",
+        "train": {
+            "ids": ["dev-example"] if learned else [],
+            "groups": ["dev-case"] if learned else [],
+            "request_fingerprints": ["1" * 64] if learned else [],
+        },
+        "calibration": {"ids": [], "groups": [], "request_fingerprints": []},
+    }
+    kwargs = {}
+    if learned:
+        kwargs = {"weight": torch.zeros(52, 4), "bias": torch.linspace(-0.2, 0.5, 52)}
+    path = tmp_path / f"{mode}-{'learned' if learned else 'control'}"
+    write_readout(path, model, variant, provenance=provenance, **kwargs)
+    return load_readout(path, model, variant)
+
+
+@pytest.mark.inference
+@pytest.mark.parametrize("mode", ["user", "grounded", "goal-first"])
+@pytest.mark.parametrize("learned", [False, True])
+def test_genuine_sidecar_browser_scoring_and_bounded_batch_parity_leave_original_helper_intact(
+    tmp_path, tiny_batch_browser_model, decision_request, mode, learned
+):
+    torch = pytest.importorskip("torch")
+    model = tiny_batch_browser_model
+    readout = browser_sidecar(tmp_path, model, mode, learned=learned)
+    original_name, original_temperature = model.name, model.temperature
+    original_weight, original_bias = model.head.weight.clone(), model.head.bias.clone()
+    original_letters = model.letters.clone()
+    requests = mixed_browser_batch_requests(decision_request)
+    baseline = BrowserDecisionBackend(model, prompt_mode=mode)
+    native_results = [baseline.predict(request) for request in requests]
+    backend = BrowserDecisionBackend(model, prompt_mode=mode, decision_readout=readout)
+    full_head_hook = model.head.register_forward_hook(lambda *_: pytest.fail("full head projected"))
+    try:
+        sequential = [backend.predict(request) for request in requests]
+        model.backbone.calls.clear()
+        batched = backend.predict_batch(requests)
+    finally:
+        full_head_hook.remove()
+    telemetry = readout.telemetry()
+    assert telemetry["kind"] == (
+        "learned_rows" if learned else "untrained_fp32_selected_rows_control"
+    )
+    assert telemetry["kind"] in backend.name and telemetry["weights_sha256"] in backend.name
+    assert backend.metadata["decision_readout"] == telemetry
+    assert model.name == original_name and model.temperature == original_temperature
+    torch.testing.assert_close(model.head.weight, original_weight, atol=0, rtol=0)
+    torch.testing.assert_close(model.head.bias, original_bias, atol=0, rtol=0)
+    torch.testing.assert_close(model.letters, original_letters, atol=0, rtol=0)
+    assert [call["input_ids"].shape[0] for call in model.backbone.calls] == [2, 2, 1]
+    differs_from_base = False
+    for actual, single, native, request in zip(
+        batched, sequential, native_results, requests, strict=True
+    ):
+        assert actual["model"] == single["model"] == backend.name
+        assert actual["temperature"] == single["temperature"] == original_temperature
+        assert actual["decision_readout"] == single["decision_readout"] == telemetry
+        assert actual["usage"] == single["usage"]
+        for question in request.questions:
+            probabilities = actual["answers"][question.id]["probabilities"]
+            assert probabilities == pytest.approx(
+                single["answers"][question.id]["probabilities"], abs=1e-6
+            )
+            if learned:
+                logits = torch.linspace(-0.2, 0.5, 52)[: len(question.labels())]
+                expected = (
+                    (torch.tanh(logits / model.softcap) * model.softcap) / original_temperature
+                ).softmax(0)
+                assert list(probabilities.values()) == pytest.approx(expected.tolist(), abs=1e-6)
+                differs_from_base |= any(
+                    abs(value - native["answers"][question.id]["probabilities"][label]) > 1e-5
+                    for label, value in probabilities.items()
+                )
+            else:
+                assert probabilities == pytest.approx(
+                    native["answers"][question.id]["probabilities"], abs=1e-6
+                )
+    assert differs_from_base is learned
+    ledger = batched[0]["browser_batch_evidence"]
+    assert all(
+        result["execution"]["candidate_projector"] == "explicit_callback"
+        for chunk in ledger["chunks"]
+        for result in chunk["responses"]
+    )
+
+
+@pytest.mark.parametrize("mode", ["native", "reasoned"])
+def test_decision_sidecar_rejects_native_and_reasoned_modes_before_inference(browser_model, mode):
+    with pytest.raises(ValueError, match="decision_readout supports only"):
+        BrowserDecisionBackend(browser_model, prompt_mode=mode, decision_readout=object())
+    assert not browser_model.calls and not browser_model.generation_calls
+
+
+@pytest.mark.inference
+@pytest.mark.parametrize(
+    ("key", "wrong"),
+    [
+        ("base_model_id", "different/model"),
+        ("base_revision", "b" * 40),
+        ("quantization", "nf4"),
+        ("prompt_variant", "different_prompt"),
+        ("candidate_ids", list(range(52))),
+        ("base_temperature", 1.0),
+        ("temperature", 1.0),
+        ("softcap", None),
+        ("hidden_size", 5),
+        ("weights_sha256", "missing_hash"),
+        ("kind", "unknown"),
+        ("projection_precision", "bfloat16"),
+    ],
+)
+def test_browser_constructor_rechecks_each_sidecar_identity_pin_before_inference(
+    tmp_path, tiny_batch_browser_model, key, wrong
+):
+    readout = browser_sidecar(tmp_path, tiny_batch_browser_model, "grounded")
+    telemetry = readout.telemetry()
+    telemetry[key] = wrong
+    wrong_readout = SimpleNamespace(
+        telemetry=lambda: telemetry,
+        project=lambda *_: pytest.fail("invalid sidecar reached inference"),
+    )
+    with pytest.raises(ValueError, match="decision_readout"):
+        BrowserDecisionBackend(
+            tiny_batch_browser_model, prompt_mode="grounded", decision_readout=wrong_readout
+        )
+    assert not tiny_batch_browser_model.backbone.calls
+
+
+@pytest.mark.inference
+def test_native_batch_candidate_projector_receives_true_slots_counts_softcap_without_head_mutation(
+    tiny_batch_browser_model, decision_request
+):
+    torch = pytest.importorskip("torch")
+    from s1.evaluation.gemma import predict_batch
+
+    model, seen = tiny_batch_browser_model, []
+    requests = mixed_browser_batch_requests(decision_request)
+    original_head, original_letters = model.head, model.letters.clone()
+
+    def projector(hidden, counts, softcap):
+        seen.append((hidden.detach().clone(), counts.clone(), softcap))
+        logits = hidden.new_zeros((len(counts), 52))
+        logits[:, 0] = 2.0
+        return logits
+
+    actual = predict_batch(model, requests, independent=False, candidate_projector=projector)
+    assert len(seen) == 1
+    hidden, counts, softcap = seen[0]
+    assert hidden.shape == (5, 4)
+    assert counts.tolist() == [len(q.labels()) for request in requests for q in request.questions]
+    assert softcap == model.softcap
+    assert model.head is original_head
+    torch.testing.assert_close(model.letters, original_letters, atol=0, rtol=0)
+    for result, request in zip(actual, requests, strict=True):
+        assert result["execution"]["candidate_projector"] == "explicit_callback"
+        for question in request.questions:
+            expected = torch.tensor([2.0] + [0.0] * (len(question.labels()) - 1))
+            expected = (expected / model.temperature).softmax(0)
+            assert list(result["answers"][question.id]["probabilities"].values()) == pytest.approx(
+                expected.tolist(), abs=1e-6
+            )
+
+
+@pytest.mark.inference
+@pytest.mark.parametrize("readout,callback", [("full", lambda *_: None), ("candidate", 1)])
+def test_native_batch_rejects_invalid_custom_projector_before_forward(
+    tiny_batch_browser_model, decision_request, readout, callback
+):
+    from s1.evaluation.gemma import predict_batch
+
+    with pytest.raises(ValueError, match="candidate_projector"):
+        predict_batch(
+            tiny_batch_browser_model,
+            [decision_request],
+            readout=readout,
+            candidate_projector=callback,
+        )
+    assert not tiny_batch_browser_model.backbone.calls

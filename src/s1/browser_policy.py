@@ -140,17 +140,28 @@ class BrowserDecisionBackend:
     The caller must supply browser observations, history, and legal candidates.
     """
 
-    def __init__(self, model, *, prompt_mode="native", analysis_style="detailed"):
+    def __init__(
+        self,
+        model,
+        *,
+        prompt_mode="native",
+        analysis_style="detailed",
+        decision_readout=None,
+    ):
         if prompt_mode not in ("native", "user", "reasoned", "grounded", "goal-first"):
             raise ValueError("prompt_mode must be native, user, reasoned, grounded or goal-first")
         if analysis_style not in ("detailed", "compact"):
             raise ValueError("analysis_style must be detailed or compact")
         if analysis_style == "compact" and prompt_mode != "reasoned":
             raise ValueError("compact analysis_style requires reasoned prompt mode")
+        if decision_readout is not None and prompt_mode not in ("user", "grounded", "goal-first"):
+            raise ValueError("decision_readout supports only user, grounded and goal-first modes")
         self.model = model
         self.name = model.name
         self.prompt_mode = prompt_mode
         self.analysis_style = analysis_style
+        self.decision_readout = decision_readout
+        self.decision_readout_metadata = None
         self.supports_stage_batching = prompt_mode != "reasoned"
         self.prompt_variant = {
             "native": "native",
@@ -186,6 +197,41 @@ class BrowserDecisionBackend:
             actual_ids = model.letters.tolist()
             if actual_ids != candidate_ids(model.tok):
                 raise ValueError("model candidate IDs differ from the checked answer boundary")
+        if decision_readout is not None:
+            from .browser_readout import _model_pins, _provenance
+
+            if not callable(getattr(decision_readout, "project", None)) or not callable(
+                getattr(decision_readout, "telemetry", None)
+            ):
+                raise ValueError("decision_readout must provide project and telemetry methods")
+            telemetry = decision_readout.telemetry()
+            if not isinstance(telemetry, dict):
+                raise ValueError("decision_readout telemetry must be a pinned artifact object")
+            pins = _model_pins(model, self.prompt_variant)
+            for key, value in pins.items():
+                actual = telemetry.get(key)
+                if type(actual) is not type(value) or actual != value:
+                    raise ValueError(f"decision_readout {key} differs from the configured model")
+            if any(type(value) is not int for value in telemetry["candidate_ids"]):
+                raise ValueError("decision_readout candidate IDs must be original integers")
+            kind = telemetry.get("kind")
+            if kind not in ("learned_rows", "untrained_fp32_selected_rows_control"):
+                raise ValueError(
+                    "decision_readout must identify its learned or control artifact kind"
+                )
+            digest = telemetry.get("weights_sha256")
+            if (
+                not isinstance(digest, str)
+                or len(digest) != 64
+                or any(character not in "0123456789abcdef" for character in digest)
+            ):
+                raise ValueError("decision_readout must identify its exact weights SHA256")
+            if telemetry.get("projection_precision") != "float32":
+                raise ValueError("decision_readout must use the declared FP32 projection")
+            _provenance(telemetry.get("provenance"), learned=kind == "learned_rows")
+            self.decision_readout_metadata = copy.deepcopy(telemetry)
+            self.metadata["decision_readout"] = copy.deepcopy(telemetry)
+            self.name = f"{model.name}:browser-readout:{kind}:{digest}"
 
     def _prepare_question(self, request, question):
         import torch
@@ -435,12 +481,14 @@ class BrowserDecisionBackend:
                     }
                     out = self.model.backbone(**inputs, use_cache=False, return_dict=True)
                     hidden = out.last_hidden_state[:, -1]
-                    logits = project_candidates(
-                        hidden,
-                        self.model.head,
-                        self.model.letters,
-                        torch.tensor([len(question.labels())], device=self.model.device),
-                        getattr(self.model, "softcap", None),
+                    counts = torch.tensor([len(question.labels())], device=self.model.device)
+                    softcap = getattr(self.model, "softcap", None)
+                    logits = (
+                        project_candidates(
+                            hidden, self.model.head, self.model.letters, counts, softcap
+                        )
+                        if self.decision_readout is None
+                        else self.decision_readout.project(hidden, counts, softcap)
                     )
                     probabilities = (logits / self.model.temperature).softmax(-1).cpu().tolist()[0]
                     answers[question.id] = answer_from_probabilities(
@@ -494,6 +542,8 @@ class BrowserDecisionBackend:
                 "input_tokens": total_input_tokens,
                 "output_tokens": analysis["usage"]["output_tokens"],
             }
+        if self.decision_readout_metadata is not None:
+            response["decision_readout"] = copy.deepcopy(self.decision_readout_metadata)
         return response
 
     def predict_batch(self, requests):
@@ -580,6 +630,8 @@ class BrowserDecisionBackend:
                     "execution": execution,
                     "usage": {"input_tokens": tokens[index], "output_tokens": 0},
                 }
+                if self.decision_readout_metadata is not None:
+                    response["decision_readout"] = copy.deepcopy(self.decision_readout_metadata)
                 result.append((index, response))
             return result
 
@@ -658,6 +710,11 @@ class BrowserDecisionBackend:
                         [row["request"] for row in chunk_rows],
                         independent=False,
                         readout="candidate",
+                        **(
+                            {"candidate_projector": self.decision_readout.project}
+                            if self.decision_readout is not None
+                            else {}
+                        ),
                     )
                     chunk["responses"] = copy.deepcopy(results)
                     chunk["usage"] = {
