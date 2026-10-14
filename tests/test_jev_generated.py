@@ -428,6 +428,20 @@ def test_adapter_lock_wait_counts_in_unchanged_budget_before_any_forward(
     assert not backend.model.calls and not backend.model.hooks
 
 
+def test_generation_setup_delay_rechecks_deadline_and_removes_hook(backend, payload, monkeypatch):
+    clock = [0.0]
+    monkeypatch.setattr(
+        jev_generated,
+        "time",
+        SimpleNamespace(monotonic=lambda: clock[0], perf_counter=time.perf_counter),
+    )
+    backend.model.lm.eval = lambda: clock.__setitem__(0, 21)
+    with pytest.raises(BackendTimeoutError) as caught:
+        adapter(backend).predict(payload)
+    assert caught.value.generation["forward_calls"] == 0
+    assert not backend.model.calls and not backend.model.hooks
+
+
 def test_observer_mutation_failure_cannot_change_action_and_slow_observer_blocks_forward(
     backend, payload, monkeypatch
 ):
