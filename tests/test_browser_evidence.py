@@ -136,3 +136,18 @@ def test_missing_explicit_caller_is_detected_after_capture(source_tree, tmp_path
     check = browser_evidence.verify_runtime_sources(manifest, additional_files=supplied)
     assert check["success"] is False
     assert check["missing"] == ["apps/modal/jev_browser.py"]
+
+
+def test_action_trainer_is_an_explicitly_named_source(source_tree, tmp_path):
+    _root, _files = source_tree
+    caller = tmp_path / "jev_browser_fit_actions.py"
+    caller.write_bytes(b"# exact action trainer\r\n")
+    supplied = {"scripts/jev_browser_fit_actions.py": caller}
+    manifest = browser_evidence.capture_runtime_sources(
+        tmp_path / "evidence", additional_files=supplied
+    )
+    assert browser_evidence.verify_runtime_sources(manifest, additional_files=supplied)["success"]
+    caller.write_text("# modified action trainer")
+    assert browser_evidence.verify_runtime_sources(manifest, additional_files=supplied)[
+        "changed"
+    ] == ["scripts/jev_browser_fit_actions.py"]

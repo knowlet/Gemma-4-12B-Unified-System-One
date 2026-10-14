@@ -21,6 +21,7 @@ _ALLOWED_CALLERS = frozenset(
         *_DEFAULT_CALLERS,
         "apps/modal/jev_browser.py",
         "scripts/jev_browser_fit_readout.py",
+        "scripts/jev_browser_fit_actions.py",
         "scripts/jev_browser_training_data.py",
         "scripts/breakthrough_training.py",
     )
