@@ -517,6 +517,65 @@ and task structure, not unseen websites. Freeze the learned artifact before
 comparison, use the same fixtures and helper for other models, and retain
 failures as well as successes. No transfer model result is claimed here.
 
+## Direct native action generation: October 15 diagnostics
+
+The identical-feature diagnostic above showed that both full-context and cached
+scoring retain the wrong travel choices. A separate opt-in policy tests whether
+decoding the action directly can avoid the classifier binding problem. It uses
+the same pinned NF4 checkpoint and unchanged full vocabulary head to generate
+one JSON object containing `operation` and `target`. The complete original
+state, history, goal, questions and candidate criteria remain in its prompt.
+The strict adapter validates the offered operation and its target key before
+the unchanged upstream executor can act. It does not repair malformed output,
+retry, fall back to classification, or remove candidates.
+
+Both original-travel trials retain the 16-decision, 25-second HTTP and
+8192-token context limits. Generation is greedy, thinking is disabled, and
+at most 32 new tokens are allowed. The adapter checks a 20-second cooperative
+budget before and after blocking generation; it cannot cancel a running model
+call. These are exposed development diagnostics, with one attempt each.
+
+| Policy / evidence | Completed | Executed actions | Policy / text calls | Observed failure |
+| --- | ---: | ---: | ---: | --- |
+| [Generated v1](../artifacts/jev-browser/20261015-generated-actions-travel-01/receipt.json) | 0/1 | 0 | 1 / 0 | Markdown fences fail strict JSON parsing |
+| [Generated v2](../artifacts/jev-browser/20261015-generated-actions-travel-02/receipt.json) | 0/1 | 4 | 5 / 1 | Opens the property without submitting search; final DONE object omits `target` |
+
+V1 returned 22 tokens in 22 entered backbone calls. Its output also used the
+element description `[4] Destination` instead of the offered criteria key `4`.
+The actual rejection occurred during JSON parsing, before target membership was
+checked. Its [independent audit](../artifacts/jev-browser/20261015-generated-actions-travel-01-audit.json)
+verifies the source, fixture, complete prompt, HTTP/server evidence and unchanged
+browser state. V2 only clarifies plain JSON and exact criteria keys using generic
+examples. Its legal actions are TYPE_TEXT destination, SELECT Design, CLICK Free
+cancellation, and CLICK View Casa Flora. It never clicks Find stays. The fresh
+page check finds the correct property and filters, but an empty applied query
+and `searched=false`. The final generated `{"operation":"DONE"}` is rejected
+because `target` is required, so neither trial records an accepted false DONE.
+
+The preserved runtime identities are `e25c099c715fe8366cafa5ce0c22367d3f8b247b9c50ef2561ffae4a8b9bb873`
+and `2be59dba475d096999d8eed032a45f7ab270606c2f29908cd7268e781322e432`.
+Both pass source verification, and every server journal is sealed with no
+observer errors. These trials establish that replacing the classifier with
+greedy native action generation alone still misses search submission. Neither
+policy is promoted, and the fresh travel-transfer seed remains unset.
+
+The optional response maps the validated decoded action to point masses for
+upstream execution. It labels these as a deterministic decoded policy, not
+model posterior probabilities, calibrated confidence, or a probability of
+successful completion. Unused target heads are explicitly not evaluated.
+All eight conditional upstream operations, including SCROLL_UP, are supported.
+Ordinary API requests retain their existing inference policy. The committed
+implementation passes 1978 checks with 173 optional-dependency skips, including
+actual Chromium harness tests; separate native CPU generation checks pass.
+These test counts are software checks, not model task scores.
+
+The next implementation under review trains a small attention adapter on the
+existing audited training trajectories to generate the next legal action.
+It has no completed fitting or browser result yet. Its text helper will retain
+the original checkpoint behavior, and transfer identities remain excluded from
+fitting. The original diagnostic followed by all ten development and three
+exposed travel regressions must pass before a new transfer evaluation.
+
 ## Historical failure diagnosis
 
 The October 13 archive's 72 measured decisions retain the exact goal and stay
