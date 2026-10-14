@@ -30,6 +30,17 @@ finally:
         ["--prefix-cache", "--prompt-mode", "grounded", "--competitor", "jev-omni"],
         ["--prefix-suffix-batch-size", "2", "--prompt-mode", "grounded"],
         ["--prefix-suffix-batch-size", "3"],
+        ["--generated-actions", "--prompt-mode", "reasoned"],
+        ["--generated-actions", "--prompt-mode", "user"],
+        ["--generated-actions", "--prompt-mode", "grounded"],
+        ["--generated-actions", "--analysis-style", "compact"],
+        ["--generated-actions", "--hierarchical-candidates"],
+        ["--generated-actions", "--batch-hierarchy-stages"],
+        ["--generated-actions", "--decision-readout", "unused"],
+        ["--generated-actions", "--prefix-cache"],
+        ["--generated-actions", "--prefix-suffix-batch-size", "2"],
+        ["--generated-actions", "--competitor", "decider"],
+        ["--generated-actions", "--competitor", "jev-omni"],
     ],
 )
 def test_incompatible_modes_fail_before_public_model_loading(tmp_path, monkeypatch, options):
@@ -89,11 +100,12 @@ def test_travel_challenges_reject_incompatible_scope_before_upstream_or_weights(
 
 
 @pytest.mark.parametrize("mode", [None, "challenges", "transfer"])
+@pytest.mark.parametrize("generated", [False, True])
 @pytest.mark.parametrize(
     "journal_mode", ["off", "completed", "pending", "observer_failure", "snapshot_failure"]
 )
 def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_runtime(
-    tmp_path, monkeypatch, mode, journal_mode
+    tmp_path, monkeypatch, mode, journal_mode, generated
 ):
     import json
     from types import SimpleNamespace
@@ -113,7 +125,7 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
     application = SimpleNamespace(
         state=SimpleNamespace(request_evidence_errors=[], request_evidence_timings=[])
     )
-    sinks = []
+    sinks, app_options = [], []
 
     def capture(destination, **_kwargs):
         initial_receipts.append(json.loads((destination / "receipt.json").read_text()))
@@ -162,6 +174,7 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
 
     def create_app(*_args, **kwargs):
         sinks.append(kwargs["request_evidence_sink"])
+        app_options.append(kwargs)
         return application
 
     monkeypatch.setattr(api, "create_app", create_app)
@@ -255,6 +268,8 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
     options = [f"--travel-{mode}-only", "--suite-split", "development"] if mode else []
     if journal_mode != "off":
         options.append("--server-evidence")
+    if generated:
+        options.append("--generated-actions")
     arguments = ["--upstream-path", "unused", "--output-dir", str(output), *options]
     if journal_mode in {"pending", "observer_failure", "snapshot_failure"}:
         with pytest.raises(SystemExit) as error:
@@ -264,6 +279,9 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
         DRIVER.main(arguments)
     assert len(initial_receipts) == len(benchmark_calls) == len(model_calls) == 1
     assert initial_receipts[0]["travel_challenges_only"] is (mode == "challenges")
+    assert initial_receipts[0]["generated_actions"] is generated
+    assert app_options[0]["jev_generated_actions"] is generated
+    assert benchmark_calls[0]["model"] == ("generated-actions-nf4" if generated else "native-nf4")
     assert benchmark_calls[0]["travel_challenges_only"] is (mode == "challenges")
     assert initial_receipts[0]["travel_transfer_only"] is (mode == "transfer")
     assert benchmark_calls[0]["travel_transfer_only"] is (mode == "transfer")
@@ -271,6 +289,10 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
     assert benchmark_calls[0]["task_ids"] is None
     assert benchmark_calls[0]["live_url"] is None
     receipt = json.loads((output / "receipt.json").read_text())
+    if generated:
+        assert receipt["decision_model"]["policy"] == "greedy_legal_action_v2"
+        assert receipt["decision_model"]["max_new_tokens"] == 32
+        assert receipt["decision_model"]["budget_seconds"] == 20
     assert receipt["stage"] == (
         "browser_benchmark" if journal_mode == "snapshot_failure" else "complete"
     )

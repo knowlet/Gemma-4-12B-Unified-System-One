@@ -27,6 +27,7 @@ def main(argv=None):
         default="native",
     )
     parser.add_argument("--analysis-style", choices=["detailed", "compact"], default="detailed")
+    parser.add_argument("--generated-actions", action="store_true")
     parser.add_argument("--hierarchical-candidates", action="store_true")
     parser.add_argument("--batch-hierarchy-stages", action="store_true")
     parser.add_argument("--decision-readout")
@@ -50,6 +51,19 @@ def main(argv=None):
     parser.add_argument("--live-expected-title")
     parser.add_argument("--live-only", action="store_true")
     args = parser.parse_args(argv)
+    if args.generated_actions and (
+        args.competitor
+        or args.prompt_mode != "native"
+        or args.analysis_style != "detailed"
+        or args.hierarchical_candidates
+        or args.batch_hierarchy_stages
+        or args.decision_readout
+        or args.prefix_cache
+        or args.prefix_suffix_batch_size != 1
+    ):
+        parser.error(
+            "generated-actions requires the owned native model without other decision policies"
+        )
     if args.travel_challenges_only and (
         args.suite_split != "development"
         or args.travel_transfer_only
@@ -103,6 +117,7 @@ def main(argv=None):
         "quantization": args.quantization,
         "prompt_mode": args.prompt_mode,
         "analysis_style": args.analysis_style,
+        "generated_actions": args.generated_actions,
         "hierarchical_candidates": args.hierarchical_candidates,
         "batch_hierarchy_stages": args.batch_hierarchy_stages,
         "decision_readout_requested": args.decision_readout,
@@ -269,11 +284,22 @@ def main(argv=None):
             if decision_readout is not None:
                 receipt["decision_model"]["decision_readout"] = decision_readout.telemetry()
             cell = f"{args.prompt_mode}-{args.quantization}"
+            if args.generated_actions:
+                from s1.jev_generated import POLICY, PROBABILITIES
+
+                cell = f"generated-actions-{args.quantization}"
+                receipt["decision_model"].update(
+                    policy=POLICY,
+                    probabilities_semantics=PROBABILITIES,
+                    max_new_tokens=32,
+                    budget_seconds=20,
+                )
         application = create_app(
             backend,
             jev_compatible=True,
             jev_hierarchical=args.hierarchical_candidates,
             jev_hierarchical_batch=args.batch_hierarchy_stages,
+            jev_generated_actions=args.generated_actions,
             model_identity=cell,
             request_evidence_sink=server_journal,
         )

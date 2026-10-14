@@ -23,6 +23,7 @@ def create_app(
     jev_compatible=False,
     jev_hierarchical=False,
     jev_hierarchical_batch=False,
+    jev_generated_actions=False,
     model_identity=None,
     request_evidence_sink=None,
 ):
@@ -32,6 +33,17 @@ def create_app(
         raise ValueError("Jev hierarchical choices require the explicit compatible endpoint")
     if jev_hierarchical_batch and not jev_hierarchical:
         raise ValueError("Jev hierarchy batching requires hierarchical choices")
+    if type(jev_generated_actions) is not bool:
+        raise ValueError("Jev generated actions must be an explicit boolean")
+    generated_adapter = None
+    if jev_generated_actions:
+        if not jev_compatible or jev_hierarchical or jev_hierarchical_batch:
+            raise ValueError(
+                "Jev generated actions require compatibility without hierarchy/batching"
+            )
+        from .jev_generated import JevGeneratedActionAdapter
+
+        generated_adapter = JevGeneratedActionAdapter(backend, model_identity=model_identity)
     app = FastAPI(title="Gemma Unified System One", version="0.1.0")
     lock = threading.Lock()
     app.state.request_evidence_errors = []
@@ -95,7 +107,7 @@ def create_app(
                     request, ensure_ascii=False, separators=(",", ":"), allow_nan=False
                 ).encode()
                 request_sha = hashlib.sha256(encoded).hexdigest()
-            except (ValueError, TypeError, OverflowError):
+            except (ValueError, TypeError, OverflowError, UnicodeError):
                 request_sha = None
             emit(
                 "request_started",
@@ -123,6 +135,13 @@ def create_app(
                 if emit is not None:
                     emit("inference_lock_acquired", {})
                 if compatible:
+                    if generated_adapter is not None:
+                        return generated_adapter.predict(
+                            request,
+                            evidence_sink=(lambda event: emit("generated_action_checkpoint", event))
+                            if emit is not None
+                            else None,
+                        )
                     from .jev import JevCompatibilityAdapter
 
                     adapter = JevCompatibilityAdapter
