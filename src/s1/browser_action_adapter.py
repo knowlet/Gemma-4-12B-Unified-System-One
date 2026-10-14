@@ -383,6 +383,8 @@ def _verify_action_adapter(path, *, model_id, revision, quantization):
     if _sha(receipt_blob) != record["sha256"]:
         raise ValueError("action adapter training receipt hash mismatch")
     receipt = _json(receipt_blob)
+    if receipt.get("adapter_artifact") != "adapter" or receipt.get("adapter_files") != m["files"]:
+        raise ValueError("action adapter files differ from the sealed training receipt")
     if any(
         receipt.get(key) != value
         for key, value in pins.items()

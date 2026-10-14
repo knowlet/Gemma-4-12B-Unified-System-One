@@ -156,6 +156,8 @@ def artifact(tmp_path):
         "provenance": provenance,
         "training_receipt": {"path": "../receipt.json", "sha256": ""},
     }
+    receipt["adapter_artifact"] = "adapter"
+    receipt["adapter_files"] = copy.deepcopy(manifest["files"])
 
     def seal():
         manifest["training_receipt"]["sha256"] = sha(write(root / "receipt.json", receipt))
@@ -271,6 +273,36 @@ def test_actual_case_inventory_must_match_manifest(artifact):
         action.verify_action_adapter(artifact.path)
 
 
+def test_rehashed_valid_weights_cannot_replace_sealed_training_artifact(artifact, monkeypatch):
+    safe = pytest.importorskip("safetensors.torch")
+    original_receipt = (artifact.root / "receipt.json").read_bytes()
+    values = {key: value.clone() for key, value in artifact.tensors.items()}
+    values[next(iter(values))][0, 0] += 1
+    replacement = safe.save(values)
+    # These are still structurally valid, finite q/v weights with genuine new bytes.
+    assert action._tensor_bytes(replacement)["tensor_count"] == 4
+    (artifact.path / "adapter_model.safetensors").write_bytes(replacement)
+    artifact.manifest["files"]["adapter_model.safetensors"] = record(replacement)
+    write(artifact.path / "manifest.json", artifact.manifest)
+    monkeypatch.setattr(
+        action, "_tensor_bytes", lambda _: pytest.fail("substituted weights reached decoding")
+    )
+    with pytest.raises(ValueError, match="sealed training receipt"):
+        action.verify_action_adapter(artifact.path)
+    assert (artifact.root / "receipt.json").read_bytes() == original_receipt
+
+
+@pytest.mark.parametrize("artifact_name", [None, "another-adapter"])
+def test_sealed_receipt_must_identify_adjacent_adapter(artifact, artifact_name):
+    if artifact_name is None:
+        artifact.receipt.pop("adapter_artifact")
+    else:
+        artifact.receipt["adapter_artifact"] = artifact_name
+    artifact.seal()
+    with pytest.raises(ValueError, match="sealed training receipt"):
+        action.verify_action_adapter(artifact.path)
+
+
 @pytest.mark.parametrize(
     "change",
     [
@@ -301,6 +333,7 @@ def test_only_finite_complete_text_decoder_lora_pairs_are_accepted(artifact, cha
     blob = safe.save(values)
     (artifact.path / "adapter_model.safetensors").write_bytes(blob)
     artifact.manifest["files"]["adapter_model.safetensors"] = record(blob)
+    artifact.receipt["adapter_files"] = copy.deepcopy(artifact.manifest["files"])
     artifact.seal()
     with pytest.raises(ValueError):
         action.verify_action_adapter(artifact.path)
