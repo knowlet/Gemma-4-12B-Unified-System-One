@@ -28,6 +28,7 @@ def main(argv=None):
     )
     parser.add_argument("--analysis-style", choices=["detailed", "compact"], default="detailed")
     parser.add_argument("--generated-actions", action="store_true")
+    parser.add_argument("--generated-action-adapter", type=Path)
     parser.add_argument("--hierarchical-candidates", action="store_true")
     parser.add_argument("--batch-hierarchy-stages", action="store_true")
     parser.add_argument("--decision-readout")
@@ -51,6 +52,8 @@ def main(argv=None):
     parser.add_argument("--live-expected-title")
     parser.add_argument("--live-only", action="store_true")
     args = parser.parse_args(argv)
+    if args.generated_action_adapter and not args.generated_actions:
+        parser.error("generated-action-adapter requires --generated-actions")
     if args.generated_actions and (
         args.competitor
         or args.prompt_mode != "native"
@@ -108,6 +111,19 @@ def main(argv=None):
         parser.error("live-only requires live-url and cannot be combined with fixture tasks")
     if args.live_url and not (args.live_goal and args.live_expected_title):
         parser.error("live-url requires live-goal and live-expected-title")
+    verified_action_adapter = None
+    if args.generated_action_adapter:
+        from s1.browser_action_adapter import verify_action_adapter
+
+        try:
+            verified_action_adapter = verify_action_adapter(
+                args.generated_action_adapter,
+                model_id=args.model,
+                revision=args.revision,
+                quantization=args.quantization,
+            )
+        except (ValueError, OSError) as exc:
+            parser.error(str(exc))
     upstream = upstream_manifest(args.upstream_path)
     destination = Path(args.output_dir).resolve()
     destination.mkdir(parents=True, exist_ok=False)
@@ -135,6 +151,11 @@ def main(argv=None):
         "cost_usd": None,
         "upstream": upstream,
     }
+    if verified_action_adapter is not None:
+        receipt["generated_action_adapter"] = verified_action_adapter.telemetry()
+        receipt["text_helper_policy"] = (
+            "same pinned checkpoint; action adapter disabled for field generation"
+        )
     (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
     server, thread, listener, application = None, None, None, None
     thread_started = False
@@ -163,6 +184,7 @@ def main(argv=None):
         import uvicorn
 
         from s1.api import create_app
+        from s1.browser_action_adapter import base_field_text
         from s1.browser_policy import BrowserDecisionBackend
         from s1.browser_text import generate_field_text
         from s1.unified import UnifiedDecisionModel
@@ -192,6 +214,13 @@ def main(argv=None):
         )
         if model.revision != args.revision:
             raise ValueError("loaded checkpoint revision differs from requested immutable revision")
+        if verified_action_adapter is not None:
+            from s1.browser_action_adapter import attach_action_adapter
+
+            receipt["stage"] = "action_adapter_load"
+            receipt["generated_action_adapter"] = attach_action_adapter(
+                model, verified_action_adapter
+            )
         receipt["model_reported"] = model.name
         receipt["revision_reported"] = model.revision
         receipt["model_load_ms"] = (time.perf_counter() - load_started) * 1000
@@ -294,6 +323,10 @@ def main(argv=None):
                     max_new_tokens=32,
                     budget_seconds=20,
                 )
+                if verified_action_adapter is not None:
+                    receipt["decision_model"]["action_adapter"] = receipt[
+                        "generated_action_adapter"
+                    ]
         application = create_app(
             backend,
             jev_compatible=True,
@@ -333,7 +366,11 @@ def main(argv=None):
             live_url=args.live_url,
             live_goal=args.live_goal,
             live_expected_title=args.live_expected_title,
-            text_helper=lambda context: generate_field_text(model, context),
+            text_helper=lambda context: (
+                base_field_text(model, context)
+                if verified_action_adapter is not None
+                else generate_field_text(model, context)
+            ),
         )
         receipt["peak_cuda_allocated_bytes"] = torch.cuda.max_memory_allocated()
         receipt["stage"] = "complete"

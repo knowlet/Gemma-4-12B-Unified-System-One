@@ -41,6 +41,8 @@ finally:
         ["--generated-actions", "--prefix-suffix-batch-size", "2"],
         ["--generated-actions", "--competitor", "decider"],
         ["--generated-actions", "--competitor", "jev-omni"],
+        ["--generated-action-adapter", "unused"],
+        ["--generated-actions", "--generated-action-adapter", "unused"],
     ],
 )
 def test_incompatible_modes_fail_before_public_model_loading(tmp_path, monkeypatch, options):
@@ -100,17 +102,24 @@ def test_travel_challenges_reject_incompatible_scope_before_upstream_or_weights(
 
 
 @pytest.mark.parametrize("mode", [None, "challenges", "transfer"])
-@pytest.mark.parametrize("generated", [False, True])
+@pytest.mark.parametrize("policy", ["native", "generated", "adapted"])
 @pytest.mark.parametrize(
     "journal_mode", ["off", "completed", "pending", "observer_failure", "snapshot_failure"]
 )
 def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_runtime(
-    tmp_path, monkeypatch, mode, journal_mode, generated
+    tmp_path, monkeypatch, mode, journal_mode, policy
 ):
     import json
     from types import SimpleNamespace
 
-    from s1 import api, browser_evidence, browser_policy, browser_text, unified
+    from s1 import (
+        api,
+        browser_action_adapter,
+        browser_evidence,
+        browser_policy,
+        browser_text,
+        unified,
+    )
     from s1.browser_server_evidence import ServerEvidenceJournal
 
     if journal_mode == "snapshot_failure":
@@ -121,6 +130,28 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
         monkeypatch.setattr(ServerEvidenceJournal, "snapshot", broken_snapshot)
 
     output = tmp_path / "run"
+    generated = policy != "native"
+    adapter_calls, helper_calls = [], []
+    verified = SimpleNamespace(telemetry=lambda: {"manifest_sha256": "verified-test-bytes"})
+
+    def verify_adapter(path, **pins):
+        assert path == Path("test-adapter")
+        assert not model_calls
+        adapter_calls.append(("verify", pins))
+        return verified
+
+    def attach_adapter(model, artifact):
+        assert artifact is verified and len(model_calls) == 1
+        adapter_calls.append(("attach", model))
+        return {"manifest_sha256": "verified-test-bytes", "all_parameters_frozen": True}
+
+    def base_helper(model, context):
+        helper_calls.append((model.name, context))
+        return "base helper result", {"action_adapter_state": "disabled_for_pinned_base_helper"}
+
+    monkeypatch.setattr(browser_action_adapter, "verify_action_adapter", verify_adapter)
+    monkeypatch.setattr(browser_action_adapter, "attach_action_adapter", attach_adapter)
+    monkeypatch.setattr(browser_action_adapter, "base_field_text", base_helper)
     initial_receipts, benchmark_calls, model_calls, sockets, threads = [], [], [], [], []
     application = SimpleNamespace(
         state=SimpleNamespace(request_evidence_errors=[], request_evidence_timings=[])
@@ -241,6 +272,8 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
 
     def benchmark(**kwargs):
         benchmark_calls.append(kwargs)
+        if policy == "adapted":
+            assert kwargs["text_helper"]({"goal": "preserved user goal"})[0] == "base helper result"
         if journal_mode != "off":
             sink = sinks[0]
             assert sink is not None
@@ -270,6 +303,8 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
         options.append("--server-evidence")
     if generated:
         options.append("--generated-actions")
+    if policy == "adapted":
+        options.extend(["--generated-action-adapter", "test-adapter"])
     arguments = ["--upstream-path", "unused", "--output-dir", str(output), *options]
     if journal_mode in {"pending", "observer_failure", "snapshot_failure"}:
         with pytest.raises(SystemExit) as error:
@@ -289,6 +324,13 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
     assert benchmark_calls[0]["task_ids"] is None
     assert benchmark_calls[0]["live_url"] is None
     receipt = json.loads((output / "receipt.json").read_text())
+    if policy == "adapted":
+        assert [call[0] for call in adapter_calls] == ["verify", "attach"]
+        assert "adapter_path" not in model_calls[0][1]
+        assert helper_calls == [(model_calls[0][0], {"goal": "preserved user goal"})]
+        assert receipt["decision_model"]["action_adapter"]["all_parameters_frozen"] is True
+    else:
+        assert not adapter_calls and not helper_calls
     if generated:
         assert receipt["decision_model"]["policy"] == "greedy_legal_action_v2"
         assert receipt["decision_model"]["max_new_tokens"] == 32

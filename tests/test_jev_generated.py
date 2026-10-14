@@ -9,7 +9,7 @@ import subprocess
 import sys
 import time
 import types
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -400,6 +400,32 @@ def test_late_complete_generation_retained_but_never_returned_as_action(
     assert e["raw_output"] == backend.model.generated and e["forward_calls"] > 0
     assert e["budget_seconds"] == 20 and e["elapsed_ms"] == pytest.approx(20001)
     assert "decoded_action" not in e
+
+
+def test_adapter_lock_wait_counts_in_unchanged_budget_before_any_forward(
+    backend, payload, monkeypatch
+):
+    clock = [0.0]
+    monkeypatch.setattr(
+        jev_generated,
+        "time",
+        SimpleNamespace(monotonic=lambda: clock[0], perf_counter=time.perf_counter),
+    )
+
+    @contextmanager
+    def wait_then_acquire():
+        clock[0] = 20.001
+        yield
+
+    backend.model.action_adapter = SimpleNamespace(
+        metadata={"manifest_sha256": "actual-adapter-identity"}, decision_context=wait_then_acquire
+    )
+    with pytest.raises(BackendTimeoutError) as caught:
+        adapter(backend).predict(payload)
+    assert caught.value.generation["action_adapter"]["manifest_sha256"] == "actual-adapter-identity"
+    assert caught.value.generation["phase"] == "adapter_lock_wait"
+    assert caught.value.generation["forward_calls"] == 0
+    assert not backend.model.calls and not backend.model.hooks
 
 
 def test_observer_mutation_failure_cannot_change_action_and_slow_observer_blocks_forward(

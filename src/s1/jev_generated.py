@@ -10,6 +10,7 @@ import copy
 import hashlib
 import json
 import time
+from contextlib import nullcontext
 
 from .browser_text import _FieldTokenCapture
 from .errors import BackendResponseError, BackendTimeoutError, RequestValidationError
@@ -159,6 +160,9 @@ class JevGeneratedActionAdapter:
             "budget_seconds": 20,
             "timeout_policy": "cooperative_before_after_blocking_generate_no_hard_cancel",
         }
+        action_adapter = getattr(model, "action_adapter", None)
+        if action_adapter is not None:
+            generation["action_adapter"] = copy.deepcopy(action_adapter.metadata)
 
         def emit(event, data):
             if evidence_sink is not None:
@@ -228,28 +232,36 @@ class JevGeneratedActionAdapter:
             deadline()
             emit("prepared", {"prompt": prompt, "candidate_labels": labels, "input_tokens": count})
             inputs = {k: v.to(model.device) if hasattr(v, "to") else v for k, v in inputs.items()}
-            model.lm.eval()
-            hook = model.backbone.register_forward_pre_hook(forward, with_kwargs=True)
-            deadline()
-            generation["phase"] = "generation"
-            decode_started = time.perf_counter()
-            try:
-                with torch.inference_mode():
-                    output = model.lm.generate(
-                        **inputs,
-                        max_new_tokens=32,
-                        do_sample=False,
-                        num_beams=1,
-                        num_return_sequences=1,
-                        return_dict_in_generate=False,
-                        use_cache=True,
-                        pad_token_id=model.tok.pad_token_id,
-                        streamer=capture,
-                    )
-            finally:
-                generation["generation_elapsed_ms"] = (time.perf_counter() - decode_started) * 1000
-                hook.remove()
-                hook = None
+            generation["phase"] = (
+                "adapter_lock_wait" if action_adapter is not None else "generation"
+            )
+            with action_adapter.decision_context() if action_adapter is not None else nullcontext():
+                # Shared adapter/helper lock waiting is inside the SAME budget.
+                deadline()
+                model.lm.eval()
+                hook = model.backbone.register_forward_pre_hook(forward, with_kwargs=True)
+                generation["phase"] = "generation"
+                decode_started = time.perf_counter()
+                try:
+                    deadline()
+                    with torch.inference_mode():
+                        output = model.lm.generate(
+                            **inputs,
+                            max_new_tokens=32,
+                            do_sample=False,
+                            num_beams=1,
+                            num_return_sequences=1,
+                            return_dict_in_generate=False,
+                            use_cache=True,
+                            pad_token_id=model.tok.pad_token_id,
+                            streamer=capture,
+                        )
+                finally:
+                    generation["generation_elapsed_ms"] = (
+                        time.perf_counter() - decode_started
+                    ) * 1000
+                    hook.remove()
+                    hook = None
             generation["phase"] = "decoding"
             if (
                 len(output.shape) != 2
