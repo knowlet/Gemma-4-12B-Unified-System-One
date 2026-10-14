@@ -621,8 +621,48 @@ JSON validation. CPU tests and the actual cached tokenizer verify all 5,605
 legal actions across 491 saved states, with at most 13 tokens including EOS.
 The full software suite passes 2025 checks with 275 dependency/browser opt-in
 skips; two separate genuine CPU generation checks pass with CUDA disabled.
-Its browser outcome is still unmeasured. It does not establish a fix for the
-separate missed-search requirement.
+The [matched grammar comparison](../artifacts/jev-browser/20261015-action-grammar-selection-01/state.json)
+completes **12/13 with the same action adapter versus 8/13 without it**, using
+the identical grammar in both arms. The adapted model passes all ten regular
+development tasks, including native_select, and two of three travel goal
+regressions. It still selects Nature, opens Serra Lodge and declares DONE
+without applying Lisbon search. The promotion gate fails. The
+[independent audit](../artifacts/jev-browser/20261015-action-grammar-selection-01-full-independent-audit.json)
+verifies all 13 paired initial observations and 107 policy calls, with separate
+cached-tokenizer verification of full prompt and legal output token paths.
+
+One base call returns legal JSON after 24.554 seconds and is correctly rejected
+by the unchanged 20-second cooperative limit. It remains a failed attempt.
+Read-only resource observations also record another active GPU workload;
+subsequent calls generally take 3–5 seconds. These observations do not establish
+the cause of the outlier or a controlled inference-speed comparison. The other
+remaining failures are semantic, so valid action syntax alone is insufficient.
+
+The [fixed-state wording diagnostic](../artifacts/jev-browser/20261015-action-lora-goal-wording-01/receipt.json)
+uses the original unconstrained v2 decoder and exactly one saved post-SELECT
+observation. Twelve calls change only the goal strings in question instructions.
+All four existing category-only wordings correctly open the property; all four
+existing full-search wordings correctly choose Destination. The actual failed
+wording and two compact search paraphrases instead open the property; another
+new wording explicitly naming Destination and Find stays correctly fills it.
+This is 9/12 external next-action agreement, not browser task completion. Its
+[independent audit](../artifacts/jev-browser/20261015-action-lora-goal-wording-01-independent-audit.json)
+verifies all input/source/adapter bindings, 24 checkpoints and 130 entered
+backbone calls. The result supports wording-sensitive goal conditioning at this
+fixed state, without establishing a hidden model mechanism.
+
+A training-only counterfactual collector pairs required and optional destination
+search at identical listing and prematurely opened detail states. Its first
+[96-row collection](../artifacts/jev-browser/20261015-counterfactual-training-01/receipt.json)
+is [quarantined before any fitting](../artifacts/jev-browser/20261015-counterfactual-training-01-quarantine.json):
+the real page URLs encode query scope. An
+[independent audit](../artifacts/jev-browser/20261015-counterfactual-training-01-independent-audit-r2.json)
+also finds that the earlier 425-row corpus has deterministic goal-profile URL
+indices, a potential memorization confound whose causal effect is unmeasured.
+The collector now serves one real URL derived only from pinned HTML bytes and
+compares complete first native requests after replacing only goal strings.
+It preserves the original leaking collection and recollects into a new directory;
+model inputs are never rewritten to conceal their actual observed URL.
 
 ## Historical failure diagnosis
 
