@@ -413,7 +413,36 @@
     "edge": "All22 responses satisfy native contract. No CLICK or SCROLL action selected; all4 correct actions are DONE. Continuing0/14, complete4/8.",
     "lite": "Complete8/8, continuing3/14: CLICK1/12 and SCROLL_DOWN2/2. All22 responses exceed20s on this CPU profile.",
     "within_budget_continuing": "Both produce0/14 correct continuing actions within20s in this saved-state CPU experiment. This is not browser task success.",
-    "implication": "Separate response/schema validity, complete-state recognition, active-action correctness and latency."
+    "implication": "Separate response/schema validity, complete-state recognition, active-action correctness and latency.",
+    "saved_action_error_breakdown": {
+      "scope": "Post hoc inspection of the same fixed22 saved outputs, with no new model calls or browser execution.",
+      "continuing_denominator": 14,
+      "d3-edge": {
+        "premature_BLOCKED": 7,
+        "premature_DONE": 5,
+        "unsupported_WAIT": 2,
+        "valid_active_actions": 0
+      },
+      "d3-lite": {
+        "premature_BLOCKED": 2,
+        "premature_DONE": 3,
+        "unsupported_WAIT": 1,
+        "wrong_operation_SCROLL_DOWN": 5,
+        "valid_active_actions": 3
+      },
+      "active_target_misses": "Zero for both arms, with only one CLICK actually selected across both arms. This does not establish general target-selection accuracy; unused target heads are not scored as executed actions.",
+      "representative_completion_error": "On the Rust References and Borrowing document, Mutable References appears in the table of contents while the visible body still introduces references. Both models choose DONE before the requested subsection opens. The completed state has the #mutable-references URL fragment and the subsection opening in visible text.",
+      "representative_continuation_error": "Lite chooses SCROLL_DOWN instead of the offered DESCRIPTION link in both worktree intermediate states, with selected-operation probabilities0.7031816453689828 and0.7143748588883281.",
+      "confidence_semantics": "Publisher raw confidence is entropy-derived; normalized operation confidence is the winning probability. Neither is a measured browser task-success probability.",
+      "observation_check": "No same-task text-identical pair with differing gold or URL was found. Native snapshot.js85..92 and V3 helper74..79 filter text by viewport intersection. Although native model transport omits explicit scroll coordinates, this inspection does not establish missing viewport evidence or contradictory labels.",
+      "analysis_source": "artifacts/jev-runtime/decision3-public-dev22-error-diagnosis-20261016-01/analyze_saved_rows.py",
+      "analysis_source_sha256": "395bebd2342ca64f2bd5709aab692c9de8106c601fd51f29bf73d591026c90b1",
+      "report_sha256": "e4c68afd298e2d033c6b458e305cfc12d90ad646c961972faa2c05fae0e0d4b1",
+      "contexts_sha256": "ce00528d33690d48c753b1644acdc011f617ef06473081b5bfc30c790e4f8906",
+      "manual_review_notes": "artifacts/jev-runtime/decision3-public-dev22-error-diagnosis-20261016-01/manual-review-notes-01.json",
+      "manual_review_notes_sha256": "9af2c59b180702629d2348df69c7f9b6b4527e8be3f15db4ae5ed6d32e4b3029",
+      "validation": "Root read the full owned analysis source and H02 delta before one stdlib-only execution; independently rehashed all47 explicit inputs/source and output files afterward. Source unchanged, forbidden framework modules empty. Representative incomplete/completed visible text and URLs manually checked; no model or analysis rerun."
+    }
   },
   "not_run_in_this_experiment": {
     "vllm-sr/d3": "225be8b1e2270becab69c5fe05b26f99cbbdd66b",
