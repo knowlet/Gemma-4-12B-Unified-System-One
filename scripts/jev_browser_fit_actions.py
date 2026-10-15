@@ -495,10 +495,41 @@ def _save_adapter(model, directory):
     }
 
 
-def _finalize(output, receipt, *, primary_error=None, **kwargs):
+def _check_initial_snapshot(snapshot):
+    from s1.browser_action_adapter import verify_initial_action_adapter_copy
+
+    checks = {}
+    for key, root in (
+        ("original_verification", snapshot["original_root"]),
+        ("frozen_verification", snapshot["frozen_root"]),
+    ):
+        try:
+            checks[key] = verify_initial_action_adapter_copy(root, snapshot["descriptor"]["files"])
+        except Exception as exc:
+            checks[key] = {
+                "success": False,
+                "error": {"type": type(exc).__name__, "message": str(exc)},
+            }
+    return checks
+
+
+def _finalize(output, receipt, *, primary_error=None, initial_snapshot=None, **kwargs):
     """Preserve the original error even if final verification is interrupted."""
     try:
+        parent_changed = False
+        if initial_snapshot is not None:
+            checks = _check_initial_snapshot(initial_snapshot)
+            receipt["initial_action_adapter"].update(checks)
+            parent_changed = not all(check["success"] for check in checks.values())
+            if parent_changed:
+                receipt.update(stage="failed")
+                receipt.setdefault(
+                    "error",
+                    {"type": "RuntimeError", "message": "Initial action adapter parent changed"},
+                )
         integrity._finalize_fit(output, receipt, primary_error=primary_error, **kwargs)
+        if parent_changed:
+            raise RuntimeError("Initial action adapter parent changed")
     except BaseException as final_error:
         receipt.update(
             stage="failed",
@@ -515,7 +546,16 @@ def _finalize(output, receipt, *, primary_error=None, **kwargs):
         primary_error.add_note("Secondary finalization failure: " + type(final_error).__name__)
 
 
-def fit(*, train_cases, development_cases, output_dir, steps=None, learning_rate=1e-4, seed=42):
+def fit(
+    *,
+    train_cases,
+    development_cases,
+    output_dir,
+    steps=None,
+    learning_rate=1e-4,
+    seed=42,
+    initial_action_adapter=None,
+):
     if (
         (steps is not None and (type(steps) is not int or steps < 1))
         or type(seed) is not int
@@ -532,6 +572,12 @@ def fit(*, train_cases, development_cases, output_dir, steps=None, learning_rate
     if not audit["valid"]:
         raise ValueError("Training and development episode/source/request groups overlap")
     output = Path(output_dir).resolve()
+    if initial_action_adapter is not None:
+        from s1.browser_action_adapter import validate_initial_action_adapter_destination
+
+        validate_initial_action_adapter_destination(
+            initial_action_adapter, output / "inputs/initial_action_adapter"
+        )
     output.mkdir(parents=True, exist_ok=False)
     receipt = {
         "stage": "setup",
@@ -563,11 +609,18 @@ def fit(*, train_cases, development_cases, output_dir, steps=None, learning_rate
         None,
         None,
     )
+    initial_snapshot = None
     try:
         import importlib.metadata
 
         import torch
 
+        from s1.browser_action_adapter import (
+            capture_initial_action_adapter,
+            initialize_training_action_adapter,
+            verify_action_adapter,
+            verify_initial_action_adapter_splits,
+        )
         from s1.browser_evidence import capture_runtime_sources
         from s1.evaluation.datasets import request_fingerprint
         from s1.jev_generated import INSTRUCTIONS, POLICY
@@ -581,6 +634,16 @@ def fit(*, train_cases, development_cases, output_dir, steps=None, learning_rate
         source_manifest = capture_runtime_sources(output, additional_files=source_files)
         receipt["source_manifest"] = source_manifest
         receipt["input_manifests"] = {}
+
+        def inventory(cases):
+            return {
+                "ids": sorted({case.id for case in cases}),
+                "groups": sorted({case.group_id or case.id for case in cases}),
+                "request_fingerprints": sorted(
+                    {request_fingerprint(case.request) for case in cases}
+                ),
+            }
+
         for split, snapshot in snapshots.items():
             destination = output / "inputs" / split
             receipt["input_manifests"][split] = {
@@ -591,6 +654,21 @@ def fit(*, train_cases, development_cases, output_dir, steps=None, learning_rate
                 "artifact_path": "inputs/" + split,
                 "preservation_timing": "validated bytes frozen before model loading or training",
             }
+        if initial_action_adapter is not None:
+            receipt["stage"] = "initial_adapter_capture"
+            _write(output / "receipt.json", receipt)
+            initial_snapshot = capture_initial_action_adapter(
+                initial_action_adapter, output / "inputs/initial_action_adapter"
+            )
+            receipt["initial_action_adapter"] = initial_snapshot["descriptor"]
+            if not all(
+                check["success"] for check in _check_initial_snapshot(initial_snapshot).values()
+            ):
+                raise ValueError("Initial action adapter parent changed before model loading")
+            verify_initial_action_adapter_splits(
+                initial_snapshot["frozen_root"],
+                {"train": inventory(train), "development": inventory(development)},
+            )
         receipt["stage"] = "model_loading"
         _write(output / "receipt.json", receipt)
         torch.manual_seed(seed)
@@ -616,6 +694,14 @@ def fit(*, train_cases, development_cases, output_dir, steps=None, learning_rate
             raise ValueError("Training model identity differs from the pinned BF16 base")
         for config in model.lm.peft_config.values():
             config.base_model_name_or_path, config.revision = MODEL_ID, REVISION
+        if initial_snapshot is not None:
+            if not all(
+                check["success"] for check in _check_initial_snapshot(initial_snapshot).values()
+            ):
+                raise ValueError("Initial action adapter parent changed before loading")
+            receipt["initial_action_adapter"]["initial_tensor_verification"] = (
+                initialize_training_action_adapter(model, initial_snapshot["verified"])
+            )
         receipt["stage"] = "preflight"
         _write(output / "receipt.json", receipt)
         rows = {}
@@ -644,15 +730,6 @@ def fit(*, train_cases, development_cases, output_dir, steps=None, learning_rate
             seed=seed,
         )
         files = _save_adapter(model, output / "adapter")
-
-        def inventory(cases):
-            return {
-                "ids": sorted({case.id for case in cases}),
-                "groups": sorted({case.group_id or case.id for case in cases}),
-                "request_fingerprints": sorted(
-                    {request_fingerprint(case.request) for case in cases}
-                ),
-            }
 
         adapter_manifest = {
             "schema_version": 1,
@@ -707,6 +784,7 @@ def fit(*, train_cases, development_cases, output_dir, steps=None, learning_rate
             input_snapshots=snapshots,
             started=started,
             primary_error=primary,
+            initial_snapshot=initial_snapshot,
             owned_artifacts=[output / "adapter"],
         )
     # Valid manifests are published only after the final immutable receipt passes.
@@ -715,8 +793,18 @@ def fit(*, train_cases, development_cases, output_dir, steps=None, learning_rate
         "sha256": integrity._sha((output / "receipt.json").read_bytes()),
     }
     try:
+        if initial_snapshot is not None and not all(
+            check["success"] for check in _check_initial_snapshot(initial_snapshot).values()
+        ):
+            raise ValueError("Initial action adapter parent changed before publication")
         (output / "adapter/manifest.invalid.json").unlink()
         _write(output / "adapter/manifest.json", adapter_manifest)
+        if initial_snapshot is not None:
+            verify_action_adapter(output / "adapter")
+            if not all(
+                check["success"] for check in _check_initial_snapshot(initial_snapshot).values()
+            ):
+                raise ValueError("Initial action adapter parent changed during publication")
     except BaseException as exc:
         receipt.update(stage="failed", error={"type": type(exc).__name__, "message": str(exc)})
         _finalize(
@@ -727,6 +815,7 @@ def fit(*, train_cases, development_cases, output_dir, steps=None, learning_rate
             input_snapshots=snapshots,
             started=started,
             primary_error=exc,
+            initial_snapshot=initial_snapshot,
             owned_artifacts=[output / "adapter"],
         )
         raise
@@ -741,6 +830,7 @@ def main(argv=None):
     parser.add_argument("--steps", type=int)
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--initial-action-adapter")
     receipt = fit(**vars(parser.parse_args(argv)))
     print(
         json.dumps({key: receipt[key] for key in ("stage", "scope", "steps", "adapter_artifact")})

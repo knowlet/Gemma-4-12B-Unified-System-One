@@ -45,6 +45,22 @@ _KEYS = {
     "provenance",
     "training_receipt",
 }
+_PARENT_PATH = "inputs/initial_action_adapter"
+_PARENT_KEYS = {
+    "schema_version",
+    "artifact_path",
+    "files",
+    "identity_sha256",
+    "lineage_depth",
+    "parent_manifest_sha256",
+    "parent_training_receipt_sha256",
+    "parent_weights_sha256",
+    "historical_training_cases",
+    "historical_completed_updates",
+    "initial_tensor_verification",
+    "original_verification",
+    "frozen_verification",
+}
 
 
 def _sha(blob):
@@ -93,6 +109,220 @@ def _record(root, label, record):
     ):
         raise ValueError(f"adapter evidence hash/size mismatch: {label}")
     return blob
+
+
+def _ordinary_directory(configured):
+    configured = Path(configured).absolute()
+    if (
+        ".." in configured.parts
+        or any(path.is_symlink() for path in (configured, *configured.parents))
+        or not configured.is_dir()
+    ):
+        raise ValueError(
+            "initial adapter evidence requires ordinary local directories without symlinks"
+        )
+    return configured.resolve()
+
+
+def _parent_inventory(root, *, capture=False):
+    root = _ordinary_directory(root)
+    files, blobs, total = {}, {}, 0
+    for path in sorted(root.rglob("*")):
+        if path.is_symlink():
+            raise ValueError("initial adapter evidence must not contain symlinks")
+        if path.is_dir():
+            continue
+        label = path.relative_to(root).as_posix()
+        blob = _read(root, label)
+        total += len(blob)
+        if len(files) >= 10_000 or total > 1_073_741_824:
+            raise ValueError("initial adapter fit tree exceeds its bounded file/byte inventory")
+        files[label] = {"sha256": _sha(blob), "size_bytes": len(blob)}
+        if capture:
+            blobs[label] = blob
+    if not files:
+        raise ValueError("initial adapter fit tree must not be empty")
+    return files, blobs
+
+
+def _inventory_identity(files):
+    return _sha(json.dumps(files, sort_keys=True, separators=(",", ":")).encode())
+
+
+def verify_initial_action_adapter_copy(root, files):
+    """Rehash every ordinary file; the copied fit root is independent of its origin."""
+    actual, _ = _parent_inventory(root)
+    expected, current = set(files), set(actual)
+    changed = sorted(label for label in expected & current if files[label] != actual[label])
+    return {
+        "success": not changed and expected == current,
+        "identity_sha256": _inventory_identity(files),
+        "current_identity_sha256": _inventory_identity(actual),
+        "changed": changed,
+        "missing": sorted(expected - current),
+        "added": sorted(current - expected),
+    }
+
+
+def validate_initial_action_adapter_destination(path, destination):
+    """Reject overlapping/symlinked capture locations before creating a child fit."""
+    adapter = _ordinary_directory(path)
+    if adapter.name != "adapter":
+        raise ValueError("initial action adapter must be the adjacent fit's adapter directory")
+    original = adapter.parent
+    destination = Path(destination).absolute()
+    if ".." in destination.parts or any(
+        parent.is_symlink() for parent in (destination, *destination.parents)
+    ):
+        raise ValueError("initial adapter destination must not contain symlinks")
+    if destination.resolve().is_relative_to(original) or original.is_relative_to(
+        destination.resolve()
+    ):
+        raise ValueError("initial adapter capture must not overlap or recurse into its parent fit")
+    return original, destination
+
+
+def capture_initial_action_adapter(path, destination):
+    """Freeze the complete verified parent fit tree before any training base is loaded."""
+    original, destination = validate_initial_action_adapter_destination(path, destination)
+    adapter = original / "adapter"
+    verified = verify_action_adapter(adapter)
+    files, blobs = _parent_inventory(original, capture=True)
+    destination.mkdir(parents=True, exist_ok=False)
+    for label, blob in blobs.items():
+        target = destination / label
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(blob)
+    original_check = verify_initial_action_adapter_copy(original, files)
+    frozen_check = verify_initial_action_adapter_copy(destination, files)
+    copied = verify_action_adapter(destination / "adapter")
+    if (
+        not original_check["success"]
+        or not frozen_check["success"]
+        or copied.telemetry() != verified.telemetry()
+    ):
+        raise ValueError("initial adapter parent changed during capture")
+    parent_receipt = _json(_read(destination, "receipt.json", limit=10_000_000))
+    updates = parent_receipt.get("training", {}).get("completed_updates")
+    if (
+        type(updates) is not int
+        or updates < 1
+        or parent_receipt["training"].get("development_updates") != 0
+    ):
+        raise ValueError(
+            "initial adapter parent requires completed training progress and zero development updates"
+        )
+    descriptor = {
+        "schema_version": 1,
+        "artifact_path": _PARENT_PATH,
+        "files": files,
+        "identity_sha256": _inventory_identity(files),
+        "lineage_depth": verified.tensor_metadata.get("lineage_depth", 0) + 1,
+        "parent_manifest_sha256": verified.manifest_sha256,
+        "parent_training_receipt_sha256": verified.receipt_sha256,
+        "parent_weights_sha256": verified.manifest["files"]["adapter_model.safetensors"]["sha256"],
+        "historical_training_cases": len(verified.manifest["provenance"]["train"]["ids"])
+        + verified.tensor_metadata.get("historical_training_cases", 0),
+        "historical_completed_updates": updates
+        + verified.tensor_metadata.get("historical_completed_updates", 0),
+        "initial_tensor_verification": None,
+        "original_verification": original_check,
+        "frozen_verification": frozen_check,
+    }
+    if descriptor["lineage_depth"] > 8:
+        raise ValueError("initial adapter lineage exceeds eight parent generations")
+    return {
+        "original_root": original,
+        "frozen_root": destination,
+        "descriptor": descriptor,
+        "verified": copied,
+    }
+
+
+def initialize_training_action_adapter(model, verified):
+    """Inject exact captured FP32 q/v tensors into an already constructed BF16 PEFT model."""
+    import torch
+    from peft import get_peft_model_state_dict, set_peft_model_state_dict
+    from safetensors.torch import load
+
+    if not isinstance(verified, VerifiedActionAdapter) or (
+        model.name,
+        model.revision,
+        model.quantization,
+    ) != (BASE_ID, BASE_REVISION, "none"):
+        raise ValueError(
+            "warm start requires verified local bytes and the pinned unquantized training base"
+        )
+    blob = verified.files["adapter_model.safetensors"]
+    if _sha(blob) != verified.manifest["files"]["adapter_model.safetensors"]["sha256"]:
+        raise ValueError("captured initial adapter weights changed")
+    values = load(blob)
+    parameters = dict(model.lm.named_parameters())
+    trainable = {
+        name.replace(".default.", "."): value
+        for name, value in parameters.items()
+        if value.requires_grad
+    }
+    expected = verified.tensor_metadata["tensor_shapes"]
+    if (
+        set(trainable) != set(values)
+        or {name: list(value.shape) for name, value in trainable.items()} != expected
+        or any(value.dtype != torch.float32 for value in [*trainable.values(), *values.values()])
+    ):
+        raise ValueError("initial adapter must exactly match every FP32 q/v training key and shape")
+    frozen = {
+        name: (value, value._version)
+        for name, value in parameters.items()
+        if not value.requires_grad
+    }
+    head, backbone, head_version = model.head, model.backbone, model.head.weight._version
+    base = model.lm.get_base_model()
+    if (
+        head.weight.dtype != torch.bfloat16
+        or head.weight.requires_grad
+        or set(model.lm.peft_config) != {"default"}
+        or base.get_output_embeddings() is not head
+        or base.model is not backbone
+    ):
+        raise ValueError(
+            "warm start requires a frozen BF16 full head and exactly one training adapter"
+        )
+    result = set_peft_model_state_dict(model.lm, values, adapter_name="default")
+    loaded = get_peft_model_state_dict(
+        model.lm, adapter_name="default", save_embedding_layers=False
+    )
+    current = dict(model.lm.named_parameters())
+    if (
+        result.unexpected_keys
+        or any(".lora_" in key for key in result.missing_keys)
+        or set(loaded) != set(values)
+        or any(not torch.equal(loaded[key].detach().cpu(), value) for key, value in values.items())
+    ):
+        raise ValueError("initial adapter tensors were not loaded exactly")
+    if (
+        set(current) != set(parameters)
+        or any(current[name] is not value for name, value in parameters.items())
+        or any(not value.requires_grad for value in trainable.values())
+        or model.head is not head
+        or model.backbone is not backbone
+        or base.get_output_embeddings() is not head
+        or base.model is not backbone
+        or head.weight._version != head_version
+        or any(
+            value._version != version or value.requires_grad for value, version in frozen.values()
+        )
+    ):
+        raise ValueError("initial adapter load altered a frozen base/full-head parameter")
+    return {
+        "success": True,
+        "tensor_count": len(values),
+        "tensor_shapes": expected,
+        "weights_sha256": _sha(blob),
+        "all_tensors_exact": True,
+        "all_trainables_qv_fp32": True,
+        "frozen_base_versions_unchanged": True,
+        "full_head_identity_version_preserved": True,
+    }
 
 
 def _inventory(blob, split):
@@ -334,7 +564,146 @@ class VerifiedActionAdapter:
         }
 
 
-def _verify_action_adapter(path, *, model_id, revision, quantization):
+def verify_initial_action_adapter_splits(parent_root, provenance, *, head_sha256=None):
+    """Reject train/development leakage across every verified copied ancestor."""
+    ancestor_root = Path(parent_root)
+    for _ in range(8):
+        ancestor_manifest = _json(
+            _read(ancestor_root / "adapter", "manifest.json", limit=4_000_000)
+        )
+        ancestor_receipt = _json(_read(ancestor_root, "receipt.json", limit=10_000_000))
+        if head_sha256 is not None and any(
+            ancestor_receipt["training"].get(key) != head_sha256
+            for key in ("original_head_sha256_before", "original_head_sha256_after")
+        ):
+            raise ValueError("initial adapter ancestor full-head hash differs from the child base")
+        if any(
+            set(provenance["train"][key]) & set(ancestor_manifest["provenance"]["development"][key])
+            or set(provenance["development"][key])
+            & set(ancestor_manifest["provenance"]["train"][key])
+            for key in ("ids", "groups", "request_fingerprints")
+        ):
+            raise ValueError("initial adapter historical training/development provenance overlaps")
+        descriptor = ancestor_receipt.get("initial_action_adapter")
+        if descriptor is None:
+            return
+        if descriptor.get("artifact_path") != _PARENT_PATH:
+            raise ValueError("initial adapter ancestor path mismatch")
+        ancestor_root /= _PARENT_PATH
+    raise ValueError("initial adapter ancestor split inventory exceeds eight generations")
+
+
+def _verify_initial_parent(root, receipt, manifest, *, depth, seen):
+    if "initial_action_adapter" not in receipt:
+        return {}
+    descriptor = receipt["initial_action_adapter"]
+    if (
+        not isinstance(descriptor, dict)
+        or set(descriptor) != _PARENT_KEYS
+        or type(descriptor["schema_version"]) is not int
+        or descriptor["schema_version"] != 1
+        or descriptor["artifact_path"] != _PARENT_PATH
+    ):
+        raise ValueError("initial adapter parent descriptor schema/path mismatch")
+    files = descriptor["files"]
+    if (
+        not isinstance(files, dict)
+        or not files
+        or descriptor["identity_sha256"] != _inventory_identity(files)
+    ):
+        raise ValueError("initial adapter parent inventory identity mismatch")
+    copied = root / _PARENT_PATH
+    check = verify_initial_action_adapter_copy(copied, files)
+    for label, entry in files.items():
+        _record(copied, label, entry)
+    for key in ("original_verification", "frozen_verification"):
+        if (
+            descriptor[key] != check
+            or descriptor[key].get("success") is not True
+            or check["success"] is not True
+        ):
+            raise ValueError("initial adapter parent original/frozen verification failed")
+    parent = _verify_action_adapter(
+        copied / "adapter",
+        model_id=BASE_ID,
+        revision=BASE_REVISION,
+        quantization="nf4",
+        depth=depth + 1,
+        seen=seen,
+    )
+    parent_receipt = _json(_read(copied, "receipt.json", limit=10_000_000))
+    updates = parent_receipt.get("training", {}).get("completed_updates")
+    current_updates = receipt.get("training", {}).get("completed_updates")
+    expected = {
+        "parent_manifest_sha256": parent.manifest_sha256,
+        "parent_training_receipt_sha256": parent.receipt_sha256,
+        "parent_weights_sha256": parent.manifest["files"]["adapter_model.safetensors"]["sha256"],
+        "lineage_depth": parent.tensor_metadata.get("lineage_depth", 0) + 1,
+        "historical_training_cases": len(parent.manifest["provenance"]["train"]["ids"])
+        + parent.tensor_metadata.get("historical_training_cases", 0),
+        "historical_completed_updates": updates
+        + parent.tensor_metadata.get("historical_completed_updates", 0)
+        if type(updates) is int
+        else None,
+    }
+    if (
+        any(
+            type(descriptor[key]) is not type(value) or descriptor[key] != value
+            for key, value in expected.items()
+        )
+        or not 1 <= descriptor["lineage_depth"] <= 8
+        or type(updates) is not int
+        or updates < 1
+        or type(current_updates) is not int
+        or current_updates < 1
+        or parent_receipt["training"].get("development_updates") != 0
+        or receipt["training"].get("development_updates") != 0
+    ):
+        raise ValueError(
+            "initial adapter parent bindings/progress/zero-development-update lineage mismatch"
+        )
+    verify_initial_action_adapter_splits(
+        copied,
+        manifest["provenance"],
+        head_sha256=receipt["training"]["original_head_sha256_before"],
+    )
+    initial = descriptor["initial_tensor_verification"]
+    required = {
+        "success",
+        "tensor_count",
+        "tensor_shapes",
+        "weights_sha256",
+        "all_tensors_exact",
+        "all_trainables_qv_fp32",
+        "frozen_base_versions_unchanged",
+        "full_head_identity_version_preserved",
+    }
+    if (
+        not isinstance(initial, dict)
+        or set(initial) != required
+        or any(
+            initial[key] is not True
+            for key in (
+                "success",
+                "all_tensors_exact",
+                "all_trainables_qv_fp32",
+                "frozen_base_versions_unchanged",
+                "full_head_identity_version_preserved",
+            )
+        )
+        or initial["tensor_count"] != parent.tensor_metadata["tensor_count"]
+        or initial["tensor_shapes"] != parent.tensor_metadata["tensor_shapes"]
+        or initial["weights_sha256"] != expected["parent_weights_sha256"]
+        or parent.tensor_metadata["stored_dtypes"] != ["torch.float32"]
+    ):
+        raise ValueError("initial adapter exact FP32 tensor load evidence mismatch")
+    return {
+        key: descriptor[key]
+        for key in ("lineage_depth", "historical_training_cases", "historical_completed_updates")
+    }
+
+
+def _verify_action_adapter(path, *, model_id, revision, quantization, depth=0, seen=()):
     """Read/verify local bytes before any backbone is loaded; never uses the Hub."""
     configured = Path(path)
     if configured.is_symlink() or not configured.is_dir():
@@ -380,6 +749,8 @@ def _verify_action_adapter(path, *, model_id, revision, quantization):
     ):
         raise ValueError("action adapter must reference its adjacent training receipt")
     receipt_blob = _read(directory.parent, "receipt.json", limit=10_000_000)
+    if depth > 8 or _sha(receipt_blob) in seen:
+        raise ValueError("initial adapter parent lineage is recursive or exceeds eight generations")
     if _sha(receipt_blob) != record["sha256"]:
         raise ValueError("action adapter training receipt hash mismatch")
     receipt = _json(receipt_blob)
@@ -401,7 +772,11 @@ def _verify_action_adapter(path, *, model_id, revision, quantization):
     ):
         raise ValueError("adapter training receipt checkpoint/policy pins differ from manifest")
     _training_evidence(directory.parent, receipt, m["provenance"])
+    parent = _verify_initial_parent(
+        directory.parent, receipt, m, depth=depth, seen=(*seen, _sha(receipt_blob))
+    )
     tensor_metadata = _tensor_bytes(files["adapter_model.safetensors"])
+    tensor_metadata.update(parent)
     return VerifiedActionAdapter(
         copy.deepcopy(m), _sha(manifest_blob), _sha(receipt_blob), files, tensor_metadata
     )

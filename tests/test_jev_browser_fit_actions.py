@@ -326,6 +326,7 @@ def test_full_fit_freezes_inputs_adapter_only_and_final_manifest_receipt(
     monkeypatch.setattr(s1.unified, "UnifiedDecisionModel", lambda *args, **kwargs: tiny)
     output = tmp_path / "fit"
     receipt = FIT.fit(train_cases=train, development_cases=development, output_dir=output)
+    assert "initial_action_adapter" not in receipt
     assert receipt["stage"] == "complete" and receipt["full_lm_head_unchanged"]
     assert receipt["source_verification"]["success"]
     assert all(value["success"] for value in receipt["input_verification"].values())
@@ -344,6 +345,231 @@ def test_full_fit_freezes_inputs_adapter_only_and_final_manifest_receipt(
     assert "scripts/jev_browser_fit_actions.py" in receipt["source_manifest"]["files"]
     with pytest.raises(FileExistsError):
         FIT.fit(train_cases=train, development_cases=development, output_dir=output)
+
+
+@pytest.fixture
+def warm_fit(tmp_path, tiny, monkeypatch):
+    import torch
+
+    import s1.unified
+
+    child = copy.deepcopy(tiny, {id(torch): torch})
+    for model in (tiny, child):
+        model.lm.to(dtype=torch.bfloat16)
+        for parameter in model.lm.parameters():
+            if parameter.requires_grad:
+                parameter.data = parameter.data.float()
+    parent_data, child_data = tmp_path / "parent-data", tmp_path / "child-data"
+    parent_data.mkdir()
+    child_data.mkdir()
+    train = COLLECTION.collection(parent_data, "train", group="historical-parent-training")
+    development = COLLECTION.collection(parent_data, "development", group="held-aside-development")
+    current = COLLECTION.collection(child_data, "train", group="new-current-training")
+    calls = []
+
+    def construct(*args, **kwargs):
+        calls.append(kwargs)
+        assert kwargs["quantization"] == "none" and kwargs["precision"] == "bfloat16"
+        return tiny if len(calls) == 1 else child
+
+    monkeypatch.setattr(s1.unified, "UnifiedDecisionModel", construct)
+    parent = tmp_path / "parent-fit"
+    FIT.fit(train_cases=train, development_cases=development, output_dir=parent)
+    return SimpleNamespace(
+        parent=parent,
+        parent_model=tiny,
+        child=child,
+        train=current,
+        development=development,
+        calls=calls,
+    )
+
+
+def test_genuine_cpu_warm_fit_starts_exactly_from_parent_and_never_updates_development(
+    tmp_path, warm_fit, monkeypatch
+):
+    import torch
+    from peft import get_peft_model_state_dict
+
+    from s1.browser_action_adapter import verify_action_adapter
+
+    parent_values = {
+        key: value.detach().clone()
+        for key, value in get_peft_model_state_dict(
+            warm_fit.parent_model.lm, save_embedding_layers=False
+        ).items()
+    }
+    head = warm_fit.child.head.weight.detach().clone()
+    original_train = FIT.train_actions
+    observed = []
+
+    def checked(model, *args, **kwargs):
+        initial = get_peft_model_state_dict(model.lm, save_embedding_layers=False)
+        assert set(initial) == set(parent_values)
+        assert all(torch.equal(initial[key], value) for key, value in parent_values.items())
+        observed.append(True)
+        return original_train(model, *args, **kwargs)
+
+    monkeypatch.setattr(FIT, "train_actions", checked)
+    output = tmp_path / "child-fit"
+    receipt = FIT.fit(
+        train_cases=warm_fit.train,
+        development_cases=warm_fit.development,
+        output_dir=output,
+        initial_action_adapter=warm_fit.parent / "adapter",
+        learning_rate=5e-5,
+    )
+    descriptor = receipt["initial_action_adapter"]
+    assert observed == [True] and len(warm_fit.calls) == 2
+    assert (
+        descriptor["historical_training_cases"] == descriptor["historical_completed_updates"] == 1
+    )
+    assert descriptor["lineage_depth"] == 1
+    assert descriptor["initial_tensor_verification"]["all_tensors_exact"] is True
+    assert (
+        descriptor["original_verification"]["success"]
+        and descriptor["frozen_verification"]["success"]
+    )
+    assert receipt["training"]["completed_updates"] == 1
+    assert (
+        receipt["training"]["development_examples"] == 1
+        and receipt["training"]["development_updates"] == 0
+    )
+    assert torch.equal(head, warm_fit.child.head.weight)
+    assert any(
+        not torch.equal(
+            value, get_peft_model_state_dict(warm_fit.child.lm, save_embedding_layers=False)[key]
+        )
+        for key, value in parent_values.items()
+    )
+    verified = verify_action_adapter(output / "adapter")
+    assert verified.telemetry()["historical_training_cases"] == 1
+    assert verified.telemetry()["train_cases"] == 1
+    assert not torch.cuda.is_initialized()
+
+
+@pytest.mark.parametrize("which", ["original", "frozen"])
+def test_parent_source_drift_after_update_blocks_child_publication(
+    tmp_path, warm_fit, monkeypatch, which
+):
+    original = FIT._save_adapter
+    output = tmp_path / "child-fit"
+
+    def changed(model, directory):
+        result = original(model, directory)
+        root = warm_fit.parent if which == "original" else output / "inputs/initial_action_adapter"
+        path = next((root / "sources/s1").glob("*.py"))
+        path.write_bytes(path.read_bytes() + b"\n# changed parent copy\n")
+        return result
+
+    monkeypatch.setattr(FIT, "_save_adapter", changed)
+    with pytest.raises(RuntimeError, match="parent changed"):
+        FIT.fit(
+            train_cases=warm_fit.train,
+            development_cases=warm_fit.development,
+            output_dir=output,
+            initial_action_adapter=warm_fit.parent / "adapter",
+        )
+    receipt = json.loads((output / "receipt.json").read_bytes())
+    assert receipt["stage"] == "failed"
+    assert receipt["initial_action_adapter"][which + "_verification"]["success"] is False
+    assert not (output / "adapter/manifest.json").exists()
+    assert (output / "adapter/manifest.invalid.json").exists()
+
+
+def test_copied_parent_drift_is_rejected_before_loading_training_base(
+    tmp_path, warm_fit, monkeypatch
+):
+    from s1 import browser_action_adapter as action
+
+    capture = action.capture_initial_action_adapter
+
+    def changed(*args, **kwargs):
+        snapshot = capture(*args, **kwargs)
+        path = snapshot["frozen_root"] / "adapter/adapter_model.safetensors"
+        path.write_bytes(path.read_bytes() + b" ")
+        return snapshot
+
+    monkeypatch.setattr(action, "capture_initial_action_adapter", changed)
+    output = tmp_path / "child-fit"
+    with pytest.raises(ValueError, match="before model loading"):
+        FIT.fit(
+            train_cases=warm_fit.train,
+            development_cases=warm_fit.development,
+            output_dir=output,
+            initial_action_adapter=warm_fit.parent / "adapter",
+        )
+    assert len(warm_fit.calls) == 1
+    assert json.loads((output / "receipt.json").read_bytes())["stage"] == "failed"
+    assert not (output / "adapter/manifest.json").exists()
+
+
+def test_historical_development_leak_is_rejected_before_loading_training_base(tmp_path, warm_fit):
+    data = tmp_path / "leaking-data"
+    data.mkdir()
+    train = COLLECTION.collection(data, "train", group="held-aside-development")
+    development = COLLECTION.collection(data, "development", group="different-new-development")
+    output = tmp_path / "child-fit"
+    with pytest.raises(ValueError, match="historical training/development"):
+        FIT.fit(
+            train_cases=train,
+            development_cases=development,
+            output_dir=output,
+            initial_action_adapter=warm_fit.parent / "adapter",
+        )
+    assert len(warm_fit.calls) == 1
+    assert not (output / "adapter/manifest.json").exists()
+
+
+def test_parent_drift_does_not_replace_primary_training_failure(tmp_path, warm_fit, monkeypatch):
+    def failed(*_args, **_kwargs):
+        path = next((warm_fit.parent / "sources/s1").glob("*.py"))
+        path.write_bytes(path.read_bytes() + b"\n# changed origin\n")
+        raise RuntimeError("primary native training failure")
+
+    monkeypatch.setattr(FIT, "train_actions", failed)
+    output = tmp_path / "child-fit"
+    with pytest.raises(RuntimeError, match="primary native training failure"):
+        FIT.fit(
+            train_cases=warm_fit.train,
+            development_cases=warm_fit.development,
+            output_dir=output,
+            initial_action_adapter=warm_fit.parent / "adapter",
+        )
+    receipt = json.loads((output / "receipt.json").read_bytes())
+    assert receipt["error"]["message"] == "primary native training failure"
+    assert receipt["stage"] == "failed" and not (output / "adapter/manifest.json").exists()
+
+
+@pytest.mark.parametrize("change", ["shape", "extra_trainable", "frozen_head"])
+def test_native_initial_tensor_load_rejects_inventory_or_frozen_base_changes(
+    warm_fit, monkeypatch, change
+):
+    import peft
+    import torch
+
+    from s1.browser_action_adapter import initialize_training_action_adapter, verify_action_adapter
+
+    verified = verify_action_adapter(warm_fit.parent / "adapter")
+    if change == "shape":
+        parameter = next(
+            parameter for parameter in warm_fit.child.lm.parameters() if parameter.requires_grad
+        )
+        parameter.data = parameter.data[:, :1]
+    elif change == "extra_trainable":
+        warm_fit.child.head.weight.requires_grad_(True)
+    else:
+        original = peft.set_peft_model_state_dict
+
+        def changed(*args, **kwargs):
+            result = original(*args, **kwargs)
+            with torch.no_grad():
+                warm_fit.child.head.weight.add_(1)
+            return result
+
+        monkeypatch.setattr(peft, "set_peft_model_state_dict", changed)
+    with pytest.raises(ValueError, match="key and shape|frozen base"):
+        initialize_training_action_adapter(warm_fit.child, verified)
 
 
 def test_final_input_mismatch_writes_failed_receipt_and_never_valid_adapter(

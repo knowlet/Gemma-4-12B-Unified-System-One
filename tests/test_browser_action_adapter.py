@@ -4,6 +4,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import shutil
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -185,6 +186,122 @@ def test_valid_local_artifact_captures_weights_and_exact_provenance(artifact):
     # Loading later consumes these captured bytes, not a newly modified origin.
     (artifact.path / "adapter_model.safetensors").write_bytes(b"later modified origin")
     assert sha(verified.files["adapter_model.safetensors"]) == metadata["weights_sha256"]
+
+
+@pytest.fixture
+def warm_child(artifact, tmp_path):
+    artifact.receipt["training"].update(completed_updates=1, development_updates=0)
+    artifact.seal()
+    root = tmp_path / "child"
+    snapshot = action.capture_initial_action_adapter(
+        artifact.path, root / "inputs/initial_action_adapter"
+    )
+    shutil.copytree(artifact.root, root, dirs_exist_ok=True)
+    receipt, manifest = copy.deepcopy(artifact.receipt), copy.deepcopy(artifact.manifest)
+    descriptor = copy.deepcopy(snapshot["descriptor"])
+    parent = snapshot["verified"]
+    descriptor["initial_tensor_verification"] = {
+        "success": True,
+        "tensor_count": parent.tensor_metadata["tensor_count"],
+        "tensor_shapes": parent.tensor_metadata["tensor_shapes"],
+        "weights_sha256": parent.manifest["files"]["adapter_model.safetensors"]["sha256"],
+        "all_tensors_exact": True,
+        "all_trainables_qv_fp32": True,
+        "frozen_base_versions_unchanged": True,
+        "full_head_identity_version_preserved": True,
+    }
+    receipt["initial_action_adapter"] = descriptor
+
+    def seal():
+        manifest["training_receipt"]["sha256"] = sha(write(root / "receipt.json", receipt))
+        write(root / "adapter/manifest.json", manifest)
+
+    seal()
+    return SimpleNamespace(
+        root=root,
+        path=root / "adapter",
+        receipt=receipt,
+        manifest=manifest,
+        seal=seal,
+        snapshot=snapshot,
+    )
+
+
+def test_verified_warm_parent_is_self_contained_and_history_is_disclosed(
+    warm_child, artifact, tmp_path
+):
+    verified = action.verify_action_adapter(warm_child.path)
+    metadata = verified.telemetry()
+    assert metadata["lineage_depth"] == 1
+    assert metadata["historical_training_cases"] == metadata["historical_completed_updates"] == 1
+    assert metadata["train_cases"] == 1
+    # Deployment relies on the sealed full copy, after the origin is removed.
+    shutil.rmtree(artifact.root)
+    assert action.verify_action_adapter(warm_child.path).telemetry() == metadata
+    next_snapshot = action.capture_initial_action_adapter(
+        warm_child.path, tmp_path / "grandchild/inputs/initial_action_adapter"
+    )
+    assert next_snapshot["descriptor"]["lineage_depth"] == 2
+    assert next_snapshot["descriptor"]["historical_training_cases"] == 2
+
+
+@pytest.mark.parametrize(
+    "relative", ["adapter/adapter_model.safetensors", "sources/s1/example.py", "receipt.json"]
+)
+def test_copied_parent_substitution_fails_before_child_weights(warm_child, monkeypatch, relative):
+    path = warm_child.root / "inputs/initial_action_adapter" / relative
+    path.write_bytes(path.read_bytes() + b" ")
+    monkeypatch.setattr(
+        action, "_tensor_bytes", lambda _: pytest.fail("substituted parent reached tensor decoding")
+    )
+    with pytest.raises(ValueError, match="hash/size mismatch"):
+        action.verify_action_adapter(warm_child.path)
+
+
+@pytest.mark.parametrize(
+    "key,value",
+    [
+        ("artifact_path", "../parent"),
+        ("lineage_depth", 9),
+        ("parent_weights_sha256", "0" * 64),
+        ("historical_completed_updates", 0),
+        ("initial_tensor_verification", None),
+    ],
+)
+def test_parent_descriptor_cannot_skip_lineage_or_initial_equality(warm_child, key, value):
+    warm_child.receipt["initial_action_adapter"][key] = value
+    warm_child.seal()
+    with pytest.raises(ValueError):
+        action.verify_action_adapter(warm_child.path)
+
+
+def test_null_parent_descriptor_is_not_a_parentless_artifact(warm_child):
+    warm_child.receipt["initial_action_adapter"] = None
+    warm_child.seal()
+    with pytest.raises(ValueError, match="parent descriptor"):
+        action.verify_action_adapter(warm_child.path)
+
+
+def test_warm_child_full_head_hash_must_match_its_sealed_ancestors(warm_child):
+    warm_child.receipt["training"].update(
+        original_head_sha256_before="2" * 64, original_head_sha256_after="2" * 64
+    )
+    warm_child.seal()
+    with pytest.raises(ValueError, match="ancestor full-head hash"):
+        action.verify_action_adapter(warm_child.path)
+
+
+def test_parent_capture_rejects_symlinks_overlap_and_progressless_parent(artifact, tmp_path):
+    with pytest.raises(ValueError, match="overlap"):
+        action.capture_initial_action_adapter(artifact.path, artifact.root / "child")
+    assert not (artifact.root / "child").exists()
+    (artifact.root / "unconsumed-link").symlink_to(artifact.root / "receipt.json")
+    with pytest.raises(ValueError, match="symlink"):
+        action.capture_initial_action_adapter(artifact.path, tmp_path / "copy")
+    assert not (tmp_path / "copy").exists()
+    (artifact.root / "unconsumed-link").unlink()
+    with pytest.raises(ValueError, match="progress"):
+        action.capture_initial_action_adapter(artifact.path, tmp_path / "no-progress")
 
 
 @pytest.mark.parametrize(
