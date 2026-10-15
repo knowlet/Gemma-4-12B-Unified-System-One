@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "scope": "Actual read-only live-page and owned Chromium validation of a separate observation prototype; no model, training or full-campaign qualification",
+  "page": "https://developer.mozilla.org/en-US/docs/Web/API/URL_API",
+  "baseline_snapshot_sha256": "5327d4ab5d615ac0804f4913bb86bb59b383b11ff80f2408eb4aa565243f9dd5",
+  "first_hidden_pruning_prototype_sha256": "aa00ceebc987f6159d418053331aae4097d3ad15170fd3a31a10ef5133579c33",
+  "validated_relevant_node_pruning_prototype_sha256": "c18d29c78754a55977d308d9a46a6cebcb246026e79aca15bcc5d324f6c2956f",
+  "preserved_attempts": {
+    "live01": "Baseline and hidden-only candidate both exceeded20k in all three same-document brackets.",
+    "live02": "Same failure reproduced; separate bounded instrumentation counted the node frontier.",
+    "owned01": "14 semantic passes,1 diagnostic,1 test-loader setup failure. Same-page set_content retained JavaScript const declarations; original source and raw results preserved.",
+    "owned02": "Fresh page per fixture plus page-error capture; same semantic assertions rerun."
+  },
+  "instrumentation": {
+    "native_wire": false,
+    "visited_nodes": 37132,
+    "comment_nodes": 8950,
+    "trim_empty_text_nodes": 16715,
+    "remaining_nodes_before_hidden_pruning": 11467,
+    "stopped_by": "stack_exhausted",
+    "error": null,
+    "raw_sha256": "f0af205edef2a7b66e6ef8ba3b7b4c9d8f86011957e3f436f290dfa64a2e63e0"
+  },
+  "actual_live03": {
+    "stage": "complete",
+    "same_document_across_all_evaluations": true,
+    "brackets": 3,
+    "baseline_cap_evaluations": 6,
+    "clean_candidate_evaluations": 3,
+    "candidate_visited_nodes": [
+      9518,
+      9518,
+      9518
+    ],
+    "candidate_text_characters": [
+      1188,
+      1188,
+      1188
+    ],
+    "observer_errors": [],
+    "cleanup_errors": [],
+    "receipt": {
+      "sha256": "f6355d0c8f9c7d2cda98a7532d109aec88a6c002cca711ade8db4fc8d2f55fe1",
+      "size_bytes": 3335
+    }
+  },
+  "actual_owned02": {
+    "stage": "complete",
+    "semantic_regression_passes": 15,
+    "diagnostic_only_cases": 1,
+    "all_pinned_sources_unchanged": true,
+    "external_requests": [],
+    "cleanup_errors": [],
+    "receipt": {
+      "sha256": "efad311accbef38f43671a5df04617ecfefa0792cde9daa609bdae7c9c5387ee",
+      "size_bytes": 11637
+    },
+    "checks": [
+      "Exact visible prefix, internal whitespace, newline and indentation preservation.",
+      "Open shadow/slots/display:contents/fixed descendants and legacy hidden sentinels.",
+      "Full non-metadata snapshot and marker preservation on valid baseline cases.",
+      "Visible20k element/depth128 caps and6000 text limit retained."
+    ]
+  },
+  "limits": {
+    "node_count_scope": "Relevant traversal nodes after skipping comments, trim-empty text and provably excluded subtrees; not a hard bound on all browser DOM work.",
+    "closed_details": "Large closed-details synthetic case still caps; evaluated only, not a semantic regression pass.",
+    "production_profile_promoted": false,
+    "new_full24_collection": false,
+    "model_calls": 0,
+    "training_updates": 0,
+    "model_task_score": null,
+    "competitor_ranking": null,
+    "prior_collection06": "Unchanged19/24 scripted success; all24 quarantined and0 eligible rows.",
+    "profile_node_limit": 20000,
+    "profile_depth_limit": 128,
+    "profile_text_utf16_limit": 6000
+  }
+}
