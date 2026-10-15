@@ -10,6 +10,7 @@ Install playwright and run ``playwright install chromium`` before using this run
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import html
 import importlib
@@ -769,6 +770,8 @@ class PlaywrightCDP:
         self.public_navigation_events = []
         self.public_navigation_violations = []
         self.public_observer_errors = []
+        self.observation_expression = None
+        self.observation_sink = None
 
     @staticmethod
     def _public_request_scope(request, hosts):
@@ -860,7 +863,23 @@ class PlaywrightCDP:
             return {"success": True}
         if session_id not in self.sessions:
             raise ValueError("Missing owned CDP session")
-        return self.sessions[session_id].send(method, params)
+        response = self.sessions[session_id].send(method, params)
+        if (
+            method == "Runtime.evaluate"
+            and self.observation_expression is not None
+            and params.get("expression") == self.observation_expression
+            and self.observation_sink is not None
+        ):
+            # Capture the exact response before upstream adds fingerprints or
+            # refreshes internally. Neither issue an extra read nor change it.
+            self.observation_sink(
+                {
+                    "protocol_call": self.calls,
+                    "session": session_id,
+                    "response": copy.deepcopy(response),
+                }
+            )
+        return response
 
 
 def upstream_manifest(upstream_path: str | Path) -> dict[str, Any]:
@@ -1106,6 +1125,26 @@ def _write_json(path: Path, value: Any, secrets=()):
     path.write_text(json.dumps(_redact(value, list(secrets)), indent=2, ensure_ascii=False) + "\n")
 
 
+class _ObservationJournal:
+    """Persist all native reads, including refreshes inside Agent.predict()."""
+
+    def __init__(self, path, secrets):
+        self.path, self.secrets = path, list(secrets)
+        self.count, self.write_ms = 0, 0.0
+        path.touch(exist_ok=False)
+
+    def append(self, event):
+        started = time.perf_counter()
+        row = {"sequence": self.count, **event}
+        blob = json.dumps(_redact(row, self.secrets), ensure_ascii=False, allow_nan=False)
+        with self.path.open("a", encoding="utf-8") as stream:
+            stream.write(blob + "\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        self.count += 1
+        self.write_ms += (time.perf_counter() - started) * 1000
+
+
 @contextmanager
 def _record_runner_error(output, secrets):
     try:
@@ -1294,7 +1333,15 @@ def run_benchmark(
         "live_url": live_url,
         "timing_boundary": "Agent construction through independent "
         "verification, final HTML capture/write and browser cleanup; "
-        "excludes JSON evidence writes",
+        "includes synchronous native-observation journal writes; "
+        "excludes final outcome, state, request and summary JSON writes",
+        "native_observation_capture": {
+            "artifact": "attempts/<case_id>/observations.jsonl",
+            "scope": "Exact native snapshot.js CDP responses, including internal refreshes; "
+            "recorded before upstream fingerprint/screenshot additions without extra page reads",
+            "persistence": "redacted append, flush and fsync after every response",
+            "snapshot_source_sha256": manifest["source_sha256"]["jev_ultrafast/snapshot.js"],
+        },
         "transport": "headless Chromium through Playwright CDP; unchanged upstream browser.act",
         "fixture_manifest": [
             {
@@ -1350,6 +1397,9 @@ def run_benchmark(
             launch["executable_path"] = str(chromium_executable)
         browser = playwright.chromium.launch(**launch)
         transport = PlaywrightCDP(browser)
+        transport.observation_expression = (
+            Path(upstream_path) / "jev_ultrafast/snapshot.js"
+        ).read_text()
         primary_error = None
         secrets = startup_secrets
         try:
@@ -1395,6 +1445,10 @@ def run_benchmark(
                         close_error, verification_elapsed_ms = None, None
                         error_stage, verification_error, dom_error = None, None, None
                         snapshots = []
+                        observation_journal = _ObservationJournal(
+                            attempt / "observations.jsonl", secrets
+                        )
+                        transport.observation_sink = observation_journal.append
                         transport.public_navigation_hosts = (
                             public.allowed_top_level_hosts if public else None
                         )
@@ -1521,6 +1575,10 @@ def run_benchmark(
                                 "policy_calls": len(policy_calls),
                                 "text_calls": len(model_calls) - len(policy_calls),
                                 "browser_protocol_calls": transport.calls - call_start,
+                                "native_observations": observation_journal.count,
+                                "native_observation_write_ms": round(
+                                    observation_journal.write_ms, 3
+                                ),
                                 "model_requested": model,
                                 "models_reported": identities,
                                 "action_count": len(final_state["history"]) if final_state else 0,
@@ -1543,6 +1601,7 @@ def run_benchmark(
                             _write_json(attempt / "states.json", snapshots, secrets)
                             _write_json(attempt / "final_state.json", final_state, secrets)
                             outcomes.append(outcome)
+                            transport.observation_sink = None
                             _write_json(
                                 output / "summary.json", _summary(outcomes, configuration), secrets
                             )

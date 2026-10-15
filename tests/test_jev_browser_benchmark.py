@@ -26,6 +26,69 @@ SPEC.loader.exec_module(HARNESS)
 
 
 @pytest.mark.parametrize(
+    "response",
+    [
+        {"result": {"value": {"url": "https://example.org", "actions": [{"id": 1}]}}},
+        {"result": {"value": None}},
+        {"exceptionDetails": {"text": "navigating"}},
+    ],
+)
+def test_native_observation_capture_preserves_protocol_result_and_detaches(response):
+    sent, captured = [], []
+
+    def send(method, params):
+        sent.append((method, params))
+        return response
+
+    transport = HARNESS.PlaywrightCDP(None)
+    transport.sessions["owned"] = SimpleNamespace(send=send)
+    transport.observation_expression = "pinned native snapshot"
+    transport.observation_sink = captured.append
+    params = {"expression": "pinned native snapshot", "returnByValue": True}
+    actual = transport.cdp("Runtime.evaluate", session_id="owned", **params)
+    assert actual is response
+    assert sent == [("Runtime.evaluate", params)]
+    assert captured == [{"protocol_call": 1, "session": "owned", "response": response}]
+    response["upstream_added"] = "must not enter the earlier capture"
+    assert "upstream_added" not in captured[0]["response"]
+    transport.cdp("Runtime.evaluate", session_id="owned", expression="marker only")
+    assert len(captured) == 1
+
+
+def test_native_observation_journal_is_durable_redacted_and_refuses_overwrite(tmp_path):
+    path = tmp_path / "observations.jsonl"
+    journal = HARNESS._ObservationJournal(path, ["private-token"])
+    journal.append({"response": {"url": "https://example.org/private-token"}})
+    # Already readable before final-state or summary files exist.
+    assert json.loads(path.read_text()) == {
+        "sequence": 0,
+        "response": {"url": "https://example.org/[REDACTED]"},
+    }
+    journal.append({"response": {"exceptionDetails": {"text": "navigating"}}})
+    assert [json.loads(line)["sequence"] for line in path.read_text().splitlines()] == [0, 1]
+    assert journal.count == 2 and journal.write_ms >= 0
+    with pytest.raises(FileExistsError):
+        HARNESS._ObservationJournal(path, [])
+
+
+def test_native_observation_write_failure_propagates_without_a_second_browser_read():
+    sent = []
+    transport = HARNESS.PlaywrightCDP(None)
+    transport.sessions["owned"] = SimpleNamespace(
+        send=lambda method, params: sent.append((method, params)) or {"result": {"value": None}}
+    )
+    transport.observation_expression = "snapshot"
+
+    def fail(_event):
+        raise OSError("observation disk full")
+
+    transport.observation_sink = fail
+    with pytest.raises(OSError, match="observation disk full"):
+        transport.cdp("Runtime.evaluate", session_id="owned", expression="snapshot")
+    assert sent == [("Runtime.evaluate", {"expression": "snapshot"})]
+
+
+@pytest.mark.parametrize(
     "method,url,navigation,parent,blocked",
     [
         ("GET", "https://arxiv.org/search/?query=attention", True, None, False),
@@ -884,16 +947,24 @@ def test_all_original_nine_fixture_hashes_stay_unchanged(pinned_upstream):
 
 
 @pytest.mark.integration
-def test_real_upstream_guarded_click_and_independent_dom_judge(real_browser_environment):
+def test_real_upstream_guarded_click_and_independent_dom_judge(
+    real_browser_environment, monkeypatch
+):
     upstream, chromium = real_browser_environment
     cases = HARNESS.make_cases()
     case = next(case for case in cases if case.task_id == "premature_done")
     transport = HARNESS.PlaywrightCDP(chromium)
+    transport.observation_expression = (upstream / "jev_ultrafast/snapshot.js").read_text()
+    observations = []
+    transport.observation_sink = observations.append
     with HARNESS.fixture_server(cases) as base:
         with HARNESS.load_upstream(upstream, transport) as (agent_module, _model_module):
             agent = agent_module.Agent(base + case.path, case.goal)
             try:
                 page = agent.state["page"]
+                captured_page = observations[-1]["response"]["result"]["value"]
+                assert "fingerprint" not in captured_page
+                assert captured_page == {k: v for k, v in page.items() if k != "fingerprint"}
                 assert HARNESS.verify_fixture(agent.browser, case)["success"] is False
                 action = next(
                     action for action in page["actions"] if action["label"] == "Activate report"
@@ -903,6 +974,20 @@ def test_real_upstream_guarded_click_and_independent_dom_judge(real_browser_envi
                 # The previous observation cannot authorize a second mutation.
                 with pytest.raises(agent_module.StalePage):
                     agent.browser.act(action, page)
+                chosen_pages = []
+
+                def choose(fresh_page, _goal, _history):
+                    chosen_pages.append(fresh_page)
+                    return {"choice": "DONE"}
+
+                monkeypatch.setattr(agent_module, "choose", choose)
+                agent.command("predict")
+                assert chosen_pages[0]["fingerprint"] != page["fingerprint"]
+                refreshed = observations[-1]["response"]["result"]["value"]
+                assert len(observations) >= 2
+                assert refreshed == {
+                    k: v for k, v in chosen_pages[0].items() if k != "fingerprint"
+                }
             finally:
                 agent.close()
 
@@ -1169,6 +1254,12 @@ def test_real_runner_saves_false_done_requests_and_never_overwrites(
         assert calls[0]["transport_attempts"][0]["http_status"] == 200
         assert (attempt / "final.html").is_file()
         assert (attempt / "states.json").is_file()
+        observations = [
+            json.loads(line) for line in (attempt / "observations.jsonl").read_text().splitlines()
+        ]
+        assert len(observations) == summary["outcomes"][0]["native_observations"] > 0
+        assert [row["sequence"] for row in observations] == list(range(len(observations)))
+        assert all("actions" in row["response"]["result"]["value"] for row in observations)
         source_hashes = summary["configuration"]["upstream"]["source_sha256"]
         assert len(source_hashes) == len(HARNESS.UPSTREAM_FILES)
         assert source_hashes[HARNESS.UPSTREAM_TRAVEL_SOURCE] == HARNESS.UPSTREAM_TRAVEL_SHA256
