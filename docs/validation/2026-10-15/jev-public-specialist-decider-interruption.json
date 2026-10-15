@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "scope": "Sealed native Decider evaluation on exactly two exposed public tasks, followed by host-reboot-interrupted Omni setup; two scored attempts, not a completed specialist campaign or broad superiority claim",
+  "run": "artifacts/jev-browser/20261015-public-bf16-specialist-selection-01",
+  "whole_campaign_complete": false,
+  "current_primary_comparison_record": "docs/validation/2026-10-15/jev-public-bf16-comparison.json",
+  "controller_sha256": "47abe8a0e3c407e4d843ef42b5a38f6ecec68c050aae2c3f1da5061a4ec167e6",
+  "canonical_plan_sha256": "cc8652567bfe097ac104be2f98e65ebbdca17266ad140a01bb7c1f4981893908",
+  "plan_file_sha256": "26d81ce0ebb0bfebbadf53f11a3e1ddc4b57bec1378dcc92db867be6fe66ddac",
+  "borrowed_public_controller_sha256": "a0b8714c9a8d10e4b860c6ac8a01ceba0dd65ae13b25ad3105c48d29cfe4cd37",
+  "borrowed_bf16_controller_sha256": "75b6b67098d22286416ae5653abd13c2c66f405b6c1dd78b6a5bd945958dcbc7",
+  "frozen28_manifest_sha256": "6ea86492b1b9c3d198ba45e84bb114303b7900e8dcaab73f6bd4e85b753e680c",
+  "public_judge_sha256": "0ec9826d334cb2fbed24ade8780fa785291017d904b18233419ced760750bca3",
+  "decider": {
+    "model": "Mapika/decider-2b",
+    "revision": "533964dae8be954c5b5e19fa4948e48408094c1e",
+    "precision": "bfloat16",
+    "native_context_limit": 32768,
+    "native_max_options": 52,
+    "calibration": "checkpoint",
+    "attempts": 2,
+    "strict_successes": 0,
+    "receipt_sha256": "b1705103c93a6bebcb1e2835d37d0171171883e53bc4020264d76a2607c2826b",
+    "arm_inventory_identity_sha256": "0e5a0d7d62fb3320fc0ef75a8feafd50c903b9fb800ee4345f5168c8f6e44b82",
+    "totals": {
+      "policy_calls": 32,
+      "helper_calls": 0,
+      "executed_actions": 31,
+      "elapsed_ms": 67689
+    },
+    "whole_arm_elapsed_ms_including_preservation_load_finalization": 242104.03725801734,
+    "outcomes": [
+      {
+        "case_id": "public-python-counter-most-common-v1",
+        "strict_success": false,
+        "goal_satisfied": false,
+        "status": "ready",
+        "error": "Runner stopped at the 16-decision budget",
+        "classification": "task_failed",
+        "premature_done": false,
+        "policy_calls": 16,
+        "helper_calls": 0,
+        "executed_actions": 15,
+        "elapsed_ms": 47904,
+        "failed_fresh_DOM_conditions": [
+          "path",
+          "collections_heading",
+          "counter_section",
+          "method_signature",
+          "method_description"
+        ],
+        "final_url": "https://docs.python.org/3.14/library/datetime.html#available-types",
+        "public_document_requests": 2,
+        "public_document_commits": 4,
+        "public_scope_violations": 0,
+        "public_observer_errors": []
+      },
+      {
+        "case_id": "public-nasa-mars-facts-moons-v1",
+        "strict_success": false,
+        "goal_satisfied": false,
+        "status": "ready",
+        "error": "Runner stopped at the 16-decision budget",
+        "classification": "task_failed",
+        "premature_done": false,
+        "policy_calls": 16,
+        "helper_calls": 0,
+        "executed_actions": 16,
+        "elapsed_ms": 19785,
+        "failed_fresh_DOM_conditions": [
+          "path",
+          "facts_heading",
+          "moons_section"
+        ],
+        "final_url": "https://science.nasa.gov/solar-system/",
+        "public_document_requests": 2,
+        "public_document_commits": 2,
+        "public_scope_violations": 0,
+        "public_observer_errors": []
+      }
+    ],
+    "native_request_accounting": {
+      "policy_requests": 32,
+      "expanded_requests": 17,
+      "flat_compatibility_requests": 15,
+      "actual_backend_predict_calls": 87,
+      "expanded_backend_predict_calls": 72,
+      "flat_backend_predict_calls": 15,
+      "recorded_input_tokens": 243565,
+      "recorded_output_tokens": 0,
+      "all_full_candidates_and_stage_probabilities_verified": true,
+      "native_stage_prompt_token_ids_captured": false
+    },
+    "shared_helper": {
+      "model": "knowlet/Gemma-4-12B-Unified-System-One",
+      "revision": "a66f836b56605039fe040f330180e336d19b3362",
+      "precision": "bfloat16",
+      "quantization": "none",
+      "adaptation": "none",
+      "actual_calls": 0,
+      "note": "The same frozen unadapted helper was loaded and available; Decider did not request a field fill."
+    },
+    "all_infrastructure_complete": true
+  },
+  "native_budget_and_policy_scope": {
+    "full_target_hierarchy_branch_width": 20,
+    "maximum_targets_per_head": 400,
+    "maximum_stage_calls": 64,
+    "stage_batching": false,
+    "expanded_requests": "Unchanged native hierarchy has a cooperative20-second before/after-blocking-call budget plus outerHTTP25.",
+    "flat_requests": "Unchanged narrow compatibility fallback has no native20-second guard; outerHTTP25 remains and is not a hard cancellation of server computation.",
+    "policy_differences": "Native classifier distributions/checkpoint contexts/calibration and hierarchy differ from the primary generated-action grammar policy; equal tasks/initial native inputs do not imply identical policies, compute or deadline coverage.",
+    "max_decisions": 16,
+    "seed": 20261014,
+    "repeats": 1,
+    "cost_scope": "All32 requests, both budget failures and all31 executed actions remain counted. Attempt timing includes browser/verification/observation evidence; whole-arm time also includes setup/load/finalization and is descriptive."
+  },
+  "matched_actual_initial_inputs": [
+    {
+      "case_id": "public-python-counter-most-common-v1",
+      "primary_child_base_and_decider_initials_equal_after_only_transport_alias": true,
+      "raw_payload_sha256_by_arm": {
+        "primary-child": "59588df0c7daf853a889bf86aadfad76b8f4060f38429190c4f148f575a19c79",
+        "primary-base": "59588df0c7daf853a889bf86aadfad76b8f4060f38429190c4f148f575a19c79",
+        "decider": "5f1f3b14b07f43b152112955e1069d304dcd0d5beb2953b9f7038156923f400b"
+      },
+      "alias_only_normalized_payload_sha256_by_arm": {
+        "primary-child": "69c070c7d8312df952021043e884861d339218fa0729636b650f41d2471d3ac1",
+        "primary-base": "69c070c7d8312df952021043e884861d339218fa0729636b650f41d2471d3ac1",
+        "decider": "69c070c7d8312df952021043e884861d339218fa0729636b650f41d2471d3ac1"
+      },
+      "normalization": "Only payload.model transport alias; no URL/page/candidate/question/history normalization",
+      "omni_initial_payload": null
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1",
+      "primary_child_base_and_decider_initials_equal_after_only_transport_alias": true,
+      "raw_payload_sha256_by_arm": {
+        "primary-child": "6e6749b6c0b85027481fcad7588ad7a60d68d04bd2f04d4b273e55b0a6fe19cd",
+        "primary-base": "6e6749b6c0b85027481fcad7588ad7a60d68d04bd2f04d4b273e55b0a6fe19cd",
+        "decider": "c91fb7c8d8cd22ded1828c02163dd1f9f7436b3c0d1c953e78dda42b752b125e"
+      },
+      "alias_only_normalized_payload_sha256_by_arm": {
+        "primary-child": "e0810b66767a72e126acc4c87367c48df41faad2809c8cd2eaef7fc25ffcaa5e",
+        "primary-base": "e0810b66767a72e126acc4c87367c48df41faad2809c8cd2eaef7fc25ffcaa5e",
+        "decider": "e0810b66767a72e126acc4c87367c48df41faad2809c8cd2eaef7fc25ffcaa5e"
+      },
+      "normalization": "Only payload.model transport alias; no URL/page/candidate/question/history normalization",
+      "omni_initial_payload": null
+    }
+  ],
+  "omni": {
+    "model": "akhilaaa3/Jev-Omni",
+    "revision": "5addda86ddee081a68fb067477ea100c221b8917",
+    "planned_cases": 2,
+    "task_attempts_observed": 0,
+    "task_policy_requests_observed": 0,
+    "strict_successes": null,
+    "task_score": null,
+    "status": "host_reboot_interrupted_model_loading",
+    "receipt_stage_preserved": "model_loading",
+    "partial_receipt_sha256": "ff42cf9ba70d0f711977a52be6503a3696188d798b2634b776ddc75a1959977d",
+    "partial_log_sha256": "6db2d13145f4ea40bb63229b18c60d3d71685a545a5b1fd212ce210e08c4841f",
+    "partial_inventory_identity_sha256": "9d2a42e7bb1497abb390deef83593adf8f71db6cac380f7d14c2a2ff3bdd1c6a",
+    "final_elapsed_ms": null,
+    "no_score_imputed": true,
+    "note": "Receipt has no summaries, benchmark attempts or policy journals. Loading had begun; this is unscored partial setup, not0/2 and not successful initialization."
+  },
+  "host_interruption": {
+    "previous_boot_id": "e06fcfc84de849489eaca69201ba7d65",
+    "current_boot_id": "9d508fa8c124402c97697fa83afcbef0",
+    "current_boot_utc": "2026-10-15T10:58:42+00:00",
+    "old_controller_pid": 676760,
+    "old_omni_worker_pid": 678524,
+    "old_pids_absent_at_audit": true,
+    "stale_state_stage_preserved": "running",
+    "stale_state_sha256": "1c7a90ba1161165ae929481e2f78122737e1d6abaa935a7aa0af714eea36a921",
+    "stale_lock_contents_preserved": "676760",
+    "stale_lock_sha256": "4f6570bfa68b41b79f3332d5d6d1e739f2d8cad6869bf6954419e4f21049dfff",
+    "observations": "Previous-boot records show nvidia-modeset blocked>122s, nv_alloc_system_pages and an rw-semaphore reported likely owned by python678524, alongside journald memory-pressure notices shortly before the later boot. These observations support a temporal association with interrupted Omni loading, not proof of OOM-killer activity or reboot causality.",
+    "journal_filter_scope": "Only boot metadata, previous-boot kernel driver-stall/allocation/rwsem lines and journald memory-pressure notices; no network logs or unrelated user process inspection.",
+    "filtered_journal_sha256": {
+      "boot_list": "4e3ffa676a92373d39c6be59787903f9f1093777cf833899d5ed9bd4eedde7b8",
+      "prior_kernel_driver": "d4e8141f5faceea5e42baaee2ae16fcb15326573a8cd85c91934c0a186312ee2",
+      "prior_journald_memory": "432c1bc235bffc167da6a11f977cd51806bb5b1c59f3d335f0c5cd9b3eef5a72"
+    },
+    "causal_limits": "No OOM-killer or reboot-cause conclusion; driver stall and memory pressure temporally coincide with interrupted loading. Numeric PIDs are not cross-boot identities.",
+    "source_loading_note": "Helper and Omni are separately constructed with different model.safetensors hashes despite equal23919549408-byte sizes; no implemented parameter sharing or interchangeable-weight assumption.",
+    "retry_performed_by_this_audit": false
+  },
+  "independent_evidence": {
+    "decider": {
+      "path": "artifacts/jev-browser/20261015-public-specialist-decider-independent-audit.json",
+      "sha256": "4bee9363cdcefd164163eb9b72d34d0f4c17fb1dd74168b053c73fe78187be45",
+      "auditor_sha256": "8149a968202a08c33e4e3806c559b70ba1da6c102fa3c3077d11adb29a98fccd",
+      "native_checker_sha256": "f7442fa3bfa6b5c41aa0413f2482680e40b1b0f82797a6dd9823fa8ebaa17bc0",
+      "outer_checks_passed": 1067,
+      "additional_native_assertions": "Every32 call completed independent full-target/stage/probability checks; these internal assertions are not separately counted.",
+      "read_input_files": 2270,
+      "read_inputs_identity_sha256": "6e98e977db80c722e3faaa5051c6049a822d2aa5f5508959443d762e47d2c605",
+      "base_or_specialist_checkpoint_bytes_opened": 0
+    },
+    "interruption": {
+      "path": "artifacts/jev-browser/20261015-public-specialist-reboot-independent-01/report.json",
+      "sha256": "85429f750b02698f5b5c6b46934aaa88975c37c8927baefa7a584e0863048cef",
+      "auditor_sha256": "ee21934243d695824a73f2b2ad361534078f7c67c437ac6aadcc95230ed5c8fc",
+      "checks_passed": 14,
+      "read_input_files": 1059,
+      "read_inputs_identity_sha256": "78d4536b1c8b912a8067e36d8f0488ef2d80ce52342ef951d3433d3e496d8598"
+    }
+  },
+  "limitations": [
+    "Native classifier actual prompt token IDs are not separately saved. Full stage requests, returned probabilities/usage and recorded Decider per-stage context counts were checked; no independent raw-logit/backbone/token-ID or generated-action EOS verification is claimed.",
+    "Head/parameter/frozen/calibration and whole-checkpoint hash evidence is source-bound root runtime telemetry; CPU auditors did not open base/specialist checkpoints or inspect former live GPU tensors.",
+    "Fresh DOM visibility/occlusion and actual captured HTML are checked without browser replay; live public documents are not frozen fixtures.",
+    "Primary child/base each1/2 and Decider0/2 are individual outcomes on two exposed tasks. Omni remains unscored. No complete four-model campaign, broad-web readiness, transfer, training causality or general superiority follows.",
+    "All original state/lock/partial setup/logs, failures and sealed reports remain unchanged. No restart, new model/browser/site call, training, precision/offload change, qualification or deployment was performed for this evidence record."
+  ],
+  "new_training": false,
+  "fresh_transfer_seed": null,
+  "production_promoted": false
+}
