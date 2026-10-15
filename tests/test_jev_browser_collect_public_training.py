@@ -134,7 +134,15 @@ class FakeEvidence:
 
 
 @contextmanager
-def fake_native_episode(tmp_path, kind="ordinary", *, pre_refresh=False, reject_mutation=False):
+def fake_native_episode(
+    tmp_path,
+    kind="ordinary",
+    *,
+    pre_refresh=False,
+    reject_mutation=False,
+    done_fresh_rejections=0,
+    done_fresh_fault=None,
+):
     """Real pinned Agent/choose with an explicit fake Browser only for CPU tests."""
     t = task()
     bundle = tmp_path / "bundle"
@@ -165,9 +173,14 @@ def fake_native_episode(tmp_path, kind="ordinary", *, pre_refresh=False, reject_
                 self.counter = 0
                 self.fresh_count = 0
                 self.scroll_y = 0
+                self.done_fresh_remaining = done_fresh_rejections
+                self.after_failed_done = False
 
             def observe(self, screenshot=False):
                 page = synthetic_page(self.url, scroll_y=self.scroll_y)
+                if self.after_failed_done and done_fresh_fault == "no_reobserve":
+                    self.after_failed_done = False
+                    return page
                 raw = {k: copy.deepcopy(v) for k, v in page.items() if k != "fingerprint"}
                 ep.raw_sink(
                     {
@@ -180,6 +193,22 @@ def fake_native_episode(tmp_path, kind="ordinary", *, pre_refresh=False, reject_
 
             def fresh(self, page, action=None):
                 self.fresh_count += 1
+                if (
+                    action is None
+                    and self.done_fresh_remaining
+                    and ep.pending
+                    and ep.pending[-1]["selected"]["operation"] == "DONE"
+                    and "transition_sequence" not in ep.pending[-1]
+                ):
+                    self.done_fresh_remaining -= 1
+                    self.after_failed_done = True
+                    if done_fresh_fault == "history_change":
+                        ep.agent.state["history"][0]["action"] = "Changed existing history"
+                    if done_fresh_fault == "history_addition":
+                        ep.agent.state["history"].append({"invented": "Unexpected mutation"})
+                    if done_fresh_fault == "fresh_exception":
+                        raise stale("Document changed during evaluation")
+                    return False
                 if pre_refresh and self.fresh_count == 1:
                     return False
                 return (
@@ -275,6 +304,180 @@ def test_real_native_agent_stops_first_true_without_forced_extra_states(tmp_path
         )
         assert all(set(r["payload"]) == {"model", "state", "questions"} for r in requests)
         assert all("actual_private_fact" not in m.encode(r["payload"]).decode() for r in requests)
+
+
+@pytest.mark.parametrize("kind", ["ordinary", "recovery"])
+def test_native_DONE_false_guard_reobserves_then_fresh_DONE_without_input_retry(tmp_path, kind):
+    with fake_native_episode(tmp_path, kind, done_fresh_rejections=1) as (ep, _agent, _model):
+        result = ep.execute()
+        assert result["success"] and result["supervised_decisions"] == 3
+        assert result["bootstrap_decisions"] == int(kind == "recovery")
+        excluded = [row for row in ep.pending if row.get("excluded_no_input")]
+        assert len(excluded) == 1 and excluded[0]["accepted"] is False
+        assert excluded[0]["selected"] == {"operation": "DONE", "target": None}
+        evidence = m._require_no_input_done_exclusion(ep, excluded[0])
+        assert evidence["reobserved_raw_sequence"] >= evidence["execution_raw_observation_start"]
+        states = ep.journals["states"].rows
+        before = states[evidence["before_state_sequence"]]["state"]
+        after = states[evidence["after_state_sequence"]]["state"]
+        assert m.encode(before["history"]) == m.encode(after["history"])
+        assert after["status"] == "ready" and after["decision"] is None
+        assert len(ep.agent.state["history"]) == 1 + int(kind == "recovery")
+        guards = ep.journals["guarded-actions"].rows[
+            evidence["execution_guard_sequence_start"] : evidence["guard_sequence_end"]
+        ]
+        assert [row["native_method"] for row in guards] == ["fresh", "fresh"]
+        assert guards[-1]["accepted"] is False and guards[-1]["result"] is False
+        assert ep.pending[-1]["accepted"] is True and ep.agent.state["status"] == "done"
+        m.write(ep.folder / "public-request-ledger.json", {"fake_CPU_ledger": True})
+        cases, wires = m.serialize_episode(ep, "episodes/CPU")
+        assert len(cases) == len(wires) == 2
+        assert [case["gold"]["operation"] for case in cases] == ["CLICK", "DONE"]
+        assert [case["id"].rsplit("-step-", 1)[1] for case in cases] == ["000", "001"]
+        assert excluded[0]["call_sequence"] not in [
+            wire["native_policy_request_sequence"] for wire in wires
+        ]
+        assert wires[-1]["compiled_input_sequence"] == len(ep.pending) - 1
+
+
+def test_excluded_DONE_and_following_tick_append_journals_without_rewriting(tmp_path):
+    with fake_native_episode(tmp_path, done_fresh_rejections=1) as (ep, _agent, _model):
+        ep.tick()
+        row = ep.tick()
+        assert row.get("excluded_no_input") is True and row["accepted"] is False
+        assert m.pair_coverage(ep, ep)["required"]["ordinary_DONE"] is False
+        sealed_prefixes = {path.name: path.read_bytes() for path in ep.folder.glob("*.jsonl")}
+        old_states = copy.deepcopy(ep.journals["states"].rows)
+        following = ep.tick()
+        assert following["accepted"] is True
+        assert ep.journals["states"].rows[: len(old_states)] == old_states
+        assert all(
+            (ep.folder / name).read_bytes().startswith(blob)
+            for name, blob in sealed_prefixes.items()
+        )
+        assert (
+            len(
+                [
+                    event
+                    for event in ep.journals["all-native-calls"].rows
+                    if event["phase"] == "excluded-no-input"
+                ]
+            )
+            == 1
+        )
+
+
+def test_repeated_no_input_DONE_rejections_exhaust_original16_decision_budget(tmp_path):
+    with fake_native_episode(tmp_path, done_fresh_rejections=100) as (ep, _agent, _model):
+        with pytest.raises(ValueError, match="16 supervised"):
+            ep.execute()
+        assert ep.resolved_counts() == {"bootstrap": 0, "supervised": 16}
+        assert len(ep.pending) == 16 and len(ep.agent.state["history"]) == 1
+        assert sum(row.get("excluded_no_input") is True for row in ep.pending) == 15
+        assert (
+            len([row for row in ep.journals["all-native-calls"].rows if row["phase"] == "request"])
+            == 16
+        )
+        assert not ep.pending[-1]["accepted"] and ep.agent.state["status"] == "ready"
+        assert not m.pair_coverage(ep, ep)["required"]["ordinary_DONE"]
+
+
+@pytest.mark.parametrize(
+    "fault", ["history_change", "history_addition", "fresh_exception", "no_reobserve"]
+)
+def test_done_false_guard_refuses_changed_history_exception_or_missing_native_observation(
+    tmp_path, fault
+):
+    with fake_native_episode(tmp_path, done_fresh_rejections=1, done_fresh_fault=fault) as (
+        ep,
+        _agent,
+        _model,
+    ):
+        ep.tick()
+        with pytest.raises(ValueError, match="guard rejected"):
+            ep.tick()
+        assert not ep.pending[-1].get("excluded_no_input")
+        assert not any(
+            row["phase"] == "excluded-no-input" for row in ep.journals["all-native-calls"].rows
+        )
+
+
+def test_done_false_guard_requires_the_exact_current_native_page_arguments(tmp_path):
+    with fake_native_episode(tmp_path, done_fresh_rejections=1) as (ep, _agent, _model):
+        native_fresh = ep.agent.browser.fresh
+
+        def wrong_arguments(page, action=None):
+            if (
+                ep.pending
+                and ep.pending[-1]["selected"]["operation"] == "DONE"
+                and "transition_sequence" not in ep.pending[-1]
+            ):
+                page = {**page, "fingerprint": "not-the-current-native-page"}
+            return native_fresh(page, action) if action is not None else native_fresh(page)
+
+        ep.agent.browser.fresh = wrong_arguments
+        ep.tick()
+        with pytest.raises(ValueError, match="guard rejected"):
+            ep.tick()
+        assert not ep.pending[-1].get("excluded_no_input")
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "flag_click",
+        "flag_only_rejected",
+        "accepted_excluded",
+        "missing_flag",
+        "missing_event",
+        "event_rule",
+        "guard_arguments",
+        "act_event",
+        "false_preproof",
+        "history_change",
+        "missing_reobserve",
+    ],
+)
+def test_serialization_cannot_skip_failed_input_or_trust_forged_exclusion_flags(tmp_path, mutation):
+    with fake_native_episode(tmp_path, done_fresh_rejections=1) as (ep, _agent, _model):
+        ep.execute()
+        excluded = next(row for row in ep.pending if row.get("excluded_no_input"))
+        transition = ep.journals["transitions"].rows[excluded["transition_sequence"]]
+        if mutation == "flag_click":
+            ep.pending[0]["excluded_no_input"] = True
+        elif mutation == "flag_only_rejected":
+            ep.pending[0]["accepted"] = False
+        elif mutation == "accepted_excluded":
+            excluded["accepted"] = True
+        elif mutation == "missing_flag":
+            excluded.pop("excluded_no_input")
+        elif mutation == "missing_event":
+            ep.journals["all-native-calls"].rows.pop(excluded["exclusion_event_sequence"])
+        elif mutation == "event_rule":
+            ep.journals["all-native-calls"].rows[excluded["exclusion_event_sequence"]][
+                "rule_id"
+            ] = "forged"
+        elif mutation == "guard_arguments":
+            ep.journals["guarded-actions"].rows[transition["execution_guard_sequence_start"]][
+                "arguments"
+            ][0]["fingerprint"] = "forged"
+        elif mutation == "act_event":
+            ep.journals["guarded-actions"].rows[transition["execution_guard_sequence_start"]][
+                "native_method"
+            ] = "act"
+        elif mutation == "false_preproof":
+            excluded["pre"]["verdict"]["success"] = False
+        elif mutation == "history_change":
+            ep.journals["states"].rows[transition["after_state_sequence"]]["state"]["history"][0][
+                "action"
+            ] = "forged"
+        else:
+            transition["raw_observation_count_after_native_tick"] = transition[
+                "execution_raw_observation_start"
+            ]
+        m.write(ep.folder / "public-request-ledger.json", {"fake_CPU_ledger": True})
+        with pytest.raises(ValueError, match="excluded|Rejected"):
+            m.serialize_episode(ep, "episodes/CPU")
 
 
 def test_recovery_bootstrap_history_genuine_but_not_positive_labels(tmp_path):
@@ -859,6 +1062,35 @@ def test_MDN_category_waypoint_requires_actual_offered_link(tmp_path, goal_id):
         }
 
 
+@pytest.mark.parametrize("bootstrap", [False, True])
+def test_MDN_class_page_cannot_choose_earlier_category_backlink(tmp_path, bootstrap):
+    """Portable reproduction of the three source-backed run04 CLICK refusals."""
+    goal = "mdn-resizeobserver-observe" if bootstrap else "mdn-intersectionobserver-observe"
+    t = get_public_training_task(goal)
+    routes = t["bootstrap_route_paths"] if bootstrap else t["route_paths"]
+    with fake_native_episode(tmp_path) as (_ep, _agent, model):
+        page = synthetic_page("https://developer.mozilla.org" + routes[1])
+        links = [
+            {
+                "node": 1,
+                "href": "https://developer.mozilla.org" + routes[0],
+                "label": "API category backlink",
+            }
+        ]
+        body = {
+            "questions": {"operation": {"criteria": {"CLICK": "Click", "SCROLL_DOWN": "Scroll"}}}
+        }
+        assert m.scripted_teacher(
+            t, page, body, model, links, {"success": False}, {}, bootstrap=bootstrap
+        ) == {"operation": "SCROLL_DOWN", "target": None}
+        links.append(
+            {"node": 2, "href": "https://developer.mozilla.org" + routes[-1], "label": "observe()"}
+        )
+        assert m.scripted_teacher(
+            t, page, body, model, links, {"success": False}, {}, bootstrap=bootstrap
+        ) == {"operation": "CLICK", "target": "2"}
+
+
 def test_ownership_carries_full_document_loader_over_fragment_commit():
     t = task()
     tr = transport_for(t)
@@ -1067,6 +1299,9 @@ def test_setup_failure_retains_all24_empty_disjoint_bundles(tmp_path, monkeypatc
         m.collect(output, tmp_path, plan)
     receipt = json.loads((output / "receipt.json").read_text())
     assert receipt["stage"] == "partial" and receipt["all24_attempt_records_retained"]
+    assert receipt["schema_id"] == "jev-public-native-training-collection-v3"
+    assert receipt["excluded_no_input_done_count"] == 0
+    assert receipt["no_input_done_recovery"] == m.NO_INPUT_DONE_RULE
     assert len(receipt["outcomes"]) == 24 and all(
         r["attempted"] is False for r in receipt["outcomes"]
     )
@@ -1077,6 +1312,11 @@ def test_setup_failure_retains_all24_empty_disjoint_bundles(tmp_path, monkeypatc
     )
     assert json.loads((output / "train/receipt.json").read_text())["split"] == "train"
     assert json.loads((output / "development/receipt.json").read_text())["split"] == "development"
+    assert all(
+        json.loads((output / split / "receipt.json").read_text())["excluded_no_input_done_count"]
+        == 0
+        for split in ("train", "development")
+    )
 
 
 @pytest.mark.parametrize(

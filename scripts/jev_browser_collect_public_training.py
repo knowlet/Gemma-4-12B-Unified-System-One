@@ -39,7 +39,7 @@ from s1.browser_evidence import (  # noqa: E402
 )
 from s1.browser_public_training import NativeWireRequest, public_training_case  # noqa: E402
 
-SCHEMA = "jev-public-native-training-collection-v2"
+SCHEMA = "jev-public-native-training-collection-v3"
 PROPOSAL_SHA = "e3c2c9833709f3d5c05a320c13403f46aa8b8938acaf7e867d52470928f4bdfa"
 MODEL_ALIAS = "generated-actions-none"
 FORBIDDEN = {"torch", "transformers", "peft", "bitsandbytes", "tensorflow", "jax", "safetensors"}
@@ -64,6 +64,14 @@ ASSET_SHA = {
     "tokenizer_config.json": "794a39f8330ce05020774c70c091225bc5f031b9cacf41fc20e52eb54b4b52d8",
     "chat_template.jinja": "ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4",
     "generation_config.json": "040d0ccb9e10df02df9738424c1ce6d20d5d15b09362da922093ccd97573dbb4",
+}
+NO_INPUT_DONE_RULE = {
+    "rule_id": "done-fresh-false-no-input-v1",
+    "operation": "DONE",
+    "requires": "Strict true current preproof; exactly one matching native fresh before/after pair returning False without an exception; no act; byte-identical full history; native tick returns ready/decisionNone and its own new raw re-observation",
+    "continuation": "Only the next ordinary native tick after the same bounded passive settling; no Agent state assignment, custom observe, mutation retry or budget extension",
+    "fit_rows": "Retained excluded-no-input request, acceptedFalse; never a positive fit row. Revalidate original journals before skipping. All other unaccepted requests refuse serialization.",
+    "accounting": "Every excluded DONE remains in resolved supervised16 budget, full request/compiled/raw/private/state/guard journals and all-native-call index. Accepted fit step IDs are dense and retain actual native request/compiled sequence links.",
 }
 
 
@@ -330,6 +338,7 @@ def collection_plan(output, upstream, collection_id):
         ],
         "supervised_decisions_per_episode": MAX_STEPS,
         "recovery_bootstrap_decisions_separate": BOOTSTRAP_STEPS,
+        "no_input_done_recovery": copy.deepcopy(NO_INPUT_DONE_RULE),
         "passive_between_ticks": {
             "timeout_seconds": SETTLE_SECONDS,
             "interval_seconds": SETTLE_INTERVAL,
@@ -360,8 +369,8 @@ def collection_plan(output, upstream, collection_id):
             "initial_URL_only": "Exact declared task start URL; every later navigation/scroll is an offered guarded native Agent action",
             "policy": "Frozen harness GET/HEAD, service workers blocked, CDP Document/root commits and passive top-document HTTP statuses; audited contacts are not all prevented",
         },
-        "read_schedule": "Unchanged Agent/observe/fresh/act. Goal-independent bounded passive settling occurs between ticks only, without native re-observe or Agent state assignments. Each actual choose strict pre-proof completes the preceding nonterminal action by appending a transition; immediate post-action DOM reads/errors remain diagnostic. DONE retains immediate identical strict pre/post ownership. All phase-at-entry and resolved classifications, rejected calls and raw native observations retained; no mutation retries.",
-        "native_post_action_read_errors": "Only source-defined navigation StalePage reads may defer after exactly one matching real history action, accepted native act and true execution freshness. Every such error is retained; action/guard failures cannot defer.",
+        "read_schedule": "Unchanged Agent/observe/fresh/act. Goal-independent bounded passive settling occurs between ticks only, without native re-observe or Agent state assignments. Each actual choose strict pre-proof completes the preceding nonterminal action by appending a transition; immediate post-action DOM reads/errors remain diagnostic. Accepted DONE retains immediate identical strict pre/post ownership. Only the explicit no-input DONE rule may retain an excluded decision and continue to the next ordinary tick. All phase-at-entry and resolved classifications, rejected calls and raw native observations retained; no mutation retries.",
+        "native_post_action_read_errors": "Only source-defined navigation StalePage reads may defer after exactly one matching real history action, accepted native act and true execution freshness. Every such error is retained; mutation/action guard failures cannot defer or retry. The separate no-input DONE exclusion never creates an accepted transition.",
         "ownership_provenance": "Every ownership journal row detaches document_commit_count/document_request_count and owned_target_ids/owned_session_ids/root_frames at binding time, so admission can rederive the latest full-document loader from the exact final-ledger prefix. Fixed expected_ownership and native payload fields remain unchanged.",
         "limits": {
             "context": 8192,
@@ -490,12 +499,18 @@ def scripted_teacher(task, page, payload, model, links, verdict, observed, *, bo
     if current.path.rstrip("/") != target.rstrip("/"):
         action = find(target)
         if action is None:
-            # Prefer the furthest genuinely offered route waypoint; skip the current document.
-            for path in reversed(routes):
-                if path.rstrip("/") != current.path.rstrip("/"):
-                    action = find(path)
-                    if action is not None:
-                        break
+            # A class page may offer a backlink to its API category. Once a
+            # waypoint is reached, only later waypoints advance this route.
+            normalized_routes = [path.rstrip("/") for path in routes]
+            position = (
+                normalized_routes.index(current.path.rstrip("/"))
+                if current.path.rstrip("/") in normalized_routes
+                else -1
+            )
+            for path in reversed(routes[position + 1 :]):
+                action = find(path)
+                if action is not None:
+                    break
         index_fragment = task.get(
             "bootstrap_index_section_fragment" if bootstrap else "index_section_fragment"
         )
@@ -572,6 +587,215 @@ def teacher_response(payload, selected):
         "usage": {},
         "annotation": "scripted one-hot execution signal; not classifier probability or model score",
     }
+
+
+def _no_input_done_evidence(episode, row, transition):
+    """Read existing journals only; a failed mutation/exception never qualifies."""
+    try:
+        require(
+            row["selected"] == {"operation": "DONE", "target": None}
+            and row["bootstrap"] is False
+            and transition["error"] is None
+            and transition["immediate_diagnostic_error"] is None
+            and transition["execution_accepted"] is False,
+            "Only no-error unexecuted supervised DONE may be excluded",
+        )
+        pre = row["pre"]
+        physical = episode.journals["private-dom"].rows[pre["sequence"]]
+        require(
+            pre["verdict"]["success"] is True
+            and physical["strict"] is True
+            and physical["observed"] == pre["observed"]
+            and physical["verdict"] == pre["verdict"]
+            and physical["expected_ownership"] == pre["binding"]
+            and not any(key.endswith("_error") for key in physical),
+            "Excluded DONE lacks original strict true preproof",
+        )
+        calls = episode.journals["all-native-calls"].rows
+        request = calls[row["call_sequence"]]
+        returned = [
+            event
+            for event in calls
+            if event["phase"] == "teacher-returned"
+            and event["request_sequence"] == row["call_sequence"]
+        ]
+        resolved = [
+            event
+            for event in calls
+            if event["phase"] == "decision-resolved"
+            and event["request_sequence"] == row["call_sequence"]
+        ]
+        require(
+            request["phase"] == "request"
+            and encode(request["payload"]) == encode(row["payload"])
+            and request["wire_sha256"] == sha(encode(row["payload"]))
+            and len(returned) == len(resolved) == 1
+            and returned[0]["selected"] == row["selected"]
+            and returned[0]["response"] == teacher_response(row["payload"], row["selected"])
+            and returned[0]["private_precondition_sequence"] == pre["sequence"]
+            and returned[0]["raw_observation_sequence"] == row["raw_sequence"]
+            and returned[0]["compiled_sequence"] == row["compiled_sequence"]
+            and returned[0]["execution_raw_observation_start"]
+            == row["execution_raw_observation_start"]
+            and resolved[0]["resolved_phase"] == "supervised"
+            and resolved[0]["bootstrap"] is False
+            and episode.journals["compiled-inputs"].rows[row["compiled_sequence"]]["wire_sha256"]
+            == sha(encode(row["payload"])),
+            "Excluded DONE request/teacher/compiler provenance differs",
+        )
+        before_sequence, after_sequence = (
+            transition[key] for key in ("before_state_sequence", "after_state_sequence")
+        )
+        states = episode.journals["states"].rows
+        require(
+            type(before_sequence) is int
+            and before_sequence == request["native_policy_call_index"] * 2
+            and after_sequence == before_sequence + 1,
+            "Excluded DONE before/after tick sequence differs",
+        )
+        before_row, after_row = states[before_sequence], states[after_sequence]
+        before, after = before_row["state"], after_row["state"]
+        require(
+            before_row["phase"] == "before-tick"
+            and after_row["phase"] == "after-tick"
+            and encode(before["history"]) == encode(after["history"])
+            and before["goal"] == after["goal"] == episode.task["goal"]
+            and before["text_calls"] == after["text_calls"] == []
+            and after["status"] == "ready"
+            and after["decision"] is None
+            and len(after["decisions"]) == len(before["decisions"]) + 1
+            and after["decisions"][:-1] == before["decisions"]
+            and after["decisions"][-1]["choice"] == "DONE"
+            and after["decisions"][-1]["operation"] == "DONE"
+            and after["decisions"][-1]["target"] is None
+            and after["decisions"][-1]["fingerprint"] == row["native_fingerprint"]
+            and encode(after["decisions"][-1]["request"]) == encode(row["payload"]),
+            "Excluded DONE changed full history or lacks native ready/re-observed state",
+        )
+        start, end = (
+            transition[key] for key in ("execution_guard_sequence_start", "guard_sequence_end")
+        )
+        guards = episode.journals["guarded-actions"].rows
+        require(
+            type(start) is int
+            and type(end) is int
+            and start == row["execution_guard_sequence_start"]
+            and end == start + 2
+            and 0 <= start < end <= len(guards),
+            "Excluded DONE guard population differs",
+        )
+        tick_start = transition["guard_sequence_start"]
+        require(
+            type(tick_start) is int
+            and 0 <= tick_start <= start
+            and not any(event.get("native_method") == "act" for event in guards[tick_start:end]),
+            "Excluded DONE tick contained an act attempt",
+        )
+        guard, result = guards[start:end]
+        raw_pre = episode.raw_rows[row["raw_sequence"]]["response"]["result"]["value"]
+        expected_page = {**raw_pre, "fingerprint": row["native_fingerprint"]}
+        require(
+            raw_pre["page_key"] == pre["binding"]["native_page_key"]
+            and guard["phase"] == "before"
+            and guard["native_method"] == "fresh"
+            and guard["sequence"] == start
+            and encode(guard["arguments"]) == encode([expected_page])
+            and guard["keywords"] == {}
+            and guard["target"] == pre["binding"]["target_id"]
+            and guard["session"] == pre["binding"]["session_id"]
+            and result["phase"] == "after"
+            and result["native_method"] == "fresh"
+            and result["sequence"] == start + 1
+            and result["before_sequence"] == start
+            and result["accepted"] is False
+            and result.get("result") is False
+            and "error" not in result,
+            "Excluded DONE is not exactly one current native fresh-False pair without act/error",
+        )
+        raw_start, raw_end = (
+            transition[key]
+            for key in (
+                "execution_raw_observation_start",
+                "raw_observation_count_after_native_tick",
+            )
+        )
+        require(
+            type(raw_start) is int
+            and type(raw_end) is int
+            and raw_start == row["execution_raw_observation_start"]
+            and row["raw_sequence"] < raw_start < raw_end <= len(episode.raw_rows),
+            "Excluded DONE has no new native tick re-observation",
+        )
+        after_page = {key: value for key, value in after["page"].items() if key != "fingerprint"}
+        matches = [
+            index
+            for index in range(raw_start, raw_end)
+            if episode.raw_rows[index]["response"].get("result", {}).get("value") == after_page
+        ]
+        require(matches, "Native after-tick page lacks new detached raw snapshot")
+        require(
+            transition["selected"] == row["selected"]
+            and transition["request_sequence"] == row["call_sequence"]
+            and transition["bootstrap"] is False
+            and transition["postproof_deferred"] is False
+            and transition["native_status"] == "ready"
+            and transition["before_history_length"] == len(before["history"])
+            and transition["after_history_length"] == len(after["history"])
+            and transition["before_fingerprint"] == before["page"]["fingerprint"]
+            and transition["after_fingerprint"] == after["page"]["fingerprint"],
+            "Excluded DONE transition differs from native state/cost references",
+        )
+        return {
+            "rule_id": NO_INPUT_DONE_RULE["rule_id"],
+            "before_state_sequence": before_sequence,
+            "after_state_sequence": after_sequence,
+            "execution_guard_sequence_start": start,
+            "guard_sequence_end": end,
+            "execution_raw_observation_start": raw_start,
+            "raw_observation_count_after_native_tick": raw_end,
+            "reobserved_raw_sequence": matches[-1],
+            "unchanged_full_history_sha256": sha(encode(before["history"])),
+        }
+    except (ValueError, KeyError, IndexError, TypeError, AttributeError):
+        return None
+
+
+def _require_no_input_done_exclusion(episode, row):
+    """Flags alone cannot discard a failed request from supervision."""
+    transition = episode.journals["transitions"].rows[row["transition_sequence"]]
+    evidence = _no_input_done_evidence(episode, row, transition)
+    events = [
+        event
+        for event in episode.journals["all-native-calls"].rows
+        if event["phase"] == "excluded-no-input"
+        and event["request_sequence"] == row["call_sequence"]
+    ]
+    require(
+        evidence is not None
+        and row.get("excluded_no_input") is True
+        and row.get("accepted") is False
+        and transition.get("phase") == "excluded-no-input-DONE"
+        and transition.get("accepted") is False
+        and transition.get("excluded_no_input") is True
+        and transition.get("exclusion_evidence") == evidence
+        and transition.get("request_sequence") == row["call_sequence"]
+        and transition.get("selected") == row["selected"]
+        and len(events) == 1
+        and type(row.get("exclusion_event_sequence")) is int
+        and 0 <= row["exclusion_event_sequence"] < len(episode.journals["all-native-calls"].rows)
+        and episode.journals["all-native-calls"].rows[row["exclusion_event_sequence"]] == events[0]
+        and events[0]
+        == {
+            "sequence": row.get("exclusion_event_sequence"),
+            "phase": "excluded-no-input",
+            "request_sequence": row["call_sequence"],
+            "transition_sequence": row["transition_sequence"],
+            "rule_id": NO_INPUT_DONE_RULE["rule_id"],
+            "evidence": evidence,
+        },
+        "Unverified excluded-no-input DONE; rejected transitions cannot be silently skipped",
+    )
+    return evidence
 
 
 class NativeCompiler:
@@ -1037,6 +1261,7 @@ class Episode:
                     "compiled_sequence": compiled_seq,
                     "bootstrap": self.bootstrap,
                     "execution_guard_sequence_start": len(self.journals["guarded-actions"].rows),
+                    "execution_raw_observation_start": len(self.raw_rows),
                     "native_fingerprint": page["fingerprint"],
                 }
             )
@@ -1051,6 +1276,7 @@ class Episode:
                     "private_precondition_sequence": pre["sequence"],
                     "raw_observation_sequence": raw_seq,
                     "compiled_sequence": compiled_seq,
+                    "execution_raw_observation_start": len(self.raw_rows),
                     "offered_link_metadata": links,
                 }
             )
@@ -1068,8 +1294,8 @@ class Episode:
         before_history = len(self.agent.state["history"])
         before_calls = len(self.pending)
         guards_start = len(self.journals["guarded-actions"].rows)
-        before = self.agent.snapshot()
-        self.journals["states"].append(
+        before = copy.deepcopy(self.agent.snapshot())
+        before_state_sequence = self.journals["states"].append(
             {"phase": "before-tick", "state": before, "bootstrap": self.bootstrap}
         )
         caught = None
@@ -1078,7 +1304,7 @@ class Episode:
         except BaseException as exc:
             caught = exc
             result = self.agent.snapshot()
-        self.journals["states"].append(
+        after_state_sequence = self.journals["states"].append(
             {"phase": "after-tick", "state": result, "bootstrap": self.bootstrap}
         )
         if len(self.pending) != before_calls + 1:
@@ -1098,6 +1324,7 @@ class Episode:
                 raise caught
             raise ValueError("Tick did not yield exactly one actual native policy request")
         row = self.pending[-1]
+        raw_after_native_tick = len(self.raw_rows)
         selected = row["selected"]
         done = selected["operation"] == "DONE"
         added = result["history"][before_history:]
@@ -1173,6 +1400,10 @@ class Episode:
             "execution_guard_sequence_start": row["execution_guard_sequence_start"],
             "guard_sequence_end": len(self.journals["guarded-actions"].rows),
             "private_precondition_sequence": row["pre"]["sequence"],
+            "before_state_sequence": before_state_sequence,
+            "after_state_sequence": after_state_sequence,
+            "execution_raw_observation_start": row["execution_raw_observation_start"],
+            "raw_observation_count_after_native_tick": raw_after_native_tick,
             "before_fingerprint": before["page"]["fingerprint"],
             "after_fingerprint": result["page"]["fingerprint"],
             "native_status": result["status"],
@@ -1199,12 +1430,32 @@ class Episode:
             row["execution_record"] = copy.deepcopy(record)
             self.awaiting_post = row
             self.need_settle = True
+        excluded = _no_input_done_evidence(self, row, record)
+        if excluded is not None:
+            require(self.awaiting_post is None, "Excluded DONE left an uncompleted native action")
+            record.update(
+                phase="excluded-no-input-DONE", excluded_no_input=True, exclusion_evidence=excluded
+            )
         transition = self.journals["transitions"].append(record)
         row.update(
             transition_sequence=transition,
             accepted=record["accepted"],
             immediate_diagnostic=diagnostic,
         )
+        if excluded is not None:
+            event_sequence = self.journals["all-native-calls"].append(
+                {
+                    "phase": "excluded-no-input",
+                    "request_sequence": row["call_sequence"],
+                    "transition_sequence": transition,
+                    "rule_id": NO_INPUT_DONE_RULE["rule_id"],
+                    "evidence": excluded,
+                }
+            )
+            row.update(excluded_no_input=True, exclusion_event_sequence=event_sequence)
+            _require_no_input_done_exclusion(self, row)
+            self.need_settle = True
+            return row
         if diagnostic_error is not None:
             if caught is not None:
                 raise caught from diagnostic_error
@@ -1239,7 +1490,7 @@ class Episode:
                     "Scripted public trajectory exceeded16 supervised decisions includingDONE",
                 )
             row = self.tick()
-            if row["selected"]["operation"] == "DONE":
+            if row["selected"]["operation"] == "DONE" and row["accepted"] is True:
                 require(self.awaiting_post is None, "DONE left an uncompleted native transition")
                 counts = self.resolved_counts()
                 return {
@@ -1395,6 +1646,14 @@ def run_episode(bundle, task, kind, plan, pages, compiler, evidence, playwright,
             scripted_teacher_calls=sum(
                 r["phase"] == "teacher-returned" for r in episode.journals["all-native-calls"].rows
             ),
+            excluded_no_input_done_count=sum(
+                r["phase"] == "excluded-no-input" for r in episode.journals["all-native-calls"].rows
+            ),
+            excluded_no_input_native_request_sequences=[
+                r["request_sequence"]
+                for r in episode.journals["all-native-calls"].rows
+                if r["phase"] == "excluded-no-input"
+            ],
             model_inference_calls=0,
         )
         write(folder / "attempt-result.json", result)
@@ -1429,6 +1688,7 @@ def pair_coverage(ordinary, recovery):
         return bool(
             ep.pending
             and ep.pending[-1].get("accepted") is True
+            and not ep.pending[-1].get("excluded_no_input")
             and ep.pending[-1]["selected"]["operation"] == "DONE"
             and ep.pending[-1]["pre"]["verdict"]["success"]
             and ep.pending[-1]["post"]["verdict"]["success"]
@@ -1476,8 +1736,32 @@ def serialize_episode(episode, relative_folder):
 
     cases = []
     wires = []
-    for index, row in enumerate(r for r in episode.pending if not r["bootstrap"]):
-        require(row["accepted"], "Rejected transition cannot become a public training case")
+    publishable = []
+    exclusions = set()
+    exclusion_events = [
+        event
+        for event in episode.journals["all-native-calls"].rows
+        if event["phase"] == "excluded-no-input"
+    ]
+    for row in episode.pending:
+        if row.get("excluded_no_input") or any(
+            event["request_sequence"] == row["call_sequence"] for event in exclusion_events
+        ):
+            _require_no_input_done_exclusion(episode, row)
+            exclusions.add(row["call_sequence"])
+            continue
+        require(
+            row.get("accepted") is True,
+            "Rejected transition cannot become a public training case or disappear",
+        )
+        if not row["bootstrap"]:
+            publishable.append(row)
+    require(
+        len(exclusion_events) == len(exclusions)
+        and {event["request_sequence"] for event in exclusion_events} == exclusions,
+        "Orphan or duplicate excluded native request event",
+    )
+    for index, row in enumerate(publishable):
         require(
             len(episode.raw_rows) == episode.raw.count
             and 0 <= row["raw_sequence"] < episode.raw.count,
@@ -2015,6 +2299,10 @@ def collect(output, upstream, plan):
             "finalization_errors": finalization_errors,
             "projected_future_fit": projected,
             "all24_mandatory_pair_gate": collection_gate,
+            "no_input_done_recovery": copy.deepcopy(NO_INPUT_DONE_RULE),
+            "excluded_no_input_done_count": sum(
+                r.get("excluded_no_input_done_count", 0) for r in split_episodes[split]
+            ),
             "model_calls": 0,
             "training_updates": 0,
             "task_score": None,
@@ -2043,6 +2331,10 @@ def collect(output, upstream, plan):
         "projected_future_fit": projected,
         "before_serialization_projection": before_serialization_projection,
         "all24_mandatory_pair_gate": collection_gate,
+        "no_input_done_recovery": copy.deepcopy(NO_INPUT_DONE_RULE),
+        "excluded_no_input_done_count": sum(
+            r.get("excluded_no_input_done_count", 0) for r in outcomes
+        ),
         "error": error(primary) if primary else None,
         "finalization_errors": finalization_errors,
         "model_calls": 0,

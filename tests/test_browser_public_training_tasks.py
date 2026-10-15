@@ -69,7 +69,7 @@ def test_mdn_goal_requires_syntax_and_signature_without_an_explanation_condition
 
 
 def test_private_mdn_category_routes_keep_partner_recovery_hint_consistent():
-    assert PRIVATE_ROUTE_HINT_REVISION == "mdn-specifications-categories-v1"
+    assert PRIVATE_ROUTE_HINT_REVISION == "mdn-specifications-forward-routes-v2"
     categories = {
         "mdn-intersectionobserver-observe": "/en-US/docs/Web/API/Intersection_Observer_API",
         "mdn-resizeobserver-observe": "/en-US/docs/Web/API/Resize_Observer_API",

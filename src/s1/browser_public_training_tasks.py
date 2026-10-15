@@ -11,7 +11,7 @@ from __future__ import annotations
 import copy
 
 PROPOSAL_SHA256 = "e3c2c9833709f3d5c05a320c13403f46aa8b8938acaf7e867d52470928f4bdfa"
-PRIVATE_ROUTE_HINT_REVISION = "mdn-specifications-categories-v1"
+PRIVATE_ROUTE_HINT_REVISION = "mdn-specifications-forward-routes-v2"
 
 _DEFINITIONS = [
     {
