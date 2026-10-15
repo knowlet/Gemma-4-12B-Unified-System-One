@@ -685,10 +685,24 @@ compares the actual cached processor and frozen trainer against an independent
 Rust-tokenizer/Jinja implementation for all 96 training and 66 development rows.
 Every prompt, mask, target token and prediction position matches. A
 [predeclared continuation](../artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01-prospective-plan.json)
-has started from the sealed 425-update adapter: one epoch of 96 new updates,
+completed from the sealed 425-update adapter: one epoch of 96 new updates,
 learning rate `5e-5`, seed 42, and the same 66 development states with zero updates.
-Training completion, browser regression results and fresh transfer performance
-remain unverified. No new transfer seed has been selected.
+Strict CPU verification confirms the copied ancestry, all 176 initial FP32
+adapter tensors, unchanged frozen base versions and the identical original head
+hash. Teacher-forced development agreement remains 61/66 sequences and 683/688
+tokens; it is not a browser score.
+
+The [tracked continuation record](validation/2026-10-15/jev-counterfactual-continuation.json)
+retains the actual first browser regression: **0/1 strict completion**, despite
+the final DOM satisfying every requested search/filter/property condition. The
+model initially performs all five required actions correctly, then returns to
+the list and reopens Casa Flora repeatedly instead of declaring DONE. It exhausts
+the unchanged 16-decision budget. The early gate rejects this child adapter;
+the remaining comparison arms are not run, so there is no new 13-case score or
+matched-control result. The earlier audited 12/13 adapter remains the candidate.
+No new transfer seed has been selected. The tracked JSON is a compact evidence
+index; full raw requests, server journals, source copies and weights remain in
+the ignored local artifact directories it identifies.
 
 ## Historical failure diagnosis
 
