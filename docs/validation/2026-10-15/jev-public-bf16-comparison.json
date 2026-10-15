@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "scope": "Actual two exposed public-website tasks, child96 BF16 versus unadapted BF16; four scored browser attempts plus separate unscored access checks; not four distinct tasks or broad superiority",
+  "model": "knowlet/Gemma-4-12B-Unified-System-One",
+  "revision": "a66f836b56605039fe040f330180e336d19b3362",
+  "candidate_weights_sha256": "165fbd1db402692ec06f4264a16026eb76abbed711d9ff56aef37f44a442f178",
+  "development_comparison_record": "docs/validation/2026-10-15/jev-bf16-browser-selection.json",
+  "controller_sha256": "a0b8714c9a8d10e4b860c6ac8a01ceba0dd65ae13b25ad3105c48d29cfe4cd37",
+  "plan_sha256": "cbc4aa1f1d6b8451aa108d7cd8780c4179e78f8f3f1f07e50f9b279fc55bd848",
+  "frozen28_manifest_sha256": "6ea86492b1b9c3d198ba45e84bb114303b7900e8dcaab73f6bd4e85b753e680c",
+  "public_judge_sha256": "0ec9826d334cb2fbed24ade8780fa785291017d904b18233419ced760750bca3",
+  "cases": [
+    {
+      "case_id": "public-python-counter-most-common-v1",
+      "goal": "In the Python 3.14 documentation, open the collections reference and bring the Counter.most_common() method signature and description into view.",
+      "start_url": "https://docs.python.org/3.14/library/datatypes.html",
+      "allowed_top_level_hosts": [
+        "docs.python.org"
+      ],
+      "judge_kind": "python"
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1",
+      "goal": "Open NASA Science's Mars Facts page and bring its Moons section into view. Stop on that section.",
+      "start_url": "https://science.nasa.gov/solar-system/",
+      "allowed_top_level_hosts": [
+        "science.nasa.gov"
+      ],
+      "judge_kind": "nasa"
+    }
+  ],
+  "comparison": {
+    "candidate": "same child96 adapter as the known13/13 BF16 diagnostic",
+    "base": "same pinned unadapted BF16 checkpoint",
+    "helper": "same unadapted BF16 base; candidate adapter disabled under the same lock and restored frozen/eval",
+    "quantization": "none",
+    "grammar": "greedy_legal_action_v2; full legal token trie, no pruning/truncation/repair/fallback",
+    "policy_seconds": 20,
+    "policy_budget_kind": "cooperative; native prepared/raw checkpoints count within budget",
+    "http_seconds": 25,
+    "max_decisions": 16,
+    "max_context_tokens": 8192,
+    "max_action_tokens": 32,
+    "seed": 20261014,
+    "repeats": 1,
+    "fresh_start_access_ready_each_arm": true,
+    "missing_access_cases_dropped": false,
+    "production_attachment": false
+  },
+  "arms": [
+    {
+      "arm": "child-public",
+      "attempts": 2,
+      "successes": 1,
+      "receipt_sha256": "fbd06531c9a2b7c03d524f290e2043124d89cf9a8452f2a8f5769aeb8f990111",
+      "totals": {
+        "policy_calls": 21,
+        "helper_calls": 2,
+        "executed_actions": 19,
+        "elapsed_ms": 92664
+      },
+      "outcomes": [
+        {
+          "case_id": "public-python-counter-most-common-v1",
+          "strict_success": true,
+          "goal_satisfied": true,
+          "status": "done",
+          "error": null,
+          "classification": "strict_success",
+          "elapsed_ms": 39020,
+          "policy_calls": 5,
+          "helper_calls": 1,
+          "executed_actions": 3,
+          "all_raw_snapshot_inputs_reconstructed": true,
+          "public_documents": {
+            "blocks": 0,
+            "playwright_navigation_events": 3,
+            "root_document_requests": 3,
+            "root_document_commits": 5,
+            "scope_violations": 0,
+            "observer_errors": [],
+            "commit_urls": [
+              "https://docs.python.org/3.14/library/datatypes.html",
+              "https://docs.python.org/3.14/library/datatypes.html",
+              "https://docs.python.org/3.14/search.html?q=collections.Counter.most_common",
+              "https://docs.python.org/3.14/library/collections.html",
+              "https://docs.python.org/3.14/library/collections.html#collections.Counter.most_common"
+            ]
+          },
+          "private_goal_verified": true
+        },
+        {
+          "case_id": "public-nasa-mars-facts-moons-v1",
+          "strict_success": false,
+          "goal_satisfied": false,
+          "status": "ready",
+          "error": "Runner stopped at the 16-decision budget",
+          "classification": "task_failed",
+          "elapsed_ms": 53644,
+          "policy_calls": 16,
+          "helper_calls": 1,
+          "executed_actions": 16,
+          "all_raw_snapshot_inputs_reconstructed": true,
+          "public_documents": {
+            "blocks": 24,
+            "playwright_navigation_events": 1,
+            "root_document_requests": 1,
+            "root_document_commits": 1,
+            "scope_violations": 0,
+            "observer_errors": [],
+            "commit_urls": [
+              "https://science.nasa.gov/solar-system/"
+            ]
+          },
+          "private_goal_verified": false
+        }
+      ]
+    },
+    {
+      "arm": "base-public",
+      "attempts": 2,
+      "successes": 1,
+      "receipt_sha256": "6a15d92cf0a2c4d206a8db7e6c926590f93d3e763743387c5d30ffb34671c746",
+      "totals": {
+        "policy_calls": 9,
+        "helper_calls": 2,
+        "executed_actions": 7,
+        "elapsed_ms": 54904
+      },
+      "outcomes": [
+        {
+          "case_id": "public-python-counter-most-common-v1",
+          "strict_success": true,
+          "goal_satisfied": true,
+          "status": "done",
+          "error": null,
+          "classification": "strict_success",
+          "elapsed_ms": 38289,
+          "policy_calls": 5,
+          "helper_calls": 1,
+          "executed_actions": 3,
+          "all_raw_snapshot_inputs_reconstructed": true,
+          "public_documents": {
+            "blocks": 0,
+            "playwright_navigation_events": 3,
+            "root_document_requests": 3,
+            "root_document_commits": 5,
+            "scope_violations": 0,
+            "observer_errors": [],
+            "commit_urls": [
+              "https://docs.python.org/3.14/library/datatypes.html",
+              "https://docs.python.org/3.14/library/datatypes.html",
+              "https://docs.python.org/3.14/search.html?q=collections.Counter.most_common",
+              "https://docs.python.org/3.14/library/collections.html",
+              "https://docs.python.org/3.14/library/collections.html#collections.Counter.most_common"
+            ]
+          },
+          "private_goal_verified": true
+        },
+        {
+          "case_id": "public-nasa-mars-facts-moons-v1",
+          "strict_success": false,
+          "goal_satisfied": false,
+          "status": "blocked",
+          "error": null,
+          "classification": "task_failed",
+          "elapsed_ms": 16615,
+          "policy_calls": 4,
+          "helper_calls": 1,
+          "executed_actions": 4,
+          "all_raw_snapshot_inputs_reconstructed": true,
+          "public_documents": {
+            "blocks": 17,
+            "playwright_navigation_events": 1,
+            "root_document_requests": 1,
+            "root_document_commits": 1,
+            "scope_violations": 0,
+            "observer_errors": [],
+            "commit_urls": [
+              "https://science.nasa.gov/solar-system/"
+            ]
+          },
+          "private_goal_verified": false
+        }
+      ]
+    }
+  ],
+  "paired_initial_payloads": [
+    {
+      "case_id": "public-python-counter-most-common-v1",
+      "exact_initial_payload_equal": true,
+      "payload_sha256_by_arm": {
+        "child-public": "59588df0c7daf853a889bf86aadfad76b8f4060f38429190c4f148f575a19c79",
+        "base-public": "59588df0c7daf853a889bf86aadfad76b8f4060f38429190c4f148f575a19c79"
+      },
+      "normalizations": []
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1",
+      "exact_initial_payload_equal": true,
+      "payload_sha256_by_arm": {
+        "child-public": "6e6749b6c0b85027481fcad7588ad7a60d68d04bd2f04d4b273e55b0a6fe19cd",
+        "base-public": "6e6749b6c0b85027481fcad7588ad7a60d68d04bd2f04d4b273e55b0a6fe19cd"
+      },
+      "normalizations": []
+    }
+  ],
+  "accounting": {
+    "actual_task_attempts": 4,
+    "distinct_tasks": 2,
+    "policy_calls": 30,
+    "helper_calls": 4,
+    "executed_native_actions": 26,
+    "deferrals": 0,
+    "unattempted_model_arms": []
+  },
+  "independent_audit": {
+    "path": "artifacts/jev-browser/20261015-public-bf16-final-independent-audit.json",
+    "sha256": "d755fea4e18e73eacfffc1a18bb1d30e4fca3daf9772e6df3c64f4551db96fd7",
+    "auditor_sha256": "e4f359e291b88b2ee7477def8debbc97fedb3c8b7123639082a9f11ff36142e9",
+    "checks_passed": 2555,
+    "checks_total": 2555,
+    "read_inputs": 3083,
+    "base_weight_bytes_opened": 0,
+    "all_infrastructure_complete": true
+  },
+  "setup_failure_preserved": {
+    "run": "artifacts/jev-browser/20261015-public-bf16-counterfactual-selection-01",
+    "reason": "Playwright import failed before any browser or model call because the initial process lacked the explicit existing overlay PYTHONPATH",
+    "browser_calls": 0,
+    "model_calls": 0,
+    "task_score": null,
+    "resolution": "Same reviewed immutable controller, new output02 and canonical plan, explicit inherited overlay environment; no policy retry or new training",
+    "launch_record": "artifacts/jev-runtime/public_bf16_selection_root_launch_02.json"
+  },
+  "interpretation": [
+    "Both candidate and base strictly complete Python and fail NASA, despite exactly equal initial native requests with no normalization. Known development13/13 versus11/13 has not improved success on these two actual public tasks.",
+    "NASA remains on the Solar System start page in both arms; path, Mars Facts heading and Moons section fail. There is no access deferral or public scope/observer error.",
+    "Child repeats visible in-page tab controls through the16-decision budget. Baseline is automatically blocked by the unchanged upstream no-progress guard after repeated unchanged searchbox clicks; it does not generate BLOCKED. No native Enter or submit control is offered after filling search. All are retained task failures.",
+    "All failure costs remain in their arm totals. Timings are descriptive with shared GPU activity and distinct trajectories, not a controlled latency or throughput claim.",
+    "arXiv remains separately deferred from the earlier access failure; this is not a complete four-case suite. Current Python/NASA tasks remain excluded from new training."
+  ],
+  "new_training": false,
+  "fresh_transfer_seed": null,
+  "production_promoted": false,
+  "local_evidence": {
+    "run": "artifacts/jev-browser/20261015-public-bf16-counterfactual-selection-02",
+    "note": "Full observations, private fresh DOM/HTML, native tokens/grammar, client/server journals, document requests/commits, source/fit captures and weights remain ignored local evidence; this file is a compact tracked index."
+  },
+  "semantic_addendum": {
+    "path": "artifacts/jev-browser/20261015-public-bf16-semantic-addendum.json",
+    "sha256": "7257e6fe6870b871bb87071ad6ee1f39428ef99703f41a8df935484e93865a91",
+    "checks_passed": 33,
+    "checks_total": 33,
+    "child_controls": "Calls5–16 operate role=tab controls after scrollY560; these are different from the global Planets role=button offered at initial scrollY0.",
+    "no_ignored_mars_link_claim": "No standalone Mars link appears in any of the16 child policy payloads; later Mars mention is an unrelated image link. SCROLL_UP/DOWN remain offered after the tab loop begins.",
+    "baseline_stop": "Upstream automatic no-progress block after three unchanged non-wait searchbox clicks; the model did not generate a BLOCKED action.",
+    "prior_route_proof": "The current initial raw url,title,w,h,text,scroll,actions,omitted_actions equal the saved scripted reachability initial page, including the global Planets role=button geometry; timeOrigin/page_key differ. Prior four native clicks reach Mars Facts/Moons, but post-click observations are prior scripted evidence, not a new live replay or a current ignored Mars target.",
+    "old_setup_failure_preserved": true
+  },
+  "next_work": "Compare unchanged native Decider/Omni on these fixed tasks, then develop a separate public-native training evidence contract and disjoint navigation supervision; current Python/NASA tasks stay out of training. Existing clean96 already includes32DONE labels, so missing stopping examples alone is not an established explanation."
+}
