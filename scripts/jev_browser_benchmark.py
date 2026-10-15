@@ -770,6 +770,10 @@ class PlaywrightCDP:
         self.public_navigation_events = []
         self.public_navigation_violations = []
         self.public_observer_errors = []
+        self.public_document_requests = []
+        self.public_document_commits = []
+        self.public_root_frames = {}
+        self.public_document_started = set()
         self.observation_expression = None
         self.observation_sink = None
 
@@ -831,6 +835,111 @@ class PlaywrightCDP:
         else:
             route.continue_()
 
+    @staticmethod
+    def _public_document_url_scope(url, hosts):
+        try:
+            parsed = urlsplit(url)
+            allowed = (
+                parsed.scheme == "https"
+                and parsed.hostname in hosts
+                and parsed.username is None
+                and parsed.password is None
+                and parsed.port in {None, 443}
+            )
+        except (TypeError, ValueError):
+            allowed = False
+        return None if allowed else "public document outside declared HTTPS hosts"
+
+    def _public_document_request(self, session, event, hosts):
+        """Keep raw CDP document events when Playwright omits prefetched requests."""
+        try:
+            if event.get("type") != "Document":
+                return
+            if event["frameId"] != self.public_root_frames[session]:
+                return
+            request = event["request"]
+            self.public_document_started.add(session)
+            reasons = [self._public_document_url_scope(request["url"], hosts)]
+            if request["method"] not in {"GET", "HEAD"}:
+                reasons.append("public document permits only GET and HEAD requests")
+            redirect = event.get("redirectResponse")
+            if redirect and self._public_document_url_scope(redirect["url"], hosts):
+                reasons.append("public document redirected from outside declared HTTPS hosts")
+            record = {
+                "source": "cdp_document_request",
+                "session": session,
+                "request_id": event["requestId"],
+                "loader_id": event["loaderId"],
+                "frame_id": event["frameId"],
+                "url": request["url"],
+                "method": request["method"],
+                "redirected_from": redirect["url"] if redirect else None,
+                "redirect_status": redirect["status"] if redirect else None,
+                "scope_violation": "; ".join(reason for reason in reasons if reason) or None,
+            }
+            self.public_document_requests.append(record)
+            if record["scope_violation"]:
+                self.public_navigation_violations.append(record)
+        except Exception as exc:
+            self.public_observer_errors.append(
+                {"source": "cdp_document_request", "type": type(exc).__name__, "message": str(exc)}
+            )
+
+    def _public_document_commit(self, session, event, hosts, *, within_document=False):
+        try:
+            if within_document:
+                frame_id, url, loader_id = event["frameId"], event["url"], None
+                if frame_id != self.public_root_frames[session]:
+                    return
+            else:
+                frame = event["frame"]
+                if frame.get("parentId"):
+                    return
+                frame_id, url, loader_id = frame["id"], frame["url"], frame["loaderId"]
+                self.public_root_frames[session] = frame_id
+            setup_blank = url == "about:blank" and session not in self.public_document_started
+            if not setup_blank:
+                self.public_document_started.add(session)
+            record = {
+                "source": "cdp_within_document" if within_document else "cdp_frame_commit",
+                "session": session,
+                "frame_id": frame_id,
+                "loader_id": loader_id,
+                "url": url,
+                "setup_blank": setup_blank,
+                "scope_violation": None
+                if setup_blank
+                else self._public_document_url_scope(url, hosts),
+            }
+            self.public_document_commits.append(record)
+            if record["scope_violation"]:
+                self.public_navigation_violations.append(record)
+        except Exception as exc:
+            self.public_observer_errors.append(
+                {"source": "cdp_document_commit", "type": type(exc).__name__, "message": str(exc)}
+            )
+
+    def _observe_public_documents(self, session_id, session, hosts):
+        session.on(
+            "Network.requestWillBeSent",
+            lambda event: self._public_document_request(session_id, event, hosts),
+        )
+        session.on(
+            "Page.frameNavigated",
+            lambda event: self._public_document_commit(session_id, event, hosts),
+        )
+        session.on(
+            "Page.navigatedWithinDocument",
+            lambda event: self._public_document_commit(
+                session_id, event, hosts, within_document=True
+            ),
+        )
+        for method in ("Page.getFrameTree", "Network.enable", "Page.enable"):
+            self.calls += 1
+            result = session.send(method)
+            if method == "Page.getFrameTree":
+                self.public_root_frames[session_id] = result["frameTree"]["frame"]["id"]
+
     def cdp(self, method, session_id=None, **params):
         self.calls += 1
         if method == "Target.createTarget":
@@ -852,9 +961,14 @@ class PlaywrightCDP:
         if method == "Target.attachToTarget":
             target = params["targetId"]
             session = f"session-{len(self.sessions) + 1}"
-            self.sessions[session] = self.targets[target].context.new_cdp_session(
+            owned = self.targets[target].context.new_cdp_session(
                 self.targets[target]
             )
+            self.sessions[session] = owned
+            if self.public_navigation_hosts is not None:
+                self._observe_public_documents(
+                    session, owned, frozenset(self.public_navigation_hosts)
+                )
             return {"sessionId": session}
         if method == "Target.closeTarget":
             page = self.targets.pop(params["targetId"], None)
@@ -1167,11 +1281,15 @@ def _finish_public_browser(browser, transport, output, secrets, *, primary_error
         _write_json(
             output / "public-request-ledger.json",
             {
-                "scope": "Observed request events; redirected contacts are audited, not prevented",
+                "scope": "Interceptable request routing plus separate owned-session CDP "
+                "document requests and frame commits; cached/prefetched navigations and "
+                "redirect contacts are audited, not guaranteed prevented",
                 "blocks": transport.public_request_blocks,
                 "navigation_events": transport.public_navigation_events,
                 "navigation_violations": transport.public_navigation_violations,
                 "observer_errors": transport.public_observer_errors,
+                "document_requests": transport.public_document_requests,
+                "document_commits": transport.public_document_commits,
             },
             secrets,
         )
@@ -1365,10 +1483,12 @@ def run_benchmark(
             public_judge_sha256=hashlib.sha256(
                 Path(verify_public_web_case.__code__.co_filename).read_bytes()
             ).hexdigest(),
-            public_request_policy="Only GET/HEAD HTTP requests; service workers blocked. "
-            "Direct top-level navigation guarded by declared HTTPS hosts; observed navigation "
-            "hops audited and any scope violation invalidates the attempt. Redirect contacts "
-            "are not prevented by routing. Subresource hosts retained.",
+            public_request_policy="Interceptable HTTP requests restricted to GET/HEAD; "
+            "service workers blocked. Interceptable top-level navigation guarded by declared "
+            "HTTPS hosts. Separate raw CDP document-request and root-frame commit ledgers "
+            "audit cached/prefetched navigations and redirects; any observed scope violation "
+            "invalidates the attempt. Auditing does not prevent all contacts. "
+            "Subresource hosts retained.",
         )
     _write_json(output / "configuration.json", configuration)
     for case in cases:
@@ -1456,6 +1576,8 @@ def run_benchmark(
                         navigation_start = len(transport.public_navigation_events)
                         violation_start = len(transport.public_navigation_violations)
                         observer_start = len(transport.public_observer_errors)
+                        document_request_start = len(transport.public_document_requests)
+                        document_commit_start = len(transport.public_document_commits)
                         try:
                             agent = agent_module.Agent(url, goal, screenshots=False)
                             snapshots.append(_redact(agent.snapshot(), secrets))
@@ -1595,6 +1717,12 @@ def run_benchmark(
                                 )
                                 outcome["public_observer_errors"] = (
                                     transport.public_observer_errors[observer_start:]
+                                )
+                                outcome["public_document_requests"] = (
+                                    transport.public_document_requests[document_request_start:]
+                                )
+                                outcome["public_document_commits"] = (
+                                    transport.public_document_commits[document_commit_start:]
                                 )
                             _write_json(attempt / "outcome.json", outcome, secrets)
                             _write_json(attempt / "model_calls.json", model_calls, secrets)

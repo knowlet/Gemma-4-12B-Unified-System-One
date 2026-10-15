@@ -9,10 +9,12 @@ import os
 import shutil
 import sys
 import threading
+import time
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
+from urllib.parse import urlsplit
 
 import pytest
 
@@ -208,6 +210,241 @@ def test_public_observer_failure_is_explicit():
     assert transport.public_observer_errors[0]["type"] == "AttributeError"
 
 
+def _document_transport():
+    transport = HARNESS.PlaywrightCDP(None)
+    transport.public_root_frames["owned"] = "root"
+    return transport
+
+
+def _document_request(url="https://arxiv.org/abs/1706.03762", **changes):
+    return {
+        "type": "Document",
+        "frameId": "root",
+        "requestId": "request-1",
+        "loaderId": "loader-1",
+        "request": {"url": url, "method": "GET"},
+        **changes,
+    }
+
+
+def _document_commit(url="https://arxiv.org/abs/1706.03762", **changes):
+    return {"frame": {"id": "root", "url": url, "loaderId": "loader-1", **changes}}
+
+
+@pytest.mark.parametrize("public", [False, True])
+def test_document_observer_setup_precedes_native_navigation_and_default_is_unchanged(public):
+    events, callbacks = [], {}
+
+    def send(method, params=None):
+        events.append(("send", method, params))
+        if method == "Page.getFrameTree":
+            return {"frameTree": {"frame": {"id": "root"}}}
+        if method in {"Network.enable", "Page.enable"}:
+            assert transport.public_root_frames["session-1"] == "root"
+        return {}
+
+    def on(event, callback):
+        events.append(("listen", event))
+        callbacks[event] = callback
+
+    session = SimpleNamespace(send=send, on=on)
+    page = SimpleNamespace(context=SimpleNamespace(new_cdp_session=lambda _page: session))
+    transport = HARNESS.PlaywrightCDP(None)
+    transport.targets["target"] = page
+    transport.public_navigation_hosts = ("arxiv.org",) if public else None
+    attached = transport.cdp("Target.attachToTarget", targetId="target")
+    transport.cdp("Page.navigate", session_id=attached["sessionId"], url="https://arxiv.org/")
+    if public:
+        assert [entry[:2] for entry in events] == [
+            ("listen", "Network.requestWillBeSent"),
+            ("listen", "Page.frameNavigated"),
+            ("listen", "Page.navigatedWithinDocument"),
+            ("send", "Page.getFrameTree"),
+            ("send", "Network.enable"),
+            ("send", "Page.enable"),
+            ("send", "Page.navigate"),
+        ]
+        assert transport.calls == 5
+        callbacks["Network.requestWillBeSent"](_document_request())
+        callbacks["Page.frameNavigated"](_document_commit())
+        callbacks["Page.navigatedWithinDocument"](
+            {"frameId": "root", "url": "https://arxiv.org/abs/1706.03762#abstract"}
+        )
+        assert len(transport.public_document_requests) == 1
+        assert len(transport.public_document_commits) == 2
+    else:
+        assert events == [("send", "Page.navigate", {"url": "https://arxiv.org/"})]
+        assert transport.calls == 2
+        assert transport.public_root_frames == {}
+
+
+@pytest.mark.parametrize("method", ["Page.getFrameTree", "Network.enable", "Page.enable"])
+def test_document_observer_setup_failure_propagates_before_navigation(method):
+    sent = []
+
+    def send(actual, _params=None):
+        sent.append(actual)
+        if actual == method:
+            raise RuntimeError("observer setup failed")
+        return {"frameTree": {"frame": {"id": "root"}}}
+
+    transport = HARNESS.PlaywrightCDP(None)
+    transport.public_navigation_hosts = ("arxiv.org",)
+    session = SimpleNamespace(send=send, on=lambda *_: None)
+    transport.targets["target"] = SimpleNamespace(
+        context=SimpleNamespace(new_cdp_session=lambda _page: session)
+    )
+    with pytest.raises(RuntimeError, match="observer setup failed"):
+        transport.cdp("Target.attachToTarget", targetId="target")
+    assert "Page.navigate" not in sent
+
+
+@pytest.mark.parametrize(
+    "event",
+    [
+        _document_request(frameId="iframe"),
+        _document_request(type="Prefetch"),
+        _document_request(type="Image"),
+    ],
+)
+def test_document_request_audit_excludes_other_resources_and_frames(event):
+    transport = _document_transport()
+    transport._public_document_request("owned", event, {"arxiv.org"})
+    assert transport.public_document_requests == []
+    assert transport.public_navigation_violations == []
+    assert transport.public_observer_errors == []
+    assert transport.public_document_started == set()
+
+
+@pytest.mark.parametrize("method", ["GET", "HEAD"])
+def test_document_request_retains_native_ids_and_allowed_redirect(method):
+    transport = _document_transport()
+    event = _document_request(
+        request={"url": "https://arxiv.org/abs/1706.03762", "method": method},
+        redirectResponse={"url": "https://arxiv.org/search/", "status": 302},
+    )
+    transport._public_document_request("owned", event, {"arxiv.org"})
+    assert transport.public_document_requests == [
+        {
+            "source": "cdp_document_request",
+            "session": "owned",
+            "request_id": "request-1",
+            "loader_id": "loader-1",
+            "frame_id": "root",
+            "url": "https://arxiv.org/abs/1706.03762",
+            "method": method,
+            "redirected_from": "https://arxiv.org/search/",
+            "redirect_status": 302,
+            "scope_violation": None,
+        }
+    ]
+    assert transport.public_document_started == {"owned"}
+    assert transport.public_navigation_violations == []
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://outside.example.org/page",
+        "http://arxiv.org/abs/1706.03762",
+        "https://user:secret@arxiv.org/page",
+        "https://arxiv.org:444/page",
+        "https://arxiv.org:broken/page",
+        "data:text/html,example",
+        None,
+    ],
+)
+def test_document_url_scope_rejects_invalid_or_undeclared_targets(url):
+    assert HARNESS.PlaywrightCDP._public_document_url_scope(url, {"arxiv.org"})
+
+
+def test_document_request_audits_method_target_and_redirect_source_together():
+    transport = _document_transport()
+    transport._public_document_request(
+        "owned",
+        _document_request(
+            request={"url": "https://outside.example.org/page", "method": "POST"},
+            redirectResponse={"url": "http://arxiv.org/search/", "status": 307},
+        ),
+        {"arxiv.org"},
+    )
+    record = transport.public_document_requests[0]
+    assert record["method"] == "POST" and record["redirect_status"] == 307
+    assert "outside declared HTTPS hosts" in record["scope_violation"]
+    assert "only GET and HEAD" in record["scope_violation"]
+    assert "redirected from outside" in record["scope_violation"]
+    assert transport.public_navigation_violations == [record]
+    # A later allowed URL cannot erase a violating redirect hop.
+    transport._public_document_request("owned", _document_request(), {"arxiv.org"})
+    assert len(transport.public_navigation_violations) == 1
+
+
+def test_document_commit_tracks_root_replacement_fragment_and_iframe_separately():
+    transport = _document_transport()
+    transport._public_document_commit(
+        "owned",
+        _document_commit("https://outside.example.org/frame", parentId="root"),
+        {"arxiv.org"},
+    )
+    transport._public_document_commit("owned", _document_commit(id="replacement"), {"arxiv.org"})
+    transport._public_document_commit(
+        "owned",
+        {"frameId": "old-root", "url": "https://outside.example.org/"},
+        {"arxiv.org"},
+        within_document=True,
+    )
+    transport._public_document_commit(
+        "owned",
+        {"frameId": "replacement", "url": "https://arxiv.org/abs/1706.03762#abstract"},
+        {"arxiv.org"},
+        within_document=True,
+    )
+    assert transport.public_root_frames["owned"] == "replacement"
+    assert [row["source"] for row in transport.public_document_commits] == [
+        "cdp_frame_commit",
+        "cdp_within_document",
+    ]
+    assert transport.public_document_commits[-1]["loader_id"] is None
+    assert transport.public_navigation_violations == transport.public_observer_errors == []
+
+
+def test_document_commit_exempts_only_pre_navigation_setup_blank():
+    transport = _document_transport()
+    transport._public_document_commit("owned", _document_commit("about:blank"), {"arxiv.org"})
+    assert transport.public_document_commits[-1]["setup_blank"] is True
+    assert transport.public_document_started == set()
+    transport._public_document_request("owned", _document_request(), {"arxiv.org"})
+    transport._public_document_commit("owned", _document_commit("about:blank"), {"arxiv.org"})
+    assert transport.public_document_commits[-1]["setup_blank"] is False
+    assert len(transport.public_navigation_violations) == 1
+
+
+@pytest.mark.parametrize("within_document", [False, True])
+def test_document_commit_catches_disallowed_activation_without_a_request(within_document):
+    transport = _document_transport()
+    url = "https://outside.example.org/prefetched"
+    event = {"frameId": "root", "url": url} if within_document else _document_commit(url)
+    transport._public_document_commit(
+        "owned", event, {"arxiv.org"}, within_document=within_document
+    )
+    assert transport.public_document_requests == transport.public_navigation_events == []
+    assert transport.public_document_commits[0]["url"] == url
+    assert transport.public_navigation_violations == transport.public_document_commits
+
+
+@pytest.mark.parametrize("observer", ["request", "commit", "within_document"])
+def test_document_observer_malformed_events_are_explicit_errors(observer):
+    transport = _document_transport()
+    if observer == "request":
+        transport._public_document_request("owned", {"type": "Document"}, {"arxiv.org"})
+    else:
+        transport._public_document_commit(
+            "owned", {}, {"arxiv.org"}, within_document=observer == "within_document"
+        )
+    assert transport.public_document_requests == transport.public_document_commits == []
+    assert transport.public_observer_errors[0]["type"] == "KeyError"
+
+
 def test_public_request_ledger_survives_final_snapshot_and_close_failures(tmp_path):
     transport = HARNESS.PlaywrightCDP(None)
     transport.public_request_blocks.append({"url": "https://arxiv.org/feedback", "method": "POST"})
@@ -215,6 +452,8 @@ def test_public_request_ledger_survives_final_snapshot_and_close_failures(tmp_pa
 
     def close():
         transport.public_navigation_events.append({"url": "https://arxiv.org/last-event"})
+        transport.public_document_requests.append({"url": "https://arxiv.org/raw-request"})
+        transport.public_document_commits.append({"url": "https://arxiv.org/raw-commit"})
         raise OSError("secondary browser close failed")
 
     HARNESS._finish_public_browser(
@@ -223,6 +462,8 @@ def test_public_request_ledger_survives_final_snapshot_and_close_failures(tmp_pa
     ledger = json.loads((tmp_path / "public-request-ledger.json").read_bytes())
     assert ledger["blocks"] == transport.public_request_blocks
     assert ledger["navigation_events"][-1]["url"].endswith("last-event")
+    assert ledger["document_requests"][-1]["url"].endswith("raw-request")
+    assert ledger["document_commits"][-1]["url"].endswith("raw-commit")
     assert any("secondary browser close failed" in note for note in primary.__notes__)
 
 
@@ -918,6 +1159,273 @@ def real_browser_environment(pinned_upstream):
             browser.close()
 
 
+@contextmanager
+def _local_prefetch_site(*, outside_host=False):
+    """Actual local HTTP documents, including a scripted policy used only by tests."""
+    hits, policy_payloads = [], []
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            hits.append(
+                {
+                    "path": self.path,
+                    "host": self.headers.get("Host"),
+                    "purpose": self.headers.get("Sec-Purpose"),
+                }
+            )
+            page = self.path.split("#", 1)[0]
+            host = "localhost" if outside_host else "127.0.0.1"
+            next_path = "/second" if page == "/first" else "/third"
+            link = (
+                f'<a href="http://{host}:{self.server.server_port}{next_path}">Next page</a>'
+                if page != "/third"
+                else '<a href="#section">Section</a><h2 id="section">Section</h2>'
+            )
+            rules = {
+                "prefetch": [
+                    {
+                        "source": "document",
+                        "where": {"selector_matches": "a"},
+                        "eagerness": "conservative",
+                    }
+                ]
+            }
+            body = (
+                f"<!doctype html><title>{page}</title><h1>{page}</h1>"
+                "<style>a{display:block;width:200px;height:60px}</style>"
+                f'{link}<script type="speculationrules">{json.dumps(rules)}</script>'
+            ).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Cache-Control", "max-age=600")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_POST(self):
+            payload = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+            policy_payloads.append(payload)
+            page = urlsplit(payload["state"]["page"]["url"]).path
+            operation = "DONE" if page == "/third" else "CLICK"
+            choices = payload["questions"]["operation"]["criteria"]
+            answers = {
+                "operation": {
+                    "choice": operation,
+                    "confidence": 1.0,
+                    "probabilities": {key: float(key == operation) for key in choices},
+                }
+            }
+            if operation == "CLICK":
+                criteria = payload["questions"]["click_target"]["criteria"]
+                target = next(
+                    key for key, value in criteria.items() if "Next page" in value["element"]
+                )
+                answers["click_target"] = {
+                    "choice": target,
+                    "confidence": 1.0,
+                    "probabilities": {key: float(key == target) for key in criteria},
+                }
+            body = json.dumps({"model": "test-only-local-prefetch-policy", "answers": answers})
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(body.encode())
+
+        def log_message(self, *_):
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}", hits, policy_payloads
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+def _allow_test_loopback_http(monkeypatch, base):
+    """Normalize only the local test origin, retaining actual host scope decisions.
+
+    Production remains strict HTTPS. Both permitted 127.0.0.1 and forbidden
+    localhost are actual loopback hosts; their URLs stay unchanged in the ledgers.
+    """
+    port = urlsplit(base).port
+    original_request = HARNESS.PlaywrightCDP._public_request_scope
+    original_document = HARNESS.PlaywrightCDP._public_document_url_scope
+
+    def normalize(url):
+        parsed = urlsplit(url)
+        assert parsed.scheme == "http" and parsed.hostname in {"127.0.0.1", "localhost"}
+        assert parsed.port == port
+        return parsed._replace(scheme="https", netloc=parsed.hostname).geturl()
+
+    def request_scope(request, hosts):
+        proxy = SimpleNamespace(
+            method=request.method,
+            url=normalize(request.url),
+            is_navigation_request=request.is_navigation_request,
+            frame=request.frame,
+        )
+        return original_request(proxy, hosts)
+
+    def document_scope(url, hosts):
+        # The owned pre-navigation about:blank is handled by the observer itself.
+        return original_document(normalize(url), hosts)
+
+    monkeypatch.setattr(HARNESS.PlaywrightCDP, "_public_request_scope", staticmethod(request_scope))
+    monkeypatch.setattr(
+        HARNESS.PlaywrightCDP, "_public_document_url_scope", staticmethod(document_scope)
+    )
+
+
+def _observe_local_path(native, stale_page, path):
+    deadline = time.monotonic() + 5
+    while True:
+        try:
+            snapshot = native.observe(screenshot=False)
+            if urlsplit(snapshot["url"]).path == path:
+                return snapshot
+        except stale_page:
+            pass
+        if time.monotonic() >= deadline:
+            pytest.fail(f"Local native navigation did not settle on {path}")
+        time.sleep(0.01)
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize("outside_host", [False, True])
+def test_real_native_prefetch_documents_are_captured_despite_missing_playwright_events(
+    real_browser_environment, monkeypatch, outside_host
+):
+    upstream, chromium = real_browser_environment
+    with _local_prefetch_site(outside_host=outside_host) as (base, hits, _payloads):
+        _allow_test_loopback_http(monkeypatch, base)
+        transport = HARNESS.PlaywrightCDP(chromium)
+        transport.public_navigation_hosts = ("127.0.0.1",)
+        with HARNESS.load_upstream(upstream, transport) as (agent_module, _model_module):
+            native = agent_module.Browser(base + "/first")
+            snapshots, navigation_entries = [], []
+            try:
+                for index, path in enumerate(("/first", "/second", "/third")):
+                    snapshot = _observe_local_path(native, agent_module.StalePage, path)
+                    snapshots.append(snapshot)
+                    navigation_entries.append(
+                        native.evaluate(
+                            "({timeOrigin:performance.timeOrigin,"
+                            "deliveryType:performance.getEntriesByType('navigation')[0].deliveryType})"
+                        )
+                    )
+                    if index < 2:
+                        action = next(
+                            a
+                            for a in snapshot["actions"]
+                            if a["kind"] == "click" and a["label"] == "Next page"
+                        )
+                        native.act(action, snapshot)
+                assert len({entry["timeOrigin"] for entry in navigation_entries}) == 3
+                assert [entry["deliveryType"] for entry in navigation_entries[1:]] == [
+                    "navigational-prefetch",
+                    "navigational-prefetch",
+                ]
+                assert [
+                    urlsplit(row["url"]).path for row in transport.public_navigation_events
+                ] == ["/first"]
+                assert [
+                    urlsplit(row["url"]).path for row in transport.public_document_requests
+                ] == ["/first", "/second", "/third"]
+                commits = [
+                    row for row in transport.public_document_commits if not row["setup_blank"]
+                ]
+                assert [urlsplit(row["url"]).path for row in commits] == [
+                    "/first",
+                    "/second",
+                    "/third",
+                ]
+                assert all(row["method"] == "GET" for row in transport.public_document_requests)
+                assert all(hit["purpose"] == "prefetch" for hit in hits if hit["path"] != "/first")
+                assert transport.public_request_blocks == transport.public_observer_errors == []
+                if outside_host:
+                    assert len(transport.public_navigation_violations) == 4
+                    assert all(
+                        urlsplit(row["url"]).hostname == "localhost"
+                        for row in transport.public_navigation_violations
+                    )
+                else:
+                    assert transport.public_navigation_violations == []
+                section = next(a for a in snapshots[-1]["actions"] if a["label"] == "Section")
+                native.act(section, snapshots[-1])
+                deadline = time.monotonic() + 5
+                while not any(
+                    row["source"] == "cdp_within_document"
+                    for row in transport.public_document_commits
+                ):
+                    assert time.monotonic() < deadline
+                    native.evaluate("location.href")
+                assert transport.public_document_commits[-1]["url"].endswith("#section")
+                assert transport.public_document_commits[-1]["source"] == "cdp_within_document"
+                assert len(transport.public_document_requests) == 3
+            finally:
+                native.close()
+
+
+@pytest.mark.integration
+def test_real_runner_rejects_prefetched_outside_host_even_with_done_and_positive_judge(
+    pinned_upstream, tmp_path, monkeypatch
+):
+    monkeypatch.syspath_prepend(str(ROOT / "scripts"))
+    import jev_public_web_cases as public
+
+    with _local_prefetch_site(outside_host=True) as (base, hits, payloads):
+        _allow_test_loopback_http(monkeypatch, base)
+        case = SimpleNamespace(
+            case_id="test-local-prefetch",
+            goal="Open Next page twice and stop.",
+            start_url=base + "/first",
+            allowed_top_level_hosts=("127.0.0.1",),
+        )
+        monkeypatch.setattr(public, "get_public_web_case", lambda _case_id: case)
+        monkeypatch.setattr(public, "case_manifest", lambda _case: {"case_id": case.case_id})
+
+        def positive_fresh_judge(browser, _case):
+            observed = browser.evaluate(
+                "({url:location.href,heading:document.querySelector('h1').innerText})"
+            )
+            return {
+                "success": observed["heading"] == "/third",
+                "observed": observed,
+                "mismatches": {},
+            }
+
+        monkeypatch.setattr(public, "verify_public_web_case", positive_fresh_judge)
+        output = tmp_path / "prefetched-outside-host"
+        summary = HARNESS.run_benchmark(
+            upstream_path=pinned_upstream,
+            endpoint=base + "/policy",
+            model="test-only-local-prefetch-policy",
+            output_dir=output,
+            public_case_ids=[case.case_id],
+        )
+        outcome = summary["outcomes"][0]
+        assert outcome["status"] == "done" and outcome["goal_satisfied"] is True
+        assert summary["successes"] == 0 and outcome["success"] is False
+        assert outcome["error_stage"] == "public_navigation_scope"
+        assert len(outcome["public_scope_violations"]) == 4
+        assert outcome["public_request_blocks"] == outcome["public_observer_errors"] == []
+        assert len(outcome["public_navigation_events"]) == 1
+        assert len(outcome["public_document_requests"]) == 3
+        assert any(
+            hit["host"].startswith("localhost:") and hit["purpose"] == "prefetch" for hit in hits
+        )
+        ledger = json.loads((output / "public-request-ledger.json").read_bytes())
+        assert ledger["document_requests"] == outcome["public_document_requests"]
+        assert ledger["document_commits"] == outcome["public_document_commits"]
+        assert payloads and all(
+            "public_document" not in json.dumps(payload) for payload in payloads
+        )
+
+
 @pytest.mark.integration
 def test_upstream_manifest_checks_executed_initializer(pinned_upstream, tmp_path):
     copied = tmp_path / "upstream"
@@ -985,9 +1493,7 @@ def test_real_upstream_guarded_click_and_independent_dom_judge(
                 assert chosen_pages[0]["fingerprint"] != page["fingerprint"]
                 refreshed = observations[-1]["response"]["result"]["value"]
                 assert len(observations) >= 2
-                assert refreshed == {
-                    k: v for k, v in chosen_pages[0].items() if k != "fingerprint"
-                }
+                assert refreshed == {k: v for k, v in chosen_pages[0].items() if k != "fingerprint"}
             finally:
                 agent.close()
 
