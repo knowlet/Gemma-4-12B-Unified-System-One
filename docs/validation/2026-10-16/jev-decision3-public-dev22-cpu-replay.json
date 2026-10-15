@@ -1,0 +1,479 @@
+{
+  "schema_id": "jev-decision3-public-dev22-native-cpu-replay-v1",
+  "date": "2026-10-16",
+  "status": "complete; both workers exited0; independently audited saved evidence",
+  "collection": "https://huggingface.co/collections/vllm-sr/decision-30",
+  "scope": "22 fixed development states from teacher browser trajectories per model; offline action decisions, no model-owned browser rollout",
+  "runtime": {
+    "device": "cpu",
+    "torch_threads": 2,
+    "interop_threads": 1,
+    "backbone_dtype": "bfloat16",
+    "readout_dtype": "float32",
+    "temperature": 1,
+    "attention_mode": "noncausal_full_attention",
+    "pooling": "last",
+    "native_batch_size": 8,
+    "publisher_max_length": null,
+    "project_context_cap": 16384,
+    "complete_head_candidate_cap": 255,
+    "actual_maximum_head_candidates": 60,
+    "request_budget_seconds": 20,
+    "deadline": "Cooperative full-call wall time, late raw output retained, no hard20s cancellation",
+    "browser_actions": 0,
+    "separate_Gemma_helper_calls": 0,
+    "optimizer_updates": 0,
+    "task_score": null,
+    "usd_cost": null
+  },
+  "inputs": {
+    "public_closed_files": 701,
+    "public_closed_bytes": 105415940,
+    "public_closed_identity_sha256": "d74f729460c648b8c88cf677bc379d1ae34fe7530a9651810e8af2825d449742",
+    "development_cases": {
+      "path": "artifacts/jev-browser/20261016-public-native-training-collection-07/development/cases.jsonl",
+      "sha256": "649f69ae49b43b000ad3a1338c75760173c1713bd75368e4737fef611bae8c9f",
+      "size_bytes": 293804
+    },
+    "development_native_wires": {
+      "path": "artifacts/jev-browser/20261016-public-native-training-collection-07/development/wire_requests.jsonl",
+      "sha256": "055cb23f27f2c06cbe312b99c66704f8ef549363c3fb761f9d5e626cd684becd",
+      "size_bytes": 296484
+    },
+    "continuing_states": 14,
+    "complete_states": 8,
+    "gold_operations": {
+      "CLICK": 12,
+      "SCROLL_DOWN": 2,
+      "DONE": 8
+    },
+    "transformations": "Transport replaces only model alias. Publisher projection preserves all original state, question, type, instruction and criterion values/order. No truncation, candidate filtering, fixture DTO or operation-first call."
+  },
+  "scoring": {
+    "primary": "Membership of selected active action in original valid_next_targets; targetless actions require original empty target list and null selected target",
+    "secondary": "Exact active gold; equals primary count in this dataset",
+    "budgeted": "Original22 denominator; action correct and full call completes in less than20s",
+    "inactive_heads": "Validated and retained, never counted as extra accuracy",
+    "unavailable": "Separate null outcomes; zero unavailable rows in this completed run",
+    "always_DONE_analytical_reference": {
+      "valid": 8,
+      "planned": 22,
+      "not_a_model_or_browser_score": true
+    }
+  },
+  "models": {
+    "d3-edge": {
+      "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+      "strata": {
+        "all22": {
+          "planned": 22,
+          "raw_returned": 22,
+          "contract_valid": 22,
+          "raw_action_valid": 4,
+          "exact_gold": 4,
+          "within20s_action_valid": 3,
+          "unavailable": 0,
+          "late_valid": 9
+        },
+        "continuing": {
+          "planned": 14,
+          "raw_returned": 14,
+          "contract_valid": 14,
+          "raw_action_valid": 0,
+          "exact_gold": 0,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 7
+        },
+        "gold_operation:CLICK": {
+          "planned": 12,
+          "raw_returned": 12,
+          "contract_valid": 12,
+          "raw_action_valid": 0,
+          "exact_gold": 0,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 5
+        },
+        "state_role:ordinary_incomplete": {
+          "planned": 5,
+          "raw_returned": 5,
+          "contract_valid": 5,
+          "raw_action_valid": 0,
+          "exact_gold": 0,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 3
+        },
+        "complete": {
+          "planned": 8,
+          "raw_returned": 8,
+          "contract_valid": 8,
+          "raw_action_valid": 4,
+          "exact_gold": 4,
+          "within20s_action_valid": 3,
+          "unavailable": 0,
+          "late_valid": 2
+        },
+        "gold_operation:DONE": {
+          "planned": 8,
+          "raw_returned": 8,
+          "contract_valid": 8,
+          "raw_action_valid": 4,
+          "exact_gold": 4,
+          "within20s_action_valid": 3,
+          "unavailable": 0,
+          "late_valid": 2
+        },
+        "state_role:ordinary_complete": {
+          "planned": 4,
+          "raw_returned": 4,
+          "contract_valid": 4,
+          "raw_action_valid": 2,
+          "exact_gold": 2,
+          "within20s_action_valid": 2,
+          "unavailable": 0,
+          "late_valid": 1
+        },
+        "state_role:recovery_incomplete": {
+          "planned": 7,
+          "raw_returned": 7,
+          "contract_valid": 7,
+          "raw_action_valid": 0,
+          "exact_gold": 0,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 4
+        },
+        "state_role:recovered_complete": {
+          "planned": 4,
+          "raw_returned": 4,
+          "contract_valid": 4,
+          "raw_action_valid": 2,
+          "exact_gold": 2,
+          "within20s_action_valid": 1,
+          "unavailable": 0,
+          "late_valid": 1
+        },
+        "state_role:correct_document_incomplete": {
+          "planned": 1,
+          "raw_returned": 1,
+          "contract_valid": 1,
+          "raw_action_valid": 0,
+          "exact_gold": 0,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 0
+        },
+        "state_role:recovered_document_incomplete": {
+          "planned": 1,
+          "raw_returned": 1,
+          "contract_valid": 1,
+          "raw_action_valid": 0,
+          "exact_gold": 0,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 0
+        },
+        "gold_operation:SCROLL_DOWN": {
+          "planned": 2,
+          "raw_returned": 2,
+          "contract_valid": 2,
+          "raw_action_valid": 0,
+          "exact_gold": 0,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 2
+        }
+      },
+      "latency_seconds": {
+        "min": 16.81915817299887,
+        "median": 18.73138367449792,
+        "max": 30.370840919997136
+      },
+      "operation_counts": {
+        "BLOCKED": 8,
+        "DONE": 9,
+        "WAIT": 5
+      },
+      "heads": 54,
+      "probability_values": 897,
+      "singleton_heads": 10,
+      "native_token_length_range": [
+        1478,
+        4170
+      ],
+      "gates": {
+        "worker": {
+          "count": 78,
+          "minimum_MemAvailable_bytes": 32359923712,
+          "required_MemAvailable_bytes": 30646100800,
+          "ledger": {
+            "sha256": "6550af7fb09b94d7042af6330f596622e562b64ef56cdb3a37817460bf024a66",
+            "size_bytes": 58000
+          }
+        },
+        "controller": {
+          "count": 2,
+          "minimum_MemAvailable_bytes": 33607458816,
+          "required_MemAvailable_bytes": 30646100800,
+          "ledger": {
+            "sha256": "57d4c8b5408b212bf497a47d3ab9a9a39fceb8b5e0eda6d899418283b524b547",
+            "size_bytes": 1501
+          }
+        }
+      },
+      "elapsed_seconds": 487.86409204699885,
+      "peak_rss_bytes": 3242098688,
+      "actual_model_loads": 1,
+      "verified_loads": 1,
+      "cuda_initialized": false,
+      "worker_receipt": {
+        "path": "artifacts/jev-d3-native/20261016-actual07-dev22-cpu-replay-01/d3-edge/receipt.json",
+        "sha256": "64f6ee0af811bc58f07369d182d2bc491eba7e76f30406391d78abccbf6116e4",
+        "size_bytes": 1945380
+      }
+    },
+    "d3-lite": {
+      "revision": "9c10703193afc7c7d28c88201c0364bfbbf58320",
+      "strata": {
+        "all22": {
+          "planned": 22,
+          "raw_returned": 22,
+          "contract_valid": 22,
+          "raw_action_valid": 11,
+          "exact_gold": 11,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 22
+        },
+        "continuing": {
+          "planned": 14,
+          "raw_returned": 14,
+          "contract_valid": 14,
+          "raw_action_valid": 3,
+          "exact_gold": 3,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 14
+        },
+        "gold_operation:CLICK": {
+          "planned": 12,
+          "raw_returned": 12,
+          "contract_valid": 12,
+          "raw_action_valid": 1,
+          "exact_gold": 1,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 12
+        },
+        "state_role:ordinary_incomplete": {
+          "planned": 5,
+          "raw_returned": 5,
+          "contract_valid": 5,
+          "raw_action_valid": 1,
+          "exact_gold": 1,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 5
+        },
+        "complete": {
+          "planned": 8,
+          "raw_returned": 8,
+          "contract_valid": 8,
+          "raw_action_valid": 8,
+          "exact_gold": 8,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 8
+        },
+        "gold_operation:DONE": {
+          "planned": 8,
+          "raw_returned": 8,
+          "contract_valid": 8,
+          "raw_action_valid": 8,
+          "exact_gold": 8,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 8
+        },
+        "state_role:ordinary_complete": {
+          "planned": 4,
+          "raw_returned": 4,
+          "contract_valid": 4,
+          "raw_action_valid": 4,
+          "exact_gold": 4,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 4
+        },
+        "state_role:recovery_incomplete": {
+          "planned": 7,
+          "raw_returned": 7,
+          "contract_valid": 7,
+          "raw_action_valid": 2,
+          "exact_gold": 2,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 7
+        },
+        "state_role:recovered_complete": {
+          "planned": 4,
+          "raw_returned": 4,
+          "contract_valid": 4,
+          "raw_action_valid": 4,
+          "exact_gold": 4,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 4
+        },
+        "state_role:correct_document_incomplete": {
+          "planned": 1,
+          "raw_returned": 1,
+          "contract_valid": 1,
+          "raw_action_valid": 0,
+          "exact_gold": 0,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 1
+        },
+        "state_role:recovered_document_incomplete": {
+          "planned": 1,
+          "raw_returned": 1,
+          "contract_valid": 1,
+          "raw_action_valid": 0,
+          "exact_gold": 0,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 1
+        },
+        "gold_operation:SCROLL_DOWN": {
+          "planned": 2,
+          "raw_returned": 2,
+          "contract_valid": 2,
+          "raw_action_valid": 2,
+          "exact_gold": 2,
+          "within20s_action_valid": 0,
+          "unavailable": 0,
+          "late_valid": 2
+        }
+      },
+      "latency_seconds": {
+        "min": 35.26590092299739,
+        "median": 38.05939984949873,
+        "max": 62.56974177799566
+      },
+      "operation_counts": {
+        "BLOCKED": 2,
+        "CLICK": 1,
+        "DONE": 11,
+        "SCROLL_DOWN": 7,
+        "WAIT": 1
+      },
+      "heads": 54,
+      "probability_values": 897,
+      "singleton_heads": 10,
+      "native_token_length_range": [
+        1478,
+        4170
+      ],
+      "gates": {
+        "worker": {
+          "count": 78,
+          "minimum_MemAvailable_bytes": 32138117120,
+          "required_MemAvailable_bytes": 31680800240,
+          "ledger": {
+            "sha256": "6120eea0bdce3d90ea3c39d3f43bfd7c5cf00a5c737fb96f2b04cc4408e7387b",
+            "size_bytes": 58000
+          }
+        },
+        "controller": {
+          "count": 2,
+          "minimum_MemAvailable_bytes": 33199489024,
+          "required_MemAvailable_bytes": 31680800240,
+          "ledger": {
+            "sha256": "ee35f63f49ac9890eecf75e893f3075c45d77d717767374fdec9da98985e38a0",
+            "size_bytes": 1501
+          }
+        }
+      },
+      "elapsed_seconds": 989.248106361003,
+      "peak_rss_bytes": 3738865664,
+      "actual_model_loads": 1,
+      "verified_loads": 1,
+      "cuda_initialized": false,
+      "worker_receipt": {
+        "path": "artifacts/jev-d3-native/20261016-actual07-dev22-cpu-replay-01/d3-lite/receipt.json",
+        "sha256": "e5111606eebd3557006511d97665745306812449ae66634d3b03dc318762e1f3",
+        "size_bytes": 1945549
+      }
+    }
+  },
+  "diagnosis": {
+    "edge": "All22 responses satisfy native contract. No CLICK or SCROLL action selected; all4 correct actions are DONE. Continuing0/14, complete4/8.",
+    "lite": "Complete8/8, continuing3/14: CLICK1/12 and SCROLL_DOWN2/2. All22 responses exceed20s on this CPU profile.",
+    "within_budget_continuing": "Both produce0/14 correct continuing actions within20s in this saved-state CPU experiment. This is not browser task success.",
+    "implication": "Separate response/schema validity, complete-state recognition, active-action correctness and latency."
+  },
+  "not_run_in_this_experiment": {
+    "vllm-sr/d3": "225be8b1e2270becab69c5fe05b26f99cbbdd66b",
+    "vllm-sr/d3-flash": "8b35c853b90e777595ec36bacae820fe08ea077a",
+    "vllm-sr/d3-mini": "97dd054df4b3e0b3beb6af23ab8c82b7c0052e0e",
+    "vllm-sr/d3-nano": "aeb70d4dd53ed25b855c3b0a66394b8fe265db7f"
+  },
+  "resources": {
+    "controller_elapsed_seconds": 1481.9869573630058,
+    "same_boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0",
+    "MemTotal_bytes": 130595860480,
+    "policy": "Fresh durable full reserve+2*resident files+2GiB every phase. No swap/resident credit; declared conservative floor, not measured peak bound.",
+    "resource_gate_count": 160,
+    "sequential_workers": true,
+    "owned_test_or_other_model_overlap": false,
+    "observational_overlap": "Lightweight source reads/edits and bounded stdlib progress reads; external ComfyUI unmodified and uncontrolled.",
+    "replay_inventory": {
+      "files": 240,
+      "bytes": 16030721,
+      "identity_sha256": "f4ffdaeec9be314b2fb995f07fec7952347b2ad4220051dce14c872c2d26a735"
+    }
+  },
+  "validation": {
+    "pure_fake_tests": 32,
+    "source_review": "Root full H01 source plus H02 deltas and complete controller; independent H02 CLEAR",
+    "result_audit": "Independent reconstruction of108 full prompts, distributions, first argmax/entropy/active actions/strata,160gates,full701 corpus and installed/frozen84 sources. Saved token IDs/hashes checked without retokenization. Saved weight-authentication records checked without rereading weight payloads.",
+    "source_HOLD": {
+      "path": "artifacts/jev-runtime/decision3-public-dev22-replay-20261016-01/source-HOLD-02.json",
+      "sha256": "a77f488597ffca68f010694cfe1ef166c356bddc276255d6333494f08db0b939",
+      "size_bytes": 5340
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-public-dev22-replay-20261016-01/replay-plan-HOLD-02.json",
+      "sha256": "e1adf1e65c02aeb995359c6ac24f56a4eeb45f2ccfadb5cf5709d90e14f328ab",
+      "size_bytes": 56089
+    },
+    "root_receipt": {
+      "path": "artifacts/jev-d3-native/20261016-actual07-dev22-cpu-replay-01/receipt.json",
+      "sha256": "ecc4e31bfba1ad7d700c3605c4af7fcc4fa0dd4f631d2246c06caa59771203f6",
+      "size_bytes": 7778244
+    },
+    "independent_audit": {
+      "path": "artifacts/jev-runtime/decision3-dev22-result-audit-20261016-01/report-01.json",
+      "sha256": "38a161fc3e39438184208feae34ea4144085a062f3f3f4be83cfcd5c14d374f6",
+      "size_bytes": 38113
+    },
+    "audit_source": {
+      "path": "artifacts/jev-runtime/decision3-dev22-result-audit-20261016-01/audit_results.py",
+      "sha256": "e20bd2d50d7ff7050c3ce9f0ec5d491c21a73c8dbe75c300be254ecf0deed4cb",
+      "size_bytes": 21022
+    }
+  },
+  "limitations": [
+    "No model/processor/framework/tensor/browser execution by this audit; no weight payload rehash or independent forward/syscall/GPU trace.",
+    "Token ID arrays and lengths/hashes are independently checked, not retokenized. Full text prompts independently reconstructed from pinned policy/config.",
+    "Recorded memory gates are internally crosschecked; admission floor is declared conservative, not a measured peak bound.",
+    "External ComfyUI remains unmodified and uncontrolled; lightweight source/stdlib observation occurred. No fair GPU speed, primary paired-model, family superiority, model-owned task success or generalization claim.",
+    "Four larger collection models not launched; no Decision3 family ranking or strongest-open-model claim established.",
+    "No same-input primary Gemma run in this experiment, no fair GPU latency comparison, no training or adapter qualification.",
+    "Correlated states from fixed teacher trajectories: development action diagnostics, not unseen task wins."
+  ],
+  "artifact_root": "artifacts/jev-d3-native/20261016-actual07-dev22-cpu-replay-01"
+}
