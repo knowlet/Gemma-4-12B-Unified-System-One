@@ -24,6 +24,7 @@ _ALLOWED_CALLERS = frozenset(
         "scripts/jev_browser_fit_readout.py",
         "scripts/jev_browser_fit_actions.py",
         "scripts/jev_browser_training_data.py",
+        "scripts/jev_browser_collect_public_training.py",
         "scripts/breakthrough_training.py",
     )
 )
