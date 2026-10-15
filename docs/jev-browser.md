@@ -664,6 +664,32 @@ compares complete first native requests after replacing only goal strings.
 It preserves the original leaking collection and recollects into a new directory;
 model inputs are never rewritten to conceal their actual observed URL.
 
+The recollected [clean 96 states](../artifacts/jev-browser/20261015-counterfactual-training-02/receipt.json)
+pass all 32 [independent audit checks](../artifacts/jev-browser/20261015-counterfactual-training-02-independent-audit.json).
+All 16 paired first requests are identical except for per-question goal strings,
+and all actual browser URLs use the same HTML-derived neutral route. The
+quarantined first collection remains unused. These are new training wordings on
+exposed travel HTML, not unseen websites or a new evaluation score.
+
+The action trainer now accepts `--initial-action-adapter PATH`. It freezes the
+complete verified parent fit before loading the base, copies every FP32 q/v
+adapter tensor exactly, and checks train/development separation across copied
+ancestors. It retains the original frozen full head and rejects parent-source or
+copied-evidence drift. Parentless training retains its existing behavior.
+The software suite passes 2087 checks with 299 optional dependency/browser skips;
+92 separate genuine CPU tensor checks pass, including a parent-to-child native
+BF16 fit with exact initial tensors and zero development updates.
+
+The [native compiler preflight](../artifacts/jev-browser/20261015-counterfactual-native-compiler-preflight/receipt.json)
+compares the actual cached processor and frozen trainer against an independent
+Rust-tokenizer/Jinja implementation for all 96 training and 66 development rows.
+Every prompt, mask, target token and prediction position matches. A
+[predeclared continuation](../artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01-prospective-plan.json)
+has started from the sealed 425-update adapter: one epoch of 96 new updates,
+learning rate `5e-5`, seed 42, and the same 66 development states with zero updates.
+Training completion, browser regression results and fresh transfer performance
+remain unverified. No new transfer seed has been selected.
+
 ## Historical failure diagnosis
 
 The October 13 archive's 72 measured decisions retain the exact goal and stay
