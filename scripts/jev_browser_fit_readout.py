@@ -10,6 +10,7 @@ success. A separate closed-loop browser run must evaluate the saved sidecar.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import io
 import json
@@ -18,6 +19,7 @@ import re
 import time
 from pathlib import Path
 from types import SimpleNamespace
+from urllib.parse import urlsplit
 
 from breakthrough_training import fit_head
 from jev_browser_training_data import training_case
@@ -58,6 +60,12 @@ def _input_paths(root):
     paths = {
         label: root / label for label in ("cases.jsonl", "wire_requests.jsonl", "receipt.json")
     }
+    for label in ("training_goal_inventory.json", "counterfactual_exclusions.json"):
+        path = root / label
+        if path.exists() or path.is_symlink():
+            if path.is_symlink() or not path.is_file():
+                raise ValueError("Collection metadata must be ordinary files, not symlinks")
+            paths[label] = path
     fixture_dir = root / "fixtures"
     if fixture_dir.is_symlink() or not fixture_dir.is_dir():
         raise ValueError("Collection fixtures directory is missing or symlinked")
@@ -86,6 +94,280 @@ def _input_paths(root):
     return paths
 
 
+def _collection_goal_metadata(receipt, blobs):
+    """Bind optional prospective metadata before accepting its contents."""
+    result = {}
+    for label, field, verification in (
+        (
+            "training_goal_inventory.json",
+            "training_goal_inventory",
+            "training_goal_input_verification",
+        ),
+        (
+            "counterfactual_exclusions.json",
+            "counterfactual_exclusions",
+            "counterfactual_exclusion_verification",
+        ),
+    ):
+        record = receipt.get(field)
+        if label not in blobs and record is None:
+            continue
+        if (
+            label not in blobs
+            or not isinstance(record, dict)
+            or record.get("artifact_path") != label
+            or record.get("sha256") != _sha(blobs[label])
+            or not isinstance(receipt.get(verification), dict)
+            or receipt.get(verification, {}).get("success") is not True
+        ):
+            raise ValueError("Collection goal metadata lacks its unchanged prospective identity")
+        result[field] = _json(blobs[label])
+    return result
+
+
+def _validate_goal_inventory(metadata, episodes, episode_fixtures, blobs):
+    inventory = metadata.get("training_goal_inventory")
+    if inventory is None:
+        return
+    entries = inventory.get("cases") if isinstance(inventory, dict) else None
+    labels = sorted(label for label in blobs if label.startswith("fixtures/"))
+    if (
+        not isinstance(entries, list)
+        or len(entries) != len(labels)
+        or any(not isinstance(entry, dict) for entry in entries)
+        or any(
+            not isinstance(entry.get("case_id"), str) or not entry["case_id"] for entry in entries
+        )
+        or len({entry["case_id"] for entry in entries}) != len(entries)
+    ):
+        raise ValueError("Collection goal inventory differs from its fixture inventory")
+    by_fixture = dict(zip(labels, entries, strict=True))
+    for episode_id, episode in episodes.items():
+        label = episode_fixtures[episode_id]
+        entry = by_fixture[label]
+        goal, expected = entry.get("goal"), entry.get("expected")
+        if (
+            entry.get("task_id") != episode["task_id"]
+            or entry.get("html_sha256") != _sha(blobs[label])
+            or not isinstance(goal, str)
+            or _sha(goal.encode()) != episode.get("goal_sha256")
+            or not isinstance(expected, dict)
+            or not expected
+        ):
+            raise ValueError("Collection goal inventory differs from its verified episode")
+        observed = episode["verified_dom"].get("observed", {}).get("result", {}) or {}
+        for key, value in expected.items():
+            actual = observed.get(key)
+            if key == "fixture_token":
+                continue
+            if key == "query" and isinstance(actual, str) and isinstance(value, str):
+                actual, value = actual.strip().casefold(), value.strip().casefold()
+            if actual != value:
+                raise ValueError("Collection goal inventory differs from actual verified DOM")
+
+
+def _validate_counterfactual_collection(receipt, metadata, episodes, wires, html_sha256):
+    """Accept only explicit train-only paired observations with neutral public URLs."""
+    from s1.browser_training_counterfactuals import (
+        GOAL_NORMALIZATION,
+        normalized_goal_sha256,
+        validate_excluded_goal_hashes,
+    )
+
+    inventory = metadata.get("training_goal_inventory", {})
+    exclusion = metadata.get("counterfactual_exclusions", {})
+    exclusion_record = receipt.get("counterfactual_exclusions", {})
+    source = receipt.get("source_manifest", {})
+    source_check = receipt.get("source_verification", {})
+    pair_proof = receipt.get("counterfactual_pair_verification", {})
+    compared = (
+        "initial HTML, guarded history, actual application state, typed text, "
+        "complete first native payload bytes with only questions.*.instructions.goal "
+        "replaced by a common placeholder; no field or candidate-order exclusions"
+    )
+    if (
+        receipt.get("split") != "train"
+        or receipt.get("task_ids") != ["upstream_travel"]
+        or receipt.get("repeats") != 1
+        or receipt.get("travel_goal_variants", False) is not False
+        or any(
+            type(receipt.get(key)) is not int
+            for key in ("counterfactual_seed", "effective_seed", "ordinary_seed")
+        )
+        or receipt["counterfactual_seed"] != receipt["effective_seed"]
+        or receipt["effective_seed"] != receipt["seed"]
+        or receipt["seed"] < 0
+        or receipt["ordinary_seed"] < 0
+        or receipt["ordinary_seed"] == receipt["seed"]
+        or len(episodes) != 32
+        or inventory.get("scope")
+        != "training-only counterfactual goals on exposed training HTML; no transfer"
+        or inventory.get("seed") != receipt["seed"]
+        or inventory.get("episode_count") != 32
+        or inventory.get("initialization_preservation_timing") != "before browser collection"
+        or receipt.get("training_goal_inventory", {}).get("preservation_timing")
+        != "before browser collection"
+        or receipt.get("source_preservation_timing")
+        != "before fixture generation and browser collection"
+        or "s1/browser_training_counterfactuals.py" not in source.get("files", {})
+        or source_check.get("identity_sha256") != source.get("identity_sha256")
+        or source_check.get("current_identity_sha256") != source.get("identity_sha256")
+        or any(source_check.get(key) != [] for key in ("changed", "missing", "added"))
+        or pair_proof.get("success") is not True
+        or type(pair_proof.get("pairs")) is not int
+        or pair_proof["pairs"] != 16
+        or pair_proof.get("compared") != compared
+    ):
+        raise ValueError(
+            "Counterfactual collection requires complete train-only source and pair proofs"
+        )
+    if (
+        not isinstance(exclusion, dict)
+        or set(exclusion) != {"schema_version", "normalization", "goal_sha256"}
+        or type(exclusion["schema_version"]) is not int
+        or exclusion["schema_version"] != 1
+        or exclusion["normalization"] != GOAL_NORMALIZATION
+        or exclusion_record.get("normalization") != GOAL_NORMALIZATION
+        or exclusion_record.get("preservation_timing")
+        != "before goal generation and browser collection"
+    ):
+        raise ValueError("Counterfactual exclusion metadata is invalid")
+    excluded = validate_excluded_goal_hashes(exclusion["goal_sha256"])
+    if type(exclusion_record.get("goal_count")) is not int or exclusion_record["goal_count"] != len(
+        excluded
+    ):
+        raise ValueError("Counterfactual exclusion count differs from its preserved hashes")
+    suffix = "/tasks/" + html_sha256[:24] + "?scenario=travel"
+    public_fixture = receipt.get("counterfactual_public_fixture")
+    if (
+        not isinstance(public_fixture, dict)
+        or type(public_fixture.get("served_pages")) is not int
+        or public_fixture
+        != {
+            "url_suffix": suffix,
+            "html_sha256": html_sha256,
+            "identity_source": "pinned HTML bytes only; independent of goal, scope and seed",
+            "served_pages": 1,
+        }
+    ):
+        raise ValueError("Counterfactual collection requires one neutral HTML-hash public fixture")
+    origins = set()
+
+    def public_url(value):
+        if not isinstance(value, str):
+            raise ValueError("Counterfactual wire requires an actual neutral public URL")
+        url = urlsplit(value)
+        if (
+            url.scheme != "http"
+            or url.hostname not in {"127.0.0.1", "localhost"}
+            or url.username is not None
+            or url.password is not None
+            or url.path != "/tasks/" + html_sha256[:24]
+            or url.query != "scenario=travel"
+            or url.fragment not in {"", "casa-flora", "the-glasshouse", "serra-lodge"}
+        ):
+            raise ValueError(
+                "Counterfactual public URL reveals a private profile or differs from pinned HTML"
+            )
+        origins.add((url.scheme, url.netloc))
+
+    first_wires = {}
+    for wire in wires:
+        episode_id = wire["case_id"].rsplit("-step-", 1)[0]
+        public_url(wire["payload"]["state"]["page"].get("url"))
+        wire_goal = wire["payload"]["questions"]["operation"]["instructions"]["goal"]
+        if any(
+            not isinstance(question.get("instructions"), dict)
+            or question["instructions"].get("goal") != wire_goal
+            for question in wire["payload"]["questions"].values()
+        ):
+            raise ValueError("Counterfactual questions must preserve the same complete user goal")
+        first_wires.setdefault(episode_id, wire)
+    pairs = {}
+    for entry, episode in zip(inventory["cases"], episodes.values(), strict=True):
+        query = entry.get("query_required")
+        pair_id, start, family = entry.get("pair_id"), entry.get("start"), entry.get("family")
+        if (
+            episode.get("task_id") != "upstream_travel"
+            or type(query) is not bool
+            or start not in {"listing", "detail"}
+            or type(family) is not int
+            or family not in range(4)
+            or re.fullmatch(
+                rf"counterfactual-{receipt['seed']}-{family}-[01]-{start}", str(pair_id)
+            )
+            is None
+            or entry["case_id"] != pair_id + "-query" + str(int(query))
+            or entry.get("public_url_suffix") != suffix
+            or entry["html_sha256"] != html_sha256
+            or any(
+                episode.get(key) != entry.get(key)
+                for key in ("pair_id", "start", "family", "query_required")
+            )
+            or episode.get("counterfactual_case_id") != entry["case_id"]
+            or not episode["episode_id"].endswith("-counterfactual-" + start)
+            or episode.get("initialization") != "guarded counterfactual training initialization"
+            or normalized_goal_sha256(entry["goal"]) in excluded
+            or query != ("query" in entry["expected"] and entry["expected"].get("searched") is True)
+            or (not query and any(key in entry["expected"] for key in ("query", "searched")))
+        ):
+            raise ValueError(
+                "Counterfactual episode differs from its goal scope or exclusion inventory"
+            )
+        initial = episode.get("initial_verified_dom", {}).get("observed", {})
+        public_url(initial.get("url"))
+        public_url(episode.get("initialization_snapshot", {}).get("url"))
+        public_url(episode["verified_dom"].get("observed", {}).get("url"))
+        history = episode.get("initialization_history")
+        if (
+            not isinstance(history, list)
+            or not history
+            or entry.get("initialization")
+            != [
+                {"label": row["action"], "kind": row["kind"], "text": row["text"]}
+                for row in history
+            ]
+            or re.fullmatch(r"[0-9a-f]{64}", str(episode.get("initialization_html_sha256"))) is None
+        ):
+            raise ValueError("Counterfactual guarded initialization proof is invalid")
+        payload = copy.deepcopy(first_wires[episode["episode_id"]]["payload"])
+        for question in payload["questions"].values():
+            if question["instructions"].get("goal") != entry["goal"]:
+                raise ValueError("Counterfactual native question goal differs from its inventory")
+            question["instructions"]["goal"] = "<same user goal for external pair comparison>"
+        compared_wire = json.dumps(
+            payload, ensure_ascii=False, allow_nan=False, separators=(",", ":")
+        ).encode()
+        if _sha(compared_wire) != episode.get("first_wire_goal_comparison_sha256"):
+            raise ValueError("Counterfactual first-wire goal comparison hash differs")
+        signature = (
+            episode["initialization_html_sha256"],
+            history,
+            initial.get("result"),
+            initial.get("typed_destination"),
+            compared_wire,
+            {
+                key: value
+                for key, value in entry["expected"].items()
+                if key not in {"query", "searched"}
+            },
+        )
+        pair = pairs.setdefault(pair_id, [])
+        if pair and (pair[0][0] == query or pair[0][1] != signature):
+            raise ValueError("Counterfactual pair differs outside only the per-question user goal")
+        pair.append((query, signature))
+    if (
+        len(pairs) != 16
+        or any(
+            len(pair) != 2 or {row[0] for row in pair} != {False, True} for pair in pairs.values()
+        )
+        or len(origins) != 1
+    ):
+        raise ValueError(
+            "Counterfactual collection requires sixteen complete neutral-URL goal pairs"
+        )
+
+
 def _validated_snapshot(path, split):
     """Validate one coherent byte snapshot, including native wire/episode identities."""
     from jev_browser_benchmark import UPSTREAM_FILES, UPSTREAM_REVISION, UPSTREAM_TRAVEL_SHA256
@@ -100,6 +382,10 @@ def _validated_snapshot(path, split):
     # Every input is read exactly once. Parsing, hashing and freezing use these bytes.
     blobs = {label: source.read_bytes() for label, source in paths.items()}
     receipt = _json(blobs["receipt.json"])
+    counterfactual = receipt.get("travel_counterfactual_goals", False)
+    if type(counterfactual) is not bool:
+        raise ValueError("Counterfactual collection requires an explicit boolean receipt flag")
+    metadata = _collection_goal_metadata(receipt, blobs)
     if (
         receipt.get("stage") != "complete"
         or receipt.get("split") != split
@@ -157,13 +443,21 @@ def _validated_snapshot(path, split):
     ):
         raise ValueError("Development collection identities or guarded outcomes are invalid")
     episodes = {}
+    episode_fixtures = {}
     referenced_fixtures = set()
     for episode in receipt["episodes"]:
         episode_id = episode.get("episode_id")
         task_id = episode.get("task_id")
         prefix = re.escape(f"{split}-{receipt['seed']}-")
         match = re.fullmatch(
-            prefix + r"([0-9]{4})-" + re.escape(str(task_id)) + r"-(fresh|recovery)",
+            prefix
+            + r"([0-9]{4})-"
+            + re.escape(str(task_id))
+            + (
+                r"-(counterfactual-listing|counterfactual-detail)"
+                if counterfactual
+                else r"-(fresh|recovery)"
+            ),
             str(episode_id),
         )
         if (
@@ -187,8 +481,10 @@ def _validated_snapshot(path, split):
             raise ValueError("Collection fixture bytes differ from their episode identity")
         referenced_fixtures.add(label)
         episodes[episode_id] = episode
+        episode_fixtures[episode_id] = label
     if referenced_fixtures != {label for label in blobs if label.startswith("fixtures/")}:
         raise ValueError("Collection fixture inventory differs from its episode identities")
+    _validate_goal_inventory(metadata, episodes, episode_fixtures, blobs)
     expected_ids = [
         f"{episode_id}-step-{index:03d}"
         for episode_id, episode in episodes.items()
@@ -232,7 +528,14 @@ def _validated_snapshot(path, split):
     if source_manifest is not None:
         from s1.browser_evidence import _ALLOWED_CALLERS
 
+        if not isinstance(source_manifest, dict) or any(
+            not isinstance(receipt.get(field), dict)
+            for field in ("source_verification", "upstream_verification")
+        ):
+            raise ValueError("Collection prospective source proofs must be objects")
         source_files = source_manifest.get("files", {})
+        if not isinstance(source_files, dict):
+            raise ValueError("Collection source inventory must be an object")
         source_record = source_files.get("scripts/jev_browser_training_data.py", {})
         identity = _sha(
             json.dumps(
@@ -269,6 +572,15 @@ def _validated_snapshot(path, split):
             raise ValueError("Collection preserved source inventory differs from its identity")
     elif any(label.startswith("sources/") for label in blobs):
         raise ValueError("Collection source evidence has no prospective receipt identity")
+    if counterfactual:
+        try:
+            _validate_counterfactual_collection(
+                receipt, metadata, episodes, wires, UPSTREAM_TRAVEL_SHA256
+            )
+        except (AttributeError, KeyError, TypeError, ValueError, IndexError):
+            raise ValueError(
+                "Counterfactual collection proofs or neutral paired inputs are invalid"
+            ) from None
     return cases, receipt, {"root": root, "blobs": blobs, "manifest": _input_manifest(blobs)}
 
 

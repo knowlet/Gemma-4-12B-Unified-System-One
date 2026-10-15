@@ -424,6 +424,494 @@ def add_prospective_sources(path):
     return manifest
 
 
+def counterfactual_collection(tmp_path, monkeypatch):
+    """Build 32 coherent guarded profiles without a browser or external fixture."""
+    from s1.browser_training_counterfactuals import (
+        GOAL_NORMALIZATION,
+        make_counterfactual_travel_episodes,
+    )
+
+    benchmark = importlib.import_module("jev_browser_benchmark")
+    html = b"<!doctype html><title>Portable counterfactual fixture</title>"
+    html_sha = digest(html)
+    monkeypatch.setattr(benchmark, "UPSTREAM_TRAVEL_SHA256", html_sha)
+    folder = tmp_path / "train"
+    folder.mkdir()
+    (folder / "fixtures").mkdir()
+    path = folder / "cases.jsonl"
+    seed = 20261006
+    suffix = "/tasks/" + html_sha[:24] + "?scenario=travel"
+    base = "http://127.0.0.1:34719" + suffix
+    exclusions = {
+        "schema_version": 1,
+        "normalization": GOAL_NORMALIZATION,
+        "goal_sha256": ["0" * 64],
+    }
+    specs = make_counterfactual_travel_episodes(
+        seed=seed, excluded_goal_hashes=exclusions["goal_sha256"]
+    )
+    wires, episodes, inventory = [], [], []
+    for index, spec in enumerate(specs):
+        episode_id = f"train-{seed}-{index:04d}-upstream_travel-counterfactual-{spec.start}"
+        fixture = f"fixtures/{index:04d}.html"
+        (folder / fixture).write_bytes(html)
+        history = [
+            {"action": label, "kind": kind, "text": text, "page_changed": True}
+            for label, kind, text in spec.initialization
+        ]
+        initial_url = base + (spec.property.anchor if spec.start == "detail" else "")
+        initial_result = {
+            "name": spec.property.name if spec.start == "detail" else "Listing",
+            "hash": spec.property.anchor if spec.start == "detail" else "",
+            "category": spec.property.category,
+            "free": spec.free,
+            "query": "",
+            "searched": False,
+        }
+        actions = []
+        if spec.query_required:
+            if spec.start == "detail":
+                actions.append({"operation": "CLICK", "target": "4"})
+            actions.extend(
+                [{"operation": "TYPE_TEXT", "target": "4"}, {"operation": "CLICK", "target": "5"}]
+            )
+        if spec.query_required or spec.start == "listing":
+            actions.append({"operation": "CLICK", "target": "8"})
+        actions.append({"operation": "DONE", "target": None})
+        first_wire = len(wires)
+        for step, choice in enumerate(actions):
+            payload = {
+                "model": "development-teacher-request",
+                "state": {
+                    "page": {
+                        "url": initial_url
+                        if step == 0
+                        else base + (spec.property.anchor if step == len(actions) - 1 else ""),
+                        "text": "Same observed page",
+                        "title": "Travel",
+                    },
+                    "elements": [],
+                    "recent_actions": copy.deepcopy(history),
+                },
+                "questions": {
+                    "operation": {
+                        "type": "choice",
+                        "instructions": {"goal": spec.goal, "rules": "Only observed actions"},
+                        "criteria": {
+                            "CLICK": "Click a control",
+                            "TYPE_TEXT": "Fill a field",
+                            "DONE": "Goal complete",
+                        },
+                    },
+                    "click_target": {
+                        "type": "choice",
+                        "instructions": {"goal": spec.goal, "operation": "CLICK"},
+                        "criteria": {"4": "All stays", "5": "Find stays", "8": "View property"},
+                    },
+                    "type_text_target": {
+                        "type": "choice",
+                        "instructions": {"goal": spec.goal, "operation": "TYPE_TEXT"},
+                        "criteria": {"4": "Destination"},
+                    },
+                },
+            }
+            wires.append(
+                {
+                    "case_id": f"{episode_id}-step-{step:03d}",
+                    "payload": payload,
+                    "label_source": "scripted development teacher, fresh observed candidate IDs",
+                    "teacher_choice": choice,
+                    "valid_next_targets": {
+                        choice["operation"]: [] if choice["target"] is None else [choice["target"]]
+                    },
+                }
+            )
+        compared = COLLECTOR._counterfactual_comparison_bytes(
+            wires[first_wire]["payload"], spec.goal
+        )
+        episodes.append(
+            {
+                "episode_id": episode_id,
+                "task_id": "upstream_travel",
+                "group_id": "browser-development:" + html_sha,
+                "steps": len(actions),
+                "scope": "scripted training collection, no model score",
+                "fixture_path": fixture,
+                "fixture_sha256": html_sha,
+                "goal_sha256": digest(spec.goal.encode()),
+                "verified_dom": {
+                    "success": True,
+                    "mismatches": {},
+                    "observed": {"result": dict(spec.expected), "url": base + spec.property.anchor},
+                },
+                "counterfactual_case_id": spec.case_id,
+                "pair_id": spec.pair_id,
+                "family": spec.family,
+                "start": spec.start,
+                "query_required": spec.query_required,
+                "initialization": "guarded counterfactual training initialization",
+                "initialization_history": history,
+                "initial_verified_dom": {
+                    "observed": {
+                        "result": initial_result,
+                        "typed_destination": "" if spec.start == "listing" else None,
+                        "url": initial_url,
+                    }
+                },
+                "initialization_snapshot": {"url": initial_url},
+                "initialization_html_sha256": digest(json.dumps(initial_result).encode()),
+                "first_wire_goal_comparison_sha256": digest(compared),
+            }
+        )
+        inventory.append(
+            {
+                "case_id": spec.case_id,
+                "task_id": "upstream_travel",
+                "goal": spec.goal,
+                "expected": spec.expected,
+                "html_sha256": html_sha,
+                "pair_id": spec.pair_id,
+                "family": spec.family,
+                "start": spec.start,
+                "query_required": spec.query_required,
+                "initialization": [
+                    {"label": label, "kind": kind, "text": text}
+                    for label, kind, text in spec.initialization
+                ],
+                "public_url_suffix": suffix,
+            }
+        )
+    goal_inventory = {
+        "scope": "training-only counterfactual goals on exposed training HTML; no transfer",
+        "seed": seed,
+        "episode_count": 32,
+        "initialization_preservation_timing": "before browser collection",
+        "cases": inventory,
+    }
+    for filename, value in [
+        ("training_goal_inventory.json", goal_inventory),
+        ("counterfactual_exclusions.json", exclusions),
+    ]:
+        (folder / filename).write_text(json.dumps(value) + "\n")
+    upstream = copy.deepcopy(UPSTREAM)
+    upstream["source_sha256"]["jev_ultrafast/static/fixture.html"] = html_sha
+    receipt = {
+        "schema_version": 1,
+        "stage": "complete",
+        "scope": "development-only scripted training collection; no model evaluation",
+        "split": "train",
+        "seed": seed,
+        "ordinary_seed": 20261001,
+        "counterfactual_seed": seed,
+        "effective_seed": seed,
+        "repeats": 1,
+        "training_cases": len(wires),
+        "task_ids": ["upstream_travel"],
+        "travel_counterfactual_goals": True,
+        "collector_sha256": digest(Path(COLLECTOR.__file__).read_bytes()),
+        "upstream": upstream,
+        "episodes": episodes,
+        "training_goal_inventory": {
+            "artifact_path": "training_goal_inventory.json",
+            "sha256": digest((folder / "training_goal_inventory.json").read_bytes()),
+            "preservation_timing": "before browser collection",
+        },
+        "counterfactual_exclusions": {
+            "artifact_path": "counterfactual_exclusions.json",
+            "sha256": digest((folder / "counterfactual_exclusions.json").read_bytes()),
+            "normalization": GOAL_NORMALIZATION,
+            "goal_count": 1,
+            "preservation_timing": "before goal generation and browser collection",
+        },
+        "training_goal_input_verification": {"success": True},
+        "counterfactual_exclusion_verification": {"success": True},
+        "counterfactual_pair_verification": {
+            "success": True,
+            "pairs": 16,
+            "compared": "initial HTML, guarded history, actual application state, typed text, complete first native payload bytes with only questions.*.instructions.goal replaced by a common placeholder; no field or candidate-order exclusions",
+        },
+        "counterfactual_public_fixture": {
+            "url_suffix": suffix,
+            "html_sha256": html_sha,
+            "identity_source": "pinned HTML bytes only; independent of goal, scope and seed",
+            "served_pages": 1,
+        },
+    }
+    (folder / "receipt.json").write_text(json.dumps(receipt) + "\n")
+    rewrite_counterfactual_wires(path, lambda _rows: None, wires=wires)
+    manifest = add_prospective_sources(path)
+    rewrite_receipt(
+        path,
+        lambda saved: saved.update(
+            source_verification={
+                "success": True,
+                "identity_sha256": manifest["identity_sha256"],
+                "current_identity_sha256": manifest["identity_sha256"],
+                "changed": [],
+                "missing": [],
+                "added": [],
+            }
+        ),
+    )
+    return path
+
+
+def rewrite_counterfactual_wires(path, change, *, wires=None, rehash_comparisons=False):
+    wire_path = path.parent / "wire_requests.jsonl"
+    if wires is None:
+        wires = [json.loads(line) for line in wire_path.read_bytes().splitlines()]
+    change(wires)
+    receipt = json.loads((path.parent / "receipt.json").read_bytes())
+    episodes = {e["episode_id"]: e for e in receipt["episodes"]}
+    cases, seen = [], set()
+    for wire in wires:
+        episode = episodes[wire["case_id"].rsplit("-step-", 1)[0]]
+        cases.append(
+            COLLECTOR.training_case(
+                wire["payload"],
+                case_id=wire["case_id"],
+                group_id=episode["group_id"],
+                task_id=episode["task_id"],
+                split="train",
+                selected=wire["teacher_choice"],
+                valid_targets=wire["valid_next_targets"],
+            )
+        )
+        if rehash_comparisons and episode["episode_id"] not in seen:
+            goal = wire["payload"]["questions"]["operation"]["instructions"]["goal"]
+            episode["first_wire_goal_comparison_sha256"] = digest(
+                COLLECTOR._counterfactual_comparison_bytes(wire["payload"], goal)
+            )
+        seen.add(episode["episode_id"])
+    wire_path.write_text("".join(json.dumps(w) + "\n" for w in wires))
+    path.write_text("".join(c.model_dump_json() + "\n" for c in cases))
+    receipt.update(
+        dataset_sha256=digest(path.read_bytes()), wire_sha256=digest(wire_path.read_bytes())
+    )
+    (path.parent / "receipt.json").write_text(json.dumps(receipt) + "\n")
+
+
+def test_explicit_counterfactual_mode_accepts_and_freezes_metadata(tmp_path, monkeypatch):
+    path = counterfactual_collection(tmp_path, monkeypatch)
+    cases, _receipt, snapshot = FIT._validated_snapshot(path, "train")
+    assert len(cases) == 96
+    frozen = tmp_path / "frozen"
+    FIT._freeze_collection(snapshot, frozen)
+    for filename in ("training_goal_inventory.json", "counterfactual_exclusions.json"):
+        assert filename in snapshot["manifest"]["files"]
+        assert (frozen / filename).read_bytes() == (path.parent / filename).read_bytes()
+    assert len(FIT.validated_collection(frozen / "cases.jsonl", "train")[0]) == 96
+    (path.parent / "counterfactual_exclusions.json").write_bytes(b"changed after validation")
+    assert "counterfactual_exclusions.json" in FIT._verify_collection(snapshot)["changed"]
+
+
+@pytest.mark.parametrize(
+    "corruption", ["url_scope", "private_marker", "candidate_order", "comparison_hash"]
+)
+def test_counterfactual_pairs_reject_scope_leaks_even_with_rebuilt_case_ledgers(
+    tmp_path, monkeypatch, corruption
+):
+    path = counterfactual_collection(tmp_path, monkeypatch)
+    if corruption == "comparison_hash":
+        rewrite_receipt(
+            path, lambda r: r["episodes"][0].update(first_wire_goal_comparison_sha256="0" * 64)
+        )
+    else:
+
+        def change(wires):
+            payload = wires[0]["payload"]
+            if corruption == "url_scope":
+                payload["state"]["page"]["url"] = (
+                    "http://127.0.0.1:34719/tasks/private-query1?scenario=travel"
+                )
+            elif corruption == "private_marker":
+                payload["state"]["private_oracle"] = {"query_required": True}
+            else:
+                question = payload["questions"]["click_target"]
+                question["criteria"] = dict(reversed(list(question["criteria"].items())))
+
+        rewrite_counterfactual_wires(path, change, rehash_comparisons=True)
+    with pytest.raises(ValueError, match="Counterfactual"):
+        FIT.validated_collection(path, "train")
+
+
+@pytest.mark.parametrize(
+    "corruption",
+    ["goal_hash", "exclusion_bytes", "excluded_goal", "missing_inventory", "missing_exclusions"],
+)
+def test_counterfactual_goal_and_exclusion_metadata_are_binding(tmp_path, monkeypatch, corruption):
+    from s1.browser_training_counterfactuals import normalized_goal_sha256
+
+    path = counterfactual_collection(tmp_path, monkeypatch)
+    if corruption == "goal_hash":
+        rewrite_receipt(path, lambda r: r["episodes"][0].update(goal_sha256="0" * 64))
+    elif corruption == "exclusion_bytes":
+        metadata = path.parent / "counterfactual_exclusions.json"
+        metadata.write_bytes(metadata.read_bytes() + b" ")
+    elif corruption == "excluded_goal":
+        metadata = path.parent / "counterfactual_exclusions.json"
+        data = json.loads(metadata.read_bytes())
+        goal = json.loads((path.parent / "training_goal_inventory.json").read_bytes())["cases"][0][
+            "goal"
+        ]
+        data["goal_sha256"] = [normalized_goal_sha256(goal)]
+        metadata.write_text(json.dumps(data) + "\n")
+        rewrite_receipt(
+            path,
+            lambda r: r["counterfactual_exclusions"].update(sha256=digest(metadata.read_bytes())),
+        )
+    else:
+        (
+            path.parent
+            / (
+                "training_goal_inventory.json"
+                if corruption == "missing_inventory"
+                else "counterfactual_exclusions.json"
+            )
+        ).unlink()
+    with pytest.raises(ValueError):
+        FIT.validated_collection(path, "train")
+
+
+@pytest.mark.parametrize("flag", [False, None, "true", 1])
+def test_counterfactual_episode_suffix_cannot_bypass_explicit_flag(tmp_path, monkeypatch, flag):
+    path = counterfactual_collection(tmp_path, monkeypatch)
+    rewrite_receipt(path, lambda r: r.update(travel_counterfactual_goals=flag))
+    with pytest.raises(ValueError):
+        FIT.validated_collection(path, "train")
+
+
+@pytest.mark.parametrize(
+    "proof",
+    [
+        "pair",
+        "pair_count",
+        "pair_scope",
+        "source",
+        "inventory",
+        "exclusion",
+        "public_fixture",
+        "seed",
+        "effective_seed",
+        "repeats",
+        "pair_shape",
+        "source_shape",
+        "inventory_shape",
+        "exclusion_shape",
+        "public_count_shape",
+    ],
+)
+def test_counterfactual_false_or_incomplete_proofs_fail_closed(tmp_path, monkeypatch, proof):
+    path = counterfactual_collection(tmp_path, monkeypatch)
+
+    def change(receipt):
+        if proof.endswith("_shape") and proof != "public_count_shape":
+            key = {
+                "pair_shape": "counterfactual_pair_verification",
+                "source_shape": "source_verification",
+                "inventory_shape": "training_goal_input_verification",
+                "exclusion_shape": "counterfactual_exclusion_verification",
+            }[proof]
+            receipt[key] = True
+        elif proof == "public_count_shape":
+            receipt["counterfactual_public_fixture"]["served_pages"] = True
+        elif proof in {"pair", "source", "inventory", "exclusion"}:
+            key = {
+                "pair": "counterfactual_pair_verification",
+                "source": "source_verification",
+                "inventory": "training_goal_input_verification",
+                "exclusion": "counterfactual_exclusion_verification",
+            }[proof]
+            receipt[key]["success"] = False
+        elif proof == "pair_count":
+            receipt["counterfactual_pair_verification"]["pairs"] = 15
+        elif proof == "pair_scope":
+            receipt["counterfactual_pair_verification"]["compared"] = "initial HTML only"
+        elif proof == "public_fixture":
+            receipt.pop("counterfactual_public_fixture")
+        elif proof == "seed":
+            receipt["counterfactual_seed"] += 1
+        elif proof == "effective_seed":
+            receipt["effective_seed"] += 1
+        else:
+            receipt["repeats"] = 2
+
+    rewrite_receipt(path, change)
+    with pytest.raises(ValueError):
+        FIT.validated_collection(path, "train")
+
+
+@pytest.mark.parametrize(
+    "filename", ["training_goal_inventory.json", "counterfactual_exclusions.json"]
+)
+def test_optional_metadata_symlinks_are_rejected_even_without_mode_flag(tmp_path, filename):
+    path = collection(tmp_path, "train")
+    (path.parent / filename).symlink_to(tmp_path / "missing-metadata")
+    with pytest.raises(ValueError, match="symlink"):
+        FIT.validated_collection(path, "train")
+
+
+def test_legacy_optional_goal_inventory_is_verified_and_frozen(tmp_path):
+    path = collection(tmp_path, "train")
+    wire = json.loads((path.parent / "wire_requests.jsonl").read_bytes())
+    goal = wire["payload"]["questions"]["operation"]["instructions"]["goal"]
+    inventory = {
+        "scope": "development-only diversified travel supervision, no model evaluation",
+        "cases": [
+            {
+                "case_id": "original-fixture-identity",
+                "task_id": "completion_toggle",
+                "goal": goal,
+                "expected": {"completed": True},
+                "html_sha256": digest((path.parent / "fixtures/0000.html").read_bytes()),
+            }
+        ],
+    }
+    metadata = path.parent / "training_goal_inventory.json"
+    metadata.write_text(json.dumps(inventory) + "\n")
+
+    def annotate(receipt):
+        receipt["training_goal_inventory"] = {
+            "artifact_path": metadata.name,
+            "sha256": digest(metadata.read_bytes()),
+        }
+        receipt["training_goal_input_verification"] = {"success": True}
+        receipt["episodes"][0]["verified_dom"]["observed"] = {"result": {"completed": True}}
+
+    rewrite_receipt(path, annotate)
+    _cases, _receipt, snapshot = FIT._validated_snapshot(path, "train")
+    assert metadata.name in snapshot["manifest"]["files"]
+    frozen = tmp_path / "legacy-frozen"
+    FIT._freeze_collection(snapshot, frozen)
+    assert (frozen / metadata.name).read_bytes() == metadata.read_bytes()
+    metadata.write_bytes(metadata.read_bytes() + b" ")
+    assert metadata.name in FIT._verify_collection(snapshot)["changed"]
+    with pytest.raises(ValueError, match="metadata"):
+        FIT.validated_collection(path, "train")
+
+
+@pytest.mark.parametrize(
+    "name,split,count",
+    [
+        ("20261015-counterfactual-training-02", "train", 96),
+        ("20261014-training-diverse-goals-01", "train", 425),
+        ("20261014-development-trajectories-01", "development", 66),
+        ("20261015-counterfactual-training-01", "train", None),
+    ],
+)
+def test_available_real_collections_accept_only_clean_counterfactual_proofs(name, split, count):
+    path = ROOT / "artifacts/jev-browser" / name / "cases.jsonl"
+    if not path.exists():
+        pytest.skip("local preserved collection is not bundled with the repository")
+    before = (path.parent / "receipt.json").read_bytes()
+    if count is None:
+        with pytest.raises(ValueError, match="Counterfactual"):
+            FIT.validated_collection(path, split)
+    else:
+        assert len(FIT.validated_collection(path, split)[0]) == count
+    assert (path.parent / "receipt.json").read_bytes() == before
+
+
 @pytest.mark.parametrize("change", ["changed", "missing", "added", "upstream_failed"])
 def test_prospective_source_bytes_and_final_verification_are_required(tmp_path, change):
     path = collection(tmp_path, "train")
