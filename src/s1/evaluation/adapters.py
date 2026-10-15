@@ -38,6 +38,7 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
         "agentjev",
         "clef",
         "jev_omni",
+        "decision3",
     ):
         reasons.append("local_model_concurrency_unavailable")
     if spec.runtime != "reference":
@@ -104,6 +105,10 @@ def execution_blockers(spec: ModelSpec, profile: ProfileSpec) -> list[str]:
             reasons.append("local_competitor_processor_override_unavailable")
     elif spec.adapter == "jev_omni":
         from .jev_omni import configuration_blockers
+
+        reasons.extend(configuration_blockers(spec))
+    elif spec.adapter == "decision3":
+        from .decision3 import configuration_blockers
 
         reasons.extend(configuration_blockers(spec))
     elif spec.adapter == "clef":
@@ -179,7 +184,7 @@ class ReferenceAdapter:
                 "quantization": model.quantization,
                 "quantization_details": model.quantization_details,
             }
-        if self.spec.adapter in ("decider", "kev", "agentjev", "clef", "jev_omni"):
+        if self.spec.adapter in ("decider", "kev", "agentjev", "clef", "jev_omni", "decision3"):
             return self.backend.telemetry()
         if self.spec.adapter == "laya":
             return {
@@ -205,7 +210,7 @@ class ReferenceAdapter:
     def resources(self):
         if self.spec.adapter == "gemma":
             return self.backend.model.memory_snapshot()
-        if self.spec.adapter in ("decider", "kev", "agentjev", "clef", "jev_omni"):
+        if self.spec.adapter in ("decider", "kev", "agentjev", "clef", "jev_omni", "decision3"):
             return self.backend.resources()
         import resource
         import sys
@@ -285,6 +290,10 @@ def load_adapter(spec: ModelSpec, environment) -> Adapter:
         from .jev_omni import JevOmniBackend
 
         backend = JevOmniBackend(spec)
+    elif spec.adapter == "decision3":
+        from .decision3 import Decision3Backend
+
+        backend = Decision3Backend(spec)
     elif spec.adapter == "clef":
         from .clef import ClefBackend
 

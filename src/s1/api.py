@@ -24,6 +24,7 @@ def create_app(
     jev_hierarchical=False,
     jev_hierarchical_batch=False,
     jev_browser_operation_first=False,
+    jev_decision3_native=False,
     jev_generated_actions=False,
     jev_generated_action_grammar=False,
     model_identity=None,
@@ -31,6 +32,26 @@ def create_app(
 ):
     from fastapi import Depends, FastAPI, Header, HTTPException
 
+    if type(jev_decision3_native) is not bool:
+        raise ValueError("Decision3 native profile must be an explicit boolean")
+    decision3_class = None
+    if jev_decision3_native:
+        if (
+            not jev_compatible
+            or jev_hierarchical
+            or jev_hierarchical_batch
+            or jev_browser_operation_first
+            or jev_generated_actions
+            or jev_generated_action_grammar
+            or not callable(request_evidence_sink)
+        ):
+            raise ValueError(
+                "Decision3 native requires compatibility and server evidence without other decision profiles"
+            )
+        from .jev_decision3_native import JevDecision3NativeAdapter
+
+        decision3_class = JevDecision3NativeAdapter
+        decision3_class(backend, model_identity=model_identity)
     if jev_hierarchical and not jev_compatible:
         raise ValueError("Jev hierarchical choices require the explicit compatible endpoint")
     if jev_hierarchical_batch and not jev_hierarchical:
@@ -149,12 +170,17 @@ def create_app(
         def error_detail(exc):
             generation = getattr(exc, "generation", None)
             hierarchy = getattr(exc, "hierarchy", None)
-            if compatible and (generation is not None or hierarchy is not None):
+            decision3_native = getattr(exc, "decision3_native", None)
+            if compatible and (
+                generation is not None or hierarchy is not None or decision3_native is not None
+            ):
                 detail = {"message": str(exc)}
                 if generation is not None and generation is not hierarchy:
                     detail["generation"] = generation
                 if hierarchy is not None:
                     detail["hierarchy"] = hierarchy
+                if decision3_native is not None:
+                    detail["decision3_native"] = decision3_native
                 return detail
             return str(exc)
 
@@ -178,7 +204,13 @@ def create_app(
                         if emit is not None
                         else {}
                     )
-                    if operation_first_class is not None:
+                    if decision3_class is not None:
+                        adapter = decision3_class
+                        if emit is not None:
+                            options["evidence_sink"] = lambda event: emit(
+                                "decision3_native_checkpoint", event
+                            )
+                    elif operation_first_class is not None:
                         adapter = operation_first_class
                         if emit is not None:
                             options["evidence_sink"] = lambda event: emit(
@@ -200,7 +232,13 @@ def create_app(
             except BaseException as exc:
                 if emit is not None:
                     details = {"error": {"type": type(exc).__name__, "message": str(exc)}}
-                    for key in ("hierarchy", "generation", "batch_evidence", "prefix_evidence"):
+                    for key in (
+                        "hierarchy",
+                        "generation",
+                        "batch_evidence",
+                        "prefix_evidence",
+                        "decision3_native",
+                    ):
                         if hasattr(exc, key):
                             details[key] = getattr(exc, key)
                     emit("server_failed", details)
@@ -218,6 +256,7 @@ def create_app(
             if compatible and (
                 getattr(exc, "generation", None) is not None
                 or getattr(exc, "hierarchy", None) is not None
+                or getattr(exc, "decision3_native", None) is not None
             ):
                 raise HTTPException(status_code=502, detail=error_detail(exc)) from exc
             raise

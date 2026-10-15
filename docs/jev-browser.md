@@ -1166,6 +1166,27 @@ does not enforce it. The default endpoint still evaluates every requested head.
 CPU contracts establish scheduling and fake-backend probability behavior only;
 native numerical equivalence, speed and browser success remain unverified.
 
+The separate `jev_decision3_native_v1` profile uses the publisher's pinned
+`AutoModel.system_one()` for all six Decision 3.0 checkpoints: `d3`, `d3-flash`,
+`d3-mini`, `d3-nano`, `d3-lite` and `d3-edge`. Enable local `--decision3-native`
+with one of those `--competitor` values, `--quantization none` and
+`--server-evidence`; keep the default pinned Gemma BF16 text helper. The Python API
+uses `create_app(..., jev_decision3_native=True, jev_compatible=True,
+request_evidence_sink=journal)`. It evaluates every requested head, including
+singletons, preserves ordered JSON for the publisher's serializer, and rejects
+heads above the native 255-option cap before inference. Hierarchy, operation-first
+and generated-action policies cannot be combined with this profile. One shared
+20-second cooperative timer covers parsing, native preflight and inference;
+the upstream caller retains responsibility for its external 25-second HTTP
+timeout, and blocking computation cannot be hard-cancelled. The enforced
+16,384-token project cap is prospective: publisher `max_length` is `null`, while
+262,144 is architecture/tokenizer metadata. BF16 backbone, FP32 readout and
+checkpoint temperature remain native. Weights must already exist in the pinned
+local cache; conservative memory gates run before helper and D3 loading, with no
+swap credit. The main model's conservative declaration currently exceeds this
+host's capacity. CPU tests establish contracts only; native numerical behavior,
+task success, speed and loading peak memory require a separately reviewed replay.
+
 To request stage batching, add `--jev-batch-stages` with the API hierarchy flags,
 or add `--batch-hierarchy-stages` with `--hierarchical-candidates` in the local
 runner. This optional setting uses the backend's ordered batch method when

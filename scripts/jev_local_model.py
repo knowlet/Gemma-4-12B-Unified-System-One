@@ -136,12 +136,22 @@ def main(argv=None):
     parser.add_argument("--hierarchical-candidates", action="store_true")
     parser.add_argument("--batch-hierarchy-stages", action="store_true")
     parser.add_argument("--browser-operation-first", action="store_true")
+    parser.add_argument("--decision3-native", action="store_true")
     parser.add_argument("--decision-readout")
     parser.add_argument("--prefix-cache", action="store_true")
     parser.add_argument("--prefix-suffix-batch-size", type=int, choices=[1, 2], default=1)
     parser.add_argument(
         "--competitor",
-        choices=["decider", "jev-omni"],
+        choices=[
+            "decider",
+            "jev-omni",
+            "d3",
+            "d3-flash",
+            "d3-mini",
+            "d3-nano",
+            "d3-lite",
+            "d3-edge",
+        ],
         help="Use the pinned competitor for decisions and the same Gemma checkpoint for text",
     )
     parser.add_argument("--suite-split", choices=["development", "holdout"], default="development")
@@ -158,8 +168,33 @@ def main(argv=None):
     parser.add_argument("--live-only", action="store_true")
     parser.add_argument("--public-cases", nargs="+", dest="public_case_ids")
     args = parser.parse_args(argv)
+    decision3_names = {"d3", "d3-flash", "d3-mini", "d3-nano", "d3-lite", "d3-edge"}
+    if (args.competitor in decision3_names) != args.decision3_native:
+        parser.error("Decision3 competitors require the separate --decision3-native profile")
+    if args.decision3_native and (
+        args.competitor not in decision3_names
+        or args.quantization != "none"
+        or not args.server_evidence
+        or args.hierarchical_candidates
+        or args.batch_hierarchy_stages
+        or args.browser_operation_first
+        or args.generated_actions
+        or args.generated_action_grammar
+        or args.generated_action_adapter
+        or args.generated_action_qualification
+        or args.prompt_mode != "native"
+        or args.analysis_style != "detailed"
+        or args.decision_readout
+        or args.prefix_cache
+        or args.prefix_suffix_batch_size != 1
+        or args.model != "knowlet/Gemma-4-12B-Unified-System-One"
+        or args.revision != "a66f836b56605039fe040f330180e336d19b3362"
+    ):
+        parser.error(
+            "decision3-native requires one pinned D3 competitor, fixed BF16 Gemma helper, quantization none and server-evidence without other policies"
+        )
     if args.browser_operation_first and (
-        not args.competitor
+        args.competitor not in {"decider", "jev-omni"}
         or not args.hierarchical_candidates
         or not args.server_evidence
         or args.batch_hierarchy_stages
@@ -333,6 +368,10 @@ def main(argv=None):
         from s1.jev_browser_operation_first import profile_manifest
 
         receipt["browser_decision_profile"] = profile_manifest()
+    if args.decision3_native:
+        from s1.jev_decision3_native import profile_manifest
+
+        receipt["browser_decision_profile"] = profile_manifest()
     if verified_action_adapter is not None:
         receipt["generated_action_adapter"] = verified_action_adapter.telemetry()
         receipt["text_helper_policy"] = (
@@ -378,6 +417,15 @@ def main(argv=None):
                 "scope": "server computation only; HTTP delivery unknown; unfinished requests remain unsealed",
             }
         receipt["stage"] = "dependencies"
+        if args.decision3_native:
+            from s1.evaluation.decision3 import CHECKPOINTS, require_memory
+
+            receipt["stage"] = "decision3_memory_before_any_weight_read"
+            receipt["decision3_memory_before_helper"] = require_memory(
+                CHECKPOINTS[args.competitor],
+                include_helper=True,
+            )
+            _write_receipt(receipt_path, receipt, qualified=True)
         import torch
         import uvicorn
 
@@ -454,7 +502,26 @@ def main(argv=None):
 
             receipt["stage"] = "competitor_load"
             _write_receipt(receipt_path, receipt, qualified=qualified)
-            if args.competitor == "jev-omni":
+            if args.decision3_native:
+                from s1.evaluation.decision3 import Decision3Backend, decision3_spec
+
+                spec = decision3_spec(args.competitor, device="cuda")
+                before = receipt["decision3_memory_before_helper"]
+                receipt["decision3_memory_before_native_load"] = require_memory(
+                    CHECKPOINTS[args.competitor],
+                    include_helper=True,
+                    helper_already_loaded=True,
+                    expected_boot_id=before["boot_id"],
+                    expected_memtotal=before["memory_bytes"]["MemTotal"],
+                )
+                _write_receipt(receipt_path, receipt, qualified=True)
+                backend = Decision3Backend(
+                    spec,
+                    helper_already_loaded=True,
+                    expected_boot_id=before["boot_id"],
+                    expected_memtotal=before["memory_bytes"]["MemTotal"],
+                )
+            elif args.competitor == "jev-omni":
                 from s1.evaluation.contracts import Capabilities, ModelSpec
                 from s1.evaluation.jev_omni import (
                     CONTEXT_LIMIT,
@@ -559,6 +626,7 @@ def main(argv=None):
             model_identity=cell,
             request_evidence_sink=server_journal,
             **({"jev_browser_operation_first": True} if args.browser_operation_first else {}),
+            **({"jev_decision3_native": True} if args.decision3_native else {}),
         )
         listener = socket.socket()
         listener.bind(("127.0.0.1", 0))
@@ -602,6 +670,8 @@ def main(argv=None):
     except (Exception, KeyboardInterrupt) as exc:
         primary_error = exc
         receipt["error"] = {"type": type(exc).__name__, "message": str(exc)}
+        if hasattr(exc, "decision3_memory"):
+            receipt["decision3_memory_refusal"] = exc.decision3_memory
     finally:
         cleanup_errors = []
 
@@ -689,10 +759,10 @@ def main(argv=None):
         if cleanup_errors:
             receipt["cleanup_errors"] = cleanup_errors
         receipt["elapsed_ms"] = (time.perf_counter() - started) * 1000
-        if qualified:
+        if qualified or args.decision3_native:
             receipt_failure = _finish_qualified_receipt(receipt_path, receipt, primary_error)
         else:
-            _write_receipt(receipt_path, receipt)
+            _write_receipt(receipt_path, receipt, qualified=args.decision3_native)
     print(json.dumps(receipt, indent=2), flush=True)
     if receipt_failure is not None:
         raise receipt_failure

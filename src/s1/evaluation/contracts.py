@@ -43,6 +43,7 @@ class ModelSpec(ConfigModel):
         "agentjev",
         "clef",
         "jev_omni",
+        "decision3",
         "http",
         "tfidf",
         "prior",
