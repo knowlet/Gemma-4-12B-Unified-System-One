@@ -716,6 +716,80 @@ def test_MDN_offered_interfaces_precedes_same_document_specifications(tmp_path):
         }
 
 
+def test_MDN_real_empty_fragment_breadcrumb_cannot_reset_interfaces(tmp_path):
+    """Exact MDN breadcrumb/TOC URLs seen in sealed02, portable CPU reproduction."""
+    with fake_native_episode(tmp_path) as (_ep, _agent, model):
+        t = get_public_training_task("mdn-intersectionobserver-observe")
+        page = synthetic_page(t["start_url"] + "#interfaces", scroll_y=18000)
+        links = [
+            {"node": 1, "href": t["start_url"], "label": "Web APIs"},
+            {"node": 2, "href": t["start_url"] + "#specifications", "label": "Specifications"},
+            {"node": 3, "href": t["start_url"] + "#interfaces", "label": "Interfaces"},
+        ]
+        for action, link in zip(page["actions"], links):
+            action["label"] = link["label"]
+        body = {
+            "questions": {"operation": {"criteria": {"CLICK": "Click", "SCROLL_DOWN": "Scroll"}}}
+        }
+        selected = m.scripted_teacher(t, page, body, model, links, {"success": False}, {})
+        assert selected == {"operation": "SCROLL_DOWN", "target": None}
+
+
+def test_MDN_saved02_interfaces_views_progress_without_same_path_breadcrumb_when_present(tmp_path):
+    """Uses immutable failed pilot states only; no rerun/rescore or live site read."""
+    root = ROOT / "artifacts/jev-browser/20261015-public-native-training-collection-02"
+    if not (root / "receipt.json").exists():
+        pytest.skip("Optional sealed real MDN route diagnostic absent")
+    with fake_native_episode(tmp_path) as (_ep, _agent, model):
+        checked = 0
+        for result in root.rglob("attempt-result.json"):
+            if not result.parent.name.startswith("mdn-"):
+                continue
+            folder = result.parent
+            rows = [
+                json.loads(line)
+                for line in (folder / "all-native-calls.jsonl").read_text().splitlines()
+            ]
+            raw = [
+                json.loads(line)
+                for line in (folder / "observations.jsonl").read_text().splitlines()
+            ]
+            t = get_public_training_task(json.loads(result.read_text())["goal_id"])
+            for returned in (row for row in rows if row["phase"] == "teacher-returned"):
+                request = rows[returned["request_sequence"]]
+                page = raw[returned["raw_observation_sequence"]]["response"]["result"]["value"]
+                if page["url"] != t["start_url"] + "#interfaces":
+                    continue
+                old_operation = returned["selected"]["operation"]
+                if old_operation != "CLICK":
+                    continue
+                _elements, targets, _controls = model.action_space(page["actions"])
+                old = targets[old_operation][returned["selected"]["target"]]
+                href = next(
+                    (
+                        link["href"]
+                        for link in returned["offered_link_metadata"]
+                        if link["node"] == old["node"]
+                    ),
+                    None,
+                )
+                if href != t["start_url"]:
+                    continue
+                selected = m.scripted_teacher(
+                    t,
+                    page,
+                    request["payload"],
+                    model,
+                    returned["offered_link_metadata"],
+                    {"success": False},
+                    {},
+                    bootstrap=returned["bootstrap"],
+                )
+                assert selected == {"operation": "SCROLL_DOWN", "target": None}
+                checked += 1
+        assert checked > 0
+
+
 def test_ownership_carries_full_document_loader_over_fragment_commit():
     t = task()
     tr = transport_for(t)

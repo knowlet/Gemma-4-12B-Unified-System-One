@@ -502,7 +502,11 @@ def scripted_teacher(task, page, payload, model, links, verdict, observed, *, bo
             and current.fragment != "interfaces"
         ):
             action = find(current.path, "interfaces")
-        if action is None and current.path.rstrip("/") not in {p.rstrip("/") for p in routes}:
+        if (
+            action is None
+            and current.path.rstrip("/") not in {p.rstrip("/") for p in routes}
+            and current.path.rstrip("/") != urlsplit(task["start_url"]).path.rstrip("/")
+        ):
             action = find(urlsplit(task["start_url"]).path)
     elif not bootstrap and task.get("section_fragment"):
         action = find(target, task["section_fragment"])
