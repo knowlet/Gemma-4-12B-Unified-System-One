@@ -1,0 +1,58 @@
+{
+  "schema_id": "jev-observation-profile-manifest-validation-v1",
+  "validation_date": "2026-10-16",
+  "problem": "An explicit observation profile needs a deterministic complete manifest before a run and strict authentication before any copied runtime is loaded.",
+  "source": {
+    "src/s1/jev_observation_profile.py": {
+      "sha256": "bc99741a847738c2ba1930007a5287136c6ddb28cb98dd2f1364b189c807921d",
+      "size_bytes": 22296
+    },
+    "tests/test_jev_observation_manifest.py": {
+      "sha256": "230fbe7504a188df68d6af7527b0e93bdd89c342b213501532ee5e4473db90b4",
+      "size_bytes": 15458
+    }
+  },
+  "changes": [
+    "ProfileBundle.materialized_manifest() computes the complete source-tree contract without I/O, and materialize_profile() uses that same contract.",
+    "verify_materialized_profile() requires explicit reviewed source and manifest hashes, rebuilds the expected contents using installed code, and authenticates the exact ordinary 16-file tree.",
+    "The verifier compares exact expected manifest bytes. Rehashing modified metadata, duplicate keys, nonfinite JSON or replacement runtime code cannot authorize a different profile.",
+    "Descriptor-based no-follow reads enforce file/count/byte bounds and stable identities; a final closed inventory must match. Returned bytes and identity data are immutable."
+  ],
+  "runtime_identity": {
+    "default": "native-1231850",
+    "opt_in": "composed-visible-text-v2",
+    "canonical_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+    "native_snapshot_sha256": "e50473501c8fb8e70f3b21866d987393e3f2315c639d638bd477d170e81ed78d",
+    "composed_snapshot_sha256": "5327d4ab5d615ac0804f4913bb86bb59b383b11ff80f2408eb4aa565243f9dd5",
+    "all_seven_runtime_bytes_unchanged_by_this_API_addition": true
+  },
+  "verification": {
+    "focused_tests": {
+      "passed": 80,
+      "pure_source_and_manifest": 74,
+      "owned_Chromium": 6,
+      "log_sha256": "e0715b8840a464d5f93284c61db3e5023e7f7a462a4ae837cc275b78613547e1",
+      "receipt_sha256": "28863f596321a5a3f0647fd2af4fea93ccd52b7b58470154a20fa67f8668e07a",
+      "sources_unchanged": true
+    },
+    "standard_offline_suite": {
+      "passed": 2753,
+      "skipped": 435,
+      "warnings": 1,
+      "log_sha256": "3c91dd1c3a4d92c7c161e37e3c0cbe143630d56c64bbfa4629c272617be961cb"
+    },
+    "independent_prototype_tests": 49,
+    "independent_additional_negative_tests": 5,
+    "independent_review_sha256": "48ca86ab13068cee8f1b041201d33acf4b40078f52c23cd7940697824a61a429",
+    "Ruff": "passed",
+    "actual_model_calls": 0,
+    "input_actions": 0
+  },
+  "limits": [
+    "Canonical Git verification remains a separate strict caller prerequisite; this library never claims to perform it.",
+    "The returned identity is not a filesystem lock. Callers must reverify before later imports and at lifecycle boundaries.",
+    "A helper source version change requires the corresponding new explicit manifest identity; old source trees receive no automatic fallback.",
+    "Benchmark, collector and admission dispatch are still pending. Existing corpora and model scores are unchanged.",
+    "The six browser cases use a fake policy and prove source integration and freshness behavior, not model quality or task success."
+  ]
+}

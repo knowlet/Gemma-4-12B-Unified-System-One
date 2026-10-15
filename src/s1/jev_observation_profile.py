@@ -15,7 +15,7 @@ import os
 import re
 import stat
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from types import MappingProxyType
 
 NATIVE_PROFILE = "native-1231850"
@@ -37,6 +37,8 @@ PARENT_BUILDER_SHA256 = "b9739ba962d41bdb20831196ca8b217608e369477d433b39672b17e
 PARENT_V1_SNAPSHOT_SHA256 = "3a4a5e7532a7eb99334b8fd71e181d5d18183af4966757cd42d48e6404cbb197"
 MAX_SOURCE_BYTES = 1024 * 1024
 MAX_TOTAL_BYTES = 4 * 1024 * 1024
+MAX_MATERIALIZED_FILES = 16
+MAX_MATERIALIZED_BYTES = MAX_MATERIALIZED_FILES * MAX_SOURCE_BYTES
 
 REPLACEMENT = r"""  const words=[], range=document.createRange(); let length=0;
   const textProfile={id:'composed-visible-text-v2',visited_nodes:0,
@@ -167,7 +169,23 @@ class ProfileBundle:
     _helper_source: bytes
 
     def manifest(self):
+        """Return the pure source-bundle contract without a disk inventory."""
         return json.loads(self._manifest_bytes)
+
+    def _materialized_sources(self):
+        files = {"canonical/" + k: v for k, v in self.canonical_files.items()}
+        files.update({"runtime/" + k: v for k, v in self.runtime_files.items()})
+        files["sources/jev_observation_profile.py"] = self._helper_source
+        return files
+
+    def materialized_manifest(self):
+        """Return the deterministic complete disk contract; no I/O or mutation."""
+        manifest = self.manifest()
+        manifest["artifact_files"] = {
+            label: {"sha256": _sha(blob), "size_bytes": len(blob)}
+            for label, blob in sorted(self._materialized_sources().items())
+        }
+        return manifest
 
     @property
     def read_state(self):
@@ -176,6 +194,29 @@ class ProfileBundle:
     @property
     def marker_expression(self):
         return f"(() => {{ const state={self.read_state}; return state?.marker ?? null; }})()"
+
+
+@dataclass(frozen=True)
+class VerifiedMaterializedProfile:
+    path: Path
+    bundle: ProfileBundle
+    manifest_sha256: str
+    _manifest_bytes: bytes
+
+    def manifest(self):
+        return json.loads(self._manifest_bytes)
+
+    @property
+    def runtime_root(self):
+        return self.path / "runtime"
+
+    @property
+    def read_state(self):
+        return self.bundle.read_state
+
+    @property
+    def marker_expression(self):
+        return self.bundle.marker_expression
 
 
 def build_profile(canonical_sources, *, expected_source_sha256, profile=NATIVE_PROFILE):
@@ -280,9 +321,7 @@ def materialize_profile(canonical_root, output, *, expected_source_sha256, profi
         profile=profile,
     )
     output.mkdir(parents=True, exist_ok=False)
-    files = {"canonical/" + k: v for k, v in bundle.canonical_files.items()}
-    files.update({"runtime/" + k: v for k, v in bundle.runtime_files.items()})
-    files["sources/jev_observation_profile.py"] = bundle._helper_source
+    files = bundle._materialized_sources()
     for label, blob in sorted(files.items()):
         _write_exclusive(output / label, blob)
     _require(
@@ -295,11 +334,7 @@ def materialize_profile(canonical_root, output, *, expected_source_sha256, profi
         Path(__file__).read_bytes() == bundle._helper_source,
         "Helper changed during materialization",
     )
-    manifest = bundle.manifest()
-    manifest["artifact_files"] = {
-        label: {"sha256": _sha(blob), "size_bytes": len(blob)}
-        for label, blob in sorted(files.items())
-    }
+    manifest = bundle.materialized_manifest()
     final = _encode(manifest) + b"\n"
     pending = output / ".profile-manifest.pending"
     _write_exclusive(pending, final)
@@ -325,6 +360,160 @@ def materialize_profile(canonical_root, output, *, expected_source_sha256, profi
     # no semantic validation follows a successful manifest publication.
     os.replace(pending, output / "profile-manifest.json")
     return result
+
+
+def _stat_identity(value):
+    return (
+        value.st_dev,
+        value.st_ino,
+        value.st_mode,
+        value.st_size,
+        value.st_mtime_ns,
+        value.st_ctime_ns,
+    )
+
+
+def _materialized_labels():
+    return {
+        *("canonical/" + label for label in CANONICAL_SHA256),
+        *("runtime/" + label for label in CANONICAL_SHA256),
+        "sources/jev_observation_profile.py",
+        "profile-manifest.json",
+    }
+
+
+def _capture_materialized_tree(root, *, read_contents):
+    """Capture one fixed ordinary tree using bounded no-follow descriptor reads."""
+    expected_files = _materialized_labels()
+    expected_dirs = {
+        str(parent)
+        for label in expected_files
+        for parent in PurePosixPath(label).parents
+        if str(parent) != "."
+    }
+    files, directories, blobs = {}, {}, {}
+    total = 0
+
+    def visit(label, descriptor):
+        nonlocal total
+        before = os.fstat(descriptor)
+        _require(stat.S_ISDIR(before.st_mode), "Ordinary profile directory required")
+        directories[label] = _stat_identity(before)
+        with os.scandir(descriptor) as entries:
+            for entry in entries:
+                relative = label + "/" + entry.name if label else entry.name
+                observed = entry.stat(follow_symlinks=False)
+                _require(not stat.S_ISLNK(observed.st_mode), "Profile symlink refused")
+                if stat.S_ISDIR(observed.st_mode):
+                    _require(relative in expected_dirs, "Unknown nested profile directory")
+                    child = os.open(
+                        entry.name,
+                        os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                        dir_fd=descriptor,
+                    )
+                    try:
+                        _require(
+                            _stat_identity(os.fstat(child)) == _stat_identity(observed),
+                            "Profile directory changed before read",
+                        )
+                        visit(relative, child)
+                    finally:
+                        os.close(child)
+                    continue
+                _require(stat.S_ISREG(observed.st_mode), "Ordinary profile file required")
+                _require(relative in expected_files, "Unknown extra profile file")
+                _require(0 < observed.st_size <= MAX_SOURCE_BYTES, "Profile file exceeds bound")
+                files[relative] = _stat_identity(observed)
+                total += observed.st_size
+                _require(
+                    len(files) <= MAX_MATERIALIZED_FILES and total <= MAX_MATERIALIZED_BYTES,
+                    "Complete materialized profile exceeds bound",
+                )
+                if read_contents:
+                    fd = os.open(
+                        entry.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=descriptor
+                    )
+                    with os.fdopen(fd, "rb") as stream:
+                        opened = os.fstat(stream.fileno())
+                        _require(
+                            stat.S_ISREG(opened.st_mode)
+                            and _stat_identity(opened) == files[relative],
+                            "Profile file changed before read",
+                        )
+                        blob = stream.read(MAX_SOURCE_BYTES + 1)
+                        _require(
+                            len(blob) == opened.st_size
+                            and len(blob) <= MAX_SOURCE_BYTES
+                            and _stat_identity(os.fstat(stream.fileno())) == files[relative],
+                            "Profile file changed during bounded read",
+                        )
+                    blobs[relative] = blob
+        _require(
+            _stat_identity(os.fstat(descriptor)) == directories[label],
+            "Profile directory changed during capture",
+        )
+
+    root_fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        visit("", root_fd)
+        _require(
+            _stat_identity(root.stat(follow_symlinks=False)) == directories[""],
+            "Profile root changed during capture",
+        )
+    finally:
+        os.close(root_fd)
+    _require(set(files) == expected_files, "Missing materialized profile file")
+    _require(set(directories) == {"", *expected_dirs}, "Missing materialized profile directory")
+    return blobs, files, directories
+
+
+def verify_materialized_profile(
+    path, *, expected_manifest_sha256, expected_source_sha256, profile=NATIVE_PROFILE
+):
+    """Authenticate disk bytes and return a detached immutable identity handle.
+
+    This is not a Git verifier, runtime installer, filesystem lock, browser
+    execution or fit admission. Callers retain strict canonical Git checks and
+    must reverify before later importing live files and at lifecycle boundaries.
+    Captured helper/runtime Python is always data and is never executed here.
+    """
+    helper = _source_pin(expected_source_sha256)
+    _require(
+        type(expected_manifest_sha256) is str
+        and re.fullmatch(r"[0-9a-f]{64}", expected_manifest_sha256),
+        "Explicit reviewed materialized manifest SHA256 required",
+    )
+    _require(
+        type(profile) is str and profile in {NATIVE_PROFILE, COMPOSED_PROFILE},
+        "Unknown explicit snapshot profile",
+    )
+    root = _ordinary_path(path)
+    _require(root.is_dir(), "Materialized profile directory required")
+    blobs, first_files, first_dirs = _capture_materialized_tree(root, read_contents=True)
+    manifest_blob = blobs["profile-manifest.json"]
+    _require(_sha(manifest_blob) == expected_manifest_sha256, "Materialized manifest hash differs")
+    canonical = {label: blobs["canonical/" + label] for label in CANONICAL_SHA256}
+    bundle = build_profile(
+        canonical, expected_source_sha256=expected_source_sha256, profile=profile
+    )
+    _require(bundle._helper_source == helper, "Reviewed helper changed during verification")
+    expected_manifest = _encode(bundle.materialized_manifest()) + b"\n"
+    _require(manifest_blob == expected_manifest, "Materialized manifest metadata/profile differs")
+    expected_sources = bundle._materialized_sources()
+    _require(
+        all(blobs[label] == blob for label, blob in expected_sources.items()),
+        "Materialized canonical/runtime/helper bytes differ",
+    )
+    _, final_files, final_dirs = _capture_materialized_tree(root, read_contents=False)
+    _require(
+        first_files == final_files and first_dirs == final_dirs,
+        "Materialized profile closed inventory changed during verification",
+    )
+    _require(
+        _ordinary_path(root) == root and _source_pin(expected_source_sha256) == helper,
+        "Reviewed source/path changed during verification",
+    )
+    return VerifiedMaterializedProfile(root, bundle, _sha(manifest_blob), manifest_blob)
 
 
 def main(argv=None):
