@@ -1,0 +1,183 @@
+{
+  "schema_id": "jev-public-native-action-fit-entry-validation-v1",
+  "date": "2026-10-16",
+  "status": "additive production entry and verifier implemented; synthetic checks pass; genuine CPU admission reaches expected LOAD refusal",
+  "files": {
+    "scripts/jev_public_action_artifact.py": {
+      "sha256": "6ccdbffd9c086f67cf382a30c40b9950c5e2fe04acfe6919e7703fe87a9bbd70",
+      "size_bytes": 49424
+    },
+    "scripts/jev_browser_fit_public_actions.py": {
+      "sha256": "2e3563764f4371029b19d9b20a22ffe2f6381d0e8436785fa8c4b8a8a28df24c",
+      "size_bytes": 23258
+    },
+    "tests/test_jev_public_action_artifact.py": {
+      "sha256": "7db9f2ddb8e844274804797a2ab13cb1bb134ec434385d067e59c5ed1e6081e8",
+      "size_bytes": 37537
+    },
+    "tests/test_jev_browser_fit_public_actions.py": {
+      "sha256": "2425851a946272ef4f391628b369bbe9943fc21ecfa574f9da9716f2fb96910b",
+      "size_bytes": 8699
+    }
+  },
+  "separate_contract": {
+    "kind": "jev_public_native_action_lora_v1",
+    "verified_input_type": "VerifiedPublicFitInputs",
+    "verified_artifact_type": "VerifiedPublicActionArtifact",
+    "qualification_required": "jev_public_action_bf16_qualification_v1",
+    "qualification_implemented": false,
+    "attach_api_implemented": false,
+    "legacy_NF4_kind_and_verifier_unchanged": true,
+    "original_collection_sources_unchanged": 84,
+    "execution_source_handoff_files": 90
+  },
+  "implemented_training_path": {
+    "corpus": "20261016-public-native-training-collection-07",
+    "schema": "jev-public-native-training-collection-v5",
+    "observation_profile": "composed-visible-text-v3",
+    "public_files": 701,
+    "public_bytes": 105415940,
+    "native_call_dispositions": {
+      "accepted-fit-row": 142,
+      "bootstrap-non-fit": 49,
+      "excluded-no-input-DONE": 2,
+      "excluded-no-input-SCROLL": 1
+    },
+    "train_rows": 120,
+    "evaluation_only_rows": 22,
+    "parent_files": 496,
+    "parent_bytes": 80805458,
+    "historical_parent_updates": 521,
+    "parent_qv_FP32_tensors": 176,
+    "trainable_parameters": 5193728,
+    "default_updates": 120,
+    "default_learning_rate": 5e-05,
+    "default_seed": 42,
+    "model": "knowlet/Gemma-4-12B-Unified-System-One",
+    "revision": "a66f836b56605039fe040f330180e336d19b3362",
+    "training_quantization": "none",
+    "training_dtype": "bfloat16",
+    "inference_identity": "generated-actions-none",
+    "candidate_cap": 400,
+    "context": 8192,
+    "maximum_target_tokens": 32,
+    "native_stop_token": 106,
+    "generation_EOS": [
+      1,
+      106,
+      50
+    ],
+    "head_sha256": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+    "temperature": 2.7830344470383452,
+    "unchanged_kernel_sha256": "4bf6585008e434a469dafb4a9997dee595b079044e03c9afe00ceffa5e031f82",
+    "pre_optimizer_requirement": "Actual constructed model processor must reproduce every142 serialized CPU-reference record/input/target/position, including full native prompt and masks. This post-load path has synthetic coverage but was not genuinely executed in this entry probe.",
+    "publication": "All semantic/source/copy/resource/cap checks precede final atomic valid manifest rename. Final rename power-loss durability not claimed."
+  },
+  "focused_validation": {
+    "tests": 73,
+    "passed": 73,
+    "seconds_from_pytest": 28.38,
+    "test_wrapper_seconds": 28.57694655600062,
+    "source_before_after_unchanged": true,
+    "forbidden_runtime_modules_after": [],
+    "AST": "all4 files parsed",
+    "Ruff": "all checks passed",
+    "coverage": "Full701/496/142/90/51 synthetic semantic flows; rehashed proof/source/parent/compiled/environment forgeries, exact phase scopes/order, train/eval separation, full epoch/176-name receipts, final marker failure paths and primary error persistence. Genuine runtime interfaces are explicit synthetic seams.",
+    "root_test_receipt": {
+      "path": "artifacts/jev-runtime/public-native-action-production-source-20261016-01/root-final-tests-01/receipt.json",
+      "sha256": "61efd73fa32d543a9a36c63d1fe4563ad3c35c303177920c5eab2b313e3b3750",
+      "size_bytes": 1614
+    },
+    "junit": {
+      "path": "artifacts/jev-runtime/public-native-action-production-source-20261016-01/root-final-tests-01/junit.xml",
+      "sha256": "1c62883113ecb89c39c53a01e9d64717aff210481776956336e60a2484c3bcce",
+      "size_bytes": 11331
+    },
+    "final_source_hold": {
+      "path": "artifacts/jev-runtime/public-native-action-production-source-20261016-01/final-source-01/HOLD-final-01.json",
+      "sha256": "6fcd887994ad8dbb5c0415a8e29bac4919f8ef84b7569d4f2b31b0aff68acb6e",
+      "size_bytes": 2786
+    },
+    "ruff_log": {
+      "path": "artifacts/jev-runtime/public-native-action-production-source-20261016-01/pure-tests-H05-01/ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "size_bytes": 19
+    },
+    "retained_auxiliary_runner_failures": "H04 guard rejected existing pure s1.contracts conftest import; H05 guard runner referenced an absent HOLD filename. Neither entered pytest. Both logs preserved; final current bytes were validated by the separate root73-test run."
+  },
+  "genuine_admission_only_probe": {
+    "probe_receipt": {
+      "path": "artifacts/jev-runtime/public-native-action-production-preload-20261016-01/probe-receipt-01.json",
+      "sha256": "78a1b937f739c303e6e4ff4a6f09033884aa09fe6dab076f670f1bebaf3406aa",
+      "size_bytes": 3748
+    },
+    "failed_producer_receipt": {
+      "path": "artifacts/jev-runtime/public-native-action-production-preload-20261016-01/fit-attempt-01/receipt.json",
+      "sha256": "eeb78c9ac7de77f0073d20211a5951014e63fd122b277c47d2ce2022b2e95668",
+      "size_bytes": 223704
+    },
+    "wrapper_source": {
+      "path": "artifacts/jev-runtime/public-native-action-production-preload-20261016-01/run_preload_probe.py",
+      "sha256": "eb4223c1e702d471e9449edc44a3679f6d8a4c9a44b121312b8fb1bf27232b65",
+      "size_bytes": 4855
+    },
+    "source_handoff": {
+      "path": "artifacts/jev-runtime/public-native-action-production-preload-20261016-01/source-handoff-01.json",
+      "sha256": "5d2ef25aa964deb8bfa9a6673c16272a32fc640848edb89ef95b55fee76358d2",
+      "size_bytes": 11718
+    },
+    "source_handoff_sha256": "5d2ef25aa964deb8bfa9a6673c16272a32fc640848edb89ef95b55fee76358d2",
+    "extra_guard": "Subclass calls the unchanged production gate first and always stops after its first non-CPU stage; cannot reach base checkpoint hash/model construction even if memory suddenly becomes available. Actual run failed in the original LOAD gate before extra stop fired.",
+    "additional_stop_triggered": false,
+    "CPU_gates_passed": 4,
+    "LOAD_gate_admitted": false,
+    "LOAD_required_bytes": 73958270912,
+    "LOAD_available_bytes": 32500084736,
+    "TRAIN_declared_required_bytes": 106438961088,
+    "model_loads": 0,
+    "optimizer_initializations": 0,
+    "training_updates": 0,
+    "real_model_processor_recompilations": 0,
+    "base_tensor_payload_reads_source_enforced": 0,
+    "CUDA_initialized": false,
+    "valid_manifest_exists": false,
+    "qualified": false,
+    "task_score": null,
+    "parent_initial_tensor_injection": null,
+    "elapsed_seconds": 19.933338395996543,
+    "peak_rss_bytes": 977096704,
+    "finalization_errors": []
+  },
+  "independent_artifact_audit": {
+    "report": {
+      "path": "artifacts/jev-runtime/public-native-action-production-preload-20261016-01/independent-audit-01/report-01.json",
+      "sha256": "e4c04c09e453a2918bd0fb1042a5776aebf71f5722a1b68970531b1d43a188aa",
+      "size_bytes": 2127
+    },
+    "source": {
+      "path": "artifacts/jev-runtime/public-native-action-production-preload-20261016-01/independent-audit-01/audit_preload.py",
+      "sha256": "1f97e001b80a4dfaff37efcdab39cc40e3f08fc694a6ef8fb256257f1a7942c8",
+      "size_bytes": 12752
+    },
+    "execution_receipt": {
+      "path": "artifacts/jev-runtime/public-native-action-production-preload-20261016-01/independent-audit-01/execution-receipt-01.json",
+      "sha256": "f844c621192967aa00c1747b5fde99574dd4db800a6810f1fa84c4675d45be62",
+      "size_bytes": 433
+    },
+    "scope": "Stdlib hashes of original/copied701 public files, fixed496 legacy parent files,90 current/copied sources,9 metadata and154 reference files;5 actual gate records; complete failed attempt and reserves; final before/after equality. Parent safetensors hashed as opaque bytes under explicit authorization, without decoding or rerunning genuine verification.",
+    "failed_attempt_bound": {
+      "bytes": 237510528,
+      "files": 1453,
+      "reserved_bytes": 68157440,
+      "reserved_files": 264
+    }
+  },
+  "limits": [
+    "Legacy parent safetensors read only as streaming opaque SHA bytes under explicit root authorization; no tensor decode or framework import.176 finite FP32 checks remain source-backed evidence of the genuine probe's existing legacy verifier, not re-executed here.",
+    "No23.9GB base or Decision3 weight/cache payload was opened. Zero base reads follows reviewed guard control flow; no independent syscall trace was collected.",
+    "Expected resource refusal is not fitting success, adapter qualification, browser task score or benchmark/model superiority.",
+    "No genuine BF16 model construction,142-row recompilation through a constructed model,optimizer,training,generated action or browser rollout occurred. These remain necessary before adapter qualification.",
+    "Existing full-suite baseline was2902 passed/524 skipped before this additive change; only the73 new focused tests were run for these new paths.",
+    "Full conservative per-phase memory formulas remain unchanged; no swap/resident credit or new resource-policy claim."
+  ]
+}

@@ -1148,6 +1148,38 @@ required episodes. Existing v3 collections retain their original native
 observation identity. Profile checks and scripted teacher completion establish
 data validity; model success still requires a separate end-to-end run.
 
+The fixed `20261016-public-native-training-collection-07` corpus has a separate
+fitting entry, `scripts/jev_browser_fit_public_actions.py`. It authenticates all
+701 input files, the complete 496-file historical parent and an explicitly
+reviewed 90-file source handoff. The source handoff binds the original 84
+collection sources, four unchanged training dependencies and the two new public
+fitting/verifier scripts. Use the interpreter, distributions, source files and
+six processor assets authenticated by the recorded CPU compilation reference.
+
+```bash
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+HF_HUB_CACHE="$PWD/artifacts/jev-local-hf/hub" \
+PYTHONDONTWRITEBYTECODE=1 TOKENIZERS_PARALLELISM=false \
+OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
+PYTHONPATH=artifacts/jev-runtime/overlay:src:scripts \
+"$REVIEWED_PYTHON" -B scripts/jev_browser_fit_public_actions.py --run \
+  --source-handoff /path/to/reviewed-source-handoff.json \
+  --expected-source-handoff REVIEWED_HANDOFF_SHA256 \
+  --expected-boot-id EXPECTED_BOOT_ID \
+  --output artifacts/jev-browser/your-new-public-action-fit
+```
+
+Set `REVIEWED_PYTHON` to the reference closure's absolute interpreter path. The
+default candidate uses 120 updates, learning rate `5e-5` and seed 42. All 142
+rows must reproduce the saved CPU compilation using the actual model's
+processor before optimization; the 22 development rows receive zero updates.
+Fresh durable CPU, BF16-load and training memory gates protect each stage.
+The output kind is `jev_public_native_action_lora_v1`, with qualification still
+required. Generated browser actions need a separate BF16 qualification path.
+The [entry validation record](validation/2026-10-16/jev-public-native-action-fitting-entry-07.json)
+reports focused synthetic checks and a genuine admission-only probe that
+stopped at the load gate with zero model loads and updates.
+
 Use a Torch/CUDA build that supports the installed GPU. The GB10 pilot used
 Torch `2.13.0+cu130`; the repository's standard inference extra currently pins
 Torch `2.8.0`. Preserve the established GPU environment when reproducing the
