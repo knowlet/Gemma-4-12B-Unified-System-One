@@ -749,8 +749,25 @@ and the runtime adds observation instrumentation, so the closed-loop comparison
 alone does not isolate precision. The final captured HTML also corroborates the
 fresh six-condition result.
 This is the exposed original fixture, not a public website or transfer result.
-The separate matched-13 comparison follows this early gate and is reported on
-its own evidence. The production NF4 attachment remains unchanged.
+The production NF4 attachment remains unchanged.
+
+The subsequent [matched BF16 browser comparison](validation/2026-10-15/jev-bf16-browser-selection.json)
+completes **13/13 with the child adapter versus 11/13 with the unadapted BF16
+base**. Both use the same native legal-action grammar, base-only BF16 text helper,
+seed and 16-decision/20-second policy budgets. All 13 full initial requests match
+after normalizing only the transport alias and ephemeral fixture port; the
+fixture HTML, private judges and manifests also match exactly. The baseline's
+two failures remain: BLOCKED despite a satisfied already-checked goal, and
+premature DONE before applying the original travel search.
+
+Independent auditing passes 3,928 checks across all 27 actual attempts: one
+original early gate plus two 13-case arms, including the original again. There
+are 13 distinct matched pairs, not 27 unseen tasks. The audit retains every
+native snapshot, full prompt/token/grammar binding, HTTP/server response,
+helper check and fresh final-DOM verdict. These exposed development cases on
+one seed establish neither public-site generalization nor competitor or speed
+superiority. A production BF16 qualification and tracked-CLI reproduction are
+separate acceptance work; no fresh transfer seed has been selected.
 
 The opt-in `--public-cases CASE_ID ...` mode now adds four fixed navigation goals
 on arXiv, Python documentation and NASA Science. Case definitions and fresh-DOM
