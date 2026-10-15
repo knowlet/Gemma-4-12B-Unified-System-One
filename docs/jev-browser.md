@@ -725,8 +725,49 @@ The full CPU suite passes 2276 checks with 299 optional skips; the final focused
 suite passes 330 with 25 browser opt-in skips. Twenty-five separate existing
 guarded Chromium checks pass. A real public-harness smoke uses a clearly scripted
 provider that always returns BLOCKED, verifies one untouched native request and
-zero model forwards/actions, and correctly reports no task success. Actual
-public-site model completion and competitor comparisons remain unmeasured.
+zero model forwards/actions, and correctly reports no task success.
+
+The [first actual public policy diagnostic](validation/2026-10-15/jev-public-web-policy.json)
+uses the retained original 425-update adapter, NF4 and the same legal-action
+grammar. Independent source, request, token and final-DOM audits confirm **1/2
+strict completion**. Python reaches `Counter.most_common()` with its signature
+and description visible, then accepts DONE: six policy decisions, one base-model
+text helper and three executed actions. Two decisions were rejected by unchanged
+page-freshness guards; they are retained and are not decoder retries.
+
+NASA instead accepts DONE at `/mars/moons/`, titled “Moons of Mars”, rather than
+the requested `/mars/facts/` Moons section. All three independent criteria for
+path, Facts heading and section fail. After entering “Mars Facts”, the native
+search controls offer only a searchbox CLICK/TYPE action, with no separate submit
+button or ENTER operation. Clicking the field does not submit a search. This
+does not make the task infeasible: a separate scripted reachability diagnostic
+reaches the exact section using only four native guarded clicks, **Planets →
+Mars → Facts → Moons**. Its first attempt retains an observation failure after
+two executed clicks; its second adds bounded read-only observation retries and
+satisfies the unchanged fresh-DOM judge. Neither attempt calls a model or text
+helper, and neither counts as model completion.
+The two arXiv proposals stay deferred with their HTTP 429
+evidence, and are not silently counted as passes or omitted from a claimed
+four-task score. No public competitor comparison or broad reliability claim
+has been established.
+
+All 15 policy requests and both helpers are sealed and independently checked.
+Only 13 policy inputs have separately saved complete raw page snapshots: Python
+decision 5 and NASA decision 7 used internal refreshes whose complete raw
+geometry was not separately recorded. Their full native model inputs remain
+available. Later harness runs now append every exact native snapshot CDP
+response to `observations.jsonl`, including internal refreshes, before upstream
+adds fingerprints. The transport makes no extra page read and changes no
+returned response. Each append is redacted, flushed and synced; its measured
+write time stays inside the attempt timing boundary. Historical artifacts are
+preserved with their capture limitation.
+
+The frozen NASA request ledger also omits intermediate full-document
+navigations present in native snapshots. Its recorded GET/HEAD guards, blocked
+POSTs and absence of logged scope violations do not establish complete network
+coverage. The final-DOM judgments remain supported independently. Subsequent
+transport diagnostics address the missing navigation events; old logs are not
+rewritten to imply coverage they did not record.
 
 ## Historical failure diagnosis
 
