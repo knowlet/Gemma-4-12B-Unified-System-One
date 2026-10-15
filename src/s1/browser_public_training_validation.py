@@ -25,6 +25,7 @@ from .jev_generated import TARGETS
 
 COLLECTION_SCHEMA = "jev-public-native-training-collection-v3"
 COMPOSED_COLLECTION_SCHEMA = "jev-public-native-training-collection-v4"
+SCROLL_COLLECTION_SCHEMA = "jev-public-native-training-collection-v5"
 NO_INPUT_DONE_RULE = {
     "rule_id": "done-fresh-false-no-input-v1",
     "operation": "DONE",
@@ -32,6 +33,14 @@ NO_INPUT_DONE_RULE = {
     "continuation": "Only the next ordinary native tick after the same bounded passive settling; no Agent state assignment, custom observe, mutation retry or budget extension",
     "fit_rows": "Retained excluded-no-input request, acceptedFalse; never a positive fit row. Revalidate original journals before skipping. All other unaccepted requests refuse serialization.",
     "accounting": "Every excluded DONE remains in resolved supervised16 budget, full request/compiled/raw/private/state/guard journals and all-native-call index. Accepted fit step IDs are dense and retain actual native request/compiled sequence links.",
+}
+NO_INPUT_SCROLL_RULE = {
+    "rule_id": "scroll-text-stale-before-input-v1",
+    "operations": ["SCROLL_UP", "SCROLL_DOWN"],
+    "requires": "Strict false-goal current preproof; exactly act-before/fresh-before/fresh-False/act-StalePage without input; only marker text index7 changes; unchanged owned document/full history; native ready/decisionNone and its own new raw re-observation",
+    "continuation": "Only the next ordinary native tick after existing bounded passive settling; no cached act replay, custom observe, Agent state assignment or budget extension",
+    "fit_rows": "Retain acceptedFalse excluded-no-input SCROLL; independently rederive every original journal join before skipping. All other rejected rows remain fatal.",
+    "accounting": "Every excluded SCROLL remains in its resolved bootstrap16 or supervised16 decision budget and all raw/request/compiled/private/guard/state/cost populations; separate from DONE exclusions. Native60 actions unchanged.",
 }
 MAX_BYTES = 1_073_741_824
 MAX_FILES = 10_000
@@ -90,6 +99,7 @@ class PublicCollectionError(ValueError):
 class _CollectionContract:
     schema_id: str
     composed: bool
+    scroll: bool = False
 
 
 def _collection_contract(schema_id):
@@ -97,7 +107,11 @@ def _collection_contract(schema_id):
         return _CollectionContract(COLLECTION_SCHEMA, False)
     if schema_id == COMPOSED_COLLECTION_SCHEMA:
         return _CollectionContract(COMPOSED_COLLECTION_SCHEMA, True)
-    raise PublicCollectionError("Explicit public collection-v3 or collection-v4 format required")
+    if schema_id == SCROLL_COLLECTION_SCHEMA:
+        return _CollectionContract(SCROLL_COLLECTION_SCHEMA, True, True)
+    raise PublicCollectionError(
+        "Explicit public collection-v3 or collection-v4 or collection-v5 format required"
+    )
 
 
 @dataclass(frozen=True)
@@ -530,10 +544,11 @@ def _outer_contract(snapshot):
     _require(
         type(receipt) is dict
         and type(receipt.get("schema_id")) is str
-        and receipt["schema_id"] in {COLLECTION_SCHEMA, COMPOSED_COLLECTION_SCHEMA}
+        and receipt["schema_id"]
+        in {COLLECTION_SCHEMA, COMPOSED_COLLECTION_SCHEMA, SCROLL_COLLECTION_SCHEMA}
         and type(receipt.get("schema_version")) is int
         and receipt["schema_version"] == 1,
-        "Explicit public collection-v3 or collection-v4 format required; v1/v2/fixture formats are not admitted",
+        "Explicit public collection-v3 or collection-v4 or collection-v5 format required; v1/v2/fixture formats are not admitted",
     )
     _require(
         receipt.get("stage") == "complete"
@@ -558,6 +573,25 @@ def _outer_contract(snapshot):
         and receipt.get("collection_plan_sha256") == _sha(_encode(plan)),
         "Outer receipt and prospective plan identity differ",
     )
+    if _collection_contract(receipt["schema_id"]).scroll:
+        _require(
+            receipt.get("no_input_scroll_recovery") == NO_INPUT_SCROLL_RULE
+            and type(receipt.get("excluded_no_input_scroll_count")) is int
+            and receipt["excluded_no_input_scroll_count"] >= 0,
+            "V5 outer SCROLL rule/count missing or changed",
+        )
+    else:
+        _require(
+            not any(
+                key in receipt
+                for key in (
+                    "no_input_scroll_recovery",
+                    "excluded_no_input_scroll_count",
+                    "excluded_no_input_scroll_native_request_sequences",
+                )
+            ),
+            "Historical outer receipt declares v5 SCROLL accounting",
+        )
     _require(
         set(receipt.get("bundles", {})) == {"train", "development"},
         "Both self-contained public splits required",
@@ -784,6 +818,16 @@ def _trusted_plan(plan, receipt, reviewed_source_pins):
         and plan.get("no_input_done_recovery") == NO_INPUT_DONE_RULE,
         "Reviewed private routes or exact no-input DONE exclusion rule differ",
     )
+    if _collection_contract(plan.get("schema_id")).scroll:
+        _require(
+            plan.get("no_input_scroll_recovery") == NO_INPUT_SCROLL_RULE,
+            "V5 exact prospective no-input SCROLL rule required",
+        )
+    else:
+        _require(
+            "no_input_scroll_recovery" not in plan,
+            "Historical collection cannot enable the v5 SCROLL rule",
+        )
     collection = plan.get("collection_id")
     _require(
         type(collection) is str and collection and "/" not in collection and "\\" not in collection,
@@ -906,6 +950,10 @@ def _checked_HTML(snapshot, split, proof):
 
 
 def _strict_private(snapshot, split, task, proof, owner, page, session, ledger):
+    return _checked_private(snapshot, split, task, proof, owner, page, session, ledger, strict=True)
+
+
+def _checked_private(snapshot, split, task, proof, owner, page, session, ledger, *, strict):
     """Recompute recorded DOM facts using installed code after source auth.
 
     This authenticates evidence relationships, not a new browser replay or a
@@ -915,7 +963,7 @@ def _strict_private(snapshot, split, task, proof, owner, page, session, ledger):
 
     expected = _expected_owned_binding(owner, page, session, ledger)
     _require(
-        proof.get("strict") is True
+        proof.get("strict") is strict
         and proof.get("phase") == owner.get("phase")
         and proof.get("expected_ownership") == expected
         and not any(key.endswith("_error") for key in proof)
@@ -1530,6 +1578,193 @@ def _audit_excluded_done(
     }
 
 
+def _audit_excluded_scroll(
+    page,
+    selected,
+    binding,
+    execution,
+    event,
+    before,
+    after,
+    raw,
+    ret,
+    request,
+    guards,
+    *,
+    marker_event,
+    diagnostic_index,
+):
+    """Derive source-proven pre-input SCROLL refusal; no collector predicate is invoked."""
+    _require(
+        selected.get("operation") in NO_INPUT_SCROLL_RULE["operations"]
+        and selected == {"operation": selected["operation"], "target": None}
+        and execution.get("selected") == selected
+        and execution.get("private_precondition_sequence")
+        == ret.get("private_precondition_sequence")
+        and execution.get("phase") == "excluded-no-input-SCROLL"
+        and execution.get("accepted") is False
+        and execution.get("excluded_no_input") is True
+        and execution.get("execution_accepted") is False
+        and execution.get("postproof_deferred") is False
+        and execution.get("bootstrap") is ret.get("bootstrap")
+        and execution.get("error") is None
+        and execution.get("error_scope") is None
+        and execution.get("immediate_diagnostic_error") is None
+        and "strict_DONE_error" not in execution
+        and not any(
+            key.startswith(("private_postcondition", "postcondition_")) for key in execution
+        )
+        and before.get("status") == after.get("status") == "ready"
+        and before.get("decision") is None
+        and after.get("decision") is None
+        and before.get("plan_index") == after.get("plan_index")
+        and _encode(before["history"]) == _encode(after["history"])
+        and execution.get("before_history_length")
+        == execution.get("after_history_length")
+        == len(before["history"])
+        and execution.get("native_status") == "ready"
+        and execution.get("before_fingerprint") == before["page"]["fingerprint"]
+        and execution.get("after_fingerprint") == after["page"]["fingerprint"],
+        "Excluded SCROLL changed history/state or claimed input/acceptance/postproof",
+    )
+    action = _selected_native_action(page, selected)
+    _require(
+        action is not None and action.get("kind") == "scroll",
+        "Excluded SCROLL is not an offered native scroll",
+    )
+    start, end = (
+        execution.get(key) for key in ("execution_guard_sequence_start", "guard_sequence_end")
+    )
+    _require(
+        type(start) is int
+        and type(end) is int
+        and 0 <= start < end <= len(guards)
+        and end == start + 4
+        and start == execution.get("guard_sequence_start") + 2,
+        "Excluded SCROLL must have exactly four nested execution guards",
+    )
+    native_page = {**page, "fingerprint": _native_fingerprint(page)}
+    expected_guards = [
+        {
+            "sequence": start,
+            "phase": "before",
+            "native_method": "act",
+            "target": binding["target_id"],
+            "session": binding["session_id"],
+            "arguments": [action, native_page],
+            "keywords": {"text": None},
+        },
+        {
+            "sequence": start + 1,
+            "phase": "before",
+            "native_method": "fresh",
+            "target": binding["target_id"],
+            "session": binding["session_id"],
+            "arguments": [native_page, action],
+            "keywords": {},
+        },
+        {
+            "sequence": start + 2,
+            "phase": "after",
+            "native_method": "fresh",
+            "before_sequence": start + 1,
+            "accepted": False,
+            "result": False,
+        },
+        {
+            "sequence": start + 3,
+            "phase": "after",
+            "native_method": "act",
+            "before_sequence": start,
+            "accepted": False,
+            "error": {
+                "type": "StalePage",
+                "message": "Page changed since this decision. Observe again.",
+                "notes": [],
+            },
+        },
+    ]
+    _require(
+        _encode(guards[start:end], canonical=True) == _encode(expected_guards, canonical=True),
+        "Excluded SCROLL is not the exact native fresh-False short-circuit before input",
+    )
+    _require(type(marker_event) is dict, "Excluded SCROLL lacks its source-bound execution MARKER")
+    response = marker_event.get("response", {})
+    marker = response.get("result", {}).get("value")
+    old_marker = page.get("marker")
+    _require(
+        "error" not in marker_event
+        and not response.get("exceptionDetails")
+        and marker_event.get("failure") is None
+        and marker_event.get("session") == binding["session_id"]
+        and type(marker) is list
+        and type(old_marker) is list
+        and len(marker) == len(old_marker) == 10
+        and type(marker[7]) is type(old_marker[7]) is str
+        and marker[7] != old_marker[7]
+        and all(_encode(marker[i]) == _encode(old_marker[i]) for i in range(10) if i != 7),
+        "Excluded SCROLL requires only text-index7 change on the same document/controls",
+    )
+    raw_start, raw_end = (
+        execution.get(key)
+        for key in ("execution_raw_observation_start", "raw_observation_count_after_native_tick")
+    )
+    _require(
+        type(raw_start) is int
+        and type(raw_end) is int
+        and raw_start == ret.get("execution_raw_observation_start")
+        and ret["raw_observation_sequence"] < raw_start < raw_end <= len(raw),
+        "Excluded SCROLL lacks its new native tick re-observation",
+    )
+    after_page = {key: value for key, value in after["page"].items() if key != "fingerprint"}
+    reobserved = raw[raw_end - 1]
+    _require(
+        _encode(reobserved["response"].get("result", {}).get("value")) == _encode(after_page)
+        and _encode(after_page.get("marker")) == _encode(marker)
+        and raw[ret["raw_observation_sequence"]]["protocol_call"]
+        < marker_event["protocol_call"]
+        < reobserved["protocol_call"],
+        "Excluded SCROLL marker/newraw/after-page chronology differs",
+    )
+    expected = {
+        "rule_id": NO_INPUT_SCROLL_RULE["rule_id"],
+        "before_state_sequence": request["native_policy_call_index"] * 2,
+        "after_state_sequence": request["native_policy_call_index"] * 2 + 1,
+        "execution_guard_sequence_start": start,
+        "guard_sequence_end": end,
+        "execution_raw_observation_start": raw_start,
+        "raw_observation_count_after_native_tick": raw_end,
+        "reobserved_raw_sequence": raw_end - 1,
+        "marker_event_sequence": marker_event["sequence"],
+        "marker_protocol_call": marker_event["protocol_call"],
+        "private_diagnostic_sequence": diagnostic_index,
+        "unchanged_full_history_sha256": _sha(_encode(before["history"])),
+    }
+    _require(
+        execution.get("exclusion_evidence") == expected
+        and event["sequence"] > ret["sequence"]
+        and event
+        == {
+            "sequence": event["sequence"],
+            "phase": "excluded-no-input",
+            "request_sequence": request["sequence"],
+            "transition_sequence": execution["sequence"],
+            "rule_id": NO_INPUT_SCROLL_RULE["rule_id"],
+            "evidence": expected,
+        },
+        "Excluded SCROLL evidence/event differs from independently derived journal facts",
+    )
+    return {
+        "episode_id": request["episode_id"],
+        "native_policy_request_sequence": request["sequence"],
+        "native_policy_call_index": request["native_policy_call_index"],
+        "compiled_input_sequence": ret["compiled_sequence"],
+        "transition_sequence": execution["sequence"],
+        "event_sequence": event["sequence"],
+        "evidence": expected,
+    }
+
+
 def _check_predict_observation(before_page, page, ret, raw, raw_count_before_tick, fresh):
     """Pinned predict either retains its page or performs its own new observe."""
     end, selected = ret.get("execution_raw_observation_start"), ret.get("raw_observation_sequence")
@@ -1737,6 +1972,11 @@ def _audit_episode(
     """
     folder = _relative(result["artifact_path"])
     prefix = split + "/" + folder + "/"
+    contract = _collection_contract(plan.get("schema_id"))
+    _require(
+        not contract.scroll or observation_profile is not None,
+        "V5 SCROLL requires reviewed composed events",
+    )
     rows = {
         name: _sequential(snapshot.read_jsonl(prefix + name + ".jsonl"), name) for name in _JOURNALS
     }
@@ -1884,7 +2124,19 @@ def _audit_episode(
     exclusion_events = _single_by(
         [row for row in calls if row["phase"] == "excluded-no-input"],
         "request_sequence",
-        label="excluded no-input DONE",
+        label="excluded no-input",
+    )
+    _require(
+        all(
+            event.get("rule_id")
+            in (
+                {NO_INPUT_DONE_RULE["rule_id"], NO_INPUT_SCROLL_RULE["rule_id"]}
+                if contract.scroll
+                else {NO_INPUT_DONE_RULE["rule_id"]}
+            )
+            for event in exclusion_events.values()
+        ),
+        "Excluded DONE flag/event or v5 SCROLL rule is unknown or cross-schema",
     )
     _require(
         set(exclusion_events) <= request_sequences
@@ -1982,6 +2234,7 @@ def _audit_episode(
                 "terminal-or-rejected",
                 "excluded-no-input-DONE",
             }
+            | ({"excluded-no-input-SCROLL"} if contract.scroll else set())
             for row in transitions
         ),
         "Unindexed/orphan native transition event",
@@ -1999,6 +2252,7 @@ def _audit_episode(
     proofs = {}
     expected_cases, expected_wires, source_indices = [], [], []
     excluded_rows = []
+    excluded_scroll_rows = []
     used_private = {0}
     diagnostics = set()
     history = []
@@ -2253,28 +2507,11 @@ def _audit_episode(
             "Native tick state/raw observation bounds differ from immutable teacher return",
         )
         if excluded:
+            scroll = exclusion_events[sequence]["rule_id"] == NO_INPUT_SCROLL_RULE["rule_id"]
             _require(
-                not bootstrap and verdict["success"] and selected["operation"] == "DONE",
-                "Only strict true supervised DONE may have an exclusion",
-            )
-            _require(
-                exclusion_events[sequence]["sequence"] < requests[index + 1]["sequence"],
-                "Excluded DONE event was not appended before the next native request",
-            )
-            excluded_rows.append(
-                _audit_excluded_done(
-                    page,
-                    selected,
-                    owner,
-                    execution,
-                    exclusion_events[sequence],
-                    before["state"],
-                    after["state"],
-                    raw,
-                    ret,
-                    request,
-                    guards,
-                )
+                index + 1 < len(requests)
+                and exclusion_events[sequence]["sequence"] < requests[index + 1]["sequence"],
+                "Excluded no-input event was not appended before the next native request",
             )
             diagnostic_index = execution.get("immediate_private_diagnostic_sequence")
             _require(
@@ -2283,15 +2520,79 @@ def _audit_episode(
                 and diagnostic_index not in diagnostics
                 and private[diagnostic_index].get("strict") is False
                 and private[diagnostic_index].get("phase") == "after-tick-diagnostic",
-                "Excluded DONE lost its retained immediate private diagnostic",
+                "Excluded no-input call lost its retained immediate private diagnostic",
             )
+            if scroll:
+                _require(
+                    contract.scroll
+                    and not verdict["success"]
+                    and selected["operation"] in NO_INPUT_SCROLL_RULE["operations"],
+                    "Only v5 strict false-goal targetless SCROLL may have this exclusion",
+                )
+                after_page = {
+                    key: value
+                    for key, value in after["state"]["page"].items()
+                    if key != "fingerprint"
+                }
+                diagnostic_owner, _diagnostic_verdict = _checked_private(
+                    snapshot,
+                    split,
+                    task,
+                    private[diagnostic_index],
+                    owners[diagnostic_index],
+                    after_page,
+                    session,
+                    ledger,
+                    strict=False,
+                )
+                _require(
+                    diagnostic_owner == owner,
+                    "Excluded SCROLL diagnostic changed current owned document/loader",
+                )
+                excluded_scroll_rows.append(
+                    _audit_excluded_scroll(
+                        page,
+                        selected,
+                        owner,
+                        execution,
+                        exclusion_events[sequence],
+                        before["state"],
+                        after["state"],
+                        raw,
+                        ret,
+                        request,
+                        guards,
+                        marker_event=profile_marker_events.get(execution_start + 1),
+                        diagnostic_index=diagnostic_index,
+                    )
+                )
+            else:
+                _require(
+                    not bootstrap and verdict["success"] and selected["operation"] == "DONE",
+                    "Only strict true supervised DONE may have an exclusion",
+                )
+                excluded_rows.append(
+                    _audit_excluded_done(
+                        page,
+                        selected,
+                        owner,
+                        execution,
+                        exclusion_events[sequence],
+                        before["state"],
+                        after["state"],
+                        raw,
+                        ret,
+                        request,
+                        guards,
+                    )
+                )
             diagnostics.add(diagnostic_index)
             proofs[sequence] = {
                 "pre": verdict,
                 "post": None,
                 "binding": owner,
                 "selected": selected,
-                "bootstrap": False,
+                "bootstrap": bootstrap,
                 "excluded": True,
             }
             continue
@@ -2542,6 +2843,17 @@ def _audit_episode(
         "excluded_no_input_native_request_sequences": [
             row["native_policy_request_sequence"] for row in excluded_rows
         ],
+        **(
+            {
+                "no_input_scroll_recovery": NO_INPUT_SCROLL_RULE,
+                "excluded_no_input_scroll_count": len(excluded_scroll_rows),
+                "excluded_no_input_scroll_native_request_sequences": [
+                    row["native_policy_request_sequence"] for row in excluded_scroll_rows
+                ],
+            }
+            if contract.scroll
+            else {}
+        ),
     }.items():
         _require(
             _encode(result.get(key), canonical=True) == _encode(value, canonical=True),
@@ -2595,6 +2907,7 @@ def _audit_episode(
         "counts": counts,
         "rows": rows,
         "excluded_no_input": excluded_rows,
+        "excluded_no_input_scroll": excluded_scroll_rows,
         "native_call_mapping": [
             {
                 "episode_id": result["episode_id"],
@@ -2604,7 +2917,11 @@ def _audit_episode(
                 "phase_at_entry": request["phase_at_entry"],
                 "resolved_phase": resolved[request["sequence"]]["resolved_phase"],
                 "native_wire_sha256": request["wire_sha256"],
-                "disposition": "excluded-no-input-DONE"
+                "disposition": "excluded-no-input-SCROLL"
+                if request["sequence"] in exclusion_events
+                and exclusion_events[request["sequence"]]["rule_id"]
+                == NO_INPUT_SCROLL_RULE["rule_id"]
+                else "excluded-no-input-DONE"
                 if request["sequence"] in exclusion_events
                 else "bootstrap-non-fit"
                 if resolved[request["sequence"]]["bootstrap"]
@@ -2708,7 +3025,8 @@ def _source_bundle(
 def _coverage(task, ordinary, recovery):
     def continuing(audit):
         return any(
-            not row["bootstrap"]
+            not row.get("excluded", False)
+            and not row["bootstrap"]
             and row["selected"]["operation"] != "DONE"
             and not row["pre"]["success"]
             for row in audit["proofs"].values()
@@ -2747,6 +3065,18 @@ def _coverage(task, ordinary, recovery):
 
 
 def _episode_result(snapshot, split, task, kind, plan, episode, *, observation_profile=None):
+    if not _collection_contract(plan.get("schema_id")).scroll:
+        _require(
+            not any(
+                key in episode
+                for key in (
+                    "no_input_scroll_recovery",
+                    "excluded_no_input_scroll_count",
+                    "excluded_no_input_scroll_native_request_sequences",
+                )
+            ),
+            "Historical episode declares v5 SCROLL accounting",
+        )
     expected_id = plan["collection_id"] + "-" + task["goal_id"] + "-" + kind
     folder = "episodes/" + task["goal_id"] + "-" + kind
     _require(
@@ -2870,7 +3200,7 @@ class AdmittedPublicCollection:
 
 
 def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer_cache):
-    """Admit fixed24 v3/v4 evidence with installed reviewed code and cached CPU tokens.
+    """Admit fixed24 v3/v4/v5 evidence with reviewed code and cached CPU tokens.
 
     Parent content/recursive lineage, adapter loading and zero dev optimizer
     updates are separate future fitting gates. Nothing here imports artifact
@@ -2909,6 +3239,7 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
     compiler = _CachedNativeCompiler(tokenizer_cache, plan.get("tokenizer_metadata", {}))
     all_results, all_coverage = [], []
     excluded_mapping, all_call_identities, all_call_mapping, accepted_mapping = {}, {}, {}, {}
+    scroll_excluded_mapping = {}
     split_cases, split_wires, source_checks, observed_counts = {}, {}, {}, {}
     for split in ("train", "development"):
         receipt = snapshot.read_json(split + "/receipt.json")
@@ -2931,6 +3262,23 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
             receipt.get("no_input_done_recovery") == NO_INPUT_DONE_RULE,
             "Split no-input DONE rule differs from reviewed v3 contract",
         )
+        if contract.scroll:
+            _require(
+                receipt.get("no_input_scroll_recovery") == NO_INPUT_SCROLL_RULE,
+                "V5 split SCROLL rule differs",
+            )
+        else:
+            _require(
+                not any(
+                    key in receipt
+                    for key in (
+                        "no_input_scroll_recovery",
+                        "excluded_no_input_scroll_count",
+                        "excluded_no_input_scroll_native_request_sequences",
+                    )
+                ),
+                "Historical split declares v5 SCROLL accounting",
+            )
         _inventory_matches(
             snapshot, split + "/", receipt.get("evidence_files"), excluded=("receipt.json",)
         )
@@ -2968,7 +3316,7 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
             [],
             set(),
         )
-        split_excluded, split_all_native, split_call_mapping = [], [], []
+        split_excluded, split_all_native, split_call_mapping, split_scroll_excluded = [], [], [], []
         for task_index, task in enumerate(expected_tasks):
             audits, pair_results = [], episodes[task_index * 2 : task_index * 2 + 2]
             for kind, result in zip(("ordinary", "recovery"), pair_results, strict=True):
@@ -2996,6 +3344,7 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
                 expected_wires.extend(audit["wires"])
                 call_index.extend(audit["call_index"])
                 split_excluded.extend(audit["excluded_no_input"])
+                split_scroll_excluded.extend(audit["excluded_no_input_scroll"])
                 split_call_mapping.extend(audit["native_call_mapping"])
                 split_all_native.extend(
                     {"native_payload": row["payload"], "native_wire_sha256": row["wire_sha256"]}
@@ -3060,6 +3409,11 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
             else ["correct_document_but_position_incomplete"],
             "no_forced_state_count": True,
             "excluded_no_input_done_count": len(split_excluded),
+            **(
+                {"excluded_no_input_scroll_count": len(split_scroll_excluded)}
+                if contract.scroll
+                else {}
+            ),
         }
         for key, expected in expected_counts.items():
             _require(
@@ -3082,6 +3436,7 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
         )
         split_cases[split], split_wires[split] = tuple(expected_cases), expected_wires
         excluded_mapping[split] = split_excluded
+        scroll_excluded_mapping[split] = split_scroll_excluded
         all_call_identities[split] = public_wire_identities(split_all_native)
         all_call_mapping[split] = split_call_mapping
         accepted_mapping[split] = [
@@ -3114,6 +3469,14 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
         and outer["excluded_no_input_done_count"] == sum(map(len, excluded_mapping.values())),
         "Outer excluded no-input DONE count/rule differs from all actual journals",
     )
+    if contract.scroll:
+        _require(
+            outer.get("no_input_scroll_recovery") == NO_INPUT_SCROLL_RULE
+            and type(outer.get("excluded_no_input_scroll_count")) is int
+            and outer["excluded_no_input_scroll_count"]
+            == sum(map(len, scroll_excluded_mapping.values())),
+            "Outer excluded no-input SCROLL count/rule differs from all journals",
+        )
     compiled_upper = sum(
         4 * len(_encode(case.request.model_dump(mode="json"))) + 64 * 8192 + 4096
         for cases in split_cases.values()
@@ -3165,6 +3528,9 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
     if observation_profile is not None:
         provenance["observation_profile"] = observation_profile.binding()
         provenance["observation_profile_verification"] = outer["observation_profile_verification"]
+    if contract.scroll:
+        provenance["no_input_scroll_recovery"] = copy.deepcopy(NO_INPUT_SCROLL_RULE)
+        provenance["excluded_no_input_scroll_mapping"] = scroll_excluded_mapping
     provenance["provenance_fingerprint"] = _sha(_encode(provenance, canonical=True))
     return AdmittedPublicCollection(
         snapshot,

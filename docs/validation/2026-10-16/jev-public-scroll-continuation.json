@@ -1,0 +1,46 @@
+{
+  "schema": "jev-validation-summary-v1",
+  "scope": "Public training collector and independent admission; CPU regression evidence, not a model task score",
+  "problem": "Collection 06 stopped two episodes after the unchanged native scroll guard refused input because only visible text changed between prediction and execution.",
+  "change": {
+    "opt_in": "--allow-no-input-stale-scroll",
+    "collection_schema": "jev-public-native-training-collection-v5",
+    "rule": "scroll-text-stale-before-input-v1",
+    "behavior": "Retain and independently authenticate the refused SCROLL_UP or SCROLL_DOWN request, exclude it from fit rows, and permit the next ordinary native tick within the existing episode budget.",
+    "proof": "Require native freshness refusal before input, unchanged owned page identity and action history, a text-only marker change, retained native guards and raw observations, and unchanged goal, plan and text-call history.",
+    "other_schemas": "Existing v3 and v4 contracts retain their original rules."
+  },
+  "validation": [
+    {
+      "kind": "collector native control-flow checks with fake CDP leaves",
+      "passed": 27,
+      "elapsed_seconds": 13.09
+    },
+    {
+      "kind": "new admission checks with genuine cached tokenizer, template, Agent and Browser control flow; fake CDP leaves",
+      "passed": 23,
+      "elapsed_seconds": 84.26,
+      "receipt_sha256": "13475c4c2c1f29b6d0e5f0af82b616e45f88667b81096554485a0c485361b968",
+      "log_sha256": "da2ea601fb386878839af6034f3344f079d8d47e4535c1186a011071735afe32",
+      "coverage": "One complete 24-episode positive fixture and 21 coherently rehashed negative fixtures, including both scroll directions and collection phases."
+    },
+    {
+      "kind": "historical v3 and v4 admission regressions on the new validator",
+      "passed": 150,
+      "skipped": 1,
+      "skip_reason": "Intentional unsupported historical v2 judge fixture",
+      "elapsed_seconds": 127.55,
+      "receipt_sha256": "4051d03d65c186810fd0988302d974cb540a23f80e87b215e54c0b21b46bd166",
+      "log_sha256": "d27c38995691d8e23287f15b8bdea16e61e2618dab828aeeed35695b7f5c55fa"
+    }
+  ],
+  "reproducibility": "Both genuine CPU lanes retained fresh resource gates, unchanged before/after source pins and terminal logs. Ruff and git diff --check passed.",
+  "limits": {
+    "new_public_collection_completed": false,
+    "collection_06_reclassified": false,
+    "model_calls": 0,
+    "training_updates": 0,
+    "task_score": null,
+    "comparison_win_claimed": false
+  }
+}

@@ -41,6 +41,7 @@ from s1.browser_public_training import NativeWireRequest, public_training_case  
 
 SCHEMA = "jev-public-native-training-collection-v3"
 PROFILE_SCHEMA = "jev-public-native-training-collection-v4"
+SCROLL_SCHEMA = "jev-public-native-training-collection-v5"
 NATIVE_PROFILE = "native-1231850"
 COMPOSED_PROFILE = "composed-visible-text-v2"
 PROFILE_JOURNAL = "observation-profile-events"
@@ -77,6 +78,40 @@ NO_INPUT_DONE_RULE = {
     "fit_rows": "Retained excluded-no-input request, acceptedFalse; never a positive fit row. Revalidate original journals before skipping. All other unaccepted requests refuse serialization.",
     "accounting": "Every excluded DONE remains in resolved supervised16 budget, full request/compiled/raw/private/state/guard journals and all-native-call index. Accepted fit step IDs are dense and retain actual native request/compiled sequence links.",
 }
+
+
+NO_INPUT_SCROLL_RULE = {
+    "rule_id": "scroll-text-stale-before-input-v1",
+    "operations": ["SCROLL_UP", "SCROLL_DOWN"],
+    "requires": "Strict false-goal current preproof; exactly act-before/fresh-before/fresh-False/act-StalePage without input; only marker text index7 changes; unchanged owned document/full history; native ready/decisionNone and its own new raw re-observation",
+    "continuation": "Only the next ordinary native tick after existing bounded passive settling; no cached act replay, custom observe, Agent state assignment or budget extension",
+    "fit_rows": "Retain acceptedFalse excluded-no-input SCROLL; independently rederive every original journal join before skipping. All other rejected rows remain fatal.",
+    "accounting": "Every excluded SCROLL remains in its resolved bootstrap16 or supervised16 decision budget and all raw/request/compiled/private/guard/state/cost populations; separate from DONE exclusions. Native60 actions unchanged.",
+}
+
+
+def scroll_recovery_enabled(plan):
+    return (
+        plan.get("schema_id") == SCROLL_SCHEMA
+        and plan.get("no_input_scroll_recovery") == NO_INPUT_SCROLL_RULE
+        and plan.get("observation_profile", {}).get("profile") == COMPOSED_PROFILE
+    )
+
+
+def scroll_accounting(plan, calls):
+    if not scroll_recovery_enabled(plan):
+        return {}
+    sequences = [
+        row["request_sequence"]
+        for row in calls
+        if row["phase"] == "excluded-no-input"
+        and row.get("rule_id") == NO_INPUT_SCROLL_RULE["rule_id"]
+    ]
+    return {
+        "no_input_scroll_recovery": copy.deepcopy(NO_INPUT_SCROLL_RULE),
+        "excluded_no_input_scroll_count": len(sequences),
+        "excluded_no_input_scroll_native_request_sequences": sequences,
+    }
 
 
 class RejectModels(importlib.abc.MetaPathFinder):
@@ -377,11 +412,17 @@ def collection_plan(
     *,
     observation_profile=NATIVE_PROFILE,
     observation_profile_helper_sha256=None,
+    allow_no_input_stale_scroll=False,
 ):
     require(
         type(observation_profile) is str
         and observation_profile in {NATIVE_PROFILE, COMPOSED_PROFILE},
         "Unknown observation profile",
+    )
+    require(
+        type(allow_no_input_stale_scroll) is bool
+        and (not allow_no_input_stale_scroll or observation_profile == COMPOSED_PROFILE),
+        "No-input stale SCROLL requires explicit composed profile",
     )
     tasks_module, evidence = private_modules()
     tasks = tasks_module.tasks()
@@ -507,6 +548,9 @@ def collection_plan(
     if profile_binding is not None:
         plan["schema_id"] = PROFILE_SCHEMA
         plan["observation_profile"] = profile_binding
+    if allow_no_input_stale_scroll:
+        plan["schema_id"] = SCROLL_SCHEMA
+        plan["no_input_scroll_recovery"] = copy.deepcopy(NO_INPUT_SCROLL_RULE)
     plan["runtime_source_pins"] = {
         label: record(path) for label, path in _source_paths(source_files()).items()
     }
@@ -922,6 +966,349 @@ def _require_no_input_done_exclusion(episode, row):
     return evidence
 
 
+def _no_input_scroll_evidence(episode, row, transition):
+    """Derive only text-stale, source-proven unexecuted scrolls; no flag is evidence."""
+    try:
+        require(
+            scroll_recovery_enabled(episode.plan)
+            and not episode.profile_failures()
+            and episode.awaiting_post is None,
+            "Explicit clean v5 scroll rule required",
+        )
+        sources = episode.plan["upstream"]["source_sha256"]
+        require(
+            sources["jev_ultrafast/agent.py"]
+            == "aaf8b271cb0ee6643fe7beb525328ab80de8568c7ac044d02b9c6721161e7c8b"
+            and sources["jev_ultrafast/browser.py"]
+            == "ee08dafa93d731bd292aa0263a578a29c8001cf22eef3c59fe44a159649155ee",
+            "Authenticated native short-circuit and recovery source required",
+        )
+        selected = row["selected"]
+        require(
+            selected["operation"] in NO_INPUT_SCROLL_RULE["operations"]
+            and selected == {"operation": selected["operation"], "target": None}
+            and transition["error"] is None
+            and transition["immediate_diagnostic_error"] is None
+            and transition["execution_accepted"] is False
+            and transition["accepted"] is False
+            and transition["postproof_deferred"] is False,
+            "Only uncaught-error-free rejected targetless scroll qualifies",
+        )
+        pre = row["pre"]
+        physical = episode.journals["private-dom"].rows[pre["sequence"]]
+        common = (
+            "trusted_expected_ownership",
+            "owned_context",
+            "same_native_document",
+            "viewport",
+            "document_ready",
+            "no_visible_access_blocker",
+            "no_access_error_title",
+        )
+        require(
+            physical["strict"] is True
+            and pre["verdict"]["success"] is False
+            and physical["observed"] == pre["observed"]
+            and physical["verdict"] == pre["verdict"]
+            and physical["expected_ownership"] == pre["binding"]
+            and not pre["errors"]
+            and all(pre["verdict"]["checks"].get(key) is True for key in common),
+            "False-goal strict current preproof required",
+        )
+        raw_pre = episode.raw_rows[row["raw_sequence"]]["response"]["result"]["value"]
+        expected_page = {**raw_pre, "fingerprint": row["native_fingerprint"]}
+        actions = [
+            action for action in raw_pre["actions"] if action["id"].upper() == selected["operation"]
+        ]
+        require(
+            len(actions) == 1
+            and actions[0]["kind"] == "scroll"
+            and raw_pre["page_key"] == pre["binding"]["native_page_key"],
+            "Offered current native scroll required",
+        )
+        action = actions[0]
+        calls = episode.journals["all-native-calls"].rows
+        request = calls[row["call_sequence"]]
+        returned = [
+            event
+            for event in calls
+            if event["phase"] == "teacher-returned"
+            and event["request_sequence"] == row["call_sequence"]
+        ]
+        resolved = [
+            event
+            for event in calls
+            if event["phase"] == "decision-resolved"
+            and event["request_sequence"] == row["call_sequence"]
+        ]
+        require(
+            request["phase"] == "request"
+            and encode(request["payload"]) == encode(row["payload"])
+            and request["wire_sha256"] == sha(encode(row["payload"]))
+            and len(returned) == len(resolved) == 1
+            and returned[0]["selected"] == selected
+            and returned[0]["response"] == teacher_response(row["payload"], selected)
+            and returned[0]["private_precondition_sequence"] == pre["sequence"]
+            and returned[0]["raw_observation_sequence"] == row["raw_sequence"]
+            and returned[0]["compiled_sequence"] == row["compiled_sequence"]
+            and returned[0]["execution_raw_observation_start"]
+            == row["execution_raw_observation_start"]
+            and resolved[0]["bootstrap"] is row["bootstrap"]
+            and resolved[0]["resolved_phase"] == ("bootstrap" if row["bootstrap"] else "supervised")
+            and episode.journals["compiled-inputs"].rows[row["compiled_sequence"]]["wire_sha256"]
+            == sha(encode(row["payload"])),
+            "Scroll native call/compiler/resolved teacher joins differ",
+        )
+        before_sequence, after_sequence = (
+            transition["before_state_sequence"],
+            transition["after_state_sequence"],
+        )
+        require(
+            before_sequence == request["native_policy_call_index"] * 2
+            and after_sequence == before_sequence + 1,
+            "Scroll state sequence differs",
+        )
+        states = episode.journals["states"].rows
+        before, after = states[before_sequence]["state"], states[after_sequence]["state"]
+        require(
+            states[before_sequence]["phase"] == "before-tick"
+            and states[after_sequence]["phase"] == "after-tick"
+            and encode(before["history"]) == encode(after["history"])
+            and before["goal"] == after["goal"] == episode.task["goal"]
+            and before["plan"] == after["plan"]
+            and before["plan_index"] == after["plan_index"]
+            and before["text_calls"] == after["text_calls"] == []
+            and before["status"] == after["status"] == "ready"
+            and after["decision"] is None
+            and len(after["decisions"]) == len(before["decisions"]) + 1
+            and after["decisions"][:-1] == before["decisions"]
+            and after["decisions"][-1]["choice"] == action["id"]
+            and after["decisions"][-1]["operation"] == selected["operation"]
+            and after["decisions"][-1]["target"] is None
+            and after["decisions"][-1]["fingerprint"] == row["native_fingerprint"]
+            and encode(after["decisions"][-1]["request"]) == encode(row["payload"]),
+            "Scroll did not return native ready with one consumed decision and unchanged full history",
+        )
+        guards = episode.journals["guarded-actions"].rows
+        start, end = transition["execution_guard_sequence_start"], transition["guard_sequence_end"]
+        tick_start = transition["guard_sequence_start"]
+        require(
+            type(start) is int
+            and type(end) is int
+            and start == row["execution_guard_sequence_start"]
+            and start == tick_start + 2
+            and end == start + 4
+            and 0 <= tick_start < end <= len(guards),
+            "Scroll must have one predict pair then exactly four execution guard rows",
+        )
+        predict, predicted = guards[tick_start:start]
+        require(
+            predict["phase"] == "before"
+            and predict["native_method"] == "fresh"
+            and encode(predict["arguments"]) == encode([before["page"]])
+            and predict["keywords"] == {}
+            and predicted["phase"] == "after"
+            and predicted["before_sequence"] == tick_start
+            and predicted["native_method"] == "fresh"
+            and type(predicted.get("result")) is bool
+            and predicted["accepted"] is predicted["result"]
+            and "error" not in predicted,
+            "Native pre-policy refresh pair differs",
+        )
+        act, fresh, stale, failed = guards[start:end]
+        require(
+            all(g["sequence"] == start + i for i, g in enumerate((act, fresh, stale, failed))),
+            "Scroll guard sequence differs",
+        )
+        require(
+            act["phase"] == fresh["phase"] == "before"
+            and act["native_method"] == failed["native_method"] == "act"
+            and fresh["native_method"] == stale["native_method"] == "fresh"
+            and encode(act["arguments"]) == encode([action, expected_page])
+            and act["keywords"] == {"text": None}
+            and encode(fresh["arguments"]) == encode([expected_page, action])
+            and fresh["keywords"] == {}
+            and all(
+                g["target"] == pre["binding"]["target_id"]
+                and g["session"] == pre["binding"]["session_id"]
+                for g in (predict, act, fresh)
+            )
+            and stale["phase"] == failed["phase"] == "after"
+            and stale["before_sequence"] == start + 1
+            and failed["before_sequence"] == start
+            and stale.get("result") is False
+            and stale["accepted"] is False
+            and "error" not in stale
+            and failed["accepted"] is False
+            and "result" not in failed
+            and failed["error"]
+            == {
+                "type": "StalePage",
+                "message": "Page changed since this decision. Observe again.",
+                "notes": [],
+            },
+            "Not the exact native fresh-False short-circuit before input",
+        )
+        marker_guards = [
+            g
+            for g in guards[:end]
+            if g["phase"] == "before"
+            and g["native_method"] == "fresh"
+            and (
+                len(g["arguments"]) == 1 or g["arguments"][1].get("kind") not in {"click", "select"}
+            )
+        ]
+        marker_events = [
+            event
+            for event in episode.profile_tracker.rows
+            if event["expression_kind"] == "MARKER"
+            and event["protocol_call"]
+            <= episode.raw_rows[transition["raw_observation_count_after_native_tick"] - 1][
+                "protocol_call"
+            ]
+        ]
+        require(len(marker_guards) == len(marker_events), "MARKER/fresh population differs")
+        matched = [
+            event
+            for guard, event in zip(marker_guards, marker_events, strict=True)
+            if guard["sequence"] == start + 1
+        ]
+        require(len(matched) == 1, "Missing scroll execution marker")
+        event = matched[0]
+        current = event["response"]["result"]["value"]
+        old = expected_page["marker"]
+        require(
+            event["session"] == pre["binding"]["session_id"]
+            and event["failure"] is None
+            and event["manifest_sha256"] == episode.plan["observation_profile"]["manifest_sha256"]
+            and event["expression_sha256"]
+            == episode.plan["observation_profile"]["marker_expression_sha256"]
+            and type(current) is list
+            and len(current) == len(old) == 10
+            and type(current[7]) is type(old[7]) is str
+            and current[7] != old[7]
+            and all(current[i] == old[i] for i in range(10) if i != 7),
+            "Only text-index7 marker change on same native document qualifies",
+        )
+        raw_start, raw_end = (
+            transition["execution_raw_observation_start"],
+            transition["raw_observation_count_after_native_tick"],
+        )
+        require(
+            raw_start == row["execution_raw_observation_start"]
+            and row["raw_sequence"] < raw_start < raw_end <= len(episode.raw_rows),
+            "Missing native tick re-observation after scroll refusal",
+        )
+        after_page = {key: value for key, value in after["page"].items() if key != "fingerprint"}
+        matches = [
+            i
+            for i in range(raw_start, raw_end)
+            if episode.raw_rows[i]["response"].get("result", {}).get("value") == after_page
+        ]
+        require(
+            matches
+            and row["native_fingerprint"]
+            == sha(
+                json.dumps(
+                    {k: raw_pre[k] for k in ("url", "text", "actions", "scroll")}, sort_keys=True
+                ).encode()
+            )
+            and after["page"]["fingerprint"]
+            == sha(
+                json.dumps(
+                    {k: after_page[k] for k in ("url", "text", "actions", "scroll")}, sort_keys=True
+                ).encode()
+            )
+            and after_page["marker"] == current
+            and episode.raw_rows[row["raw_sequence"]]["protocol_call"]
+            < event["protocol_call"]
+            < episode.raw_rows[matches[-1]]["protocol_call"],
+            "Scroll marker/after-state/raw chronology differs",
+        )
+        diagnostic_sequence = transition["immediate_private_diagnostic_sequence"]
+        diagnostic = episode.journals["private-dom"].rows[diagnostic_sequence]
+        require(
+            diagnostic["phase"] == "after-tick-diagnostic"
+            and diagnostic["strict"] is False
+            and diagnostic["expected_ownership"] == pre["binding"]
+            and diagnostic["observed"] is not None
+            and diagnostic["HTML"] is not None
+            and not any(key.endswith("_error") for key in diagnostic)
+            and all(diagnostic["verdict"]["checks"].get(key) is True for key in common)
+            and all(
+                diagnostic[key] == []
+                for key in (
+                    "public_scope_violations",
+                    "public_observer_errors",
+                    "HTTP_document_failures",
+                )
+            ),
+            "Scroll diagnostic lacks same trusted owned document or clean access facts",
+        )
+        require(
+            transition["selected"] == selected
+            and transition["request_sequence"] == row["call_sequence"]
+            and transition["bootstrap"] is row["bootstrap"]
+            and transition["native_status"] == "ready"
+            and transition["before_history_length"]
+            == transition["after_history_length"]
+            == len(before["history"])
+            and transition["before_fingerprint"] == before["page"]["fingerprint"]
+            and transition["after_fingerprint"] == after["page"]["fingerprint"],
+            "Scroll transition metadata differs",
+        )
+        return {
+            "rule_id": NO_INPUT_SCROLL_RULE["rule_id"],
+            "before_state_sequence": before_sequence,
+            "after_state_sequence": after_sequence,
+            "execution_guard_sequence_start": start,
+            "guard_sequence_end": end,
+            "execution_raw_observation_start": raw_start,
+            "raw_observation_count_after_native_tick": raw_end,
+            "reobserved_raw_sequence": matches[-1],
+            "marker_event_sequence": event["sequence"],
+            "marker_protocol_call": event["protocol_call"],
+            "private_diagnostic_sequence": diagnostic_sequence,
+            "unchanged_full_history_sha256": sha(encode(before["history"])),
+        }
+    except (ValueError, KeyError, IndexError, TypeError, AttributeError):
+        return None
+
+
+def _require_no_input_scroll_exclusion(episode, row):
+    transition = episode.journals["transitions"].rows[row["transition_sequence"]]
+    evidence = _no_input_scroll_evidence(episode, row, transition)
+    events = [
+        event
+        for event in episode.journals["all-native-calls"].rows
+        if event["phase"] == "excluded-no-input"
+        and event["request_sequence"] == row["call_sequence"]
+    ]
+    require(
+        evidence is not None
+        and row.get("excluded_no_input") is True
+        and row.get("accepted") is False
+        and transition.get("phase") == "excluded-no-input-SCROLL"
+        and transition.get("excluded_no_input") is True
+        and transition.get("exclusion_evidence") == evidence
+        and len(events) == 1
+        and type(row.get("exclusion_event_sequence")) is int
+        and 0 <= row["exclusion_event_sequence"] < len(episode.journals["all-native-calls"].rows)
+        and episode.journals["all-native-calls"].rows[row["exclusion_event_sequence"]] == events[0]
+        and events[0]
+        == {
+            "sequence": row["exclusion_event_sequence"],
+            "phase": "excluded-no-input",
+            "request_sequence": row["call_sequence"],
+            "transition_sequence": row["transition_sequence"],
+            "rule_id": NO_INPUT_SCROLL_RULE["rule_id"],
+            "evidence": evidence,
+        },
+        "Unverified excluded-no-input SCROLL; flags cannot discard a rejected request",
+    )
+    return evidence
+
+
 class NativeCompiler:
     def __init__(self):
         from jinja2.sandbox import ImmutableSandboxedEnvironment
@@ -1085,7 +1472,9 @@ class Episode:
             from s1.jev_observation_events import ObservationProfileTracker
 
             require(
-                plan["schema_id"] == PROFILE_SCHEMA and observation_runtime is not None,
+                plan["schema_id"] in {PROFILE_SCHEMA, SCROLL_SCHEMA}
+                and observation_runtime is not None
+                and (plan["schema_id"] != SCROLL_SCHEMA or scroll_recovery_enabled(plan)),
                 "Composed collection requires explicit verified runtime",
             )
             self.journals[PROFILE_JOURNAL] = ProfileEventJournal(
@@ -1614,10 +2003,16 @@ class Episode:
         excluded = (
             _no_input_done_evidence(self, row, record) if not self.profile_failures() else None
         )
+        if excluded is None and scroll_recovery_enabled(self.plan) and not self.profile_failures():
+            excluded = _no_input_scroll_evidence(self, row, record)
         if excluded is not None:
             require(self.awaiting_post is None, "Excluded DONE left an uncompleted native action")
             record.update(
-                phase="excluded-no-input-DONE", excluded_no_input=True, exclusion_evidence=excluded
+                phase="excluded-no-input-DONE"
+                if excluded["rule_id"] == NO_INPUT_DONE_RULE["rule_id"]
+                else "excluded-no-input-SCROLL",
+                excluded_no_input=True,
+                exclusion_evidence=excluded,
             )
         transition = self.journals["transitions"].append(record)
         row.update(
@@ -1632,12 +2027,15 @@ class Episode:
                     "phase": "excluded-no-input",
                     "request_sequence": row["call_sequence"],
                     "transition_sequence": transition,
-                    "rule_id": NO_INPUT_DONE_RULE["rule_id"],
+                    "rule_id": excluded["rule_id"],
                     "evidence": excluded,
                 }
             )
             row.update(excluded_no_input=True, exclusion_event_sequence=event_sequence)
-            _require_no_input_done_exclusion(self, row)
+            if excluded["rule_id"] == NO_INPUT_DONE_RULE["rule_id"]:
+                _require_no_input_done_exclusion(self, row)
+            else:
+                _require_no_input_scroll_exclusion(self, row)
             self.need_settle = True
             return row
         if diagnostic_error is not None:
@@ -1875,15 +2273,19 @@ def run_episode(
                 r["phase"] == "teacher-returned" for r in episode.journals["all-native-calls"].rows
             ),
             excluded_no_input_done_count=sum(
-                r["phase"] == "excluded-no-input" for r in episode.journals["all-native-calls"].rows
+                r["phase"] == "excluded-no-input"
+                and r.get("rule_id") == NO_INPUT_DONE_RULE["rule_id"]
+                for r in episode.journals["all-native-calls"].rows
             ),
             excluded_no_input_native_request_sequences=[
                 r["request_sequence"]
                 for r in episode.journals["all-native-calls"].rows
                 if r["phase"] == "excluded-no-input"
+                and r.get("rule_id") == NO_INPUT_DONE_RULE["rule_id"]
             ],
             model_inference_calls=0,
         )
+        result.update(scroll_accounting(plan, episode.journals["all-native-calls"].rows))
         write(folder / "attempt-result.json", result)
     if primary is not None and not isinstance(primary, Exception):
         raise EpisodeInterrupted(primary, episode, result) from primary
@@ -1983,7 +2385,15 @@ def serialize_episode(episode, relative_folder):
         if row.get("excluded_no_input") or any(
             event["request_sequence"] == row["call_sequence"] for event in exclusion_events
         ):
-            _require_no_input_done_exclusion(episode, row)
+            events = [
+                event
+                for event in exclusion_events
+                if event["request_sequence"] == row["call_sequence"]
+            ]
+            if len(events) == 1 and events[0].get("rule_id") == NO_INPUT_SCROLL_RULE["rule_id"]:
+                _require_no_input_scroll_exclusion(episode, row)
+            else:
+                _require_no_input_done_exclusion(episode, row)
             exclusions.add(row["call_sequence"])
             continue
         require(
@@ -2202,11 +2612,21 @@ def collect(output, upstream, plan):
 
         require(
             plan.get("schema_id", SCHEMA)
-            == (PROFILE_SCHEMA if "observation_profile" in plan else SCHEMA),
+            == (
+                SCROLL_SCHEMA
+                if "no_input_scroll_recovery" in plan
+                else PROFILE_SCHEMA
+                if "observation_profile" in plan
+                else SCHEMA
+            )
+            and ("no_input_scroll_recovery" not in plan or scroll_recovery_enabled(plan)),
             "Collection schema and explicit observation profile disagree",
         )
         if "observation_profile" in plan:
-            require(plan["schema_id"] == PROFILE_SCHEMA, "Explicit v4 profile schema required")
+            require(
+                plan["schema_id"] in {PROFILE_SCHEMA, SCROLL_SCHEMA},
+                "Explicit profile collection schema required",
+            )
             require(
                 upstream_manifest(upstream) == plan["upstream"],
                 "Canonical Git/source changed before profile materialization",
@@ -2504,6 +2924,7 @@ def collect(output, upstream, plan):
                         observation_profile_failure_count=0,
                         observation_profile_failures=[],
                     )
+                missing.update(scroll_accounting(plan, []))
                 outcomes.append(missing)
                 split_episodes[task["split"]].append(missing)
                 continue
@@ -2626,6 +3047,13 @@ def collect(output, upstream, plan):
                 observation_profile=copy.deepcopy(plan["observation_profile"]),
                 observation_profile_verification=profile_checks[split],
             )
+        if scroll_recovery_enabled(plan):
+            receipt.update(
+                no_input_scroll_recovery=copy.deepcopy(NO_INPUT_SCROLL_RULE),
+                excluded_no_input_scroll_count=sum(
+                    r.get("excluded_no_input_scroll_count", 0) for r in split_episodes[split]
+                ),
+            )
         write(bundle / "receipt.json", receipt)
         bundle_receipts[split] = {
             "path": split + "/receipt.json",
@@ -2666,6 +3094,13 @@ def collect(output, upstream, plan):
             observation_profile=copy.deepcopy(plan["observation_profile"]),
             observation_profile_verification=profile_checks,
         )
+    if scroll_recovery_enabled(plan):
+        receipt.update(
+            no_input_scroll_recovery=copy.deepcopy(NO_INPUT_SCROLL_RULE),
+            excluded_no_input_scroll_count=sum(
+                r.get("excluded_no_input_scroll_count", 0) for r in outcomes
+            ),
+        )
     write(output / "receipt.json", receipt)
     if primary:
         raise primary
@@ -2688,6 +3123,7 @@ def main(argv=None):
         "--observation-profile", choices=(NATIVE_PROFILE, COMPOSED_PROFILE), default=NATIVE_PROFILE
     )
     parser.add_argument("--observation-profile-helper-sha256")
+    parser.add_argument("--allow-no-input-stale-scroll", action="store_true")
     args = parser.parse_args(argv)
     sys.meta_path.insert(0, RejectModels())
     plan = collection_plan(
@@ -2696,6 +3132,7 @@ def main(argv=None):
         args.collection_id,
         observation_profile=args.observation_profile,
         observation_profile_helper_sha256=args.observation_profile_helper_sha256,
+        allow_no_input_stale_scroll=args.allow_no_input_stale_scroll,
     )
     digest = sha(encode(plan))
     if not args.collect:
