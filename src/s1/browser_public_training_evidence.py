@@ -15,7 +15,7 @@ from urllib.parse import urlsplit
 
 from .browser_public_training_tasks import get_public_training_task
 
-OBSERVATION_SCHEMA = "jev-public-native-training-dom-observation-v2"
+OBSERVATION_SCHEMA = "jev-public-native-training-dom-observation-v3"
 OWNERSHIP_FIELDS = frozenset(
     {"target_id", "session_id", "root_frame_id", "loader_id", "native_page_key", "url"}
 )
@@ -28,24 +28,38 @@ _READ_JS = r"""
   const clean = value => String(value ?? '').replace(/\s+/g, ' ').trim();
   const normalized = value => clean(value).replace(/^\d+(?:\.\d+)*[.)]?\s*/, '')
     .toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const parent = node => node?.parentElement || node?.getRootNode?.()?.host || null;
   const path = node => {
     const parts = [];
-    for (let current=node; current && current.nodeType===1; current=current.parentElement) {
+    for (let current=node; current && current.nodeType===1; current=parent(current)) {
       if (parts.length >= 128) return null;
-      const tag=current.tagName.toLowerCase(), parent=current.parentElement;
-      const siblings=parent ? [...parent.children].filter(child=>child.tagName===current.tagName) : [current];
+      const tag=current.tagName.toLowerCase(), lightParent=current.parentElement;
+      const root=!lightParent ? current.getRootNode?.() : null;
+      const siblings=[...(lightParent?.children || root?.children || [current])]
+        .filter(child=>child.tagName===current.tagName);
       parts.unshift(tag+'['+(siblings.indexOf(current)+1)+']');
+      if (!lightParent && root?.host) parts.unshift('#shadow-root');
     }
     return parts.length ? '/'+parts.join('/') : null;
   };
-  const hit = (x,y) => ({x,y,path:x>=0 && y>=0 && x<innerWidth && y<innerHeight ?
-    path(document.elementFromPoint(x,y)) : null});
+  const hit = (x,y) => {
+    let node=x>=0 && y>=0 && x<innerWidth && y<innerHeight ? document.elementFromPoint(x,y) : null;
+    const documentPath=path(node), chain=node ? [path(node)] : [];
+    let depth=0;
+    while (node?.shadowRoot?.mode==='open' && depth++<128) {
+      const next=node.shadowRoot.elementFromPoint(x,y);
+      if (!next || next===node) break;
+      node=next;chain.push(path(node));
+    }
+    return {x,y,path:path(node),document_path:documentPath,chain,overflow:depth>128};
+  };
   const fact = node => {
     if (!node) return null;
-    const rect=node.getBoundingClientRect(), styles=[];
+    const rect=node.getBoundingClientRect(), styles=[], ancestors=[];
     let current=node;
-    for (; current && styles.length<128; current=current.parentElement) {
+    for (; current && styles.length<128; current=parent(current)) {
       const style=getComputedStyle(current);
+      ancestors.push(path(current));
       styles.push({display:style.display,visibility:style.visibility,opacity:style.opacity,
         content_visibility:style.contentVisibility || 'visible',hidden:current.hidden===true});
     }
@@ -56,6 +70,7 @@ _READ_JS = r"""
       text_truncated:raw.length>32000,connected:node.isConnected,
       rect:{x:rect.left,y:rect.top,width:rect.width,height:rect.height},
       client_rect_count:node.getClientRects().length,style_chain:styles,style_overflow:!!current,
+      composed_ancestor_paths:ancestors,
       center_hit:hit(rect.left+rect.width/2,rect.top+rect.height/2),
       intersection_hit:hit((left+right)/2,(top+bottom)/2)};
   };
@@ -79,13 +94,34 @@ _READ_JS = r"""
     }
     return found;
   };
-  const target={heading:fact(heading),signature:null,paragraph:null,paragraphs:[],row:null,
+  const target={heading:fact(heading),signature:null,signature_shadow:null,paragraph:null,paragraphs:[],row:null,
     matching_function:null,owner_container_path:null};
   if (spec.judge_kind==='mdn_method') {
     const pattern=new RegExp('(^|[^a-zA-Z0-9_$])'+spec.signature_name+'\\s*\\(');
     const signatures=ownNodes(heading,node=>node.tagName==='PRE' && pattern.test(node.textContent),16);
     target.signature=fact(signatures[0]);
-    if (target.signature) target.signature.owner_heading_path=path(heading);
+    if (target.signature) {
+      target.signature.owner_heading_path=path(heading);
+      target.signature.source='light-dom';
+    } else {
+      // Only hosts encountered in this heading's own light-DOM interval may
+      // supply a signature. No other section or closed root is searched.
+      const hosts=ownNodes(heading,node=>node.tagName==='MDN-CODE-EXAMPLE',16);
+      for (const host of hosts) {
+        const root=host.shadowRoot;
+        if (!root || root.mode!=='open') continue;
+        const pre=[...root.querySelectorAll('pre')].find(candidate=>{
+          const code=candidate.querySelector('code');
+          return code && pattern.test(code.innerText ?? code.textContent ?? '');
+        });
+        if (!pre) continue;
+        const code=pre.querySelector('code');
+        target.signature={...fact(pre),owner_heading_path:path(heading),source:'open-shadow-root'};
+        target.signature_shadow={root_mode:root.mode,host:fact(host),code:fact(code),
+          root_path:path(host)+'/#shadow-root',owner_heading_path:path(heading)};
+        break;
+      }
+    }
   } else if (spec.judge_kind==='overlay') {
     const fn=main ? [...main.querySelectorAll('code.function')].find(node=>clean(node.textContent)==='overlay') : null;
     const row=fn?.closest('tr'), cell=fn?.closest('td,th'), signature=fn?.closest('p');
@@ -110,7 +146,7 @@ _READ_JS = r"""
     paragraphs:nameParagraphs};
   const blockerSelector='#challenge-form,#cf-challenge-running,[id^="cf-chl-"],'+
     '.cf-error-details,.g-recaptcha,.h-captcha,input[type="password"]';
-  return {schema_id:'jev-public-native-training-dom-observation-v2',url:location.href,
+  return {schema_id:'jev-public-native-training-dom-observation-v3',url:location.href,
     document_title:document.title,document_time_origin:performance.timeOrigin,
     document_read:{url_start:initialURL,url_end:location.href,
       time_origin_start:origin,time_origin_end:performance.timeOrigin},
@@ -159,7 +195,12 @@ def _number(value):
 
 def _node_path(value):
     return isinstance(value, str) and bool(
-        re.fullmatch(r"(?:/[a-z][a-z0-9:_-]*\[[1-9][0-9]*\]){1,128}", value)
+        len(value.split("/")) <= 129
+        and re.fullmatch(
+            r"(?:/[a-z][a-z0-9:_-]*\[[1-9][0-9]*\])+(?:/#shadow-root"
+            r"(?:/[a-z][a-z0-9:_-]*\[[1-9][0-9]*\])+)*",
+            value,
+        )
     )
 
 
@@ -258,6 +299,78 @@ def _visible(node, viewport, *, opening=False):
         and abs(hit["x"] - x) < 1e-4
         and abs(hit["y"] - y) < 1e-4
         and _within(hit.get("path"), node["path"])
+    )
+
+
+def _composed_ancestors(node):
+    """Require every style's composed ancestor, including the light-DOM host."""
+    current = node.get("path")
+    if not _node_path(current):
+        return False
+    expected = []
+    while current:
+        expected.append(current)
+        current = current.rsplit("/", 1)[0]
+        if current.endswith("/#shadow-root"):
+            current = current.removesuffix("/#shadow-root")
+    return (
+        node.get("composed_ancestor_paths") == expected
+        and type(node.get("style_chain")) is list
+        and len(node["style_chain"]) == len(expected)
+    )
+
+
+def _shadow_hit(node, host, root_path):
+    hit = _mapping(node.get("center_hit"))
+    chain = hit.get("chain")
+    return (
+        hit.get("document_path") == host.get("path")
+        and hit.get("overflow") is False
+        and type(chain) is list
+        and len(chain) == 2
+        and chain[0] == host.get("path")
+        and chain[-1] == hit.get("path")
+        and _within(chain[-1], node.get("path"))
+        and chain[-1].startswith(root_path + "/")
+        and chain[-1].count("/#shadow-root/") == 1
+    )
+
+
+def _mdn_signature_source(target, heading, signature, main, viewport, name):
+    source = signature.get("source")
+    shadow = target.get("signature_shadow")
+    signature_path = signature.get("path")
+    if source == "light-dom":
+        return (
+            shadow is None and _node_path(signature_path) and "/#shadow-root/" not in signature_path
+        )
+    shadow = _mapping(shadow)
+    host, code = (_mapping(shadow.get(key)) for key in ("host", "code"))
+    root_path = shadow.get("root_path")
+    return (
+        source == "open-shadow-root"
+        and _node_path(signature_path)
+        and shadow.get("root_mode") == "open"
+        and host.get("tag") == "mdn-code-example"
+        and _within(host.get("path"), main.get("path"))
+        and "/#shadow-root/" not in host.get("path", "")
+        and root_path == host.get("path", "") + "/#shadow-root"
+        and signature.get("path", "").startswith(root_path + "/")
+        and signature.get("path", "").count("/#shadow-root/") == 1
+        and shadow.get("owner_heading_path") == heading.get("path")
+        and _rendered(host, allow_contents=True)
+        and code.get("tag") == "code"
+        and _within(code.get("path"), signature.get("path"))
+        and code.get("text_truncated") is False
+        and bool(
+            re.search(r"(?<![A-Za-z0-9_$])" + re.escape(name) + r"\s*\(", _text(code.get("text")))
+        )
+        and _visible(code, viewport)
+        and _composed_ancestors(signature)
+        and _composed_ancestors(code)
+        and _composed_ancestors(host)
+        and _shadow_hit(signature, host, root_path)
+        and _shadow_hit(code, host, root_path)
     )
 
 
@@ -445,6 +558,12 @@ def validate_public_training_observation(task, observation, *, expected_ownershi
             and signature.get("tag") == "pre"
             and signature.get("owner_heading_path") == heading.get("path"),
         )
+        check(
+            "signature_source_ownership",
+            _mdn_signature_source(
+                target, heading, signature, main, viewport, task["signature_name"]
+            ),
+        )
     elif task["judge_kind"] == "overlay":
         row, function = _mapping(target.get("row")), _mapping(target.get("matching_function"))
         cell = target.get("owner_container_path")
@@ -492,7 +611,7 @@ def validate_public_training_observation(task, observation, *, expected_ownershi
             and _visible(paragraph, viewport, opening=True),
         )
     return {
-        "schema_id": "jev-public-native-training-dom-verdict-v2",
+        "schema_id": "jev-public-native-training-dom-verdict-v3",
         "goal_id": task["goal_id"],
         "success": all(checks.values()),
         "checks": checks,

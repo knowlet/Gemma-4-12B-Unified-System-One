@@ -687,7 +687,7 @@ def test_unoffered_path_cannot_become_direct_navigation(tmp_path):
 
 def test_MDN_interfaces_anchor_not_reclicked_after_it_is_applied(tmp_path):
     with fake_native_episode(tmp_path) as (ep, _agent, model):
-        t = get_public_training_task("mdn-intersectionobserver-observe")
+        t = get_public_training_task("mdn-abortcontroller-abort")
         p = synthetic_page(t["start_url"] + "#interfaces")
         links = [{"node": 1, "href": t["start_url"] + "#interfaces", "label": "Interfaces"}]
         body = {
@@ -701,7 +701,7 @@ def test_MDN_interfaces_anchor_not_reclicked_after_it_is_applied(tmp_path):
 
 def test_MDN_offered_interfaces_precedes_same_document_specifications(tmp_path):
     with fake_native_episode(tmp_path) as (_ep, _agent, model):
-        t = get_public_training_task("mdn-intersectionobserver-observe")
+        t = get_public_training_task("mdn-abortcontroller-abort")
         p = synthetic_page(t["start_url"])
         links = [
             {"node": 1, "href": t["start_url"] + "#specifications", "label": "Specifications"},
@@ -719,7 +719,7 @@ def test_MDN_offered_interfaces_precedes_same_document_specifications(tmp_path):
 def test_MDN_real_empty_fragment_breadcrumb_cannot_reset_interfaces(tmp_path):
     """Exact MDN breadcrumb/TOC URLs seen in sealed02, portable CPU reproduction."""
     with fake_native_episode(tmp_path) as (_ep, _agent, model):
-        t = get_public_training_task("mdn-intersectionobserver-observe")
+        t = get_public_training_task("mdn-abortcontroller-abort")
         page = synthetic_page(t["start_url"] + "#interfaces", scroll_y=18000)
         links = [
             {"node": 1, "href": t["start_url"], "label": "Web APIs"},
@@ -785,9 +785,78 @@ def test_MDN_saved02_interfaces_views_progress_without_same_path_breadcrumb_when
                     {},
                     bootstrap=returned["bootstrap"],
                 )
-                assert selected == {"operation": "SCROLL_DOWN", "target": None}
+                if selected["operation"] == "CLICK":
+                    chosen = targets["CLICK"][selected["target"]]
+                    chosen_href = next(
+                        link["href"]
+                        for link in returned["offered_link_metadata"]
+                        if link["node"] == chosen["node"]
+                    )
+                    fragment = t[
+                        "bootstrap_index_section_fragment"
+                        if returned["bootstrap"]
+                        else "index_section_fragment"
+                    ]
+                    assert chosen_href == t["start_url"] + "#" + fragment
+                else:
+                    assert selected == {"operation": "SCROLL_DOWN", "target": None}
                 checked += 1
         assert checked > 0
+
+
+@pytest.mark.parametrize("bootstrap", [False, True])
+@pytest.mark.parametrize(
+    "goal_id",
+    [t["goal_id"] for t in m.private_modules()[0].tasks() if t["judge_kind"] == "mdn_method"],
+)
+def test_MDN_index_hint_uses_current_trajectory_and_stops_reclicking(tmp_path, goal_id, bootstrap):
+    with fake_native_episode(tmp_path) as (_ep, _agent, model):
+        t = get_public_training_task(goal_id)
+        fragment = t["bootstrap_index_section_fragment" if bootstrap else "index_section_fragment"]
+        page = synthetic_page(t["start_url"])
+        links = [
+            {"node": 1, "href": t["start_url"], "label": "Web APIs"},
+            {"node": 2, "href": t["start_url"] + "#specifications", "label": "Specifications"},
+            {"node": 3, "href": t["start_url"] + "#interfaces", "label": "Interfaces"},
+        ]
+        body = {
+            "questions": {"operation": {"criteria": {"CLICK": "Click", "SCROLL_DOWN": "Scroll"}}}
+        }
+        assert m.scripted_teacher(
+            t, page, body, model, links, {"success": False}, {}, bootstrap=bootstrap
+        ) == {"operation": "CLICK", "target": "2" if fragment == "specifications" else "3"}
+        page["url"] += "#" + fragment
+        assert m.scripted_teacher(
+            t, page, body, model, links, {"success": False}, {}, bootstrap=bootstrap
+        ) == {"operation": "SCROLL_DOWN", "target": None}
+
+
+@pytest.mark.parametrize(
+    "goal_id",
+    ["mdn-intersectionobserver-observe", "mdn-resizeobserver-observe", "mdn-urlsearchparams-get"],
+)
+def test_MDN_category_waypoint_requires_actual_offered_link(tmp_path, goal_id):
+    with fake_native_episode(tmp_path) as (_ep, _agent, model):
+        t = get_public_training_task(goal_id)
+        page = synthetic_page(t["start_url"])
+        body = {
+            "questions": {"operation": {"criteria": {"CLICK": "Click", "SCROLL_DOWN": "Scroll"}}}
+        }
+        assert m.scripted_teacher(t, page, body, model, [], {"success": False}, {}) == {
+            "operation": "SCROLL_DOWN",
+            "target": None,
+        }
+        links = [
+            {
+                "node": 2,
+                "href": "https://developer.mozilla.org" + t["route_paths"][0],
+                "label": "API category",
+            }
+        ]
+        assert m.scripted_teacher(t, page, body, model, links, {"success": False}, {}) == {
+            "operation": "CLICK",
+            "target": "2",
+        }
 
 
 def test_ownership_carries_full_document_loader_over_fragment_commit():

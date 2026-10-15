@@ -78,6 +78,7 @@ def observation(task):
             MAIN + "/pre[1]", task["signature_name"] + "(value)", tag="pre", y=160, height=60
         )
         signature["owner_heading_path"] = heading["path"]
+        signature["source"] = "light-dom"
         target.update(signature=signature, paragraph=None, paragraphs=[])
     elif task["judge_kind"] == "overlay":
         row = node(
@@ -150,6 +151,8 @@ def test_all_twelve_exact_task_shapes_have_recomputed_private_checks(task):
     raw, owner = observation(task)
     verdict = validate_public_training_observation(task, raw, expected_ownership=owner)
     assert verdict["success"], verdict["failed_checks"]
+    assert raw["schema_id"] == "jev-public-native-training-dom-observation-v3"
+    assert verdict["schema_id"] == "jev-public-native-training-dom-verdict-v3"
     assert all(verdict["checks"].values())
     assert "not full collection validation" in verdict["scope"]
 
@@ -397,6 +400,7 @@ def dom_observation(
     zero_main_box=False,
     git_command=None,
     git_name_child=False,
+    mdn_shadow=None,
 ):
     """Execute the real observer against a small CPU-only DOM API mock.
 
@@ -414,6 +418,7 @@ def dom_observation(
     program = r"""
 const spec=__TASK__, childHeading=__CHILD__, ownContent=__OWN__, visibleName=__VISIBLE__;
 const mainDisplay=__DISPLAY__, zeroMainBox=__ZERO_BOX__, gitCommand=__GIT_COMMAND__, gitNameChild=__GIT_CHILD__;
+const shadowMode=__SHADOW__;
 globalThis.location={href:spec.primary_target_url};
 globalThis.performance={timeOrigin:1790000000000};
 globalThis.innerWidth=1024;globalThis.innerHeight=768;
@@ -422,6 +427,7 @@ globalThis.NodeFilter={SHOW_ELEMENT:1};
 function node(tag,text,y,height=40,width=700) {
   return {tagName:tag.toUpperCase(),nodeType:1,innerText:text,textContent:text,id:'',
     hidden:false,isConnected:true,children:[],parentElement:null,
+    getRootNode(){return this._root || this.parentElement?.getRootNode() || globalThis.document;},
     contains(other){for(;other;other=other.parentElement)if(other===this)return true;return false;},
     closest(selector){const tags=selector.split(',');for(let n=this;n;n=n.parentElement)
       if(tags.includes(n.tagName.toLowerCase()))return n;return null;},
@@ -454,6 +460,27 @@ if(spec.site_group==='git-reference') {
   add(cell,node('p','Replaces the substring of the original string with the new substring.',visibleName?220:100));
 } else {
   add(main,node('h2',spec.target_heading,100));
+  if(shadowMode && spec.judge_kind==='mdn_method') {
+    if(childHeading)add(main,node('h3','A Different Child Subsection',180));
+    const host=add(main,node('mdn-code-example',shadowMode==='light_text_only'?spec.signature_name+'(value)':'',230,100));
+    const root={host,mode:shadowMode==='closed'?'closed':'open',children:[]};
+    if(shadowMode!=='closed' && shadowMode!=='light_text_only')host.shadowRoot=root;
+    const pre=node('pre',spec.signature_name+'(value)',240,80,600);pre._root=root;
+    root.children.push(pre);
+    const code=add(pre,node('code',shadowMode==='wrong_signature'?'unrelated(value)':spec.signature_name+'(value)',245,60,500));
+    if(shadowMode==='missing_code')pre.children=[];
+    if(shadowMode==='hidden_host')host._display='none';
+    if(shadowMode==='hidden_code')code._visibility='hidden';
+    if(shadowMode==='offscreen') {
+      for(const n of [host,pre,code])n.getBoundingClientRect=()=>({left:40,top:900,right:640,bottom:980,width:600,height:80});
+    }
+    if(shadowMode==='disconnected')code.isConnected=false;
+    root.querySelectorAll=()=>descendants(root).filter(n=>n.tagName==='PRE');
+    pre.querySelector=()=>pre.children.find(n=>n.tagName==='CODE')||null;
+    root.elementFromPoint=(x,y)=>[...descendants(root)].reverse().find(n=>{const r=n.getBoundingClientRect();
+      return x>=r.left&&x<r.right&&y>=r.top&&y<r.bottom;})||null;
+    if(shadowMode==='occluded')root.elementFromPoint=()=>null;
+  } else {
   const content=()=>spec.judge_kind==='mdn_method'
     ? node('pre',spec.signature_name+'(value)',240,60)
     : node('p',childHeading&&!ownContent
@@ -462,13 +489,14 @@ if(spec.site_group==='git-reference') {
   if(ownContent)add(main,content());
   if(childHeading)add(main,node('h3','A Different Child Subsection',180));
   if(!ownContent)add(main,content());
+  }
 }
 const all=[html,body,main,...descendants(main)];
 main.querySelectorAll=selector=>selector==='code.function'
   ? descendants(main).filter(n=>n.functionClass)
   : descendants(main).filter(n=>/^H[1-6]$/.test(n.tagName));
 for(const cell of all.filter(n=>n.tagName==='TD'))cell.querySelectorAll=()=>descendants(cell).filter(n=>n.tagName==='P');
-globalThis.getComputedStyle=n=>({display:n===main?mainDisplay:'block',visibility:'visible',opacity:'1',contentVisibility:'visible'});
+globalThis.getComputedStyle=n=>({display:n._display||(n===main?mainDisplay:'block'),visibility:n._visibility||'visible',opacity:'1',contentVisibility:'visible'});
 globalThis.document={title:identity+' - Official Documentation',readyState:'complete',
   querySelector(){return main;},querySelectorAll(){return [];},
   createTreeWalker(root){const nodes=descendants(root);let i=0;return {nextNode(){return nodes[i++]||null;}};},
@@ -486,6 +514,7 @@ console.log(JSON.stringify(eval(__SCRIPT__)));
         ("__ZERO_BOX__", zero_main_box),
         ("__GIT_COMMAND__", git_command),
         ("__GIT_CHILD__", git_name_child),
+        ("__SHADOW__", mdn_shadow),
     ):
         program = program.replace(key, json.dumps(value))
     result = subprocess.run(["node", "-e", program], capture_output=True, text=True, check=True)
@@ -509,6 +538,79 @@ def test_actual_dom_observer_keeps_own_content_before_child_heading(task_id):
     task = get_public_training_task(task_id)
     raw, owner = dom_observation(task, child_heading=True, own_content=True)
     assert validate_public_training_observation(task, raw, expected_ownership=owner)["success"]
+
+
+def test_actual_DOM_open_shadow_code_has_composed_ownership_styles_and_deep_hits():
+    task = get_public_training_task("mdn-abortcontroller-abort")
+    raw, owner = dom_observation(
+        task, mdn_shadow="open", main_display="contents", zero_main_box=True
+    )
+    signature, shadow = raw["target"]["signature"], raw["target"]["signature_shadow"]
+    assert signature["source"] == "open-shadow-root"
+    assert "/mdn-code-example[1]/#shadow-root/pre[1]" in signature["path"]
+    assert shadow["root_mode"] == "open"
+    assert signature["composed_ancestor_paths"][1] == shadow["host"]["path"]
+    assert signature["center_hit"]["chain"] == [shadow["host"]["path"], shadow["code"]["path"]]
+    assert validate_public_training_observation(task, raw, expected_ownership=owner)["success"]
+
+
+def test_new_observer_schema_does_not_reinterpret_old_v2_observations():
+    task = get_public_training_task("mdn-abortcontroller-abort")
+    raw, owner = observation(task)
+    raw["schema_id"] = "jev-public-native-training-dom-observation-v2"
+    verdict = validate_public_training_observation(task, raw, expected_ownership=owner)
+    assert not verdict["success"] and not verdict["checks"]["observation_schema"]
+
+
+@pytest.mark.parametrize(
+    "mode",
+    [
+        "closed",
+        "light_text_only",
+        "wrong_signature",
+        "missing_code",
+        "hidden_host",
+        "hidden_code",
+        "offscreen",
+        "disconnected",
+        "occluded",
+    ],
+)
+def test_actual_DOM_shadow_requires_real_rendered_unobscured_owned_code(mode):
+    task = get_public_training_task("mdn-abortcontroller-abort")
+    raw, owner = dom_observation(task, mdn_shadow=mode)
+    assert not validate_public_training_observation(task, raw, expected_ownership=owner)["success"]
+
+
+def test_actual_DOM_shadow_never_borrows_code_after_child_heading():
+    task = get_public_training_task("mdn-abortcontroller-abort")
+    raw, owner = dom_observation(task, mdn_shadow="open", child_heading=True)
+    assert raw["target"]["signature"] is None
+    assert not validate_public_training_observation(task, raw, expected_ownership=owner)["success"]
+
+
+@pytest.mark.parametrize(
+    "mutation", ["host_path", "root_mode", "ancestor", "deep_hit", "heading", "truncated"]
+)
+def test_shadow_raw_fact_corruption_cannot_override_composed_source_ownership(mutation):
+    task = get_public_training_task("mdn-abortcontroller-abort")
+    raw, owner = dom_observation(task, mdn_shadow="open")
+    target = raw["target"]
+    if mutation == "host_path":
+        target["signature_shadow"]["host"]["path"] = MAIN + "/mdn-code-example[2]"
+    elif mutation == "root_mode":
+        target["signature_shadow"]["root_mode"] = "closed"
+    elif mutation == "ancestor":
+        target["signature"]["composed_ancestor_paths"].pop(1)
+    elif mutation == "deep_hit":
+        target["signature"]["center_hit"]["chain"] = [target["signature"]["path"]]
+    elif mutation == "heading":
+        target["signature_shadow"]["owner_heading_path"] = MAIN + "/h3[1]"
+    else:
+        target["signature_shadow"]["code"]["text_truncated"] = True
+    verdict = validate_public_training_observation(task, raw, expected_ownership=owner)
+    assert not verdict["success"]
+    assert not verdict["checks"]["signature_source_ownership"]
 
 
 @pytest.mark.parametrize("visible", [False, True])

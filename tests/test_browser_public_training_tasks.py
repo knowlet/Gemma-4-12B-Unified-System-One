@@ -7,6 +7,7 @@ from urllib.parse import urlsplit
 import pytest
 
 from s1.browser_public_training_tasks import (
+    PRIVATE_ROUTE_HINT_REVISION,
     PROPOSAL_SHA256,
     get_public_training_task,
     public_training_tasks,
@@ -65,3 +66,22 @@ def test_mdn_goal_requires_syntax_and_signature_without_an_explanation_condition
     assert len(mdn) == 4
     assert all(task["target_heading"] == "Syntax" for task in mdn)
     assert all("explanation" not in task["goal"] for task in mdn)
+
+
+def test_private_mdn_category_routes_keep_partner_recovery_hint_consistent():
+    assert PRIVATE_ROUTE_HINT_REVISION == "mdn-specifications-categories-v1"
+    categories = {
+        "mdn-intersectionobserver-observe": "/en-US/docs/Web/API/Intersection_Observer_API",
+        "mdn-resizeobserver-observe": "/en-US/docs/Web/API/Resize_Observer_API",
+        "mdn-urlsearchparams-get": "/en-US/docs/Web/API/URL_API",
+    }
+    for task in tasks():
+        if task["judge_kind"] != "mdn_method":
+            assert "index_section_fragment" not in task
+            continue
+        other = get_public_training_task(task["bootstrap_goal_id"])
+        expected = "specifications" if task["goal_id"] in categories else "interfaces"
+        assert task["index_section_fragment"] == expected
+        assert task["bootstrap_index_section_fragment"] == other["index_section_fragment"]
+        if task["goal_id"] in categories:
+            assert task["route_paths"][0] == categories[task["goal_id"]]

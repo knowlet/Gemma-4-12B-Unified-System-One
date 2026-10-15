@@ -320,6 +320,7 @@ def collection_plan(output, upstream, collection_id):
         "output": str(Path(output).resolve()),
         "collector_sha256": record(__file__)["sha256"],
         "proposal_sha256": PROPOSAL_SHA,
+        "private_route_hint_revision": tasks_module.PRIVATE_ROUTE_HINT_REVISION,
         "upstream": upstream_source,
         "tasks": tasks,
         "ordered_episode_ids": [
@@ -495,13 +496,16 @@ def scripted_teacher(task, page, payload, model, links, verdict, observed, *, bo
                     action = find(path)
                     if action is not None:
                         break
+        index_fragment = task.get(
+            "bootstrap_index_section_fragment" if bootstrap else "index_section_fragment"
+        )
         if (
             action is None
             and task["judge_kind"] == "mdn_method"
             and current.path.rstrip("/") == "/en-US/docs/Web/API"
-            and current.fragment != "interfaces"
+            and current.fragment != index_fragment
         ):
-            action = find(current.path, "interfaces")
+            action = find(current.path, index_fragment)
         if (
             action is None
             and current.path.rstrip("/") not in {p.rstrip("/") for p in routes}

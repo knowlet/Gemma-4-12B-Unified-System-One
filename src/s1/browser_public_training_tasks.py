@@ -11,6 +11,7 @@ from __future__ import annotations
 import copy
 
 PROPOSAL_SHA256 = "e3c2c9833709f3d5c05a320c13403f46aa8b8938acaf7e867d52470928f4bdfa"
+PRIVATE_ROUTE_HINT_REVISION = "mdn-specifications-categories-v1"
 
 _DEFINITIONS = [
     {
@@ -26,10 +27,13 @@ _DEFINITIONS = [
         "allowed_top_level_hosts": ["developer.mozilla.org"],
         "target_path": "/en-US/docs/Web/API/IntersectionObserver/observe",
         "route_paths": [
+            "/en-US/docs/Web/API/Intersection_Observer_API",
             "/en-US/docs/Web/API/IntersectionObserver",
             "/en-US/docs/Web/API/IntersectionObserver/observe",
         ],
         "route_label_hints": ["IntersectionObserver", "Syntax"],
+        "index_section_fragment": "specifications",
+        "bootstrap_index_section_fragment": "specifications",
         "judge_kind": "mdn_method",
         "main_identity": "IntersectionObserver",
         "signature_name": "observe",
@@ -39,6 +43,7 @@ _DEFINITIONS = [
         "bootstrap_goal_id": "mdn-resizeobserver-observe",
         "bootstrap_target_path": "/en-US/docs/Web/API/ResizeObserver/observe",
         "bootstrap_route_paths": [
+            "/en-US/docs/Web/API/Resize_Observer_API",
             "/en-US/docs/Web/API/ResizeObserver",
             "/en-US/docs/Web/API/ResizeObserver/observe",
         ],
@@ -56,10 +61,13 @@ _DEFINITIONS = [
         "allowed_top_level_hosts": ["developer.mozilla.org"],
         "target_path": "/en-US/docs/Web/API/ResizeObserver/observe",
         "route_paths": [
+            "/en-US/docs/Web/API/Resize_Observer_API",
             "/en-US/docs/Web/API/ResizeObserver",
             "/en-US/docs/Web/API/ResizeObserver/observe",
         ],
         "route_label_hints": ["ResizeObserver", "Syntax"],
+        "index_section_fragment": "specifications",
+        "bootstrap_index_section_fragment": "specifications",
         "judge_kind": "mdn_method",
         "main_identity": "ResizeObserver",
         "signature_name": "observe",
@@ -69,6 +77,7 @@ _DEFINITIONS = [
         "bootstrap_goal_id": "mdn-intersectionobserver-observe",
         "bootstrap_target_path": "/en-US/docs/Web/API/IntersectionObserver/observe",
         "bootstrap_route_paths": [
+            "/en-US/docs/Web/API/Intersection_Observer_API",
             "/en-US/docs/Web/API/IntersectionObserver",
             "/en-US/docs/Web/API/IntersectionObserver/observe",
         ],
@@ -86,10 +95,13 @@ _DEFINITIONS = [
         "allowed_top_level_hosts": ["developer.mozilla.org"],
         "target_path": "/en-US/docs/Web/API/URLSearchParams/get",
         "route_paths": [
+            "/en-US/docs/Web/API/URL_API",
             "/en-US/docs/Web/API/URLSearchParams",
             "/en-US/docs/Web/API/URLSearchParams/get",
         ],
         "route_label_hints": ["URLSearchParams", "Syntax"],
+        "index_section_fragment": "specifications",
+        "bootstrap_index_section_fragment": "interfaces",
         "judge_kind": "mdn_method",
         "main_identity": "URLSearchParams",
         "signature_name": "get",
@@ -120,6 +132,8 @@ _DEFINITIONS = [
             "/en-US/docs/Web/API/AbortController/abort",
         ],
         "route_label_hints": ["AbortController", "Syntax"],
+        "index_section_fragment": "interfaces",
+        "bootstrap_index_section_fragment": "specifications",
         "judge_kind": "mdn_method",
         "main_identity": "AbortController",
         "signature_name": "abort",
@@ -129,6 +143,7 @@ _DEFINITIONS = [
         "bootstrap_goal_id": "mdn-urlsearchparams-get",
         "bootstrap_target_path": "/en-US/docs/Web/API/URLSearchParams/get",
         "bootstrap_route_paths": [
+            "/en-US/docs/Web/API/URL_API",
             "/en-US/docs/Web/API/URLSearchParams",
             "/en-US/docs/Web/API/URLSearchParams/get",
         ],
