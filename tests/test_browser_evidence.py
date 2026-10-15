@@ -18,6 +18,7 @@ def source_tree(tmp_path, monkeypatch):
         "src/s1/evaluation/jev_omni.py": b'REVISION = "pinned"\n',
         "scripts/jev_browser_benchmark.py": b"# exact browser runner\r\n",
         "scripts/jev_local_model.py": b"# local caller\n",
+        "scripts/jev_public_web_cases.py": b"# external public-site judge\n",
     }
     for relative, blob in files.items():
         path = root / relative

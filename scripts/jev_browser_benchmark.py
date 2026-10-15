@@ -764,12 +764,85 @@ class PlaywrightCDP:
         self.targets = {}
         self.sessions = {}
         self.calls = 0
+        self.public_navigation_hosts = None
+        self.public_request_blocks = []
+        self.public_navigation_events = []
+        self.public_navigation_violations = []
+        self.public_observer_errors = []
+
+    @staticmethod
+    def _public_request_scope(request, hosts):
+        if request.method not in {"GET", "HEAD"}:
+            return "public task permits only GET and HEAD requests", False
+        if not request.is_navigation_request():
+            return None, False
+        try:
+            main_navigation = request.frame.parent_frame is None
+        except Exception:
+            return "public navigation frame metadata unavailable", True
+        if not main_navigation:
+            return None, False
+        try:
+            parsed = urlsplit(request.url)
+            allowed = (
+                parsed.scheme == "https"
+                and parsed.hostname in hosts
+                and parsed.username is None
+                and parsed.password is None
+                and parsed.port in {None, 443}
+            )
+        except ValueError:
+            allowed = False
+        return (
+            None if allowed else "public task top-level navigation outside declared HTTPS hosts",
+            True,
+        )
+
+    def _public_request_observed(self, request, hosts):
+        """Audit navigation hops; Playwright routing does not intercept redirected hops."""
+        try:
+            reason, navigation = self._public_request_scope(request, hosts)
+            if navigation or (reason and request.is_navigation_request()):
+                previous = request.redirected_from
+                record = {
+                    "url": request.url,
+                    "method": request.method,
+                    "redirected_from": previous.url if previous is not None else None,
+                    "scope_violation": reason,
+                }
+                self.public_navigation_events.append(record)
+                if reason:
+                    self.public_navigation_violations.append(record)
+        except Exception as exc:
+            self.public_observer_errors.append({"type": type(exc).__name__, "message": str(exc)})
+
+    def _public_route(self, route, hosts):
+        """Read-only public tasks keep ordinary assets and same-site GET navigation."""
+        request = route.request
+        reason, _ = self._public_request_scope(request, hosts)
+        if reason:
+            self.public_request_blocks.append(
+                {"url": request.url, "method": request.method, "reason": reason}
+            )
+            route.abort("blockedbyclient")
+        else:
+            route.continue_()
 
     def cdp(self, method, session_id=None, **params):
         self.calls += 1
         if method == "Target.createTarget":
             target = f"target-{len(self.targets) + 1}"
-            page = self.browser.new_page()
+            page = (
+                self.browser.new_page(service_workers="block")
+                if self.public_navigation_hosts is not None
+                else self.browser.new_page()
+            )
+            if self.public_navigation_hosts is not None:
+                hosts = frozenset(self.public_navigation_hosts)
+                page.context.on(
+                    "request", lambda request: self._public_request_observed(request, hosts)
+                )
+                page.context.route("**/*", lambda route: self._public_route(route, hosts))
             page.goto(params.get("url", "about:blank"))
             self.targets[target] = page
             return {"targetId": target}
@@ -1044,6 +1117,36 @@ def _record_runner_error(output, secrets):
         raise
 
 
+def _finish_public_browser(browser, transport, output, secrets, *, primary_error=None):
+    """Persist request evidence even when the final agent snapshot could not be read."""
+    failures = []
+    try:
+        browser.close()
+    except BaseException as exc:
+        failures.append(exc)
+    try:
+        _write_json(
+            output / "public-request-ledger.json",
+            {
+                "scope": "Observed request events; redirected contacts are audited, not prevented",
+                "blocks": transport.public_request_blocks,
+                "navigation_events": transport.public_navigation_events,
+                "navigation_violations": transport.public_navigation_violations,
+                "observer_errors": transport.public_observer_errors,
+            },
+            secrets,
+        )
+    except BaseException as exc:
+        failures.append(exc)
+    if failures:
+        retained = primary_error if primary_error is not None else failures[0]
+        for failure in failures:
+            if failure is not retained:
+                retained.add_note("Public browser finalization failure: " + repr(failure))
+        if primary_error is None:
+            raise retained
+
+
 def run_benchmark(
     upstream_path,
     endpoint,
@@ -1066,6 +1169,7 @@ def run_benchmark(
     live_url=None,
     live_goal=None,
     live_expected_title=None,
+    public_case_ids=None,
 ):
     """Run all attempts, preserving failures; an existing output folder is never overwritten.
 
@@ -1081,6 +1185,30 @@ def run_benchmark(
     manifest = upstream_manifest(upstream_path)
     if suite_split not in {"development", "holdout"}:
         raise ValueError("suite_split must be development or holdout")
+    public_cases = []
+    if public_case_ids is not None:
+        if (
+            suite_split != "development"
+            or travel_challenges_only
+            or travel_transfer_only
+            or task_ids is not None
+            or any(value is not None for value in (live_url, live_goal, live_expected_title))
+        ):
+            raise ValueError("Public cases require a separate development run without other suites")
+        if (
+            not isinstance(public_case_ids, (list, tuple))
+            or not public_case_ids
+            or any(not isinstance(case_id, str) for case_id in public_case_ids)
+            or len(set(public_case_ids)) != len(public_case_ids)
+        ):
+            raise ValueError("Public cases require distinct explicit case IDs")
+        from jev_public_web_cases import (
+            case_manifest,
+            get_public_web_case,
+            verify_public_web_case,
+        )
+
+        public_cases = [get_public_web_case(case_id) for case_id in public_case_ids]
     if travel_challenges_only:
         if suite_split != "development":
             raise ValueError("Travel goal challenges require the development split")
@@ -1099,15 +1227,19 @@ def run_benchmark(
         )
     defaults = TASK_IDS if suite_split == "development" else SEEDED_TASK_IDS
     chosen = (
-        {"upstream_travel"}
-        if travel_challenges_only or travel_transfer_only
-        else set(defaults if task_ids is None else task_ids)
+        set()
+        if public_cases
+        else (
+            {"upstream_travel"}
+            if travel_challenges_only or travel_transfer_only
+            else set(defaults if task_ids is None else task_ids)
+        )
     )
     if chosen - set(TASK_IDS):
         raise ValueError(f"Unknown tasks: {sorted(chosen - set(TASK_IDS))}")
     if suite_split == "holdout" and chosen.intersection(DEVELOPMENT_ONLY_TASK_IDS):
         raise ValueError("Historical upstream_travel is development only and cannot run as holdout")
-    if not chosen and not live_url:
+    if not chosen and not live_url and not public_cases:
         raise ValueError("Choose at least one task")
     if live_url:
         parsed = urlsplit(live_url)
@@ -1123,18 +1255,22 @@ def run_benchmark(
 
     output = Path(output_dir).resolve()
     output.mkdir(parents=True, exist_ok=False)
-    cases = [
-        case
-        for repeat in range(repeats)
-        for case in (
-            make_travel_transfer_cases(upstream_path, seed=seed, repeat=repeat)
-            if travel_transfer_only
-            else make_travel_goal_challenges(upstream_path, repeat)
-            if travel_challenges_only
-            else make_cases(seed, repeat, suite_split, upstream_path=upstream_path)
-        )
-        if case.task_id in chosen
-    ]
+    cases = (
+        []
+        if public_cases
+        else [
+            case
+            for repeat in range(repeats)
+            for case in (
+                make_travel_transfer_cases(upstream_path, seed=seed, repeat=repeat)
+                if travel_transfer_only
+                else make_travel_goal_challenges(upstream_path, repeat)
+                if travel_challenges_only
+                else make_cases(seed, repeat, suite_split, upstream_path=upstream_path)
+            )
+            if case.task_id in chosen
+        ]
+    )
     configuration = {
         "upstream": manifest,
         "model_requested": model,
@@ -1174,6 +1310,19 @@ def run_benchmark(
         ],
         "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
     }
+    if public_cases:
+        configuration.update(
+            suite_scope="Predeclared read-only production-site navigation tasks; "
+            "fresh external DOM judges; no claim of broad website coverage",
+            public_web_cases=[case_manifest(case) for case in public_cases],
+            public_judge_sha256=hashlib.sha256(
+                Path(verify_public_web_case.__code__.co_filename).read_bytes()
+            ).hexdigest(),
+            public_request_policy="Only GET/HEAD HTTP requests; service workers blocked. "
+            "Direct top-level navigation guarded by declared HTTPS hosts; observed navigation "
+            "hops audited and any scope violation invalidates the attempt. Redirect contacts "
+            "are not prevented by routing. Subresource hosts retained.",
+        )
     _write_json(output / "configuration.json", configuration)
     for case in cases:
         case_dir = output / "fixtures" / case.case_id
@@ -1201,6 +1350,8 @@ def run_benchmark(
             launch["executable_path"] = str(chromium_executable)
         browser = playwright.chromium.launch(**launch)
         transport = PlaywrightCDP(browser)
+        primary_error = None
+        secrets = startup_secrets
         try:
             with load_upstream(upstream_path, transport) as (agent_module, model_module):
                 with model_adapter(
@@ -1215,12 +1366,23 @@ def run_benchmark(
                     text_helper=text_helper,
                 ) as (records, secrets):
                     task_specs = [
-                        (case.case_id, case.goal, fixture_base + case.url_suffix, case)
+                        (case.case_id, case.goal, fixture_base + case.url_suffix, case, None)
                         for case in cases
                     ]
                     if live_url:
-                        task_specs.append(("live-wikipedia", live_goal, live_url, None))
-                    for case_id, goal, url, case in task_specs:
+                        task_specs.append(("live-wikipedia", live_goal, live_url, None, None))
+                    task_specs.extend(
+                        (
+                            f"{public.case_id}-{repeat:03d}",
+                            public.goal,
+                            public.start_url,
+                            None,
+                            public,
+                        )
+                        for repeat in range(repeats)
+                        for public in public_cases
+                    )
+                    for case_id, goal, url, case, public in task_specs:
                         attempt = output / "attempts" / case_id
                         attempt.mkdir(parents=True, exist_ok=False)
                         started = time.perf_counter()
@@ -1233,6 +1395,13 @@ def run_benchmark(
                         close_error, verification_elapsed_ms = None, None
                         error_stage, verification_error, dom_error = None, None, None
                         snapshots = []
+                        transport.public_navigation_hosts = (
+                            public.allowed_top_level_hosts if public else None
+                        )
+                        blocked_start = len(transport.public_request_blocks)
+                        navigation_start = len(transport.public_navigation_events)
+                        violation_start = len(transport.public_navigation_violations)
+                        observer_start = len(transport.public_observer_errors)
                         try:
                             agent = agent_module.Agent(url, goal, screenshots=False)
                             snapshots.append(_redact(agent.snapshot(), secrets))
@@ -1252,6 +1421,8 @@ def run_benchmark(
                                 try:
                                     if case:
                                         verification = verify_fixture(agent.browser, case)
+                                    elif public:
+                                        verification = verify_public_web_case(agent.browser, public)
                                     else:
                                         observed = agent.browser.evaluate("""(() => ({url:location.href,
                                           title:document.title, heading:document.querySelector('#firstHeading')?.innerText,
@@ -1307,6 +1478,13 @@ def run_benchmark(
                                     error_stage = error_stage or "close"
                             else:
                                 final_state = None
+                            if public and (
+                                transport.public_navigation_violations[violation_start:]
+                                or transport.public_observer_errors[observer_start:]
+                            ):
+                                message = "Public navigation scope or request observation failed"
+                                error = f"{error}; {message}" if error else message
+                                error_stage = error_stage or "public_navigation_scope"
                             model_calls = records[record_start:]
                             policy_calls = [
                                 record for record in model_calls if record["kind"] == "policy"
@@ -1320,7 +1498,11 @@ def run_benchmark(
                             )
                             outcome = {
                                 "case_id": case_id,
-                                "task_id": case.task_id if case else "live_wikipedia",
+                                "task_id": case.task_id
+                                if case
+                                else public.case_id
+                                if public
+                                else "live_wikipedia",
                                 "goal": goal,
                                 "status": final_state["status"] if final_state else "error",
                                 "goal_satisfied": None
@@ -1343,6 +1525,19 @@ def run_benchmark(
                                 "models_reported": identities,
                                 "action_count": len(final_state["history"]) if final_state else 0,
                             }
+                            if public:
+                                outcome["public_request_blocks"] = transport.public_request_blocks[
+                                    blocked_start:
+                                ]
+                                outcome["public_navigation_events"] = (
+                                    transport.public_navigation_events[navigation_start:]
+                                )
+                                outcome["public_scope_violations"] = (
+                                    transport.public_navigation_violations[violation_start:]
+                                )
+                                outcome["public_observer_errors"] = (
+                                    transport.public_observer_errors[observer_start:]
+                                )
                             _write_json(attempt / "outcome.json", outcome, secrets)
                             _write_json(attempt / "model_calls.json", model_calls, secrets)
                             _write_json(attempt / "states.json", snapshots, secrets)
@@ -1351,8 +1546,16 @@ def run_benchmark(
                             _write_json(
                                 output / "summary.json", _summary(outcomes, configuration), secrets
                             )
+        except BaseException as exc:
+            primary_error = exc
+            raise
         finally:
-            browser.close()
+            if public_cases:
+                _finish_public_browser(
+                    browser, transport, output, secrets, primary_error=primary_error
+                )
+            else:
+                browser.close()
     return _summary(outcomes, configuration)
 
 
@@ -1410,6 +1613,7 @@ def main():
     parser.add_argument("--live-url")
     parser.add_argument("--live-goal")
     parser.add_argument("--live-expected-title")
+    parser.add_argument("--public-cases", nargs="+", dest="public_case_ids")
     args = parser.parse_args()
     if args.travel_challenges_only and (
         args.suite_split != "development"

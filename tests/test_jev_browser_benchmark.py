@@ -25,6 +25,204 @@ sys.modules[SPEC.name] = HARNESS
 SPEC.loader.exec_module(HARNESS)
 
 
+@pytest.mark.parametrize(
+    "method,url,navigation,parent,blocked",
+    [
+        ("GET", "https://arxiv.org/search/?query=attention", True, None, False),
+        ("HEAD", "https://arxiv.org/abs/1706.03762", True, None, False),
+        ("GET", "https://cdn.example.org/site.css", False, None, False),
+        ("GET", "https://other.example.org/frame", True, object(), False),
+        ("POST", "https://arxiv.org/feedback", False, None, True),
+        ("PUT", "https://arxiv.org/feedback", True, None, True),
+        ("GET", "https://other.example.org/article", True, None, True),
+        ("GET", "http://arxiv.org/search/", True, None, True),
+        ("GET", "https://user:password@arxiv.org/search/", True, None, True),
+        ("GET", "https://arxiv.org:444/search/", True, None, True),
+    ],
+)
+def test_public_route_retains_assets_and_bounds_read_only_navigation(
+    method, url, navigation, parent, blocked
+):
+    decisions = []
+    transport = HARNESS.PlaywrightCDP(None)
+    route = SimpleNamespace(
+        request=SimpleNamespace(
+            method=method,
+            url=url,
+            is_navigation_request=lambda: navigation,
+            frame=SimpleNamespace(parent_frame=parent),
+        ),
+        abort=lambda reason: decisions.append(("abort", reason)),
+        continue_=lambda: decisions.append(("continue", None)),
+    )
+    transport._public_route(route, {"arxiv.org"})
+    assert decisions == [("abort", "blockedbyclient") if blocked else ("continue", None)]
+    assert bool(transport.public_request_blocks) is blocked
+    if blocked:
+        assert transport.public_request_blocks[0]["url"] == url
+
+
+def test_public_context_blocks_service_worker_route_bypass_without_changing_default():
+    created, routes = [], []
+
+    def new_page(**options):
+        created.append(options)
+        return SimpleNamespace(
+            context=SimpleNamespace(
+                route=lambda pattern, callback: routes.append((pattern, callback)),
+                on=lambda event, callback: None,
+            ),
+            goto=lambda _url: None,
+        )
+
+    transport = HARNESS.PlaywrightCDP(SimpleNamespace(new_page=new_page))
+    transport.cdp("Target.createTarget", url="about:blank")
+    assert created == [{}] and routes == []
+    transport.public_navigation_hosts = ("arxiv.org",)
+    transport.cdp("Target.createTarget", url="about:blank")
+    assert created == [{}, {"service_workers": "block"}]
+    assert len(routes) == 1 and routes[0][0] == "**/*"
+
+
+def test_public_redirect_audit_retains_a_violating_hop_after_return_to_allowed_host():
+    transport = HARNESS.PlaywrightCDP(None)
+    previous = None
+    for url in (
+        "https://arxiv.org/search/",
+        "https://outside.example.org/redirect",
+        "https://arxiv.org/abs/1706.03762",
+    ):
+        request = SimpleNamespace(
+            url=url,
+            method="GET",
+            frame=SimpleNamespace(parent_frame=None),
+            is_navigation_request=lambda: True,
+            redirected_from=previous,
+        )
+        transport._public_request_observed(request, {"arxiv.org"})
+        previous = request
+    assert len(transport.public_navigation_events) == 3
+    assert transport.public_navigation_events[-1]["scope_violation"] is None
+    assert len(transport.public_navigation_violations) == 1
+    assert transport.public_navigation_violations[0]["url"].startswith("https://outside.")
+    assert transport.public_request_blocks == []  # Audit is not contact prevention.
+
+
+def test_public_early_navigation_without_frame_is_aborted_and_audited():
+    class EarlyRequest:
+        method = "GET"
+        url = "https://arxiv.org/search/"
+        redirected_from = None
+
+        def is_navigation_request(self):
+            return True
+
+        @property
+        def frame(self):
+            raise RuntimeError("Frame is not yet created")
+
+    transport = HARNESS.PlaywrightCDP(None)
+    decisions = []
+    request = EarlyRequest()
+    transport._public_route(
+        SimpleNamespace(
+            request=request,
+            abort=lambda reason: decisions.append(reason),
+            continue_=lambda: pytest.fail("Unknown navigation frame must not be continued"),
+        ),
+        {"arxiv.org"},
+    )
+    transport._public_request_observed(request, {"arxiv.org"})
+    assert decisions == ["blockedbyclient"]
+    assert "metadata unavailable" in transport.public_request_blocks[0]["reason"]
+    assert len(transport.public_navigation_violations) == 1
+    assert transport.public_observer_errors == []
+
+
+def test_public_observer_failure_is_explicit():
+    transport = HARNESS.PlaywrightCDP(None)
+    transport._public_request_observed(object(), {"arxiv.org"})
+    assert transport.public_observer_errors[0]["type"] == "AttributeError"
+
+
+def test_public_request_ledger_survives_final_snapshot_and_close_failures(tmp_path):
+    transport = HARNESS.PlaywrightCDP(None)
+    transport.public_request_blocks.append({"url": "https://arxiv.org/feedback", "method": "POST"})
+    primary = RuntimeError("final agent snapshot failed")
+
+    def close():
+        transport.public_navigation_events.append({"url": "https://arxiv.org/last-event"})
+        raise OSError("secondary browser close failed")
+
+    HARNESS._finish_public_browser(
+        SimpleNamespace(close=close), transport, tmp_path, [], primary_error=primary
+    )
+    ledger = json.loads((tmp_path / "public-request-ledger.json").read_bytes())
+    assert ledger["blocks"] == transport.public_request_blocks
+    assert ledger["navigation_events"][-1]["url"].endswith("last-event")
+    assert any("secondary browser close failed" in note for note in primary.__notes__)
+
+
+def test_public_request_ledger_write_failure_preserves_primary_and_still_closes(
+    tmp_path, monkeypatch
+):
+    primary, closed = RuntimeError("primary snapshot failure"), []
+
+    def fail(*_args):
+        raise OSError("request ledger write failure")
+
+    monkeypatch.setattr(HARNESS, "_write_json", fail)
+    HARNESS._finish_public_browser(
+        SimpleNamespace(close=lambda: closed.append(True)),
+        HARNESS.PlaywrightCDP(None),
+        tmp_path,
+        [],
+        primary_error=primary,
+    )
+    assert closed == [True]
+    assert any("request ledger write failure" in note for note in primary.__notes__)
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [
+        {"suite_split": "holdout"},
+        {"travel_challenges_only": True},
+        {"travel_transfer_only": True},
+        {"task_ids": []},
+        {"task_ids": ["native_select"]},
+        {"live_goal": "Open Spoon"},
+        {"live_url": "https://en.wikipedia.org/wiki/Spork"},
+    ],
+)
+def test_public_cases_reject_mixed_scope_before_browser_output(tmp_path, monkeypatch, settings):
+    monkeypatch.setattr(HARNESS, "upstream_manifest", lambda _path: {})
+    with pytest.raises(ValueError, match="Public cases"):
+        HARNESS.run_benchmark(
+            upstream_path="unused",
+            endpoint="http://localhost/policy",
+            model="diagnostic",
+            output_dir=tmp_path / "run",
+            public_case_ids=["public-arxiv-title-filter-results-v1"],
+            **settings,
+        )
+    assert not (tmp_path / "run").exists()
+
+
+@pytest.mark.parametrize("case_ids", [[], ["x", "x"], [None], "not-a-list"])
+def test_public_cases_need_explicit_distinct_ids(tmp_path, monkeypatch, case_ids):
+    monkeypatch.setattr(HARNESS, "upstream_manifest", lambda _path: {})
+    with pytest.raises(ValueError, match="distinct explicit"):
+        HARNESS.run_benchmark(
+            upstream_path="unused",
+            endpoint="http://localhost/policy",
+            model="diagnostic",
+            output_dir=tmp_path / "run",
+            public_case_ids=case_ids,
+        )
+    assert not (tmp_path / "run").exists()
+
+
 def test_variants_are_frozen_and_holdout_does_not_reuse_development():
     development = HARNESS.make_cases(seed=72)
     assert development == HARNESS.make_cases(seed=72)
@@ -118,7 +316,9 @@ def test_unapplied_search_judge_respects_application_query_case_and_whitespace()
     ("query", "searched", "success"),
     [("  qUiTo  ", True, True), ("Quito", False, False), ("Porto", True, False)],
 )
-def test_travel_query_equivalence_still_requires_correct_city_and_submission(query, searched, success):
+def test_travel_query_equivalence_still_requires_correct_city_and_submission(
+    query, searched, success
+):
     case = HARNESS.FixtureCase(
         case_id="travel-query-diagnostic",
         task_id="upstream_travel",

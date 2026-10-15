@@ -21,6 +21,45 @@ finally:
 @pytest.mark.parametrize(
     "options",
     [
+        ["--suite-split", "holdout"],
+        ["--travel-challenges-only"],
+        ["--travel-transfer-only"],
+        ["--tasks", "native_select"],
+        ["--live-only"],
+        ["--live-url", "https://en.wikipedia.org/wiki/Spork"],
+        ["--live-goal", "Open Spoon"],
+        ["--live-expected-title", "Spoon"],
+        ["--public-cases", "x", "x"],
+    ],
+)
+def test_public_case_scope_rejected_before_loading_upstream_or_weights(
+    tmp_path, monkeypatch, options
+):
+    monkeypatch.setattr(
+        DRIVER,
+        "upstream_manifest",
+        lambda _path: pytest.fail("Invalid public scope must fail before upstream or model access"),
+    )
+    output = tmp_path / "run"
+    with pytest.raises(SystemExit) as caught:
+        DRIVER.main(
+            [
+                "--upstream-path",
+                "unused",
+                "--output-dir",
+                str(output),
+                "--public-cases",
+                "public-arxiv-title-filter-results-v1",
+                *options,
+            ]
+        )
+    assert caught.value.code == 2
+    assert not output.exists()
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
         ["--decision-readout", "unused"],
         ["--decision-readout", "unused", "--prompt-mode", "reasoned"],
         ["--decision-readout", "unused", "--prompt-mode", "grounded", "--competitor", "decider"],
@@ -102,7 +141,7 @@ def test_travel_challenges_reject_incompatible_scope_before_upstream_or_weights(
     assert not output.exists()
 
 
-@pytest.mark.parametrize("mode", [None, "challenges", "transfer"])
+@pytest.mark.parametrize("mode", [None, "challenges", "transfer", "public"])
 @pytest.mark.parametrize("policy", ["native", "generated", "adapted", "grammar"])
 @pytest.mark.parametrize(
     "journal_mode", ["off", "completed", "pending", "observer_failure", "snapshot_failure"]
@@ -160,6 +199,10 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
     sinks, app_options = [], []
 
     def capture(destination, **_kwargs):
+        if mode == "public":
+            assert _kwargs["additional_files"]["scripts/jev_public_web_cases.py"] == (
+                ROOT / "scripts/jev_public_web_cases.py"
+            )
         initial_receipts.append(json.loads((destination / "receipt.json").read_text()))
         return {"identity_sha256": "test-source-identity"}
 
@@ -299,7 +342,13 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
         return {"scope": "mock forwarding only", "attempts": 0}
 
     monkeypatch.setattr(DRIVER, "run_benchmark", benchmark)
-    options = [f"--travel-{mode}-only", "--suite-split", "development"] if mode else []
+    options = (
+        ["--public-cases", "public-arxiv-title-filter-results-v1"]
+        if mode == "public"
+        else [f"--travel-{mode}-only", "--suite-split", "development"]
+        if mode
+        else []
+    )
     if journal_mode != "off":
         options.append("--server-evidence")
     if generated:
@@ -328,6 +377,11 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
     assert benchmark_calls[0]["suite_split"] == "development"
     assert benchmark_calls[0]["task_ids"] is None
     assert benchmark_calls[0]["live_url"] is None
+    assert benchmark_calls[0]["public_case_ids"] == (
+        ["public-arxiv-title-filter-results-v1"] if mode == "public" else None
+    )
+    if mode == "public":
+        assert initial_receipts[0]["public_case_ids"] == ["public-arxiv-title-filter-results-v1"]
     receipt = json.loads((output / "receipt.json").read_text())
     if policy == "adapted":
         assert [call[0] for call in adapter_calls] == ["verify", "attach"]

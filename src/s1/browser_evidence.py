@@ -15,6 +15,7 @@ from pathlib import Path
 _DEFAULT_CALLERS = (
     "scripts/jev_browser_benchmark.py",
     "scripts/jev_local_model.py",
+    "scripts/jev_public_web_cases.py",
 )
 _ALLOWED_CALLERS = frozenset(
     (

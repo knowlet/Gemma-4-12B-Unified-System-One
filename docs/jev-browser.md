@@ -704,6 +704,30 @@ No new transfer seed has been selected. The tracked JSON is a compact evidence
 index; full raw requests, server journals, source copies and weights remain in
 the ignored local artifact directories it identifies.
 
+The opt-in `--public-cases CASE_ID ...` mode now adds four fixed navigation goals
+on arXiv, Python documentation and NASA Science. Case definitions and fresh-DOM
+judges live in `scripts/jev_public_web_cases.py`; expected URLs, selectors and
+verdicts stay outside the policy request. It uses the existing strict DONE and
+error accounting, preserves full native candidates and records public request
+scope violations. Fixture, transfer and Wikipedia modes retain their defaults.
+The judge source is captured with the actual runner sources before model loading.
+
+The [tracked public readiness record](validation/2026-10-15/jev-public-web-readiness.json)
+includes four actual native initial observations, all within the 8,192-token
+budget without pruning, and production-page DOM diagnostics. The arXiv results
+request returns HTTP 429 and remains an access failure. The original paper and
+Python method final pages satisfy their judges. NASA's first diagnostic correctly
+rejects an offscreen Moons heading during unfinished smooth scrolling; a separate
+explicit immediate-position diagnostic satisfies the unchanged judge. These
+direct navigations and viewport adjustments are not agent task results.
+
+The full CPU suite passes 2276 checks with 299 optional skips; the final focused
+suite passes 330 with 25 browser opt-in skips. Twenty-five separate existing
+guarded Chromium checks pass. A real public-harness smoke uses a clearly scripted
+provider that always returns BLOCKED, verifies one untouched native request and
+zero model forwards/actions, and correctly reports no task success. Actual
+public-site model completion and competitor comparisons remain unmeasured.
+
 ## Historical failure diagnosis
 
 The October 13 archive's 72 measured decisions retain the exact goal and stay

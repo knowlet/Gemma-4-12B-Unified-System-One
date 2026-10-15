@@ -52,7 +52,29 @@ def main(argv=None):
     parser.add_argument("--live-goal")
     parser.add_argument("--live-expected-title")
     parser.add_argument("--live-only", action="store_true")
+    parser.add_argument("--public-cases", nargs="+", dest="public_case_ids")
     args = parser.parse_args(argv)
+    if args.public_case_ids is not None:
+        if (
+            args.suite_split != "development"
+            or args.travel_challenges_only
+            or args.travel_transfer_only
+            or args.tasks is not None
+            or args.live_only
+            or any(
+                value is not None
+                for value in (args.live_url, args.live_goal, args.live_expected_title)
+            )
+            or len(set(args.public_case_ids)) != len(args.public_case_ids)
+        ):
+            parser.error("public-cases requires distinct IDs in a separate development run")
+        from jev_public_web_cases import get_public_web_case
+
+        try:
+            for case_id in args.public_case_ids:
+                get_public_web_case(case_id)
+        except ValueError as exc:
+            parser.error(str(exc))
     if args.generated_action_adapter and not args.generated_actions:
         parser.error("generated-action-adapter requires --generated-actions")
     if args.generated_action_grammar and not args.generated_actions:
@@ -155,6 +177,8 @@ def main(argv=None):
         "cost_usd": None,
         "upstream": upstream,
     }
+    if args.public_case_ids is not None:
+        receipt["public_case_ids"] = args.public_case_ids
     if verified_action_adapter is not None:
         receipt["generated_action_adapter"] = verified_action_adapter.telemetry()
         receipt["text_helper_policy"] = (
@@ -169,6 +193,10 @@ def main(argv=None):
         "scripts/jev_local_model.py": Path(__file__),
         "scripts/jev_browser_benchmark.py": Path(run_benchmark.__code__.co_filename),
     }
+    if args.public_case_ids is not None:
+        source_files["scripts/jev_public_web_cases.py"] = Path(
+            get_public_web_case.__code__.co_filename
+        )
     started = time.perf_counter()
     try:
         from s1.browser_evidence import capture_runtime_sources, verify_runtime_sources
@@ -374,6 +402,7 @@ def main(argv=None):
             live_url=args.live_url,
             live_goal=args.live_goal,
             live_expected_title=args.live_expected_title,
+            public_case_ids=args.public_case_ids,
             text_helper=lambda context: (
                 base_field_text(model, context)
                 if verified_action_adapter is not None
