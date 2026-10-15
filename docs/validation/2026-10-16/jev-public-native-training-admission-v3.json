@@ -1,0 +1,402 @@
+{
+  "schema_version": 1,
+  "scope": "Recorded public-native collection-v3 data admission and CPU software validation. Training, inference and model performance remain unqualified.",
+  "result": {
+    "recorded_data_admission_passed": true,
+    "actual_admission_run": "02",
+    "collection_id": "public-native-collection-20261016-05",
+    "fitting_qualified": false,
+    "policy_task_score": null
+  },
+  "references": {
+    "validator": {
+      "path": "src/s1/browser_public_training_validation.py",
+      "sha256": "f5ee8a221cf8c9f88a4e776f0ef2039b6a66aec796825c15271610aedbf1f1d5",
+      "size_bytes": 117492
+    },
+    "validator_tests": {
+      "path": "tests/test_browser_public_training_validation.py",
+      "sha256": "6ae44cdf6ad0f91030490eb1e644b33dfc189314753dd59947bbb9cffe51f387",
+      "size_bytes": 79551
+    },
+    "admission_helper": {
+      "path": "artifacts/jev-runtime/public-admission-v3-actual05-20261016-02.py",
+      "sha256": "fcf7be0365560bef3b6db12f50a174fa1a3f48106e64d71d1c8c164503fca944",
+      "size_bytes": 5446
+    },
+    "admission_plan": {
+      "path": "artifacts/jev-browser/20261016-public-native-training-05-admission-02/plan.json",
+      "sha256": "023adacd75372dc65c9178d632f718f9937d7fbd9f1d589dfb1e89e7cfb1a05f",
+      "size_bytes": 140213
+    },
+    "admission_receipt": {
+      "path": "artifacts/jev-browser/20261016-public-native-training-05-admission-02/receipt.json",
+      "sha256": "406f911c685dfdb01236f7d66706cad3066b912e80aeafe3d9ca583e38bf7951",
+      "size_bytes": 10189
+    },
+    "admission_provenance": {
+      "path": "artifacts/jev-browser/20261016-public-native-training-05-admission-02/admission-provenance.json",
+      "sha256": "119525dd5021feecb46ef812b4eedf3bad64398e7324363abf35510919062758",
+      "size_bytes": 306022
+    },
+    "collection_receipt": {
+      "path": "artifacts/jev-browser/20261016-public-native-training-collection-05/receipt.json",
+      "sha256": "53a80fa46b4b2b03ea1aec828b066b45c8ab1ccbabdd2a9e4ec712451588af4d",
+      "size_bytes": 46130
+    },
+    "collection_plan": {
+      "path": "artifacts/jev-browser/20261016-public-native-training-collection-05/collection_plan.json",
+      "sha256": "b2938dd0a3a042da91c8cc853bbd656ef2e396b31cad2affa2516cbb4abe494f",
+      "size_bytes": 32919
+    },
+    "frozen34_manifest": {
+      "path": "artifacts/jev-runtime/frozen-public-native-training-34/freeze-manifest.json",
+      "sha256": "a2cb4aa9c3b87cc6eefa9e4311c305185476c5404c9882799a9870b5e35dd5fe",
+      "size_bytes": 12575
+    },
+    "published_collection_record": {
+      "path": "docs/validation/2026-10-16/jev-public-training-collection-05.json",
+      "sha256": "3da54057f82c2c8a163de22e9885ab15d5aa94a71908a179037fb6b8750fa1d8",
+      "size_bytes": 15548
+    },
+    "independent_source_review": {
+      "path": "artifacts/jev-runtime/public-admission-independent-source-review-20261016-01/independent-source-review-01.json",
+      "sha256": "8903ca0ddb8de6fdc2b2dcf1fb59fd0d3c1751b20cc4a5e7f45cf19eea3276cf",
+      "size_bytes": 8112
+    },
+    "root_focused_test_log": {
+      "path": "artifacts/jev-runtime/public_admission_v3_root_focused_02.log",
+      "sha256": "a200be8e6f551998dcd91a49d8bf8e670191ef6a144b906066500c240e093fb4",
+      "size_bytes": 421
+    },
+    "root_standard_repository_test_log": {
+      "path": "artifacts/jev-runtime/public_admission_v3_standard_repository_01.log",
+      "sha256": "e5ddee30d71dc50e076d58260c5a8e54bbe61dd4c4a1ac19d1777620681a0da5",
+      "size_bytes": 17887
+    },
+    "author_focused_test_receipt": {
+      "path": "artifacts/jev-runtime/public-admission-v3-cpu-20261016-02/receipt.json",
+      "sha256": "fb3017ba8a3a3aef6dce041501dab8bc657b2135b6196397649fbdd1448a7097",
+      "size_bytes": 1959
+    },
+    "author_focused_test_log": {
+      "path": "artifacts/jev-runtime/public-admission-v3-cpu-20261016-02/pytest.log",
+      "sha256": "2553857b557f74948b7e11dae8eea4e05a3e3ea9a46dc950341eb365a4b3c815",
+      "size_bytes": 421
+    },
+    "independent_narrow_test_log": {
+      "path": "artifacts/jev-runtime/public-admission-independent-source-review-20261016-01/narrow-tests-01.log",
+      "sha256": "fa36b16f63ebe425f72cf726500cb9d9cb013a5e62be634b59d8eb7c0b68097d",
+      "size_bytes": 334
+    },
+    "independent_projection_mutation_test_log": {
+      "path": "artifacts/jev-runtime/public-admission-independent-source-review-20261016-01/projection-mutation-tests-01.log",
+      "sha256": "d9fbe6c5107ab4f085df9faa896dd7f4f797f380d994966d9098ce80b5dc817c",
+      "size_bytes": 98
+    },
+    "DTO_mutation_tests": {
+      "path": "tests/test_browser_public_training.py",
+      "sha256": "35780d1a710473f3919533e56ac5d87da8d8945764a26c27b46f472d5c721576",
+      "size_bytes": 16233
+    },
+    "tokenizer_metadata_tokenizer.json": {
+      "path": "artifacts/jev-local-hf/hub/models--knowlet--Gemma-4-12B-Unified-System-One/snapshots/a66f836b56605039fe040f330180e336d19b3362/tokenizer.json",
+      "sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+      "size_bytes": 32169626
+    },
+    "tokenizer_metadata_tokenizer_config.json": {
+      "path": "artifacts/jev-local-hf/hub/models--knowlet--Gemma-4-12B-Unified-System-One/snapshots/a66f836b56605039fe040f330180e336d19b3362/tokenizer_config.json",
+      "sha256": "794a39f8330ce05020774c70c091225bc5f031b9cacf41fc20e52eb54b4b52d8",
+      "size_bytes": 3736
+    },
+    "tokenizer_metadata_chat_template.jinja": {
+      "path": "artifacts/jev-local-hf/hub/models--knowlet--Gemma-4-12B-Unified-System-One/snapshots/a66f836b56605039fe040f330180e336d19b3362/chat_template.jinja",
+      "sha256": "ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4",
+      "size_bytes": 18683
+    },
+    "tokenizer_metadata_generation_config.json": {
+      "path": "artifacts/jev-local-hf/hub/models--knowlet--Gemma-4-12B-Unified-System-One/snapshots/a66f836b56605039fe040f330180e336d19b3362/generation_config.json",
+      "sha256": "040d0ccb9e10df02df9738424c1ce6d20d5d15b09362da922093ccd97573dbb4",
+      "size_bytes": 255
+    },
+    "record_input_authentication": {
+      "path": "artifacts/jev-runtime/public-admission-independent-source-review-20261016-01/record-input-authentication-01.json",
+      "sha256": "a6d0929ed93b4fac8d21505f9fa6d6de63e45040950e2e0cf4dfd8aaf03ce636",
+      "size_bytes": 7582
+    }
+  },
+  "actual_admission": {
+    "plan_ref": "admission_plan",
+    "receipt_ref": "admission_receipt",
+    "provenance_ref": "admission_provenance",
+    "helper_ref": "admission_helper",
+    "elapsed_seconds": 10.50519901000007,
+    "framework_modules_imported": [],
+    "model_calls": 0,
+    "browser_calls": 0,
+    "training_updates": 0,
+    "closed_inventory_unchanged": true,
+    "provenance_fingerprint": "22646a1960eeb541ea661e3980272afc42de785fb9d1abd8732db31dbbf42fe7",
+    "row_naming": "Existing fit_eligible_row_count/fit_eligible_pair fields denote admitted supervision candidates; admission alone authorizes no fit."
+  },
+  "corpus": {
+    "root": "artifacts/jev-browser/20261016-public-native-training-collection-05",
+    "outer_receipt_ref": "collection_receipt",
+    "collection_schema": "jev-public-native-training-collection-v3",
+    "ordered_compact_collection_plan_sha256": "bf2817a64aa37dc567d1174898a08b39e6530d8e6c10bab637d4a5f87ca89f79",
+    "closed_inventory_sha256": "02add05bb81301179ae13d5c673c2ff067fc245be144b517d9da5d628e133834",
+    "closed_files": 644,
+    "closed_bytes": 97369620,
+    "mandatory_episodes": 24,
+    "goals": 12,
+    "ordinary_and_recovery_per_goal": true,
+    "actual_native_requests": 191,
+    "admitted_supervision_rows": 142,
+    "bootstrap_non_fit_requests": 49,
+    "actual_no_input_DONE_exclusions": 0,
+    "splits": {
+      "train": {
+        "episodes": 16,
+        "completed_recorded_episodes": 16,
+        "admitted_supervision_rows": 120,
+        "actual_native_requests": 164,
+        "bootstrap_non_fit_requests": 44,
+        "excluded_no_input_DONE_requests": 0,
+        "ordered_native_wire_sha256": "0e22a93a9773de541c59cda7236549f7565085bbe7963169e758594bc7781c5a",
+        "all_native_ordered_wire_sha256": "379563288c1edf8253d5746cc54db2716cfbc889e24f146a0cd0b6bc67c7d473"
+      },
+      "development": {
+        "episodes": 8,
+        "completed_recorded_episodes": 8,
+        "admitted_supervision_rows": 22,
+        "actual_native_requests": 27,
+        "bootstrap_non_fit_requests": 5,
+        "excluded_no_input_DONE_requests": 0,
+        "ordered_native_wire_sha256": "48064c33ff4eafc00f1fc0a3a74fff7e2f84c3ab6b9bd78532e772a02f0b0d43",
+        "all_native_ordered_wire_sha256": "8a15a3cd67705400e45add89124253fe4ac37a6e41e5967586210a5213a45110"
+      }
+    },
+    "goal_coverage": {
+      "train": [
+        {
+          "goal_id": "mdn-intersectionobserver-observe",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": true
+        },
+        {
+          "goal_id": "mdn-resizeobserver-observe",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": false
+        },
+        {
+          "goal_id": "mdn-urlsearchparams-get",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": false
+        },
+        {
+          "goal_id": "mdn-abortcontroller-abort",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": true
+        },
+        {
+          "goal_id": "postgres18-string-overlay",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": true
+        },
+        {
+          "goal_id": "postgres18-limit-offset",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": false
+        },
+        {
+          "goal_id": "postgres18-check-constraints",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": false
+        },
+        {
+          "goal_id": "postgres18-recursive-queries",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": true
+        }
+      ],
+      "development": [
+        {
+          "goal_id": "rust-stack-heap",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": false
+        },
+        {
+          "goal_id": "rust-mutable-borrows",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": true
+        },
+        {
+          "goal_id": "git-restore-description",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": false
+        },
+        {
+          "goal_id": "git-worktree-description",
+          "required_pair_coverage_complete": true,
+          "position_incomplete_observed": false
+        }
+      ]
+    },
+    "within_train_duplicate_requests": "Retained, without deduplication or any policy score inference.",
+    "split_boundaries": {
+      "train_sites": [
+        "developer.mozilla.org",
+        "www.postgresql.org"
+      ],
+      "development_sites": [
+        "doc.rust-lang.org",
+        "git-scm.com"
+      ],
+      "site_groups_and_layout_groups_disjoint": true,
+      "excluded_site_families": [
+        "docs.python.org",
+        "science.nasa.gov",
+        "arxiv.org",
+        "wikipedia.org"
+      ]
+    }
+  },
+  "admission_contract": {
+    "closed_evidence": "Complete bounded ordinary-file capture and hashes; symlinks, nonordinary files, missing/extra journals, orphan HTML and stale inventories refuse. Final unchanged-tree verification is mandatory.",
+    "unchanged_caps": {
+      "bytes": 1073741824,
+      "files": 10000,
+      "HTML_bytes_per_document": 5242880
+    },
+    "source_policy": {
+      "frozen_source_profile": "frozen-public-native-training-34",
+      "manifest_ref": "frozen34_manifest",
+      "reviewed_installed_source_files": 81,
+      "both_copied_splits_match_installed_reviewed_bytes": true,
+      "native_upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+      "canonical_native_source_files": 7,
+      "artifact_source_imported_or_executed": false,
+      "native_source_sha256": {
+        "jev_ultrafast/__init__.py": "60f025b8d24465e2c0f7a3547d43b8020fd8843de7b6cb3f892ef63f5548cf63",
+        "jev_ultrafast/snapshot.js": "e50473501c8fb8e70f3b21866d987393e3f2315c639d638bd477d170e81ed78d",
+        "jev_ultrafast/agent.py": "aaf8b271cb0ee6643fe7beb525328ab80de8568c7ac044d02b9c6721161e7c8b",
+        "jev_ultrafast/browser.py": "ee08dafa93d731bd292aa0263a578a29c8001cf22eef3c59fe44a159649155ee",
+        "jev_ultrafast/model.py": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3",
+        "jev_ultrafast/questions.py": "66a7054b85040b949e1757311257ea0c5a843c635f9a40c99f6d15ad660fb422",
+        "jev_ultrafast/static/fixture.html": "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe"
+      }
+    },
+    "all_142_rows": "DTOs and full ordered native wires are regenerated from actual request/return/resolution, compiler, raw snapshot, state/history, guard, ownership, ledger and private-proof journals. Serialized rows must match exactly.",
+    "all_191_calls": "Every request remains indexed, including49 bootstrap non-fit calls. Entry/resolved phases, supervised16 plus separate bootstrap16, errors, methods, cost evidence and deferred native postconditions remain bound.",
+    "private_v3": "Reviewed installed predicates recompute completion from trusted owned target/session/root/loader/current page, URL/document read provenance, main/heading/own content, finite geometry, viewport visibility and hit-test facts. Asserted success cannot supply a label.",
+    "actions": "Only offered operations and their active targets are accepted; targetless choices retain null. Native freshness/act/history chronology must match. First complete proof selects DONE; DONE retains page and history.",
+    "declined_DONE": "Strict true preproof, one matching freshFalse/no exception/no act/unchanged full history, native ready-decisionNone and a new native observation are required. Such requests consume the supervised budget, retain all journals/indexes and never supply positive rows."
+  },
+  "compiler": {
+    "actual_compiled_requests": 191,
+    "cached_metadata_files": 4,
+    "metadata_refs_prefix": "tokenizer_metadata_",
+    "implementation": "Pinned cached Rust tokenizer and immutable Jinja template rederive full rendered prompts/token-ID digests and complete legal-action trie telemetry with EOS.",
+    "context_tokens": 8192,
+    "reserved_new_tokens": 32,
+    "EOS_token_id": 106,
+    "candidate_cap_per_head": 400,
+    "candidate_order_and_unused_heads_preserved": true,
+    "pruning_or_fixture52_coercion": false,
+    "actual_max_requested_head_width": 66,
+    "actual_prompt_tokens_min": 1197,
+    "actual_prompt_tokens_max": 5044,
+    "width_scope": "Full400 preservation/order is a CPU contract; actual corpus width is reported separately.",
+    "projection": "Detached projection permits an explicit model alias only; ordered native request bytes and external selection/proof annotations remain bound. Mutating a projection cannot rewrite admitted stored wires."
+  },
+  "four_review_fixes": [
+    {
+      "issue": "JSON exponent overflow",
+      "fix": "parse_float rejects nonfinite overflow at every tree position; finite extremes remain valid.",
+      "regression": "Rehashed whole24 elapsed-cost overflow copies reject."
+    },
+    {
+      "issue": "Historical URL paired with a new loader",
+      "fix": "Latest owned root URL joins its last full loader, preserving legitimate within-document fragments.",
+      "regression": "Rehashed whole24 phantom latest-document rejects; fragment/reload controls pass."
+    },
+    {
+      "issue": "False pre-policy freshness without re-observe",
+      "fix": "True preserves page/no observe; false requires a newly appended latest raw snapshot, even for byte-identical refresh.",
+      "regression": "Rehashed whole24 false/no-observe and unchanged independent narrow repro refuse."
+    },
+    {
+      "issue": "DONE after-page/final snapshot rewrite",
+      "fix": "DONE preserves exact page/history; final full snapshot equals last native after-tick state.",
+      "regression": "Whole24 wrong DONE page and independently changed final snapshot reject; narrow repro refuses."
+    }
+  ],
+  "validation": {
+    "root_genuine_cached_CPU_focused": {
+      "log_ref": "root_focused_test_log",
+      "passed": 123,
+      "skipped": 1,
+      "pytest_seconds": 68.78,
+      "skip": "Prospective judge differs from sealed old-v2 facts; those facts are not reinterpreted."
+    },
+    "author_genuine_cached_CPU_focused": {
+      "receipt_ref": "author_focused_test_receipt",
+      "log_ref": "author_focused_test_log",
+      "passed": 123,
+      "skipped": 1,
+      "pytest_seconds": 67.39,
+      "source_before_after_unchanged": true,
+      "skip": "Same intentional sealed old-v2 judge mismatch."
+    },
+    "root_standard_repository": {
+      "log_ref": "root_standard_repository_test_log",
+      "passed": 2750,
+      "skipped": 358,
+      "warnings": 1,
+      "pytest_seconds": 69.03,
+      "skip_scope": "Includes unavailable Torch and explicitly gated model/browser checks; genuine cached CPU focused suites above separately exercise complete admission.",
+      "warning": "Existing Starlette TestClient/httpx deprecation."
+    },
+    "independent_narrow_CPU": {
+      "log_ref": "independent_narrow_test_log",
+      "passed": 23,
+      "skipped": 1,
+      "deselected": 100,
+      "pytest_seconds": 0.25,
+      "skip": "Selected synthetic fixture needs tokenizers absent from the small Python3.12 environment."
+    },
+    "independent_projection_and_mutation_CPU": {
+      "log_ref": "independent_projection_mutation_test_log",
+      "passed": 9,
+      "pytest_seconds": 0.41,
+      "coverage": [
+        "full400 detached alias-only projection",
+        "changed native bytes/order/selection/proofs refuse",
+        "nested DTO mutation refuses serialization"
+      ]
+    },
+    "complete_independent_review": {
+      "ref": "independent_source_review",
+      "result": "clear after four fixes",
+      "original_validator_lines_reviewed": 2700,
+      "final_validator_lines": 2766,
+      "scope": "Entire v2 base plus v3 source/tests and pinned Agent/choose/observe controlflow; every fix delta reviewed."
+    },
+    "synthetic_scope": "Whole24 fake-Browser tests use pinned native Agent/choose and genuine cached CPU compiler. All5 coherently rehashed complete-tree negatives pass. Synthetic declined-DONE tests cover that branch; actual05 has0 such exclusions, so no actual-site declined-DONE recovery claim is made.",
+    "code_style": "Root reports Ruff and formatting clean for both held validator/test files."
+  },
+  "not_yet_qualified": [
+    "Full recursive parent content authentication and adapter lineage.",
+    "Combined complete parent, both fitting data copies, compiled rows and fit output copies under unchanged byte/file caps.",
+    "Exact base/checkpoint and adapter/head content and precision validation in the intended fitting runtime.",
+    "Train/dev optimizer isolation, including zero development optimizer updates.",
+    "Live host resource admission, model loading, fitting, optimizer updates and inference qualification.",
+    "Browser task performance, win rate, latency superiority or model comparisons after fitting."
+  ],
+  "boundaries": [
+    "Independent data admission and CPU software evidence only; no training or model performance score.",
+    "Preparing this record required no model/browser/network/tensor payload reads. Actual admission02 imported no Torch, Transformers or Playwright.",
+    "Earlier corpus records and admission01 remain immutable; no old score or old judge result is reinterpreted.",
+    "All named references and644 corpus file pins were authenticated read-only. Read-time hashes do not imply future immutability."
+  ]
+}
