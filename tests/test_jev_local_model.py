@@ -9,6 +9,8 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 try:
+    # main() imports this sibling lazily, after the temporary script path is gone.
+    importlib.import_module("jev_public_web_cases")
     SPEC = importlib.util.spec_from_file_location(
         "jev_local_model", ROOT / "scripts/jev_local_model.py"
     )
