@@ -1,0 +1,37 @@
+{
+  "schema_id": "jev-observation-profile-event-classification-validation-v1",
+  "validation_date": "2026-10-16",
+  "problem": "A native refresh can succeed after an earlier composed-text traversal failure. Qualification must retain that failure while preserving the existing treatment of temporary navigation errors.",
+  "source": {
+    "src/s1/jev_observation_events.py": {
+      "sha256": "3c9fe36a25fd9d6b5388308c762c83944af1bbdd088481e45bd20f035046f41f",
+      "size_bytes": 8062
+    },
+    "tests/test_jev_observation_events.py": {
+      "sha256": "eb2a4b31f5ce4835d03b2fa706e0670f5f243c3e048ce03481f9d8ab41eae7c5",
+      "size_bytes": 7636
+    }
+  },
+  "behavior": [
+    "Records exact effective READ_STATE and MARKER replies with source/manifest identities and ordered protocol calls. Observations and model requests are not rewritten.",
+    "Confirmed structured traversal-limit exceptions and proven profile-integrity mismatches remain latched across subsequent good reads.",
+    "Null reads during document setup and ordinary navigation/context errors are retained without automatically classifying them as profile-cap failures.",
+    "Successful reads require the expected profile metadata and native marker shape, including the final control-identity list. Returned records are detached from callers and sinks."
+  ],
+  "verification": {
+    "pure_tests_passed": 25,
+    "saved_genuine_native_events_replayed": 20,
+    "confirmed_cap_events": 6,
+    "integrity_events": 0,
+    "saved_replay_report_sha256": "bd4768fe0c7a5f510a72d83295e7041f6558f509d875480a86125698b47f17fb",
+    "Ruff": "passed",
+    "new_browser_runs": 0,
+    "model_calls": 0
+  },
+  "limits": [
+    "This is a shared classifier. Benchmark, collector and whole-corpus admission integration remain in progress.",
+    "Replay uses immutable historical native V2 responses with identical snapshot/marker bytes, retaining their historical builder identity. It is not a new browser or model run.",
+    "Malformed event envelopes and persistence errors propagate to the transport; the integrating caller must retain an integrity failure and invalidate the attempt.",
+    "No model quality, task success, training qualification or superiority is established by these tests."
+  ]
+}
