@@ -73,6 +73,59 @@ def test_initial_memory_refusal_never_reaches_project_or_parent(tmp_path, monkey
     assert not (tmp_path / "out/adapter/manifest.json").exists()
 
 
+@pytest.mark.parametrize("steps", [337, 1000000, True, False, 0, -1, 336.0])
+def test_invalid_steps_refuse_before_environment_output_or_model(tmp_path, monkeypatch, steps):
+    def unexpected(*_args, **_kwargs):
+        pytest.fail("Invalid steps reached a protected operation or output")
+    monkeypatch.setattr(FIT, "_fresh_environment", unexpected)
+    monkeypatch.setattr(FIT, "_construct_model", unexpected)
+    monkeypatch.setattr(FIT, "ResourceGate", unexpected)
+    monkeypatch.setattr(ART, "ordinary", unexpected)
+    monkeypatch.setattr(ART, "trusted_module", unexpected)
+    message = "resource journal capacity" if type(steps) is int and steps > 336 else "Positive finite"
+    with pytest.raises(ValueError, match=message):
+        FIT.fit_public_actions(output=tmp_path / "out", source_handoff="unused",
+            expected_source_handoff="a" * 64, expected_boot_id="boot", steps=steps)
+    assert not (tmp_path / "out").exists()
+
+
+@pytest.mark.parametrize("steps", [120, 240, 336])
+def test_supported_steps_reach_environment_validation_without_creating_output(tmp_path, monkeypatch, steps):
+    def stop_before_environment():
+        raise RuntimeError("supported configuration reached environment validation")
+    monkeypatch.setattr(FIT, "_fresh_environment", stop_before_environment)
+    with pytest.raises(RuntimeError, match="supported configuration"):
+        FIT.fit_public_actions(output=tmp_path / "out", source_handoff="unused",
+            expected_source_handoff="a" * 64, expected_boot_id="boot", steps=steps)
+    assert not (tmp_path / "out").exists()
+
+
+def test_max_steps_complete_journal_fits_all512_phases_including_final_semantic_tensor_gate(tmp_path):
+    steps = 336
+    phases = ["before-any-project-framework-or-parent-payload", "before-public-project-admission",
+        "immediately-before-legacy-parent-capture-and-Torch", "before-parent-recursive-tensor-authentication",
+        "before-checkpoint-payload-hash-and-BF16-loader", "before-any-BF16-model-construction", "before-parent-injection"]
+    phases += ["before-BF16-processor-compile-" + split + "-" + str(index)
+        for split, count in ART.COUNTS.items() for index in range(count)]
+    phases += ["immediately-before-unchanged-train_actions-optimizer"]
+    phases += ["before-native-train-forward"] * steps + ["before-native-development-forward"] * 22
+    phases += ["before-public-child-tensor-verification", "before-public-artifact-tree-or-parent-payload",
+        "before-legacy-parent-only-verifier", "before-public-child-tensor-verification"]
+    assert len(phases) - steps == FIT.FIXED_RESOURCE_GATES == 176
+    assert len(phases) == FIT.MAX_RESOURCE_GATES == 512
+    assert steps == FIT.MAX_TRAINING_STEPS
+    journal = tmp_path / "whole-success.jsonl"
+    gate = FIT.ResourceGate(journal, "boot", observe=lambda: observation(MEM_TOTAL))
+    for phase in phases:
+        gate.check(phase, ART.resource_phase_scope(phase))
+    blob = journal.read_bytes()
+    assert len(blob.splitlines()) == 512
+    ART.validate_resource_evidence(blob, steps=steps)
+    with pytest.raises(ValueError, match="Bounded exact protected resource phase"):
+        gate.check("before-public-child-tensor-verification", "cpu")
+    assert journal.read_bytes() == blob
+
+
 def candidate_fixture(tmp_path, monkeypatch):
     output = tmp_path / "fit"
     output.mkdir()

@@ -1173,6 +1173,10 @@ Set `REVIEWED_PYTHON` to the reference closure's absolute interpreter path. The
 default candidate uses 120 updates, learning rate `5e-5` and seed 42. All 142
 rows must reproduce the saved CPU compilation using the actual model's
 processor before optimization; the 22 development rows receive zero updates.
+`--steps` accepts 1 through 336. A complete fit needs 176 resource observations
+plus one per update, including final publication checks, within the 512-row
+journal. Larger values fail before environment checks, output creation or model
+loading.
 Fresh durable CPU, BF16-load and training memory gates protect each stage.
 The output kind is `jev_public_native_action_lora_v1`, with qualification still
 required. Generated browser actions need a separate BF16 qualification path.

@@ -1,0 +1,34 @@
+{
+  "schema_id": "jev-public-fit-step-capacity-validation-v1",
+  "date": "2026-10-16",
+  "problem": "A positive step count above336 could update the model and then exhaust the512-row resource journal before final semantic publication verification.",
+  "change": "Reject steps above336 before environment checks, output creation, project imports or model operations. The default120-step candidate is unchanged.",
+  "capacity": {
+    "setup": 7,
+    "train_and_development_compiles": 142,
+    "optimizer_entry": 1,
+    "development_forwards": 22,
+    "publication_checks_including_final_semantic_tensor": 4,
+    "fixed_observations": 176,
+    "maximum_training_steps": 336,
+    "maximum_resource_observations": 512
+  },
+  "validation": {
+    "source_review": "Root and independent reviewer read both changed Python files and unchanged resource verifier; source CLEAR before tests.",
+    "focused_tests": 84,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "pytest_seconds": 28.79,
+    "meaningful_boundaries": "337/oversized/invalid types refuse before protected operations;120/240/336 reach environment validation; the complete336-step synthetic phase journal passes the unchanged artifact verifier with exactly512 rows, including final semantic tensor verification; a513th row refuses without mutation.",
+    "source_pins_before_after_current_equal": 92,
+    "captured_runtime_sources_unchanged": 84,
+    "ruff": "PASS",
+    "loaded_forbidden_framework_modules": [],
+    "receipt_path": "artifacts/jev-runtime/public-fitter-step-capacity-20261016-01/pure-tests-01-receipt.json",
+    "receipt_sha256": "9bd29a476e2e22d53c68b986993a89f115e765bc73513734b5b714413b11efde",
+    "source_hold_sha256": "c3b730b17e1c2428589cc2076ac9f00d54539fc14ead582506c3e5a82d979346",
+    "root_receipt_review": "Independently checked receipt, JUnit, log hashes and every current source pin after the delegated run; no tests repeated."
+  },
+  "scope": "Pure synthetic boundary tests only. No new genuine fitting, model load, processor, tensor payload or GPU execution. The earlier admission-only probe and90-file handoff retain their original source snapshot identity; they do not qualify these changed fitter bytes."
+}

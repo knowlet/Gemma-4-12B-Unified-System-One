@@ -23,6 +23,11 @@ ROOT = Path(__file__).resolve().parents[1]
 BASE_BYTES = 23919549408
 BASE_SHA = "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53"
 CACHE = ROOT / "artifacts/jev-local-hf/hub/models--knowlet--Gemma-4-12B-Unified-System-One/snapshots" / artifact.REVISION
+MAX_RESOURCE_GATES = 512
+# Seven setup gates, every compile, optimizer setup,22 dev forwards and four
+# publication gates, including the final semantic child tensor verification.
+FIXED_RESOURCE_GATES = 7 + sum(artifact.COUNTS.values()) + 1 + artifact.COUNTS["development"] + 4
+MAX_TRAINING_STEPS = MAX_RESOURCE_GATES - FIXED_RESOURCE_GATES
 
 
 def memory_observation():
@@ -46,7 +51,7 @@ class ResourceGate:
         artifact.create(self.path, b"")
 
     def check(self, phase, scope):
-        artifact.require(scope == artifact.resource_phase_scope(phase) and self.sequence < 512, "Bounded exact protected resource phase")
+        artifact.require(scope == artifact.resource_phase_scope(phase) and self.sequence < MAX_RESOURCE_GATES, "Bounded exact protected resource phase")
         record = {"sequence": self.sequence, "phase": phase, "scope": scope,
                   "UTC": datetime.now(UTC).isoformat(), "monotonic": time.monotonic(),
                   "expected_boot_id": self.expected_boot_id, "admitted": False,
@@ -218,6 +223,8 @@ def fit_public_actions(*, output, source_handoff, expected_source_handoff, expec
     artifact.require(type(steps) is int and steps > 0 and type(seed) is int
         and type(learning_rate) in (int, float) and math.isfinite(learning_rate) and learning_rate > 0,
         "Positive finite steps/LR and integer seed required")
+    artifact.require(steps <= MAX_TRAINING_STEPS,
+        "Public fit steps exceed complete resource journal capacity (maximum " + str(MAX_TRAINING_STEPS) + ")")
     _fresh_environment()
     output = artifact.ordinary(output)
     artifact.require(not output.exists(), "New independent public fit output required")
