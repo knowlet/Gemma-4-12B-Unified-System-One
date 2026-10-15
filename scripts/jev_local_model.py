@@ -135,6 +135,7 @@ def main(argv=None):
     parser.add_argument("--generated-action-qualification", type=Path)
     parser.add_argument("--hierarchical-candidates", action="store_true")
     parser.add_argument("--batch-hierarchy-stages", action="store_true")
+    parser.add_argument("--browser-operation-first", action="store_true")
     parser.add_argument("--decision-readout")
     parser.add_argument("--prefix-cache", action="store_true")
     parser.add_argument("--prefix-suffix-batch-size", type=int, choices=[1, 2], default=1)
@@ -157,6 +158,24 @@ def main(argv=None):
     parser.add_argument("--live-only", action="store_true")
     parser.add_argument("--public-cases", nargs="+", dest="public_case_ids")
     args = parser.parse_args(argv)
+    if args.browser_operation_first and (
+        not args.competitor
+        or not args.hierarchical_candidates
+        or not args.server_evidence
+        or args.batch_hierarchy_stages
+        or args.generated_actions
+        or args.generated_action_grammar
+        or args.generated_action_adapter
+        or args.generated_action_qualification
+        or args.prompt_mode != "native"
+        or args.analysis_style != "detailed"
+        or args.decision_readout
+        or args.prefix_cache
+        or args.prefix_suffix_batch_size != 1
+    ):
+        parser.error(
+            "browser-operation-first requires a native competitor, hierarchical-candidates and server-evidence without other decision policies"
+        )
     if args.public_case_ids is not None:
         if (
             args.suite_split != "development"
@@ -310,6 +329,10 @@ def main(argv=None):
     }
     if args.public_case_ids is not None:
         receipt["public_case_ids"] = args.public_case_ids
+    if args.browser_operation_first:
+        from s1.jev_browser_operation_first import profile_manifest
+
+        receipt["browser_decision_profile"] = profile_manifest()
     if verified_action_adapter is not None:
         receipt["generated_action_adapter"] = verified_action_adapter.telemetry()
         receipt["text_helper_policy"] = (
@@ -535,6 +558,7 @@ def main(argv=None):
             jev_generated_action_grammar=args.generated_action_grammar,
             model_identity=cell,
             request_evidence_sink=server_journal,
+            **({"jev_browser_operation_first": True} if args.browser_operation_first else {}),
         )
         listener = socket.socket()
         listener.bind(("127.0.0.1", 0))

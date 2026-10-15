@@ -1152,6 +1152,20 @@ or `--hierarchical-candidates` to `scripts/jev_local_model.py`. Both enable the
 same adapter; neither silently selects or prunes targets. Keep this option and
 its branching/budget settings identical across comparison arms.
 
+The separate `jev_browser_operation_first_v1` specialist profile is enabled by
+local `--browser-operation-first` with `--competitor decider` or `--competitor jev-omni`,
+`--hierarchical-candidates` and `--server-evidence`. The Python API uses
+`create_app(..., jev_browser_operation_first=True, jev_compatible=True, jev_hierarchical=True)`;
+stage batching and generated actions cannot be combined with this profile. It
+retains the full original request, evaluates operation first and only its selected
+target head, computes every active group and conditional probability, and journals
+unused heads as `not_evaluated`. Any original head above 20 targets retains one shared
+20-second cooperative budget; original narrow requests retain the upstream browser's
+external 25-second HTTP timeout, which callers must configure because the adapter
+does not enforce it. The default endpoint still evaluates every requested head.
+CPU contracts establish scheduling and fake-backend probability behavior only;
+native numerical equivalence, speed and browser success remain unverified.
+
 To request stage batching, add `--jev-batch-stages` with the API hierarchy flags,
 or add `--batch-hierarchy-stages` with `--hierarchical-candidates` in the local
 runner. This optional setting uses the backend's ordered batch method when

@@ -23,6 +23,7 @@ def create_app(
     jev_compatible=False,
     jev_hierarchical=False,
     jev_hierarchical_batch=False,
+    jev_browser_operation_first=False,
     jev_generated_actions=False,
     jev_generated_action_grammar=False,
     model_identity=None,
@@ -34,6 +35,24 @@ def create_app(
         raise ValueError("Jev hierarchical choices require the explicit compatible endpoint")
     if jev_hierarchical_batch and not jev_hierarchical:
         raise ValueError("Jev hierarchy batching requires hierarchical choices")
+    if type(jev_browser_operation_first) is not bool:
+        raise ValueError("Jev browser operation-first must be an explicit boolean")
+    operation_first_class = None
+    if jev_browser_operation_first:
+        if (
+            not jev_compatible
+            or not jev_hierarchical
+            or jev_hierarchical_batch
+            or jev_generated_actions
+            or jev_generated_action_grammar
+        ):
+            raise ValueError(
+                "browser operation-first requires compatibility and hierarchy without batching/generated actions"
+            )
+        from .jev_browser_operation_first import JevBrowserOperationFirstAdapter
+
+        operation_first_class = JevBrowserOperationFirstAdapter
+        operation_first_class(backend, model_identity=model_identity)
     if type(jev_generated_actions) is not bool:
         raise ValueError("Jev generated actions must be an explicit boolean")
     if type(jev_generated_action_grammar) is not bool:
@@ -159,7 +178,13 @@ def create_app(
                         if emit is not None
                         else {}
                     )
-                    if jev_hierarchical:
+                    if operation_first_class is not None:
+                        adapter = operation_first_class
+                        if emit is not None:
+                            options["evidence_sink"] = lambda event: emit(
+                                "browser_operation_first_checkpoint", event
+                            )
+                    elif jev_hierarchical:
                         from .jev_hierarchy import JevHierarchicalAdapter
 
                         adapter = JevHierarchicalAdapter
