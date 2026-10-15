@@ -697,12 +697,42 @@ retains the actual first browser regression: **0/1 strict completion**, despite
 the final DOM satisfying every requested search/filter/property condition. The
 model initially performs all five required actions correctly, then returns to
 the list and reopens Casa Flora repeatedly instead of declaring DONE. It exhausts
-the unchanged 16-decision budget. The early gate rejects this child adapter;
+the unchanged 16-decision budget. The early gate rejects this NF4 configuration;
 the remaining comparison arms are not run, so there is no new 13-case score or
 matched-control result. The earlier audited 12/13 adapter remains the candidate.
 No new transfer seed has been selected. The tracked JSON is a compact evidence
 index; full raw requests, server journals, source copies and weights remain in
 the ignored local artifact directories it identifies.
+
+A [predeclared precision replay](validation/2026-10-15/jev-counterfactual-precision-replay.json)
+then crosses four unchanged saved requests with the parent/child adapters and
+NF4/BF16 backbones: **16 actual native generated decisions**, with no browser
+actions or text-helper calls. Independent auditing passes 1,067 checks plus 52
+lineage/label checks, covering all request/prompt/token/grammar bindings,
+the complete captured parent/child fit
+trees, exact FP32 adapter values, frozen parameter versions and unchanged original
+full head and temperature.
+
+| Saved state | Expected | Parent NF4 | Parent BF16 | Child NF4 | Child BF16 |
+| --- | --- | --- | --- | --- | --- |
+| Original task fully complete | DONE | DONE | DONE | Back 4 | DONE |
+| Nature selected, destination still missing | TYPE 4 | View 8 | TYPE 4 | TYPE 4 | TYPE 4 |
+| Nature detail opened before required search | Back 4 | DONE | DONE | Back 4 | Back 4 |
+| Familiar category-only Nature training control | DONE | DONE | DONE | DONE | DONE |
+
+The stopping regression is deployment-composition-sensitive on the identical
+original completion request: child NF4 returns Back while child BF16 returns
+DONE. The parent still falsely stops on the prematurely opened Nature detail in
+both precisions, so precision alone does not explain every failure. Child BF16
+matches all four external next-action labels; these are not four browser task
+successes. The category-only row is known training data with its authentic profile
+URL, and comparisons between different rows do not isolate goal wording.
+
+BF16 uses the existing exact training initializer followed by frozen evaluation
+and an explicitly separate diagnostic context. The production attachment remains
+NF4-only; its manifest and loader are unchanged. A separate full-browser BF16
+diagnostic must pass the original task before matched known-13 arms can run.
+No fresh transfer seed, new fit or competitor result follows from this replay.
 
 The opt-in `--public-cases CASE_ID ...` mode now adds four fixed navigation goals
 on arXiv, Python documentation and NASA Science. Case definitions and fresh-DOM
