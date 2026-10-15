@@ -39,11 +39,17 @@ from s1.browser_evidence import (  # noqa: E402
 )
 from s1.browser_public_training import NativeWireRequest, public_training_case  # noqa: E402
 
-SCHEMA = "jev-public-native-training-collection-v1"
+SCHEMA = "jev-public-native-training-collection-v2"
 PROPOSAL_SHA = "e3c2c9833709f3d5c05a320c13403f46aa8b8938acaf7e867d52470928f4bdfa"
 MODEL_ALIAS = "generated-actions-none"
 FORBIDDEN = {"torch", "transformers", "peft", "bitsandbytes", "tensorflow", "jax", "safetensors"}
 MAX_STEPS = BOOTSTRAP_STEPS = 16
+SETTLE_SECONDS = 2.0
+SETTLE_INTERVAL = 0.05
+SETTLE_SAMPLES = 3
+PASSIVE_STATE = """(() => ({ready_state:document.readyState,
+time_origin:performance.timeOrigin,url:location.href,scroll_x:scrollX,scroll_y:scrollY,
+width:innerWidth,height:innerHeight}))()"""
 CHROMIUM = Path(
     "/home/albert_hsieh/.cache/ms-playwright/chromium_headless_shell-1208/chrome-linux/headless_shell"
 )
@@ -86,6 +92,77 @@ def encode(value):
 
 def sha(blob):
     return hashlib.sha256(blob).hexdigest()
+
+
+def navigation_read_error(exc):
+    return type(exc).__name__ == "StalePage" and str(exc) in {
+        "Document changed during evaluation",
+        "Document is navigating",
+        "Page did not settle",
+    }
+
+
+def passive_settle(browser, journal, *, clock=time.monotonic, sleep=time.sleep):
+    """Goal-independent read-only pause; never refreshes or assigns native state."""
+    started = clock()
+    previous = None
+    stable = 0
+    for index in range(int(SETTLE_SECONDS / SETTLE_INTERVAL) + 1):
+        try:
+            sample = browser.evaluate(PASSIVE_STATE)
+        except Exception as exc:
+            journal.append(
+                {
+                    "phase": "sample-error",
+                    "sample_index": index,
+                    "elapsed_ms": (clock() - started) * 1000,
+                    "error": error(exc),
+                }
+            )
+            if not navigation_read_error(exc):
+                raise
+            sample = None
+        else:
+            journal.append(
+                {
+                    "phase": "sample",
+                    "sample_index": index,
+                    "elapsed_ms": (clock() - started) * 1000,
+                    "observed": sample,
+                }
+            )
+            require(
+                type(sample) is dict
+                and set(sample)
+                == {"ready_state", "time_origin", "url", "scroll_x", "scroll_y", "width", "height"},
+                "Malformed passive read; no hidden native refresh permitted",
+            )
+        complete = isinstance(sample, dict) and sample.get("ready_state") == "complete"
+        stable = stable + 1 if complete and sample == previous else int(complete)
+        previous = copy.deepcopy(sample)
+        if clock() - started > SETTLE_SECONDS:
+            break
+        if stable >= SETTLE_SAMPLES:
+            journal.append(
+                {
+                    "phase": "settled",
+                    "elapsed_ms": (clock() - started) * 1000,
+                    "stable_samples": stable,
+                }
+            )
+            if clock() - started <= SETTLE_SECONDS:
+                return
+            break
+        remaining = SETTLE_SECONDS - (clock() - started)
+        if remaining <= 0:
+            break
+        sleep(min(SETTLE_INTERVAL, remaining))
+    journal.append(
+        {"phase": "timeout", "elapsed_ms": (clock() - started) * 1000, "stable_samples": stable}
+    )
+    raise ValueError(
+        "Passive between-tick settling exceeded2s; no mutation retry or native refresh"
+    )
 
 
 def record(path):
@@ -252,6 +329,13 @@ def collection_plan(output, upstream, collection_id):
         ],
         "supervised_decisions_per_episode": MAX_STEPS,
         "recovery_bootstrap_decisions_separate": BOOTSTRAP_STEPS,
+        "passive_between_ticks": {
+            "timeout_seconds": SETTLE_SECONDS,
+            "interval_seconds": SETTLE_INTERVAL,
+            "identical_complete_samples": SETTLE_SAMPLES,
+            "JS": PASSIVE_STATE,
+            "no_goal_or_agent_state_assignment": True,
+        },
         "upstream_action_budget_unchanged": 60,
         "coverage": {
             "required_per_goal": [
@@ -275,7 +359,9 @@ def collection_plan(output, upstream, collection_id):
             "initial_URL_only": "Exact declared task start URL; every later navigation/scroll is an offered guarded native Agent action",
             "policy": "Frozen harness GET/HEAD, service workers blocked, CDP Document/root commits and passive top-document HTTP statuses; audited contacts are not all prevented",
         },
-        "read_schedule": "Native Agent internal observation/freshness unchanged. Each intercepted choose reads private DOM/HTML/ownership and current-offered-node hrefs only. Every accepted/rejected Agent tick reads fresh post DOM/HTML; no custom mutation retry or read-only refresh schedule.",
+        "read_schedule": "Unchanged Agent/observe/fresh/act. Goal-independent bounded passive settling occurs between ticks only, without native re-observe or Agent state assignments. Each actual choose strict pre-proof completes the preceding nonterminal action by appending a transition; immediate post-action DOM reads/errors remain diagnostic. DONE retains immediate identical strict pre/post ownership. All phase-at-entry and resolved classifications, rejected calls and raw native observations retained; no mutation retries.",
+        "native_post_action_read_errors": "Only source-defined navigation StalePage reads may defer after exactly one matching real history action, accepted native act and true execution freshness. Every such error is retained; action/guard failures cannot defer.",
+        "ownership_provenance": "Every ownership journal row detaches document_commit_count/document_request_count and owned_target_ids/owned_session_ids/root_frames at binding time, so admission can rederive the latest full-document loader from the exact final-ledger prefix. Fixed expected_ownership and native payload fields remain unchanged.",
         "limits": {
             "context": 8192,
             "new_tokens": 32,
@@ -392,7 +478,7 @@ def scripted_teacher(task, page, payload, model, links, verdict, observed, *, bo
                 and parsed.hostname in allowed
                 and parsed.path.rstrip("/") == path.rstrip("/")
                 and not parsed.query
-                and (fragment is None or parsed.fragment == fragment)
+                and parsed.fragment == (fragment or "")
                 and not (parsed.path == current.path and parsed.fragment == current.fragment)
                 and link["node"] in offered
             ):
@@ -409,8 +495,6 @@ def scripted_teacher(task, page, payload, model, links, verdict, observed, *, bo
                     action = find(path)
                     if action is not None:
                         break
-        if action is None and current.path.rstrip("/") not in {p.rstrip("/") for p in routes}:
-            action = find(urlsplit(task["start_url"]).path)
         if (
             action is None
             and task["judge_kind"] == "mdn_method"
@@ -418,6 +502,8 @@ def scripted_teacher(task, page, payload, model, links, verdict, observed, *, bo
             and current.fragment != "interfaces"
         ):
             action = find(current.path, "interfaces")
+        if action is None and current.path.rstrip("/") not in {p.rstrip("/") for p in routes}:
+            action = find(urlsplit(task["start_url"]).path)
     elif not bootstrap and task.get("section_fragment"):
         action = find(target, task["section_fragment"])
         if (
@@ -615,6 +701,7 @@ class Episode:
                 "guarded-actions",
                 "transitions",
                 "compiled-inputs",
+                "passive-settling",
             )
         }
         self.raw = _ObservationJournal(folder / "observations.jsonl", [])
@@ -623,6 +710,8 @@ class Episode:
         self.agent = self.model = self.transport = None
         self.bootstrap = kind == "recovery"
         self.bootstrap_reached = False
+        self.awaiting_post = None
+        self.need_settle = False
 
     def raw_sink(self, event):
         self.raw.append(event)
@@ -639,22 +728,34 @@ class Episode:
         require(matches, "Current native state has no exact detached raw snapshot")
         return matches[-1]
 
-    def proof(self, phase):
+    def proof(self, phase, *, strict=True):
         page = self.agent.state["page"]
         bound = observed = verdict = html_ref = None
         failures = {}
         first_error = None
+        exceptions = []
+        context = {
+            "document_commit_count": len(self.transport.public_document_commits),
+            "document_request_count": len(self.transport.public_document_requests),
+            "owned_target_ids": sorted(self.transport.targets),
+            "owned_session_ids": sorted(self.transport.sessions),
+            "root_frames": copy.deepcopy(self.transport.public_root_frames),
+        }
         try:
             bound = ownership(self.agent.browser, self.transport, page)
         except Exception as exc:
+            exceptions.append(exc)
             failures["binding_error"] = error(exc)
             first_error = exc
-        own_seq = self.journals["ownership"].append({"phase": phase, "binding": bound, **failures})
+        own_seq = self.journals["ownership"].append(
+            {"phase": phase, "binding": bound, **context, **failures}
+        )
         try:
             observed = self.evidence.observe_public_training(self.agent.browser, self.task)
             require(isinstance(observed, dict), "Private DOM observer returned no object")
             observed["ownership"] = copy.deepcopy(bound)
         except Exception as exc:
+            exceptions.append(exc)
             failures["observation_error"] = error(exc)
             if first_error is None:
                 first_error = exc
@@ -664,6 +765,7 @@ class Episode:
                     self.task, observed, expected_ownership=bound
                 )
             except Exception as exc:
+                exceptions.append(exc)
                 failures["validation_error"] = error(exc)
                 if first_error is None:
                     first_error = exc
@@ -678,6 +780,7 @@ class Episode:
                 }
             html_ref = self.pages.store(html)
         except Exception as exc:
+            exceptions.append(exc)
             failures["HTML_error"] = error(exc)
             if first_error is None:
                 first_error = exc
@@ -694,6 +797,7 @@ class Episode:
         seq = self.journals["private-dom"].append(
             {
                 "phase": phase,
+                "strict": strict,
                 "observed": observed,
                 "verdict": verdict,
                 "expected_ownership": bound,
@@ -702,30 +806,33 @@ class Episode:
                 **failures,
             }
         )
-        if first_error is not None:
-            raise first_error
-        require(
-            all(
-                verdict.get("checks", {}).get(key) is True
-                for key in (
-                    "trusted_expected_ownership",
-                    "owned_context",
-                    "same_native_document",
-                    "viewport",
-                    "document_ready",
-                    "no_visible_access_blocker",
-                    "no_access_error_title",
-                )
-            ),
-            "Fresh private observation ownership/access/document binding failed",
-        )
+        fatal_errors = [exc for exc in exceptions if not navigation_read_error(exc)]
+        if first_error is not None and (strict or fatal_errors):
+            raise first_error if strict else fatal_errors[0]
         require(not any(scope.values()), "Observed public scope/HTTP/observer failure")
+        if strict:
+            require(
+                all(
+                    verdict.get("checks", {}).get(key) is True
+                    for key in (
+                        "trusted_expected_ownership",
+                        "owned_context",
+                        "same_native_document",
+                        "viewport",
+                        "document_ready",
+                        "no_visible_access_blocker",
+                        "no_access_error_title",
+                    )
+                ),
+                "Fresh private observation ownership/access/document binding failed",
+            )
         return {
             "sequence": seq,
             "ownership_sequence": own_seq,
             "observed": observed,
             "verdict": verdict,
             "binding": bound,
+            "errors": failures,
         }
 
     def install_guards(self):
@@ -770,13 +877,45 @@ class Episode:
 
             setattr(browser, name, wrapped)
 
+    def resolved_counts(self):
+        rows = [
+            r for r in self.journals["all-native-calls"].rows if r["phase"] == "decision-resolved"
+        ]
+        return {
+            phase: sum(r["resolved_phase"] == phase for r in rows)
+            for phase in ("bootstrap", "supervised")
+        }
+
+    def complete_previous(self, pre, raw_sequence, request_sequence):
+        previous = self.awaiting_post
+        if previous is None:
+            return
+        require(
+            self.agent.state["history"] == previous["executed_history"],
+            "History changed between guarded execution and the next actual native request",
+        )
+        seq = self.journals["transitions"].append(
+            {
+                **previous["execution_record"],
+                "phase": "completed-at-next-native-pre",
+                "accepted": True,
+                "postproof_deferred": False,
+                "private_postcondition_sequence": pre["sequence"],
+                "postcondition_native_request_sequence": request_sequence,
+                "postcondition_raw_observation_sequence": raw_sequence,
+                "after_fingerprint": self.agent.state["page"]["fingerprint"],
+            }
+        )
+        previous.update(post=pre, accepted=True, transition_sequence=seq)
+        self.awaiting_post = None
+
     def post(self, url, _key, payload):
         index = sum(r["phase"] == "request" for r in self.journals["all-native-calls"].rows)
         page = self.agent.state["page"]
         entry = {
             "native_policy_call_index": index,
             "episode_id": self.id,
-            "bootstrap": self.bootstrap,
+            "phase_at_entry": "bootstrap" if self.bootstrap else "supervised",
             "payload": copy.deepcopy(payload),
             "wire_sha256": sha(encode(payload)),
             "page_fingerprint": page["fingerprint"],
@@ -818,6 +957,43 @@ class Episode:
             NativeWireRequest(payload)
             raw_seq = self.raw_sequence(page)
             pre = self.proof("before-native-call-" + str(index))
+            self.complete_previous(pre, raw_seq, seq)
+            boundary = self.bootstrap and urlsplit(pre["binding"]["url"]).path.rstrip(
+                "/"
+            ) == self.task["bootstrap_target_path"].rstrip("/")
+            if boundary:
+                require(
+                    not pre["verdict"]["success"],
+                    "Recovery bootstrap accidentally satisfies original goal",
+                )
+                self.bootstrap = False
+                self.bootstrap_reached = True
+                self.journals["all-native-calls"].append(
+                    {
+                        "phase": "bootstrap-boundary",
+                        "request_sequence": seq,
+                        "private_precondition_sequence": pre["sequence"],
+                        "raw_observation_sequence": raw_seq,
+                        "owned_binding": pre["binding"],
+                        "original_goal_success": False,
+                    }
+                )
+            resolved_phase = "bootstrap" if self.bootstrap else "supervised"
+            limit = BOOTSTRAP_STEPS if self.bootstrap else MAX_STEPS
+            require(
+                self.resolved_counts()[resolved_phase] < limit,
+                "Resolved native decision phase exceeded prospective16 budget",
+            )
+            self.journals["all-native-calls"].append(
+                {
+                    "phase": "decision-resolved",
+                    "request_sequence": seq,
+                    "phase_at_entry": entry["phase_at_entry"],
+                    "resolved_phase": resolved_phase,
+                    "bootstrap": self.bootstrap,
+                    "private_precondition_sequence": pre["sequence"],
+                }
+            )
             compiled = self.compiler.compile(payload)
             compiled_seq = self.journals["compiled-inputs"].append(compiled)
             links = current_links(self.agent.browser, page)
@@ -862,6 +1038,8 @@ class Episode:
                     "request_sequence": seq,
                     "selected": selected,
                     "response": response,
+                    "resolved_phase": resolved_phase,
+                    "bootstrap": self.bootstrap,
                     "private_precondition_sequence": pre["sequence"],
                     "raw_observation_sequence": raw_seq,
                     "compiled_sequence": compiled_seq,
@@ -876,6 +1054,9 @@ class Episode:
             raise
 
     def tick(self):
+        if self.need_settle:
+            passive_settle(self.agent.browser, self.journals["passive-settling"])
+            self.need_settle = False
         before_history = len(self.agent.state["history"])
         before_calls = len(self.pending)
         guards_start = len(self.journals["guarded-actions"].rows)
@@ -892,35 +1073,26 @@ class Episode:
         self.journals["states"].append(
             {"phase": "after-tick", "state": result, "bootstrap": self.bootstrap}
         )
-        if caught is not None:
+        if len(self.pending) != before_calls + 1:
             self.journals["transitions"].append(
                 {
+                    "phase": "rejected-before-execution",
                     "accepted": False,
                     "bootstrap": self.bootstrap,
-                    "error": error(caught),
+                    "error": error(caught) if caught else None,
                     "before_history_length": before_history,
                     "after_history_length": len(result["history"]),
                     "guard_sequence_start": guards_start,
                     "guard_sequence_end": len(self.journals["guarded-actions"].rows),
                 }
             )
-            raise caught
-        require(
-            len(self.pending) == before_calls + 1,
-            "Tick did not yield exactly one actual native policy request",
-        )
-        post = self.proof("after-tick")
+            if caught is not None:
+                raise caught
+            raise ValueError("Tick did not yield exactly one actual native policy request")
         row = self.pending[-1]
         selected = row["selected"]
         done = selected["operation"] == "DONE"
         added = result["history"][before_history:]
-        accepted = not caught and (
-            result["status"] == "done" and not added and post["verdict"]["success"]
-            if done
-            else len(added) == 1
-            and added[0]["operation"] == selected["operation"]
-            and added[0]["target"] == selected["target"]
-        )
         execution_guards = self.journals["guarded-actions"].rows[
             row["execution_guard_sequence_start"] :
         ]
@@ -936,55 +1108,105 @@ class Episode:
             for event in execution_guards
         )
         rejected_guard = any(
-            r.get("phase") == "after" and r.get("accepted") is False for r in execution_guards
+            event.get("phase") == "after" and event.get("accepted") is False
+            for event in execution_guards
         )
-        if done:
-            accepted = bool(
-                accepted
-                and row["pre"]["verdict"]["success"]
-                and row["pre"]["binding"] == post["binding"]
-                and matching_fresh_guard
-                and not any(r.get("native_method") == "act" for r in execution_guards)
+        act_accepted = any(
+            event.get("phase") == "after"
+            and event.get("native_method") == "act"
+            and event.get("accepted") is True
+            for event in execution_guards
+        )
+        execution_accepted = bool(
+            matching_fresh_guard
+            and not rejected_guard
+            and (
+                result["status"] == "done"
+                and not added
+                and not any(event.get("native_method") == "act" for event in execution_guards)
+                if done
+                else len(added) == 1
+                and act_accepted
+                and added[0]["operation"] == selected["operation"]
+                and added[0]["target"] == selected["target"]
             )
-        else:
-            accepted = bool(
-                accepted
-                and matching_fresh_guard
-                and any(
-                    r.get("phase") == "after"
-                    and r.get("native_method") == "act"
-                    and r.get("accepted") is True
-                    for r in execution_guards
+            and (caught is None or (not done and navigation_read_error(caught)))
+            and result["status"] != "blocked"
+        )
+        # An immediate navigation/animation view is diagnostic, never a positive
+        # postcondition. Only the next actual choose pre-proof can accept it.
+        diagnostic = None
+        diagnostic_error = None
+        try:
+            diagnostic = self.proof("after-tick-diagnostic", strict=False)
+        except BaseException as exc:
+            diagnostic_error = exc
+        record = {
+            "phase": "executed-awaiting-native-postproof"
+            if execution_accepted and not done
+            else "terminal-or-rejected",
+            "request_sequence": row["call_sequence"],
+            "selected": selected,
+            "bootstrap": row["bootstrap"],
+            "before_history_length": before_history,
+            "after_history_length": len(result["history"]),
+            "accepted": False,
+            "execution_accepted": execution_accepted,
+            "postproof_deferred": execution_accepted and not done,
+            "error": error(caught) if caught else None,
+            "error_scope": "post-action-native-observation"
+            if caught is not None and execution_accepted
+            else "execution"
+            if caught is not None
+            else None,
+            "immediate_diagnostic_error": error(diagnostic_error) if diagnostic_error else None,
+            "immediate_private_diagnostic_sequence": diagnostic["sequence"] if diagnostic else None,
+            "guard_sequence_start": guards_start,
+            "execution_guard_sequence_start": row["execution_guard_sequence_start"],
+            "guard_sequence_end": len(self.journals["guarded-actions"].rows),
+            "private_precondition_sequence": row["pre"]["sequence"],
+            "before_fingerprint": before["page"]["fingerprint"],
+            "after_fingerprint": result["page"]["fingerprint"],
+            "native_status": result["status"],
+        }
+        if done and execution_accepted and caught is None and diagnostic_error is None:
+            try:
+                post = self.proof("after-DONE-strict")
+                accepted = bool(
+                    row["pre"]["verdict"]["success"]
+                    and post["verdict"]["success"]
+                    and row["pre"]["binding"] == post["binding"]
                 )
-            )
-        accepted = bool(accepted and not rejected_guard)
-        transition = self.journals["transitions"].append(
-            {
-                "request_sequence": row["call_sequence"],
-                "selected": selected,
-                "bootstrap": self.bootstrap,
-                "before_history_length": before_history,
-                "after_history_length": len(result["history"]),
-                "accepted": accepted,
-                "error": error(caught) if caught else None,
-                "guard_sequence_start": guards_start,
-                "execution_guard_sequence_start": row["execution_guard_sequence_start"],
-                "guard_sequence_end": len(self.journals["guarded-actions"].rows),
-                "private_precondition_sequence": row["pre"]["sequence"],
-                "private_postcondition_sequence": post["sequence"],
-                "before_fingerprint": before["page"]["fingerprint"],
-                "after_fingerprint": result["page"]["fingerprint"],
-                "native_status": result["status"],
-            }
+                record.update(
+                    accepted=accepted,
+                    private_postcondition_sequence=post["sequence"],
+                    postproof_deferred=False,
+                )
+                row["post"] = post
+            except BaseException as exc:
+                diagnostic_error = exc
+                record["strict_DONE_error"] = error(exc)
+        elif execution_accepted and diagnostic_error is None:
+            row["executed_history"] = copy.deepcopy(result["history"])
+            row["execution_record"] = copy.deepcopy(record)
+            self.awaiting_post = row
+            self.need_settle = True
+        transition = self.journals["transitions"].append(record)
+        row.update(
+            transition_sequence=transition,
+            accepted=record["accepted"],
+            immediate_diagnostic=diagnostic,
         )
-        row.update(post=post, transition_sequence=transition, accepted=accepted)
-        if caught:
-            raise caught
-        require(accepted, "Native freshness/action guard rejected; no mutation retry or fit row")
-        require(
-            result["status"] != "blocked",
-            "Unchanged native Agent automatically blocked; no forced continuation",
-        )
+        if diagnostic_error is not None:
+            if caught is not None:
+                raise caught from diagnostic_error
+            raise diagnostic_error
+        if not execution_accepted:
+            if caught is not None:
+                raise caught
+            raise ValueError("Native freshness/action guard rejected; no mutation retry or fit row")
+        if done:
+            require(row["accepted"], "Native DONE ownership/freshness guard rejected; no fit row")
         return row
 
     def execute(self):
@@ -993,39 +1215,34 @@ class Episode:
             not initial["verdict"]["success"],
             "Initial target goal already satisfied; no invented incomplete state",
         )
-        if self.bootstrap:
-            for bootstrap_step in range(BOOTSTRAP_STEPS + 1):
-                if urlsplit(self.agent.state["page"]["url"]).path.rstrip("/") == self.task[
-                    "bootstrap_target_path"
-                ].rstrip("/"):
-                    proof = self.proof("bootstrap-complete")
-                    require(
-                        not proof["verdict"]["success"],
-                        "Recovery bootstrap accidentally satisfies original goal",
-                    )
-                    self.bootstrap_reached = True
-                    break
+        while True:
+            counts = self.resolved_counts()
+            if self.bootstrap and counts["bootstrap"] >= BOOTSTRAP_STEPS:
+                # The URL is only a candidate for the next actual choose. The
+                # strict pre-proof alone resolves the boundary and accepts data.
                 require(
-                    bootstrap_step < BOOTSTRAP_STEPS,
+                    urlsplit(self.agent.state["page"]["url"]).path.rstrip("/")
+                    == self.task["bootstrap_target_path"].rstrip("/"),
                     "Guarded recovery bootstrap exceeded separate16 decisions",
                 )
-                self.tick()
-            else:
-                raise ValueError("Guarded recovery bootstrap exceeded separate16 decisions")
-            self.bootstrap = False
-        for _ in range(MAX_STEPS):
+            if not self.bootstrap:
+                require(
+                    counts["supervised"] < MAX_STEPS,
+                    "Scripted public trajectory exceeded16 supervised decisions includingDONE",
+                )
             row = self.tick()
             if row["selected"]["operation"] == "DONE":
+                require(self.awaiting_post is None, "DONE left an uncompleted native transition")
+                counts = self.resolved_counts()
                 return {
                     "success": True,
                     "native_status": self.agent.state["status"],
                     "initial_private_success": initial["verdict"]["success"],
                     "bootstrap_reached": self.bootstrap_reached,
-                    "bootstrap_decisions": sum(r["bootstrap"] for r in self.pending),
-                    "supervised_decisions": sum(not r["bootstrap"] for r in self.pending),
+                    "bootstrap_decisions": counts["bootstrap"],
+                    "supervised_decisions": counts["supervised"],
                     "history_actions": len(self.agent.state["history"]),
                 }
-        raise ValueError("Scripted public trajectory exceeded16 supervised decisions includingDONE")
 
 
 def run_episode(bundle, task, kind, plan, pages, compiler, evidence, playwright, upstream):
@@ -1134,6 +1351,11 @@ def run_episode(bundle, task, kind, plan, pages, compiler, evidence, playwright,
             result["success"] = False
         result.update(
             cleanup_errors=cleanup,
+            bootstrap_reached=episode.bootstrap_reached,
+            bootstrap_decisions=episode.resolved_counts()["bootstrap"],
+            supervised_decisions=episode.resolved_counts()["supervised"],
+            history_actions=len(episode.agent.state.get("history", [])) if episode.agent else 0,
+            native_status=episode.agent.state.get("status") if episode.agent else None,
             elapsed_ms=(time.perf_counter() - started) * 1000,
             native_observations=episode.raw.count,
             native_observation_write_ms=episode.raw.write_ms,
@@ -1141,9 +1363,27 @@ def run_episode(bundle, task, kind, plan, pages, compiler, evidence, playwright,
                 r["phase"] == "request" for r in episode.journals["all-native-calls"].rows
             ),
             bootstrap_calls=sum(
-                r["phase"] == "request" and r["bootstrap"]
+                r["phase"] == "decision-resolved" and r["bootstrap"]
                 for r in episode.journals["all-native-calls"].rows
             ),
+            supervised_calls=sum(
+                r["phase"] == "decision-resolved" and not r["bootstrap"]
+                for r in episode.journals["all-native-calls"].rows
+            ),
+            unresolved_native_calls=sum(
+                r["phase"] == "request" for r in episode.journals["all-native-calls"].rows
+            )
+            - sum(
+                r["phase"] == "decision-resolved" for r in episode.journals["all-native-calls"].rows
+            ),
+            actual_call_phase_accounting="Immutable request.phase_at_entry; decision-resolved determines bootstrap/supervised budget. Rejected calls before resolution counted separately, never imputed labels.",
+            actual_native_requests_by_entry_phase={
+                phase: sum(
+                    r["phase"] == "request" and r["phase_at_entry"] == phase
+                    for r in episode.journals["all-native-calls"].rows
+                )
+                for phase in ("bootstrap", "supervised")
+            },
             scripted_teacher_calls=sum(
                 r["phase"] == "teacher-returned" for r in episode.journals["all-native-calls"].rows
             ),
