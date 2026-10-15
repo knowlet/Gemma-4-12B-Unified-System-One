@@ -36,9 +36,16 @@ def driver(monkeypatch):
         ["--observation-profile", "native"],
         ["--observation-profile-helper-sha256", "a" * 64],
         ["--observation-profile", "composed-visible-text-v2"],
+        ["--observation-profile", "composed-visible-text-v3"],
         [
             "--observation-profile",
             "composed-visible-text-v2",
+            "--observation-profile-helper-sha256",
+            "0" * 64,
+        ],
+        [
+            "--observation-profile",
+            "composed-visible-text-v3",
             "--observation-profile-helper-sha256",
             "0" * 64,
         ],
@@ -67,11 +74,21 @@ def test_invalid_observation_options_precede_sources_models_and_output(
     assert caught.value.code == 2 and not (tmp_path / "run").exists()
 
 
-@pytest.mark.parametrize("composed,profile_failure", [(False, False), (True, False), (True, True)])
+@pytest.mark.parametrize(
+    "selection,profile_failure",
+    [
+        ("native-1231850", False),
+        ("composed-visible-text-v2", False),
+        ("composed-visible-text-v2", True),
+        ("composed-visible-text-v3", False),
+        ("composed-visible-text-v3", True),
+    ],
+)
 def test_profile_arguments_reach_benchmark_and_failures_remain_in_receipt(
-    driver, monkeypatch, tmp_path, composed, profile_failure
+    driver, monkeypatch, tmp_path, selection, profile_failure
 ):
     cli, _ = driver
+    composed = selection != "native-1231850"
     calls, validated = [], []
 
     def prepare(path, selection, pin):
@@ -168,7 +185,7 @@ def test_profile_arguments_reach_benchmark_and_failures_remain_in_receipt(
     if composed:
         flags += [
             "--observation-profile",
-            "composed-visible-text-v2",
+            selection,
             "--observation-profile-helper-sha256",
             "a" * 64,
         ]
@@ -180,7 +197,7 @@ def test_profile_arguments_reach_benchmark_and_failures_remain_in_receipt(
         cli.main(flags)
     assert len(calls) == len(validated) == 1
     if composed:
-        assert calls[0]["observation_profile"] == "composed-visible-text-v2"
+        assert calls[0]["observation_profile"] == selection
         assert calls[0]["observation_profile_helper_sha256"] == "a" * 64
     else:
         assert (

@@ -377,19 +377,29 @@ def _authenticate_observation_profile(snapshot, plan, outer, reviewed_source_pin
 
     helper_pin = reviewed_source_pins.get("s1/jev_observation_profile.py", {})
     _require(_digest(helper_pin.get("sha256")), "Reviewed installed profile helper pin required")
+    declared = plan.get("observation_profile")
+    _require(type(declared) is dict, "Explicit composed observation profile binding required")
+    profile_id = declared.get("profile")
+    permitted = {trusted_profile.COMPOSED_PROFILE}
+    if contract.scroll:
+        permitted.add(trusted_profile.PRUNED_PROFILE)
+    _require(
+        type(profile_id) is str and profile_id in permitted,
+        "Collection-v4 requires composed-v2; collection-v5 requires explicit composed-v2 or composed-v3",
+    )
     canonical = {label: snapshot.blobs["train/upstream/" + label] for label in NATIVE_SOURCE_SHA256}
     try:
         bundle = trusted_profile.build_profile(
             canonical,
             expected_source_sha256=helper_pin["sha256"],
-            profile=trusted_profile.COMPOSED_PROFILE,
+            profile=profile_id,
         )
         manifest = bundle.materialized_manifest()
         manifest_bytes = trusted_profile._encode(manifest) + b"\n"
     except (OSError, ValueError, TypeError) as exc:
         raise PublicCollectionError("Installed observation profile reconstruction failed") from exc
     binding = {
-        "profile": trusted_profile.COMPOSED_PROFILE,
+        "profile": profile_id,
         "helper_source_sha256": helper_pin["sha256"],
         "manifest_path": "observation-profile/profile-manifest.json",
         "manifest_sha256": _sha(manifest_bytes),
@@ -427,7 +437,7 @@ def _authenticate_observation_profile(snapshot, plan, outer, reviewed_source_pin
                 snapshot.root / split / "observation-profile",
                 expected_manifest_sha256=binding["manifest_sha256"],
                 expected_source_sha256=helper_pin["sha256"],
-                profile=trusted_profile.COMPOSED_PROFILE,
+                profile=profile_id,
             )
         except (OSError, ValueError, TypeError) as exc:
             raise PublicCollectionError(

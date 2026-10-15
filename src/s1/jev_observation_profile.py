@@ -1,7 +1,8 @@
 """Build explicit, source-authenticated Jev observation profiles.
 
-The default returns seven canonical source files byte for byte. V2 only changes
+The default returns seven canonical source files byte for byte. V2 changes
 generic visible-text traversal, its metadata and its fail-closed limit error.
+Explicit V3 additionally skips excluded subtrees and zero-contribution leaves.
 This library never imports a browser, model, collector or artifact Python code.
 Canonical Git verification remains the caller's separate strict prerequisite.
 """
@@ -20,6 +21,7 @@ from types import MappingProxyType
 
 NATIVE_PROFILE = "native-1231850"
 COMPOSED_PROFILE = "composed-visible-text-v2"
+PRUNED_PROFILE = "composed-visible-text-v3"
 CANONICAL_REVISION = "1231850a0bf1a0c0341fe408ef1668dbbfdfac46"
 CANONICAL_SHA256 = MappingProxyType(
     {
@@ -35,6 +37,8 @@ CANONICAL_SHA256 = MappingProxyType(
 SNAPSHOT = "jev_ultrafast/snapshot.js"
 PARENT_BUILDER_SHA256 = "b9739ba962d41bdb20831196ca8b217608e369477d433b39672b17e47abcd46b"
 PARENT_V1_SNAPSHOT_SHA256 = "3a4a5e7532a7eb99334b8fd71e181d5d18183af4966757cd42d48e6404cbb197"
+V2_SNAPSHOT_SHA256 = "5327d4ab5d615ac0804f4913bb86bb59b383b11ff80f2408eb4aa565243f9dd5"
+PRUNED_SNAPSHOT_SHA256 = "c694f308f29ed5000b7bb60e9374afd9398413d2811e07741cf0f0a6321be552"
 MAX_SOURCE_BYTES = 1024 * 1024
 MAX_TOTAL_BYTES = 4 * 1024 * 1024
 MAX_MATERIALIZED_FILES = 16
@@ -161,6 +165,48 @@ def _derive_v2(native):
     return result.encode("utf-8")
 
 
+def _derive_v3(native):
+    """Derive the reviewed generic pruning delta without changing V2 bytes."""
+    source = _derive_v2(native).decode("utf-8")
+    old_check = """      const style=getComputedStyle(current);
+      if (current.hidden || current.hasAttribute('inert') ||
+          current.getAttribute('aria-hidden')==='true' || style.display==='none' ||
+          style.visibility==='hidden' || style.visibility==='collapse' ||
+          Number(style.opacity)===0 || style.contentVisibility==='hidden') return false;
+"""
+    excluded_element = """  const excludedElement=e=>{
+    const style=getComputedStyle(e);
+    return e.hidden || e.hasAttribute('inert') ||
+      e.getAttribute('aria-hidden')==='true' || style.display==='none' ||
+      style.visibility==='hidden' || style.visibility==='collapse' ||
+      Number(style.opacity)===0 || style.contentVisibility==='hidden';
+  };
+"""
+    push = (
+        "    for (let i=children.length-1;i>=0;i--) stack.push({node:children[i],depth:depth+1});"
+    )
+    for anchor in (old_check, "  const composedVisible=e=>{", "    let children;", push):
+        _require(source.count(anchor) == 1, "Reviewed V3 traversal anchors changed")
+    source = source.replace(
+        "  const composedVisible=e=>{", excluded_element + "  const composedVisible=e=>{"
+    )
+    source = source.replace(old_check, "      if (excludedElement(current)) return false;\n")
+    source = source.replace(
+        "    let children;",
+        "    if (node.nodeType===Node.ELEMENT_NODE && excludedElement(node)) continue;\n"
+        "    let children;",
+    )
+    source = source.replace(
+        push,
+        "    children=children.filter(child=>child.nodeType!==Node.COMMENT_NODE &&\n"
+        "      !(child.nodeType===Node.TEXT_NODE && !child.textContent.trim()));\n" + push,
+    )
+    source = source.replace(f"id:'{COMPOSED_PROFILE}'", f"id:'{PRUNED_PROFILE}'")
+    result = source.encode("utf-8")
+    _require(_sha(result) == PRUNED_SNAPSHOT_SHA256, "Reviewed V3 snapshot derivation differs")
+    return result
+
+
 @dataclass(frozen=True)
 class ProfileBundle:
     canonical_files: object
@@ -222,7 +268,7 @@ class VerifiedMaterializedProfile:
 def build_profile(canonical_sources, *, expected_source_sha256, profile=NATIVE_PROFILE):
     """Return detached immutable files; no alias, fallback or installation."""
     _require(
-        type(profile) is str and profile in {NATIVE_PROFILE, COMPOSED_PROFILE},
+        type(profile) is str and profile in {NATIVE_PROFILE, COMPOSED_PROFILE, PRUNED_PROFILE},
         "Unknown explicit snapshot profile",
     )
     helper = _source_pin(expected_source_sha256)
@@ -246,6 +292,8 @@ def build_profile(canonical_sources, *, expected_source_sha256, profile=NATIVE_P
     runtime = dict(canonical)
     if profile == COMPOSED_PROFILE:
         runtime[SNAPSHOT] = _derive_v2(canonical[SNAPSHOT])
+    elif profile == PRUNED_PROFILE:
+        runtime[SNAPSHOT] = _derive_v3(canonical[SNAPSHOT])
     manifest = {
         "schema": "explicit-snapshot-profile-v1",
         "profile": profile,
@@ -289,6 +337,27 @@ def build_profile(canonical_sources, *, expected_source_sha256, profile=NATIVE_P
             "score/training qualification",
         ],
     }
+    if profile == PRUNED_PROFILE:
+        manifest["derivation"] = {
+            "parent_profile": COMPOSED_PROFILE,
+            "parent_snapshot_sha256": V2_SNAPSHOT_SHA256,
+            "changes": [
+                "profile ID changed to composed-visible-text-v3",
+                "skip descendants excluded by the existing composed ancestor predicate",
+                "filter COMMENT and exact trim-empty TEXT children before reverse push",
+                "remaining order, nonempty text processing, action code and limits unchanged",
+            ],
+            "task_specific_rules": False,
+        }
+        manifest["limits"]["visited_nodes_semantics"] = (
+            "Counts visited nodes after COMMENT and exact trim-empty TEXT children are filtered "
+            "and descendants of excluded elements are skipped. The excluded element itself "
+            "still consumes a visit before its children are skipped."
+        )
+        manifest["limits"]["not_bounded_by_visited_nodes"] = (
+            "This is not a hard bound on all DOM reads, child-list creation/filtering, "
+            "CSS/ancestor checks, text trimming or elapsed time."
+        )
     _require(
         all(runtime[label] == canonical[label] for label in canonical if label != SNAPSHOT),
         "Non-snapshot source changed",
@@ -484,7 +553,7 @@ def verify_materialized_profile(
         "Explicit reviewed materialized manifest SHA256 required",
     )
     _require(
-        type(profile) is str and profile in {NATIVE_PROFILE, COMPOSED_PROFILE},
+        type(profile) is str and profile in {NATIVE_PROFILE, COMPOSED_PROFILE, PRUNED_PROFILE},
         "Unknown explicit snapshot profile",
     )
     root = _ordinary_path(path)
@@ -523,7 +592,9 @@ def main(argv=None):
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--source-sha256", required=True)
     parser.add_argument(
-        "--profile", choices=(NATIVE_PROFILE, COMPOSED_PROFILE), default=NATIVE_PROFILE
+        "--profile",
+        choices=(NATIVE_PROFILE, COMPOSED_PROFILE, PRUNED_PROFILE),
+        default=NATIVE_PROFILE,
     )
     args = parser.parse_args(argv)
     result = materialize_profile(

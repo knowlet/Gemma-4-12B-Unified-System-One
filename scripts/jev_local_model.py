@@ -16,6 +16,7 @@ from pathlib import Path
 from jev_browser_benchmark import (
     COMPOSED_OBSERVATION_PROFILE,
     NATIVE_OBSERVATION_PROFILE,
+    PRUNED_OBSERVATION_PROFILE,
     TASK_IDS,
     prepare_observation_profile,
     run_benchmark,
@@ -171,7 +172,11 @@ def main(argv=None):
     parser.add_argument("--chromium-executable")
     parser.add_argument(
         "--observation-profile",
-        choices=[NATIVE_OBSERVATION_PROFILE, COMPOSED_OBSERVATION_PROFILE],
+        choices=[
+            NATIVE_OBSERVATION_PROFILE,
+            COMPOSED_OBSERVATION_PROFILE,
+            PRUNED_OBSERVATION_PROFILE,
+        ],
         default=NATIVE_OBSERVATION_PROFILE,
     )
     parser.add_argument("--observation-profile-helper-sha256")

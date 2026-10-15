@@ -107,7 +107,7 @@ def run_synthetic_episode(
                     w=1120,
                     h=780,
                     observation_profile={
-                        "id": m.COMPOSED_PROFILE,
+                        "id": plan["observation_profile"]["profile"],
                         "visited_nodes": 42,
                         "node_limit": 20000,
                         "depth_limit": 128,
@@ -336,8 +336,7 @@ def run_synthetic_episode(
     return ep, result
 
 
-@pytest.fixture(scope="module")
-def scroll_collection(tmp_path_factory):
+def build_scroll_collection(tmp_path_factory, profile_id):
     pytest.importorskip("tokenizers")
     if (
         not (m.CACHE / "tokenizer.json").exists()
@@ -370,7 +369,7 @@ def scroll_collection(tmp_path_factory):
         output,
         native.UPSTREAM,
         "synthetic-scroll24",
-        observation_profile=m.COMPOSED_PROFILE,
+        observation_profile=profile_id,
         observation_profile_helper_sha256=m.record(profile.__file__)["sha256"],
         allow_no_input_stale_scroll=True,
     )
@@ -381,13 +380,31 @@ def scroll_collection(tmp_path_factory):
     return output, plan["runtime_source_pins"], m.CACHE
 
 
-def test_v5_complete_actual_native_synthetic_graph_keeps_separate_exclusions(scroll_collection):
-    output, pins, cache = scroll_collection
+@pytest.fixture(scope="module")
+def scroll_collection(tmp_path_factory):
+    return build_scroll_collection(tmp_path_factory, profile.COMPOSED_PROFILE)
+
+
+@pytest.fixture(scope="module")
+def pruned_scroll_collection(tmp_path_factory):
+    return build_scroll_collection(tmp_path_factory, profile.PRUNED_PROFILE)
+
+
+@pytest.mark.parametrize("collection_fixture", ["scroll_collection", "pruned_scroll_collection"])
+def test_v5_complete_actual_native_synthetic_graph_keeps_separate_exclusions(
+    request, collection_fixture
+):
+    output, pins, cache = request.getfixturevalue(collection_fixture)
     admitted = v.validate_public_training_collection(
         output, reviewed_source_pins=pins, tokenizer_cache=cache
     )
     provenance = admitted.provenance
     assert provenance["collection_schema_id"] == v.SCROLL_COLLECTION_SCHEMA
+    assert provenance["observation_profile"]["profile"] == (
+        profile.PRUNED_PROFILE
+        if collection_fixture == "pruned_scroll_collection"
+        else profile.COMPOSED_PROFILE
+    )
     assert len(admitted.train_cases) == 32 and len(admitted.development_cases) == 16
     assert sum(map(len, provenance["excluded_no_input_scroll_mapping"].values())) == 36
     assert sum(map(len, provenance["excluded_no_input_done_mapping"].values())) == 24
@@ -640,6 +657,93 @@ def test_whole24_rehashed_v5_corruptions_refuse(scroll_collection, tmp_path, mut
     reseal(blobs)
     changed = publish(tmp_path / "corrupted-whole24", blobs)
     with pytest.raises(v.PublicCollectionError):
+        v.validate_public_training_collection(
+            changed, reviewed_source_pins=pins, tokenizer_cache=cache
+        )
+
+
+@pytest.mark.parametrize(
+    "forgery", ["v4-with-v3", "v2-name-v3-identity", "v2-tree-v3-binding", "v2-identity-v3-raw"]
+)
+def test_whole24_crossprofile_forgeries_refuse(
+    pruned_scroll_collection, scroll_collection, tmp_path, forgery
+):
+    output, pins, cache = pruned_scroll_collection
+    blobs = dict(v.capture_closed_public_snapshot(output).blobs)
+    legacy = v.capture_closed_public_snapshot(scroll_collection[0])
+    v2_binding = v._json(legacy.blobs["collection_plan.json"])["observation_profile"]
+    if forgery == "v4-with-v3":
+        for label in (
+            "collection_plan.json",
+            "receipt.json",
+            "train/receipt.json",
+            "development/receipt.json",
+        ):
+            value = v._json(blobs[label])
+            value["schema_id"] = v.COMPOSED_COLLECTION_SCHEMA
+            value.pop("no_input_scroll_recovery", None)
+            value.pop("excluded_no_input_scroll_count", None)
+            blobs[label] = encoded(value)
+    elif forgery == "v2-name-v3-identity":
+        for label in ("collection_plan.json", "receipt.json"):
+            value = v._json(blobs[label])
+            value["observation_profile"]["profile"] = profile.COMPOSED_PROFILE
+            blobs[label] = encoded(value)
+    if forgery in {"v2-tree-v3-binding", "v2-identity-v3-raw"}:
+        for split in ("train", "development"):
+            prefix = split + "/observation-profile/"
+            for label in list(blobs):
+                if label.startswith(prefix):
+                    del blobs[label]
+            blobs.update(
+                {label: blob for label, blob in legacy.blobs.items() if label.startswith(prefix)}
+            )
+    if forgery == "v2-identity-v3-raw":
+        verification = {
+            "success": True,
+            "manifest_sha256": v2_binding["manifest_sha256"],
+            "errors": [],
+        }
+        for label in ("collection_plan.json", "receipt.json"):
+            value = v._json(blobs[label])
+            value["observation_profile"] = copy.deepcopy(v2_binding)
+            if label == "receipt.json":
+                value["observation_profile_verification"] = {
+                    split: verification for split in ("train", "development")
+                }
+            blobs[label] = encoded(value)
+        for split in ("train", "development"):
+            receipt = v._json(blobs[split + "/receipt.json"])
+            receipt.update(
+                observation_profile=copy.deepcopy(v2_binding),
+                observation_profile_verification=verification,
+                effective_snapshot_js_sha256=v2_binding["effective_snapshot_js_sha256"],
+            )
+            blobs[split + "/receipt.json"] = encoded(receipt)
+            for episode in rows(blobs, split + "/episodes.jsonl"):
+                change_episode_fields(
+                    blobs,
+                    episode,
+                    {
+                        "observation_profile": copy.deepcopy(v2_binding),
+                        "observation_profile_manifest_sha256": v2_binding["manifest_sha256"],
+                    },
+                )
+                journal = (
+                    split + "/" + episode["artifact_path"] + "/observation-profile-events.jsonl"
+                )
+                events = rows(blobs, journal)
+                for event in events:
+                    event["manifest_sha256"] = v2_binding["manifest_sha256"]
+                    event["expression_sha256"] = (
+                        v2_binding["effective_snapshot_js_sha256"]
+                        if event["expression_kind"] == "READ_STATE"
+                        else v2_binding["marker_expression_sha256"]
+                    )
+                blobs[journal] = jsonl(events)
+    reseal(blobs)
+    changed = publish(tmp_path / ("forged-" + forgery), blobs)
+    with pytest.raises(v.PublicCollectionError, match="profile|composed|classification"):
         v.validate_public_training_collection(
             changed, reviewed_source_pins=pins, tokenizer_cache=cache
         )

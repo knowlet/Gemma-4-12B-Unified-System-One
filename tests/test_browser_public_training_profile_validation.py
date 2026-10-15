@@ -29,15 +29,15 @@ def rows(blobs, label):
     return [v._json(line) for line in blobs[label].splitlines()]
 
 
-def upgrade_pages(value):
+def upgrade_pages(value, *, profile_id=None):
     """Only test data: replace fake ['stable'] markers with native-shaped facts."""
     if type(value) is dict:
         for child in list(value.values()):
-            upgrade_pages(child)
+            upgrade_pages(child, profile_id=profile_id)
         if {"actions", "page_key", "marker", "guards", "scroll"} <= set(value):
             value.update(w=1120, h=780)
             value["observation_profile"] = {
-                "id": p.COMPOSED_PROFILE,
+                "id": p.COMPOSED_PROFILE if profile_id is None else profile_id,
                 "visited_nodes": 42,
                 "node_limit": 20000,
                 "depth_limit": 128,
@@ -80,18 +80,18 @@ def upgrade_pages(value):
             value.update(ordered)
     elif type(value) is list:
         for child in value:
-            upgrade_pages(child)
+            upgrade_pages(child, profile_id=profile_id)
 
 
-def profile_binding(canonical_root, helper_sha):
+def profile_binding(canonical_root, helper_sha, *, profile_id=None):
     bundle = p.build_profile(
         p.read_canonical_sources(canonical_root),
         expected_source_sha256=helper_sha,
-        profile=p.COMPOSED_PROFILE,
+        profile=p.COMPOSED_PROFILE if profile_id is None else profile_id,
     )
     manifest = p._encode(bundle.materialized_manifest()) + b"\n"
     return bundle, {
-        "profile": p.COMPOSED_PROFILE,
+        "profile": p.COMPOSED_PROFILE if profile_id is None else profile_id,
         "helper_source_sha256": helper_sha,
         "manifest_path": "observation-profile/profile-manifest.json",
         "manifest_sha256": v._sha(manifest),
@@ -157,6 +157,7 @@ def episode_events(blobs, prefix, bundle, binding):
         read_state=bundle.read_state,
         marker_expression=bundle.marker_expression,
         manifest_sha256=binding["manifest_sha256"],
+        profile=binding["profile"],
     )
     for protocol, (_position, kind, row) in enumerate(
         sorted(timeline, key=lambda item: item[0]), 1

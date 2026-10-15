@@ -17,24 +17,34 @@ UPSTREAM = native.UPSTREAM
 HELPER_SHA = m.record(helper.__file__)["sha256"]
 
 
-def binding():
-    return m.observation_profile_binding(UPSTREAM, m.COMPOSED_PROFILE, HELPER_SHA)
+def binding(profile=m.COMPOSED_PROFILE):
+    return m.observation_profile_binding(UPSTREAM, profile, HELPER_SHA)
 
 
-def materialized(tmp_path):
-    plan = {"schema_id": m.PROFILE_SCHEMA, "observation_profile": binding()}
+def materialized(tmp_path, profile=m.COMPOSED_PROFILE):
+    plan = {"schema_id": m.PROFILE_SCHEMA, "observation_profile": binding(profile)}
+    if profile == m.PRUNED_PROFILE:
+        plan.update(
+            schema_id=m.SCROLL_SCHEMA,
+            no_input_scroll_recovery=copy.deepcopy(m.NO_INPUT_SCROLL_RULE),
+        )
     helper.materialize_profile(
         UPSTREAM,
         tmp_path / "observation-profile",
         expected_source_sha256=HELPER_SHA,
-        profile=m.COMPOSED_PROFILE,
+        profile=profile,
     )
     return plan, m.verify_observation_profile(tmp_path, plan)
 
 
-def enable_profile(ep):
+def enable_profile(ep, profile=m.COMPOSED_PROFILE):
     """Inject explicit fake protocol events into an otherwise real native Agent."""
-    ep.plan.update(schema_id=m.PROFILE_SCHEMA, observation_profile=binding())
+    ep.plan.update(schema_id=m.PROFILE_SCHEMA, observation_profile=binding(profile))
+    if profile == m.PRUNED_PROFILE:
+        ep.plan.update(
+            schema_id=m.SCROLL_SCHEMA,
+            no_input_scroll_recovery=copy.deepcopy(m.NO_INPUT_SCROLL_RULE),
+        )
     ep.journals[m.PROFILE_JOURNAL] = m.ProfileEventJournal(
         ep.folder / (m.PROFILE_JOURNAL + ".jsonl")
     )
@@ -42,6 +52,7 @@ def enable_profile(ep):
         read_state="synthetic effective read",
         marker_expression="synthetic effective marker",
         manifest_sha256=ep.plan["observation_profile"]["manifest_sha256"],
+        profile=profile,
         sink=ep.journals[m.PROFILE_JOURNAL].append,
     )
     ep.transport.observation_profile_errors = []
@@ -49,7 +60,7 @@ def enable_profile(ep):
 
 def event(ep, *, kind="READ_STATE", cap=False, transient=False, malformed=False):
     metadata = {
-        "id": m.COMPOSED_PROFILE,
+        "id": ep.plan["observation_profile"]["profile"],
         "visited_nodes": 20000 if cap else 14,
         "node_limit": 20000,
         "depth_limit": 128,
@@ -109,6 +120,39 @@ def test_unknown_profile_fails_before_plan_or_materialization(profile):
         m.observation_profile_binding(UPSTREAM, profile, HELPER_SHA)
 
 
+def test_pruned_profile_requires_scroll_opt_in_before_plan_dependencies(tmp_path, monkeypatch):
+    def forbidden():
+        raise AssertionError("Rejected profile mode must not read tasks or private evidence")
+
+    monkeypatch.setattr(m, "private_modules", forbidden)
+    with pytest.raises(ValueError, match="v3 requires explicit no-input stale SCROLL opt-in"):
+        m.collection_plan(
+            tmp_path / "refused",
+            UPSTREAM,
+            "pruned-without-opt-in",
+            observation_profile=m.PRUNED_PROFILE,
+            observation_profile_helper_sha256=HELPER_SHA,
+        )
+    assert not (tmp_path / "refused").exists()
+
+
+def test_v4_cannot_verify_pruned_profile_even_with_valid_scroll_rule(tmp_path, monkeypatch):
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Wrong schema must fail before profile verification")
+
+    monkeypatch.setattr(helper, "verify_materialized_profile", forbidden)
+    plan = {
+        "schema_id": m.PROFILE_SCHEMA,
+        "observation_profile": {
+            "profile": m.PRUNED_PROFILE,
+            "manifest_path": "observation-profile/profile-manifest.json",
+        },
+        "no_input_scroll_recovery": copy.deepcopy(m.NO_INPUT_SCROLL_RULE),
+    }
+    with pytest.raises(ValueError, match="Explicit composed profile"):
+        m.verify_observation_profile(tmp_path, plan)
+
+
 def test_explicit_plan_has_exact_complete_manifest_and_unchanged_population(tmp_path, monkeypatch):
     monkeypatch.setattr(m, "ASSET_SHA", {})
     monkeypatch.setattr(m, "parent_tree_metadata", lambda: {"size_bytes": 0, "file_count": 0})
@@ -159,22 +203,55 @@ def test_explicit_plan_has_exact_complete_manifest_and_unchanged_population(tmp_
     assert not (tmp_path / "composed").exists()
 
 
-def test_both_split_profiles_are_complete_identical_and_self_contained(tmp_path):
+@pytest.mark.parametrize("profile", [m.COMPOSED_PROFILE, m.PRUNED_PROFILE])
+def test_both_split_profiles_are_complete_identical_and_self_contained(tmp_path, profile):
     manifests = []
     for split in ("train", "development"):
         root = tmp_path / split
         root.mkdir()
-        plan, handle = materialized(root)
+        plan, handle = materialized(root, profile)
         files = m.inventory(root / "observation-profile")
         assert len(files) == 16
         assert handle.runtime_root == root / "observation-profile/runtime"
         assert m.profile_verification(root, plan) == {
             "success": True,
-            "manifest_sha256": binding()["manifest_sha256"],
+            "manifest_sha256": binding(profile)["manifest_sha256"],
             "errors": [],
         }
         manifests.append(files)
     assert manifests[0] == manifests[1]
+
+
+def test_pruned_and_v2_bindings_cannot_be_interchanged(tmp_path):
+    plan, handle = materialized(tmp_path, m.PRUNED_PROFILE)
+    old = binding(m.COMPOSED_PROFILE)
+    current = plan["observation_profile"]
+    assert current["canonical_snapshot_js_sha256"] == old["canonical_snapshot_js_sha256"]
+    for key in ("manifest_sha256", "effective_snapshot_js_sha256", "marker_expression_sha256"):
+        assert current[key] != old[key]
+    assert handle.bundle.manifest()["profile"] == m.PRUNED_PROFILE
+    plan["observation_profile"]["profile"] = m.COMPOSED_PROFILE
+    with pytest.raises(ValueError):
+        m.verify_observation_profile(tmp_path, plan)
+
+
+def test_v4_episode_rejects_pruned_handle_before_tracker_creation(tmp_path):
+    plan, handle = materialized(tmp_path, m.PRUNED_PROFILE)
+    plan.update(collection_id="forged-v4", schema_id=m.PROFILE_SCHEMA)
+    folder = tmp_path / "refused"
+    with pytest.raises(ValueError, match="explicit verified runtime"):
+        m.Episode(
+            tmp_path,
+            folder,
+            native.task(),
+            "ordinary",
+            plan,
+            m.Pages(tmp_path / "pages"),
+            native.FakeCompiler(),
+            native.FakeEvidence(),
+            observation_runtime=handle,
+        )
+    assert not (folder / (m.PROFILE_JOURNAL + ".jsonl")).exists()
 
 
 @pytest.mark.parametrize(
@@ -244,9 +321,10 @@ def test_episode_constructor_requires_explicit_handle_and_creates_only_v4_journa
         )
 
 
-def test_transient_native_navigation_error_is_journaled_without_poison(tmp_path):
+@pytest.mark.parametrize("profile", [m.COMPOSED_PROFILE, m.PRUNED_PROFILE])
+def test_transient_native_navigation_error_is_journaled_without_poison(tmp_path, profile):
     with native.fake_native_episode(tmp_path) as (ep, _agent, _model):
-        enable_profile(ep)
+        enable_profile(ep, profile)
         event(ep, transient=True)
         event(ep, kind="MARKER")
         event(ep)
@@ -260,9 +338,12 @@ def test_transient_native_navigation_error_is_journaled_without_poison(tmp_path)
 
 
 @pytest.mark.parametrize("failure", ["cap", "integrity", "transport"])
-def test_persistent_failure_cannot_be_cleared_by_good_read_or_make_fit_row(tmp_path, failure):
+@pytest.mark.parametrize("profile", [m.COMPOSED_PROFILE, m.PRUNED_PROFILE])
+def test_persistent_failure_cannot_be_cleared_by_good_read_or_make_fit_row(
+    tmp_path, failure, profile
+):
     with native.fake_native_episode(tmp_path) as (ep, _agent, _model):
-        enable_profile(ep)
+        enable_profile(ep, profile)
         assert ep.execute()["success"]
         if failure == "transport":
             ep.transport.observation_profile_errors.append(

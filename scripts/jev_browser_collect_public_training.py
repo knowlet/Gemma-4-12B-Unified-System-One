@@ -44,6 +44,8 @@ PROFILE_SCHEMA = "jev-public-native-training-collection-v4"
 SCROLL_SCHEMA = "jev-public-native-training-collection-v5"
 NATIVE_PROFILE = "native-1231850"
 COMPOSED_PROFILE = "composed-visible-text-v2"
+PRUNED_PROFILE = "composed-visible-text-v3"
+COMPOSED_PROFILES = (COMPOSED_PROFILE, PRUNED_PROFILE)
 PROFILE_JOURNAL = "observation-profile-events"
 PROPOSAL_SHA = "e3c2c9833709f3d5c05a320c13403f46aa8b8938acaf7e867d52470928f4bdfa"
 MODEL_ALIAS = "generated-actions-none"
@@ -94,7 +96,7 @@ def scroll_recovery_enabled(plan):
     return (
         plan.get("schema_id") == SCROLL_SCHEMA
         and plan.get("no_input_scroll_recovery") == NO_INPUT_SCROLL_RULE
-        and plan.get("observation_profile", {}).get("profile") == COMPOSED_PROFILE
+        and plan.get("observation_profile", {}).get("profile") in COMPOSED_PROFILES
     )
 
 
@@ -331,7 +333,7 @@ def parent_tree_metadata(root=PARENT_FIT):
 def observation_profile_binding(upstream, profile, helper_sha256):
     """Derive a prospective complete manifest without materialization or browser."""
     require(
-        type(profile) is str and profile in {NATIVE_PROFILE, COMPOSED_PROFILE},
+        type(profile) is str and profile in (NATIVE_PROFILE, *COMPOSED_PROFILES),
         "Unknown observation profile",
     )
     if profile == NATIVE_PROFILE:
@@ -372,7 +374,11 @@ def verify_observation_profile(bundle, plan):
     from s1 import jev_observation_profile as helper
 
     require(
-        binding["profile"] == COMPOSED_PROFILE
+        binding["profile"] in COMPOSED_PROFILES
+        and (
+            (plan.get("schema_id") == PROFILE_SCHEMA and binding["profile"] == COMPOSED_PROFILE)
+            or scroll_recovery_enabled(plan)
+        )
         and binding["manifest_path"] == "observation-profile/profile-manifest.json",
         "Explicit composed profile and fixed manifest path required",
     )
@@ -416,13 +422,17 @@ def collection_plan(
 ):
     require(
         type(observation_profile) is str
-        and observation_profile in {NATIVE_PROFILE, COMPOSED_PROFILE},
+        and observation_profile in (NATIVE_PROFILE, *COMPOSED_PROFILES),
         "Unknown observation profile",
     )
     require(
         type(allow_no_input_stale_scroll) is bool
-        and (not allow_no_input_stale_scroll or observation_profile == COMPOSED_PROFILE),
+        and (not allow_no_input_stale_scroll or observation_profile in COMPOSED_PROFILES),
         "No-input stale SCROLL requires explicit composed profile",
+    )
+    require(
+        observation_profile != PRUNED_PROFILE or allow_no_input_stale_scroll,
+        "Composed-visible-text-v3 requires explicit no-input stale SCROLL opt-in",
     )
     tasks_module, evidence = private_modules()
     tasks = tasks_module.tasks()
@@ -1474,7 +1484,13 @@ class Episode:
             require(
                 plan["schema_id"] in {PROFILE_SCHEMA, SCROLL_SCHEMA}
                 and observation_runtime is not None
-                and (plan["schema_id"] != SCROLL_SCHEMA or scroll_recovery_enabled(plan)),
+                and (
+                    (
+                        plan["schema_id"] == PROFILE_SCHEMA
+                        and plan["observation_profile"]["profile"] == COMPOSED_PROFILE
+                    )
+                    or scroll_recovery_enabled(plan)
+                ),
                 "Composed collection requires explicit verified runtime",
             )
             self.journals[PROFILE_JOURNAL] = ProfileEventJournal(
@@ -2624,7 +2640,11 @@ def collect(output, upstream, plan):
         )
         if "observation_profile" in plan:
             require(
-                plan["schema_id"] in {PROFILE_SCHEMA, SCROLL_SCHEMA},
+                (
+                    plan["schema_id"] == PROFILE_SCHEMA
+                    and plan["observation_profile"]["profile"] == COMPOSED_PROFILE
+                )
+                or scroll_recovery_enabled(plan),
                 "Explicit profile collection schema required",
             )
             require(
@@ -3120,7 +3140,9 @@ def main(argv=None):
     parser.add_argument("--collector-sha256")
     parser.add_argument("--plan-sha256")
     parser.add_argument(
-        "--observation-profile", choices=(NATIVE_PROFILE, COMPOSED_PROFILE), default=NATIVE_PROFILE
+        "--observation-profile",
+        choices=(NATIVE_PROFILE, *COMPOSED_PROFILES),
+        default=NATIVE_PROFILE,
     )
     parser.add_argument("--observation-profile-helper-sha256")
     parser.add_argument("--allow-no-input-stale-scroll", action="store_true")

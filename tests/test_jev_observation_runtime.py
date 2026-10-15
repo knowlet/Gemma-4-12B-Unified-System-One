@@ -35,19 +35,19 @@ def canonical():
     return Path(configured).resolve()
 
 
-@pytest.fixture
-def verified(tmp_path, canonical):
+@pytest.fixture(params=[profile.COMPOSED_PROFILE, profile.PRUNED_PROFILE])
+def verified(tmp_path, canonical, request):
     result = profile.materialize_profile(
         canonical,
         tmp_path / "profile",
         expected_source_sha256=HELPER_SHA,
-        profile=profile.COMPOSED_PROFILE,
+        profile=request.param,
     )
     return profile.verify_materialized_profile(
         tmp_path / "profile",
         expected_manifest_sha256=result["manifest_sha256"],
         expected_source_sha256=HELPER_SHA,
-        profile=profile.COMPOSED_PROFILE,
+        profile=request.param,
     )
 
 
@@ -93,6 +93,8 @@ def test_default_loader_keeps_canonical_import_without_profile_checks(canonical,
         (H.NATIVE_OBSERVATION_PROFILE, HELPER_SHA),
         (H.COMPOSED_OBSERVATION_PROFILE, None),
         (H.COMPOSED_OBSERVATION_PROFILE, "0" * 64),
+        (H.PRUNED_OBSERVATION_PROFILE, None),
+        (H.PRUNED_OBSERVATION_PROFILE, "0" * 64),
     ],
 )
 def test_bad_profile_or_pin_refuses_before_git_and_runtime(monkeypatch, selection, pin):
@@ -253,7 +255,7 @@ def test_sink_failure_latches_integrity_and_preserves_existing_primary(send_fail
     assert tr.observation_profile_errors[0]["phase"] == "event_sink"
 
 
-def snapshot_response():
+def snapshot_response(selection=profile.COMPOSED_PROFILE):
     marker = [1.0, "about:blank", 0, 0, 1120, 780, "Owned", "Visible", [], []]
     return {
         "result": {
@@ -261,7 +263,7 @@ def snapshot_response():
                 "text": "Visible",
                 "marker": marker,
                 "observation_profile": {
-                    "id": profile.COMPOSED_PROFILE,
+                    "id": selection,
                     "visited_nodes": 3,
                     "node_limit": 20000,
                     "depth_limit": 128,
@@ -274,8 +276,9 @@ def snapshot_response():
 
 
 @pytest.mark.parametrize("failure", ["cap", "navigation", "sink", "boundary"])
+@pytest.mark.parametrize("selection", [profile.COMPOSED_PROFILE, profile.PRUNED_PROFILE])
 def test_pure_benchmark_retains_profile_failure_after_good_refresh(
-    tmp_path, canonical, monkeypatch, failure
+    tmp_path, canonical, monkeypatch, failure, selection
 ):
     created = []
 
@@ -332,7 +335,7 @@ def test_pure_benchmark_retains_profile_failure_after_good_refresh(
                 self.state = {"status": "done", "history": []}
                 self.browser = SimpleNamespace(evaluate=lambda _: "<p>Owned</p>")
                 metadata = {
-                    "id": profile.COMPOSED_PROFILE,
+                    "id": selection,
                     "visited_nodes": 20000,
                     "node_limit": 20000,
                     "depth_limit": 128,
@@ -347,7 +350,7 @@ def test_pure_benchmark_retains_profile_failure_after_good_refresh(
                     description = "Error: Execution context was destroyed"
                 for response in (
                     {"exceptionDetails": {"exception": {"description": description}}},
-                    snapshot_response(),
+                    snapshot_response(selection),
                 ):
                     tr.sessions["s"] = Session(response)
                     tr.cdp("Runtime.evaluate", "s", expression=observation_runtime.read_state)
@@ -378,7 +381,7 @@ def test_pure_benchmark_retains_profile_failure_after_good_refresh(
         model="fake-unit",
         output_dir=output,
         task_ids=["filter_open"],
-        observation_profile=profile.COMPOSED_PROFILE,
+        observation_profile=selection,
         observation_profile_helper_sha256=HELPER_SHA,
     )
     if failure == "boundary":

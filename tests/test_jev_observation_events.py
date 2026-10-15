@@ -233,3 +233,51 @@ def test_replaying_saved_raw_events_reproduces_each_classification_exactly():
             )
             == row
         )
+
+
+@pytest.mark.parametrize("selection", ["composed-visible-text-v2", "composed-visible-text-v3"])
+@pytest.mark.parametrize("expression", [READ, MARKER])
+def test_explicit_profile_cap_is_latched_through_matching_refresh(selection, expression):
+    t = tracker(profile=selection)
+    original = cap_event(
+        1,
+        expression=expression,
+        encoded=json.dumps(metadata(id=selection, node_limit_reached=True)),
+    )
+    row = t.capture(original)
+    assert row["failure"]["kind"] == "cap"
+    good = snapshot()
+    good["observation_profile"]["id"] = selection
+    assert t.capture(event(2, good))["failure"] is None
+    assert t.capture(event(3, marker(), expression=MARKER))["profile_failure_count"] == 1
+    assert t.failed and t.rows[0]["response"] == original["response"]
+
+
+@pytest.mark.parametrize("selection", ["composed-visible-text-v2", "composed-visible-text-v3"])
+@pytest.mark.parametrize("payload", ["snapshot", "cap", "transport_cap"])
+def test_another_explicit_profile_cannot_supply_snapshot_or_cap_metadata(selection, payload):
+    other = (
+        "composed-visible-text-v3"
+        if selection == "composed-visible-text-v2"
+        else "composed-visible-text-v2"
+    )
+    if payload == "snapshot":
+        value = snapshot()
+        value["observation_profile"]["id"] = other
+        raw = event(1, value)
+    else:
+        encoded = json.dumps(metadata(id=other, node_limit_reached=True))
+        raw = cap_event(1, encoded=encoded)
+        if payload == "transport_cap":
+            raw["error"] = {
+                "type": "Error",
+                "message": raw.pop("response")["exceptionDetails"]["exception"]["description"],
+            }
+    row = tracker(profile=selection).capture(raw)
+    assert row["failure"]["kind"] == "integrity"
+
+
+@pytest.mark.parametrize("selection", ["native-1231850", "composed-visible-text-v4", None, True])
+def test_unknown_profile_is_refused_at_tracker_construction(selection):
+    with pytest.raises(ValueError, match="Unknown explicit"):
+        tracker(profile=selection)

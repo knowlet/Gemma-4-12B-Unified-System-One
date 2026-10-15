@@ -103,8 +103,8 @@ def _memory_admission():
         pytest.skip("Insufficient MemAvailable for host reserve plus 2GiB owned CPU Chromium")
 
 
-@pytest.fixture(scope="module")
-def composed_runtime(tmp_path_factory):
+@pytest.fixture(scope="module", params=[profile.COMPOSED_PROFILE, profile.PRUNED_PROFILE])
+def composed_runtime(tmp_path_factory, request):
     configured = os.environ.get("JEV_UPSTREAM_PATH")
     if not configured:
         pytest.skip("Set JEV_UPSTREAM_PATH to the existing pinned checkout; never fetches")
@@ -125,14 +125,14 @@ def composed_runtime(tmp_path_factory):
         canonical,
         tmp_path_factory.mktemp("composed-profile") / "sources",
         expected_source_sha256=helper_sha,
-        profile=profile.COMPOSED_PROFILE,
+        profile=request.param,
     )
     runtime_root = Path(materialized["runtime_root"])
     verified = profile.verify_materialized_profile(
         runtime_root.parent,
         expected_manifest_sha256=materialized["manifest_sha256"],
         expected_source_sha256=helper_sha,
-        profile=profile.COMPOSED_PROFILE,
+        profile=request.param,
     )
     _memory_admission()
     with playwright.sync_playwright() as runtime:
@@ -263,6 +263,56 @@ def test_composed_text_keeps_6000_character_bound(owned_page):
     assert observed["text"] == "A" * 6000
     assert not observed["observation_profile"]["node_limit_reached"]
     assert not observed["observation_profile"]["depth_limit_reached"]
+
+
+@pytest.mark.parametrize("noise", ["leaves", "hidden_subtree"])
+def test_pruning_reaches_shadow_tail_without_changing_native_controls(
+    composed_runtime, owned_page, noise
+):
+    native, _, _, transport, canonical_root = composed_runtime
+    browser, page = owned_page
+    setup = (
+        "for(let i=0;i<22000;i++){body.append(document.createComment('ignored'));"
+        "body.append(document.createTextNode(' \\n  '));}"
+        if noise == "leaves"
+        else "const hidden=document.createElement('div');hidden.hidden=true;"
+        "hidden.innerHTML='<span>HIDDEN_SECRET</span>'.repeat(22000);body.append(hidden);"
+    )
+    page.set_content(
+        "<!doctype html><title>Owned pruning</title><body><button>Ordinary</button>"
+        "<p>PREFIX  keeps   spacing</p><script>const body=document.body;"
+        + setup
+        + "const host=document.createElement('x-tail');host.style.display='block';"
+        "body.append(host);const shadow=host.attachShadow({mode:'open'});"
+        "const pre=document.createElement('pre');pre.textContent='TAIL keeps\\n  indentation';"
+        "shadow.append(pre);</script></body>",
+        wait_until="load",
+    )
+    if "id:'composed-visible-text-v2'" in native.READ_STATE:
+        first = len(transport.evaluations)
+        with pytest.raises(native.StalePage):
+            browser.observe(screenshot=False)
+        refused = transport.evaluations[first:]
+        assert len(refused) == 10  # Original Browser.observe retry count.
+        for expression, response in refused:
+            assert expression == native.READ_STATE
+            description = response["exceptionDetails"]["exception"]["description"]
+            assert "ComposedVisibleTextLimitError" in description
+            metadata = json.loads(
+                re.search(r"COMPOSED_VISIBLE_TEXT_LIMIT (\{[^\n]*\})", description).group(1)
+            )
+            assert metadata["id"] == profile.COMPOSED_PROFILE
+            assert metadata["visited_nodes"] == 20000
+            assert metadata["node_limit_reached"] and not metadata["depth_limit_reached"]
+        return
+    observed = browser.observe(screenshot=False)
+    assert observed["observation_profile"]["id"] == profile.PRUNED_PROFILE
+    assert observed["text"] == "Ordinary\nPREFIX  keeps   spacing\nTAIL keeps\n  indentation"
+    canonical = browser.evaluate((canonical_root / profile.SNAPSHOT).read_text())
+    for key in set(canonical) - {"text", "marker"}:
+        assert observed[key] == canonical[key]
+    assert observed["marker"][:7] == canonical["marker"][:7]
+    assert observed["marker"][8:] == canonical["marker"][8:]
 
 
 @pytest.mark.parametrize("kind", ["node", "traversal", "ancestry"])

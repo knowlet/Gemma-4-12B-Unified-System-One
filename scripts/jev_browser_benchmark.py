@@ -43,6 +43,7 @@ UPSTREAM_TRAVEL_SOURCE = "jev_ultrafast/static/fixture.html"
 UPSTREAM_TRAVEL_SHA256 = "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe"
 NATIVE_OBSERVATION_PROFILE = "native-1231850"
 COMPOSED_OBSERVATION_PROFILE = "composed-visible-text-v2"
+PRUNED_OBSERVATION_PROFILE = "composed-visible-text-v3"
 TRAVEL_CHALLENGE_SCOPE = (
     "unseen goal requirements on exposed unchanged upstream HTML, not unseen website"
 )
@@ -1077,9 +1078,9 @@ def prepare_observation_profile(upstream_path, observation_profile, helper_sha25
         raise ValueError("Unknown explicit observation profile")
     if observation_profile == NATIVE_OBSERVATION_PROFILE:
         if helper_sha256 is not None:
-            raise ValueError("An observation helper pin requires composed-visible-text-v2")
+            raise ValueError("An observation helper pin requires an explicit composed profile")
         return None
-    if observation_profile != COMPOSED_OBSERVATION_PROFILE:
+    if observation_profile not in {COMPOSED_OBSERVATION_PROFILE, PRUNED_OBSERVATION_PROFILE}:
         raise ValueError("Unknown explicit observation profile")
     from s1 import jev_observation_profile as profile
 
@@ -2176,7 +2177,11 @@ def main():
     parser.add_argument("--chromium-executable")
     parser.add_argument(
         "--observation-profile",
-        choices=[NATIVE_OBSERVATION_PROFILE, COMPOSED_OBSERVATION_PROFILE],
+        choices=[
+            NATIVE_OBSERVATION_PROFILE,
+            COMPOSED_OBSERVATION_PROFILE,
+            PRUNED_OBSERVATION_PROFILE,
+        ],
         default=NATIVE_OBSERVATION_PROFILE,
     )
     parser.add_argument("--observation-profile-helper-sha256")

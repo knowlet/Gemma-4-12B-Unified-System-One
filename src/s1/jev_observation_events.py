@@ -8,6 +8,7 @@ import re
 from hashlib import sha256
 
 PROFILE = "composed-visible-text-v2"
+PRUNED_PROFILE = "composed-visible-text-v3"
 SCHEMA = "jev-observation-profile-event-v1"
 CAP_PREFIX = "COMPOSED_VISIBLE_TEXT_LIMIT "
 META_KEYS = {
@@ -25,11 +26,11 @@ def _require(condition, message):
         raise ValueError(message)
 
 
-def _metadata_valid(value, *, exhausted):
+def _metadata_valid(value, *, exhausted, profile):
     return (
         type(value) is dict
         and set(value) == META_KEYS
-        and value["id"] == PROFILE
+        and value["id"] == profile
         and type(value["visited_nodes"]) is int
         and 1 <= value["visited_nodes"] <= 20000
         and type(value["node_limit"]) is int
@@ -46,7 +47,7 @@ def _failure(kind, reason):
     return {"kind": kind, "reason": reason}
 
 
-def _cap_failure(description):
+def _cap_failure(description, *, profile):
     if type(description) is not str:
         return None
     first_line = description.split("\n", 1)[0]
@@ -64,7 +65,7 @@ def _cap_failure(description):
         metadata = json.loads(encoded, object_pairs_hook=object_pairs)
     except (TypeError, ValueError):
         return _failure("integrity", "Malformed composed limit exception metadata")
-    if not _metadata_valid(metadata, exhausted=True):
+    if not _metadata_valid(metadata, exhausted=True, profile=profile):
         return _failure("integrity", "Invalid composed limit exception metadata")
     return _failure("cap", "Composed text traversal exhausted its node or depth limit")
 
@@ -80,7 +81,7 @@ def _marker_valid(value):
     )
 
 
-def _response_failure(kind, response):
+def _response_failure(kind, response, *, profile):
     details = response.get("exceptionDetails")
     if details:
         if type(details) is not dict:
@@ -88,7 +89,7 @@ def _response_failure(kind, response):
         exception = details.get("exception", {})
         description = exception.get("description") if type(exception) is dict else None
         # Ordinary navigation/context exceptions keep their native treatment.
-        return _cap_failure(description or details.get("text"))
+        return _cap_failure(description or details.get("text"), profile=profile)
     result = response.get("result")
     if type(result) is not dict or "value" not in result:
         return _failure("integrity", "Profile read lacks a by-value result")
@@ -101,7 +102,7 @@ def _response_failure(kind, response):
             return _failure("integrity", "Profile marker has an invalid native shape")
         return None
     if type(value) is not dict or not _metadata_valid(
-        value.get("observation_profile"), exhausted=False
+        value.get("observation_profile"), exhausted=False, profile=profile
     ):
         return _failure("integrity", "Successful snapshot has invalid profile metadata")
     if (
@@ -131,7 +132,10 @@ class ObservationProfileTracker:
         profile=PROFILE,
         sink=None,
     ):
-        _require(profile == PROFILE, "Unknown explicit observation profile")
+        _require(
+            type(profile) is str and profile in {PROFILE, PRUNED_PROFILE},
+            "Unknown explicit observation profile",
+        )
         _require(
             type(manifest_sha256) is str and re.fullmatch("[0-9a-f]{64}", manifest_sha256),
             "Explicit profile manifest SHA256 required",
@@ -146,6 +150,7 @@ class ObservationProfileTracker:
         _require(sink is None or callable(sink), "Profile sink must be callable")
         self._expressions = {read_state: "READ_STATE", marker_expression: "MARKER"}
         self._manifest_sha256 = manifest_sha256
+        self._profile = profile
         self._sink = sink
         self._rows = []
         self._failures = []
@@ -195,9 +200,9 @@ class ObservationProfileTracker:
         expression = event["expression"]
         kind = self._expressions[expression]
         failure = (
-            _response_failure(kind, payload)
+            _response_failure(kind, payload, profile=self._profile)
             if payload_key == "response"
-            else _cap_failure(payload["message"])
+            else _cap_failure(payload["message"], profile=self._profile)
         )
         sequence = len(self._rows) + 1
         if failure is not None:

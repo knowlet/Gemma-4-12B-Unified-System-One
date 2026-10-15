@@ -23,12 +23,13 @@ def actor(
     opt_in=True,
     fault=None,
     pre_refresh=False,
+    observation_profile=m.COMPOSED_PROFILE,
 ):
     t = native.task()
     bundle = tmp_path / "bundle"
     bundle.mkdir()
     helper_sha = m.record(profile.__file__)["sha256"]
-    binding = m.observation_profile_binding(native.UPSTREAM, m.COMPOSED_PROFILE, helper_sha)
+    binding = m.observation_profile_binding(native.UPSTREAM, observation_profile, helper_sha)
     plan = {
         "collection_id": "synthetic-scroll",
         "schema_id": m.SCROLL_SCHEMA if opt_in else m.PROFILE_SCHEMA,
@@ -41,7 +42,7 @@ def actor(
         native.UPSTREAM,
         bundle / "observation-profile",
         expected_source_sha256=helper_sha,
-        profile=m.COMPOSED_PROFILE,
+        profile=observation_profile,
     )
     handle = m.verify_observation_profile(bundle, plan)
     ep = m.Episode(
@@ -85,7 +86,7 @@ def actor(
                     w=1120,
                     h=780,
                     observation_profile={
-                        "id": m.COMPOSED_PROFILE,
+                        "id": observation_profile,
                         "visited_nodes": 42,
                         "node_limit": 20000,
                         "depth_limit": 128,
@@ -247,8 +248,17 @@ def actor(
 
 @pytest.mark.parametrize("direction", ["SCROLL_UP", "SCROLL_DOWN"])
 @pytest.mark.parametrize("kind", ["ordinary", "recovery"])
-def test_native_false_scroll_reobserves_then_new_tick_can_complete(tmp_path, direction, kind):
-    with actor(tmp_path, direction=direction, kind=kind, pre_refresh=True) as (ep, inputs):
+@pytest.mark.parametrize("observation_profile", [m.COMPOSED_PROFILE, m.PRUNED_PROFILE])
+def test_native_false_scroll_reobserves_then_new_tick_can_complete(
+    tmp_path, direction, kind, observation_profile
+):
+    with actor(
+        tmp_path,
+        direction=direction,
+        kind=kind,
+        pre_refresh=True,
+        observation_profile=observation_profile,
+    ) as (ep, inputs):
         row = ep.tick()
         assert row["accepted"] is False and row["excluded_no_input"] is True
         assert inputs == [] and ep.agent.state["history"] == []
@@ -264,6 +274,14 @@ def test_native_false_scroll_reobserves_then_new_tick_can_complete(tmp_path, dir
         fields = m.scroll_accounting(ep.plan, ep.journals["all-native-calls"].rows)
         assert fields["excluded_no_input_scroll_count"] == 1
         assert fields["excluded_no_input_scroll_native_request_sequences"] == [row["call_sequence"]]
+        profile_fields = ep.profile_result_fields()
+        assert profile_fields["observation_profile"]["profile"] == observation_profile
+        assert profile_fields["observation_profile_failures"] == []
+        assert all(
+            event["response"]["result"]["value"]["observation_profile"]["id"] == observation_profile
+            for event in ep.profile_tracker.rows
+            if event["expression_kind"] == "READ_STATE"
+        )
         m.write(ep.folder / "public-request-ledger.json", {"synthetic_CPU_ledger": True})
         cases, wires = m.serialize_episode(ep, "episodes/synthetic")
         assert cases and wires and cases[-1]["gold"]["operation"] == "DONE"
@@ -372,7 +390,10 @@ def test_exclusion_rederived_and_cannot_hide_other_failures(tmp_path, mutation):
         assert inputs == []
 
 
-def test_flag_is_explicit_composed_only_and_old_plans_remain_unchanged(tmp_path, monkeypatch):
+@pytest.mark.parametrize("observation_profile", [m.COMPOSED_PROFILE, m.PRUNED_PROFILE])
+def test_flag_is_explicit_composed_only_and_old_plans_remain_unchanged(
+    tmp_path, monkeypatch, observation_profile
+):
     monkeypatch.setattr(m, "ASSET_SHA", {})
     monkeypatch.setattr(m, "parent_tree_metadata", lambda: {"size_bytes": 0, "file_count": 0})
     helper_sha = m.record(profile.__file__)["sha256"]
@@ -388,7 +409,7 @@ def test_flag_is_explicit_composed_only_and_old_plans_remain_unchanged(tmp_path,
         tmp_path / "v5",
         native.UPSTREAM,
         "scroll-opted",
-        observation_profile=m.COMPOSED_PROFILE,
+        observation_profile=observation_profile,
         observation_profile_helper_sha256=helper_sha,
         allow_no_input_stale_scroll=True,
     )
@@ -397,6 +418,7 @@ def test_flag_is_explicit_composed_only_and_old_plans_remain_unchanged(tmp_path,
     assert (
         opted["schema_id"] == m.SCROLL_SCHEMA
         and opted["no_input_scroll_recovery"] == m.NO_INPUT_SCROLL_RULE
+        and opted["observation_profile"]["profile"] == observation_profile
     )
     assert opted["tasks"] == composed["tasks"] == plain["tasks"]
     assert (
