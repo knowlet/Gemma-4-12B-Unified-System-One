@@ -9,10 +9,12 @@ scored **1/2 for both the child and unadapted base**, with exactly equal raw
 initial payload pairs. The known-fixture gain did not produce a public-task
 score improvement.
 
-The new tracked CLI route is awaiting an actual parity run. Its historical
-qualification authorizes an explicit reproduction trial; it does not attest
-that this new entry point has already reproduced the diagnostic, promote the
-adapter, or establish public or unseen-task performance.
+The frozen tracked CLI reproduced the original task **1/1**, with
+[independently audited native execution](validation/2026-10-15/jev-bf16-qualified-cli-original.json).
+The remaining known13 cases were never launched: the next process's memory
+admission check refused insufficient available RAM. Full CLI parity remains
+pending. Historical qualification authorizes explicit trials; it does not
+promote the adapter or establish public or unseen-task performance.
 
 Qualification limits the claims supported by the historical evidence, rather
 than the inputs that can be evaluated. The explicit CLI accepts new public or

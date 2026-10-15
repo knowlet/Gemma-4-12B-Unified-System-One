@@ -22,8 +22,11 @@ public or unseen-task superiority. The subsequent
 recorded **1/2 for both the child and unadapted base**, with the two raw initial
 payload pairs exactly equal. The known-fixture result did not generalize into a
 public-task score improvement. The new
-[explicit BF16 qualification route](bf16-action-adapter.md) is awaiting an actual
-tracked-CLI parity run before any usable deployment claim.
+[explicit BF16 qualification route](bf16-action-adapter.md) reproduced the original
+task **1/1** through the frozen tracked CLI, with an
+[independent native execution audit](validation/2026-10-15/jev-bf16-qualified-cli-original.json).
+The known13 continuation was refused before launch by its available-memory check;
+full tracked-CLI parity and any usable deployment claim remain pending.
 
 ## October 14 local pilot
 
