@@ -128,6 +128,12 @@ def composed_runtime(tmp_path_factory):
         profile=profile.COMPOSED_PROFILE,
     )
     runtime_root = Path(materialized["runtime_root"])
+    verified = profile.verify_materialized_profile(
+        runtime_root.parent,
+        expected_manifest_sha256=materialized["manifest_sha256"],
+        expected_source_sha256=helper_sha,
+        profile=profile.COMPOSED_PROFILE,
+    )
     _memory_admission()
     with playwright.sync_playwright() as runtime:
         executable = os.environ.get("JEV_CHROMIUM_PATH")
@@ -178,7 +184,10 @@ def composed_runtime(tmp_path_factory):
                     return response
 
             transport = Transport()
-            with harness.load_upstream(runtime_root, transport) as (agent, model):
+            with harness.load_upstream(canonical, transport, observation_runtime=verified) as (
+                agent,
+                model,
+            ):
                 native = sys.modules["jev_ultrafast.browser"]
                 try:
                     assert native.READ_STATE == (runtime_root / profile.SNAPSHOT).read_text()

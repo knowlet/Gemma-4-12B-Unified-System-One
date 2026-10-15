@@ -40,6 +40,10 @@ from s1.browser_evidence import (  # noqa: E402
 from s1.browser_public_training import NativeWireRequest, public_training_case  # noqa: E402
 
 SCHEMA = "jev-public-native-training-collection-v3"
+PROFILE_SCHEMA = "jev-public-native-training-collection-v4"
+NATIVE_PROFILE = "native-1231850"
+COMPOSED_PROFILE = "composed-visible-text-v2"
+PROFILE_JOURNAL = "observation-profile-events"
 PROPOSAL_SHA = "e3c2c9833709f3d5c05a320c13403f46aa8b8938acaf7e867d52470928f4bdfa"
 MODEL_ALIAS = "generated-actions-none"
 FORBIDDEN = {"torch", "transformers", "peft", "bitsandbytes", "tensorflow", "jax", "safetensors"}
@@ -215,6 +219,25 @@ class Journal:
         return row["sequence"]
 
 
+class ProfileEventJournal(Journal):
+    """Persist tracker-owned event bytes in their original field order."""
+
+    def append(self, value):
+        row = copy.deepcopy(value)
+        require(
+            type(row) is dict
+            and type(row.get("sequence")) is int
+            and row["sequence"] == len(self.rows) + 1,
+            "Profile tracker sequence differs from journal append position",
+        )
+        with self.path.open("ab") as stream:
+            stream.write(encode(row) + b"\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        self.rows.append(row)
+        return row["sequence"]
+
+
 class Pages:
     def __init__(self, root):
         self.root = Path(root)
@@ -270,7 +293,96 @@ def parent_tree_metadata(root=PARENT_FIT):
     }
 
 
-def collection_plan(output, upstream, collection_id):
+def observation_profile_binding(upstream, profile, helper_sha256):
+    """Derive a prospective complete manifest without materialization or browser."""
+    require(
+        type(profile) is str and profile in {NATIVE_PROFILE, COMPOSED_PROFILE},
+        "Unknown observation profile",
+    )
+    if profile == NATIVE_PROFILE:
+        require(helper_sha256 is None, "Native default does not use a profile helper pin")
+        return None
+    from s1 import jev_observation_profile as helper
+
+    bundle = helper.build_profile(
+        helper.read_canonical_sources(upstream),
+        expected_source_sha256=helper_sha256,
+        profile=profile,
+    )
+    blob = (
+        json.dumps(
+            bundle.materialized_manifest(),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode()
+        + b"\n"
+    )
+    return {
+        "profile": profile,
+        "helper_source_sha256": helper_sha256,
+        "manifest_path": "observation-profile/profile-manifest.json",
+        "manifest_sha256": sha(blob),
+        "manifest_size_bytes": len(blob),
+        "canonical_snapshot_js_sha256": sha(bundle.canonical_files[helper.SNAPSHOT]),
+        "effective_snapshot_js_sha256": sha(bundle.runtime_files[helper.SNAPSHOT]),
+        "marker_expression_sha256": sha(bundle.marker_expression.encode()),
+    }
+
+
+def verify_observation_profile(bundle, plan):
+    """Authenticate a self-contained split profile through installed reviewed code."""
+    binding = plan["observation_profile"]
+    from s1 import jev_observation_profile as helper
+
+    require(
+        binding["profile"] == COMPOSED_PROFILE
+        and binding["manifest_path"] == "observation-profile/profile-manifest.json",
+        "Explicit composed profile and fixed manifest path required",
+    )
+    handle = helper.verify_materialized_profile(
+        Path(bundle) / "observation-profile",
+        expected_manifest_sha256=binding["manifest_sha256"],
+        expected_source_sha256=binding["helper_source_sha256"],
+        profile=binding["profile"],
+    )
+    require(
+        record(Path(bundle) / binding["manifest_path"])
+        == {"sha256": binding["manifest_sha256"], "size_bytes": binding["manifest_size_bytes"]}
+        and sha(handle.bundle.canonical_files[helper.SNAPSHOT])
+        == binding["canonical_snapshot_js_sha256"]
+        and sha(handle.read_state.encode()) == binding["effective_snapshot_js_sha256"]
+        and sha(handle.marker_expression.encode()) == binding["marker_expression_sha256"],
+        "Verified profile differs from prospective binding",
+    )
+    return handle
+
+
+def profile_verification(bundle, plan):
+    binding = plan["observation_profile"]
+    result = {"success": False, "manifest_sha256": binding["manifest_sha256"], "errors": []}
+    try:
+        verify_observation_profile(bundle, plan)
+        result["success"] = True
+    except Exception as exc:
+        result["errors"].append(error(exc))
+    return result
+
+
+def collection_plan(
+    output,
+    upstream,
+    collection_id,
+    *,
+    observation_profile=NATIVE_PROFILE,
+    observation_profile_helper_sha256=None,
+):
+    require(
+        type(observation_profile) is str
+        and observation_profile in {NATIVE_PROFILE, COMPOSED_PROFILE},
+        "Unknown observation profile",
+    )
     tasks_module, evidence = private_modules()
     tasks = tasks_module.tasks()
     require(
@@ -307,6 +419,9 @@ def collection_plan(output, upstream, collection_id):
         "Pinned cached tokenizer metadata differs",
     )
     upstream_source = upstream_manifest(upstream)
+    profile_binding = observation_profile_binding(
+        upstream, observation_profile, observation_profile_helper_sha256
+    )
     require(
         upstream_source["source_sha256"]["jev_ultrafast/snapshot.js"]
         == "e50473501c8fb8e70f3b21866d987393e3f2315c639d638bd477d170e81ed78d"
@@ -389,9 +504,18 @@ def collection_plan(output, upstream, collection_id):
         "no_fit_integration": True,
     }
     plan["prospective_existing_parent_metadata"] = parent_tree_metadata()
+    if profile_binding is not None:
+        plan["schema_id"] = PROFILE_SCHEMA
+        plan["observation_profile"] = profile_binding
     plan["runtime_source_pins"] = {
         label: record(path) for label, path in _source_paths(source_files()).items()
     }
+    if profile_binding is not None:
+        require(
+            plan["runtime_source_pins"]["s1/jev_observation_profile.py"]["sha256"]
+            == profile_binding["helper_source_sha256"],
+            "Profile helper differs from full captured source inventory",
+        )
     return plan
 
 
@@ -910,7 +1034,19 @@ class StatusTransport(PlaywrightCDP):
 
 
 class Episode:
-    def __init__(self, bundle, folder, task, kind, plan, pages, compiler, evidence):
+    def __init__(
+        self,
+        bundle,
+        folder,
+        task,
+        kind,
+        plan,
+        pages,
+        compiler,
+        evidence,
+        *,
+        observation_runtime=None,
+    ):
         (
             self.bundle,
             self.folder,
@@ -944,6 +1080,49 @@ class Episode:
         self.bootstrap_reached = False
         self.awaiting_post = None
         self.need_settle = False
+        self.profile_tracker = None
+        if "observation_profile" in plan:
+            from s1.jev_observation_events import ObservationProfileTracker
+
+            require(
+                plan["schema_id"] == PROFILE_SCHEMA and observation_runtime is not None,
+                "Composed collection requires explicit verified runtime",
+            )
+            self.journals[PROFILE_JOURNAL] = ProfileEventJournal(
+                folder / (PROFILE_JOURNAL + ".jsonl")
+            )
+            self.profile_tracker = ObservationProfileTracker(
+                read_state=observation_runtime.read_state,
+                marker_expression=observation_runtime.marker_expression,
+                manifest_sha256=plan["observation_profile"]["manifest_sha256"],
+                profile=plan["observation_profile"]["profile"],
+                sink=self.journals[PROFILE_JOURNAL].append,
+            )
+
+    def profile_failures(self):
+        if self.profile_tracker is None:
+            return []
+        transport_errors = (
+            self.transport.observation_profile_errors if self.transport is not None else []
+        )
+        return copy.deepcopy([*self.profile_tracker.failures, *transport_errors])
+
+    def require_profile_clean(self):
+        require(not self.profile_failures(), "Persistent observation profile failure; no fit label")
+
+    def profile_result_fields(self):
+        if self.profile_tracker is None:
+            return {}
+        failures = self.profile_failures()
+        return {
+            "observation_profile": copy.deepcopy(self.plan["observation_profile"]),
+            "observation_profile_manifest_sha256": self.plan["observation_profile"][
+                "manifest_sha256"
+            ],
+            "observation_profile_event_count": len(self.profile_tracker.rows),
+            "observation_profile_failure_count": len(failures),
+            "observation_profile_failures": failures,
+        }
 
     def raw_sink(self, event):
         self.raw.append(event)
@@ -1187,6 +1366,7 @@ class Episode:
                 "Native history differs",
             )
             NativeWireRequest(payload)
+            self.require_profile_clean()
             raw_seq = self.raw_sequence(page)
             pre = self.proof("before-native-call-" + str(index))
             self.complete_previous(pre, raw_seq, seq)
@@ -1354,6 +1534,7 @@ class Episode:
         )
         execution_accepted = bool(
             matching_fresh_guard
+            and not self.profile_failures()
             and not rejected_guard
             and (
                 result["status"] == "done"
@@ -1430,7 +1611,9 @@ class Episode:
             row["execution_record"] = copy.deepcopy(record)
             self.awaiting_post = row
             self.need_settle = True
-        excluded = _no_input_done_evidence(self, row, record)
+        excluded = (
+            _no_input_done_evidence(self, row, record) if not self.profile_failures() else None
+        )
         if excluded is not None:
             require(self.awaiting_post is None, "Excluded DONE left an uncompleted native action")
             record.update(
@@ -1442,6 +1625,7 @@ class Episode:
             accepted=record["accepted"],
             immediate_diagnostic=diagnostic,
         )
+        self.require_profile_clean()
         if excluded is not None:
             event_sequence = self.journals["all-native-calls"].append(
                 {
@@ -1469,6 +1653,7 @@ class Episode:
         return row
 
     def execute(self):
+        self.require_profile_clean()
         initial = self.proof("initial")
         require(
             not initial["verdict"]["success"],
@@ -1504,9 +1689,31 @@ class Episode:
                 }
 
 
-def run_episode(bundle, task, kind, plan, pages, compiler, evidence, playwright, upstream):
+def run_episode(
+    bundle,
+    task,
+    kind,
+    plan,
+    pages,
+    compiler,
+    evidence,
+    playwright,
+    upstream,
+    *,
+    observation_runtime=None,
+):
     folder = bundle / "attempts" / (task["goal_id"] + "-" + kind)
-    episode = Episode(bundle, folder, task, kind, plan, pages, compiler, evidence)
+    episode = Episode(
+        bundle,
+        folder,
+        task,
+        kind,
+        plan,
+        pages,
+        compiler,
+        evidence,
+        observation_runtime=observation_runtime,
+    )
     result = {
         "episode_id": episode.id,
         "goal_id": task["goal_id"],
@@ -1521,14 +1728,32 @@ def run_episode(bundle, task, kind, plan, pages, compiler, evidence, playwright,
     cleanup = []
     started = time.perf_counter()
     try:
+        if "observation_profile" in plan:
+            observation_runtime = verify_observation_profile(bundle, plan)
         chrome = playwright.chromium.launch(headless=True, executable_path=str(CHROMIUM))
         episode.transport = StatusTransport(chrome)
         episode.transport.public_navigation_hosts = tuple(task["allowed_top_level_hosts"])
         episode.transport.observation_expression = (
-            Path(upstream) / "jev_ultrafast/snapshot.js"
-        ).read_text()
+            observation_runtime.read_state
+            if observation_runtime is not None
+            else (Path(upstream) / "jev_ultrafast/snapshot.js").read_text()
+        )
         episode.transport.observation_sink = episode.raw_sink
-        with load_upstream(upstream, episode.transport) as (agent_module, model_module):
+        profile_arguments = {}
+        if observation_runtime is not None:
+            episode.transport.observation_profile_sink = episode.profile_tracker.capture
+            profile_arguments["observation_runtime"] = observation_runtime
+        with load_upstream(upstream, episode.transport, **profile_arguments) as (
+            agent_module,
+            model_module,
+        ):
+            if observation_runtime is not None:
+                browser_module = sys.modules["jev_ultrafast.browser"]
+                require(
+                    browser_module.READ_STATE == observation_runtime.read_state
+                    and browser_module.MARKER == observation_runtime.marker_expression,
+                    "Imported observation and freshness profile differ",
+                )
             episode.model = model_module
             old_post = model_module.post_json
             model_module.post_json = episode.post
@@ -1607,6 +1832,9 @@ def run_episode(bundle, task, kind, plan, pages, compiler, evidence, playwright,
                 {"not_created": True, "error": result.get("error")},
             )
         if cleanup:
+            result["success"] = False
+        result.update(episode.profile_result_fields())
+        if episode.profile_failures():
             result["success"] = False
         result.update(
             cleanup_errors=cleanup,
@@ -1715,6 +1943,14 @@ def pair_coverage(ordinary, recovery):
 
 def serialize_episode(episode, relative_folder):
     """References hash SEALED whole journals; sequence addresses the exact row."""
+    if "observation_profile" in episode.plan:
+        episode.require_profile_clean()
+        require(
+            episode.journals[PROFILE_JOURNAL].rows == episode.profile_tracker.rows
+            and (episode.folder / (PROFILE_JOURNAL + ".jsonl")).read_bytes()
+            == b"".join(encode(row) + b"\n" for row in episode.profile_tracker.rows),
+            "Profile event journal differs from captured tracker rows",
+        )
     files = {name: record(episode.folder / (name + ".jsonl")) for name in episode.journals}
     raw = record(episode.folder / "observations.jsonl")
     ledger = record(episode.folder / "public-request-ledger.json")
@@ -1950,6 +2186,7 @@ def collect(output, upstream, plan):
     del tasks_module
     bundles = {split: output / split for split in ("train", "development")}
     sources = {}
+    profile_handles = {}
     pages = {}
     episodes = {}
     outcomes = []
@@ -1963,6 +2200,25 @@ def collect(output, upstream, plan):
     try:
         from playwright.sync_api import sync_playwright
 
+        require(
+            plan.get("schema_id", SCHEMA)
+            == (PROFILE_SCHEMA if "observation_profile" in plan else SCHEMA),
+            "Collection schema and explicit observation profile disagree",
+        )
+        if "observation_profile" in plan:
+            require(plan["schema_id"] == PROFILE_SCHEMA, "Explicit v4 profile schema required")
+            require(
+                upstream_manifest(upstream) == plan["upstream"],
+                "Canonical Git/source changed before profile materialization",
+            )
+            binding = plan["observation_profile"]
+            require(
+                binding
+                == observation_profile_binding(
+                    upstream, binding["profile"], binding["helper_source_sha256"]
+                ),
+                "Prospective observation profile binding differs",
+            )
         for split, bundle in bundles.items():
             bundle.mkdir()
             for name in ("attempts", "episodes", "quarantined"):
@@ -1986,6 +2242,16 @@ def collect(output, upstream, plan):
                 destination = native_dir / relative
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 write_bytes(destination, source.read_bytes())
+            if "observation_profile" in plan:
+                from s1 import jev_observation_profile as helper
+
+                helper.materialize_profile(
+                    upstream,
+                    bundle / "observation-profile",
+                    expected_source_sha256=plan["observation_profile"]["helper_source_sha256"],
+                    profile=plan["observation_profile"]["profile"],
+                )
+                profile_handles[split] = verify_observation_profile(bundle, plan)
         compiler = NativeCompiler()
         with sync_playwright() as playwright:
             for task in plan["tasks"]:
@@ -2008,6 +2274,12 @@ def collect(output, upstream, plan):
                         ),
                         "Preserved source copy differs before next browser",
                     )
+                    profile_arguments = {}
+                    if "observation_profile" in plan:
+                        profile_handles[task["split"]] = verify_observation_profile(
+                            bundles[task["split"]], plan
+                        )
+                        profile_arguments["observation_runtime"] = profile_handles[task["split"]]
                     try:
                         episode, result = run_episode(
                             bundles[task["split"]],
@@ -2019,6 +2291,7 @@ def collect(output, upstream, plan):
                             evidence,
                             playwright,
                             upstream,
+                            **profile_arguments,
                         )
                     except EpisodeInterrupted as interrupted:
                         episodes[(task["goal_id"], kind)] = (
@@ -2045,6 +2318,15 @@ def collect(output, upstream, plan):
         copied = verify_source_copies(bundles[split], sources.get(split), plan["upstream"])
         source_checks[split]["copied_sources"] = copied
         source_checks[split]["success"] = source_checks[split]["success"] and copied["success"]
+    profile_checks = {}
+    if "observation_profile" in plan:
+        profile_checks = {
+            split: profile_verification(bundle, plan) for split, bundle in bundles.items()
+        }
+        for split in bundles:
+            source_checks[split]["success"] = (
+                source_checks[split]["success"] and profile_checks[split]["success"]
+            )
     try:
         upstream_ok = upstream_manifest(upstream) == plan["upstream"]
         require(
@@ -2170,11 +2452,20 @@ def collect(output, upstream, plan):
         publication_bytes=publication_bytes,
         publication_files=publication_files,
     )
+    if "observation_profile" in plan:
+        profile_checks = {
+            split: profile_verification(bundle, plan) for split, bundle in bundles.items()
+        }
+        for split in bundles:
+            source_checks[split]["success"] = (
+                source_checks[split]["success"] and profile_checks[split]["success"]
+            )
     collection_gate = bool(
         candidate_gate
         and len(staged_pairs) == len(plan["tasks"])
         and not finalization_errors
         and staged_projection["success"]
+        and all(check["success"] for check in profile_checks.values())
     )
     for task in plan["tasks"]:
         pair = [episodes.get((task["goal_id"], kind)) for kind in ("ordinary", "recovery")]
@@ -2203,6 +2494,16 @@ def collect(output, upstream, plan):
                     if primary
                     else {"type": "MissingAttempt", "message": "Not reached"},
                 }
+                if "observation_profile" in plan:
+                    missing.update(
+                        observation_profile=copy.deepcopy(plan["observation_profile"]),
+                        observation_profile_manifest_sha256=plan["observation_profile"][
+                            "manifest_sha256"
+                        ],
+                        observation_profile_event_count=0,
+                        observation_profile_failure_count=0,
+                        observation_profile_failures=[],
+                    )
                 outcomes.append(missing)
                 split_episodes[task["split"]].append(missing)
                 continue
@@ -2260,7 +2561,7 @@ def collect(output, upstream, plan):
         artifacts = inventory(bundle)
         receipt = {
             "schema_version": 1,
-            "schema_id": SCHEMA,
+            "schema_id": plan.get("schema_id", SCHEMA),
             "stage": "complete" if complete else "partial",
             "scope": "Development-only genuine public-native scripted supervision; no model score",
             "split": split,
@@ -2271,9 +2572,22 @@ def collect(output, upstream, plan):
             "teacher_source_sha256": record(__file__)["sha256"],
             "private_judge_source_sha256": record(Path(evidence.__file__))["sha256"],
             "upstream": plan["upstream"],
-            "native_snapshot_js_sha256": plan["upstream"]["source_sha256"][
-                "jev_ultrafast/snapshot.js"
-            ],
+            **(
+                {
+                    "canonical_snapshot_js_sha256": plan["observation_profile"][
+                        "canonical_snapshot_js_sha256"
+                    ],
+                    "effective_snapshot_js_sha256": plan["observation_profile"][
+                        "effective_snapshot_js_sha256"
+                    ],
+                }
+                if "observation_profile" in plan
+                else {
+                    "native_snapshot_js_sha256": plan["upstream"]["source_sha256"][
+                        "jev_ultrafast/snapshot.js"
+                    ],
+                }
+            ),
             "collector_runtime_source_manifest": sources.get(split),
             "source_verification": source_checks[split],
             "upstream_verification": upstream_ok,
@@ -2307,6 +2621,11 @@ def collect(output, upstream, plan):
             "training_updates": 0,
             "task_score": None,
         }
+        if "observation_profile" in plan:
+            receipt.update(
+                observation_profile=copy.deepcopy(plan["observation_profile"]),
+                observation_profile_verification=profile_checks[split],
+            )
         write(bundle / "receipt.json", receipt)
         bundle_receipts[split] = {
             "path": split + "/receipt.json",
@@ -2317,7 +2636,7 @@ def collect(output, upstream, plan):
     complete = primary is None and all(r["stage"] == "complete" for r in bundle_receipts.values())
     receipt = {
         "schema_version": 1,
-        "schema_id": SCHEMA,
+        "schema_id": plan.get("schema_id", SCHEMA),
         "stage": "complete" if complete else "partial",
         "scope": plan["scope"],
         "collection_plan_sha256": plan_sha,
@@ -2342,6 +2661,11 @@ def collect(output, upstream, plan):
         "task_score": None,
         "fresh_transfer_seed": None,
     }
+    if "observation_profile" in plan:
+        receipt.update(
+            observation_profile=copy.deepcopy(plan["observation_profile"]),
+            observation_profile_verification=profile_checks,
+        )
     write(output / "receipt.json", receipt)
     if primary:
         raise primary
@@ -2360,9 +2684,19 @@ def main(argv=None):
     parser.add_argument("--collect", action="store_true")
     parser.add_argument("--collector-sha256")
     parser.add_argument("--plan-sha256")
+    parser.add_argument(
+        "--observation-profile", choices=(NATIVE_PROFILE, COMPOSED_PROFILE), default=NATIVE_PROFILE
+    )
+    parser.add_argument("--observation-profile-helper-sha256")
     args = parser.parse_args(argv)
     sys.meta_path.insert(0, RejectModels())
-    plan = collection_plan(args.output_dir, args.upstream, args.collection_id)
+    plan = collection_plan(
+        args.output_dir,
+        args.upstream,
+        args.collection_id,
+        observation_profile=args.observation_profile,
+        observation_profile_helper_sha256=args.observation_profile_helper_sha256,
+    )
     digest = sha(encode(plan))
     if not args.collect:
         print(

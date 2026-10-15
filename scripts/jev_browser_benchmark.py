@@ -41,6 +41,8 @@ UPSTREAM_FILES = (
 )
 UPSTREAM_TRAVEL_SOURCE = "jev_ultrafast/static/fixture.html"
 UPSTREAM_TRAVEL_SHA256 = "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe"
+NATIVE_OBSERVATION_PROFILE = "native-1231850"
+COMPOSED_OBSERVATION_PROFILE = "composed-visible-text-v2"
 TRAVEL_CHALLENGE_SCOPE = (
     "unseen goal requirements on exposed unchanged upstream HTML, not unseen website"
 )
@@ -776,6 +778,37 @@ class PlaywrightCDP:
         self.public_document_started = set()
         self.observation_expression = None
         self.observation_sink = None
+        self.observation_profile_expressions = None
+        self.observation_profile_sink = None
+        self.observation_profile_errors = []
+
+    def _profile_event(
+        self, method, session_id, params, *, protocol_call, response=None, error=None
+    ):
+        if (
+            method != "Runtime.evaluate"
+            or not self.observation_profile_expressions
+            or params.get("expression") not in self.observation_profile_expressions
+            or self.observation_profile_sink is None
+        ):
+            return
+        event = {
+            "protocol_call": protocol_call,
+            "session": session_id,
+            "expression": params["expression"],
+        }
+        if error is None:
+            event["response"] = copy.deepcopy(response)
+        else:
+            event["error"] = {"type": type(error).__name__, "message": str(error)}
+        try:
+            self.observation_profile_sink(event)
+        except BaseException as exc:
+            _profile_integrity_error(self, "event_sink", exc)
+            if error is not None:
+                error.add_note("Observation profile event persistence also failed: " + repr(exc))
+            else:
+                raise
 
     @staticmethod
     def _public_request_scope(request, hosts):
@@ -942,6 +975,7 @@ class PlaywrightCDP:
 
     def cdp(self, method, session_id=None, **params):
         self.calls += 1
+        protocol_call = self.calls
         if method == "Target.createTarget":
             target = f"target-{len(self.targets) + 1}"
             page = (
@@ -961,9 +995,7 @@ class PlaywrightCDP:
         if method == "Target.attachToTarget":
             target = params["targetId"]
             session = f"session-{len(self.sessions) + 1}"
-            owned = self.targets[target].context.new_cdp_session(
-                self.targets[target]
-            )
+            owned = self.targets[target].context.new_cdp_session(self.targets[target])
             self.sessions[session] = owned
             if self.public_navigation_hosts is not None:
                 self._observe_public_documents(
@@ -977,7 +1009,14 @@ class PlaywrightCDP:
             return {"success": True}
         if session_id not in self.sessions:
             raise ValueError("Missing owned CDP session")
-        response = self.sessions[session_id].send(method, params)
+        try:
+            response = self.sessions[session_id].send(method, params)
+        except BaseException as exc:
+            self._profile_event(method, session_id, params, protocol_call=protocol_call, error=exc)
+            raise
+        self._profile_event(
+            method, session_id, params, protocol_call=protocol_call, response=response
+        )
         if (
             method == "Runtime.evaluate"
             and self.observation_expression is not None
@@ -988,7 +1027,7 @@ class PlaywrightCDP:
             # refreshes internally. Neither issue an extra read nor change it.
             self.observation_sink(
                 {
-                    "protocol_call": self.calls,
+                    "protocol_call": protocol_call,
                     "session": session_id,
                     "response": copy.deepcopy(response),
                 }
@@ -1024,8 +1063,87 @@ def upstream_manifest(upstream_path: str | Path) -> dict[str, Any]:
     }
 
 
+def _profile_integrity_error(transport, phase, error):
+    if not hasattr(transport, "observation_profile_errors"):
+        transport.observation_profile_errors = []
+    transport.observation_profile_errors.append(
+        {"kind": "integrity", "phase": phase, "type": type(error).__name__, "message": str(error)}
+    )
+
+
+def prepare_observation_profile(upstream_path, observation_profile, helper_sha256):
+    """Validate explicit opt-in before browser/model work; default imports no helper."""
+    if type(observation_profile) is not str:
+        raise ValueError("Unknown explicit observation profile")
+    if observation_profile == NATIVE_OBSERVATION_PROFILE:
+        if helper_sha256 is not None:
+            raise ValueError("An observation helper pin requires composed-visible-text-v2")
+        return None
+    if observation_profile != COMPOSED_OBSERVATION_PROFILE:
+        raise ValueError("Unknown explicit observation profile")
+    from s1 import jev_observation_profile as profile
+
+    if helper_sha256 != hashlib.sha256(Path(profile.__file__).read_bytes()).hexdigest():
+        raise ValueError("An explicit reviewed observation profile helper SHA256 is required")
+    canonical = upstream_manifest(upstream_path)
+    bundle = profile.build_profile(
+        profile.read_canonical_sources(upstream_path),
+        expected_source_sha256=helper_sha256,
+        profile=observation_profile,
+    )
+    if canonical["source_sha256"] != bundle.manifest()["canonical_source_sha256"]:
+        raise ValueError("Observation profile canonical Git identity differs")
+    return bundle
+
+
+def _verify_observation_runtime(upstream_path, observation_runtime):
+    from s1 import jev_observation_profile as profile
+
+    if type(observation_runtime) is not profile.VerifiedMaterializedProfile:
+        raise ValueError("An installed verified observation profile handle is required")
+    manifest = observation_runtime.manifest()
+    verified = profile.verify_materialized_profile(
+        observation_runtime.path,
+        expected_manifest_sha256=observation_runtime.manifest_sha256,
+        expected_source_sha256=manifest["helper_source_sha256"],
+        profile=manifest["profile"],
+    )
+    canonical = upstream_manifest(upstream_path)
+    if canonical["source_sha256"] != verified.manifest()["canonical_source_sha256"]:
+        raise ValueError("Observation runtime canonical Git identity differs")
+    return verified
+
+
+def _assert_observation_imports(observation_runtime):
+    native = sys.modules["jev_ultrafast.browser"]
+    if (
+        native.READ_STATE != observation_runtime.read_state
+        or native.MARKER != observation_runtime.marker_expression
+    ):
+        raise ValueError("Imported native READ_STATE/MARKER differs from verified profile")
+    for label in observation_runtime.manifest()["runtime_source_sha256"]:
+        if not label.endswith(".py"):
+            continue
+        name = label.removesuffix(".py").replace("/", ".").removesuffix(".__init__")
+        module = sys.modules[name]
+        if Path(module.__file__).resolve() != observation_runtime.runtime_root / label:
+            raise ValueError("Imported native source is outside the verified runtime: " + label)
+
+
 @contextmanager
-def load_upstream(upstream_path: str | Path, transport: PlaywrightCDP):
+def load_upstream(upstream_path: str | Path, transport: PlaywrightCDP, *, observation_runtime=None):
+    runtime = None
+    previous_expressions = getattr(transport, "observation_profile_expressions", None)
+    if observation_runtime is not None:
+        try:
+            runtime = _verify_observation_runtime(upstream_path, observation_runtime)
+            transport.observation_profile_expressions = {
+                runtime.read_state: "READ_STATE",
+                runtime.marker_expression: "MARKER",
+            }
+        except BaseException as exc:
+            _profile_integrity_error(transport, "before_import", exc)
+            raise
     saved = {
         name: module
         for name, module in sys.modules.items()
@@ -1049,23 +1167,69 @@ def load_upstream(upstream_path: str | Path, transport: PlaywrightCDP):
             "browser_harness.helpers": helpers,
         }
     )
-    sys.path.insert(0, str(Path(upstream_path).resolve()))
+    sys.path.insert(
+        0, str(runtime.runtime_root if runtime is not None else Path(upstream_path).resolve())
+    )
+    primary_error = None
     try:
-        yield (
-            importlib.import_module("jev_ultrafast.agent"),
-            importlib.import_module("jev_ultrafast.model"),
-        )
+        if runtime is None:
+            modules = (
+                importlib.import_module("jev_ultrafast.agent"),
+                importlib.import_module("jev_ultrafast.model"),
+            )
+        else:
+            previous_bytecode = sys.dont_write_bytecode
+            try:
+                sys.dont_write_bytecode = True
+                modules = (
+                    importlib.import_module("jev_ultrafast.agent"),
+                    importlib.import_module("jev_ultrafast.model"),
+                )
+                _assert_observation_imports(runtime)
+            except BaseException as exc:
+                _profile_integrity_error(transport, "native_import", exc)
+                raise
+            finally:
+                sys.dont_write_bytecode = previous_bytecode
+        yield modules
+    except BaseException as exc:
+        primary_error = exc
+        raise
     finally:
-        for name in list(sys.modules):
-            if (
-                name == "browser_harness"
-                or name.startswith("browser_harness.")
-                or name == "jev_ultrafast"
-                or name.startswith("jev_ultrafast.")
-            ):
-                del sys.modules[name]
-        sys.modules.update(saved)
-        sys.path.pop(0)
+        try:
+            if runtime is not None:
+                failures = []
+                for check in (
+                    lambda: _assert_observation_imports(runtime),
+                    lambda: _verify_observation_runtime(upstream_path, runtime),
+                ):
+                    try:
+                        check()
+                    except BaseException as exc:
+                        _profile_integrity_error(transport, "after_runtime", exc)
+                        failures.append(exc)
+                if failures:
+                    retained = primary_error or failures[0]
+                    for failure in failures:
+                        if failure is not retained:
+                            retained.add_note(
+                                "Observation profile final verification failed: " + repr(failure)
+                            )
+                    if primary_error is None:
+                        raise retained
+        finally:
+            for name in list(sys.modules):
+                if (
+                    name == "browser_harness"
+                    or name.startswith("browser_harness.")
+                    or name == "jev_ultrafast"
+                    or name.startswith("jev_ultrafast.")
+                ):
+                    del sys.modules[name]
+            sys.modules.update(saved)
+            sys.path.pop(0)
+            if runtime is not None:
+                transport.observation_profile_expressions = previous_expressions
 
 
 def _endpoint(value: str) -> str:
@@ -1259,6 +1423,42 @@ class _ObservationJournal:
         self.write_ms += (time.perf_counter() - started) * 1000
 
 
+class _ObservationProfileJournal(_ObservationJournal):
+    """Keep tracker-owned profile row order and sequence; native journal is separate."""
+
+    def append(self, event):
+        if type(event) is not dict:
+            raise ValueError("Profile tracker journal row must be an ordinary object")
+        payload = "response" if "response" in event else "error"
+        fields = [
+            "schema_id",
+            "sequence",
+            "protocol_call",
+            "session",
+            "expression_kind",
+            "expression_sha256",
+            "manifest_sha256",
+            payload,
+            "failure",
+            "profile_failure_count",
+        ]
+        if (
+            list(event) != fields
+            or event["schema_id"] != "jev-observation-profile-event-v1"
+            or type(event["sequence"]) is not int
+            or event["sequence"] != self.count + 1
+        ):
+            raise ValueError("Profile tracker journal row order or sequence differs")
+        started = time.perf_counter()
+        blob = json.dumps(_redact(event, self.secrets), ensure_ascii=False, allow_nan=False)
+        with self.path.open("a", encoding="utf-8") as stream:
+            stream.write(blob + "\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        self.count += 1
+        self.write_ms += (time.perf_counter() - started) * 1000
+
+
 @contextmanager
 def _record_runner_error(output, secrets):
     try:
@@ -1327,6 +1527,8 @@ def run_benchmark(
     live_goal=None,
     live_expected_title=None,
     public_case_ids=None,
+    observation_profile=NATIVE_OBSERVATION_PROFILE,
+    observation_profile_helper_sha256=None,
 ):
     """Run all attempts, preserving failures; an existing output folder is never overwritten.
 
@@ -1340,6 +1542,9 @@ def run_benchmark(
         raise ValueError("repeats and max_steps must be positive")
     endpoint = _endpoint(endpoint)
     manifest = upstream_manifest(upstream_path)
+    observation_bundle = prepare_observation_profile(
+        upstream_path, observation_profile, observation_profile_helper_sha256
+    )
     if suite_split not in {"development", "holdout"}:
         raise ValueError("suite_split must be development or holdout")
     public_cases = []
@@ -1428,6 +1633,42 @@ def run_benchmark(
             if case.task_id in chosen
         ]
     )
+    observation_runtime = None
+    if observation_bundle is not None:
+        from s1 import jev_observation_profile as profile
+
+        try:
+            materialized = profile.materialize_profile(
+                upstream_path,
+                output / "observation-profile",
+                expected_source_sha256=observation_profile_helper_sha256,
+                profile=observation_profile,
+            )
+            observation_runtime = profile.verify_materialized_profile(
+                output / "observation-profile",
+                expected_manifest_sha256=materialized["manifest_sha256"],
+                expected_source_sha256=observation_profile_helper_sha256,
+                profile=observation_profile,
+            )
+        except BaseException as exc:
+            try:
+                _write_json(
+                    output / "observation-profile-status.json",
+                    {
+                        "failed": True,
+                        "phase": "before_chromium",
+                        "id": observation_profile,
+                        "integrity_errors": [
+                            {"kind": "integrity", "type": type(exc).__name__, "message": str(exc)}
+                        ],
+                    },
+                    [api_key or "", text_api_key or ""],
+                )
+            except BaseException as write_error:
+                exc.add_note(
+                    "Observation profile refusal persistence also failed: " + repr(write_error)
+                )
+            raise
     configuration = {
         "upstream": manifest,
         "model_requested": model,
@@ -1475,6 +1716,20 @@ def run_benchmark(
         ],
         "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
     }
+    if observation_runtime is not None:
+        configuration["observation_profile"] = _observation_profile_identity(observation_runtime)
+        capture = configuration["native_observation_capture"]
+        capture["canonical_snapshot_source_sha256"] = capture["snapshot_source_sha256"]
+        capture["snapshot_source_sha256"] = hashlib.sha256(
+            observation_runtime.read_state.encode()
+        ).hexdigest()
+        configuration["observation_profile_capture"] = {
+            "artifact": "attempts/<case_id>/observation-profile-events.jsonl",
+            "scope": "Exact READ_STATE and MARKER responses/errors; separate from snapshot-only observations.jsonl; no extra reads or native exception rewriting",
+            "persistence": "tracker capture, redacted append, flush and fsync; failures remain latched even after a successful native refresh",
+            "timing": "Synchronous observer work included in the existing attempt timing boundary",
+            "click_select": "Unchanged native page_key+guard branch; no new unconditional cap gate before input",
+        }
     if public_cases:
         configuration.update(
             suite_scope="Predeclared read-only production-site navigation tasks; "
@@ -1518,12 +1773,20 @@ def run_benchmark(
         browser = playwright.chromium.launch(**launch)
         transport = PlaywrightCDP(browser)
         transport.observation_expression = (
-            Path(upstream_path) / "jev_ultrafast/snapshot.js"
-        ).read_text()
+            observation_runtime.read_state
+            if observation_runtime is not None
+            else (Path(upstream_path) / "jev_ultrafast/snapshot.js").read_text()
+        )
         primary_error = None
         secrets = startup_secrets
         try:
-            with load_upstream(upstream_path, transport) as (agent_module, model_module):
+            loader_options = (
+                {} if observation_runtime is None else {"observation_runtime": observation_runtime}
+            )
+            with load_upstream(upstream_path, transport, **loader_options) as (
+                agent_module,
+                model_module,
+            ):
                 with model_adapter(
                     agent_module,
                     model_module,
@@ -1569,6 +1832,26 @@ def run_benchmark(
                             attempt / "observations.jsonl", secrets
                         )
                         transport.observation_sink = observation_journal.append
+                        profile_tracker = profile_journal = None
+                        profile_error_start = (
+                            len(transport.observation_profile_errors)
+                            if observation_runtime is not None
+                            else 0
+                        )
+                        if observation_runtime is not None:
+                            from s1.jev_observation_events import ObservationProfileTracker
+
+                            profile_journal = _ObservationProfileJournal(
+                                attempt / "observation-profile-events.jsonl", secrets
+                            )
+                            profile_tracker = ObservationProfileTracker(
+                                read_state=observation_runtime.read_state,
+                                marker_expression=observation_runtime.marker_expression,
+                                manifest_sha256=observation_runtime.manifest_sha256,
+                                profile=observation_profile,
+                                sink=profile_journal.append,
+                            )
+                            transport.observation_profile_sink = profile_tracker.capture
                         transport.public_navigation_hosts = (
                             public.allowed_top_level_hosts if public else None
                         )
@@ -1661,6 +1944,16 @@ def run_benchmark(
                                 message = "Public navigation scope or request observation failed"
                                 error = f"{error}; {message}" if error else message
                                 error_stage = error_stage or "public_navigation_scope"
+                            profile_failures = []
+                            if profile_tracker is not None:
+                                profile_failures = (
+                                    profile_tracker.failures
+                                    + transport.observation_profile_errors[profile_error_start:]
+                                )
+                                if profile_failures:
+                                    message = "Observation profile capture or integrity failed"
+                                    error = f"{error}; {message}" if error else message
+                                    error_stage = error_stage or "observation_profile"
                             model_calls = records[record_start:]
                             policy_calls = [
                                 record for record in model_calls if record["kind"] == "policy"
@@ -1705,6 +1998,14 @@ def run_benchmark(
                                 "models_reported": identities,
                                 "action_count": len(final_state["history"]) if final_state else 0,
                             }
+                            if profile_tracker is not None:
+                                outcome.update(
+                                    observation_profile=configuration["observation_profile"],
+                                    observation_profile_failed=bool(profile_failures),
+                                    observation_profile_failures=profile_failures,
+                                    observation_profile_events=profile_journal.count,
+                                    observation_profile_write_ms=round(profile_journal.write_ms, 3),
+                                )
                             if public:
                                 outcome["public_request_blocks"] = transport.public_request_blocks[
                                     blocked_start:
@@ -1730,6 +2031,8 @@ def run_benchmark(
                             _write_json(attempt / "final_state.json", final_state, secrets)
                             outcomes.append(outcome)
                             transport.observation_sink = None
+                            if observation_runtime is not None:
+                                transport.observation_profile_sink = None
                             _write_json(
                                 output / "summary.json", _summary(outcomes, configuration), secrets
                             )
@@ -1737,13 +2040,82 @@ def run_benchmark(
             primary_error = exc
             raise
         finally:
-            if public_cases:
-                _finish_public_browser(
-                    browser, transport, output, secrets, primary_error=primary_error
-                )
+            if observation_runtime is None:
+                if public_cases:
+                    _finish_public_browser(
+                        browser, transport, output, secrets, primary_error=primary_error
+                    )
+                else:
+                    browser.close()
             else:
-                browser.close()
+                cleanup_error = None
+                try:
+                    if public_cases:
+                        _finish_public_browser(
+                            browser, transport, output, secrets, primary_error=primary_error
+                        )
+                    else:
+                        browser.close()
+                except BaseException as exc:
+                    if primary_error is not None:
+                        primary_error.add_note("Browser finalization also failed: " + repr(exc))
+                    else:
+                        cleanup_error = exc
+                try:
+                    _finish_observation_profile(output, configuration, outcomes, transport, secrets)
+                except BaseException as exc:
+                    retained = primary_error or cleanup_error
+                    if retained is None:
+                        raise
+                    retained.add_note("Observation profile finalization also failed: " + repr(exc))
+                if cleanup_error is not None:
+                    raise cleanup_error
     return _summary(outcomes, configuration)
+
+
+def _observation_profile_identity(runtime):
+    manifest = runtime.manifest()
+    return {
+        "id": manifest["profile"],
+        "manifest_path": "observation-profile/profile-manifest.json",
+        "manifest_sha256": runtime.manifest_sha256,
+        "helper_source_sha256": manifest["helper_source_sha256"],
+        "canonical_source_sha256": manifest["canonical_source_sha256"],
+        "runtime_source_sha256": manifest["runtime_source_sha256"],
+        "canonical_snapshot_js_sha256": manifest["canonical_source_sha256"][
+            "jev_ultrafast/snapshot.js"
+        ],
+        "effective_snapshot_js_sha256": hashlib.sha256(runtime.read_state.encode()).hexdigest(),
+        "marker_expression_sha256": hashlib.sha256(runtime.marker_expression.encode()).hexdigest(),
+        "scope": "Explicit observation profile; not parity with historical canonical scores",
+    }
+
+
+def _finish_observation_profile(output, configuration, outcomes, transport, secrets):
+    errors = list(transport.observation_profile_errors)
+    boundary_errors = [error for error in errors if error["phase"] != "event_sink"]
+    configuration["observation_profile_integrity_errors"] = errors
+    for outcome in outcomes:
+        if boundary_errors:
+            outcome.setdefault("observation_profile_failures", []).extend(boundary_errors)
+            outcome["observation_profile_failed"] = True
+            outcome["success"] = False
+            message = "Observation profile lifecycle verification failed"
+            outcome["error"] = f"{outcome['error']}; {message}" if outcome["error"] else message
+            outcome["error_stage"] = outcome["error_stage"] or "observation_profile"
+            _write_json(output / "attempts" / outcome["case_id"] / "outcome.json", outcome, secrets)
+    _write_json(
+        output / "observation-profile-status.json",
+        {
+            "profile": configuration["observation_profile"],
+            "integrity_errors": errors,
+            "failed": bool(errors)
+            or any(item.get("observation_profile_failed") for item in outcomes),
+        },
+        secrets,
+    )
+    _write_json(output / "configuration.json", configuration, secrets)
+    _write_json(output / "summary.json", _summary(outcomes, configuration), secrets)
 
 
 def _task_success(verification, final_state, error):
@@ -1766,7 +2138,7 @@ def _premature_done(verification, final_state):
 
 def _summary(outcomes, configuration):
     successes = sum(item["success"] for item in outcomes)
-    return {
+    result = {
         "configuration": configuration,
         "attempts": len(outcomes),
         "successes": successes,
@@ -1777,6 +2149,11 @@ def _summary(outcomes, configuration):
         "text_calls": sum(item["text_calls"] for item in outcomes),
         "outcomes": outcomes,
     }
+    if "observation_profile" in configuration:
+        result["observation_profile_failed"] = bool(
+            configuration.get("observation_profile_integrity_errors")
+        ) or any(item.get("observation_profile_failed") for item in outcomes)
+    return result
 
 
 def main():
@@ -1797,6 +2174,12 @@ def main():
     parser.add_argument("--text-model")
     parser.add_argument("--text-api-key-env", default="TEXT_MODEL_API_KEY")
     parser.add_argument("--chromium-executable")
+    parser.add_argument(
+        "--observation-profile",
+        choices=[NATIVE_OBSERVATION_PROFILE, COMPOSED_OBSERVATION_PROFILE],
+        default=NATIVE_OBSERVATION_PROFILE,
+    )
+    parser.add_argument("--observation-profile-helper-sha256")
     parser.add_argument("--live-url")
     parser.add_argument("--live-goal")
     parser.add_argument("--live-expected-title")

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "scope": "Explicit composed-visible-text-v2 integration into browser benchmark, local model CLI, public teacher collection and full-corpus admission; no model qualification claim",
+  "observation_profile": "composed-visible-text-v2",
+  "default_observation_profile": "native-1231850",
+  "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "canonical_snapshot_sha256": "e50473501c8fb8e70f3b21866d987393e3f2315c639d638bd477d170e81ed78d",
+  "effective_snapshot_sha256": "5327d4ab5d615ac0804f4913bb86bb59b383b11ff80f2408eb4aa565243f9dd5",
+  "helper_source_sha256": "bc99741a847738c2ba1930007a5287136c6ddb28cb98dd2f1364b189c807921d",
+  "event_tracker_source_sha256": "3c9fe36a25fd9d6b5388308c762c83944af1bbdd088481e45bd20f035046f41f",
+  "behavior": [
+    "Verify the canonical checkout and an exact closed 16-file materialized profile before import and after runtime use.",
+    "Retain READ_STATE and MARKER responses and sticky confirmed cap or profile-integrity failures, including failures followed by successful refreshes.",
+    "Keep profile event field order and one-based event sequence through physical journal writes.",
+    "Use explicit public-collection v4 with both complete profile trees and full current runtime source population.",
+    "Require all 24 episodes and authenticated event, raw observation, native freshness guard and protocol chronology joins for admission."
+  ],
+  "validation": {
+    "focused": {
+      "passed": 194,
+      "skipped": 0,
+      "pytest_seconds": 66.02,
+      "includes_real_owned_chromium_tests": 6,
+      "includes_cached_native_rust_jinja_full_24_episode_fixtures": true,
+      "log_sha256": "83d02b3bcaf544598df22a00a796eeebee9a6d6e2997628a13421c4fba48b0b4"
+    },
+    "standard_repository": {
+      "passed": 2835,
+      "skipped": 467,
+      "warnings": 1,
+      "pytest_seconds": 72.07,
+      "log_sha256": "84d66aba3fdabfe8943fc69ac9ab37e07d62a03def20ad6b32d6fd505752d699"
+    },
+    "before_after_runtime_and_test_source_hashes_unchanged": true,
+    "ruff_and_diff_check": "passed",
+    "independent_collector_and_admission_reviews": "no blocking findings",
+    "independent_admission_review_sha256": "16e5eefe4faac9c44147c5c37a131389c9d90322f3345048f5d18b4678610202"
+  },
+  "source_sha256": {
+    "scripts/jev_browser_benchmark.py": "3e211473596b8005ecc4130e27f2f5c61c9479d802096de6f52051a6e3fd71ac",
+    "scripts/jev_browser_collect_public_training.py": "d8be0e9d5b95c0eb814731325c6a4fb78a682746b3771a8f8f931fde72bb57df",
+    "scripts/jev_local_model.py": "2a209fa4d6fda27a2da9b25570e44cbe848580f380a1e887ea0b6006ff400789",
+    "src/s1/browser_public_training_validation.py": "b3efe0ef00d125e639f6aecd1b76c8dc3e05797ca4542ab477df4c3091256862",
+    "tests/test_browser_public_training_profile_validation.py": "e64074febe331d90e99d57d132e7397e32d982f050fd48c21836c1adaa745d1a",
+    "tests/test_jev_local_model_profile.py": "778acb018fec1e0ccb761538b8574f5e45f7f97dc3ece8df7de1d73ea25bd26c",
+    "tests/test_jev_observation_runtime.py": "efc9ab80a502625c8ce2c5bde76807e77e25ba957e9109a4988a268439042e41",
+    "tests/test_jev_public_observation_profile.py": "f3751b8918ef13a45449ebebc7eea915f894c3e29ad5ba68fb5ac34138f3560e",
+    "tests/test_jev_observation_profile_browser.py": "1987136e7585442e2edd9d1591b0db49932ba09b6303430fed5573b602764b2a"
+  },
+  "limits": {
+    "new_policy_model_calls": 0,
+    "new_training_updates": 0,
+    "new_public_teacher_episodes_in_this_milestone": 0,
+    "prior_v3_corpus": "preserved without conversion or relabeling",
+    "model_task_score": null,
+    "competitor_ranking": null,
+    "next_step": "Fresh all-24 public teacher campaign from a committed frozen runtime, followed by whole-corpus admission and separate model evaluation."
+  }
+}

@@ -24,6 +24,7 @@ from .browser_public_training import NativeWireRequest, PublicNativeActionCase, 
 from .jev_generated import TARGETS
 
 COLLECTION_SCHEMA = "jev-public-native-training-collection-v3"
+COMPOSED_COLLECTION_SCHEMA = "jev-public-native-training-collection-v4"
 NO_INPUT_DONE_RULE = {
     "rule_id": "done-fresh-false-no-input-v1",
     "operation": "DONE",
@@ -83,6 +84,31 @@ a field that already contains the requested value. Choose only an offered elemen
 
 class PublicCollectionError(ValueError):
     """Evidence was incomplete, changed, unsupported, or failed admission."""
+
+
+@dataclass(frozen=True)
+class _CollectionContract:
+    schema_id: str
+    composed: bool
+
+
+def _collection_contract(schema_id):
+    if schema_id == COLLECTION_SCHEMA:
+        return _CollectionContract(COLLECTION_SCHEMA, False)
+    if schema_id == COMPOSED_COLLECTION_SCHEMA:
+        return _CollectionContract(COMPOSED_COLLECTION_SCHEMA, True)
+    raise PublicCollectionError("Explicit public collection-v3 or collection-v4 format required")
+
+
+@dataclass(frozen=True)
+class _AuthenticatedObservationProfile:
+    binding_bytes: bytes
+    read_state: str
+    marker_expression: str
+    manifest_bytes: bytes
+
+    def binding(self):
+        return _json(self.binding_bytes)
 
 
 def _require(condition, message):
@@ -303,6 +329,107 @@ def authenticate_reviewed_public_sources(snapshot, reviewed_source_pins):
     return identities
 
 
+def _authenticate_complete_source_inventory(reviewed_source_pins):
+    from .browser_evidence import _source_paths
+
+    paths = _source_paths(
+        {
+            "scripts/jev_browser_collect_public_training.py": _INSTALLED_REVIEWED_SOURCES[
+                "scripts/jev_browser_collect_public_training.py"
+            ]
+        }
+    )
+    _require(
+        set(reviewed_source_pins) == set(paths),
+        "Entire installed runtime source population differs from reviewed pins",
+    )
+
+
+def _authenticate_observation_profile(snapshot, plan, outer, reviewed_source_pins, contract):
+    profile_fields = {
+        "observation_profile",
+        "observation_profile_verification",
+        "canonical_snapshot_js_sha256",
+        "effective_snapshot_js_sha256",
+    }
+    if not contract.composed:
+        _require(
+            not profile_fields & set(plan) and not profile_fields & set(outer),
+            "Canonical collection-v3 cannot declare a composed observation profile",
+        )
+        return None
+
+    from . import jev_observation_profile as trusted_profile
+
+    helper_pin = reviewed_source_pins.get("s1/jev_observation_profile.py", {})
+    _require(_digest(helper_pin.get("sha256")), "Reviewed installed profile helper pin required")
+    canonical = {label: snapshot.blobs["train/upstream/" + label] for label in NATIVE_SOURCE_SHA256}
+    try:
+        bundle = trusted_profile.build_profile(
+            canonical,
+            expected_source_sha256=helper_pin["sha256"],
+            profile=trusted_profile.COMPOSED_PROFILE,
+        )
+        manifest = bundle.materialized_manifest()
+        manifest_bytes = trusted_profile._encode(manifest) + b"\n"
+    except (OSError, ValueError, TypeError) as exc:
+        raise PublicCollectionError("Installed observation profile reconstruction failed") from exc
+    binding = {
+        "profile": trusted_profile.COMPOSED_PROFILE,
+        "helper_source_sha256": helper_pin["sha256"],
+        "manifest_path": "observation-profile/profile-manifest.json",
+        "manifest_sha256": _sha(manifest_bytes),
+        "manifest_size_bytes": len(manifest_bytes),
+        "canonical_snapshot_js_sha256": NATIVE_SOURCE_SHA256["jev_ultrafast/snapshot.js"],
+        "effective_snapshot_js_sha256": _sha(bundle.read_state.encode()),
+        "marker_expression_sha256": _sha(bundle.marker_expression.encode()),
+    }
+    _require(
+        plan.get("observation_profile") == binding and outer.get("observation_profile") == binding,
+        "Prospective composed profile differs from installed canonical/derived/helper identity",
+    )
+    verification = {"success": True, "manifest_sha256": binding["manifest_sha256"], "errors": []}
+    _require(
+        outer.get("observation_profile_verification")
+        == {split: verification for split in ("train", "development")},
+        "Outer composed profile verification differs from both exact split trees",
+    )
+    for split in ("train", "development"):
+        prefix = split + "/observation-profile/"
+        expected = {
+            **manifest["artifact_files"],
+            "profile-manifest.json": {
+                "sha256": binding["manifest_sha256"],
+                "size_bytes": len(manifest_bytes),
+            },
+        }
+        _inventory_matches(snapshot, prefix, expected)
+        _require(
+            snapshot.blobs[prefix + "profile-manifest.json"] == manifest_bytes,
+            "Copied composed manifest differs from deterministic installed contract",
+        )
+        try:
+            verified = trusted_profile.verify_materialized_profile(
+                snapshot.root / split / "observation-profile",
+                expected_manifest_sha256=binding["manifest_sha256"],
+                expected_source_sha256=helper_pin["sha256"],
+                profile=trusted_profile.COMPOSED_PROFILE,
+            )
+        except (OSError, ValueError, TypeError) as exc:
+            raise PublicCollectionError(
+                "Closed composed profile tree failed authentication"
+            ) from exc
+        _require(
+            verified.manifest() == manifest
+            and verified.read_state == bundle.read_state
+            and verified.marker_expression == bundle.marker_expression,
+            "Verified split profile bytes differ from installed reconstruction",
+        )
+    return _AuthenticatedObservationProfile(
+        _encode(binding), bundle.read_state, bundle.marker_expression, manifest_bytes
+    )
+
+
 def _native_action_space(actions):
     """Pure1231850 builder, authenticated by its fixed native source hashes."""
     elements, indices, targets, controls = [], {}, {}, {}
@@ -402,10 +529,11 @@ def _outer_contract(snapshot):
     receipt = snapshot.read_json("receipt.json")
     _require(
         type(receipt) is dict
-        and receipt.get("schema_id") == COLLECTION_SCHEMA
+        and type(receipt.get("schema_id")) is str
+        and receipt["schema_id"] in {COLLECTION_SCHEMA, COMPOSED_COLLECTION_SCHEMA}
         and type(receipt.get("schema_version")) is int
         and receipt["schema_version"] == 1,
-        "Explicit public collection-v3 format required; v1/v2/fixture formats are not admitted",
+        "Explicit public collection-v3 or collection-v4 format required; v1/v2/fixture formats are not admitted",
     )
     _require(
         receipt.get("stage") == "complete"
@@ -426,7 +554,7 @@ def _outer_contract(snapshot):
     plan = snapshot.read_json("collection_plan.json")
     _require(
         type(plan) is dict
-        and plan.get("schema_id") == COLLECTION_SCHEMA
+        and plan.get("schema_id") == receipt["schema_id"]
         and receipt.get("collection_plan_sha256") == _sha(_encode(plan)),
         "Outer receipt and prospective plan identity differ",
     )
@@ -1431,7 +1559,177 @@ def _check_predict_observation(before_page, page, ret, raw, raw_count_before_tic
         )
 
 
-def _audit_episode(snapshot, split, task, kind, plan, result, *, compiler=None):
+def _audit_observation_profile_events(rows, result, profile):
+    """Recompute the installed classifier and join both native expression paths."""
+    from .jev_observation_events import ObservationProfileTracker
+
+    binding = profile.binding()
+    events, raw = rows["observation-profile-events"], rows["observations"]
+    _require(
+        events
+        and raw
+        and result.get("observation_profile") == binding
+        and result.get("observation_profile_manifest_sha256") == binding["manifest_sha256"]
+        and type(result.get("observation_profile_event_count")) is int
+        and result["observation_profile_event_count"] == len(events)
+        and type(result.get("observation_profile_failure_count")) is int
+        and result["observation_profile_failure_count"] == 0
+        and result.get("observation_profile_failures") == [],
+        "Episode composed profile identity/event/failure accounting differs",
+    )
+    tracker = ObservationProfileTracker(
+        read_state=profile.read_state,
+        marker_expression=profile.marker_expression,
+        manifest_sha256=binding["manifest_sha256"],
+        profile=binding["profile"],
+    )
+    session = raw[0].get("session")
+    expressions = {"READ_STATE": profile.read_state, "MARKER": profile.marker_expression}
+    for event in events:
+        kind = event.get("expression_kind")
+        _require(
+            type(kind) is str and kind in expressions and event.get("session") == session,
+            "Composed event belongs to an unknown expression or foreign session",
+        )
+        payload_keys = {"response", "error"} & set(event)
+        _require(len(payload_keys) == 1, "Composed event lacks one exact response/error")
+        key = next(iter(payload_keys))
+        try:
+            recomputed = tracker.capture(
+                {
+                    "protocol_call": event.get("protocol_call"),
+                    "session": event.get("session"),
+                    "expression": expressions[kind],
+                    key: event[key],
+                }
+            )
+        except (ValueError, TypeError, KeyError) as exc:
+            raise PublicCollectionError(
+                "Composed event envelope/protocol integrity differs"
+            ) from exc
+        _require(
+            _encode(recomputed) == _encode(event),
+            "Composed event classification/source/manifest/sequence differs",
+        )
+    _require(
+        not tracker.failed and tracker.failures == [],
+        "Persistent composed profile failure invalidates the entire collection",
+    )
+    read_events = [
+        event
+        for event in events
+        if event["expression_kind"] == "READ_STATE" and "response" in event
+    ]
+    _require(
+        len(read_events) == len(raw)
+        and all(
+            event["protocol_call"] == observation.get("protocol_call")
+            and event["session"] == observation.get("session")
+            and _encode(event["response"]) == _encode(observation.get("response"))
+            for event, observation in zip(read_events, raw, strict=True)
+        ),
+        "Composed READ_STATE event/raw observations are not an exact ordered bijection",
+    )
+    for event in read_events:
+        response = event["response"]
+        value = response.get("result", {}).get("value")
+        if response.get("exceptionDetails") or value is None:
+            continue
+        _require(
+            type(value) is dict
+            and set(value)
+            == {
+                "observation_profile",
+                "url",
+                "title",
+                "w",
+                "h",
+                "text",
+                "scroll",
+                "actions",
+                "marker",
+                "page_key",
+                "guards",
+                "omitted_actions",
+            }
+            and type(value["actions"]) is list
+            and all(type(action) is dict for action in value["actions"])
+            and type(value["omitted_actions"]) is int
+            and value["omitted_actions"] == 0
+            and type(value["w"]) is int
+            and value["w"] > 0
+            and type(value["h"]) is int
+            and value["h"] > 0
+            and type(value["guards"]) is dict,
+            "Composed successful snapshot differs from full native source fields/actions",
+        )
+        marker, page_key = value["marker"], value["page_key"]
+        _require(
+            type(page_key) is list
+            and len(page_key) == 7
+            and type(page_key[6]) is list
+            and marker[:6] == page_key[:6]
+            and marker[1] == value["url"]
+            and marker[4] == value["w"]
+            and marker[5] == value["h"]
+            and marker[6] == value["title"]
+            and marker[7] == value["text"]
+            and marker[9] == page_key[6]
+            and type(value["scroll"]) is dict
+            and set(value["scroll"]) == {"y", "height"}
+            and marker[3] == value["scroll"]["y"],
+            "Composed native marker/page/document identity differs",
+        )
+        semantics = [
+            {key: item for key, item in action.items() if key not in {"id", "rect"}}
+            for action in value["actions"]
+            if "node" in action
+        ]
+        _require(marker[8] == semantics, "Composed native marker action semantics differ")
+    before, after = _guard_pairs(rows["guarded-actions"])
+    marker_guards = []
+    for sequence, guard in sorted(before.items()):
+        if guard["native_method"] != "fresh":
+            continue
+        arguments = guard.get("arguments")
+        _require(
+            type(arguments) is list and len(arguments) in {1, 2} and type(arguments[0]) is dict,
+            "Composed freshness guard arguments differ",
+        )
+        action = arguments[1] if len(arguments) == 2 else None
+        _require(action is None or type(action) is dict, "Composed freshness action differs")
+        if action is None or action.get("kind") not in {"click", "select"}:
+            marker_guards.append((guard, after[sequence]))
+    marker_events = [event for event in events if event["expression_kind"] == "MARKER"]
+    _require(
+        len(marker_events) == len(marker_guards),
+        "Composed MARKER events omit/add native freshness guards",
+    )
+    for event, (guard, completion) in zip(marker_events, marker_guards, strict=True):
+        _require(guard.get("session") == event["session"], "Foreign composed MARKER guard")
+        response = event.get("response", {})
+        if "error" in event or response.get("exceptionDetails"):
+            _require(
+                completion.get("accepted") is False and type(completion.get("error")) is dict,
+                "Composed MARKER error was hidden by a successful native freshness result",
+            )
+        else:
+            expected = response.get("result", {}).get("value") == guard["arguments"][0].get(
+                "marker"
+            )
+            _require(
+                type(completion.get("result")) is bool and completion["result"] is expected,
+                "Composed MARKER reply disagrees with native freshness result",
+            )
+    return {
+        guard["sequence"]: event
+        for event, (guard, _completion) in zip(marker_events, marker_guards, strict=True)
+    }
+
+
+def _audit_episode(
+    snapshot, split, task, kind, plan, result, *, compiler=None, observation_profile=None
+):
     """Join one recorded successful episode; this alone never admits a corpus.
 
     ``compiler=None`` supports narrow recorded-fact diagnostics in CPU tests.
@@ -1455,6 +1753,16 @@ def _audit_episode(snapshot, split, task, kind, plan, result, *, compiler=None):
             "compiled-inputs",
         )
     )
+    if observation_profile is not None:
+        rows["observation-profile-events"] = snapshot.read_jsonl(
+            prefix + "observation-profile-events.jsonl"
+        )
+        profile_marker_events = _audit_observation_profile_events(rows, result, observation_profile)
+    else:
+        _require(
+            not any(key.startswith("observation_profile") for key in result),
+            "Canonical collection-v3 episode cannot declare a composed profile",
+        )
     ledger = snapshot.read_json(prefix + "public-request-ledger.json")
     _check_document_ledger(ledger, task)
     statuses = snapshot.read_json(prefix + "document-response-statuses.json")
@@ -1506,6 +1814,10 @@ def _audit_episode(snapshot, split, task, kind, plan, result, *, compiler=None):
         protocol = event["protocol_call"]
         value = event["response"].get("result", {}).get("value")
         if type(value) is dict and "actions" in value:
+            _require(
+                observation_profile is not None or "observation_profile" not in value,
+                "Canonical collection-v3 raw snapshot declares a composed profile",
+            )
             _require(
                 "fingerprint" not in value and value.get("omitted_actions") == 0,
                 "Raw snapshot was mutated or omitted native actions",
@@ -1805,6 +2117,34 @@ def _audit_episode(snapshot, split, task, kind, plan, result, *, compiler=None):
             ],
             predict_result["result"],
         )
+        if observation_profile is not None:
+            raw_before_tick = (
+                initial_raw_end
+                if index == 0
+                else executed[requests[index - 1]["sequence"]][
+                    "raw_observation_count_after_native_tick"
+                ]
+            )
+            predict_protocol = profile_marker_events[predict_guard["sequence"]]["protocol_call"]
+            _require(
+                raw[raw_before_tick - 1]["protocol_call"] < predict_protocol
+                and (
+                    predict_result["result"] is True
+                    or predict_protocol < raw[ret["raw_observation_sequence"]]["protocol_call"]
+                ),
+                "Composed predict MARKER chronology differs from native observe branch",
+            )
+            for guard_sequence, event in profile_marker_events.items():
+                if execution_start <= guard_sequence < execution["guard_sequence_end"]:
+                    protocol = event["protocol_call"]
+                    raw_start = ret["execution_raw_observation_start"]
+                    raw_end = execution["raw_observation_count_after_native_tick"]
+                    _require(
+                        protocol > predict_protocol
+                        and protocol > raw[ret["raw_observation_sequence"]]["protocol_call"]
+                        and (raw_start == raw_end or protocol < raw[raw_start]["protocol_call"]),
+                        "Composed execution MARKER chronology differs from native post-observe",
+                    )
         guard_end = execution["guard_sequence_end"]
         done = selected["operation"] == "DONE"
         _require(
@@ -2276,7 +2616,9 @@ def _audit_episode(snapshot, split, task, kind, plan, result, *, compiler=None):
     }
 
 
-def _source_bundle(snapshot, split, receipt, plan, reviewed_source_pins):
+def _source_bundle(
+    snapshot, split, receipt, plan, reviewed_source_pins, *, observation_profile=None
+):
     manifest = snapshot.read_json(split + "/sources/manifest.json")
     files = {
         label: {**pin, "artifact_path": "sources/" + label}
@@ -2329,10 +2671,37 @@ def _source_bundle(snapshot, split, receipt, plan, reviewed_source_pins):
         == reviewed_source_pins["s1/browser_public_training_evidence.py"]["sha256"]
         and receipt.get("upstream_verification") is True
         and receipt.get("upstream") == plan["upstream"]
-        and receipt.get("native_snapshot_js_sha256")
-        == NATIVE_SOURCE_SHA256["jev_ultrafast/snapshot.js"],
+        and (
+            receipt.get("native_snapshot_js_sha256")
+            == NATIVE_SOURCE_SHA256["jev_ultrafast/snapshot.js"]
+            if observation_profile is None
+            else "native_snapshot_js_sha256" not in receipt
+            and receipt.get("canonical_snapshot_js_sha256")
+            == NATIVE_SOURCE_SHA256["jev_ultrafast/snapshot.js"]
+            and receipt.get("effective_snapshot_js_sha256")
+            == observation_profile.binding()["effective_snapshot_js_sha256"]
+        ),
         "Source verification status/copy/native/teacher pins differ",
     )
+    if observation_profile is None:
+        _require(
+            not {
+                "observation_profile",
+                "observation_profile_verification",
+                "canonical_snapshot_js_sha256",
+                "effective_snapshot_js_sha256",
+            }
+            & set(receipt),
+            "Canonical collection-v3 split cannot declare composed profile metadata",
+        )
+    else:
+        binding = observation_profile.binding()
+        _require(
+            receipt.get("observation_profile") == binding
+            and receipt.get("observation_profile_verification")
+            == {"success": True, "manifest_sha256": binding["manifest_sha256"], "errors": []},
+            "Split composed profile verification/identity differs",
+        )
     return verification
 
 
@@ -2377,7 +2746,7 @@ def _coverage(task, ordinary, recovery):
     }
 
 
-def _episode_result(snapshot, split, task, kind, plan, episode):
+def _episode_result(snapshot, split, task, kind, plan, episode, *, observation_profile=None):
     expected_id = plan["collection_id"] + "-" + task["goal_id"] + "-" + kind
     folder = "episodes/" + task["goal_id"] + "-" + kind
     _require(
@@ -2393,6 +2762,8 @@ def _episode_result(snapshot, split, task, kind, plan, episode):
     )
     prefix = split + "/" + folder + "/"
     expected_files = {name + ".jsonl" for name in _JOURNALS} | set(_EPISODE_OBJECTS)
+    if observation_profile is not None:
+        expected_files.add("observation-profile-events.jsonl")
     actual_files = {label[len(prefix) :] for label in snapshot.blobs if label.startswith(prefix)}
     _require(actual_files == expected_files, "Missing/orphan episode evidence file")
     _require(
@@ -2499,7 +2870,7 @@ class AdmittedPublicCollection:
 
 
 def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer_cache):
-    """Admit fixed24 v3 evidence using installed reviewed code and cached CPU tokens.
+    """Admit fixed24 v3/v4 evidence with installed reviewed code and cached CPU tokens.
 
     Parent content/recursive lineage, adapter loading and zero dev optimizer
     updates are separate future fitting gates. Nothing here imports artifact
@@ -2507,8 +2878,13 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
     """
     snapshot = capture_closed_public_snapshot(path)
     outer, plan = _outer_contract(snapshot)
-    tasks = _trusted_plan(plan, outer, reviewed_source_pins)
+    contract = _collection_contract(outer["schema_id"])
     installed = authenticate_reviewed_public_sources(snapshot, reviewed_source_pins)
+    _authenticate_complete_source_inventory(reviewed_source_pins)
+    tasks = _trusted_plan(plan, outer, reviewed_source_pins)
+    observation_profile = _authenticate_observation_profile(
+        snapshot, plan, outer, reviewed_source_pins, contract
+    )
     _require(
         set(label.split("/")[0] for label in snapshot.blobs)
         == {"receipt.json", "collection_plan.json", "exclusions.json", "train", "development"},
@@ -2537,7 +2913,7 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
     for split in ("train", "development"):
         receipt = snapshot.read_json(split + "/receipt.json")
         _require(
-            receipt.get("schema_id") == COLLECTION_SCHEMA
+            receipt.get("schema_id") == contract.schema_id
             and receipt.get("schema_version") == 1
             and receipt.get("stage") == "complete"
             and receipt.get("split") == split
@@ -2568,7 +2944,14 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
             == _file_pin(snapshot, split + "/exclusions.json")["sha256"],
             "Exclusion copy digest differs",
         )
-        source_checks[split] = _source_bundle(snapshot, split, receipt, plan, reviewed_source_pins)
+        source_checks[split] = _source_bundle(
+            snapshot,
+            split,
+            receipt,
+            plan,
+            reviewed_source_pins,
+            observation_profile=observation_profile,
+        )
         episodes = snapshot.read_jsonl(split + "/episodes.jsonl")
         declared_calls = snapshot.read_jsonl(split + "/all_native_calls.jsonl")
         declared_cases = snapshot.read_jsonl(split + "/cases.jsonl")
@@ -2589,8 +2972,25 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
         for task_index, task in enumerate(expected_tasks):
             audits, pair_results = [], episodes[task_index * 2 : task_index * 2 + 2]
             for kind, result in zip(("ordinary", "recovery"), pair_results, strict=True):
-                _episode_result(snapshot, split, task, kind, plan, result)
-                audit = _audit_episode(snapshot, split, task, kind, plan, result, compiler=compiler)
+                _episode_result(
+                    snapshot,
+                    split,
+                    task,
+                    kind,
+                    plan,
+                    result,
+                    observation_profile=observation_profile,
+                )
+                audit = _audit_episode(
+                    snapshot,
+                    split,
+                    task,
+                    kind,
+                    plan,
+                    result,
+                    compiler=compiler,
+                    observation_profile=observation_profile,
+                )
                 audits.append(audit)
                 expected_cases.extend(audit["cases"])
                 expected_wires.extend(audit["wires"])
@@ -2639,6 +3039,8 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
             relative = label[len(split) + 1 :]
             if relative in allowed_top or relative.startswith(("sources/", "upstream/")):
                 continue
+            if observation_profile is not None and relative.startswith("observation-profile/"):
+                continue  # Exact sixteen-file tree independently authenticated above.
             _require(
                 relative in html_paths
                 or any(relative.startswith(folder + "/") for folder in expected_folders),
@@ -2734,10 +3136,16 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
         "Case/wire identities overlap",
     )
     authenticate_reviewed_public_sources(snapshot, reviewed_source_pins)
+    _authenticate_complete_source_inventory(reviewed_source_pins)
+    _require(
+        _authenticate_observation_profile(snapshot, plan, outer, reviewed_source_pins, contract)
+        == observation_profile,
+        "Observation profile identity changed during whole-corpus admission",
+    )
     snapshot.verify_unchanged()
     provenance = {
         "schema_id": "jev-public-native-collection-admission-v2",
-        "collection_schema_id": COLLECTION_SCHEMA,
+        "collection_schema_id": contract.schema_id,
         "collection_id": plan["collection_id"],
         "collection_plan_sha256": outer["collection_plan_sha256"],
         "outer_receipt": _file_pin(snapshot, "receipt.json"),
@@ -2754,6 +3162,9 @@ def validate_public_training_collection(path, *, reviewed_source_pins, tokenizer
         "model_calls": 0,
         "scope": "Recorded native/raw/owned DOM/guard joins and cached CPU token/grammar verification; not browser replay or policy score. Parent size projection is not recursive parent content authentication. No fitting or optimizer updates authorized by admission alone.",
     }
+    if observation_profile is not None:
+        provenance["observation_profile"] = observation_profile.binding()
+        provenance["observation_profile_verification"] = outer["observation_profile_verification"]
     provenance["provenance_fingerprint"] = _sha(_encode(provenance, canonical=True))
     return AdmittedPublicCollection(
         snapshot,

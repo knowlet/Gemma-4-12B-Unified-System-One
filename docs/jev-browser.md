@@ -1114,6 +1114,31 @@ with that same model. An existing output directory is refused.
 Use a frozen source snapshot for a running campaign; changing source during a
 run would invalidate its recorded hashes.
 
+Both browser CLIs accept the explicit observation profile below. Its reviewed
+helper traverses open Shadow DOM and assigned slots when collecting visible text,
+including MDN method signatures that the canonical snapshot misses. Use the same
+profile and helper revision for every comparison arm:
+
+```bash
+--observation-profile composed-visible-text-v2 \
+--observation-profile-helper-sha256 bc99741a847738c2ba1930007a5287136c6ddb28cb98dd2f1364b189c807921d
+```
+
+The default remains `native-1231850`. The explicit profile authenticates the
+canonical upstream checkout and a separate materialized runtime before import
+and after execution. It retains the native action discovery and execution code.
+Its text traversal has a 6,000 UTF-16 unit output limit, 20,000 visited-node limit
+and depth limit of 128. A confirmed traversal-cap or profile-integrity failure
+invalidates the attempt even if a later refresh succeeds. The output records the
+profile manifest, READ_STATE/MARKER events and terminal profile status.
+
+`scripts/jev_browser_collect_public_training.py` accepts the same flags. Its
+explicit-profile collection schema is `jev-public-native-training-collection-v4`;
+admission verifies both complete profile trees, ordered observation events and
+all 24 required episodes. Existing v3 collections retain their original native
+observation identity. Profile checks and scripted teacher completion establish
+data validity; model success still requires a separate end-to-end run.
+
 Use a Torch/CUDA build that supports the installed GPU. The GB10 pilot used
 Torch `2.13.0+cu130`; the repository's standard inference extra currently pins
 Torch `2.8.0`. Preserve the established GPU environment when reproducing the

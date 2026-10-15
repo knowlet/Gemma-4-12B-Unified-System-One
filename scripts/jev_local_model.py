@@ -13,7 +13,14 @@ import time
 from importlib import metadata
 from pathlib import Path
 
-from jev_browser_benchmark import TASK_IDS, run_benchmark, upstream_manifest
+from jev_browser_benchmark import (
+    COMPOSED_OBSERVATION_PROFILE,
+    NATIVE_OBSERVATION_PROFILE,
+    TASK_IDS,
+    prepare_observation_profile,
+    run_benchmark,
+    upstream_manifest,
+)
 
 
 def _write_receipt(path, receipt, *, qualified=False):
@@ -162,12 +169,24 @@ def main(argv=None):
     parser.add_argument("--travel-transfer-only", action="store_true")
     parser.add_argument("--server-evidence", action="store_true")
     parser.add_argument("--chromium-executable")
+    parser.add_argument(
+        "--observation-profile",
+        choices=[NATIVE_OBSERVATION_PROFILE, COMPOSED_OBSERVATION_PROFILE],
+        default=NATIVE_OBSERVATION_PROFILE,
+    )
+    parser.add_argument("--observation-profile-helper-sha256")
     parser.add_argument("--live-url")
     parser.add_argument("--live-goal")
     parser.add_argument("--live-expected-title")
     parser.add_argument("--live-only", action="store_true")
     parser.add_argument("--public-cases", nargs="+", dest="public_case_ids")
     args = parser.parse_args(argv)
+    try:
+        observation_bundle = prepare_observation_profile(
+            args.upstream_path, args.observation_profile, args.observation_profile_helper_sha256
+        )
+    except (ValueError, OSError) as exc:
+        parser.error(str(exc))
     decision3_names = {"d3", "d3-flash", "d3-mini", "d3-nano", "d3-lite", "d3-edge"}
     if (args.competitor in decision3_names) != args.decision3_native:
         parser.error("Decision3 competitors require the separate --decision3-native profile")
@@ -362,6 +381,17 @@ def main(argv=None):
         "cost_usd": None,
         "upstream": upstream,
     }
+    observation_options = {}
+    if observation_bundle is not None:
+        receipt["observation_profile"] = {
+            "id": args.observation_profile,
+            "expected_materialized_manifest": observation_bundle.materialized_manifest(),
+            "scope": "Explicit requested observation profile; no historical score parity claim",
+        }
+        observation_options = {
+            "observation_profile": args.observation_profile,
+            "observation_profile_helper_sha256": args.observation_profile_helper_sha256,
+        }
     if args.public_case_ids is not None:
         receipt["public_case_ids"] = args.public_case_ids
     if args.browser_operation_first:
@@ -382,7 +412,8 @@ def main(argv=None):
         receipt["bf16_evaluation"] = _bf16_evaluation_scope(args)
     receipt_path = destination / "receipt.json"
     qualified = verified_bf16_qualification is not None
-    _write_receipt(receipt_path, receipt, qualified=qualified)
+    atomic_receipt = qualified or observation_bundle is not None
+    _write_receipt(receipt_path, receipt, qualified=atomic_receipt)
     primary_error = receipt_failure = None
     server, thread, listener, application = None, None, None, None
     thread_started = False
@@ -447,7 +478,7 @@ def main(argv=None):
             "scope": "owned benchmark process, identical policy for every comparison arm",
         }
         receipt["stage"] = "model_load"
-        _write_receipt(receipt_path, receipt, qualified=qualified)
+        _write_receipt(receipt_path, receipt, qualified=atomic_receipt)
         load_started = time.perf_counter()
         bf16_options = {}
         if verified_bf16_qualification is not None:
@@ -501,7 +532,7 @@ def main(argv=None):
             )
 
             receipt["stage"] = "competitor_load"
-            _write_receipt(receipt_path, receipt, qualified=qualified)
+            _write_receipt(receipt_path, receipt, qualified=atomic_receipt)
             if args.decision3_native:
                 from s1.evaluation.decision3 import Decision3Backend, decision3_spec
 
@@ -642,7 +673,7 @@ def main(argv=None):
         if not server.started:
             raise RuntimeError("local model API failed to start")
         receipt["stage"] = "browser_benchmark"
-        _write_receipt(receipt_path, receipt, qualified=qualified)
+        _write_receipt(receipt_path, receipt, qualified=atomic_receipt)
         receipt["summary"] = run_benchmark(
             upstream_path=args.upstream_path,
             endpoint=f"http://127.0.0.1:{port}/v1/systemone",
@@ -664,7 +695,12 @@ def main(argv=None):
                 if verified_action_adapter is not None
                 else generate_field_text(model, context)
             ),
+            **observation_options,
         )
+        if receipt["summary"].get("observation_profile_failed"):
+            raise RuntimeError(
+                "Benchmark observation profile capture or lifecycle verification failed"
+            )
         receipt["peak_cuda_allocated_bytes"] = torch.cuda.max_memory_allocated()
         receipt["stage"] = "complete"
     except (Exception, KeyboardInterrupt) as exc:
@@ -759,7 +795,7 @@ def main(argv=None):
         if cleanup_errors:
             receipt["cleanup_errors"] = cleanup_errors
         receipt["elapsed_ms"] = (time.perf_counter() - started) * 1000
-        if qualified or args.decision3_native:
+        if atomic_receipt or args.decision3_native:
             receipt_failure = _finish_qualified_receipt(receipt_path, receipt, primary_error)
         else:
             _write_receipt(receipt_path, receipt, qualified=args.decision3_native)
