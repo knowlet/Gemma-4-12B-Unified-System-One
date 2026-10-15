@@ -15,7 +15,7 @@ from urllib.parse import urlsplit
 
 from .browser_public_training_tasks import get_public_training_task
 
-OBSERVATION_SCHEMA = "jev-public-native-training-dom-observation-v1"
+OBSERVATION_SCHEMA = "jev-public-native-training-dom-observation-v2"
 OWNERSHIP_FIELDS = frozenset(
     {"target_id", "session_id", "root_frame_id", "loader_id", "native_page_key", "url"}
 )
@@ -102,15 +102,21 @@ _READ_JS = r"""
       ({...fact(node),owner_heading_path:path(heading)}));
     target.paragraph=target.paragraphs[0] ?? null;
   }
+  // Git's manual identifies its command in NAME, not in an article h1.
+  const nameHeading=spec.identity_command ? headings.find(node=>normalized(node.innerText)==='name') : null;
+  const nameParagraphs=ownNodes(nameHeading,node=>node.tagName==='P' && clean(node.textContent),1)
+    .map(node=>({...fact(node),owner_heading_path:path(nameHeading)}));
+  const article_identity={heading:fact(nameHeading),paragraph:nameParagraphs[0] ?? null,
+    paragraphs:nameParagraphs};
   const blockerSelector='#challenge-form,#cf-challenge-running,[id^="cf-chl-"],'+
     '.cf-error-details,.g-recaptcha,.h-captcha,input[type="password"]';
-  return {schema_id:'jev-public-native-training-dom-observation-v1',url:location.href,
+  return {schema_id:'jev-public-native-training-dom-observation-v2',url:location.href,
     document_title:document.title,document_time_origin:performance.timeOrigin,
     document_read:{url_start:initialURL,url_end:location.href,
       time_origin_start:origin,time_origin_end:performance.timeOrigin},
     ready_state:document.readyState,scroll_x:scrollX,scroll_y:scrollY,
     viewport:{width:innerWidth,height:innerHeight},main:fact(main),
-    headings:headings.slice(0,128).map(fact),target,
+    headings:headings.slice(0,128).map(fact),target,article_identity,
     blockers:[...document.querySelectorAll(blockerSelector)].slice(0,32).map(fact)};
 })()
 """
@@ -123,6 +129,9 @@ def observe_public_training(browser, task):
         key: task[key]
         for key in ("main_selector", "target_heading", "judge_kind", "signature_name")
     }
+    config["identity_command"] = (
+        task["main_identity"] if task["site_group"] == "git-reference" else None
+    )
     return browser.evaluate(
         _READ_JS.replace("__PRIVATE_CONFIG__", json.dumps(config, ensure_ascii=False))
     )
@@ -172,15 +181,29 @@ def _rect(value):
     )
 
 
-def _rendered(node):
+def _rendered(node, *, allow_contents=False):
     node = _mapping(node)
     styles = node.get("style_chain")
+    box = (
+        _rect(node.get("rect"))
+        and type(node.get("client_rect_count")) is int
+        and node["client_rect_count"] > 0
+    )
+    if allow_contents and type(styles) is list and styles and type(styles[0]) is dict:
+        rect = node.get("rect")
+        box = box or (
+            styles[0].get("display") == "contents"
+            and type(rect) is dict
+            and set(rect) == {"x", "y", "width", "height"}
+            and all(_number(value) for value in rect.values())
+            and rect["width"] == rect["height"] == 0
+            and type(node.get("client_rect_count")) is int
+            and node["client_rect_count"] == 0
+        )
     if (
         node.get("connected") is not True
         or not _node_path(node.get("path"))
-        or not _rect(node.get("rect"))
-        or type(node.get("client_rect_count")) is not int
-        or node["client_rect_count"] <= 0
+        or not box
         or node.get("style_overflow") is not False
         or type(styles) is not list
         or not 1 <= len(styles) <= 128
@@ -322,7 +345,9 @@ def validate_public_training_observation(task, observation, *, expected_ownershi
         and read.get("time_origin_start") == read.get("time_origin_end") == raw_key[0],
     )
     title, main = _text(data.get("document_title")), _mapping(data.get("main"))
-    check("main_rendered", _rendered(main))
+    # A display:contents main has no box; its identity and target descendants
+    # still have to pass their own box, CSS, ownership and visibility checks.
+    check("main_rendered", _rendered(main, allow_contents=True))
     identity = _words(task["main_identity"])
     check("document_title_identity", bool(identity) and identity in _words(title))
     headings = data.get("headings") if type(data.get("headings")) is list else []
@@ -345,7 +370,35 @@ def validate_public_training_observation(task, observation, *, expected_ownershi
                 r"\b" + re.escape(task["signature_name"]) + r"\s*\(\)", _text(node.get("text"))
             )
         ]
-    check("main_document_identity", bool(identity_nodes))
+    if task["site_group"] == "git-reference":
+        article = _mapping(data.get("article_identity"))
+        name_heading, name_paragraph = (
+            _mapping(article.get(key)) for key in ("heading", "paragraph")
+        )
+        name_paragraphs = article.get("paragraphs")
+        document_identity = (
+            _rendered(name_heading)
+            and name_heading in headings
+            and name_heading.get("tag") in {"h1", "h2", "h3", "h4", "h5", "h6"}
+            and _heading_text(name_heading.get("text")) == "name"
+            and name_heading.get("text_truncated") is False
+            and _within(name_heading.get("path"), main.get("path"))
+            and _rendered(name_paragraph)
+            and name_paragraph.get("tag") == "p"
+            and name_paragraph.get("text_truncated") is False
+            and _within(name_paragraph.get("path"), main.get("path"))
+            and name_paragraph.get("owner_heading_path") == name_heading.get("path")
+            and type(name_paragraphs) is list
+            and len(name_paragraphs) == 1
+            and name_paragraphs[0] == name_paragraph
+            and re.match(
+                r"^" + re.escape(task["main_identity"]) + r"(?:\(\d\))?\s+[-–—]\s+\S",
+                _text(name_paragraph.get("text")),
+            )
+        )
+    else:
+        document_identity = bool(identity_nodes)
+    check("main_document_identity", document_identity)
     blockers = data.get("blockers")
     check(
         "no_visible_access_blocker",
@@ -439,7 +492,7 @@ def validate_public_training_observation(task, observation, *, expected_ownershi
             and _visible(paragraph, viewport, opening=True),
         )
     return {
-        "schema_id": "jev-public-native-training-dom-verdict-v1",
+        "schema_id": "jev-public-native-training-dom-verdict-v2",
         "goal_id": task["goal_id"],
         "success": all(checks.values()),
         "checks": checks,

@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "scope": "Independent offline audit of a terminal scripted public-native teacher collection; collector protocol outcomes, not model task scores or fit eligibility.",
+  "result": "partial_collector_protocol_failure_zero_training_rows",
+  "process_exit_code": 1,
+  "run": "artifacts/jev-browser/20261015-public-native-training-collection-01",
+  "receipt": {
+    "path": "artifacts/jev-browser/20261015-public-native-training-collection-01/receipt.json",
+    "sha256": "dbd5921e7ca89e017bb109b909bd8d1aad372c01e307027bc8e8d0221cc258d7",
+    "size_bytes": 35038
+  },
+  "population": {
+    "declared_goals": 12,
+    "ordinary_recovery_episodes_per_goal": 2,
+    "attempted_episodes": 24,
+    "unattempted_episodes": 0,
+    "scripted_episodes_completed": 0,
+    "quarantined_episodes": 24,
+    "train": {
+      "goals": 8,
+      "attempted": 16,
+      "quarantined": 16,
+      "released_cases": 0,
+      "released_wires": 0
+    },
+    "development": {
+      "goals": 4,
+      "attempted": 8,
+      "quarantined": 8,
+      "released_cases": 0,
+      "released_wires": 0
+    },
+    "all24_mandatory_pair_gate": false,
+    "accepted_proven_DONE": 0
+  },
+  "actual_evidence": {
+    "native_policy_calls": 34,
+    "bootstrap_calls": 17,
+    "supervised_calls": 17,
+    "raw_observations": 199,
+    "compiled_requests_recomputed": 34,
+    "accepted_transitions": 10,
+    "accepted_DONE": 0,
+    "actual_history_actions": 34,
+    "private_verdicts_recomputed": 91,
+    "elapsed_ms": 54319.461904999116,
+    "browser_protocol_calls": 1402,
+    "native_observation_write_ms": 478.88709198923607,
+    "actual_operation_counts": {
+      "CLICK": 24,
+      "SCROLL_DOWN": 10
+    },
+    "raw_snapshot_responses_with_page": 58,
+    "raw_snapshot_responses_with_null_value": 141,
+    "prompt_token_range": [
+      1847,
+      4233
+    ],
+    "max_context": 8192,
+    "reserved_generation_tokens_including_EOS": 32,
+    "EOS_token_id": 106,
+    "top_document_HTTP_status_counts": {
+      "200": 40
+    },
+    "blocked_request_method_counts": {
+      "POST": 49
+    },
+    "scope_violations": 0,
+    "observer_errors": 0,
+    "cleanup_errors": 0,
+    "finalization_errors": 0
+  },
+  "failure_classification": {
+    "counts": {
+      "post_action_native_private_scroll_key_drift": 8,
+      "post_navigation_document_not_complete": 15,
+      "native_StalePage_after_navigation": 1
+    },
+    "interpretation": [
+      "Eight MDN attempts refused immediate post-action private proof because saved native/private scroll positions differed; native Y2/12 versus private Y35..222.",
+      "Fifteen other attempts refused immediate post-navigation private proof while the saved document readyState was loading or interactive.",
+      "One PostgreSQL recovery attempt retained native StalePage after an executed navigation.",
+      "These failure classes describe this collector protocol. They do not establish target-page or final-section feasibility or infeasibility."
+    ]
+  },
+  "independent_audit": {
+    "passed": true,
+    "checks": 8333,
+    "stable_input_files": 624,
+    "script": {
+      "path": "artifacts/jev-runtime/audit_public_native_training_collection_01.py",
+      "sha256": "74b81112c467a983082d67313f206f542cacc0cd75ce78ed0b242be96829b291",
+      "size_bytes": 42514
+    },
+    "report": {
+      "path": "artifacts/jev-browser/20261015-public-native-training-collection-independent-audit-02.json",
+      "sha256": "1ff92c2d4256153500cd43e4257b91df2d2935f14d1741ee66f5f4e1e76f14fa",
+      "size_bytes": 283432
+    },
+    "trusted_historical_git_sources": {
+      "src/s1/browser_public_training_tasks.py": {
+        "commit": "1d719c70397bac2f4c67e6077e30337803821bbc",
+        "sha256": "91fe4c31daac687112c3d9e184d9d2f313f8a6302a9f78e52acacd89db8e884c",
+        "size_bytes": 17442
+      },
+      "src/s1/browser_public_training_evidence.py": {
+        "commit": "1d719c70397bac2f4c67e6077e30337803821bbc",
+        "sha256": "b65c404f688e8b90544b0134254065cc9a33256c62e437feb4e3055b968d40ee",
+        "size_bytes": 18362
+      }
+    },
+    "checks_summary": [
+      "Both complete recursive split inventories and all captured runtime/native source copies match the sealed receipts and predeclared source pins.",
+      "All24 actual attempt records, final histories, failed private facts, all native calls and all full raw CDP snapshot responses are retained.",
+      "All34 full ordered native requests exactly reconstruct unchanged native choose from saved raw page and real history; all34 Jinja/Rust prompt hashes/token IDs and complete legal action tries recompute with EOS106 and context8192/32.",
+      "All34 executed history actions map to offered native action IDs and active heads through actual guards;10 accepted post-proof transitions remain separate from24 actions followed by a refused post-proof.",
+      "All91 private verdicts recompute using reviewed git1d719c7 judge SHA b65c404 and the pinned tasks; expected root/session/loader/native-page-key ownership joins raw CDP snapshot and document ledgers.",
+      "All12 ordinary/recovery pair coverage records independently derive from actual transitions. No DONE was selected, accepted or released; the all24 gate refuses both split publications.",
+      "Explicit docs.python.org/science.nasa.gov and arxiv.org/wikipedia.org exclusions and site-group train/development separation are preserved.",
+      "All audited inputs remain byte-stable at audit exit."
+    ]
+  },
+  "source_bindings": {
+    "git_commit": "1d719c70397bac2f4c67e6077e30337803821bbc",
+    "freeze": {
+      "path": "artifacts/jev-runtime/frozen-public-native-training-30/freeze-manifest.json",
+      "sha256": "61f2d36d4a02675d4c69842b8855e973428f90272af51597663fae904916944a",
+      "size_bytes": 12258
+    },
+    "plan_wrapper": {
+      "path": "artifacts/jev-runtime/public_native_training_collection_plan_01.json",
+      "sha256": "880e2717afdc069a29bb2c5a601abb04d8a190d91554c6b85761599514cccaf4",
+      "size_bytes": 37670
+    },
+    "inner_plan_sha256": "d86f12565f8a188b95281988a6cf87b1b234b62166ee64ff8249c9ad8b97f33a",
+    "collector_sha256": "2a91f1f888a7dc3ad8d4e2ace06be9e14e5d91c859674fc50876538d03c83f11",
+    "private_judge_sha256": "b65c404f688e8b90544b0134254065cc9a33256c62e437feb4e3055b968d40ee",
+    "train_receipt": {
+      "path": "artifacts/jev-browser/20261015-public-native-training-collection-01/train/receipt.json",
+      "sha256": "40d75fd6cb91de6da201f255ee0b8efe7b53656e976b32775e2dda4dfc1b87dd",
+      "size_bytes": 70560
+    },
+    "development_receipt": {
+      "path": "artifacts/jev-browser/20261015-public-native-training-collection-01/development/receipt.json",
+      "sha256": "1975195627e5968cf30ad9ac4a1f1d615f3364fead04999d5f0e6d581870d6c2",
+      "size_bytes": 49702
+    }
+  },
+  "boundaries": {
+    "model_calls": 0,
+    "training_updates": 0,
+    "task_score": null,
+    "fresh_transfer_seed": null,
+    "fit_eligible_rows": 0,
+    "runtime_evidence": "Pinned collection source blocks model/framework imports and records zero inference calls; this independent audit imported no model, browser or networking runtimes and read no model weights. No independent GPU-process measurement is inferred.",
+    "limitations": [
+      "Saved evidence only; no fresh website requests or live browser audit.",
+      "No target-route or final-DOM reachability claim from this failed collection.",
+      "No model performance, public generalization, training eligibility, seed choice, fit or promotion claim.",
+      "Current prospective predicate/protocol repairs do not rewrite or rescore this immutable first collection.",
+      "The first auditor initialization refusal is retained in the full report; the passing auditor avoids the application validator networking import and reconstructs exact native inputs directly."
+    ]
+  }
+}

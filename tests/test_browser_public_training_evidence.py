@@ -130,6 +130,18 @@ def observation(task):
         "blockers": [],
         "ownership": copy.deepcopy(owner),
     }
+    if task["site_group"] == "git-reference":
+        name_heading = node(MAIN + "/section[1]/h2[1]", "NAME", tag="h2", y=-180)
+        name_paragraph = node(
+            MAIN + "/section[1]/p[1]", task["main_identity"] + " - The documented command.", y=-130
+        )
+        name_paragraph["owner_heading_path"] = name_heading["path"]
+        raw["headings"].append(name_heading)
+        raw["article_identity"] = {
+            "heading": name_heading,
+            "paragraph": name_paragraph,
+            "paragraphs": [name_paragraph],
+        }
     return raw, owner
 
 
@@ -309,6 +321,7 @@ def test_correct_description_on_wrong_git_command_document_is_rejected():
     task = get_public_training_task("git-restore-description")
     raw, owner = observation(task)
     raw["headings"][0]["text"] = "git-worktree(1)"
+    raw["article_identity"]["paragraph"]["text"] = "git-worktree - Manage multiple working trees."
     assert not validate_public_training_observation(task, raw, expected_ownership=owner)["checks"][
         "main_document_identity"
     ]
@@ -374,7 +387,17 @@ def test_observer_performs_one_readonly_evaluation_and_contains_no_policy_labels
     assert json.loads(private_config)["target_heading"] == "Syntax"
 
 
-def dom_observation(task, *, child_heading=False, own_content=False, overlay_name_visible=True):
+def dom_observation(
+    task,
+    *,
+    child_heading=False,
+    own_content=False,
+    overlay_name_visible=True,
+    main_display="block",
+    zero_main_box=False,
+    git_command=None,
+    git_name_child=False,
+):
     """Execute the real observer against a small CPU-only DOM API mock.
 
     Facts, paths and hit tests come from the observer JS. The mock supplies a
@@ -390,6 +413,7 @@ def dom_observation(task, *, child_heading=False, own_content=False, overlay_nam
     script = observe_public_training(Browser(), task)
     program = r"""
 const spec=__TASK__, childHeading=__CHILD__, ownContent=__OWN__, visibleName=__VISIBLE__;
+const mainDisplay=__DISPLAY__, zeroMainBox=__ZERO_BOX__, gitCommand=__GIT_COMMAND__, gitNameChild=__GIT_CHILD__;
 globalThis.location={href:spec.primary_target_url};
 globalThis.performance={timeOrigin:1790000000000};
 globalThis.innerWidth=1024;globalThis.innerHeight=768;
@@ -408,9 +432,21 @@ function add(parent,child){parent.children.push(child);child.parentElement=paren
 function descendants(root){return root.children.flatMap(n=>[n,...descendants(n)]);}
 const html=node('html','',0,768),body=add(html,node('body','',0,768));
 const main=add(body,node('main','',-200,2000));
+if(zeroMainBox) {
+  main.getBoundingClientRect=()=>({left:0,top:0,right:0,bottom:0,width:0,height:0});
+  main.getClientRects=()=>[];
+}
 const identity=spec.main_identity+(spec.judge_kind==='mdn_method' ? ': '+spec.signature_name+'() method' : '');
-add(main,node('h1',identity,-100));
-if(spec.judge_kind==='overlay') {
+if(spec.site_group!=='git-reference')add(main,node('h1',identity,-100));
+if(spec.site_group==='git-reference') {
+  add(main,node('h2','NAME',-180));
+  if(gitNameChild)add(main,node('h3','A Different Child Subsection',-140));
+  add(main,node('p',(gitCommand??spec.main_identity)+' - The documented command.',-100));
+  add(main,node('h2','SYNOPSIS',-40));
+  add(main,node('pre','git restore [options]',0));
+  add(main,node('h2',spec.target_heading,100));
+  add(main,node('p','This is the opening explanation of the requested command.',200));
+} else if(spec.judge_kind==='overlay') {
   const row=add(add(add(main,node('table','',-40,350)),node('tbody','',-40,350)),node('tr','',-40,350));
   const cell=add(row,node('td','',-40,350));
   const signature=add(cell,node('p','overlay ( string text PLACING replacement text FROM start integer ) → text',visibleName?120:-40,visibleName?60:100));
@@ -432,7 +468,7 @@ main.querySelectorAll=selector=>selector==='code.function'
   ? descendants(main).filter(n=>n.functionClass)
   : descendants(main).filter(n=>/^H[1-6]$/.test(n.tagName));
 for(const cell of all.filter(n=>n.tagName==='TD'))cell.querySelectorAll=()=>descendants(cell).filter(n=>n.tagName==='P');
-globalThis.getComputedStyle=()=>({display:'block',visibility:'visible',opacity:'1',contentVisibility:'visible'});
+globalThis.getComputedStyle=n=>({display:n===main?mainDisplay:'block',visibility:'visible',opacity:'1',contentVisibility:'visible'});
 globalThis.document={title:identity+' - Official Documentation',readyState:'complete',
   querySelector(){return main;},querySelectorAll(){return [];},
   createTreeWalker(root){const nodes=descendants(root);let i=0;return {nextNode(){return nodes[i++]||null;}};},
@@ -446,6 +482,10 @@ console.log(JSON.stringify(eval(__SCRIPT__)));
         ("__OWN__", own_content),
         ("__VISIBLE__", overlay_name_visible),
         ("__SCRIPT__", script),
+        ("__DISPLAY__", main_display),
+        ("__ZERO_BOX__", zero_main_box),
+        ("__GIT_COMMAND__", git_command),
+        ("__GIT_CHILD__", git_name_child),
     ):
         program = program.replace(key, json.dumps(value))
     result = subprocess.run(["node", "-e", program], capture_output=True, text=True, check=True)
@@ -478,3 +518,50 @@ def test_actual_dom_overlay_requires_function_name_visible_with_signature_and_ex
     verdict = validate_public_training_observation(task, raw, expected_ownership=owner)
     assert verdict["success"] is visible
     assert verdict["checks"]["matching_overlay_row"] is visible
+
+
+@pytest.mark.parametrize(
+    "display,accepted", [("contents", True), ("block", False), ("none", False)]
+)
+def test_actual_dom_display_contents_main_requires_real_visible_descendants(display, accepted):
+    task = get_public_training_task("mdn-intersectionobserver-observe")
+    raw, owner = dom_observation(task, own_content=True, main_display=display, zero_main_box=True)
+    verdict = validate_public_training_observation(task, raw, expected_ownership=owner)
+    assert verdict["success"] is accepted
+    assert verdict["checks"]["main_rendered"] is accepted
+    if accepted:
+        raw["target"]["signature"]["connected"] = False
+        assert not validate_public_training_observation(task, raw, expected_ownership=owner)[
+            "success"
+        ]
+
+
+@pytest.mark.parametrize("task_id", ["git-restore-description", "git-worktree-description"])
+def test_actual_git_manual_identity_comes_from_own_NAME_paragraph_without_command_h1(task_id):
+    task = get_public_training_task(task_id)
+    raw, owner = dom_observation(task)
+    assert all(node["tag"] != "h1" for node in raw["headings"])
+    assert raw["article_identity"]["paragraph"]["text"].startswith(task["main_identity"] + " - ")
+    assert validate_public_training_observation(task, raw, expected_ownership=owner)["success"]
+
+
+@pytest.mark.parametrize("wrong_command", ["git-worktree", "git-restore-extra"])
+def test_actual_git_NAME_rejects_other_command_even_with_correct_URL_title_and_DESCRIPTION(
+    wrong_command,
+):
+    task = get_public_training_task("git-restore-description")
+    raw, owner = dom_observation(task, git_command=wrong_command)
+    verdict = validate_public_training_observation(task, raw, expected_ownership=owner)
+    assert verdict["checks"]["target_document_url"]
+    assert verdict["checks"]["document_title_identity"]
+    assert verdict["checks"]["requested_heading"]
+    assert verdict["checks"]["first_own_explanatory_paragraph"]
+    assert not verdict["checks"]["main_document_identity"]
+    assert not verdict["success"]
+
+
+def test_actual_git_NAME_cannot_borrow_command_from_a_child_subsection():
+    task = get_public_training_task("git-restore-description")
+    raw, owner = dom_observation(task, git_name_child=True)
+    assert raw["article_identity"]["paragraph"] is None
+    assert not validate_public_training_observation(task, raw, expected_ownership=owner)["success"]
