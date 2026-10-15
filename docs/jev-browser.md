@@ -11,6 +11,20 @@ The prior [October 13 local report](https://github.com/knowlet/Gemma-4-12B-Unifi
 recorded 0/3 travel and 0/5 completion tasks. BoolQ and public231 decision accuracy
 are different populations and do not establish browser task success.
 
+## Current BF16 diagnostic status
+
+The October 15 child adapter completed the original gate **1/1** and the known
+exposed 13 development cases **13/13**, versus the unadapted BF16 base **11/13**.
+The independent audit verified the 13 matched initial requests and fixtures.
+This is evidence for those known goals and fixtures; it does not establish
+public or unseen-task superiority. The subsequent
+[audited public BF16 comparison](validation/2026-10-15/jev-public-bf16-comparison.json)
+recorded **1/2 for both the child and unadapted base**, with the two raw initial
+payload pairs exactly equal. The known-fixture result did not generalize into a
+public-task score improvement. The new
+[explicit BF16 qualification route](bf16-action-adapter.md) is awaiting an actual
+tracked-CLI parity run before any usable deployment claim.
+
 ## October 14 local pilot
 
 Seven completed local runs used the original nine development tasks, with one

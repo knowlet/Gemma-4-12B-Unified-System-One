@@ -5,13 +5,115 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import socket
+import tempfile
 import threading
 import time
 from importlib import metadata
 from pathlib import Path
 
 from jev_browser_benchmark import TASK_IDS, run_benchmark, upstream_manifest
+
+
+def _write_receipt(path, receipt, *, qualified=False):
+    payload = json.dumps(receipt, indent=2) + "\n"
+    if not qualified:
+        path.write_text(payload)
+        return
+    pending = previous = None
+    replaced = False
+    primary = None
+    directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        descriptor, name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+        pending = Path(name)
+        with os.fdopen(descriptor, "w") as output:
+            output.write(payload)
+            output.flush()
+            os.fsync(output.fileno())
+        if path.exists():
+            descriptor, name = tempfile.mkstemp(prefix=f".{path.name}.previous.", dir=path.parent)
+            os.close(descriptor)
+            previous = Path(name)
+            previous.unlink()
+            os.link(path, previous)
+        os.replace(pending, path)
+        pending = None
+        replaced = True
+        os.fsync(directory)
+        if previous is not None:
+            previous.unlink()
+            previous = None
+    except BaseException as exc:
+        primary = exc
+        if replaced:
+            try:
+                if previous is not None:
+                    os.replace(previous, path)
+                    previous = None
+                else:
+                    path.unlink()
+                os.fsync(directory)
+            except BaseException as rollback:
+                exc.add_note("Receipt rollback also failed: " + repr(rollback))
+                if previous is not None:
+                    exc.add_note("Prior receipt backup retained at " + str(previous))
+                    previous = None
+        raise
+    finally:
+        for leftover in (pending, previous):
+            if leftover is not None:
+                try:
+                    leftover.unlink(missing_ok=True)
+                except OSError as exc:
+                    if primary is None:
+                        raise
+                    primary.add_note("Receipt temporary-file cleanup also failed: " + repr(exc))
+        try:
+            os.close(directory)
+        except OSError as exc:
+            if primary is None:
+                raise
+            primary.add_note("Receipt directory close also failed: " + repr(exc))
+
+
+def _finish_qualified_receipt(path, receipt, primary):
+    if primary is not None or receipt.get("cleanup_errors"):
+        receipt["stage"] = "failed"
+    try:
+        _write_receipt(path, receipt, qualified=True)
+    except (Exception, KeyboardInterrupt) as exc:
+        receipt["stage"] = "failed"
+        receipt["receipt_write_error"] = {"type": type(exc).__name__, "message": str(exc)}
+        notes = getattr(exc, "__notes__", [])
+        if notes:
+            receipt["receipt_write_error"]["notes"] = list(notes)
+        if primary is not None:
+            primary.add_note("Final BF16 receipt persistence also failed: " + repr(exc))
+            for note in notes:
+                primary.add_note("BF16 receipt persistence detail: " + note)
+            return primary
+        return exc
+    return None
+
+
+def _bf16_evaluation_scope(args):
+    return {
+        "scope": "actual requested evaluation; historical qualification supplies no quality guarantee",
+        "completed_configuration_path": "benchmark/configuration.json",
+        "tasks": [] if args.live_only else args.tasks,
+        "suite_split": args.suite_split,
+        "seed": args.seed,
+        "repeats": args.repeats,
+        "public_case_ids": args.public_case_ids,
+        "travel_challenges_only": args.travel_challenges_only,
+        "travel_transfer_only": args.travel_transfer_only,
+        "live_only": args.live_only,
+        "live_url": args.live_url,
+        "live_goal": args.live_goal,
+        "live_expected_title": args.live_expected_title,
+    }
 
 
 def main(argv=None):
@@ -30,6 +132,7 @@ def main(argv=None):
     parser.add_argument("--generated-actions", action="store_true")
     parser.add_argument("--generated-action-grammar", action="store_true")
     parser.add_argument("--generated-action-adapter", type=Path)
+    parser.add_argument("--generated-action-qualification", type=Path)
     parser.add_argument("--hierarchical-candidates", action="store_true")
     parser.add_argument("--batch-hierarchy-stages", action="store_true")
     parser.add_argument("--decision-readout")
@@ -77,6 +180,17 @@ def main(argv=None):
             parser.error(str(exc))
     if args.generated_action_adapter and not args.generated_actions:
         parser.error("generated-action-adapter requires --generated-actions")
+    if args.generated_action_qualification and (
+        not args.generated_action_adapter
+        or args.quantization != "none"
+        or not args.generated_actions
+        or not args.generated_action_grammar
+    ):
+        parser.error(
+            "generated-action-qualification requires a BF16 adapter with generated actions and grammar"
+        )
+    if args.generated_action_qualification and not args.server_evidence:
+        parser.error("BF16 qualification requires --server-evidence")
     if args.generated_action_grammar and not args.generated_actions:
         parser.error("generated-action-grammar requires --generated-actions")
     if args.generated_actions and (
@@ -137,16 +251,33 @@ def main(argv=None):
     if args.live_url and not (args.live_goal and args.live_expected_title):
         parser.error("live-url requires live-goal and live-expected-title")
     verified_action_adapter = None
+    verified_bf16_qualification = None
+    if args.generated_action_qualification:
+        # Set before strict verification imports PEFT/Transformers/Hub constants.
+        os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1")
     if args.generated_action_adapter:
         from s1.browser_action_adapter import verify_action_adapter
 
         try:
-            verified_action_adapter = verify_action_adapter(
-                args.generated_action_adapter,
-                model_id=args.model,
-                revision=args.revision,
-                quantization=args.quantization,
-            )
+            if args.generated_action_qualification:
+                from s1.browser_action_qualification import verify_bf16_action_qualification
+
+                if (args.model, args.revision) != (
+                    "knowlet/Gemma-4-12B-Unified-System-One",
+                    "a66f836b56605039fe040f330180e336d19b3362",
+                ):
+                    parser.error("BF16 qualification requires its pinned checkpoint and revision")
+                verified_bf16_qualification = verify_bf16_action_qualification(
+                    args.generated_action_adapter, args.generated_action_qualification
+                )
+                verified_action_adapter = verified_bf16_qualification.artifact
+            else:
+                verified_action_adapter = verify_action_adapter(
+                    args.generated_action_adapter,
+                    model_id=args.model,
+                    revision=args.revision,
+                    quantization=args.quantization,
+                )
         except (ValueError, OSError) as exc:
             parser.error(str(exc))
     upstream = upstream_manifest(args.upstream_path)
@@ -184,7 +315,13 @@ def main(argv=None):
         receipt["text_helper_policy"] = (
             "same pinned checkpoint; action adapter disabled for field generation"
         )
-    (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    if verified_bf16_qualification is not None:
+        receipt["bf16_qualification"] = verified_bf16_qualification.telemetry()
+        receipt["bf16_evaluation"] = _bf16_evaluation_scope(args)
+    receipt_path = destination / "receipt.json"
+    qualified = verified_bf16_qualification is not None
+    _write_receipt(receipt_path, receipt, qualified=qualified)
+    primary_error = receipt_failure = None
     server, thread, listener, application = None, None, None, None
     thread_started = False
     source_manifest = None
@@ -205,6 +342,12 @@ def main(argv=None):
         receipt["stage"] = "source_capture"
         source_manifest = capture_runtime_sources(destination, additional_files=source_files)
         receipt["source_manifest"] = source_manifest
+        if verified_bf16_qualification is not None:
+            from s1.browser_action_qualification import capture_bf16_qualification
+
+            receipt["bf16_qualification_capture"] = capture_bf16_qualification(
+                verified_bf16_qualification, destination / "bf16-qualification"
+            )
         if args.server_evidence:
             server_journal = ServerEvidenceJournal(destination / "server-evidence")
             receipt["server_evidence"] = {
@@ -233,8 +376,19 @@ def main(argv=None):
             "scope": "owned benchmark process, identical policy for every comparison arm",
         }
         receipt["stage"] = "model_load"
-        (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        _write_receipt(receipt_path, receipt, qualified=qualified)
         load_started = time.perf_counter()
+        bf16_options = {}
+        if verified_bf16_qualification is not None:
+            from s1.browser_action_adapter import LORA
+            from s1.browser_action_qualification import verify_bf16_base_checkpoint
+
+            os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1")
+            receipt["bf16_base_exact_bytes_before_load"] = verify_bf16_base_checkpoint(
+                verified_bf16_qualification
+            )
+            torch.manual_seed(20261014)
+            bf16_options["lora"] = {**LORA, "revision": args.revision}
         model = UnifiedDecisionModel(
             args.model,
             revision=args.revision,
@@ -243,6 +397,7 @@ def main(argv=None):
             quantization=args.quantization,
             max_context=8192,
             attn_implementation="sdpa",
+            **bf16_options,
         )
         if model.revision != args.revision:
             raise ValueError("loaded checkpoint revision differs from requested immutable revision")
@@ -250,9 +405,18 @@ def main(argv=None):
             from s1.browser_action_adapter import attach_action_adapter
 
             receipt["stage"] = "action_adapter_load"
-            receipt["generated_action_adapter"] = attach_action_adapter(
-                model, verified_action_adapter
-            )
+            if verified_bf16_qualification is not None:
+                from s1.browser_action_qualification import attach_qualified_bf16_action_adapter
+
+                receipt["generated_action_adapter"] = attach_qualified_bf16_action_adapter(
+                    model, verified_bf16_qualification
+                )
+                receipt["bf16_exact_initialization"] = model.action_adapter.initialization
+                receipt["bf16_initial_invariants"] = model.action_adapter.initial_invariants
+            else:
+                receipt["generated_action_adapter"] = attach_action_adapter(
+                    model, verified_action_adapter
+                )
         receipt["model_reported"] = model.name
         receipt["revision_reported"] = model.revision
         receipt["model_load_ms"] = (time.perf_counter() - load_started) * 1000
@@ -266,7 +430,7 @@ def main(argv=None):
             )
 
             receipt["stage"] = "competitor_load"
-            (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+            _write_receipt(receipt_path, receipt, qualified=qualified)
             if args.competitor == "jev-omni":
                 from s1.evaluation.contracts import Capabilities, ModelSpec
                 from s1.evaluation.jev_omni import (
@@ -386,7 +550,7 @@ def main(argv=None):
         if not server.started:
             raise RuntimeError("local model API failed to start")
         receipt["stage"] = "browser_benchmark"
-        (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        _write_receipt(receipt_path, receipt, qualified=qualified)
         receipt["summary"] = run_benchmark(
             upstream_path=args.upstream_path,
             endpoint=f"http://127.0.0.1:{port}/v1/systemone",
@@ -412,9 +576,17 @@ def main(argv=None):
         receipt["peak_cuda_allocated_bytes"] = torch.cuda.max_memory_allocated()
         receipt["stage"] = "complete"
     except (Exception, KeyboardInterrupt) as exc:
+        primary_error = exc
         receipt["error"] = {"type": type(exc).__name__, "message": str(exc)}
     finally:
         cleanup_errors = []
+
+        def cleanup_failure(stage, exc):
+            nonlocal primary_error
+            cleanup_errors.append({"stage": stage, "message": str(exc)})
+            if primary_error is None:
+                primary_error = exc
+
         if source_manifest is not None:
             try:
                 receipt["source_verification"] = verify_runtime_sources(
@@ -423,24 +595,24 @@ def main(argv=None):
                 if not receipt["source_verification"]["success"]:
                     raise RuntimeError("runtime source changed during the model campaign")
             except Exception as exc:
-                cleanup_errors.append({"stage": "source_verification", "message": str(exc)})
+                cleanup_failure("source_verification", exc)
         if server is not None:
             try:
                 server.should_exit = True
             except Exception as exc:
-                cleanup_errors.append({"stage": "server_shutdown", "message": str(exc)})
+                cleanup_failure("server_shutdown", exc)
         if thread_started:
             try:
                 thread.join(timeout=10)
                 if thread.is_alive():
                     raise RuntimeError("owned model API did not stop within 10 seconds")
             except Exception as exc:
-                cleanup_errors.append({"stage": "thread_shutdown", "message": str(exc)})
+                cleanup_failure("thread_shutdown", exc)
         if listener is not None:
             try:
                 listener.close()
             except Exception as exc:
-                cleanup_errors.append({"stage": "socket_shutdown", "message": str(exc)})
+                cleanup_failure("socket_shutdown", exc)
         if server_journal is not None:
             try:
                 index = server_journal.snapshot()
@@ -463,19 +635,43 @@ def main(argv=None):
                 index_path.write_text(json.dumps(index, indent=2) + "\n")
                 receipt["server_evidence"].update(index_path="server-evidence/index.json", **index)
                 if index["errors"] or index["observer_errors"]:
-                    cleanup_errors.append(
-                        {
-                            "stage": "server_evidence",
-                            "message": "Server evidence writes failed; see journal index",
-                        }
+                    cleanup_failure(
+                        "server_evidence",
+                        RuntimeError("Server evidence writes failed; see journal index"),
                     )
             except Exception as exc:
-                cleanup_errors.append({"stage": "server_evidence", "message": str(exc)})
+                cleanup_failure("server_evidence", exc)
+        if verified_bf16_qualification is not None:
+            try:
+                from s1.browser_action_qualification import (
+                    verify_bf16_base_checkpoint,
+                    verify_bf16_qualification_capture,
+                )
+
+                receipt["bf16_qualification_final_capture"] = verify_bf16_qualification_capture(
+                    verified_bf16_qualification, destination / "bf16-qualification"
+                )
+                evidence = receipt.get("server_evidence", {})
+                if not evidence.get("all_requests_sealed") or evidence.get("pending_request_ids"):
+                    raise RuntimeError("qualified BF16 server evidence is pending or unsealed")
+                if "model" in locals() and hasattr(model, "action_adapter"):
+                    receipt["bf16_final_invariants"] = model.action_adapter.check(full=True)
+                if "bf16_base_exact_bytes_before_load" in receipt:
+                    receipt["bf16_base_exact_bytes_after_run"] = verify_bf16_base_checkpoint(
+                        verified_bf16_qualification
+                    )
+            except Exception as exc:
+                cleanup_failure("bf16_qualification_finalization", exc)
         if cleanup_errors:
             receipt["cleanup_errors"] = cleanup_errors
         receipt["elapsed_ms"] = (time.perf_counter() - started) * 1000
-        (destination / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        if qualified:
+            receipt_failure = _finish_qualified_receipt(receipt_path, receipt, primary_error)
+        else:
+            _write_receipt(receipt_path, receipt)
     print(json.dumps(receipt, indent=2), flush=True)
+    if receipt_failure is not None:
+        raise receipt_failure
     if "error" in receipt or "cleanup_errors" in receipt:
         raise SystemExit(1)
 

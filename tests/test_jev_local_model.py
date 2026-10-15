@@ -1,8 +1,11 @@
 """Invalid optional policies fail before any checkpoint or browser is loaded."""
 
 import importlib.util
+import json
+import stat
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -18,6 +21,319 @@ try:
     SPEC.loader.exec_module(DRIVER)
 finally:
     sys.path.pop(0)
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        [],
+        ["--quantization", "nf4"],
+        ["--quantization", "none", "--generated-actions"],
+        [
+            "--quantization",
+            "none",
+            "--generated-actions",
+            "--generated-action-grammar",
+        ],
+    ],
+)
+def test_bf16_qualification_invalid_flags_precede_evidence_or_model_access(
+    tmp_path, monkeypatch, options
+):
+    monkeypatch.setattr(
+        DRIVER,
+        "upstream_manifest",
+        lambda *_a: pytest.fail("invalid BF16 flags reached upstream/model"),
+    )
+    with pytest.raises(SystemExit) as caught:
+        DRIVER.main(
+            [
+                "--upstream-path",
+                "unused",
+                "--output-dir",
+                str(tmp_path / "run"),
+                "--generated-action-qualification",
+                "unused",
+                "--generated-action-adapter",
+                "unused",
+                *options,
+            ]
+        )
+    assert caught.value.code == 2
+    assert not (tmp_path / "run").exists()
+
+
+@pytest.mark.parametrize(
+    "options, expected",
+    [
+        (
+            ["--public-cases", "public-python-counter-most-common-v1"],
+            {"public_case_ids": ["public-python-counter-most-common-v1"]},
+        ),
+        (
+            ["--seed", "71", "--repeats", "2", "--suite-split", "holdout"],
+            {"seed": 71, "repeats": 2, "suite_split": "holdout"},
+        ),
+        (["--tasks", "native_select"], {"tasks": ["native_select"]}),
+        (["--travel-transfer-only"], {"travel_transfer_only": True}),
+        (
+            [
+                "--live-url",
+                "https://en.wikipedia.org/wiki/Spork",
+                "--live-goal",
+                "Open Spoon",
+                "--live-expected-title",
+                "Spoon",
+                "--live-only",
+            ],
+            {"live_only": True, "tasks": [], "live_goal": "Open Spoon"},
+        ),
+    ],
+)
+def test_qualified_diagnostic_inputs_record_actual_scope_without_model_access(
+    tmp_path, monkeypatch, options, expected
+):
+    from s1 import browser_action_qualification, browser_evidence
+
+    historical = {"scope": "original plus known exposed13 diagnostics only"}
+    verified = SimpleNamespace(
+        artifact=SimpleNamespace(telemetry=lambda: {"manifest_sha256": "test-fit"}),
+        telemetry=lambda: {"observed_diagnostics": historical},
+    )
+    monkeypatch.setattr(
+        browser_action_qualification, "verify_bf16_action_qualification", lambda *_args: verified
+    )
+    monkeypatch.setattr(DRIVER, "upstream_manifest", lambda *_args: {"revision": "test"})
+
+    def stop_before_dependencies(*_args, **_kwargs):
+        raise RuntimeError("CPU test stops before model imports")
+
+    monkeypatch.setattr(browser_evidence, "capture_runtime_sources", stop_before_dependencies)
+    monkeypatch.setattr(
+        browser_action_qualification, "verify_bf16_qualification_capture", lambda *_args: {}
+    )
+    output = tmp_path / "run"
+    with pytest.raises(SystemExit) as caught:
+        DRIVER.main(
+            [
+                "--upstream-path",
+                "unused",
+                "--output-dir",
+                str(output),
+                "--generated-action-qualification",
+                "unused",
+                "--generated-action-adapter",
+                "unused",
+                "--quantization",
+                "none",
+                "--generated-actions",
+                "--generated-action-grammar",
+                "--server-evidence",
+                *options,
+            ]
+        )
+    assert caught.value.code == 1
+    receipt = json.loads((output / "receipt.json").read_text())
+    assert receipt["error"]["message"] == "CPU test stops before model imports"
+    assert receipt["bf16_qualification"]["observed_diagnostics"] == historical
+    assert receipt["bf16_evaluation"].items() >= expected.items()
+    assert "no quality guarantee" in receipt["bf16_evaluation"]["scope"]
+    assert receipt["stage"] == "failed"
+
+
+@pytest.mark.parametrize("failure", ["file_fsync", "replace", "directory_fsync"])
+def test_qualified_receipt_write_failure_preserves_previous_bytes(tmp_path, monkeypatch, failure):
+    path = tmp_path / "receipt.json"
+    previous = b'{"stage":"browser_benchmark","retained":true}\n'
+    path.write_bytes(previous)
+    fsync = DRIVER.os.fsync
+
+    def fail_fsync(descriptor):
+        is_directory = stat.S_ISDIR(DRIVER.os.fstat(descriptor).st_mode)
+        if (failure == "directory_fsync") is is_directory:
+            raise OSError(failure)
+        return fsync(descriptor)
+
+    def fail_replace(*_args):
+        raise OSError("replace")
+
+    if failure == "replace":
+        monkeypatch.setattr(DRIVER.os, "replace", fail_replace)
+    else:
+        monkeypatch.setattr(DRIVER.os, "fsync", fail_fsync)
+    with pytest.raises(OSError, match=failure):
+        DRIVER._write_receipt(path, {"stage": "complete"}, qualified=True)
+    assert path.read_bytes() == previous
+    assert list(tmp_path.iterdir()) == [path]
+
+
+def test_qualified_receipt_fsyncs_file_and_directory_and_legacy_uses_write_text(
+    tmp_path, monkeypatch
+):
+    path = tmp_path / "receipt.json"
+    observed = []
+    fsync = DRIVER.os.fsync
+
+    def record_fsync(descriptor):
+        observed.append(stat.S_ISDIR(DRIVER.os.fstat(descriptor).st_mode))
+        return fsync(descriptor)
+
+    monkeypatch.setattr(DRIVER.os, "fsync", record_fsync)
+    DRIVER._write_receipt(path, {"stage": "dependencies"}, qualified=True)
+    DRIVER._write_receipt(path, {"stage": "complete"}, qualified=True)
+    assert observed == [False, True, False, True]
+    assert json.loads(path.read_text()) == {"stage": "complete"}
+    assert list(tmp_path.iterdir()) == [path]
+
+    def forbidden_replace(*_args):
+        pytest.fail("legacy receipt write reached atomic replacement")
+
+    monkeypatch.setattr(DRIVER.os, "replace", forbidden_replace)
+    DRIVER._write_receipt(path, {"legacy": True})
+    assert path.read_text() == '{\n  "legacy": true\n}\n'
+    assert observed == [False, True, False, True]
+
+
+def test_qualified_failed_rollback_retains_backup_and_reports_all_failures(tmp_path, monkeypatch):
+    path = tmp_path / "receipt.json"
+    previous = b'{"stage":"browser_benchmark"}\n'
+    path.write_bytes(previous)
+    primary = RuntimeError("model primary")
+    receipt = {"stage": "complete", "error": {"type": "RuntimeError", "message": str(primary)}}
+    replace, fsync = DRIVER.os.replace, DRIVER.os.fsync
+    replacements = []
+
+    def replace_then_fail_rollback(source, destination):
+        replacements.append((source, destination))
+        if len(replacements) == 2:
+            raise OSError("rollback replacement failed")
+        return replace(source, destination)
+
+    def fail_directory_fsync(descriptor):
+        if stat.S_ISDIR(DRIVER.os.fstat(descriptor).st_mode):
+            raise OSError("directory fsync failed")
+        return fsync(descriptor)
+
+    monkeypatch.setattr(DRIVER.os, "replace", replace_then_fail_rollback)
+    monkeypatch.setattr(DRIVER.os, "fsync", fail_directory_fsync)
+    retained = DRIVER._finish_qualified_receipt(path, receipt, primary)
+    assert retained is primary and receipt["stage"] == "failed"
+    backups = list(tmp_path.glob(".receipt.json.previous.*"))
+    assert len(backups) == 1 and backups[0].read_bytes() == previous
+    notes = receipt["receipt_write_error"]["notes"]
+    assert any("rollback replacement failed" in note for note in notes)
+    assert any(str(backups[0]) in note for note in notes)
+    assert any("rollback replacement failed" in note for note in primary.__notes__)
+    assert json.loads(path.read_text())["stage"] == "failed"
+
+
+@pytest.mark.parametrize("earlier_failure", ["model", "helper", "cleanup", "none"])
+def test_qualified_final_persistence_retains_earlier_failure_and_progress(
+    tmp_path, monkeypatch, earlier_failure
+):
+    from s1.browser_text import FieldTextError
+
+    path = tmp_path / "receipt.json"
+    previous = b'{"stage":"browser_benchmark"}\n'
+    path.write_bytes(previous)
+    primary = (
+        FieldTextError("helper failed", {"failure_stage": "validation"})
+        if earlier_failure == "helper"
+        else RuntimeError(f"{earlier_failure} failed")
+        if earlier_failure != "none"
+        else None
+    )
+    receipt = {"stage": "complete"}
+    if earlier_failure == "cleanup":
+        receipt["cleanup_errors"] = [{"stage": "thread_shutdown", "message": str(primary)}]
+    elif primary is not None:
+        receipt["error"] = {"type": type(primary).__name__, "message": str(primary)}
+
+    def fail_replace(*_args):
+        raise OSError("final receipt replace failed")
+
+    monkeypatch.setattr(DRIVER.os, "replace", fail_replace)
+    retained = DRIVER._finish_qualified_receipt(path, receipt, primary)
+    assert path.read_bytes() == previous
+    assert receipt["stage"] == "failed"
+    assert receipt["receipt_write_error"] == {
+        "type": "OSError",
+        "message": "final receipt replace failed",
+    }
+    if primary is not None:
+        assert retained is primary
+        assert any("persistence also failed" in note for note in primary.__notes__)
+        if earlier_failure == "helper":
+            assert retained.generation == {"failure_stage": "validation"}
+        if earlier_failure == "cleanup":
+            assert receipt["cleanup_errors"][0]["message"] == str(primary)
+        else:
+            assert receipt["error"]["message"] == str(primary)
+    else:
+        assert isinstance(retained, OSError)
+
+
+@pytest.mark.parametrize("helper_failure", [False, True])
+def test_qualified_cli_prints_final_write_error_and_reraises_primary(
+    tmp_path, monkeypatch, capsys, helper_failure
+):
+    from s1 import browser_action_qualification, browser_evidence
+    from s1.browser_text import FieldTextError
+
+    primary = (
+        FieldTextError("helper primary", {"failure_stage": "validation"})
+        if helper_failure
+        else RuntimeError("model primary")
+    )
+    verified = SimpleNamespace(artifact=SimpleNamespace(telemetry=lambda: {}), telemetry=lambda: {})
+    monkeypatch.setattr(
+        browser_action_qualification, "verify_bf16_action_qualification", lambda *_args: verified
+    )
+    monkeypatch.setattr(DRIVER, "upstream_manifest", lambda *_args: {})
+    monkeypatch.setattr(
+        browser_action_qualification, "verify_bf16_qualification_capture", lambda *_args: {}
+    )
+
+    def fail_computation(*_args, **_kwargs):
+        raise primary
+
+    monkeypatch.setattr(browser_evidence, "capture_runtime_sources", fail_computation)
+    write = DRIVER._write_receipt
+    previous = []
+
+    def write_then_fail(path, receipt, *, qualified=False):
+        if previous:
+            raise OSError("final receipt persistence failed")
+        write(path, receipt, qualified=qualified)
+        previous.append(path.read_bytes())
+
+    monkeypatch.setattr(DRIVER, "_write_receipt", write_then_fail)
+    output = tmp_path / "run"
+    with pytest.raises(type(primary)) as caught:
+        DRIVER.main(
+            [
+                "--upstream-path",
+                "unused",
+                "--output-dir",
+                str(output),
+                "--generated-action-qualification",
+                "unused",
+                "--generated-action-adapter",
+                "unused",
+                "--quantization",
+                "none",
+                "--generated-actions",
+                "--generated-action-grammar",
+                "--server-evidence",
+            ]
+        )
+    assert caught.value is primary
+    printed = json.loads(capsys.readouterr().out)
+    assert printed["stage"] == "failed"
+    assert printed["error"]["message"] == str(primary)
+    assert printed["receipt_write_error"]["message"] == "final receipt persistence failed"
+    assert printed["cleanup_errors"][0]["stage"] == "bf16_qualification_finalization"
+    assert (output / "receipt.json").read_bytes() == previous[0]
 
 
 @pytest.mark.parametrize(
