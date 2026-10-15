@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "scope": "One actual original jev-ultrafast browser task with child96 BF16 diagnostic; original early gate only, not a 13-case score, public generalization, promotion or competitor result",
+  "model": "knowlet/Gemma-4-12B-Unified-System-One",
+  "revision": "a66f836b56605039fe040f330180e336d19b3362",
+  "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "fixture_sha256": "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe",
+  "controller_sha256": "75b6b67098d22286416ae5653abd13c2c66f405b6c1dd78b6a5bd945958dcbc7",
+  "plan_sha256": "00b53096dd5cc3fb2099f17ce1b24ef3a97315e3f708957269aef4a0035dd901",
+  "runtime_source_commit": "ee0cdacdaece582d8c478ffa951a77a41e7f23f4",
+  "frozen28_manifest_sha256": "6ea86492b1b9c3d198ba45e84bb114303b7900e8dcaab73f6bd4e85b753e680c",
+  "adapter": {
+    "run": "20261015-action-lora-counterfactual-fit-01",
+    "manifest_sha256": "7edcf9cd1af3d3d7cb04c9eca14e2b2c67847bc2caeef25c32eebfce6de8ddc3",
+    "weights_sha256": "165fbd1db402692ec06f4264a16026eb76abbed711d9ff56aef37f44a442f178",
+    "receipt_sha256": "6d04b5ba6301f0d9cf4d38bd4f335e1447250d556939779ab6a986d2bd4a504a",
+    "new_fit_for_this_test": false
+  },
+  "deployment": {
+    "quantization": "none",
+    "precision": "bfloat16",
+    "adapter_storage": "float32",
+    "production_attachment": false,
+    "production_nf4_contract_unchanged": true,
+    "transport_alias": "generated-actions-none",
+    "helper_policy": "same pinned BF16 base; adapter disabled for text generation"
+  },
+  "limits": {
+    "max_policy_decisions": 16,
+    "policy_budget_seconds": 20,
+    "policy_budget_kind": "cooperative; prepared/raw evidence callbacks included",
+    "http_timeout_seconds": 25,
+    "max_context_tokens": 8192,
+    "max_action_tokens": 32,
+    "helper_max_tokens": 128,
+    "helper_separate_wall_clock_budget": null,
+    "seed": 20261014,
+    "repeats": 1,
+    "candidate_pruning": false,
+    "truncation": false,
+    "repair_or_fallback": false
+  },
+  "outcome": {
+    "case_id": "development-000-upstream-travel",
+    "success": true,
+    "goal_satisfied": true,
+    "status": "done",
+    "error": null,
+    "premature_done": false,
+    "policy_calls": 6,
+    "helper_calls": 1,
+    "executed_actions": 5,
+    "raw_native_observations": 6
+  },
+  "actions": [
+    {
+      "operation": "CLICK",
+      "target": "7"
+    },
+    {
+      "operation": "SELECT",
+      "target": "6:1"
+    },
+    {
+      "operation": "TYPE_TEXT",
+      "target": "4"
+    },
+    {
+      "operation": "CLICK",
+      "target": "5"
+    },
+    {
+      "operation": "CLICK",
+      "target": "8"
+    },
+    {
+      "operation": "DONE",
+      "target": null
+    }
+  ],
+  "fresh_dom": {
+    "hash": "#casa-flora",
+    "name": "Casa Flora",
+    "category": "Design",
+    "free": true,
+    "query": "Lisbon",
+    "searched": true
+  },
+  "runtime_invariants": {
+    "success": true,
+    "full_head_sha256": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+    "head_version": 0,
+    "temperature": 2.7830344470383452,
+    "parameter_count": 805,
+    "all_parameter_versions_unchanged": true,
+    "all_parameters_frozen_eval": true,
+    "all_176_qv_tensors_exact_fp32": true,
+    "peft_enabled_default_unmerged": true
+  },
+  "receipt_sha256": "15a27300ae3231693ca258282c4ea9f1afcbb65b4165b9c5f684c31c0272cb8d",
+  "independent_audit": {
+    "path": "artifacts/jev-browser/20261015-bf16-browser-original-independent-audit.json",
+    "sha256": "3850f59c8d17440b9b7d815425f8a3bb9a92f76238b7ecf2bdd3712b55756367",
+    "checks_passed": 400,
+    "checks_total": 400,
+    "read_inputs": 1841,
+    "base_weight_bytes_opened": 0,
+    "evidence_verified": true
+  },
+  "preflight": {
+    "stdlib_controller_tests_passed": 19,
+    "genuine_tiny_cpu_helper_cases": 2,
+    "tiny_helper_scope": "Random tiny Gemma4/PEFT tensors; success and deliberate exception restore exact base helper, adapter enabled/frozen/eval state and unchanged versions; final controller entry/exit SHA pinned; not release-model inference"
+  },
+  "interpretation": [
+    "Child BF16 completes the original task with accepted DONE after five correct native actions. The prior child NF4 run performs those actions then loops Back/View through 16 decisions and fails.",
+    "The 16-call identical-input precision replay independently supports a deployment-composition-sensitive stopping effect. This actual browser comparison also changes ephemeral URL, transport alias and observation instrumentation; it does not alone isolate precision as the only cause.",
+    "The original is an exposed development fixture. Later matched13, unseen variants and real-website tests must be reported separately; no transfer seed is selected or candidate promoted here."
+  ],
+  "local_evidence": {
+    "run": "artifacts/jev-browser/20261015-bf16-counterfactual-selection-01/candidate-original",
+    "runner": "artifacts/jev-runtime/run_bf16_counterfactual_selection.py",
+    "note": "Raw model requests, fsynced journals, source/fit copies, receipts and weights remain ignored local artifacts. This file is a compact tracked evidence index."
+  },
+  "comparison_addendum": {
+    "path": "artifacts/jev-browser/20261015-bf16-original-comparison-addendum.json",
+    "sha256": "85177011cb9c443889df1d6995bb289e01cb00a1cb288dc7b7bdb3846b958ee6",
+    "checks_passed": 38,
+    "checks_total": 38,
+    "first_six_payloads_equal_after_normalization": true,
+    "normalization": [
+      "payload.model transport alias",
+      "ephemeral fixture URL port"
+    ],
+    "all_six_history_objects_exact_before_normalization": true,
+    "sixth_action": {
+      "child_nf4": "CLICK Back4",
+      "child_bf16": "DONE"
+    },
+    "raw_token_counts": {
+      "initial": {
+        "nf4": 2392,
+        "bf16": 2391
+      },
+      "sixth": {
+        "nf4": 1269,
+        "bf16": 1268
+      }
+    },
+    "final_html_corroborates_fresh_result": true,
+    "causal_limit": "Raw prompt tokens differ; source instrumentation and process/timing also change. The actual browser runs alone are not a precision-only controlled experiment."
+  }
+}

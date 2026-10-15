@@ -731,8 +731,26 @@ URL, and comparisons between different rows do not isolate goal wording.
 BF16 uses the existing exact training initializer followed by frozen evaluation
 and an explicitly separate diagnostic context. The production attachment remains
 NF4-only; its manifest and loader are unchanged. A separate full-browser BF16
-diagnostic must pass the original task before matched known-13 arms can run.
-No fresh transfer seed, new fit or competitor result follows from this replay.
+diagnostic gates matched known-13 arms on passing the original task.
+No fresh transfer seed, new fit or competitor result follows from the replay.
+
+The [actual BF16 original browser gate](validation/2026-10-15/jev-bf16-original-browser.json)
+then passes **1/1 strict completion** with the same child adapter: five native
+actions set Free cancellation, select Design, type Lisbon, apply Find and open
+Casa Flora; the sixth policy decision correctly returns DONE. An independent
+400-check audit verifies all six full native observations and requests, tokens,
+legal grammar, raw outputs, HTTP/server bindings, the base-only helper and the
+fresh private DOM verdict. Exact adapter values, frozen parameter versions,
+original full head and complete captured fit/source inventories remain intact.
+Another 38 checks confirm that the first six actual requests match the earlier
+failed NF4 run after normalizing only the transport alias and ephemeral fixture
+port; all six histories already match exactly. Raw prompt token counts differ,
+and the runtime adds observation instrumentation, so the closed-loop comparison
+alone does not isolate precision. The final captured HTML also corroborates the
+fresh six-condition result.
+This is the exposed original fixture, not a public website or transfer result.
+The separate matched-13 comparison follows this early gate and is reported on
+its own evidence. The production NF4 attachment remains unchanged.
 
 The opt-in `--public-cases CASE_ID ...` mode now adds four fixed navigation goals
 on arXiv, Python documentation and NASA Science. Case definitions and fresh-DOM
