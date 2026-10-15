@@ -769,6 +769,24 @@ coverage. The final-DOM judgments remain supported independently. Subsequent
 transport diagnostics address the missing navigation events; old logs are not
 rewritten to imply coverage they did not record.
 
+A [controlled local prefetch diagnostic](validation/2026-10-15/jev-prefetch-navigation-capture.json)
+reproduces the installed Playwright gap twice. Three ordinary document loads
+produce three request records; adding only conservative or eager speculation-rule
+prefetch leaves one Playwright request/route record despite three new documents.
+Successful document events can wait for interception events that never arrive;
+extra event-loop pumping does not recover them. This establishes the local
+mechanism, not the missing historical NASA network events.
+
+The public transport now also installs owned-session raw CDP Document-request
+and root-frame observers before any upstream navigation begins. Their independent
+streams retain commits, fragment navigation and cached/prefetched document
+transitions, check methods and declared HTTPS hosts, and invalidate scope
+violations even when DONE and the fresh goal judge would otherwise pass.
+Existing routing, prefetch behavior and upstream actions remain unchanged. The
+new real Chromium regression proves that an outside-host prefetched activation
+is rejected despite absent Playwright route events. Auditing occurs after
+contact and is not a guarantee that every network contact is prevented.
+
 ## Historical failure diagnosis
 
 The October 13 archive's 72 measured decisions retain the exact goal and stay

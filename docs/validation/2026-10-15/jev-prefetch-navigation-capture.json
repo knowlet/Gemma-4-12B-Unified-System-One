@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "scope": "Controlled local Chromium navigation-capture diagnosis and transport repair; no model, public-site task score or retroactive reconstruction of NASA requests",
+  "versions": {
+    "playwright": "1.58.0",
+    "chromium_headless_shell_build": 1208
+  },
+  "controlled_change": "Only speculationrules prefetch setting changes between otherwise identical local three-document native-click routes",
+  "repeated_runs": 2,
+  "outcomes": [
+    {
+      "prefetch": "none",
+      "native_documents": 3,
+      "playwright_context_requests": 3,
+      "playwright_routes": 3,
+      "playwright_navigation_records": 3
+    },
+    {
+      "prefetch": "conservative",
+      "native_documents": 3,
+      "playwright_context_requests": 1,
+      "playwright_routes": 1,
+      "playwright_navigation_records": 1
+    },
+    {
+      "prefetch": "eager",
+      "native_documents": 3,
+      "playwright_context_requests": 1,
+      "playwright_routes": 1,
+      "playwright_navigation_records": 1
+    }
+  ],
+  "independent_raw_observer": "Root-frame CDP Document request events and frame commits capture all three document URLs in every observed arm",
+  "causal_protocol_checks": {
+    "successful_documents_missing_matching_fetch_pause": 8,
+    "document_type_and_request_loader_identity_verified": true,
+    "loading_finished_verified": true,
+    "extra_event_loop_pumping_recovered_requests": 0
+  },
+  "mechanism": "The installed Playwright network manager buffers document starts while awaiting corresponding interception events; successful prefetched/cached documents can finish without those events and remain absent from context request/route callbacks.",
+  "repair": {
+    "existing_playwright_routes_retained": true,
+    "additional_streams": [
+      "owned-session Network.requestWillBeSent for root-frame Document requests",
+      "root Page.frameNavigated commits and Page.navigatedWithinDocument events"
+    ],
+    "setup": "Register listeners, establish the owned root frame, and enable Network/Page before upstream navigation",
+    "checks": [
+      "GET/HEAD on root Document request events",
+      "declared HTTPS hosts on document request URLs and redirect sources",
+      "independent URL checks on root commits and fragment navigation",
+      "scope or observer errors invalidate strict task completion"
+    ],
+    "second_fetch_interceptor": false,
+    "prefetch_disabled": false,
+    "upstream_policy_or_executor_modified": false
+  },
+  "limits": [
+    "The controlled local reproduction supports the installed-tooling mechanism; missing old NASA requests cannot be reconstructed retrospectively.",
+    "Interceptable requests are guarded. Prefetched/cached activations and redirect contacts are audited after contact, not guaranteed prevented.",
+    "Document commits establish URL scope, not request methods or a complete inventory of subresource network contacts.",
+    "Local HTTP browser regressions normalize only the two declared loopback test origins to standard HTTPS for scope checks, preserving actual hostnames and leaving recorded URLs unchanged. Production public tasks still require HTTPS and allowed ports."
+  ],
+  "evidence": {
+    "causal_audit": {
+      "local_path": "artifacts/jev-browser/20261015-local-navigation-ledger-diagnostic-causal-audit-02.json",
+      "sha256": "b3fb53c7badb0dd7045bad6f92aab0585021986edccef1eb84faa54b0593be27"
+    },
+    "diagnostic_driver": {
+      "local_path": "artifacts/jev-runtime/diagnose_local_navigation_ledger.py",
+      "sha256": "eb9aa6de6d665dd6e60ac7097ea1f39fe4553f85f4af5b4a28e793c0df9cd44f"
+    },
+    "causal_auditor": {
+      "local_path": "artifacts/jev-runtime/audit_local_navigation_ledger.py",
+      "sha256": "491fb8e3ac846f0d7623ef8c2c7212a03ed80fe08ac0a2a6b080ab479bc5d5c8"
+    }
+  },
+  "raw_evidence_note": "Full protocol traces and local fixture runs remain ignored local artifacts. This tracked file is a compact evidence index.",
+  "software_verification": {
+    "full_cpu_suite": {
+      "passed": 2306,
+      "skipped": 302,
+      "warnings": 1,
+      "elapsed_seconds": 46.78,
+      "warning_scope": "Existing Starlette test-client dependency deprecation; no test failed."
+    },
+    "full_browser_benchmark_file": {
+      "passed": 123,
+      "cpu_checks": 95,
+      "real_chromium_checks": 28,
+      "elapsed_seconds": 52.39
+    },
+    "new_document_observer_checks": {
+      "cpu_passed": 25,
+      "real_chromium_passed": 3
+    },
+    "ruff": "passed",
+    "diff_check": "passed"
+  },
+  "source_sha256": {
+    "scripts/jev_browser_benchmark.py": "93196c9ed59b5ee4e2e5d7b4aae990d62cfe8d45d504e625da337cbbd681c092",
+    "tests/test_jev_browser_benchmark.py": "58c9bdf731e5641d64e2797978df89437b8b85e0f8cc013a69800d9a45a3577a"
+  }
+}
