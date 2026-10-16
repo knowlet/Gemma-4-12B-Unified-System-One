@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-16",
+  "status": "source_reviewed_345_pure_tests_passed",
+  "problem": "First real public-fit attempt with sufficient initial memory rejected the valid shared HF blob-cache path before evaluating the full checkpoint hash. Existing synthetic paths did not cover the actual central hub/blobs layout.",
+  "failed_attempt": {
+    "root": "artifacts/jev-runtime/public-native-action-actual07-fit-20261016-01",
+    "receipt": {
+      "path": "artifacts/jev-runtime/public-native-action-actual07-fit-20261016-01/fit-attempt-01/receipt.json",
+      "sha256": "35665ea0a63f88f2868380b50fb11d0623f08cde749193dda49ef2862625e4d3",
+      "size_bytes": 223699
+    },
+    "source_handoff": {
+      "path": "artifacts/jev-runtime/public-native-action-actual07-fit-20261016-01/source-handoff-01.json",
+      "sha256": "99c4bfb016c59fa8ab17b3476250a5ea64fb893e068f73d96122b009fc3e4432",
+      "size_bytes": 11717
+    },
+    "gates": {
+      "path": "artifacts/jev-runtime/public-native-action-actual07-fit-20261016-01/fit-attempt-01/resource-gates.jsonl",
+      "sha256": "9c0a1b9b00bd98ee053645ba1ba157afd0ea1f4850b11f1c0b20873fac3b02c2",
+      "size_bytes": 2679
+    },
+    "stderr": {
+      "path": "artifacts/jev-runtime/public-native-action-actual07-fit-20261016-01/stderr-01.log",
+      "sha256": "6b46e3f215c89ff978e3d6aca9d83b73bf55e768c0c8ce3ccdae9da97ff9c7f5",
+      "size_bytes": 1146
+    },
+    "exit_code": 1,
+    "elapsed_seconds": 19.174927005995414,
+    "durable_admitted_gates": 6,
+    "all_gates_admitted": true,
+    "last_gate": {
+      "sequence": 5,
+      "phase": "before-any-BF16-model-construction",
+      "scope": "train",
+      "UTC": "2026-10-16T01:11:25.217787+00:00",
+      "monotonic": 51162.62667971,
+      "expected_boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0",
+      "admitted": true,
+      "swap_or_resident_credit_bytes": 0,
+      "observation": {
+        "MemTotal": 130595860480,
+        "MemAvailable": 119864623104,
+        "boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0"
+      },
+      "reserve_bytes": 26119172096,
+      "required_bytes": 106438961088,
+      "error": null
+    },
+    "reported_error": {
+      "type": "ValueError",
+      "message": "Pinned full BF16 checkpoint bytes differ"
+    },
+    "diagnosed_cause": "Resolved model.safetensors is under fixedhub/blobs/04. The previous cache.parents[1] boundary included only the per-model repository, so the boolean and short-circuited before artifact.pin. No actual checksum mismatch is established by this attempt.",
+    "actual_resolved_path": "artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+    "model_loads": 0,
+    "training_updates": 0,
+    "finalization_errors": [],
+    "base_payload_read_scope": "Not reached by the reviewed checkpoint-pin control flow; no independent syscall trace claimed."
+  },
+  "fix": {
+    "production_files": {
+      "scripts/jev_public_action_artifact.py": {
+        "path": "scripts/jev_public_action_artifact.py",
+        "sha256": "8c474af9edcc4bc78632713d242c0be9c78aacd6079758d0fcef143459082268",
+        "size_bytes": 50197
+      },
+      "scripts/jev_browser_fit_public_actions.py": {
+        "path": "scripts/jev_browser_fit_public_actions.py",
+        "sha256": "61a1119ac9dcbee37c23e9e36c80ceadef6322b14a377285ea5858a36cb99492",
+        "size_bytes": 23683
+      },
+      "scripts/jev_qualify_public_actions_bf16.py": {
+        "path": "scripts/jev_qualify_public_actions_bf16.py",
+        "sha256": "2d4c671ef3794c569fcf943fd3bbce79f470c212994bf82f52289705a8be8444",
+        "size_bytes": 131947
+      }
+    },
+    "behavior": "Shared resolver accepts fixedmodel/revision snapshot files, per-model blob targets and canonicalhub/blobs descendants; refuses external/sibling/incorrectmodel/revision and linkedtrustedroots. FIT/QUAL use the same resolver for model.safetensors. Metadata stays within its existing per-model boundary.",
+    "invariants": "Unchanged full checkpoint SHA11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53,23919549408B; fullstreamSHA/size still mandatory after fresh unchangedLOAD/TRAIN gates. No cache/snapshot/84source/kernel/reference/environment mutation.",
+    "review": "Root fullproductiondiff and17newcase testdiff CLEAR; independent source review CLEAR."
+  },
+  "validation": {
+    "AST": "PASS",
+    "Ruff": "PASS",
+    "new_cases": 17,
+    "status": "complete_fake_only_three_focused_files",
+    "results": {
+      "pytest_exit_code": 0,
+      "counts": {
+        "tests": 345,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "junit_seconds": 61.081
+      },
+      "tests_wrapper_elapsed_seconds": 62.57356615400204,
+      "source_pins_equal": true,
+      "loaded_forbidden_modules_after_pytest": [],
+      "source_pins_current_before_after_equal": 95,
+      "receipt": {
+        "path": "artifacts/jev-runtime/public-native-action-checkpoint-resolver-fix-20261016-01/pure-test-01/pure-tests-01-receipt.json",
+        "sha256": "64ced8e60f0ef99a6f897e4e338c35defad556d90631f6be8f052e31ecfaa8a0",
+        "size_bytes": 30222
+      },
+      "genuine_model_or_browser_execution": false
+    }
+  },
+  "next": "After pure regression, regenerate reviewed90 source handoff for the changedART/FIT bytes and rerun fixed120/LR5e-5/seed42 genuine localfit with no concurrentGPUworker. No model qualification/browser-performance win is implied by this fix."
+}

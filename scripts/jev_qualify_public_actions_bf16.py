@@ -1170,6 +1170,8 @@ def _configure_environment(command):
 
 def _cache_path(name):
     cache = _cache()
+    if name == "model.safetensors":
+        return _artifact_module().resolve_base_checkpoint(cache)
     path = (cache / name).resolve(strict=True)
     require(path.is_relative_to(cache.parents[1].resolve(strict=True)), "Checkpoint cache escape")
     return path

@@ -124,6 +124,20 @@ def ordinary(path):
     return path
 
 
+def resolve_base_checkpoint(cache):
+    """Resolve only the pinned model's checkpoint within its repo or hub blobs."""
+    cache = ordinary(cache)
+    repository = cache.parent.parent
+    require(cache.name == REVISION and cache.parent.name == "snapshots"
+            and repository.name == "models--" + MODEL_ID.replace("/", "--"), "Pinned model snapshot cache required")
+    central_blobs = repository.parent / "blobs"
+    checkpoint = ordinary((cache / "model.safetensors").resolve(strict=True))
+    require(checkpoint.is_file() and (checkpoint.is_relative_to(repository)
+            or checkpoint != central_blobs and checkpoint.is_relative_to(central_blobs)),
+            "Base checkpoint escapes its model repository or fixed hub blob cache")
+    return checkpoint
+
+
 def relative(label):
     require(type(label) is str and bool(label), "Nonempty evidence label required")
     path = PurePosixPath(label)

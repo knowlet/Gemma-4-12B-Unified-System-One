@@ -1032,6 +1032,27 @@ def test_inventory_refuses_oversized_file_before_hashing_payload(tmp_path, monke
     assert_refused(lambda: QUAL.inventory(root))
 
 
+@pytest.mark.parametrize("layout", ["repository-blob", "central-blob"])
+def test_qualification_cache_resolves_shared_base_blobs_but_preserves_metadata_boundary(tmp_path, monkeypatch, layout):
+    hub = tmp_path / "hub"
+    repository = hub / ("models--" + ART.MODEL_ID.replace("/", "--"))
+    cache = repository / "snapshots" / ART.REVISION
+    cache.mkdir(parents=True)
+    target = repository / "blobs/digest" if layout == "repository-blob" else hub / "blobs/04/digest"
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"Opaque synthetic cache bytes, not a model")
+    (cache / "model.safetensors").symlink_to(target)
+    (cache / "config.json").symlink_to(target)
+    monkeypatch.setattr(QUAL, "_cache", lambda: cache)
+    monkeypatch.setattr(QUAL, "_artifact_module", lambda: ART)
+    monkeypatch.setattr(ART, "pin", lambda *_args, **_kwargs: pytest.fail("Resolver hashed a payload"))
+    assert QUAL._cache_path("model.safetensors") == target
+    if layout == "repository-blob":
+        assert QUAL._cache_path("config.json") == target
+    else:
+        assert_refused(lambda: QUAL._cache_path("config.json"), "Checkpoint cache escape")
+
+
 def test_runtime_rejects_unknown_relevant_loaded_source(runtime_closure, monkeypatch):
     value, _ = runtime_closure
     for name, path in value["modules"].items():

@@ -274,9 +274,8 @@ def fit_public_actions(*, output, source_handoff, expected_source_handoff, expec
         # Neither CPU admission nor a successful earlier stage credits resident weights.
         gate.check("before-checkpoint-payload-hash-and-BF16-loader", "load")
         gate.check("before-any-BF16-model-construction", "train")
-        checkpoint = (CACHE / "model.safetensors").resolve(strict=True)
-        artifact.require(checkpoint.is_relative_to(CACHE.parents[1].resolve(strict=True))
-            and artifact.pin(checkpoint, limit=BASE_BYTES) == {"sha256": BASE_SHA, "size_bytes": BASE_BYTES}, "Pinned full BF16 checkpoint bytes differ")
+        checkpoint = artifact.resolve_base_checkpoint(CACHE)
+        artifact.require(artifact.pin(checkpoint, limit=BASE_BYTES) == {"sha256": BASE_SHA, "size_bytes": BASE_BYTES}, "Pinned full BF16 checkpoint bytes differ")
         receipt["base_checkpoint"] = dict(artifact.BASE_CHECKPOINT)
         kernel = artifact.trusted_module("jev_browser_fit_actions", "scripts/jev_browser_fit_actions.py")
         model = _construct_model(seed)

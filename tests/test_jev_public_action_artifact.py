@@ -51,6 +51,77 @@ def test_finite_unique_json(blob):
         ART.parse(blob)
 
 
+@pytest.mark.parametrize("layout", ["snapshot-file", "repository-blob", "central-blob"])
+def test_base_checkpoint_resolver_accepts_both_cache_blob_layouts_without_hashing(tmp_path, monkeypatch, layout):
+    hub = tmp_path / "hub"
+    repository = hub / ("models--" + ART.MODEL_ID.replace("/", "--"))
+    cache = repository / "snapshots" / ART.REVISION
+    cache.mkdir(parents=True)
+    entry = cache / "model.safetensors"
+    target = entry if layout == "snapshot-file" else repository / "blobs/digest" if layout == "repository-blob" else hub / "blobs/04/digest"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(b"Opaque synthetic layout fixture; not tensor data")
+    if target != entry:
+        entry.symlink_to("../../blobs/digest" if layout == "repository-blob" else "../../../blobs/04/digest")
+    monkeypatch.setattr(ART, "pin", lambda *_args, **_kwargs: pytest.fail("Path resolution hashed checkpoint bytes"))
+    assert ART.resolve_base_checkpoint(cache) == target
+
+
+@pytest.mark.parametrize("escape", ["outside-hub", "sibling-model", "other-hub-directory", "central-root-link", "central-shard-link",
+    "hub-link", "snapshot-link", "directory", "wrong-model", "wrong-revision"])
+def test_base_checkpoint_resolver_refuses_unapproved_roots_links_and_snapshot_identity(tmp_path, monkeypatch, escape):
+    hub = tmp_path / "hub"
+    repository = hub / ("models--" + ART.MODEL_ID.replace("/", "--"))
+    cache = repository / "snapshots" / ART.REVISION
+    cache.mkdir(parents=True)
+    entry = cache / "model.safetensors"
+    target = tmp_path / "outside/digest"
+    if escape == "sibling-model":
+        target = hub / "models--unreviewed--sibling/blobs/digest"
+    elif escape == "other-hub-directory":
+        target = hub / "unreviewed/digest"
+    elif escape == "directory":
+        target = repository / "blobs/not-a-file"
+        target.mkdir(parents=True)
+    elif escape == "wrong-model":
+        cache = hub / "models--unreviewed--sibling/snapshots" / ART.REVISION
+        cache.mkdir(parents=True)
+        entry = cache / "model.safetensors"
+        target = cache.parents[1] / "blobs/digest"
+    elif escape == "wrong-revision":
+        cache = repository / "snapshots" / ("0" * 40)
+        cache.mkdir()
+        entry = cache / "model.safetensors"
+        target = repository / "blobs/digest"
+    elif escape in {"hub-link", "snapshot-link"}:
+        target = repository / "blobs/digest"
+    if escape != "directory":
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(b"Opaque rejected layout fixture")
+    if escape == "central-root-link":
+        (hub / "blobs").symlink_to(target.parent, target_is_directory=True)
+        entry.symlink_to(hub / "blobs/digest")
+    elif escape == "central-shard-link":
+        (hub / "blobs").mkdir()
+        (hub / "blobs/04").symlink_to(target.parent, target_is_directory=True)
+        entry.symlink_to(hub / "blobs/04/digest")
+    else:
+        entry.symlink_to(target)
+    if escape == "hub-link":
+        alias = tmp_path / "hub-alias"
+        alias.symlink_to(hub, target_is_directory=True)
+        cache = alias / repository.name / "snapshots" / ART.REVISION
+    elif escape == "snapshot-link":
+        actual = repository / "real-snapshot"
+        cache.rename(actual)
+        cache.symlink_to(actual, target_is_directory=True)
+    monkeypatch.setattr(ART, "pin", lambda *_args, **_kwargs: pytest.fail("Rejected path reached payload hashing"))
+    reason = "Pinned model snapshot cache required" if escape in {"wrong-model", "wrong-revision"} else (
+        "Ordinary confined local path required" if escape in {"hub-link", "snapshot-link"} else "Base checkpoint escapes")
+    with pytest.raises(ValueError, match=reason):
+        ART.resolve_base_checkpoint(cache)
+
+
 @pytest.mark.parametrize("field,value", [("kind", "jev_action_lora_v1"), ("training_quantization", "nf4"),
     ("inference_model_identity", "generated-actions-nf4"), ("schema_version", True),
     ("temperature", 1.0), ("head_sha256", "0" * 64), ("qualification_required", "legacy")])

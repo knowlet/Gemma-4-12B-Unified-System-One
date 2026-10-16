@@ -73,6 +73,60 @@ def test_initial_memory_refusal_never_reaches_project_or_parent(tmp_path, monkey
     assert not (tmp_path / "out/adapter/manifest.json").exists()
 
 
+@pytest.mark.parametrize("layout", ["repository-blob", "central-blob"])
+def test_fit_cache_layout_reaches_unchanged_full_pin_only_after_fresh_load_and_train_gates(tmp_path, monkeypatch, layout):
+    """Only unrelated preflight is fake; real resolver/pin/gates reject tiny bytes."""
+    hub = tmp_path / "hub"
+    repository = hub / ("models--" + ART.MODEL_ID.replace("/", "--"))
+    cache = repository / "snapshots" / ART.REVISION
+    cache.mkdir(parents=True)
+    target = repository / "blobs/digest" if layout == "repository-blob" else hub / "blobs/04/digest"
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"Opaque synthetic data must fail the unchanged real model pin")
+    (cache / "model.safetensors").symlink_to(target)
+    monkeypatch.setattr(FIT, "ROOT", tmp_path)
+    monkeypatch.setattr(FIT, "CACHE", cache)
+    monkeypatch.setattr(FIT, "_fresh_environment", lambda: None)
+    monkeypatch.setattr(FIT, "default_paths", lambda: {"public_root": tmp_path / "public",
+        "preflight_root": tmp_path / "preflight", "reference_compile": tmp_path / "reference"})
+    handoff_path = tmp_path / "handoff.json"
+    handoff_path.write_bytes(b"{}")
+    monkeypatch.setattr(ART, "verify_source_handoff", lambda *_args, **_kwargs: {"files": {}, "identity_sha256": "a" * 64})
+    metadata = {"parent_descriptor": {"files": {}}, "metadata_blobs": {}, "provenance": {}, "public_inventory": {},
+        "provenance_bytes": '{"observation_profile":{}}', "metadata_files": {}, "wire_identities": {}}
+    inputs = SimpleNamespace(metadata=lambda: metadata, public_items=(), reference_items=(), check=lambda: None)
+    monkeypatch.setattr(ART, "verify_public_fit_inputs", lambda **_kwargs: inputs)
+    monkeypatch.setattr(ART, "copy_items", lambda *_args: None)
+    monkeypatch.setattr(ART, "verify_reference_environment", lambda *_args, **_kwargs: {})
+    api = SimpleNamespace(capture_initial_action_adapter=lambda *_args: {"descriptor": {"files": {}}})
+    def no_project_or_model(name, *_args):
+        assert name == "s1.browser_action_adapter", "Checkpoint refusal reached a model/kernel import"
+        return api
+    monkeypatch.setattr(ART, "trusted_module", no_project_or_model)
+    monkeypatch.setattr(ART, "validate_parent_capture", lambda *_args, **_kwargs: SimpleNamespace())
+    monkeypatch.setattr(FIT, "_parent_checks", lambda _captured: None)
+    monkeypatch.setattr(FIT, "_construct_model", lambda *_args: pytest.fail("Mismatching pin reached model construction"))
+    real_gate, real_pin, pins = FIT.ResourceGate, ART.pin, []
+    monkeypatch.setattr(FIT, "ResourceGate", lambda path, boot: real_gate(path, boot, observe=lambda: observation(MEM_TOTAL)))
+    def record_pin(path, *, limit=ART.GIB):
+        pins.append((path, limit))
+        return real_pin(path, limit=limit)
+    monkeypatch.setattr(ART, "pin", record_pin)
+    output = tmp_path / "fit-output"
+    with pytest.raises(ValueError, match="Pinned full BF16 checkpoint bytes differ"):
+        FIT.fit_public_actions(output=output, source_handoff=handoff_path,
+            expected_source_handoff="a" * 64, expected_boot_id="boot")
+    assert pins == [(target, FIT.BASE_BYTES)]
+    assert FIT.BASE_SHA == ART.BASE_CHECKPOINT["sha256"] and FIT.BASE_BYTES == ART.BASE_CHECKPOINT["size_bytes"]
+    rows = [json.loads(line) for line in (output / "resource-gates.jsonl").read_bytes().splitlines()]
+    assert [(row["phase"], row["scope"]) for row in rows[-2:]] == [
+        ("before-checkpoint-payload-hash-and-BF16-loader", "load"), ("before-any-BF16-model-construction", "train")]
+    assert all(row["admitted"] for row in rows)
+    receipt = json.loads((output / "receipt.json").read_bytes())
+    assert receipt["stage"] == "failed" and receipt["model_loads"] == receipt["training_updates"] == 0
+    assert not (output / "adapter/manifest.json").exists()
+
+
 @pytest.mark.parametrize("steps", [337, 1000000, True, False, 0, -1, 336.0])
 def test_invalid_steps_refuse_before_environment_output_or_model(tmp_path, monkeypatch, steps):
     def unexpected(*_args, **_kwargs):
