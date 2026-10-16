@@ -22,12 +22,19 @@ jobs:
         python: ['3.11', '3.12', '3.13']
     steps:
       - uses: actions/checkout@v4
+      # Native-agent contracts verify this exact upstream source, never a moving branch.
+      - uses: actions/checkout@v4
+        with:
+          repository: browser-use/jev-ultrafast
+          ref: 1231850a0bf1a0c0341fe408ef1668dbbfdfac46
+          path: artifacts/jev-runtime/upstream
+          persist-credentials: false
       - uses: astral-sh/setup-uv@v6
         with:
           version: '0.12.19'
           python-version: ${{ matrix.python }}
           enable-cache: true
-      - run: uv sync --locked --extra api
+      - run: uv sync --locked --extra api --extra browser
       - run: uv run --no-sync ruff check .
       - run: uv run --no-sync ruff format --check .
       - run: uv run --no-sync pytest --cov=s1 --cov-report=xml
@@ -52,10 +59,18 @@ jobs:
       HF_HUB_OFFLINE: '1'
     steps:
       - uses: actions/checkout@v4
+      # Native-agent contracts verify this exact upstream source, never a moving branch.
+      - uses: actions/checkout@v4
+        with:
+          repository: browser-use/jev-ultrafast
+          ref: 1231850a0bf1a0c0341fe408ef1668dbbfdfac46
+          path: artifacts/jev-runtime/upstream
+          persist-credentials: false
       - uses: astral-sh/setup-uv@v6
         with:
           version: '0.12.19'
           python-version: '3.12'
           enable-cache: true
-      - run: uv sync --locked --extra inference --extra api --extra train --extra baselines
+      - run: uv sync --locked --extra inference --extra api --extra train --extra baselines --extra browser
+      - run: uv run --no-sync python scripts/prepare_ci_jev.py
       - run: uv run --no-sync pytest

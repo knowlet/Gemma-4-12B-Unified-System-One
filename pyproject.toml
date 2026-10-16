@@ -32,6 +32,7 @@ packages = ["src/s1"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["scripts"]
 addopts = "-ra"
 markers = ["inference: requires the inference extra; never downloads weights", "integration: explicitly invoked live model or cloud checks"]
 
