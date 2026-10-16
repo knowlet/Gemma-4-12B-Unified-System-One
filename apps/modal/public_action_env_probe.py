@@ -37,7 +37,7 @@ CACHE = (
     / "artifacts/jev-local-hf/hub/models--knowlet--Gemma-4-12B-Unified-System-One/snapshots"
     / REVISION
 )
-ARTIFACT_SHA = "8c474af9edcc4bc78632713d242c0be9c78aacd6079758d0fcef143459082268"
+ARTIFACT_SHA = "dbd1eb660d3bebc8dbc0b3f7e58b7bac66f5ab0a4ea9d687dc463ce830f1672d"
 CLOSURE_SHA = "ff87ceb2563bdee706c4b8cc1064a4682534be2925372c0c02c7ccd2d04e7bbc"
 MAX_BYTES = 64 * 1024**2
 MAX_LOG_BYTES = 128 * 1024
