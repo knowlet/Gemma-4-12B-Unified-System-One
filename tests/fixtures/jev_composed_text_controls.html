@@ -1,0 +1,32 @@
+<!doctype html><title>Owned composed text controls</title>
+<style>body{font:14px monospace}x-slot,x-nested,x-closed,x-direct,
+x-direct-opacity,x-direct-aria,x-direct-inert{display:block}</style>
+<h1>Owned visible controls</h1><button>Ordinary button</button>
+<label>Editable <input value="unchanged"></label>
+<select><option>First</option><option>Second</option></select>
+<x-slot><span>ASSIGNED_VISIBLE</span><span slot="unused">UNASSIGNED_SECRET</span></x-slot>
+<x-nested></x-nested><x-closed></x-closed>
+<div hidden><x-hide></x-hide></div><div inert><x-inert></x-inert></div>
+<div aria-hidden="true"><x-aria></x-aria></div>
+<div style="opacity:0"><x-opacity></x-opacity></div>
+<div style="visibility:hidden"><x-visibility></x-visibility></div>
+<div style="position:absolute;top:3000px"><x-offscreen></x-offscreen></div>
+<div style="display:contents">DISPLAY_CONTENTS_VISIBLE</div>
+<x-direct>DIRECT_SLOT_VISIBLE</x-direct>
+<x-direct-opacity>DIRECT_OPACITY_SECRET</x-direct-opacity>
+<x-direct-aria>DIRECT_ARIA_SECRET</x-direct-aria>
+<x-direct-inert>DIRECT_INERT_SECRET</x-direct-inert>
+<div id="range">RANGE_VISIBLE<span style="display:none">RANGE_HIDDEN</span></div>
+<script>
+const slot=document.querySelector('x-slot').attachShadow({mode:'open'});
+slot.innerHTML='<span>SHADOW_BEFORE</span><slot></slot><span>SHADOW_AFTER</span>';
+const nested=document.querySelector('x-nested').attachShadow({mode:'open'});
+nested.innerHTML='<x-child></x-child>';
+nested.querySelector('x-child').attachShadow({mode:'open'}).innerHTML='<p>NESTED_VISIBLE</p>';
+document.querySelector('x-closed').attachShadow({mode:'closed'}).innerHTML='<p>CLOSED_SECRET</p>';
+for (const name of ['hide','inert','aria','opacity','visibility','offscreen'])
+ document.querySelector('x-'+name).attachShadow({mode:'open'}).innerHTML='<p>'+name.toUpperCase()+'_SECRET</p>';
+document.querySelector('x-direct').attachShadow({mode:'open'}).innerHTML='<slot></slot>';
+for (const [name,attribute] of [['opacity','style="opacity:0"'],['aria','aria-hidden="true"'],['inert','inert']])
+ document.querySelector('x-direct-'+name).attachShadow({mode:'open'}).innerHTML='<div '+attribute+'><slot></slot></div>';
+</script>

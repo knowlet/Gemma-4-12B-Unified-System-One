@@ -1,0 +1,53 @@
+{
+  "schema": "jev-validation-summary-v1",
+  "scope": "Explicit composed-visible-text-v3 production integration; regression evidence, not a model task score",
+  "problem": "Hydrated public MDN pages exhausted the V2 text traversal budget on comments, trim-empty text and descendants already excluded by the visibility predicate.",
+  "change": {
+    "profile": "composed-visible-text-v3",
+    "helper_sha256": "8d199ac1564af05892e9b21e225d1fdf500f1953840855c902160ed8d56df89d",
+    "effective_snapshot_sha256": "c694f308f29ed5000b7bb60e9374afd9398413d2811e07741cf0f0a6321be552",
+    "effective_snapshot_size_bytes": 8869,
+    "derivation": "Exactly the successfully tested generic H02 pruning prototype with its explicit production profile ID.",
+    "behavior": "Skip excluded descendants and filter comments and trim-empty text children before reverse push. Retain nonempty text order and spacing, native action discovery, native execution and the existing numeric limits.",
+    "count_scope": "The node counter applies after pruning. It is not a hard bound on all DOM reads, child-list creation, CSS checks or elapsed time.",
+    "compatibility": "Native remains the default. Explicit V2 retains its original snapshot bytes. V4 admits only V2; V5 authenticates either explicit V2 or V3. V3 collection requires --allow-no-input-stale-scroll."
+  },
+  "validation": [
+    {
+      "kind": "focused production integration with genuine cached tokenizer/template, native Agent and Browser control flow, complete 24-episode admission fixtures and owned Chromium",
+      "passed": 441,
+      "skipped": 1,
+      "skip_reason": "Intentional historical v2 judge fixture is not reinterpreted",
+      "elapsed_seconds": 287.99,
+      "owned_chromium_checks": 16,
+      "coverage": "Both explicit profiles; leaf-noise and hidden-subtree shadow tails; unchanged native controls and text spacing; visible-node and depth caps; complete V5 V2/V3 positives; rehashed corruptions and four cross-profile forgeries.",
+      "receipt_sha256": "4aa1fbab37af2b9af97651447867146e26caa28c6029c647bbd7592b08810e54",
+      "log_sha256": "fc65b10a4f76f1c3835ef7228521b5dfe0b0788309ee395f2fc036dd1f7cad25"
+    },
+    {
+      "kind": "standard full repository suite",
+      "passed": 2902,
+      "skipped": 524,
+      "warnings": 1,
+      "elapsed_seconds": 94.76,
+      "receipt_sha256": "3854db5c0e7a68cab8844de0bc26e0774d8055309f9a9abc7323f4f2a6569c35",
+      "log_sha256": "5fb816fdb21d76a0d1038a2e60cf11e95d22733671dadc8051a4dc9b86ba5215"
+    },
+    {
+      "kind": "new source-bound V5/V3 public collection launcher, stdlib-only fake-child regressions",
+      "passed": 17,
+      "elapsed_seconds": 0.105,
+      "launcher_sha256": "c2dcf7cd680e9bba8bcba0ac848b44e7876664ab6ceab21353a1a5450203ef66",
+      "log_sha256": "c7cb808f7b83f7db92cae23ea5d2a5b58e0515e72f1b5edece8b266084b11194"
+    }
+  ],
+  "reproducibility": "Both integration lanes retained fresh durable resource gates, the same boot and all 96 before/after runtime and targeted-test source pins unchanged. Independent source reviews, Ruff and git diff --check passed.",
+  "limits": {
+    "new_public_collection_completed": false,
+    "historical_collections_reclassified": false,
+    "model_calls": 0,
+    "training_updates": 0,
+    "task_score": null,
+    "comparison_win_claimed": false
+  }
+}

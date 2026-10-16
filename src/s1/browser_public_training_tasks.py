@@ -1,0 +1,366 @@
+"""Twelve fixed development-only public training goals and private route hints.
+
+Only collectors/private judges may import this module. Route hints may select
+only matching currently observed guarded native links; route feasibility is
+untested. They never authorize direct destination navigation. Definition alone
+proves neither site reachability nor a training collection.
+"""
+
+from __future__ import annotations
+
+import copy
+
+PROPOSAL_SHA256 = "e3c2c9833709f3d5c05a320c13403f46aa8b8938acaf7e867d52470928f4bdfa"
+PRIVATE_ROUTE_HINT_REVISION = "mdn-specifications-forward-routes-v2"
+
+_DEFINITIONS = [
+    {
+        "goal_id": "mdn-intersectionobserver-observe",
+        "split": "train",
+        "site_group": "mdn-web-api",
+        "layout_group": "mdn-reference",
+        "start_url": "https://developer.mozilla.org/en-US/docs/Web/API",
+        "primary_target_url": "https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/observe",
+        "goal": "Open MDN's IntersectionObserver.observe() reference and bring its Syntax section "
+        "and method signature into view. Stop there.",
+        "goal_sha256": "b0f6a5a39fb663101210349cc645cde8fc84b74837a6424c7b76932a283e5e6f",
+        "allowed_top_level_hosts": ["developer.mozilla.org"],
+        "target_path": "/en-US/docs/Web/API/IntersectionObserver/observe",
+        "route_paths": [
+            "/en-US/docs/Web/API/Intersection_Observer_API",
+            "/en-US/docs/Web/API/IntersectionObserver",
+            "/en-US/docs/Web/API/IntersectionObserver/observe",
+        ],
+        "route_label_hints": ["IntersectionObserver", "Syntax"],
+        "index_section_fragment": "specifications",
+        "bootstrap_index_section_fragment": "specifications",
+        "judge_kind": "mdn_method",
+        "main_identity": "IntersectionObserver",
+        "signature_name": "observe",
+        "target_heading": "Syntax",
+        "section_fragment": "syntax",
+        "main_selector": "main",
+        "bootstrap_goal_id": "mdn-resizeobserver-observe",
+        "bootstrap_target_path": "/en-US/docs/Web/API/ResizeObserver/observe",
+        "bootstrap_route_paths": [
+            "/en-US/docs/Web/API/Resize_Observer_API",
+            "/en-US/docs/Web/API/ResizeObserver",
+            "/en-US/docs/Web/API/ResizeObserver/observe",
+        ],
+    },
+    {
+        "goal_id": "mdn-resizeobserver-observe",
+        "split": "train",
+        "site_group": "mdn-web-api",
+        "layout_group": "mdn-reference",
+        "start_url": "https://developer.mozilla.org/en-US/docs/Web/API",
+        "primary_target_url": "https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver/observe",
+        "goal": "Open MDN's ResizeObserver.observe() reference and bring its Syntax section and "
+        "method signature into view. Stop there.",
+        "goal_sha256": "94a1e0f2937411f83dad17f4c873cad83600a6d2959a9db1454813997766edb1",
+        "allowed_top_level_hosts": ["developer.mozilla.org"],
+        "target_path": "/en-US/docs/Web/API/ResizeObserver/observe",
+        "route_paths": [
+            "/en-US/docs/Web/API/Resize_Observer_API",
+            "/en-US/docs/Web/API/ResizeObserver",
+            "/en-US/docs/Web/API/ResizeObserver/observe",
+        ],
+        "route_label_hints": ["ResizeObserver", "Syntax"],
+        "index_section_fragment": "specifications",
+        "bootstrap_index_section_fragment": "specifications",
+        "judge_kind": "mdn_method",
+        "main_identity": "ResizeObserver",
+        "signature_name": "observe",
+        "target_heading": "Syntax",
+        "section_fragment": "syntax",
+        "main_selector": "main",
+        "bootstrap_goal_id": "mdn-intersectionobserver-observe",
+        "bootstrap_target_path": "/en-US/docs/Web/API/IntersectionObserver/observe",
+        "bootstrap_route_paths": [
+            "/en-US/docs/Web/API/Intersection_Observer_API",
+            "/en-US/docs/Web/API/IntersectionObserver",
+            "/en-US/docs/Web/API/IntersectionObserver/observe",
+        ],
+    },
+    {
+        "goal_id": "mdn-urlsearchparams-get",
+        "split": "train",
+        "site_group": "mdn-web-api",
+        "layout_group": "mdn-reference",
+        "start_url": "https://developer.mozilla.org/en-US/docs/Web/API",
+        "primary_target_url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/get",
+        "goal": "Open MDN's URLSearchParams.get() reference and bring its Syntax section and method "
+        "signature into view. Stop there.",
+        "goal_sha256": "b9cb08bf390a73053324d6b651a774c8653a80b4da367314ad1b9d88380d74a8",
+        "allowed_top_level_hosts": ["developer.mozilla.org"],
+        "target_path": "/en-US/docs/Web/API/URLSearchParams/get",
+        "route_paths": [
+            "/en-US/docs/Web/API/URL_API",
+            "/en-US/docs/Web/API/URLSearchParams",
+            "/en-US/docs/Web/API/URLSearchParams/get",
+        ],
+        "route_label_hints": ["URLSearchParams", "Syntax"],
+        "index_section_fragment": "specifications",
+        "bootstrap_index_section_fragment": "interfaces",
+        "judge_kind": "mdn_method",
+        "main_identity": "URLSearchParams",
+        "signature_name": "get",
+        "target_heading": "Syntax",
+        "section_fragment": "syntax",
+        "main_selector": "main",
+        "bootstrap_goal_id": "mdn-abortcontroller-abort",
+        "bootstrap_target_path": "/en-US/docs/Web/API/AbortController/abort",
+        "bootstrap_route_paths": [
+            "/en-US/docs/Web/API/AbortController",
+            "/en-US/docs/Web/API/AbortController/abort",
+        ],
+    },
+    {
+        "goal_id": "mdn-abortcontroller-abort",
+        "split": "train",
+        "site_group": "mdn-web-api",
+        "layout_group": "mdn-reference",
+        "start_url": "https://developer.mozilla.org/en-US/docs/Web/API",
+        "primary_target_url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort",
+        "goal": "Open MDN's AbortController.abort() reference and bring its Syntax section and "
+        "method signature into view. Stop there.",
+        "goal_sha256": "5fa91e98af39a29e1e38d73697a883d11b82bfb13cabb483ce7c98142cdc22c9",
+        "allowed_top_level_hosts": ["developer.mozilla.org"],
+        "target_path": "/en-US/docs/Web/API/AbortController/abort",
+        "route_paths": [
+            "/en-US/docs/Web/API/AbortController",
+            "/en-US/docs/Web/API/AbortController/abort",
+        ],
+        "route_label_hints": ["AbortController", "Syntax"],
+        "index_section_fragment": "interfaces",
+        "bootstrap_index_section_fragment": "specifications",
+        "judge_kind": "mdn_method",
+        "main_identity": "AbortController",
+        "signature_name": "abort",
+        "target_heading": "Syntax",
+        "section_fragment": "syntax",
+        "main_selector": "main",
+        "bootstrap_goal_id": "mdn-urlsearchparams-get",
+        "bootstrap_target_path": "/en-US/docs/Web/API/URLSearchParams/get",
+        "bootstrap_route_paths": [
+            "/en-US/docs/Web/API/URL_API",
+            "/en-US/docs/Web/API/URLSearchParams",
+            "/en-US/docs/Web/API/URLSearchParams/get",
+        ],
+    },
+    {
+        "goal_id": "postgres18-string-overlay",
+        "split": "train",
+        "site_group": "postgresql18-docs",
+        "layout_group": "postgresql-versioned-manual",
+        "start_url": "https://www.postgresql.org/docs/18/index.html",
+        "primary_target_url": "https://www.postgresql.org/docs/18/functions-string.html",
+        "goal": "In the PostgreSQL 18 documentation, open the string functions reference and bring "
+        "the overlay function signature and explanation into view. Stop there.",
+        "goal_sha256": "76c1497387c8c12961675c9f3049188e6b136e6c853b229947f3c032d0bac0b5",
+        "allowed_top_level_hosts": ["www.postgresql.org"],
+        "target_path": "/docs/18/functions-string.html",
+        "route_paths": ["/docs/18/functions.html", "/docs/18/functions-string.html"],
+        "route_label_hints": ["String Functions and Operators"],
+        "judge_kind": "overlay",
+        "main_identity": "String Functions and Operators",
+        "signature_name": "overlay",
+        "target_heading": None,
+        "section_fragment": None,
+        "main_selector": "#docContent",
+        "bootstrap_goal_id": "postgres18-check-constraints",
+        "bootstrap_target_path": "/docs/18/ddl-constraints.html",
+        "bootstrap_route_paths": ["/docs/18/ddl.html", "/docs/18/ddl-constraints.html"],
+    },
+    {
+        "goal_id": "postgres18-limit-offset",
+        "split": "train",
+        "site_group": "postgresql18-docs",
+        "layout_group": "postgresql-versioned-manual",
+        "start_url": "https://www.postgresql.org/docs/18/index.html",
+        "primary_target_url": "https://www.postgresql.org/docs/18/queries-limit.html",
+        "goal": "In the PostgreSQL 18 documentation, open the LIMIT and OFFSET reference and bring "
+        "its main heading and opening explanation into view. Stop there.",
+        "goal_sha256": "9cbb8f95f510c5d48c4b930e7d3dc1af6b3a78e845523c060e9a63fbbe095f46",
+        "allowed_top_level_hosts": ["www.postgresql.org"],
+        "target_path": "/docs/18/queries-limit.html",
+        "route_paths": ["/docs/18/queries.html", "/docs/18/queries-limit.html"],
+        "route_label_hints": ["LIMIT and OFFSET", "LIMIT and OFFSET"],
+        "judge_kind": "paragraph",
+        "main_identity": "LIMIT and OFFSET",
+        "signature_name": None,
+        "target_heading": "LIMIT and OFFSET",
+        "section_fragment": "QUERIES-LIMIT",
+        "main_selector": "#docContent",
+        "bootstrap_goal_id": "postgres18-recursive-queries",
+        "bootstrap_target_path": "/docs/18/queries-with.html",
+        "bootstrap_route_paths": ["/docs/18/queries.html", "/docs/18/queries-with.html"],
+    },
+    {
+        "goal_id": "postgres18-check-constraints",
+        "split": "train",
+        "site_group": "postgresql18-docs",
+        "layout_group": "postgresql-versioned-manual",
+        "start_url": "https://www.postgresql.org/docs/18/index.html",
+        "primary_target_url": "https://www.postgresql.org/docs/18/ddl-constraints.html",
+        "goal": "In the PostgreSQL 18 documentation, open the constraints reference and bring the "
+        "Check Constraints subsection and its opening explanation into view. Stop there.",
+        "goal_sha256": "20ed779667331572c57a74a6a35491e4ad7d852fc4d020d5d3d7fa362d54d9b9",
+        "allowed_top_level_hosts": ["www.postgresql.org"],
+        "target_path": "/docs/18/ddl-constraints.html",
+        "route_paths": ["/docs/18/ddl.html", "/docs/18/ddl-constraints.html"],
+        "route_label_hints": ["Constraints", "Check Constraints"],
+        "judge_kind": "paragraph",
+        "main_identity": "Constraints",
+        "signature_name": None,
+        "target_heading": "Check Constraints",
+        "section_fragment": "DDL-CONSTRAINTS-CHECK-CONSTRAINTS",
+        "main_selector": "#docContent",
+        "bootstrap_goal_id": "postgres18-string-overlay",
+        "bootstrap_target_path": "/docs/18/functions-string.html",
+        "bootstrap_route_paths": ["/docs/18/functions.html", "/docs/18/functions-string.html"],
+    },
+    {
+        "goal_id": "postgres18-recursive-queries",
+        "split": "train",
+        "site_group": "postgresql18-docs",
+        "layout_group": "postgresql-versioned-manual",
+        "start_url": "https://www.postgresql.org/docs/18/index.html",
+        "primary_target_url": "https://www.postgresql.org/docs/18/queries-with.html",
+        "goal": "In the PostgreSQL 18 documentation, open the WITH queries reference and bring the "
+        "Recursive Queries subsection and its opening explanation into view. Stop there.",
+        "goal_sha256": "b818ad482411bff45be27d357ce84cec5d908ad65f519a332f219cbc57bec599",
+        "allowed_top_level_hosts": ["www.postgresql.org"],
+        "target_path": "/docs/18/queries-with.html",
+        "route_paths": ["/docs/18/queries.html", "/docs/18/queries-with.html"],
+        "route_label_hints": ["WITH Queries", "Recursive Queries"],
+        "judge_kind": "paragraph",
+        "main_identity": "WITH Queries",
+        "signature_name": None,
+        "target_heading": "Recursive Queries",
+        "section_fragment": "QUERIES-WITH-RECURSIVE",
+        "main_selector": "#docContent",
+        "bootstrap_goal_id": "postgres18-limit-offset",
+        "bootstrap_target_path": "/docs/18/queries-limit.html",
+        "bootstrap_route_paths": ["/docs/18/queries.html", "/docs/18/queries-limit.html"],
+    },
+    {
+        "goal_id": "rust-stack-heap",
+        "split": "development",
+        "site_group": "rust-book",
+        "layout_group": "rust-book-manual",
+        "start_url": "https://doc.rust-lang.org/book/",
+        "primary_target_url": "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
+        "goal": "In the Rust Book, open What Is Ownership and bring The Stack and the Heap "
+        "subsection and its opening explanation into view. Stop there.",
+        "goal_sha256": "5f8289a6b625350559e7cad6dec2823f439f86d21f7f7b37b1c9260a863bc61f",
+        "allowed_top_level_hosts": ["doc.rust-lang.org"],
+        "target_path": "/book/ch04-01-what-is-ownership.html",
+        "route_paths": ["/book/ch04-01-what-is-ownership.html"],
+        "route_label_hints": ["What Is Ownership", "The Stack and the Heap"],
+        "judge_kind": "paragraph",
+        "main_identity": "What Is Ownership",
+        "signature_name": None,
+        "target_heading": "The Stack and the Heap",
+        "section_fragment": "the-stack-and-the-heap",
+        "main_selector": "main",
+        "bootstrap_goal_id": "rust-mutable-borrows",
+        "bootstrap_target_path": "/book/ch04-02-references-and-borrowing.html",
+        "bootstrap_route_paths": ["/book/ch04-02-references-and-borrowing.html"],
+    },
+    {
+        "goal_id": "rust-mutable-borrows",
+        "split": "development",
+        "site_group": "rust-book",
+        "layout_group": "rust-book-manual",
+        "start_url": "https://doc.rust-lang.org/book/",
+        "primary_target_url": "https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html",
+        "goal": "In the Rust Book, open References and Borrowing and bring its Mutable References "
+        "subsection and opening explanation into view. Stop there.",
+        "goal_sha256": "9b6e920609eda439b4a50e2e1b60e6341da98066e3f51b1fa86ad2df99d71ca4",
+        "allowed_top_level_hosts": ["doc.rust-lang.org"],
+        "target_path": "/book/ch04-02-references-and-borrowing.html",
+        "route_paths": ["/book/ch04-02-references-and-borrowing.html"],
+        "route_label_hints": ["References and Borrowing", "Mutable References"],
+        "judge_kind": "paragraph",
+        "main_identity": "References and Borrowing",
+        "signature_name": None,
+        "target_heading": "Mutable References",
+        "section_fragment": "mutable-references",
+        "main_selector": "main",
+        "bootstrap_goal_id": "rust-stack-heap",
+        "bootstrap_target_path": "/book/ch04-01-what-is-ownership.html",
+        "bootstrap_route_paths": ["/book/ch04-01-what-is-ownership.html"],
+    },
+    {
+        "goal_id": "git-restore-description",
+        "split": "development",
+        "site_group": "git-reference",
+        "layout_group": "git-manual",
+        "start_url": "https://git-scm.com/docs",
+        "primary_target_url": "https://git-scm.com/docs/git-restore",
+        "goal": "In the official Git documentation, open git restore and bring its DESCRIPTION "
+        "section and opening explanation into view. Stop there.",
+        "goal_sha256": "69a8d5b5517cdd4a1684ca356b7662cf3a509d1005a870395d40edb3237aaa7f",
+        "allowed_top_level_hosts": ["git-scm.com"],
+        "target_path": "/docs/git-restore",
+        "route_paths": ["/docs/git-restore"],
+        "route_label_hints": ["git-restore", "DESCRIPTION"],
+        "judge_kind": "paragraph",
+        "main_identity": "git-restore",
+        "signature_name": None,
+        "target_heading": "DESCRIPTION",
+        "section_fragment": "_description",
+        "main_selector": "#main",
+        "bootstrap_goal_id": "git-worktree-description",
+        "bootstrap_target_path": "/docs/git-worktree",
+        "bootstrap_route_paths": ["/docs/git-worktree"],
+    },
+    {
+        "goal_id": "git-worktree-description",
+        "split": "development",
+        "site_group": "git-reference",
+        "layout_group": "git-manual",
+        "start_url": "https://git-scm.com/docs",
+        "primary_target_url": "https://git-scm.com/docs/git-worktree",
+        "goal": "In the official Git documentation, open git worktree and bring its DESCRIPTION "
+        "section and opening explanation into view. Stop there.",
+        "goal_sha256": "483defc8901b1eedd720d53d4ade6b90b9dc2d6c4c91638993e3c6ac65b77981",
+        "allowed_top_level_hosts": ["git-scm.com"],
+        "target_path": "/docs/git-worktree",
+        "route_paths": ["/docs/git-worktree"],
+        "route_label_hints": ["git-worktree", "DESCRIPTION"],
+        "judge_kind": "paragraph",
+        "main_identity": "git-worktree",
+        "signature_name": None,
+        "target_heading": "DESCRIPTION",
+        "section_fragment": "_description",
+        "main_selector": "#main",
+        "bootstrap_goal_id": "git-restore-description",
+        "bootstrap_target_path": "/docs/git-restore",
+        "bootstrap_route_paths": ["/docs/git-restore"],
+    },
+]
+
+
+def public_training_tasks():
+    """Return detached task dictionaries; private metadata never enters policy."""
+    return copy.deepcopy(_DEFINITIONS)
+
+
+def tasks():
+    """Collector API alias for the fixed detached task inventory."""
+    return public_training_tasks()
+
+
+def get_public_training_task(task):
+    """Resolve only an exact fixed record or its ID; reject modified goals/hints."""
+    task_id = (
+        task if isinstance(task, str) else task.get("goal_id") if isinstance(task, dict) else None
+    )
+    for definition in _DEFINITIONS:
+        if definition["goal_id"] == task_id:
+            if not isinstance(task, str) and task != definition:
+                raise ValueError("public training task differs from the fixed definition")
+            return copy.deepcopy(definition)
+    raise ValueError("unknown fixed public training task")

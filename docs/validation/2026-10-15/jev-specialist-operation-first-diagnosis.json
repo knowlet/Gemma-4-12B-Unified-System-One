@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "scope": "Source-checked diagnosis of saved native specialist scheduling only. No new model, browser, network, prediction, executed action, speedup or task score.",
+  "analysis_source": {
+    "path": "artifacts/jev-runtime/diagnose_specialist_operation_first_01.py",
+    "sha256": "311197021ebbee528eef8d1c557f047d7af8d498e38f57da6271ed51803439ac",
+    "size_bytes": 21923
+  },
+  "analysis": {
+    "path": "artifacts/jev-browser/20261015-specialist-operation-first-diagnosis-01.json",
+    "sha256": "672910a9371317dc4491219fd229e212481a9bdf2c390f1884dfbfefa5e70b32",
+    "size_bytes": 90495
+  },
+  "independent_root_reproduction": {
+    "path": "artifacts/jev-browser/20261015-specialist-operation-first-root-check-01.json",
+    "sha256": "02d7f14885f116915302ced13279b0caf093c1a94f3a3dbb8a17a098b4309117",
+    "size_bytes": 90495,
+    "checks": 626,
+    "input_files": 92,
+    "identical_except_created_utc": true
+  },
+  "totals": {
+    "omni": {
+      "requests": 6,
+      "wide_requests": 1,
+      "flat_requests": 5,
+      "actual_backend_predict_calls": 12,
+      "static_operation_first_backend_predict_calls": 10,
+      "actual_native_question_rows": 17,
+      "static_operation_first_native_question_rows": 10,
+      "recorded_unused_wide_stage_elapsed_ms": 16031.042218999573,
+      "recorded_unused_wide_stage_input_tokens": 23638,
+      "recorded_unused_wide_stages": 6
+    },
+    "decider": {
+      "requests": 32,
+      "wide_requests": 17,
+      "flat_requests": 15,
+      "actual_backend_predict_calls": 87,
+      "static_operation_first_backend_predict_calls": 39,
+      "actual_native_question_rows": 105,
+      "static_operation_first_native_question_rows": 39,
+      "recorded_unused_wide_stage_elapsed_ms": 24677.501194993965,
+      "recorded_unused_wide_stage_input_tokens": 156210,
+      "recorded_unused_wide_stages": 49
+    }
+  },
+  "omni_python_failed_request": {
+    "model": "omni",
+    "request_id": "1bf5924c50cb8e4697742d07a16ec447",
+    "payload_sha256": "adf1ff628503b06bc9a32acf5750c750bf111619ffb161af1558c7a4846a3360",
+    "page_url": "https://docs.python.org/3.14/library/datatypes.html",
+    "actual_terminal": "server_failed",
+    "actual_error": {
+      "type": "BackendTimeoutError",
+      "message": "Jev hierarchy cooperative time budget exceeded; blocking calls cannot be hard-cancelled"
+    },
+    "original_scope": "wide20_cooperative",
+    "actual_backend_predict_calls": 7,
+    "actual_native_question_rows": 7,
+    "operation": "TYPE_TEXT",
+    "operation_probabilities_sha256": "c6f8a49ff839dc3586bfec947c6f829e8f56223930ca5e568376752da83a1660",
+    "operation_prompt_source_projection_sha256": "757cb3b0b9943eb32786c389e887e4da34b6337a942f0399752472dfef3f86e1",
+    "operation_native_question_count": 1,
+    "active_head": "type_text_target",
+    "active_candidates": 1,
+    "active_answer_sha256": "6fdf5c385752b443dce96fe4c0ff6d5f07a2a9fc8ae24d6d2a2f362e53f071b4",
+    "active_target": "11",
+    "static_operation_first_backend_predict_calls": 1,
+    "static_operation_first_native_question_rows": 1,
+    "recorded_unused_wide_stage_cost": {
+      "stages": 6,
+      "elapsed_ms": 16031.042218999573,
+      "reported_input_tokens": 23638
+    },
+    "mixed_or_flat_per_question_elapsed_and_usage": "not separately recorded; not allocated or claimed as measured savings",
+    "python_timeout_detail": {
+      "hierarchy_elapsed_ms": 20249.20469599965,
+      "ordinary_stage_elapsed_ms": 4188.4026560001075,
+      "ordinary_stage_input_tokens": 3070,
+      "all_stage_raw_responses_returned": true,
+      "all_stage_reported_input_tokens": 26708,
+      "last_stage_status": "failed",
+      "static_subset_only": "Recorded TYPE_TEXT plus recorded mathematically forced singleton11 would satisfy upstream selected-head response validation. No TYPE action was executed on this failed HTTP504 and no new response latency/task score is inferred."
+    }
+  },
+  "source_proof": {
+    "upstream": "Exact1231850 model.choose calls validate_choice on operation, enters targets only for that operation, and ignores unused answer heads. No upstream patch is needed.",
+    "omni": "Frozen JevOmniBackend.predict loops over request.questions. Each native publisher _prompt uses only identical serialized request.state, that question.instructions and its ordered descriptions. Its native template/media/config and FP32head/BF16backbone calibration remain unchanged; one native forward per question. Skipping another question removes no context from the kept question.",
+    "decider": "Frozen LocalCompetitorBackend explicitly calls _system_one_items/system_one independent=True. Pinned1.4.0 builds one row per rendered question with full render_state context and its own instructions/options. Per-question prompt independence is established; engine score_shared versus score_items/batching may change on splitting and therefore exact numeric/argmax equality is not established by this source proof.",
+    "actual_operation_stages": "All18 wide request ordinary stages in this evidence contain only operation as a native question. Singleton targets are restored mathematically after prediction. All38 kept operation context/goal/rules/ordered criteria are source-reconstructed and unchanged under question-list projection.",
+    "generated_precedent": "Existing JevGeneratedActionAdapter already returns answers only for operation plus selected target, unused_target_heads, unused_target_heads_status=not_evaluated; its point-mass probability semantics are NOT reused for native specialist distributions."
+  },
+  "prospective_profile": "jev_browser_operation_first_v1, native per-head calibration / hierarchical active-target probabilities; different profile from historical full-head native hierarchy",
+  "prospective_algorithm": [
+    "Validate/hash/preserve the FULL original native browser request, all supported operations, every candidate/head and source before any backend call. Reject malformed/over400 requests without pruning; no arbitrary generic question schema accepted in this opt-in route.",
+    "Use the exact parsed operation question with identical original full state, instructions/rules and ordered operation criteria; no selected-operation hint, question rewrite or payload.state reduction. Predict operation only under existing native checkpoint settings; validate complete operation probabilities.",
+    "If selected operation is targetless, return only operation. For a selected singleton head, reuse the same mathematical singleton response without a model call.",
+    "For selected2..20 target heads, predict that full exact head natively. For selected21..400 heads, retain existing balanced observation-order groups, original-instruction wrappers, group root and ALL conditional groups, then multiply every group mass by its conditional distribution and preserve full original label order. Never select only the winning group or prune candidates.",
+    "Return operation plus selected head only. Keep native calibrated probabilities/confidence/margin unchanged; enumerate unused target heads as not_evaluated. Do not invent distributions for omitted heads or copy generated-action point masses.",
+    "Preserve original full-input width-based budgeting: original wide requests retain one20s cooperative budget across planning/operation/all active stages and HTTP25; original narrow flat requests retain HTTP25-only coverage. Any later uniform20 profile requires a separately declared change. No backend calibration/context/temperature/precision overrides.",
+    "Record full original wire, projections, all actually invoked stages/raw outputs/token usage/costs/deadlines/failures; skipped stages explicitly not evaluated. No benchmark-state repair, direct URL, Enter or browser executor change. Existing controllers47/02 and error binders remain immutable."
+  ],
+  "claim_limits": [
+    "All38 inputs are already evaluated public tasks and remain excluded from training. These rows diagnose scheduling only.",
+    "The Omni Python HTTP504 remains an actual failed attempt. Recorded TYPE_TEXT operation/target11 are evidence inside a failed request, not an executed TYPE or a new task score.",
+    "Recorded unused-wide stage elapsed/tokens are actual historical stage costs, not predicted saved end-to-end latency or causal speedup. Flat/mixed per-question timing is unavailable and not invented.",
+    "Native stage-call count, native question-row count and backbone forward count differ, particularly Decider shared-cache/batching. No GPU-forward count or wall-clock prediction is inferred from these static counts.",
+    "An explicit operation-first profile can increase backend calls for narrow multi-question requests (operation and active head split) while reducing question rows. It is a separate browser profile, not a corrected historical baseline result.",
+    "No new request, route, action, model prediction, benchmark/speed/task-completion causality, public advantage or promotion is claimed."
+  ],
+  "current_public_task_results_unchanged": {
+    "cases": 2,
+    "primary_BF16_adapter": 1,
+    "primary_BF16_base": 1,
+    "Decider_native": 0,
+    "Omni_native": 0,
+    "new_operation_first_score": null
+  }
+}

@@ -411,3 +411,141 @@ probabilities = "complete"
 batch = "loop_emulated"
 concurrent_requests = false
 independent_questions = true
+
+
+[[models]]
+id = "d3-local"
+adapter = "decision3"
+enabled = false
+model_id = "vllm-sr/d3"
+revision = "225be8b1e2270becab69c5fe05b26f99cbbdd66b"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "checkpoint"
+context_limit = 16384
+notes = "Publisher AutoModel.system_one; native255, BF16 backbone/FP32 readout, T=1.0. Project context16384; native hard cap None; architecture262144. Score2..10 distinct levels. No task, numerical, speed or peak-memory claim. Explicit cached weights and resource admission required."
+[models.capabilities]
+modalities = ["text", "image"]
+primitives = ["choice", "noul", "score"]
+max_options = 255
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+
+[[models]]
+id = "d3-flash-local"
+adapter = "decision3"
+enabled = false
+model_id = "vllm-sr/d3-flash"
+revision = "8b35c853b90e777595ec36bacae820fe08ea077a"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "checkpoint"
+context_limit = 16384
+notes = "Publisher AutoModel.system_one; native255, BF16 backbone/FP32 readout, T=1.0. Project context16384; native hard cap None; architecture262144. Score2..10 distinct levels. No task, numerical, speed or peak-memory claim. Explicit cached weights and resource admission required."
+[models.capabilities]
+modalities = ["text", "image"]
+primitives = ["choice", "noul", "score"]
+max_options = 255
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+
+[[models]]
+id = "d3-mini-local"
+adapter = "decision3"
+enabled = false
+model_id = "vllm-sr/d3-mini"
+revision = "97dd054df4b3e0b3beb6af23ab8c82b7c0052e0e"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "checkpoint"
+context_limit = 16384
+notes = "Publisher AutoModel.system_one; native255, BF16 backbone/FP32 readout, T=1.0. Project context16384; native hard cap None; architecture262144. Score2..10 distinct levels. No task, numerical, speed or peak-memory claim. Explicit cached weights and resource admission required."
+[models.capabilities]
+modalities = ["text", "image"]
+primitives = ["choice", "noul", "score"]
+max_options = 255
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+
+[[models]]
+id = "d3-nano-local"
+adapter = "decision3"
+enabled = false
+model_id = "vllm-sr/d3-nano"
+revision = "aeb70d4dd53ed25b855c3b0a66394b8fe265db7f"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "checkpoint"
+context_limit = 16384
+notes = "Publisher AutoModel.system_one; native255, BF16 backbone/FP32 readout, T=1.0. Project context16384; native hard cap None; architecture262144. Score2..10 distinct levels. No task, numerical, speed or peak-memory claim. Explicit cached weights and resource admission required."
+[models.capabilities]
+modalities = ["text", "image"]
+primitives = ["choice", "noul", "score"]
+max_options = 255
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+
+[[models]]
+id = "d3-lite-local"
+adapter = "decision3"
+enabled = false
+model_id = "vllm-sr/d3-lite"
+revision = "9c10703193afc7c7d28c88201c0364bfbbf58320"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "checkpoint"
+context_limit = 16384
+notes = "Publisher AutoModel.system_one; native255, BF16 backbone/FP32 readout, T=1.0. Project context16384; native hard cap None; architecture262144. Score2..10 distinct levels. No task, numerical, speed or peak-memory claim. Explicit cached weights and resource admission required."
+[models.capabilities]
+modalities = ["text", "image"]
+primitives = ["choice", "noul", "score"]
+max_options = 255
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true
+
+
+[[models]]
+id = "d3-edge-local"
+adapter = "decision3"
+enabled = false
+model_id = "vllm-sr/d3-edge"
+revision = "cab71e6ad3461b8086d51ddb572c656babd63b0b"
+precision = "bfloat16"
+device = "cuda"
+execution_mode = "sequential"
+calibration = "checkpoint"
+context_limit = 16384
+notes = "Publisher AutoModel.system_one; native255, BF16 backbone/FP32 readout, T=1.0. Project context16384; native hard cap None; architecture262144. Score2..10 distinct levels. No task, numerical, speed or peak-memory claim. Explicit cached weights and resource admission required."
+[models.capabilities]
+modalities = ["text", "image"]
+primitives = ["choice", "noul", "score"]
+max_options = 255
+max_questions = 64
+probabilities = "complete"
+batch = "loop_emulated"
+concurrent_requests = false
+independent_questions = true

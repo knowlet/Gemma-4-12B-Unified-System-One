@@ -91,9 +91,16 @@ class RuntimeTelemetry(StrictModel):
 def validate_runtime_telemetry(adapter, spec):
     """Validate resolved identity before inference and return persistable telemetry."""
     result = RuntimeTelemetry.model_validate(adapter.telemetry())
-    if spec.adapter in ("gemma", "laya", "decider", "kev", "agentjev", "clef", "jev_omni") and (
-        result.revision != spec.revision
-    ):
+    if spec.adapter in (
+        "gemma",
+        "laya",
+        "decider",
+        "kev",
+        "agentjev",
+        "clef",
+        "jev_omni",
+        "decision3",
+    ) and (result.revision != spec.revision):
         raise ValueError("resolved model revision differs from the plan")
     if result.precision != spec.precision:
         raise ValueError("resolved precision differs from the plan")

@@ -1,0 +1,61 @@
+{
+  "checks": {
+    "boundary_test_elapsed_seconds": 1.76,
+    "boundary_tests_passed": 8,
+    "framework_imports_during_manifest_validation": [],
+    "production_AST_unchanged_by_CI_formatting": true,
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "runner_AST_changes_only_four_authority_constants": true,
+    "source_handoff_verifier": "passed",
+    "test_AST_unchanged_by_formatting": true
+  },
+  "date": "2026-10-16",
+  "named_upload": {
+    "all_actual_payload_pins_match": true,
+    "bytes": 237308893,
+    "files": 1452,
+    "manifest_path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/expected-upload-manifest-02.json",
+    "manifest_sha256": "95c2efa41ee41afdab96df50b3e4e5815a59ed8912b2ff618787c76e12281820",
+    "manifest_size_bytes": 973498,
+    "native_source_handoff_verifier_passed": true,
+    "other_1449_rows_unchanged": true
+  },
+  "reason": "Concurrent CI commits formatted four source files without changing their ASTs. Preserve those commits and historical receipts, then create fresh source identities for future execution.",
+  "scope": "The historical CPU probe remains an observation of its original source bytes. These fresh pins authorize future execution; no training updates, qualification or browser scores are inferred.",
+  "source_files": [
+    {
+      "path": "apps/modal/public_action_fit.py",
+      "sha256": "1ca6271bb94326b36fb15b031b8a177cb2eaae7a4e18d1dddf942d6eb29fc841",
+      "size_bytes": 39528
+    },
+    {
+      "path": "tests/test_public_action_modal_fit.py",
+      "sha256": "a1b606c375a3299b05ac3ed5ed9a8c68d1491092d4b8aa010165355a274bf672",
+      "size_bytes": 6933
+    },
+    {
+      "path": "apps/modal/public_action_env_probe.py",
+      "sha256": "0a79440631813ae75bd7c6ef7e6105c695a53adb45530628c947e528942e4a20",
+      "size_bytes": 16001
+    }
+  ],
+  "status": "new_execution_sources_verified_remote_training_pending",
+  "training_handoff": {
+    "identity_sha256": "ce94759a0b6439ab6b91a3f1765664c2ce27b94b6db7fa1b7b8fd6390c39f5be",
+    "path": "artifacts/jev-runtime/public-native-action-actual07-fit-20261016-01/source-handoff-03.json",
+    "sha256": "c4601d28519da5563586a84f5d17fc08620a64ce3e80baec529b43f27f5f20d8",
+    "size_bytes": 14189
+  },
+  "unchanged_scope": [
+    "original frozen84 and four training kernels",
+    "all public701 and parent496 inputs",
+    "original CPU compiler154 evidence",
+    "training algorithm,120 updates,learning rate,seed and resource floors",
+    "historical source handoffs,probe results and failed local fit receipts"
+  ],
+  "upstream_commits": [
+    "e9fdf8ad3458ba9be1ab9fccf2cdb58eb60350ff",
+    "975187f"
+  ]
+}

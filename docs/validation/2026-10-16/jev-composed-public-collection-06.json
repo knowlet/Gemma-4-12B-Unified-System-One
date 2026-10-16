@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "scope": "Actual scripted public development collection using the explicit composed observation profile; failed all24 admission gate, no policy model score or training",
+  "source_commit": "daf7a4eefc5c15a076f9fb471f7f966a9e55e7b5",
+  "source_file_count": 84,
+  "source_freeze_manifest_sha256": "d2dba2e1df04344b956dbef99f9c52b76458ec4a516a43703b414d0d5a1e2d2d",
+  "collection_plan_sha256": "e854c0a5bb5fd34795e4c16bda0a57c1a67a34e78e805b80e801406ed979c628",
+  "outer_receipt_sha256": "d109040c2748b04a6afc4bde6652d563e8504c158a14be2ad0e0e1405ea2182b",
+  "schema_id": "jev-public-native-training-collection-v4",
+  "observation_profile": {
+    "profile": "composed-visible-text-v2",
+    "helper_source_sha256": "bc99741a847738c2ba1930007a5287136c6ddb28cb98dd2f1364b189c807921d",
+    "manifest_path": "observation-profile/profile-manifest.json",
+    "manifest_sha256": "cb925e8f6af8b63f37f54a43ab03e462db70e89e956387de37eb8a62b0f4af44",
+    "manifest_size_bytes": 5013,
+    "canonical_snapshot_js_sha256": "e50473501c8fb8e70f3b21866d987393e3f2315c639d638bd477d170e81ed78d",
+    "effective_snapshot_js_sha256": "5327d4ab5d615ac0804f4913bb86bb59b383b11ff80f2408eb4aa565243f9dd5",
+    "marker_expression_sha256": "12b324490dd1e16823fbf4a3b3842af1632395467ad2058d93e112f5e0014325"
+  },
+  "results": {
+    "stage": "partial",
+    "attempts_retained": 24,
+    "scripted_teacher_successes": 19,
+    "failed_attempts": 5,
+    "eligible_training_rows": 0,
+    "train_attempts": 16,
+    "development_attempts": 8,
+    "all24_attempt_records_retained": true,
+    "counts": {
+      "actual_native_policy_calls": 162,
+      "bootstrap_calls": 46,
+      "supervised_calls": 116,
+      "scripted_teacher_calls": 162,
+      "history_actions": 140,
+      "observation_profile_event_count": 892,
+      "observation_profile_failure_count": 33,
+      "excluded_no_input_done_count": 1
+    },
+    "source_and_profile_trees": "unchanged; both complete profile trees verified",
+    "finalization_errors": []
+  },
+  "failure_diagnosis": [
+    {
+      "goals": [
+        "mdn-urlsearchparams-get-ordinary",
+        "mdn-urlsearchparams-get-recovery",
+        "mdn-abortcontroller-abort-recovery"
+      ],
+      "failed_attempts": 3,
+      "confirmed_cap_exceptions": 33,
+      "first_expression": "MARKER",
+      "page": "https://developer.mozilla.org/en-US/docs/Web/API/URL_API",
+      "visited_nodes": 20000,
+      "node_limit": 20000,
+      "node_limit_reached": true,
+      "depth_limit_reached": false,
+      "native_read_retries_after_first_failure": 10,
+      "cause_scope": "Node budget exhausted after page hydration. Saved light HTML does not establish which composed subtree consumed the budget."
+    },
+    {
+      "goals": [
+        "mdn-intersectionobserver-observe-recovery",
+        "mdn-resizeobserver-observe-recovery"
+      ],
+      "failed_attempts": 2,
+      "operation": "SCROLL_DOWN",
+      "profile_failures": 0,
+      "cause_scope": "Visible partner banner and login text appeared after choose; only native marker text changed, from 1386 to 1457 characters. Native freshness correctly rejected before executor input; history stayed unchanged.",
+      "ownership_geometry_actions_other_marker_entries": "unchanged",
+      "text_from_banner": [
+        "Learn frontend, backend, and AI from our course partner",
+        "Scrimba",
+        "Log in"
+      ]
+    }
+  ],
+  "limits": {
+    "all_attempts_quarantined": true,
+    "new_model_calls": 0,
+    "new_training_updates": 0,
+    "model_task_score": null,
+    "competitor_ranking": null,
+    "old_v3_corpus_unchanged": true
+  },
+  "next_steps": [
+    "Test generic exclusion of nonvisible composed subtrees without raising traversal limits or changing native action guards.",
+    "Define a strict no-input stale-scroll continuation that preserves failed decisions and original budgets before another full campaign."
+  ]
+}

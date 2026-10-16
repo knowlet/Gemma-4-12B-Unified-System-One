@@ -1,0 +1,99 @@
+{
+  "schema_id": "jev-public-native-parent-staging-validation-v1",
+  "scope": "CPU-only actual07 public-data and historical parent-adapter staging; no model inference, optimizer update or browser score",
+  "runtime_commit": "e864afa54692d019e21f8b8e234e8f65401703fc",
+  "observation_profile": "composed-visible-text-v3",
+  "collection_schema": "jev-public-native-training-collection-v5",
+  "source_review": {
+    "helper_sha256": "b423c46db9fb04caab9415e8ccb0853f46e0eb596a8271d73c3d81281d6dcccc",
+    "launcher_sha256": "505bb50f5cce70a2b2ad5b7560f5ae8ab5732f2a8628ff55e3a85b2a4e80d22d",
+    "test_source_sha256": "c9594312d515c6866f67788e8c3d6ff4daf9ebb2dbc6347bd499e66dcacc9c50",
+    "complete_runtime_files": 84,
+    "additional_owned_source_files": 2,
+    "root_and_independent_review": "passed",
+    "synthetic_tests_passed": 20,
+    "test_receipt_sha256": "ebc0d04fd6ee739faa37f93d66a8b79f01c3ae14946fd30a1ad2ad66659fb68b",
+    "review_fixes": [
+      "All fallible completion fsync/check operations precede final receipt replacement; fault tests cover failed directory sync and failed refusal rewrite together.",
+      "Whole output-root byte/file caps include launcher, stage, sidecars and reserved compiler/adapter/final-receipt space; exact-boundary and one-over negatives pass."
+    ],
+    "preserved_plan_correction": "Held H02 plan command_argv retained H01 pins. It was preserved unexecuted; the separate reviewed execution plan binds the actual H02 source pins.",
+    "execution_plan_sha256": "2b37224d0aa0e203c3d79caed4f7b81281ffb037588d977341017e3af1119862",
+    "durability_limit": "No fallible operation follows the helper completion replacement. Its final rename is not acknowledged as surviving power loss."
+  },
+  "actual_run": {
+    "exit_code": 0,
+    "stage": "complete",
+    "elapsed_seconds": 20.797392026004673,
+    "process_peak_RSS_bytes": 976363520,
+    "CPU_Torch_threads": 2,
+    "CUDA_initialized": false,
+    "model_calls": 0,
+    "processor_initializations": 0,
+    "optimizer_initializations": 0,
+    "training_updates": 0,
+    "task_score": null,
+    "root_receipt_sha256": "2349f04ae8bd8825270603a84e5106b3dccc80914baa804718cae9f0034c3d79",
+    "stage_receipt_sha256": "8e017a703662f64530599657426fe3a5ef7134af3b8df0daca7aeb613057dd7c",
+    "console_sha256": "81abdbfed70436d56a26177942c30c643864e45a74f44ae4fa815e9563ff7b70",
+    "primary_error": null,
+    "finalization_errors": []
+  },
+  "public_data": {
+    "files": 701,
+    "bytes": 105415940,
+    "closed_inventory_sha256": "d74f729460c648b8c88cf677bc379d1ae34fe7530a9651810e8af2825d449742",
+    "admission_receipt_sha256": "bb799a48e8bbf1fb0af5afaf23cb38fb09bb67c3d26c833e96ba33bc34b0fcdb",
+    "train_rows": 120,
+    "development_rows": 22,
+    "native_calls": 194,
+    "bootstrap_nonfit_calls": 49,
+    "excluded_no_input_DONE_calls": 2,
+    "excluded_no_input_SCROLL_calls": 1,
+    "detached_compile_alias": "generated-actions-none",
+    "candidate_limit": 400,
+    "largest_actual_offered_target_head": 66,
+    "normalization": "Only the model alias changes in detached compile projections; native action-space fields and order remain complete.",
+    "actual_processor_compilation_done": false
+  },
+  "historical_parent": {
+    "files": 496,
+    "bytes": 80805458,
+    "manifest_sha256": "7edcf9cd1af3d3d7cb04c9eca14e2b2c67847bc2caeef25c32eebfce6de8ddc3",
+    "weights_sha256": "165fbd1db402692ec06f4264a16026eb76abbed711d9ff56aef37f44a442f178",
+    "parent_capture_sha256": "da93e86817cd9d85a12cc1f04d37468ba8eb099cde6d5136b405e5e5a1e549a3",
+    "lineage_depth": 2,
+    "historical_completed_updates": 521,
+    "tensor_file_verification": "The unchanged source-pinned recursive parent verifier checked finite LoRA matrices; the staging helper required exactly176 stored FP32 q/v tensors.",
+    "original_and_copy_verification_passed": true,
+    "original_full_head_sha256": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+    "initialized_into_model": false,
+    "ancestor_train_development_split_check_passed": true
+  },
+  "resources": {
+    "same_boot_durable_gates_passed": 5,
+    "formula": "max(24GiB,ceil(MemTotal_bytes/5))+4GiB",
+    "required_bytes": 30414139392,
+    "minimum_observed_MemAvailable_bytes": 31745843200,
+    "swap_credit_bytes": 0,
+    "resource_journal_sha256": "72fec1632a02af71b9897ac64d3ec831d7b380da6c1fd87979982f13392162e3",
+    "BF16_model_load_or_training_admitted": false
+  },
+  "independent_artifact_audit": {
+    "passed": true,
+    "report_sha256": "a464a6ced972d9f80452c2c188210ee76a209e21bbf1156148ade0ed23d9963b",
+    "audit_source_sha256": "0c700295655c34b9c3c9c7183da79b447a4169030d18cf02ed49d58cc8b03a3d",
+    "public_parent_source_copies_byte_identical": true,
+    "projection_rows_checked": 142,
+    "actual_native_requests_checked": 194,
+    "recorded_resource_gates_checked": 5,
+    "independent_parent_header_result": "176 F32 matrices,5193728 parameters; tensor values were not deserialized or finite-checked again.",
+    "framework_imports": [],
+    "scope": "Independent stdlib verification of saved bytes, metadata, copies, ordered projections, dispositions and capacity arithmetic. Genuine finite checks and telemetry remain separately attributed to the pinned staging run."
+  },
+  "remaining": [
+    "Genuine native processor compilation and original native-prefix token parity for all142 accepted rows.",
+    "Explicit public-data fitter/output-verifier and BF16 deployment contract; legacy fixture/NF4 checks remain unchanged.",
+    "Fresh model-load/training resource admission and subsequent model/browser comparisons."
+  ]
+}

@@ -1,0 +1,55 @@
+name: Prefix numerical diagnostics
+
+on:
+  push:
+    branches: ['codex/jev-realworld-performance']
+    paths:
+      - '.github/workflows/prefix-numerics.yml'
+      - 'scripts/diagnose_browser_prefix.py'
+      - 'src/s1/browser_prefix*.py'
+      - 'src/s1/unified.py'
+      - 'tests/test_browser_prefix*.py'
+      - 'uv.lock'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prefix-numerics-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prefix-numerics:
+    runs-on: macos-14
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.12.19'
+          python-version: '3.12'
+          enable-cache: true
+      - run: uv sync --locked --extra inference
+      - name: Export diagnostic formatter output
+        run: |
+          mkdir -p artifacts/prefix-numerics/formatted
+          cp scripts/diagnose_browser_prefix.py src/s1/browser_prefix*.py tests/test_browser_prefix_alignment.py artifacts/prefix-numerics/formatted/
+          uv run --no-sync ruff format artifacts/prefix-numerics/formatted/
+      - name: Record layer and readout diagnostics
+        run: uv run --no-sync python scripts/diagnose_browser_prefix.py --output artifacts/prefix-numerics/report.json
+      - name: Preserve winner acceptance and check cache alignment
+        if: ${{ !cancelled() }}
+        run: uv run --no-sync pytest tests/test_browser_prefix.py tests/test_browser_prefix_alignment.py -q --junitxml=artifacts/prefix-numerics/pytest.xml
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: prefix-numerics-${{ github.sha }}
+          path: artifacts/prefix-numerics/
+          if-no-files-found: warn
+          retention-days: 30
