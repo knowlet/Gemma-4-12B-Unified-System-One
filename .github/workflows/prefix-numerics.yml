@@ -6,10 +6,9 @@ on:
     paths:
       - '.github/workflows/prefix-numerics.yml'
       - 'scripts/diagnose_browser_prefix.py'
-      - 'scripts/probe_prefix_cache_alignment.py'
-      - 'src/s1/browser_prefix.py'
+      - 'src/s1/browser_prefix*.py'
       - 'src/s1/unified.py'
-      - 'tests/test_browser_prefix.py'
+      - 'tests/test_browser_prefix*.py'
       - 'uv.lock'
   workflow_dispatch:
 
@@ -23,7 +22,7 @@ concurrency:
 jobs:
   prefix-numerics:
     runs-on: macos-14
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       HF_HUB_OFFLINE: '1'
     steps:
@@ -40,17 +39,13 @@ jobs:
       - name: Export diagnostic formatter output
         run: |
           mkdir -p artifacts/prefix-numerics/formatted
-          cp scripts/diagnose_browser_prefix.py scripts/probe_prefix_cache_alignment.py artifacts/prefix-numerics/formatted/
+          cp scripts/diagnose_browser_prefix.py src/s1/browser_prefix*.py tests/test_browser_prefix_alignment.py artifacts/prefix-numerics/formatted/
           uv run --no-sync ruff format artifacts/prefix-numerics/formatted/
-          uv run --no-sync ruff format --diff scripts/diagnose_browser_prefix.py scripts/probe_prefix_cache_alignment.py || test $? = 1
       - name: Record layer and readout diagnostics
         run: uv run --no-sync python scripts/diagnose_browser_prefix.py --output artifacts/prefix-numerics/report.json
-      - name: Test absolute key-axis ablation
+      - name: Preserve winner acceptance and check cache alignment
         if: ${{ !cancelled() }}
-        run: uv run --no-sync python scripts/probe_prefix_cache_alignment.py --output artifacts/prefix-numerics/alignment.json
-      - name: Preserve the original winner acceptance
-        if: ${{ !cancelled() }}
-        run: uv run --no-sync pytest tests/test_browser_prefix.py -q
+        run: uv run --no-sync pytest tests/test_browser_prefix.py tests/test_browser_prefix_alignment.py -q --junitxml=artifacts/prefix-numerics/pytest.xml
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

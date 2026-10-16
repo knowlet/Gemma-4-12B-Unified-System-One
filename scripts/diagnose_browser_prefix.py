@@ -52,7 +52,7 @@ def run_case(fixture, dtype, implementation):
 
     def before_backbone(_module, _args, kwargs):
         active["index"] += 1
-        active["tag"] = f'{active["phase"]}-{active["index"]}'
+        active["tag"] = f"{active['phase']}-{active['index']}"
         captures[active["tag"]] = {
             "positions": kwargs.get("position_ids").detach().cpu().clone(),
             "use_cache": kwargs.get("use_cache"),
@@ -82,7 +82,9 @@ def run_case(fixture, dtype, implementation):
             "value": value.detach().cpu().clone(),
             "allowed": allowed.detach().cpu().clone(),
         }
-        return original_sdpa(query, key, value, *args, **kwargs)
+        result = original_sdpa(query, key, value, *args, **kwargs)
+        kernels[(active["tag"], active["layer"])]["output"] = result.detach().cpu().clone()
+        return result
 
     handles.append(model.backbone.register_forward_pre_hook(before_backbone, with_kwargs=True))
     handles.append(model.backbone.register_forward_hook(after_backbone, with_kwargs=True))
@@ -92,8 +94,9 @@ def run_case(fixture, dtype, implementation):
         if module.__class__.__name__ == "Gemma4UnifiedTextDecoderLayer":
             handles.append(module.register_forward_hook(after_layer, with_kwargs=True))
     try:
-        with torch.inference_mode(), patch.object(
-            functional, "scaled_dot_product_attention", inspect_sdpa
+        with (
+            torch.inference_mode(),
+            patch.object(functional, "scaled_dot_product_attention", inspect_sdpa),
         ):
             expected = fixture["full_answers"](model, rows)
             active.update(phase="prefix", index=-1)
@@ -156,13 +159,19 @@ def run_case(fixture, dtype, implementation):
                 }
                 if full is not None and suffix is not None:
                     offset = full["key"].shape[-2] - suffix["key"].shape[-2]
+                    allowed_columns = suffix["allowed"].reshape(-1, suffix["key"].shape[-2]).any(0)
                     item.update(
                         key_absolute_offset=offset,
                         query=difference(full["query"][..., prefix:, :], suffix["query"]),
                         key=difference(full["key"][..., offset:, :], suffix["key"]),
                         value=difference(full["value"][..., offset:, :], suffix["value"]),
-                        mask=difference(
-                            full["allowed"][..., prefix:, offset:], suffix["allowed"]
+                        mask=difference(full["allowed"][..., prefix:, offset:], suffix["allowed"]),
+                        attended_key=difference(
+                            full["key"][..., offset:, :][..., allowed_columns, :],
+                            suffix["key"][..., allowed_columns, :],
+                        ),
+                        attention_output=difference(
+                            full["output"][..., prefix:, :], suffix["output"]
                         ),
                     )
                 layer_comparisons.append(item)
