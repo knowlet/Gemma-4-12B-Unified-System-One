@@ -180,7 +180,7 @@ image = (
         _install("https://pypi.org/simple", ["numpy==2.5.2", "pillow==12.3.0", "jinja2==3.1.6"]),
         _install("https://pypi.org/simple", ["transformers==5.17.0", "tokenizers==0.23.3", "huggingface_hub==1.33.0", "safetensors==0.8.0"], target=OVERLAY),
     )
-    .env({"PYTHONPATH": str(ROOT), "PYTHONDONTWRITEBYTECODE": "1"})
+    .env({"PYTHONPATH": str(SCRIPT.parent) + os.pathsep + str(ROOT), "PYTHONDONTWRITEBYTECODE": "1"})
 )
 if modal.is_local():
     for item in upload_inventory():
