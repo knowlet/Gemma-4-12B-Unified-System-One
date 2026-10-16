@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/prefix-numerics.yml'
       - 'scripts/diagnose_browser_prefix.py'
+      - 'scripts/probe_prefix_cache_alignment.py'
       - 'src/s1/browser_prefix.py'
       - 'src/s1/unified.py'
       - 'tests/test_browser_prefix.py'
@@ -36,8 +37,17 @@ jobs:
           python-version: '3.12'
           enable-cache: true
       - run: uv sync --locked --extra inference
+      - name: Export diagnostic formatter output
+        run: |
+          mkdir -p artifacts/prefix-numerics/formatted
+          cp scripts/diagnose_browser_prefix.py scripts/probe_prefix_cache_alignment.py artifacts/prefix-numerics/formatted/
+          uv run --no-sync ruff format artifacts/prefix-numerics/formatted/
+          uv run --no-sync ruff format --diff scripts/diagnose_browser_prefix.py scripts/probe_prefix_cache_alignment.py || test $? = 1
       - name: Record layer and readout diagnostics
         run: uv run --no-sync python scripts/diagnose_browser_prefix.py --output artifacts/prefix-numerics/report.json
+      - name: Test absolute key-axis ablation
+        if: ${{ !cancelled() }}
+        run: uv run --no-sync python scripts/probe_prefix_cache_alignment.py --output artifacts/prefix-numerics/alignment.json
       - name: Preserve the original winner acceptance
         if: ${{ !cancelled() }}
         run: uv run --no-sync pytest tests/test_browser_prefix.py -q
