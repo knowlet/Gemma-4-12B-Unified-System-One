@@ -1022,7 +1022,10 @@ def test_optional_batch_executes_every_stage_once_with_real_joint_probabilities_
     assert sum(answer["probabilities"].values()) == pytest.approx(1)
     trace = result["hierarchy"]
     assert trace["probabilities_semantics"] == SEMANTICS
-    assert trace["heads"]["click_target"]["group_probabilities"]["group0"] == 0.4
+    # Normalization may differ by one ULP across Python summation implementations.
+    assert trace["heads"]["click_target"]["group_probabilities"]["group0"] == pytest.approx(
+        0.4, rel=0, abs=1e-15
+    )
     assert trace["backend_predict_batch_calls"] == 1
     assert trace["backend_predict_calls"] == 0
     assert trace["planned_stage_predictions"] == 6
