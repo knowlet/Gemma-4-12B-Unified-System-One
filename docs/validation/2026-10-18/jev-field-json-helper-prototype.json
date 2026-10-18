@@ -1,0 +1,56 @@
+{
+  "status": "new_standalone_helper_source_validated_not_native_qualified",
+  "change": "Add a request-bound JSON field helper using the complete native Unicode token grammar, actual EOS and unmodified128-token/20-second limits. The original qualified helper and all existing qualification paths remain unchanged.",
+  "implementation": [
+    "Authenticate original tokenizer/cache/decoder/guard source and full native vocabulary before preparing helper.",
+    "Constrain native token choices to exactly one JSON text string or null; no answer whitelist, output repair or invented EOS.",
+    "Use original base context to disable the action LoRA, retain original raw IDs/decoder output and verify restoration before returning a value.",
+    "Include durable evidence and restoration in the20-second response gate.",
+    "Bind exact immutable grammar-cache field references, class/shape and backend serialization; refuse changed cache methods or Rust decoder."
+  ],
+  "validation": {
+    "pure_fake_LM_tests": 74,
+    "test_seconds": 322.67,
+    "Ruff_check": "PASS",
+    "Ruff_format": "PASS",
+    "H1_mutation_gaps_reproduced_before_any_forward": 3,
+    "H2_added_negative_cases": 16,
+    "actual_HFTokenizer_metadata": "GemmaTokenizer class/origin and complete262144 vocabulary/backend JSON match pinned metadata; pad0/eos1/bos2/cleanupFalse.",
+    "metadata_probe_seconds": 11.068329102999996,
+    "metadata_network_and_weight_reads": 0,
+    "metadata_CUDA_initialized": false
+  },
+  "evidence": [
+    {
+      "path": "scripts/jev_field_json_helper.py",
+      "sha256": "350e062e208635e5eabce8446a61f97de6c7aa100d2c26d3a3a64fe5f96f07c2",
+      "size_bytes": 26991
+    },
+    {
+      "path": "tests/test_jev_field_json_helper.py",
+      "sha256": "49f135e92fd3a1c5eb022ad0a83c1d3899b6c1c03d2b74ac3554f130186b4adb",
+      "size_bytes": 31084
+    },
+    {
+      "path": "artifacts/jev-runtime/field-json-helper-20261018-01/source-HOLD-02/HOLD.json",
+      "sha256": "fe281b41b34a74d774527e762e4e50ded30b72c82e6b93dafe9dde7548eacc67",
+      "size_bytes": 4307
+    },
+    {
+      "path": "artifacts/jev-runtime/field-json-helper-20261018-01/result-02.json",
+      "sha256": "01562307d096520132d77b9c6cf89fa0540fedfb83f776f8fd2d44f9f1647830",
+      "size_bytes": 10722
+    },
+    {
+      "path": "artifacts/jev-runtime/field-json-helper-20261018-01/root-review-02.json",
+      "sha256": "22421c543de9558c92542c26fe10885d579997a6e11c6539cda081c5e8c3e1e1",
+      "size_bytes": 1057
+    }
+  ],
+  "limits": [
+    "Fake LM tests are not native model generation, real PEFT restoration, latency or browser success evidence.",
+    "The actual tokenizer metadata probe imports Torch but does not initialize CUDA or load model weights.",
+    "No existing browser helper was switched and no new helper qualification or model improvement is claimed."
+  ],
+  "next": "Run five fixed same-context original/new native generation pairs, including the exposed PubMed formatting failure; judge strict format, semantic value, refusal and time separately."
+}
