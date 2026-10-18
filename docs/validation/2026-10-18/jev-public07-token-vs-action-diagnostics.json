@@ -1,0 +1,60 @@
+{
+  "schema_id": "jev-public07-token-vs-action-diagnostics-v1",
+  "stage": "existing142row_CPU_audit_complete_no_new_fit",
+  "audit_source": {
+    "path": "artifacts/jev-runtime/public-native-cfg-decision-loss-20261018-01/audit_compiled_cfg_positions.py",
+    "sha256": "684537668df861d2bcebad31a7af10a81e94cc72aef5578ff81c2ea29e6d21e7",
+    "size_bytes": 11848
+  },
+  "summary": {
+    "path": "artifacts/jev-runtime/public-native-cfg-decision-loss-20261018-01/actual-audit-01/summary.json",
+    "sha256": "53691b89aea94e8e705603a2927f20734a8c3405ce885be137e709dede0dd138",
+    "size_bytes": 2851
+  },
+  "complete_per_case_masks": {
+    "path": "artifacts/jev-runtime/public-native-cfg-decision-loss-20261018-01/actual-audit-01/per-case.jsonl",
+    "sha256": "0e0cebc0a4e4eaa1704e05b2222213f8cb8a8036ba5b160e832e505c61c2922b",
+    "size_bytes": 1152921
+  },
+  "proposal": {
+    "path": "artifacts/jev-runtime/public-native-cfg-decision-loss-20261018-01/proposal.md",
+    "sha256": "beaf9dce382788f080e57cf3066d3c48ea66687d24c14707b66edb6609701173",
+    "size_bytes": 9669
+  },
+  "existing240_development_metrics": {
+    "path": "artifacts/jev-runtime/public-native-action-epoch-ablation-20261018-01/actual-fit-240-02-parallel-cli/public07-h200-240-20261018-01-fit/fit/development.jsonl",
+    "sha256": "35da58ca02a758900b9cf822f87df235820225ad7918eb3c91d8775234e4a6fd",
+    "size_bytes": 5755
+  },
+  "counts": {
+    "train": {
+      "rows": 120,
+      "target_tokens": 1396,
+      "forced_singleton_tokens": 1124,
+      "legal_branch_tokens": 272
+    },
+    "development": {
+      "rows": 22,
+      "target_tokens": 236,
+      "forced_singleton_tokens": 192,
+      "legal_branch_tokens": 44
+    }
+  },
+  "observed240_metrics": {
+    "teacher_forced_correct_tokens": 230,
+    "teacher_forced_target_tokens": 236,
+    "teacher_forced_token_accuracy_percent": 97.45762711864407,
+    "exact_sequences": 16,
+    "development_requests": 22,
+    "native_generated_action_agreement": "16/22, equal to120",
+    "real_browser_known": "1/4",
+    "real_browser_new": "3/6"
+  },
+  "interpretation": "Token-level accuracy is a different grain from complete actions and browser task completion. Most target positions are CFG-forced during inference; their loss/gradient contributions have not been measured. These data do not establish that this loss caused browser failures.",
+  "grammar_integrity": "Actual LegalActionTokenTrie public callback, complete request-only candidates, every teacher path validated, all142prefix/target/combined token sequences matched. No manual punctuation mask: quote/brace token25938 sometimes distinguishes target1 from10..19.",
+  "audit_environment": "Existing Rust Tokenizers0.23.3 and a conservative special-ID proxy. Exact saved-token parity established for these142rows; not a replacement loaded native processor contract for arbitrary inputs.",
+  "next_experiment": "Separately versioned B=full-vocabulary branch-position mean CE and C=actual-allowed-set branch-position mean CE. Preserve complete causal inputs/all projection positions/old frozen source90_91. Matched A/C alone is a combined objective change; no quality benefit claimed before new qualification and browser evaluation.",
+  "model_or_GPU_calls_in_audit": 0,
+  "optimizer_updates_in_audit": 0,
+  "browser_model_improvement_attested": false
+}
