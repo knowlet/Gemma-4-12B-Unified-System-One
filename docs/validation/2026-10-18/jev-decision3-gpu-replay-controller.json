@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-18",
+  "evaluation": {
+    "browser_rollout": false,
+    "cases": 22,
+    "gold_used_for_runtime_selection": false,
+    "helper_calls": 0,
+    "holdout": false,
+    "input": "actual07 public development22 saved browser-state wires",
+    "operations": {
+      "CLICK": 12,
+      "DONE": 8,
+      "SCROLL": 2
+    },
+    "raw_late_results_preserved": true,
+    "request_deadline_seconds": 20
+  },
+  "independent_review": {
+    "path": "artifacts/jev-runtime/decision3-public-dev22-gpu-replay-20261016-01/independent-source-review-03.json",
+    "sha256": "0da789796f3aa856961eea4d9bf856878c0865a65877049a58de570d12e32fca",
+    "size_bytes": 2989
+  },
+  "integrity": {
+    "all_checkpoint_shards_and_readout_validated": true,
+    "fresh_process_per_model": true,
+    "full_conservative_resource_floor_at_every_gate": true,
+    "initial_durable_resource_refusal_allows_next_smaller_model": true,
+    "owned_process_group_exit_before_next_model": true,
+    "resident_and_swap_memory_credit_bytes": 0,
+    "same_physical_gpu_uuid_required": true,
+    "secondary_fatal_and_cleanup_errors_stop_campaign": true,
+    "unknown_cgroup_refused": true
+  },
+  "models_in_order": [
+    "d3",
+    "d3-flash",
+    "d3-mini",
+    "d3-nano",
+    "d3-lite",
+    "d3-edge"
+  ],
+  "scope": "Pure tests use fake workers/backends/CUDA; no model was loaded and no performance result is inferred. Actual six-model GPU replay and model-owned Jev browser tasks remain required.",
+  "sources": [
+    {
+      "path": "scripts/jev_decision3_public_dev22_gpu_replay.py",
+      "sha256": "69baedec7efeb7b361ef0b9f8d3c7fdcc70aac30cc19ffba3a74b2a88f54a029",
+      "size_bytes": 57765
+    },
+    {
+      "path": "tests/test_jev_decision3_gpu_replay.py",
+      "sha256": "dc45cfac218ac42f2d92636172c8332d2a698d967cc372e2c2a23763b086700a",
+      "size_bytes": 28099
+    }
+  ],
+  "status": "controller_implemented_and_pure_tests_passed_gpu_replay_pending",
+  "validation": {
+    "decision3_replay_tests": 12,
+    "elapsed_seconds": 0.71,
+    "modal_boundary_tests": 8,
+    "passed_subtests": 39,
+    "passed_tests": 20,
+    "pytest_command": ".venv/bin/python -B -m pytest -q -p no:cacheprovider tests/test_jev_decision3_gpu_replay.py tests/test_public_action_modal_fit.py",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed"
+  }
+}
