@@ -44,6 +44,11 @@ MAX_BODY, MAX_FRAME, MAX_LOG = 1_000_000, 16 * 1024**2, 16 * 1024**2
 SECONDS, WATCHDOG = 20.0, 1800.0
 SOURCE_SCHEMA = "decision3-browser-source-inventory-v1"
 WEIGHT_SCHEMA = "decision3-browser-complete-weight-profile-v1"
+LIFECYCLE_SCHEMA = "decision3-browser-arm-lifecycle-v2"
+
+
+class ArmRequestFailure(ValueError):
+    """An authenticated refused or late request blocks this arm until explicit end."""
 
 
 def require(condition, message):
@@ -271,6 +276,94 @@ def gpu_identity():
     return {"name": name, "uuid": uuid}
 
 
+def closed_worker_success(closed, *, model, nonce, pid, gpu_uuid, returncode):
+    """Authenticate a terminal arm receipt, independently of its performance outcome."""
+    require(type(closed) is dict and closed.get("event") == "closed", "Actual CLOSED required")
+    receipt = closed.get("receipt")
+    require(type(receipt) is dict, "Complete actual worker receipt required")
+
+    def same_uuid(value):
+        return (
+            type(value) is str
+            and value.removeprefix("GPU-").lower() == gpu_uuid.removeprefix("GPU-").lower()
+        )
+
+    require(
+        receipt.get("profile") == literal(WORKER, "PROFILE")
+        and receipt.get("model") == receipt.get("alias") == model
+        and receipt.get("nonce") == nonce
+        and type(receipt.get("pid")) is int
+        and receipt["pid"] == pid
+        and same_uuid(receipt.get("gpu_uuid")),
+        "Final worker identity differs",
+    )
+    require(
+        receipt.get("secondary_errors") == []
+        and receipt.get("network_attempts_blocked") == []
+        and same_uuid((receipt.get("final_resources") or {}).get("cuda", {}).get("uuid"))
+        and type(receipt.get("cache_before")) is dict
+        and receipt["cache_before"].get("full_payload_sha256_authenticated") is True
+        and receipt["cache_before"] == receipt.get("cache_after"),
+        "Final worker source/cache/resource cleanup is not clean",
+    )
+    successful = (
+        closed.get("success") is True
+        and closed.get("campaign_stop") is False
+        and receipt.get("stage") == "complete"
+        and receipt.get("success") is True
+        and receipt.get("campaign_stop") is False
+        and receipt.get("error") is None
+    )
+    failed = (
+        closed.get("success") is False
+        and closed.get("campaign_stop") is True
+        and receipt.get("stage") == "failed"
+        and receipt.get("success") is False
+        and receipt.get("campaign_stop") is True
+    )
+    require(successful or failed, "Inconsistent terminal worker outcome")
+    require(
+        type(returncode) is int and returncode == (0 if successful else 1),
+        "Unexpected owned worker return code",
+    )
+    if failed:
+        response = receipt.get("failed_request_response")
+        require(
+            type(response) is dict
+            and response.get("event") == "response"
+            and response.get("model") == model
+            and response.get("nonce") == nonce
+            and same_uuid(response.get("gpu_uuid"))
+            and response.get("success") is False
+            and response.get("campaign_stop") is True
+            and response.get("wire_body_utf8") is None,
+            "Authenticated failed request required for arm continuation",
+        )
+        journal, requests = response.get("journal"), receipt.get("requests")
+        require(
+            type(journal) is dict
+            and type(response.get("request_id")) is str
+            and response["request_id"]
+            and type(response.get("http_sha256")) is str
+            and re.fullmatch(r"[0-9a-f]{64}", response["http_sha256"])
+            and journal.get("request_id") == response["request_id"]
+            and journal.get("http_sha256") == response["http_sha256"]
+            and journal.get("model") == model
+            and journal.get("nonce") == nonce
+            and same_uuid(journal.get("gpu_uuid"))
+            and type(journal.get("error")) is dict
+            and receipt.get("error") == journal["error"]
+            and type(requests) is list
+            and requests
+            and requests[-1].get("request_id") == response.get("request_id")
+            and requests[-1].get("http_sha256") == response.get("http_sha256")
+            and requests[-1].get("success") is False
+            and requests[-1].get("campaign_stop") is True,
+            "Final failed request evidence differs",
+        )
+    return successful
+
+
 class Session:
     """One SDK parent allocation, six ordered fresh owned model subprocesses."""
 
@@ -337,18 +430,22 @@ class Session:
             primary.decision3_initialization_failure = failed
             raise
         self.sequence, self.next_arm, self.active, self.blocked = 0, 0, None, False
+        self.halted, self.lifecycle_errors = False, []
+        self.last_returncode = None
         self.process, self.stderr, self.buffer, self.marker = None, None, b"", None
         self.start_ticks, self.closures, self.observations = None, [], []
         self.last_control, self.identity_errors, self.protocol_history = None, [], []
 
     def check(self, nonce, *, cleanup=False):
+        if nonce != self.nonce:
+            self.halted = self.blocked = True
         require(
             nonce == self.nonce, "Persistent allocation nonce differs; no automatic replacement"
         )
         try:
             require(gpu_identity() == self.gpu, "Persistent H200 UUID changed")
         except BaseException as exc:
-            self.blocked = True
+            self.halted = self.blocked = True
             self.identity_errors.append({"type": type(exc).__name__, "message": str(exc)})
             if not cleanup or not isinstance(exc, Exception):
                 raise
@@ -477,7 +574,7 @@ class Session:
             "group_safe_to_signal": bool(group_members) and group_members <= owned,
         }
         if unknown:
-            self.blocked = True
+            self.halted = self.blocked = True
         self.observations.append(row)
         self.observations = self.observations[-16:]
         return row
@@ -533,7 +630,8 @@ class Session:
         if nonce is not None:
             self.check(nonce)
         require(
-            not self.blocked
+            not self.halted
+            and not self.blocked
             and self.active is None
             and self.next_arm < len(MODELS)
             and model == MODELS[self.next_arm],
@@ -556,6 +654,7 @@ class Session:
         self.core.write(arm / "config.json", config)
         self.stderr = arm / "stderr.log"
         self.marker = self.nonce + ":" + model
+        self.last_returncode = None
         environment = self.staging.child_environment("replay")
         environment["JEV_D3_BROWSER_OWNER"] = self.marker
         try:
@@ -593,7 +692,7 @@ class Session:
                 "ready": ready,
             }
         except BaseException as primary:
-            self.blocked = True
+            self.halted = self.blocked = True
             try:
                 self.reap()
             except BaseException as secondary:
@@ -604,7 +703,8 @@ class Session:
         started = time.monotonic()
         self.check(nonce)
         require(
-            not self.blocked
+            not self.halted
+            and not self.blocked
             and self.active is not None
             and type(body) is bytes
             and len(body) <= MAX_BODY
@@ -653,7 +753,7 @@ class Session:
                 )
             return result
         except BaseException as primary:
-            self.blocked = True
+            self.halted = self.blocked = True
             raw = self.last_control
             cleanup_error = None
             try:
@@ -685,7 +785,9 @@ class Session:
     def end(self, nonce):
         self.check(nonce, cleanup=True)
         require(self.process is not None, "No active owned arm")
-        model, closed, confirmed = self.active, None, False
+        model, pid, closed, confirmed = self.active, self.process.pid, None, False
+        arm_request_blocked = self.blocked
+        successful, errors = False, []
         try:
             if self.process.poll() is None:
                 try:
@@ -696,7 +798,7 @@ class Session:
             closed = self.read_control()
             require(closed["event"] == "closed", "Actual final worker receipt required")
         except BaseException as exc:
-            self.blocked = True
+            self.halted = self.blocked = True
             closed = {
                 "event": "closed",
                 "success": False,
@@ -707,31 +809,50 @@ class Session:
             try:
                 confirmed = self.reap()
             except BaseException as exc:
-                self.blocked = True
-                closed = closed or {"event": "closed", "success": False, "campaign_stop": True}
-                closed.setdefault("cleanup_errors", []).append(
-                    {"type": type(exc).__name__, "message": str(exc)}
+                self.halted = self.blocked = True
+                errors.append(
+                    {"stage": "owned_reap", "type": type(exc).__name__, "message": str(exc)}
                 )
+        try:
+            self.check(nonce, cleanup=True)
+            validate_inventory(encode(self.manifest))
+            successful = closed_worker_success(
+                closed,
+                model=model,
+                nonce=self.nonce,
+                pid=pid,
+                gpu_uuid=self.gpu["uuid"],
+                returncode=getattr(self, "last_returncode", None),
+            )
+        except BaseException as exc:
+            self.halted = self.blocked = True
+            errors.append(
+                {"stage": "closure_authentication", "type": type(exc).__name__, "message": str(exc)}
+            )
         self.active = None
-        success = (
-            confirmed
-            and self.last_returncode == 0
-            and closed.get("success") is True
-            and closed.get("campaign_stop") is False
-            and not self.blocked
-        )
-        self.blocked = not success
+        continuation = confirmed and not self.halted
+        self.blocked = not continuation
         record = {
+            "schema_id": LIFECYCLE_SCHEMA,
+            "nonce": self.nonce,
             "model": model,
             "owned_exit_confirmed": confirmed,
             "returncode": getattr(self, "last_returncode", None),
             "worker": closed,
-            "success": success,
+            "success": successful and not arm_request_blocked and not self.halted,
+            "continuation_authorized": continuation,
+            "hard_halted": self.halted,
+            "lifecycle_errors": errors,
             "gpu": self.gpu,
         }
         self.closures.append(record)
-        self.record("arm-closures.json", self.closures)
-        if success:
+        self.lifecycle_errors.extend(errors)
+        try:
+            self.record("arm-closures.json", self.closures)
+        except BaseException:
+            self.halted = self.blocked = True
+            raise
+        if continuation:
             self.next_arm += 1
         return record
 
@@ -742,17 +863,30 @@ class Session:
         confirmed = self.process is None and all(
             row["owned_exit_confirmed"] for row in self.closures
         )
-        self.blocked = self.blocked or not confirmed
-        validate_inventory(encode(self.manifest))
+        self.halted = self.halted or not confirmed
+        try:
+            validate_inventory(encode(self.manifest))
+        except BaseException:
+            self.halted = self.blocked = True
+            raise
+        completed = not self.halted and self.next_arm == len(MODELS)
+        successful = completed and all(row["success"] for row in self.closures)
         receipt = {
-            "stage": "complete" if not self.blocked and self.next_arm == 6 else "stopped",
-            "success": not self.blocked and self.next_arm == 6,
+            "schema_id": LIFECYCLE_SCHEMA,
+            "stage": ("complete" if successful else "complete_with_failures")
+            if completed
+            else "stopped",
+            "success": successful,
+            "completed": completed,
+            "hard_halted": self.halted,
             "owned_exit_confirmed": confirmed,
             "gpu": self.gpu,
             "nonce": self.nonce,
             "identity_errors": self.identity_errors,
+            "lifecycle_errors": self.lifecycle_errors,
             "arms": self.closures,
             "unrun": list(MODELS[self.next_arm :]),
+            "failed_models": [row["model"] for row in self.closures if not row["success"]],
             "helper_calls": 0,
             "optimizer_updates": 0,
             "task_score": None,
@@ -782,14 +916,153 @@ class Gateway:
             clock,
         )
         self.lock, self.blocked, self.active, self.nonce = threading.Lock(), False, None, None
+        self.halted, self.gpu, self.pid = False, None, None
         self.counter, self.counter_lock = 0, threading.Lock()
 
-    def request(self, body, *, started=None):
+    def accept_begin(self, reply):
+        """Bind the actual ready allocation; this cannot clear an earlier halt."""
+        try:
+            require(
+                not self.halted
+                and not self.blocked
+                and self.active is None
+                and reply.get("success") is True
+                and reply.get("model") in MODELS
+                and type(reply.get("nonce")) is str
+                and (self.nonce is None or reply["nonce"] == self.nonce)
+                and type(reply.get("gpu")) is dict
+                and type(reply["gpu"].get("uuid")) is str
+                and reply["gpu"]["uuid"].startswith("GPU-")
+                and (self.gpu is None or reply["gpu"] == self.gpu),
+                "Actual ready allocation binding differs",
+            )
+            ready = reply.get("ready")
+            require(
+                type(ready) is dict
+                and ready.get("event") == "ready"
+                and ready.get("model") == ready.get("alias") == reply["model"]
+                and ready.get("nonce") == reply["nonce"]
+                and type(ready.get("pid")) is int
+                and ready["pid"] > 0
+                and ready.get("gpu_uuid") == reply["gpu"]["uuid"],
+                "Actual ready worker binding differs",
+            )
+            self.nonce, self.active, self.gpu = reply["nonce"], reply["model"], reply["gpu"]
+            self.pid = ready["pid"]
+        except BaseException:
+            self.halted = self.blocked = True
+            raise
+
+    def accept_end(self, reply):
+        """Only a bound durable v2 closure may release an arm's request block."""
+        try:
+            require(
+                reply.get("schema_id") == LIFECYCLE_SCHEMA
+                and self.active is not None
+                and reply.get("model") == self.active
+                and reply.get("nonce") == self.nonce
+                and self.gpu is not None
+                and reply.get("gpu") == self.gpu
+                and type(reply.get("success")) is bool
+                and type(reply.get("continuation_authorized")) is bool
+                and type(reply.get("hard_halted")) is bool,
+                "Explicit arm closure binding differs",
+            )
+            worker_success = closed_worker_success(
+                reply.get("worker"),
+                model=self.active,
+                nonce=self.nonce,
+                pid=self.pid,
+                gpu_uuid=self.gpu["uuid"],
+                returncode=reply.get("returncode"),
+            )
+            require(
+                not reply["success"] or worker_success,
+                "Failed worker outcome cannot become success",
+            )
+            authorized = (
+                reply["continuation_authorized"] is True
+                and reply.get("owned_exit_confirmed") is True
+                and reply["hard_halted"] is False
+                and not self.halted
+            )
+            local_result = {
+                **reply,
+                "gateway_arm_success": reply["success"] and not self.blocked and not self.halted,
+                "gateway_arm_request_blocked": self.blocked,
+            }
+            self.active = None
+            self.pid = None
+            self.halted = self.halted or not authorized
+            self.blocked = not authorized
+            return local_result
+        except BaseException:
+            self.halted = self.blocked = True
+            raise
+
+    def delivery_failed(self, exc, *, status, response, evidence):
+        """Record delivery against its immutable response, never a later arm's state."""
+        known, validation_error, request_pin = False, None, None
+        request_id = secrets.token_hex(16)
+        try:
+            require(type(evidence) is dict, "Bound response evidence required")
+            selected = evidence["request_id"]
+            require(
+                type(selected) is str and re.fullmatch(r"[0-9a-f]{32}", selected),
+                "Bound delivery request ID required",
+            )
+            request_id = selected
+            path = ordinary(self.output / "requests" / (selected + ".json"))
+            request_pin = pin(path)
+            require(request_pin == evidence["request_pin"], "Durable request receipt changed")
+            row = parse(path.read_bytes())
+            require(
+                evidence["status"] == status
+                and evidence["response_sha256"] == hashlib.sha256(response).hexdigest()
+                and all(
+                    row.get(key) == evidence.get(key)
+                    for key in ("request_id", "http_sha256", "model", "nonce")
+                ),
+                "Response delivery binding differs",
+            )
+            known = (
+                evidence.get("known_no_action_failure") is True
+                and status != 200
+                and row.get("gateway_action_authorized") is False
+            )
+        except Exception as error:
+            validation_error = {"type": type(error).__name__, "message": str(error)[:2048]}
+        if not known:
+            with self.lock:
+                self.halted = self.blocked = True
+        receipt = {
+            "schema_id": "decision3-browser-response-delivery-v1",
+            "lifecycle_schema_id": LIFECYCLE_SCHEMA,
+            "request_id": request_id,
+            "http_sha256": evidence.get("http_sha256") if type(evidence) is dict else None,
+            "model": evidence.get("model") if type(evidence) is dict else None,
+            "nonce": evidence.get("nonce") if type(evidence) is dict else None,
+            "status": status,
+            "response_sha256": hashlib.sha256(response).hexdigest(),
+            "request_pin": request_pin,
+            "known_no_action_failure": known,
+            "error": {"type": type(exc).__name__, "message": str(exc)[:2048]},
+            "validation_error": validation_error,
+        }
+        try:
+            save(self.output / "http-delivery-errors" / (request_id + ".json"), receipt)
+        except BaseException:
+            with self.lock:
+                self.halted = self.blocked = True
+            raise
+        return receipt
+
+    def request(self, body, *, started=None, delivery_evidence=None):
         started = self.clock() if started is None else started
         require(type(body) is bytes and len(body) <= MAX_BODY, "Bounded original request required")
         with self.counter_lock:
             if self.counter >= 6 * 192:
-                self.blocked = True
+                self.halted = self.blocked = True
                 return 503, encode(
                     {"detail": "Bounded campaign request inventory exhausted; no action"}
                 )
@@ -800,14 +1073,40 @@ class Gateway:
             "raw_http_hex": body.hex(),
             "http_sha256": hashlib.sha256(body).hexdigest(),
             "model": self.active,
+            "nonce": self.nonce,
+            "lifecycle_schema_id": LIFECYCLE_SCHEMA,
             "helper": self.helper,
             "timing_scope": "local handler entry through observable queue, RPC, conversion, body encoding and durable evidence; excludes socket accept queue, response delivery, client RTT and upstream retries",
             "gateway_action_authorized": False,
         }
         status, response = 503, {"detail": "Decision service unavailable; no action"}
+
+        def bind_delivery(status, response, *, no_action_snapshot=None):
+            if delivery_evidence is not None:
+                saved = encode(row)
+                delivery_evidence.update(
+                    **{key: row[key] for key in ("request_id", "http_sha256", "model", "nonce")},
+                    status=status,
+                    response_sha256=hashlib.sha256(response).hexdigest(),
+                    request_pin={
+                        "sha256": hashlib.sha256(saved).hexdigest(),
+                        "size_bytes": len(saved),
+                    },
+                    known_no_action_failure=(
+                        status != 200
+                        and row["gateway_action_authorized"] is False
+                        and (
+                            self.blocked and not self.halted
+                            if no_action_snapshot is None
+                            else no_action_snapshot
+                        )
+                    ),
+                )
+
         acquired = self.lock.acquire(timeout=max(0, SECONDS - (self.clock() - started)))
         if not acquired:
             self.blocked = True
+            no_action_snapshot = not self.halted
             row.update(
                 error={
                     "type": "TimeoutError",
@@ -815,12 +1114,22 @@ class Gateway:
                 },
                 gateway_elapsed_seconds=self.clock() - started,
             )
-            save(self.output / "requests" / (request_id + ".json"), row)
-            return 504, encode({"detail": "Local queue deadline exceeded; no action"})
+            try:
+                save(self.output / "requests" / (request_id + ".json"), row)
+            except BaseException:
+                self.halted = True
+                raise
+            response = encode({"detail": "Local queue deadline exceeded; no action"})
+            bind_delivery(504, response, no_action_snapshot=no_action_snapshot)
+            return 504, response
         try:
+            previously_blocked = self.blocked
             try:
                 require(
-                    not self.blocked and self.active is not None and self.nonce is not None,
+                    not self.halted
+                    and not self.blocked
+                    and self.active is not None
+                    and self.nonce is not None,
                     "No ready active arm",
                 )
                 require(
@@ -833,7 +1142,8 @@ class Gateway:
                     "Original model alias must match the active arm",
                 )
                 remaining = SECONDS - (self.clock() - started)
-                require(remaining > 0, "Local decode/queue deadline exceeded")
+                if remaining <= 0:
+                    raise ArmRequestFailure("Local decode/queue deadline exceeded")
                 result = self.rpc(self.nonce, request_id, body, remaining)
                 row["rpc"] = result
                 require(
@@ -843,6 +1153,12 @@ class Gateway:
                     and result["model"] == self.active,
                     "Authenticated RPC response identity differs",
                 )
+                if (
+                    result.get("success") is False
+                    and result.get("campaign_stop") is True
+                    and result.get("wire_body_utf8") is None
+                ):
+                    raise ArmRequestFailure("Worker refused or returned late; no action")
                 require(
                     result.get("success") is True
                     and result.get("campaign_stop") is False
@@ -853,14 +1169,16 @@ class Gateway:
                 require(len(candidate) <= MAX_FRAME, "Bounded native wire response required")
                 row["gateway_elapsed_seconds"] = self.clock() - started
                 save(self.output / "requests" / (request_id + ".json"), row)
-                require(
-                    self.clock() - started < SECONDS,
-                    "Full gateway20s exceeded; raw response retained, no action",
-                )
+                if self.clock() - started >= SECONDS:
+                    raise ArmRequestFailure(
+                        "Full gateway20s exceeded; raw response retained, no action"
+                    )
                 status, response = 200, candidate
                 row["gateway_action_authorized"] = True
             except BaseException as exc:
                 self.blocked = True
+                if not previously_blocked and not isinstance(exc, ArmRequestFailure):
+                    self.halted = True
                 row["error"] = {"type": type(exc).__name__, "message": str(exc)}
                 status, response = (
                     504,
@@ -876,7 +1194,21 @@ class Gateway:
                 row.update(gateway_action_authorized=False, late_after_final_evidence=True)
                 save(self.output / "requests" / (request_id + ".json"), row)
                 status, response = 504, {"detail": "Final evidence exceeded gateway20s; no action"}
-            return status, response if type(response) is bytes else encode(response)
+            response = response if type(response) is bytes else encode(response)
+            bind_delivery(status, response)
+            if status == 200 and self.clock() - started >= SECONDS:
+                self.blocked = True
+                row.update(gateway_action_authorized=False, late_after_response_binding=True)
+                save(self.output / "requests" / (request_id + ".json"), row)
+                status, response = (
+                    504,
+                    encode({"detail": "Final response binding exceeded gateway20s; no action"}),
+                )
+                bind_delivery(status, response)
+            return status, response
+        except BaseException:
+            self.halted = self.blocked = True
+            raise
         finally:
             self.lock.release()
 
@@ -894,7 +1226,7 @@ def http_server(gateway, token):
             if not secrets.compare_digest(self.headers.get("Authorization", ""), "Bearer " + token):
                 self.send_error(401)
                 return
-            body = b""
+            body, delivery_evidence = b"", {}
             try:
                 length = int(self.headers.get("Content-Length", "-1"))
                 require(
@@ -909,9 +1241,11 @@ def http_server(gateway, token):
                     require(chunk, "Incomplete HTTP body")
                     body += chunk
                 require(len(body) == length, "Incomplete HTTP body")
-                status, response = gateway.request(body, started=started)
+                status, response = gateway.request(
+                    body, started=started, delivery_evidence=delivery_evidence
+                )
             except Exception as exc:
-                gateway.blocked = True
+                gateway.halted = gateway.blocked = True
                 save(
                     gateway.output / "http-errors" / (secrets.token_hex(16) + ".json"),
                     {
@@ -922,14 +1256,16 @@ def http_server(gateway, token):
                     },
                 )
                 status, response = 400, encode({"detail": "Malformed request; no action"})
-            self.send_response(status)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Content-Length", str(len(response)))
-            self.end_headers()
             try:
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(response)))
+                self.end_headers()
                 self.wfile.write(response)
-            except OSError:
-                gateway.blocked = True
+            except OSError as exc:
+                gateway.delivery_failed(
+                    exc, status=status, response=response, evidence=delivery_evidence
+                )
 
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     server.daemon_threads = False
@@ -946,6 +1282,7 @@ def prepare(output):
         output / "plan.json",
         {
             "stage": "prospective_not_executed",
+            "lifecycle_schema_id": LIFECYCLE_SCHEMA,
             "source_files": 17,
             "models": list(MODELS),
             "weight_profile_schema": WEIGHT_SCHEMA,
@@ -1134,6 +1471,7 @@ def main(
                 "policy": f"http://127.0.0.1:{server.server_port}/v1/systemone",
                 "token_file": str(private),
                 "helper": helper,
+                "lifecycle_schema_id": LIFECYCLE_SCHEMA,
                 "control": "Write control-0001.json, control-0002.json... with action begin/model, end, or close. No policy request changes an arm.",
             },
         )
@@ -1147,8 +1485,8 @@ def main(
                 action = payload["action"]
                 if action == "begin":
                     require(
-                        not gateway.blocked and gateway.active is None,
-                        "Previous arm must close successfully",
+                        not gateway.halted and not gateway.blocked and gateway.active is None,
+                        "Previous arm needs explicit authenticated safe closure",
                     )
                     begin_attempted = True
                     reply = remote.begin.remote(
@@ -1159,11 +1497,12 @@ def main(
                         weight_profile_sha256,
                         gateway.nonce,
                     )
-                    gateway.nonce, gateway.active = reply["nonce"], reply["model"]
+                    gateway.accept_begin(reply)
                 elif action == "end":
                     reply = remote.end.remote(gateway.nonce)
-                    gateway.active = None
-                    gateway.blocked = gateway.blocked or not reply["success"]
+                    # Retain the actual remote end even if local binding refuses it.
+                    save(destination / f"control-{sequence:04d}-receipt.json", reply)
+                    reply = gateway.accept_end(reply)
                 elif action == "close":
                     gateway.active = None
                     reply = remote.close.remote(gateway.nonce)
@@ -1180,7 +1519,7 @@ def main(
                 sequence += 1
     except BaseException as exc:
         primary = exc
-        gateway.blocked = True
+        gateway.halted = gateway.blocked = True
         save(
             destination / "controller-error.json",
             {

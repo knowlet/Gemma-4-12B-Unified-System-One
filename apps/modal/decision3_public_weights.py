@@ -23,7 +23,7 @@ from pathlib import Path
 ROOT = Path("/home/albert_hsieh/Gemma-4-12B-Unified-System-One")
 SCRIPT = ROOT / "apps/modal/decision3_public_weights.py"
 SERVICE = ROOT / "apps/modal/decision3_browser_service.py"
-SERVICE_SHA = "0b4953a09be492f817e83937b487f8f552c81f5dc9a741b576de1828e53503f4"
+SERVICE_SHA = "26f97ed511df198346dde088feee422b7075a1a34c9d6d9da55d53ec4a9c6c80"
 INTERPRETER = "/opt/decision3/bin/python"
 SCHEMA = "decision3-public-cpu-weight-source18-v1"
 MAX_LOG, DEADLINE = 16 * 1024**2, 14400
