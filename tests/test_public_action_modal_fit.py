@@ -33,6 +33,7 @@ def extracted_helpers(tmp_path):
         "complete_cgroup",
         "cgroup_memory",
         "host",
+        "clear_baked_processor_metadata",
         "admit",
         "group_alive",
         "stop_owned",
@@ -83,6 +84,44 @@ def extracted_helpers(tmp_path):
     }
     exec(compile(ast.Module(body=body, type_ignores=[]), str(APP), "exec"), namespace)
     return namespace, export_root
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [None, "unexpected_weight", "unexpected_empty_directory", "wrong_pin", "missing", "symlink"],
+)
+def test_image_mount_cleanup_requires_exact_metadata_before_removing_any_file(tmp_path, fault):
+    namespace, _export = extracted_helpers(tmp_path)
+    hub = tmp_path / "cache/hub"
+    cache = hub / "models--public/snapshots/fixed"
+    cache.mkdir(parents=True)
+    metadata = {}
+    for name, blob in (("config.json", b"{}"), ("tokenizer.json", b"public tokenizer")):
+        (cache / name).write_bytes(blob)
+        metadata[name] = {"sha256": hashlib.sha256(blob).hexdigest(), "size_bytes": len(blob)}
+    namespace.update(HUB=hub, CACHE=cache, BASE_METADATA=metadata)
+    if fault == "unexpected_weight":
+        (cache / "model.safetensors").write_bytes(b"must survive")
+    elif fault == "unexpected_empty_directory":
+        (hub / "unrelated").mkdir()
+    elif fault == "wrong_pin":
+        (cache / "tokenizer.json").write_bytes(b"changed")
+    elif fault == "missing":
+        (cache / "tokenizer.json").unlink()
+    elif fault == "symlink":
+        (cache / "tokenizer.json").unlink()
+        (cache / "tokenizer.json").symlink_to(cache / "config.json")
+    before = {str(p.relative_to(hub)): p.read_bytes() for p in hub.rglob("*") if p.is_file()}
+    before_dirs = {str(p.relative_to(hub)) for p in hub.rglob("*") if p.is_dir()}
+    if fault is None:
+        namespace["clear_baked_processor_metadata"]()
+        assert hub.is_dir() and not list(hub.iterdir())
+    else:
+        with pytest.raises(ValueError):
+            namespace["clear_baked_processor_metadata"]()
+        after = {str(p.relative_to(hub)): p.read_bytes() for p in hub.rglob("*") if p.is_file()}
+        assert before == after
+        assert before_dirs == {str(p.relative_to(hub)) for p in hub.rglob("*") if p.is_dir()}
 
 
 @pytest.mark.parametrize(

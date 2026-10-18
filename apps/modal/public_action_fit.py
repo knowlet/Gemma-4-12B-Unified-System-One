@@ -482,6 +482,47 @@ def reference_environment():
     return artifact.verify_reference_environment(tuple(items), model=None)
 
 
+def clear_baked_processor_metadata():
+    """Empty only the six verified image assets before mounting the HF volume."""
+    expected = {
+        str((CACHE / name).relative_to(HUB)): value
+        for name, value in BASE_METADATA.items()
+        if name not in {"artifact-manifest.json", "s1_config.json"}
+    }
+    allowed_directories = {
+        HUB / parent for name in expected for parent in Path(name).parents if parent != Path(".")
+    }
+    found, directories, pending, entries = {}, [], [ordinary(HUB)], 0
+    while pending:
+        directory = pending.pop()
+        with os.scandir(directory) as children:
+            for entry in children:
+                entries += 1
+                require(entries <= 32 and not entry.is_symlink(), "Bounded ordinary image metadata")
+                path = ordinary(entry.path)
+                if entry.is_dir(follow_symlinks=False):
+                    require(
+                        path in allowed_directories,
+                        "Unexpected image cache directory; keep all bytes",
+                    )
+                    directories.append(path)
+                    pending.append(path)
+                else:
+                    name = str(path.relative_to(HUB))
+                    require(
+                        name in expected, "Image cache contains an unexpected file; keep all bytes"
+                    )
+                    found[name] = pin(path)
+    require(found == expected, "Exact baked processor metadata required before removing any file")
+    # Validate the entire set before changing it; a real base checkpoint or any
+    # extra cache entry causes refusal. This runs only in the image build step.
+    for name in found:
+        (HUB / name).unlink()
+    for directory in sorted(directories, key=lambda value: len(value.parts), reverse=True):
+        directory.rmdir()
+    require(not any(HUB.iterdir()), "Empty image volume mount point required")
+
+
 def install_dependencies():
     closure = authority(REFERENCE / "processor-source-closure.json", CLOSURE_SHA)
     versions = {**closure["versions"], **EXTRA_PACKAGES}
@@ -550,6 +591,7 @@ def install_dependencies():
             not list(base_site.glob(name + "-*.dist-info")),
             "Do not duplicate fixed overlay distribution into base: " + name,
         )
+    clear_baked_processor_metadata()
     return 0
 
 

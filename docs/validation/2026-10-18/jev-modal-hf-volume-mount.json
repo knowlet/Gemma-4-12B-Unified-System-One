@@ -1,0 +1,59 @@
+{
+  "attempt": {
+    "CPU_download_child_started": false,
+    "GPU_fit_started": false,
+    "app_id": "ap-2ShJ166JygKEC5yXPd088C",
+    "authoritative_modal_state": "stopped",
+    "cli_exit_code": 1,
+    "failure": "cannot mount volume on non-empty path: fixed HF hub",
+    "local_upload_gate": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-03/upload-gates.jsonl",
+      "sha256": "1e438c3608ae7d66ad0018b0f181295b9b2744da66125985fbb55615775724a7",
+      "size_bytes": 931
+    },
+    "manifest_bytes": 973498,
+    "named_bytes": 237308893,
+    "named_files": 1452,
+    "named_manifest_remote_prefix": "jev-public07-fit-named-inputs-01/public07-h200-120-20261018-03/manifest.json",
+    "stderr": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/modal-run-03.stderr.log",
+      "sha256": "151d0bfeee06aaf1c05c7926e047e63fc956c2fcbf04b0172f77dd8f6e10d31b",
+      "size_bytes": 3983
+    },
+    "stdout": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/modal-run-03.stdout.log",
+      "sha256": "f6ac4d444ab70da889e313eb629281f0bb3c365e1c58f396d2e4e02ca820c7b5",
+      "size_bytes": 36794
+    },
+    "tasks": 0,
+    "training_updates": 0
+  },
+  "correction": {
+    "action": "after image-only dependency and reference verification, remove only the six exact pinned baked processor metadata files and their exact parent directory set; leave image HF hub empty for the volume mount",
+    "local_cache_or_volume_data_removed": false,
+    "source": {
+      "path": "apps/modal/public_action_fit.py",
+      "sha256": "4aaafccd8c6da760d05d627abd5caa239a37c031770d4d2f657433f267014863",
+      "size_bytes": 44650
+    },
+    "tests": {
+      "path": "tests/test_public_action_modal_fit.py",
+      "sha256": "2981cde7e3dc90ac32754aab5594172776a66674b94d671bd3c45feb1a187e43",
+      "size_bytes": 12851
+    },
+    "training_sources_steps_payload_and_resource_floors": "unchanged",
+    "unexpected_file_or_directory_symlink_missing_file_or_wrong_hash": "refuse before unlink; preserve all bytes and directories"
+  },
+  "date": "2026-10-18",
+  "scope": "Build mount-point correction only; no trained candidate, qualification, browser success or comparative performance result is claimed.",
+  "status": "named_upload_completed_remote_mount_collision_corrected_before_retry",
+  "validation": {
+    "D3_wrapper_pure_tests": 9,
+    "Gemma_boundary_tests": 23,
+    "command": ".venv/bin/python -B -m pytest -q -p no:cacheprovider tests/test_public_action_modal_fit.py tests/test_decision3_modal_replay.py",
+    "elapsed_seconds": 0.83,
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "tests_passed": 32
+  }
+}
