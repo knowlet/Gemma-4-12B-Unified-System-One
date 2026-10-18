@@ -1,0 +1,141 @@
+{
+  "status": "complete_native_runtime_qualification_and_independent_CPU_verification",
+  "qualification_kind": "jev_public_action_field_json_bf16_qualification_v1",
+  "qualification_sha256": "1dfc2c7ab91bf0144f0547b5b144de969310d84944097ac60ec82b1a8d49012c",
+  "scope": "Runtime contract validation of the same240-step policy weights with the new constrained base JSON helper. No browser task score or training gain is attested.",
+  "native_run": {
+    "root_exec": 31159,
+    "exit_code": 0,
+    "runtime_cases": 41,
+    "passed": 41,
+    "HTTP_status_counts": {
+      "200": 36,
+      "422": 2,
+      "404": 3
+    },
+    "all_original_recipes_order_full_inputs_preserved": true,
+    "source_count": 93,
+    "model_loads": 1,
+    "owned_PID": 760525,
+    "whole_owned_exit": true,
+    "total_worker_ms": 384860.0481270114,
+    "max_cooperative_ms": 10538.910456001759,
+    "max_HTTP_ms": 12415.333304990781,
+    "limits_seconds": {
+      "whole_native": 20,
+      "HTTP": 25
+    },
+    "pending_cases": 0,
+    "observer_errors": 0
+  },
+  "native_helper_cases": {
+    "positive": {
+      "raw_output": "{\"text\": \"atlas\"}",
+      "input_tokens": 137,
+      "actual_output_tokens_including_EOS": 7,
+      "actual_callbacks": 7,
+      "native_forwards": 7,
+      "real_EOS": true,
+      "outer_status": 200,
+      "postwrite_outer_ms": 9282.867296016775,
+      "actual_HTTP_ms": 9329.668255988508
+    },
+    "context_overflow": {
+      "input_tokens": 8071,
+      "native_forwards": 0,
+      "callbacks": 0,
+      "status": 422,
+      "adapter_restored": true,
+      "typed_wrapped_error_retained": true,
+      "postwrite_outer_ms": 7973.430566984462
+    },
+    "evidence": "Full original raw IDs, exact262144 masks at every callback, decoder output, EOS, original PEFT disabled/restore phases, durable preauthorization events and postwrite server-selected completion join actual SDK bytes/status."
+  },
+  "physical_invariants": {
+    "all_176_FP32_q_v_tensors_exact": true,
+    "full_frozen_head_sha256": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+    "all_modules_eval": true,
+    "all_parameters_frozen": true,
+    "PEFT_behavior_unchanged": true,
+    "original_memory_floor_formulas": true
+  },
+  "independent_verification": {
+    "CPU_verifier_exec": 8011,
+    "CPU_verifier_exit": 0,
+    "externally_selected_qualification_SHA": true,
+    "full_closed_files": 2081,
+    "full_closed_bytes": 369271041,
+    "root_rehashed_all_files_and_exact_population": true,
+    "all_raw41_and_client41_retained": true,
+    "independent_API_readmission_and_full_masks": true,
+    "fresh_CPU_prepare_inputs_bytes_exact": 1182435,
+    "fresh_CPU_prepare_original_gates": 542,
+    "new_model_or_HTTP_calls_in_verification": 0,
+    "sealing": "Root removed only write bits after complete owned exit and full private closure. Independent preseal index keeps original modes; separate root seal records the transition."
+  },
+  "policy_development": {
+    "agreement": 16,
+    "denominator": 22,
+    "unknown": 0,
+    "scope": "Same exposed native development actions; unchanged16/22, not a browser task score."
+  },
+  "raw_lifecycle": "Original child result worker_exit_confirmed=false is preserved; authenticated parent qualification marks true only after reaping the owned worker and confirming process group absence.",
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/public-field-json-qualification-20261018-01/qualify-01/qualification.json",
+      "sha256": "1dfc2c7ab91bf0144f0547b5b144de969310d84944097ac60ec82b1a8d49012c",
+      "size_bytes": 365009
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-json-qualification-20261018-01/verify-01/verification.json",
+      "sha256": "b456a952173ea561bd41870aef0b0fa68404b4a744a7836597a344bca90db49a",
+      "size_bytes": 192
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-json-qualification-20261018-01/qualify-01/owned-exit.json",
+      "sha256": "e4dc489cd51f4eb4b1b4c01cfd04de4e89b4f8525ff6c26e29057ab6c44cd9c7",
+      "size_bytes": 245
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-json-qualification-20261018-01/qualify-01/run/result.json",
+      "sha256": "e2366f61a737027b950b00a87daa596682df888e6457e9cd7362d915d65685ac",
+      "size_bytes": 15068
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-json-qualification-20261018-01/root-native-result-review-01.json",
+      "sha256": "61cd1f9efca6bd54fbe67e927bbcb84c8370c4b1dd18de922af19828e04c3212",
+      "size_bytes": 903
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-json-qualification-20261018-01/root-qualified-readonly-seal-01.json",
+      "sha256": "dd44dca49e73f268f2a9c2bb279f1d6451cf8fe7d10bb680d6cc79c5cafe4ca6",
+      "size_bytes": 453
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-json-qualification-20261018-01/independent-qualification-review-01/review.json",
+      "sha256": "7dd8d42b2e502c064fb9a04d7e91626351f17cb0ce545bc46db248e816fb69ff",
+      "size_bytes": 25424
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-json-qualification-20261018-01/independent-qualification-review-01/closed-index.json",
+      "sha256": "63b4483ec35ba63ed8e2da8067b1dff3a44c2a8643507d9a46303fb12db20bad",
+      "size_bytes": 379511
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-json-qualification-20261018-01/independent-prepare-review-01/review.json",
+      "sha256": "a3704e5d48c88da8163be2477ed078734ecc98d56251837fe8842dc528a9c77a",
+      "size_bytes": 21575
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-json-qualification-20261018-01/root-prequalification-input-review-01.json",
+      "sha256": "03f5fd73a87dc0aa5311124bb102ab24ccbbcdfe6c5b2c8fc349f50df9a6934d",
+      "size_bytes": 766
+    }
+  ],
+  "next": "Bind a fresh separately qualified owned service and run the complete original known4 then public6 browser suites. A transparent client transport recorder is being reviewed because the old benchmark saved parsed JSON without request headers or full response bytes.",
+  "limits": [
+    "41/41 is service-contract conformance, not task accuracy.",
+    "The native helper probe fixed the exposed PubMed format failure, but the full filter task has not yet been rerun.",
+    "No matched A/C fit, new browser score or victory over another model is claimed."
+  ]
+}
