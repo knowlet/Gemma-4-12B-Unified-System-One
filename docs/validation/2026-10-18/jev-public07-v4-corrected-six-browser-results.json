@@ -1,0 +1,131 @@
+{
+  "schema_id": "jev-public07-v4-corrected-six-browser-results-v1",
+  "status": "entire_six_arm_complete_with_original_helper_profile_restored",
+  "model_child_manifest_sha256": "75b17c0a6bd5c381426e5e872298c915335310d80c24768dc4a0b0f3b1a27362",
+  "model_qualification_sha256": "c1fea3d45a7841c410f9c9c20eba32d3794025611ded8a68eeb9422baab50125",
+  "profile": "composed-visible-controls-v4",
+  "profile_helper_sha256": "f96fb0553c4c8ef1a163633577bfb3ddbb03ddbc1ff6644c36d8fbe2c06d4b43",
+  "TEXT_MODEL_REASONING": "none",
+  "successes": 2,
+  "denominator": 6,
+  "policy_calls": 44,
+  "text_calls": 1,
+  "premature_done_count": 0,
+  "observation_profile_failed": false,
+  "max_decisions": 16,
+  "repeats": 1,
+  "seed": 20261014,
+  "summary": {
+    "path": "artifacts/jev-runtime/public07-six-v4-browser-20261018-02/results/summary.json",
+    "sha256": "c132919489e17edf5c669c2ff847aa91aa751bc92d77621773027f115e3f4702",
+    "size_bytes": 421405
+  },
+  "closed_tree": {
+    "path": "artifacts/jev-runtime/public07-six-v4-browser-20261018-02-closed-index.json",
+    "sha256": "00088ffc95bce7ea9857c281a2ef6ba39cf141e8d7c0e019de082c8647f43e16",
+    "size_bytes": 14309
+  },
+  "closed_files": 79,
+  "closed_bytes": 22660952,
+  "launch_receipt": {
+    "path": "artifacts/jev-runtime/public07-six-v4-browser-20261018-02/runtime-bundle/launch-receipt.json",
+    "sha256": "ddc22ed0e4eea52d8a653858ceee9b8cf3361d626a815d10f4f8a4777a7bb023",
+    "size_bytes": 417
+  },
+  "outcomes": [
+    {
+      "case_id": "heldout-public-000-000",
+      "status": "done",
+      "goal_satisfied": true,
+      "success": true,
+      "error": null,
+      "error_stage": null,
+      "premature_done": false,
+      "policy_calls": 3,
+      "text_calls": 0,
+      "elapsed_ms": 22241
+    },
+    {
+      "case_id": "heldout-public-001-000",
+      "status": "done",
+      "goal_satisfied": true,
+      "success": true,
+      "error": null,
+      "error_stage": null,
+      "premature_done": false,
+      "policy_calls": 3,
+      "text_calls": 0,
+      "elapsed_ms": 24850
+    },
+    {
+      "case_id": "heldout-public-002-000",
+      "status": "ready",
+      "goal_satisfied": false,
+      "success": false,
+      "error": "Runner stopped at the 16-decision budget",
+      "error_stage": "decision_budget",
+      "premature_done": false,
+      "policy_calls": 16,
+      "text_calls": 0,
+      "elapsed_ms": 116324
+    },
+    {
+      "case_id": "heldout-public-003-000",
+      "status": "ready",
+      "goal_satisfied": false,
+      "success": false,
+      "error": "StalePage: Document is navigating",
+      "error_stage": "execution",
+      "premature_done": false,
+      "policy_calls": 10,
+      "text_calls": 0,
+      "elapsed_ms": 88841
+    },
+    {
+      "case_id": "heldout-public-004-000",
+      "status": "blocked",
+      "goal_satisfied": false,
+      "success": false,
+      "error": null,
+      "error_stage": null,
+      "premature_done": false,
+      "policy_calls": 1,
+      "text_calls": 0,
+      "elapsed_ms": 5904
+    },
+    {
+      "case_id": "heldout-public-005-000",
+      "status": "blocked",
+      "goal_satisfied": false,
+      "success": false,
+      "error": null,
+      "error_stage": null,
+      "premature_done": false,
+      "policy_calls": 11,
+      "text_calls": 1,
+      "elapsed_ms": 90749
+    }
+  ],
+  "actual_helper": {
+    "request_reasoning": {
+      "enabled": false
+    },
+    "raw_output": "```json\n{\"text\": \"migraine\"}\n```",
+    "usage": {
+      "input_tokens": 626,
+      "output_tokens": 13
+    },
+    "action_adapter_state": "disabled_for_pinned_base_helper",
+    "successful_HTTP200": true
+  },
+  "observations": [
+    "SQLite and NumPy completed with DONE and the independent final DOM judges. curl again exhausted 16 decisions.",
+    "pandas selected the Series.map link and then the inherited browser observation loop failed with StalePage: Document is navigating; the original success remains 3/6 in v3. Two v4 runs exhibit this navigation failure, but no isolated causal claim about label proxies is made.",
+    "PubMed continuation cleared all filters, changed the query using a successful pinned base helper, then took further unrelated controls and finally BLOCKED. It did not satisfy the original goal. An unexecuted provisional DONE from an intermediate HTTP call is not counted as a premature executed DONE.",
+    "The previous whole v4 run with the omitted reasoning environment remains intact. This is a new whole-six execution, with no selective task reruns or score replacement."
+  ],
+  "profile_improvement_demonstrated": false,
+  "original_v3_score": "3/6, preserved separately",
+  "case005_interface_exposed": true,
+  "blind_generalisation_claim": false
+}
