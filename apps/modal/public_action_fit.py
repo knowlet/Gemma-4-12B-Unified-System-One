@@ -872,6 +872,8 @@ def fit_child(config):
             else:
                 create(target, read(source))
             require(pin(target) == row["pin"], "Materialized input differs")
+    # Source directories were created after process startup; discard negative finders.
+    importlib.invalidate_caches()
     stage_weights(config, output)
     versions = reference_environment()
     admit(output / "preflight-gates.jsonl", "train", config["boot_id"])
@@ -898,6 +900,7 @@ def fit_child(config):
                 "versions": versions,
                 "host": host(),
                 "gpu": gpu.stdout.decode(),
+                "wrapper": pin(SCRIPT),
                 "source_handoff_sha256": HANDOFF_SHA,
                 "manifest_sha256": config["manifest_sha256"],
                 "steps": 120,

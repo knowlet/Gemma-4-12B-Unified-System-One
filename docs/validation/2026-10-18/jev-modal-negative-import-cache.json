@@ -1,0 +1,81 @@
+{
+  "actual_CPU_regression": {
+    "CLI_exit_code": 0,
+    "after_invalidate": {
+      "origin": "/tmp/jev-import-probe-pjs30bmv/src/s1/browser_public_training_validation.py",
+      "target_imported": false
+    },
+    "app_id": "ap-Qj1mU5daAKlHJ3kyMQscUQ",
+    "baseline": {
+      "error": {
+        "message": "No module named 's1'",
+        "name": "s1",
+        "type": "ModuleNotFoundError"
+      },
+      "spec": null
+    },
+    "before_create": {
+      "cache_entry_is_none": true,
+      "cache_entry_present": true,
+      "source_exists": false
+    },
+    "evidence": {
+      "path": "artifacts/jev-runtime/public-native-action-import-cache-probe-20261018-01/actual-cpu-probe-01.json",
+      "sha256": "cdd8ce2be27fbd5ab50a052f823529f3a6ff649af5e7b8d7804803781a5de8a8",
+      "size_bytes": 1474
+    },
+    "interpreter": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+    "model_loads": 0,
+    "owned_exit_confirmed": true,
+    "resources": "1CPU4GiB, no GPU, no volumes, blocked network",
+    "target_module_executed": false,
+    "training_updates": 0
+  },
+  "date": "2026-10-18",
+  "failed_attempt08": {
+    "CLI_exit_code": 1,
+    "app_id": "ap-gzs65ngoJO1A4uCVf8FSoL",
+    "closed_fit_leaf_files_verified": 10,
+    "export_index": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-08/fit-job/export-index.json",
+      "sha256": "4ecf824d74549e4bdcc1638e202597c4d867d10400334899aedfa9526b7bd428",
+      "size_bytes": 1243
+    },
+    "failure": "same No module named s1 despite correct PYTHONPATH; src created after Python startup retains cached None finder",
+    "model_loads": 0,
+    "owned_exit_confirmed": true,
+    "receipt": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-08/fit-job/fit/receipt.json",
+      "sha256": "2bfc9b6bf26837388e43a56e917814a242441e8e9778dd08d4c2466d0f636f39",
+      "size_bytes": 636
+    },
+    "training_updates": 0
+  },
+  "fix": "Invalidate import caches after all verified named source files are materialized, before any real source import. Add actual wrapper SHA/size to existing remote-preflight. Exact entire app byte comparison proves no other change against0d66c7a.",
+  "root_validation": {
+    "owned_launch_tests_passed": 3,
+    "real_fresh_subprocess": "late-created source negative-cache baseline fails; the actual production invalidation AST statement resolves the exact target without executing it",
+    "review": "Root full probe source and cache fix read; source90/91/trainingdata/recipe/gates unchanged",
+    "ruff_check_and_format": "passed",
+    "seconds": 0.33
+  },
+  "schema_id": "jev-modal-negative-import-cache-correction-v1",
+  "scope": "The real cloud probe establishes this import mechanism only; no completed120-update fit or browser score exists.",
+  "sources": [
+    {
+      "path": "apps/modal/public_action_fit.py",
+      "sha256": "43d7caff61f030a8ad0634614f7eb70dd8836948f494b9391efe67930e6f81aa",
+      "size_bytes": 51990
+    },
+    {
+      "path": "tests/test_public_action_modal_fit.py",
+      "sha256": "1f246164b31ca6aad8626592dfc6f8877dd77fd1b8b12d49eaa996570748fa93",
+      "size_bytes": 30963
+    },
+    {
+      "path": "apps/modal/public_action_import_probe.py",
+      "sha256": "9fad0cc7f22fcb3c674ebf9b958e3a69ec2369ab9a5acd1bfc09756127112d55",
+      "size_bytes": 11333
+    }
+  ]
+}

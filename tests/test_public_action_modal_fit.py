@@ -393,20 +393,49 @@ def test_owned_exit_receipt_never_claims_overall_success_before_export_and_volum
             assert kwargs["start_new_session"] is True and kwargs["stdin"] == -3
             assert kwargs["env"]["HF_HUB_OFFLINE"] == kwargs["env"]["TRANSFORMERS_OFFLINE"] == "1"
             if fault is None:
-                package = namespace["ROOT"] / "src/s1"
-                package.mkdir(parents=True)
-                (package / "__init__.py").write_text("")
-                target = package / "browser_public_training_validation.py"
-                target.write_text('raise AssertionError("target must only be located")\n')
+                target = namespace["ROOT"] / "src/s1/browser_public_training_validation.py"
+                fit = next(
+                    node
+                    for node in ast.parse(APP.read_bytes()).body
+                    if isinstance(node, ast.FunctionDef) and node.name == "fit_child"
+                )
+                refresh = next(
+                    node
+                    for node in fit.body
+                    if isinstance(node, ast.Expr)
+                    and isinstance(node.value, ast.Call)
+                    and isinstance(node.value.func, ast.Attribute)
+                    and isinstance(node.value.func.value, ast.Name)
+                    and node.value.func.value.id == "importlib"
+                    and node.value.func.attr == "invalidate_caches"
+                )
+                code = (
+                    """import importlib.util, sys
+from pathlib import Path
+target = Path(sys.argv[1])
+source = str(target.parents[1])
+# The local test venv has an editable project .pth; the Modal image does not.
+sys.path[:] = [p for p in sys.path if p == source or not (Path(p) / "s1").is_dir()]
+assert not target.parent.exists()
+assert importlib.util.find_spec('jev_fixture_missing_module') is None
+assert source in sys.path_importer_cache and sys.path_importer_cache[source] is None
+target.parent.mkdir(parents=True)
+(target.parent / '__init__.py').write_text('')
+target.write_text('raise AssertionError("target must only be located")')
+try:
+    importlib.util.find_spec('s1.browser_public_training_validation')
+    raise AssertionError('baseline must fail after late source creation')
+except ModuleNotFoundError as exc:
+    assert exc.name == 's1'
+"""
+                    + ast.unparse(refresh)
+                    + """
+print(importlib.util.find_spec('s1.browser_public_training_validation').origin)
+assert 's1.browser_public_training_validation' not in sys.modules
+"""
+                )
                 probe = subprocess.run(
-                    [
-                        sys.executable,
-                        "-B",
-                        "-s",
-                        "-c",
-                        "import importlib.util; print(importlib.util.find_spec("
-                        "'s1.browser_public_training_validation').origin)",
-                    ],
+                    [sys.executable, "-B", "-s", "-c", code, str(target)],
                     env=kwargs["env"],
                     cwd=kwargs["cwd"],
                     capture_output=True,
