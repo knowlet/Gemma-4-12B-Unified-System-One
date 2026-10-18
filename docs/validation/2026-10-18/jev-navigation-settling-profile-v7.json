@@ -1,0 +1,158 @@
+{
+  "schema_id": "jev-navigation-settling-profile-v7-review-v1",
+  "status": "VERIFIED_NATIVE_BROWSER_FIXTURE_NOT_LLM_TASK_SCORE",
+  "problem": "A correct native navigation click can be followed by an unfinished document. The original Browser.observe retries ten null READ_STATE results; the unchanged Agent may make a second observe call. One exposed pandas attempt exhausted both calls while an older successful attempt recovered on its thirteenth read. These traces do not contain per-read wall clocks and do not prove a particular settling duration would recover the failed attempt.",
+  "change": {
+    "profile": "composed-visible-text-settled-v7",
+    "parent": "Exact composed-visible-text-v3; no v4/v5/v6 menu or executor changes",
+    "observe": "Retry only the exact native StalePage('Document is navigating') within a cooperative five-second target. Accept the first complete snapshot that finishes within that target; reject a late snapshot and record actual elapsed time. Preserve other exception identities.",
+    "timing": "The target includes inherited readiness, native observation, screenshot and diagnostic capture. Synchronous CDP calls can overshoot. Five seconds is not a hard cancellation deadline, and two Agent observe calls are not a hard ten-second operation bound.",
+    "unchanged": "Native browser_operation, Agent, freshness, action execution, history, policy/helper calls, questions, cases, judge and sixteen-decision budget",
+    "diagnostics": "Bounded per-observe records and an attempt sidecar. Native operation timings combine its CDP work; they are not individual CDP or screenshot timings. Diagnostic failures retain the primary error and cannot produce a successful observation."
+  },
+  "sources": [
+    {
+      "path": "scripts/jev_observation_profile_v7.py",
+      "sha256": "d9f4236d1d46c9472c3d6c1551342639ecb870e6c0dd419246927645410ea868",
+      "size_bytes": 30002
+    },
+    {
+      "path": "scripts/jev_browser_profile_v7_benchmark.py",
+      "sha256": "31450f9002ad216c32b77751997eb27748c491d7bc757c4410294d3704fdfb9e",
+      "size_bytes": 13506
+    },
+    {
+      "path": "tests/test_jev_observation_profile_v7.py",
+      "sha256": "d0eedde81cb2d3cc975588a332db98acc14b72704eb6f4fee330d3b357a16bfd",
+      "size_bytes": 29543
+    }
+  ],
+  "validation": {
+    "pure_tests": "45 passed; Ruff check/format passed for all three files",
+    "pure_scope": "Actual derived native Browser and unchanged Agent with fake CDP/clock; no Chromium, model, GPU or external network. Tests include two observes with one chosen action, one executed click and one history entry, plus late snapshots, unrelated errors and diagnostic failure paths.",
+    "real_browser_fixture": {
+      "scope": "Actual Chromium145.0.7632.0 and original1120x780 native Browser; seven fixed loopback streaming-body delays. No actual Agent/model/policy/helper call; Agent two-pass behavior is covered by the separate pure regressions.",
+      "returncode": 0,
+      "scenario_assertions_passed": 7,
+      "first_observe_recoveries": 5,
+      "second_observe_recoveries": 1,
+      "two_observe_timeouts": 1,
+      "native_snapshot_SHA_joins": 6,
+      "CDP_rows": 1098,
+      "omitted_CDP_rows": 0,
+      "native_input_events": 14,
+      "trusted_clicks": 7,
+      "target_GETs": 7,
+      "model_POST_attempts": 0,
+      "cases": [
+        {
+          "case_id": "delay-035",
+          "outcomes": [
+            "snapshot"
+          ],
+          "observe_elapsed_seconds": [
+            0.355237
+          ]
+        },
+        {
+          "case_id": "delay-080",
+          "outcomes": [
+            "snapshot"
+          ],
+          "observe_elapsed_seconds": [
+            0.801172
+          ]
+        },
+        {
+          "case_id": "delay-150",
+          "outcomes": [
+            "snapshot"
+          ],
+          "observe_elapsed_seconds": [
+            1.507477
+          ]
+        },
+        {
+          "case_id": "delay-250",
+          "outcomes": [
+            "snapshot"
+          ],
+          "observe_elapsed_seconds": [
+            2.502423
+          ]
+        },
+        {
+          "case_id": "delay-450",
+          "outcomes": [
+            "snapshot"
+          ],
+          "observe_elapsed_seconds": [
+            4.498879
+          ]
+        },
+        {
+          "case_id": "delay-600",
+          "outcomes": [
+            "StalePage",
+            "snapshot"
+          ],
+          "observe_elapsed_seconds": [
+            5.002722,
+            1.014223
+          ]
+        },
+        {
+          "case_id": "delay-1120",
+          "outcomes": [
+            "StalePage",
+            "StalePage"
+          ],
+          "observe_elapsed_seconds": [
+            5.002986,
+            5.002763
+          ]
+        }
+      ],
+      "timing_limits": "Fixture explicitly requests Browser.observe(False), so it does not measure screenshot overhead. Production retains the original screenshot option. Synchronous overshoot remains recorded; timeout records keep terminal_unknown=true, including the first call of the subsequently recovered6s case.",
+      "late_final_DOM": "After the11.2s two-pass timeout, a separate read-only check confirms eventual reachability. It does not rescue either timeout.",
+      "closure": "Outer fresh process group closed; exact installed Playwright Node and Chromium executables identified with PID/start readback; observed owned identities absent, server socket/new threads closed. This does not claim every transient OS descendant was enumerated.",
+      "prior_attempt": "fixture-actual-01 remains EXIT1/closurefalse because its role classifier used comm=node while the real driver used comm=MainThread. All seven native assertions had passed. Fixture02 changes only test-tool executable identification; production v7 and all seven scenarios remain unchanged.",
+      "root_closed_index": {
+        "path": "artifacts/jev-runtime/native-navigation-v7-20261018-01/root-fixture-actual02-closed-index-01.json",
+        "sha256": "39c58e4670c34478388ff1f108a3616350b054b12dff582571653fbcd3a152f8",
+        "size_bytes": 6018
+      },
+      "independent_review": {
+        "path": "artifacts/jev-runtime/native-navigation-v7-20261018-01/independent-fixture-actual02-review-01/review.json",
+        "sha256": "874f041ca04c68600726670b3c6ad91a47022818a3acd7b8af684da5261ba162",
+        "size_bytes": 5819
+      },
+      "independent_closed_index": {
+        "path": "artifacts/jev-runtime/native-navigation-v7-20261018-01/independent-fixture-actual02-review-01/closed-index.json",
+        "sha256": "e017a25d047d4a68e770a6dd672e378f335f895aab5db7637879c61a8a091390",
+        "size_bytes": 3112
+      },
+      "fixture_HOLD": {
+        "path": "artifacts/jev-runtime/native-navigation-v7-20261018-01/fixture-source-HOLD-02/HOLD.json",
+        "sha256": "4c18098bb7ec133a5a3392e457dae7bb5510d4202efd43cd78d6fdcea95e09c5",
+        "size_bytes": 7059
+      }
+    },
+    "source_HOLD": {
+      "path": "artifacts/jev-runtime/native-navigation-v7-20261018-01/source-HOLD-01/HOLD.json",
+      "sha256": "f039271a381d22f337d7166a66308f85f5c8083fe621089a20cbcba1e3582051",
+      "size_bytes": 20522
+    },
+    "root_source_review": {
+      "path": "artifacts/jev-runtime/native-navigation-v7-20261018-01/root-source-review-01.json",
+      "sha256": "08ba90c0dbea007a0bf315a4e44d17545e0ccc0e3b0a4524f620b95dd1ad0ca6",
+      "size_bytes": 2719
+    }
+  },
+  "interpretation": {
+    "LLM_task_score_attested": false,
+    "latest_complete_browser_score": "3/10 with the constrained helper and original v3 profile; v7 has not been scored",
+    "latest_score_reference": "docs/validation/2026-10-18/jev-field-json-browser-retest.json",
+    "next": "Repeat all ten fixed cases with the same qualified model/helper and the explicit v7 condition. Fixture recovery is not an LLM task success or a superiority claim."
+  }
+}
