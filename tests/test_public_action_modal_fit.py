@@ -12,6 +12,7 @@ import sys
 import tempfile
 from pathlib import Path, PurePosixPath
 from types import SimpleNamespace
+from typing import Literal, get_args, get_type_hints
 
 import pytest
 
@@ -25,6 +26,7 @@ def extracted_helpers(tmp_path):
     """Compile only reviewed function definitions, never the application module."""
     names = {
         "require",
+        "training_steps_choice",
         "encode",
         "parse",
         "ordinary",
@@ -333,12 +335,13 @@ def test_modal_ram_request_increases_without_changing_cpu_gpu_disk_or_recipe():
     assert {
         keyword.arg: ast.literal_eval(keyword.value)
         for keyword in calls[0].keywords
-        if keyword.arg in {"steps", "learning_rate", "seed"}
+        if keyword.arg in {"learning_rate", "seed"}
     } == {
-        "steps": 120,
         "learning_rate": 5e-5,
         "seed": 42,
     }
+    selected = next(keyword.value for keyword in calls[0].keywords if keyword.arg == "steps")
+    assert isinstance(selected, ast.Name) and selected.id == "steps"
 
 
 @pytest.mark.parametrize(
@@ -378,8 +381,9 @@ def test_admission_distinguishes_unknown_cgroup_from_observed_unlimited_and_real
 
 
 @pytest.mark.parametrize("fault", [None, "inventory", "commit"])
+@pytest.mark.parametrize("training_steps", [120, 240])
 def test_owned_exit_receipt_never_claims_overall_success_before_export_and_volume_publication(
-    tmp_path, fault
+    tmp_path, fault, training_steps
 ):
     namespace, export_root = extracted_helpers(tmp_path)
     launches, probes, commits = [], [], []
@@ -471,10 +475,17 @@ assert 's1.browser_public_training_validation' not in sys.modules
             raise OSError("synthetic export inventory failure")
 
         namespace["tree_inventory"] = unavailable_inventory
-    result = namespace["owned"]("fit", "synthetic-run", "a" * 64)
+    result = namespace["owned"]("fit", "synthetic-run", "a" * 64, training_steps=training_steps)
     root = export_root / "synthetic-run-fit"
     ephemeral = namespace["RUNTIME"] / "owned-public07/synthetic-run-fit"
     saved = json.loads((ephemeral / "controller-receipt.json").read_bytes())
+    config = json.loads((ephemeral / "child-config.json").read_bytes())
+    assert (
+        config["training_steps"]
+        == saved["training_steps"]
+        == result["training_steps"]
+        == training_steps
+    )
     assert len(launches) == 1 and probes
     assert len(commits) == {None: 1, "inventory": 0, "commit": 2}[fault]
     assert (
@@ -733,3 +744,131 @@ def test_failed_child_primary_survives_failed_full_export_copy(tmp_path):
     assert result["error"]["message"] == "Owned child failed: 17"
     assert any("full export copy failed" in note for note in result["error"]["notes"])
     assert not list(export_root.rglob("export-index.json"))
+
+
+@pytest.mark.parametrize("value", [360, 336, True, 120.0, "240", None])
+def test_training_steps_refused_before_output_or_upload(tmp_path, value):
+    namespace, _export = extracted_helpers(tmp_path)
+    tree = ast.parse(APP.read_bytes())
+    namespace["Literal"] = Literal
+    for name in ("fit", "main"):
+        node = next(
+            node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == name
+        )
+        node.decorator_list = []
+        exec(compile(ast.Module(body=[node], type_ignores=[]), str(APP), "exec"), namespace)
+        assert get_args(get_type_hints(namespace[name])["training_steps"]) == (120, 240)
+        assert namespace[name].__defaults__[-1] == 120
+    with pytest.raises(ValueError, match="Training steps must be120 or240"):
+        namespace["fit"]("refused", "a" * 64, training_steps=value)
+    output = tmp_path / "must-not-upload"
+    with pytest.raises(ValueError, match="Training steps must be120 or240"):
+        namespace["main"](
+            output=str(output),
+            manifest="must-not-read",
+            run_id="refused",
+            run=True,
+            training_steps=value,
+        )
+    assert not output.exists()
+    assert not (namespace["RUNTIME"] / "owned-public07").exists()
+
+
+@pytest.mark.parametrize("steps,completed", [(120, 120), (240, 240), (240, 120)])
+def test_selected_steps_reach_real_fitter_boundary_and_completed_count_check(
+    tmp_path, steps, completed
+):
+    """Execute the actual child training tail with a fake fitter, never its setup/model path."""
+    namespace, _export = extracted_helpers(tmp_path)
+    node = next(
+        node
+        for node in ast.parse(APP.read_bytes()).body
+        if isinstance(node, ast.FunctionDef) and node.name == "fit_child"
+    )
+    start = next(
+        index
+        for index, entry in enumerate(node.body)
+        if isinstance(entry, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "result" for target in entry.targets)
+    )
+    function = ast.parse("def child_training_tail():\n    pass\n").body[0]
+    function.body = [node.body[0], *node.body[start:]]
+    output = tmp_path / "child"
+    (output / "fit/adapter").mkdir(parents=True)
+    (output / "fit/receipt.json").write_bytes(b"{}")
+    (output / "fit/adapter/manifest.json").write_bytes(b"{}")
+    calls = []
+
+    def fit_public_actions(**kwargs):
+        calls.append(kwargs)
+        return {"stage": "complete", "training_updates": completed, "qualified": False}
+
+    namespace.update(
+        config={"training_steps": steps, "boot_id": "fixed-boot"},
+        output=output,
+        HANDOFF=tmp_path / "fixed-handoff.json",
+        HANDOFF_SHA="b" * 64,
+        fitter=SimpleNamespace(fit_public_actions=fit_public_actions),
+    )
+    exec(compile(ast.Module(body=[function], type_ignores=[]), str(APP), "exec"), namespace)
+    if steps == completed:
+        assert namespace["child_training_tail"]() == 0
+        receipt = json.loads((output / "fit-child-result.json").read_bytes())
+        assert receipt["training_updates"] == completed and receipt["qualified"] is False
+    else:
+        with pytest.raises(ValueError, match="Complete requested-step"):
+            namespace["child_training_tail"]()
+        assert not (output / "fit-child-result.json").exists()
+    assert calls == [
+        {
+            "output": output / "fit",
+            "source_handoff": namespace["HANDOFF"],
+            "expected_source_handoff": "b" * 64,
+            "expected_boot_id": "fixed-boot",
+            "steps": steps,
+            "learning_rate": 5e-5,
+            "seed": 42,
+        }
+    ]
+
+
+@pytest.mark.parametrize("steps,completed", [(120, 120), (240, 240), (240, 120)])
+def test_cli_forwards_selected_steps_and_refuses_mismatched_closed_result(
+    tmp_path, steps, completed
+):
+    namespace, _export = extracted_helpers(tmp_path)
+    node = next(
+        node
+        for node in ast.parse(APP.read_bytes()).body
+        if isinstance(node, ast.FunctionDef) and node.name == "main"
+    )
+    start = next(
+        index
+        for index, entry in enumerate(node.body)
+        if isinstance(entry, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "fitted" for target in entry.targets)
+    )
+    function = ast.parse("def cli_fit_tail():\n    pass\n").body[0]
+    function.body = node.body[start:]
+    calls, exports = [], []
+
+    def remote(run_id, manifest_sha256, **kwargs):
+        calls.append((run_id, manifest_sha256, kwargs))
+        return {"success": True, "training_steps": completed}
+
+    namespace.update(
+        supplied=b"{}",
+        run_id="selected-run",
+        training_steps=steps,
+        local=tmp_path / "local",
+        fit=SimpleNamespace(remote=remote),
+        export=lambda *args: exports.append(args),
+    )
+    exec(compile(ast.Module(body=[function], type_ignores=[]), str(APP), "exec"), namespace)
+    if steps == completed:
+        namespace["cli_fit_tail"]()
+    else:
+        with pytest.raises(ValueError, match="different step count"):
+            namespace["cli_fit_tail"]()
+    assert calls == [("selected-run", hashlib.sha256(b"{}").hexdigest(), {"training_steps": steps})]
+    assert exports == [({"success": True, "training_steps": completed}, tmp_path / "local/fit-job")]

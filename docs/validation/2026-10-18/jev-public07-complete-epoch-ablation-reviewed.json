@@ -1,0 +1,44 @@
+{
+  "schema_id": "public07_complete_epoch_ablation_review_v1",
+  "stage": "source_reviewed_no_additional_training_yet",
+  "source": {
+    "sha256": "3553b107d74f0f761e0c2e9cf554c12259e89a39f41e747f36de4ec987248c4c",
+    "size_bytes": 53046,
+    "lines": 1361,
+    "snapshot": "public_action_fit.py"
+  },
+  "tests": {
+    "sha256": "6c48fbabc887df01bbcb7b6ebd847d8bdd93071b73ad257a2d97859cbc3e7a4b",
+    "size_bytes": 36781,
+    "lines": 874,
+    "snapshot": "test_public_action_modal_fit.py"
+  },
+  "choices": [
+    120,
+    240
+  ],
+  "default": 120,
+  "frozen_resource_gate_cap": 512,
+  "fixed_resource_gate_rows": 176,
+  "maximum_training_steps": 336,
+  "rejected_360": "Would require536 total gates; existing limits are unchanged.",
+  "scope": "Parameterize only complete120-example epochs. Same original legacy parent, fixed public120train/22dev, learning rate5e-5 and seed42; zero development updates, no new observations/evaluation data.",
+  "payload": {
+    "sha256": "95c2efa41ee41afdab96df50b3e4e5815a59ed8912b2ff618787c76e12281820",
+    "size_bytes": 973498,
+    "files": 1452,
+    "bytes": 237308893,
+    "byte_identical_to": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/expected-upload-manifest-02.json",
+    "all90_source_pin_checks": "PASS"
+  },
+  "unchanged_source90": true,
+  "hypothesis": "Compare one versus two complete training epochs under the same collection. More steps are not assumed to improve true website behavior; existing120 baseline remains sealed.",
+  "validation": {
+    "root_semantic_patch_and_new_tests_read": true,
+    "focused_tests": "54 pure tests pass; no actual model/GPU/network.",
+    "lint": "Ruff pass",
+    "cases": "Default120 and opt-in240 propagated through CLI/RPC/child/fitter/controller; unsupported values and mismatched completed counts refused."
+  },
+  "actual_training": false,
+  "browser_score": null
+}

@@ -22,6 +22,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path, PurePosixPath
+from typing import Literal
 
 ROOT = Path("/home/albert_hsieh/Gemma-4-12B-Unified-System-One")
 SCRIPT = ROOT / "apps/modal/public_action_fit.py"
@@ -124,6 +125,13 @@ BASE_METADATA = {
 def require(condition, message):
     if not condition:
         raise ValueError(message)
+
+
+def training_steps_choice(value):
+    # Frozen FIT reserves176 of512 journal rows, leaving336 train updates.
+    # Only complete120-row epochs fit:360 would exceed the unchanged gate cap.
+    require(type(value) is int and value in (120, 240), "Training steps must be120 or240")
+    return value
 
 
 def encode(value):
@@ -799,6 +807,7 @@ def download_child(config):
 
 
 def fit_child(config):
+    steps = training_steps_choice(config["training_steps"])
     output = ordinary(config["output"])
     admit(output / "preflight-gates.jsonl", "cpu", config["boot_id"])
     manifest_blob = read(named_input(config))
@@ -903,7 +912,7 @@ def fit_child(config):
                 "wrapper": pin(SCRIPT),
                 "source_handoff_sha256": HANDOFF_SHA,
                 "manifest_sha256": config["manifest_sha256"],
-                "steps": 120,
+                "steps": steps,
             }
         ),
     )
@@ -919,15 +928,15 @@ def fit_child(config):
         source_handoff=HANDOFF,
         expected_source_handoff=HANDOFF_SHA,
         expected_boot_id=config["boot_id"],
-        steps=120,
+        steps=steps,
         learning_rate=5e-5,
         seed=42,
     )
     require(
         result["stage"] == "complete"
-        and result["training_updates"] == 120
+        and result["training_updates"] == steps
         and result["qualified"] is False,
-        "Complete120 unqualified public fit",
+        "Complete requested-step unqualified public fit",
     )
     create(
         output / "fit-child-result.json",
@@ -936,7 +945,7 @@ def fit_child(config):
                 "success": True,
                 "receipt": pin(output / "fit/receipt.json"),
                 "manifest": pin(output / "fit/adapter/manifest.json"),
-                "training_updates": 120,
+                "training_updates": result["training_updates"],
                 "qualified": False,
             }
         ),
@@ -1063,9 +1072,10 @@ def copy_output(output, binding):
     return destination, expected
 
 
-def owned(mode, run_id, manifest_sha256=None):
+def owned(mode, run_id, manifest_sha256=None, *, training_steps=120):
     require(re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", run_id) is not None, "Bounded fresh run ID")
     require(mode in {"download", "fit"}, "Declared owned mode")
+    training_steps = training_steps_choice(training_steps)
     output = ordinary(RUNTIME / "owned-public07" / (run_id + "-" + mode))
     require(not output.exists(), "Fresh owned remote output")
     output.mkdir(parents=True)
@@ -1081,6 +1091,8 @@ def owned(mode, run_id, manifest_sha256=None):
             )
         },
     }
+    if mode == "fit":
+        config["training_steps"] = training_steps
     create(output / "child-config.json", encode(config))
     environment = {
         "PATH": "/usr/local/bin:/usr/bin:/bin",
@@ -1179,6 +1191,8 @@ def owned(mode, run_id, manifest_sha256=None):
             "modal_app_id": app.app_id,
             "modal_call_id": modal.current_function_call_id(),
         }
+        if mode == "fit":
+            report["training_steps"] = training_steps
         create(output / "controller-receipt.json", encode(report))
         if confirmed:
             destination, index = copy_output(output, config["mounts"]["/export"])
@@ -1210,6 +1224,7 @@ def owned(mode, run_id, manifest_sha256=None):
         raise primary
     return {
         "success": primary is None and report is not None and report["child_success"],
+        **({"training_steps": training_steps} if mode == "fit" else {}),
         "root": output.name,
         "export_index": export_pin,
         "error": None
@@ -1256,8 +1271,8 @@ def download(run_id: str):
         "/export": results,
     },
 )
-def fit(run_id: str, manifest_sha256: str):
-    return owned("fit", run_id, manifest_sha256)
+def fit(run_id: str, manifest_sha256: str, training_steps: Literal[120, 240] = 120):
+    return owned("fit", run_id, manifest_sha256, training_steps=training_steps)
 
 
 def receive(remote, destination, expected, limit=GIB):
@@ -1300,8 +1315,15 @@ def export(result, destination):
 
 
 @app.local_entrypoint()
-def main(output: str, manifest: str, run_id: str, run: bool = False):
+def main(
+    output: str,
+    manifest: str,
+    run_id: str,
+    run: bool = False,
+    training_steps: Literal[120, 240] = 120,
+):
     require(run, "Explicit --run after source and exact named upload manifest review required")
+    training_steps = training_steps_choice(training_steps)
     require(
         re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", run_id) is not None,
         "Bounded fresh run ID before uploading",
@@ -1331,6 +1353,9 @@ def main(output: str, manifest: str, run_id: str, run: bool = False):
     downloaded = download.remote(run_id)
     export(downloaded, local / "download")
     require(downloaded["success"], "Public HF download stage failed; no GPU worker started")
-    fitted = fit.remote(run_id, hashlib.sha256(supplied).hexdigest())
+    fitted = fit.remote(run_id, hashlib.sha256(supplied).hexdigest(), training_steps=training_steps)
     export(fitted, local / "fit-job")
-    require(fitted["success"], "Remote fit failed; retained named partial evidence")
+    require(
+        fitted["success"] and fitted["training_steps"] == training_steps,
+        "Remote fit failed or returned a different step count; retained named evidence",
+    )
