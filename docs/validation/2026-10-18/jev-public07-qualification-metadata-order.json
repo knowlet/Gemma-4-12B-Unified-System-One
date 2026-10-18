@@ -1,0 +1,61 @@
+{
+  "schema_id": "jev_public07_qualification_metadata_order_v1",
+  "status": "source_fix_tested_new_qualification_pending",
+  "problem": "A completed real41-case native HTTP qualification was rejected by the separate saved-byte verifier because the derived tensor metadata dictionary serialized in a different order on repeated safetensors loads.",
+  "genuine_diagnostic": {
+    "path": "artifacts/jev-runtime/public-native-action-local-qualification-20261018-01/verify-diagnostic-02.json",
+    "sha256": "3616e9281c1e1e7c41d75574a7c34ea409a17fb24b2c82dc1f0a0f39b29d1e50",
+    "size_bytes": 33057
+  },
+  "observed": {
+    "manifest_bytes_equal": true,
+    "receipt_bytes_equal": true,
+    "adapter_items_equal": true,
+    "tensor_metadata_bytes_equal": false,
+    "tensor_metadata_strict_json_semantic_equal": true,
+    "tensor_metadata_size_bytes": 15895
+  },
+  "prior_qualification": {
+    "path": "artifacts/jev-runtime/public-native-action-local-qualification-20261018-01/qualify-01/qualification.json",
+    "sha256": "1c8d904aa1b13965508da472ec2fa0faee1645fbcb98fad19a1175c0d9de41bb",
+    "size_bytes": 361633
+  },
+  "prior_result": {
+    "technical_cases_passed": 41,
+    "model_loads": 1,
+    "owned_exit_confirmed": true,
+    "deployed": false,
+    "task_performance_attested": false,
+    "known_development_generation_agreement": {
+      "correct": 16,
+      "denominator": 22,
+      "scope": "Exposed development only, no browser/heldout score."
+    }
+  },
+  "fix": {
+    "source": {
+      "path": "scripts/jev_qualify_public_actions_bf16.py",
+      "sha256": "d8cc51a8a66a26f95a0ec0f665f8ee1d95f29044ee301d02d24f1495420ee3ea",
+      "size_bytes": 155151
+    },
+    "change": "After complete physical artifact/tensor reverification, compare only derived tensor metadata using strict JSON exact typed equality. Manifest, receipt and adapter bytes remain exact.",
+    "unchanged": "All176 tensors, FP32/finite checks, exact shapes/parameter count, all closed artifact file SHA/size/population checks, all RAM/resource gates, training90, artifact verifier and runtime/plan remain unchanged.",
+    "new_execution91": {
+      "path": "artifacts/jev-runtime/public-native-action-qualification-execution-20261018-02/execution-91.json",
+      "sha256": "5e85fa36f1f3633e0957e4feeb3983e649c78ca77b64466741ed7e1565e7c6b2",
+      "size_bytes": 14388
+    },
+    "prior_execution91_sha256": "948f8b41735e1ca15289a859626f71d391ae3e18468f69631dd32390021a7942",
+    "execution_delta": "Only qualifier file row and derived source identity change; the other90 rows and complete training handoff are identical."
+  },
+  "tests": {
+    "path": "tests/test_jev_qualify_public_actions_bf16.py",
+    "focused": "19 passed,243 deselected in19.90s; real DTO check, synthetic physical verifier. Dictionary order accepted; shape/list order/type/key/duplicate/nonfinite/manifest/receipt/adapter changes refused.",
+    "lint": "Ruff pass",
+    "independent_review": "CLEAR; byte reconstruction confirms sole production comparison delta.",
+    "full_qualifier_suite": "262 passed in42.76s; one existing Starlette/httpx deprecation warning."
+  },
+  "next": "Fresh CPU prepare02, externally review inputs, requalify41 with new source91, independently verify, then serve and run real websites. Preserve old marker and failures unchanged.",
+  "browser_task_score": null,
+  "goal_complete": false
+}

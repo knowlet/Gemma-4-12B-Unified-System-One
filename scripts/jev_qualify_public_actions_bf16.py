@@ -1973,7 +1973,13 @@ class VerifiedPublicBF16Qualification:
             fresh.manifest_bytes == self.artifact.manifest_bytes
             and fresh.receipt_bytes == self.artifact.receipt_bytes
             and fresh.adapter_items == self.artifact.adapter_items
-            and fresh.tensor_metadata_bytes == self.artifact.tensor_metadata_bytes,
+            # Safetensors may return tensors in a different dictionary order
+            # on each load. Reverify every tensor and file byte above, then
+            # compare this derived JSON with exact scalar/list semantics.
+            and exact(
+                strict_json(fresh.tensor_metadata_bytes),
+                strict_json(self.artifact.tensor_metadata_bytes),
+            ),
             "Captured public DTO differs from fully reverified exact child",
         )
         _check_development_inputs(strict_json(files["inputs.json"]), Path(self.root) / "public")

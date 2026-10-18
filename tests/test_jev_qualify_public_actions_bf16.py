@@ -16,7 +16,7 @@ import math
 import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -3132,3 +3132,75 @@ def test_qualified_dto_revalidation_precedes_attach_or_capture(
     destination = tmp_path / "must-not-capture"
     assert_refused(lambda: QUAL.capture_public_bf16_qualification(changed, destination, gate=gate))
     assert not destination.exists()
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        None,
+        "shape",
+        "shape-list-order",
+        "bool",
+        "float",
+        "missing",
+        "extra",
+        "duplicate",
+        "nonfinite",
+        "manifest",
+        "receipt",
+        "adapter",
+    ],
+)
+def test_captured_dto_accepts_only_derived_dictionary_order_changes(
+    captured_qualification, monkeypatch, mutation
+):
+    """Exercise the real DTO check; physical artifact verification stays synthetic."""
+    verified, _other, gate, _checks = captured_qualification
+    metadata = {
+        "tensor_count": 176,
+        "parameters": 5193728,
+        "stored_dtypes": ["torch.float32"],
+        "tensor_shapes": {"q": [8, 16], "v": [16, 8]},
+    }
+    original = replace(verified.artifact, tensor_metadata_bytes=ordered_bytes(metadata))
+    reordered = dict(reversed(list(metadata.items())))
+    reordered["tensor_shapes"] = dict(reversed(list(metadata["tensor_shapes"].items())))
+    if mutation == "shape":
+        reordered["tensor_shapes"]["q"] = [8, 17]
+    elif mutation == "shape-list-order":
+        reordered["tensor_shapes"]["q"] = [16, 8]
+    elif mutation == "bool":
+        reordered["tensor_count"] = True
+    elif mutation == "float":
+        reordered["tensor_count"] = 176.0
+    elif mutation == "missing":
+        del reordered["parameters"]
+    elif mutation == "extra":
+        reordered["extra"] = None
+    blob = ordered_bytes(reordered)
+    if mutation == "duplicate":
+        blob = blob[:-1] + b',"tensor_count":176}'
+    elif mutation == "nonfinite":
+        blob = blob.replace(b'"tensor_count":176', b'"tensor_count":NaN')
+    fresh = replace(original, tensor_metadata_bytes=blob)
+    if mutation == "manifest":
+        fresh = replace(fresh, manifest_bytes=fresh.manifest_bytes + b"\n")
+    elif mutation == "receipt":
+        fresh = replace(fresh, receipt_bytes=fresh.receipt_bytes + b"\n")
+    elif mutation == "adapter":
+        fresh = replace(fresh, adapter_items=(*fresh.adapter_items, ("unknown", b"changed")))
+    checked = replace(verified, artifact=original)
+    physical_checks = []
+
+    def physical_public(config, actual_gate, *, path=None):
+        physical_checks.append((config, path))
+        actual_gate.check("public-verify", "cpu")
+        return fresh
+
+    monkeypatch.setattr(QUAL, "_public", physical_public)
+    if mutation is None:
+        assert fresh.tensor_metadata_bytes != original.tensor_metadata_bytes
+        assert checked.check(gate=gate)["qualified"] is True
+    else:
+        assert_refused(lambda: checked.check(gate=gate))
+    assert len(physical_checks) == 1
