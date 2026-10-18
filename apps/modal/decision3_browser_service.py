@@ -286,7 +286,7 @@ class Session:
         self.core = self.staging.load_core()
         self.identities = self.core.authenticate_source(CORE_SHA)
         self.profile = validate_weight_profile(profile_blob, profile_sha, self.identities)
-        self.output = self.core.ordinary(self.core.OUTPUT_ROOT / ("browser-" + run_id))
+        self.output = ordinary(self.core.OUTPUT_ROOT / ("browser-" + run_id))
         require(not self.output.exists(), "Fresh cloud browser output required")
         self.output.mkdir(parents=True)
         self.nonce, self.gpu = secrets.token_hex(24), gpu_identity()

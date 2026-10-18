@@ -589,7 +589,7 @@ def test_staging_failure_publishes_original_partial_tree_without_model_child(tmp
     published = []
     core = SimpleNamespace(
         OUTPUT_ROOT=tmp_path,
-        ordinary=Path,
+        ordinary=load_source("real_file_only_replay_core", SERVICE.CORE).ordinary,
         authenticate_source=lambda _sha: {},
         write=lambda path, value, **_kwargs: SERVICE.save(path, value),
     )

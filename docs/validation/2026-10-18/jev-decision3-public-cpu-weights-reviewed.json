@@ -1,0 +1,57 @@
+{
+  "schema_id": "decision3_public_cpu_weights_source_review_v1",
+  "stage": "reviewed_source_actual_download_pending",
+  "downloader": {
+    "path": "apps/modal/decision3_public_weights.py",
+    "sha256": "6c34444cf9371bfbb75b717c02471f0537facbc371c7958f57c8808a6d46d47d",
+    "size_bytes": 22505
+  },
+  "tests": {
+    "path": "tests/test_decision3_public_weights.py",
+    "sha256": "e46adf8f5430ad1d3a029389c167d343468bf2fb2371a7d3286dd995c7bb1c80",
+    "size_bytes": 11863
+  },
+  "service_current": {
+    "path": "apps/modal/decision3_browser_service.py",
+    "sha256": "b4287a80e3e3eefcfd96329d7de1bfe6ef8852861553de4fb3d59bab2f87e12f",
+    "size_bytes": 49036
+  },
+  "service_test_current": {
+    "path": "tests/test_decision3_browser_service.py",
+    "sha256": "605645ecb91dad67cb5e0adaade75df1a9d3cabba0a2960648813a44a97ca47d",
+    "size_bytes": 24559
+  },
+  "source18_inventory": {
+    "path": "artifacts/jev-runtime/decision3-public-weights-20261018-01/source-HOLD-02/named-source-inventory.json",
+    "sha256": "fb58cc751b755fca9f55788b64701dcd2b6605e3db76b34a9507a9d226b8eb06",
+    "size_bytes": 4583
+  },
+  "source17_inventory": {
+    "path": "artifacts/jev-runtime/decision3-browser-service-20261018-01/source-HOLD-03/named-source-inventory.json",
+    "sha256": "d61f873533db15d115293b14d4ecc093d9060c5c1ab7a863be120b56d4bd3528",
+    "size_bytes": 4231
+  },
+  "scope": "Exactly17 public serving sources plus independent CPU downloader; no collection/parent/admission data, credential or local weight upload. Existing knowlet private public-HF/results volumes only.",
+  "resources": {
+    "CPU": 2,
+    "memory_MiB": 8192,
+    "ephemeral_disk_MiB": 524288,
+    "GPU": false,
+    "retries": 0,
+    "single_use_container": true
+  },
+  "download": "Public token=False, all6 immutable repository revisions and exact runtime-file patterns. Manifest SHA then every full file SHA/size, all backbone shards/index/header BF16, fixed255 FP32 readout and model-specific parameter/file counts. No Torch/processor/model constructor.",
+  "ownership": "Fresh dedicated Python3.13 -B -s child with no CUDA visibility; framework import audit. Confirmed process/group/marked-descendant closure, immutable source rechecks, full SHA-verified provider export before any successful profile.",
+  "profile": "Preserves original actual closed index/controller/result JSON bytes and exposes an externally selected SHA; missing/failed/unknown closure cannot produce a usable profile.",
+  "additional_api_bug_fixed": "Frozen core.ordinary validates existing regular input files. Both new fresh-output callers incorrectly used it; now use generic output path validator. Tests retain actual frozen core API and reach real Session staging/CPU-owned child-launch boundary through fakes. Frozen core unchanged.",
+  "validation": {
+    "root_entire_source_and_tests_read": true,
+    "focused": "36 service+downloader pure tests passed0.95s; prior23 reviewed wire tests unchanged.",
+    "lint": "Ruff pass",
+    "independent_review": "CLEAR entire source, actual helper APIs and exact sole caller/SERVICE_SHA deltas; all17/18 inventory rows and immutable HOLD copies verified."
+  },
+  "historical_review": "Prior service d19 review did not catch the fresh-directory API mismatch; source fix and new source17/18 are separately pinned. Old HOLDs and validation records are retained.",
+  "actual_download": false,
+  "actual_D3_model_loads": 0,
+  "actual_D3_browser_results": null
+}
