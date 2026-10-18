@@ -1,0 +1,53 @@
+{
+  "schema_id": "jev-css-hover-entry-profile-v5-root-review-v1",
+  "stage": "root_reviewed_local_browser_fixtures_passed",
+  "profile": "composed-visible-hover-entries-v5",
+  "sources": [
+    {
+      "path": "scripts/jev_observation_profile_v5.py",
+      "sha256": "7847b2f9eecb3f9d492ccfdf8415c52632b99ac6ead6df560c49c3caf004e141",
+      "size_bytes": 28379
+    },
+    {
+      "path": "scripts/jev_browser_profile_v5_benchmark.py",
+      "sha256": "c84c722d080b1aba8c4225f6e47e42baf33cb19f15545c25b167c0105c89f5d6",
+      "size_bytes": 13181
+    },
+    {
+      "path": "tests/test_jev_observation_profile_v5.py",
+      "sha256": "723536eae1f29a6a858a64cfe307867dfe9171dc4b87505c439a8c760e5fa9d1",
+      "size_bytes": 27130
+    }
+  ],
+  "HOLD02": {
+    "path": "artifacts/jev-runtime/public-native-hover-entries-v5-20261018-01/source-HOLD-02/HOLD.json",
+    "sha256": "79812f89a89d57c9deb9ea890874baa1635b2dd1be0c5d8cae6788fafc19b13d",
+    "size_bytes": 1478
+  },
+  "mechanism": "Derive exact v4 observation and executor. Append a unique short visible noninteractive leaf only when current readable active CSSOM proves its visible owner:hover reveals a popup containing native controls; bind trigger, owner, current rule proof and popup identities to freshness checks. Native press/release executor is unchanged.",
+  "budget_refusal": "All fixed CSS exploration limits remain unchanged. Known budget exhaustion discards the entire optional hover candidate batch, clears bindings and invalidates older hover epochs. Original native/v4 actions, IDs, omitted count and guard remain usable. Explicit stage/scanned/maximum and unknown unscanned candidate count are returned. Unexpected CSS/native errors still fail.",
+  "coverage": "Only supported readable current CSS rules are attested. Unsupported, cross-origin or pending CSS makes coverage incomplete; no hidden menu labels or whole-site coverage claims.",
+  "scope": "Original v3/v4 production, operation heads, model/data, canonical benchmark, cases/golds/budgets unchanged. Isolated runner only substitutes profile/tracker imports and explicit profile name, plus optional case import; inverse source bytes and AST are checked.",
+  "root_validation": {
+    "full_source_review": "Full3HOLD01files then full18513B HOLD02delta",
+    "tests": "31passed in5.82s; actual owned Chromium fixtures and source closure tests",
+    "lint": "Ruffpassed all3files",
+    "checks": [
+      "Actual trusted native press/release opens supported hover menu",
+      "Stale owner/CSS/label changes refuse before Input",
+      "Budget refusal preserves native and v4 label-proxy actions; old hover never revives",
+      "Unexpected exceptions are not swallowed",
+      "Executor bytes equal v4 and protected source90 SHA unchanged"
+    ]
+  },
+  "known_limits": [
+    "This is a candidate observation repair; inherited hover-triggered movement/overlay press-release behavior is unchanged.",
+    "Synchronous observation does not wait for delayed menu reactions.",
+    "External site readiness and actual model task improvements remain unmeasured at this commit.",
+    "New-site interface exposure is recorded and does not count as blind model validation."
+  ],
+  "actual_external_site_calls_for_v5": 0,
+  "actual_model_calls_for_v5": 0,
+  "actual_GPU_Modal_calls_for_v5": 0,
+  "relative_model_victory_attested": false
+}
