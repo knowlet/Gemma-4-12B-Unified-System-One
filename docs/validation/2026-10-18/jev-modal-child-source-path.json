@@ -1,0 +1,51 @@
+{
+  "attempt": {
+    "CLI_exit_code": 1,
+    "actual_GPU": "NVIDIA H200, GPU-d3f8ffff-b276-5de7-3e16-47bb22f27fd0, 143771 MiB, 143145 MiB, 4 MiB, 610.57.04\n",
+    "all_preflight_gates_passed": true,
+    "app_id": "ap-3jCPk8gDveXa6g1erpP1Tf",
+    "closed_fit_leaf_files_verified": 10,
+    "controller_receipt": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-07/fit-job/controller-receipt.json",
+      "sha256": "9b278b175353b7ed89c5ea0fa57b7c166c7086ec5492ddf791649c9bf740a80a",
+      "size_bytes": 2017
+    },
+    "export_index": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-07/fit-job/export-index.json",
+      "sha256": "d3f5ea1275f442d6f06d144cebdfa0aa072addabc95247ef5855cabed17375d9",
+      "size_bytes": 1243
+    },
+    "failure": "ModuleNotFoundError: No module named s1 at ART.trusted_module find_spec(s1.browser_public_training_validation)",
+    "model_loads": 0,
+    "owned_exit_confirmed": true,
+    "raw_stderr": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-07/fit-job/stderr.log",
+      "sha256": "4c05428df592e4d864c0473f6437261312d402344abb0d31184157bf0f0285b5",
+      "size_bytes": 1679
+    },
+    "receipt": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-07/fit-job/fit/receipt.json",
+      "sha256": "cb7549f248bf35b3ab7e4a10ed1e418c8e1a4aba755ef5dcd8a8956a7fd01c84",
+      "size_bytes": 636
+    },
+    "run_id": "public07-h200-120-20261018-07",
+    "training_updates": 0
+  },
+  "date": "2026-10-18",
+  "fix": "Only owned fresh-child PYTHONPATH now includes fixed ROOT/src after the fixed overlay. Entire app bytes otherwise unchanged against ded8e7b. No source90/91, import verifier, gate, data, model or training recipe modification.",
+  "schema_id": "jev-modal-owned-source-path-correction-v1",
+  "scope": "No complete trained candidate or model performance result exists. Failed evidence is retained.",
+  "sources": [
+    {
+      "path": "apps/modal/public_action_fit.py",
+      "sha256": "d19f79d4a3c4d3ccabd018842618be3ca37f33b75ef1a346f521ba18ecc2c68a",
+      "size_bytes": 51829
+    },
+    {
+      "path": "tests/test_public_action_modal_fit.py",
+      "sha256": "5568807b99f3b3e2f349219d6c41385225f8480b597dfd405a79deeb71e9e6c3",
+      "size_bytes": 29621
+    }
+  ],
+  "test": "Existing owned-launch test now genuinely spawns one stdlib-only temporary Python to locate the same nested s1 module by captured child environment; it checks the exact module origin without importing the target. All3 parametrizations passed0.26s; Ruffcheck/format passed."
+}

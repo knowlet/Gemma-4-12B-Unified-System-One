@@ -1082,7 +1082,7 @@ def owned(mode, run_id, manifest_sha256=None):
     environment = {
         "PATH": "/usr/local/bin:/usr/bin:/bin",
         "LANG": "C.UTF-8",
-        "PYTHONPATH": str(OVERLAY),
+        "PYTHONPATH": ":".join((str(OVERLAY), str(ROOT / "src"))),
         "PYTHONNOUSERSITE": "1",
         "PYTHONDONTWRITEBYTECODE": "1",
         "TOKENIZERS_PARALLELISM": "false",

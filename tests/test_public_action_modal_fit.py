@@ -7,6 +7,8 @@ import os
 import re
 import signal
 import stat
+import subprocess
+import sys
 import tempfile
 from pathlib import Path, PurePosixPath
 from types import SimpleNamespace
@@ -390,6 +392,28 @@ def test_owned_exit_receipt_never_claims_overall_success_before_export_and_volum
             assert command[0] == "/synthetic-only/python" and command[-2] == "--fit-child"
             assert kwargs["start_new_session"] is True and kwargs["stdin"] == -3
             assert kwargs["env"]["HF_HUB_OFFLINE"] == kwargs["env"]["TRANSFORMERS_OFFLINE"] == "1"
+            if fault is None:
+                package = namespace["ROOT"] / "src/s1"
+                package.mkdir(parents=True)
+                (package / "__init__.py").write_text("")
+                target = package / "browser_public_training_validation.py"
+                target.write_text('raise AssertionError("target must only be located")\n')
+                probe = subprocess.run(
+                    [
+                        sys.executable,
+                        "-B",
+                        "-s",
+                        "-c",
+                        "import importlib.util; print(importlib.util.find_spec("
+                        "'s1.browser_public_training_validation').origin)",
+                    ],
+                    env=kwargs["env"],
+                    cwd=kwargs["cwd"],
+                    capture_output=True,
+                    check=True,
+                    timeout=10,
+                )
+                assert probe.stdout.decode().strip() == str(target)
             kwargs["stdout"].write(b"Synthetic child already exited; no worker was launched.\n")
             kwargs["stdout"].flush()
 
