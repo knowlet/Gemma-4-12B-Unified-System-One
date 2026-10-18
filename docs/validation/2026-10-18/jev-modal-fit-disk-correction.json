@@ -1,0 +1,60 @@
+{
+  "authorized_payload": {
+    "bytes": 237308893,
+    "files": 1452,
+    "manifest": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/expected-upload-manifest-02.json",
+      "sha256": "95c2efa41ee41afdab96df50b3e4e5815a59ed8912b2ff618787c76e12281820",
+      "size_bytes": 973498
+    },
+    "user_approval": "explicit permission for this batch to be used for Modal training"
+  },
+  "correction": {
+    "ephemeral_disk_mib_after": 524288,
+    "ephemeral_disk_mib_before": 131072,
+    "exact_source_change": "only the two ephemeral_disk keyword integer values",
+    "functions": [
+      "download",
+      "fit"
+    ],
+    "payload_and_training_sources_changed": false,
+    "source": {
+      "path": "apps/modal/public_action_fit.py",
+      "sha256": "8daedf14e8e46fde3c26037f70d560c5ff6872ba32e3ca777c173095781f19e4",
+      "size_bytes": 39528
+    }
+  },
+  "date": "2026-10-18",
+  "observed_attempt": {
+    "app_id": "ap-VYFySkoOnvrHSyZ20cJsZw",
+    "cli_exit_code": 1,
+    "dependency_install_completed": true,
+    "error": "Function disk request out of bounds: 131072 MiB. Must be between 524288 and 3145728 MiB.",
+    "gpu_fit_started": false,
+    "local_entrypoint_output_created": false,
+    "pip_check": "No broken requirements found.",
+    "stderr": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/modal-run-01.stderr.log",
+      "sha256": "ae913bd2cc32b0ec48b9eb7aceaf671dcb83a5e86b3cb2b3b12591e763355961",
+      "size_bytes": 638
+    },
+    "stdout": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/modal-run-01.stdout.log",
+      "sha256": "0affd8343fa3558d475d618c4bbd28e164aa372ca4c5a12b30c634cb7170d9f6",
+      "size_bytes": 32707
+    },
+    "training_updates": 0
+  },
+  "scope": "Deployment resource correction; no successful training, qualification, browser task score or comparative model result is claimed.",
+  "status": "deployment_refused_before_training_resource_config_corrected",
+  "validation": {
+    "decision3_replay_tests": 12,
+    "elapsed_seconds": 0.71,
+    "modal_boundary_tests": 8,
+    "passed_subtests": 39,
+    "passed_tests": 20,
+    "pytest_command": ".venv/bin/python -B -m pytest -q -p no:cacheprovider tests/test_jev_decision3_gpu_replay.py tests/test_public_action_modal_fit.py",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed"
+  }
+}
