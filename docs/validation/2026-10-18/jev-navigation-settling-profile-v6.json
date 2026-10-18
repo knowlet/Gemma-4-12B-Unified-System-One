@@ -1,0 +1,53 @@
+{
+  "schema_id": "jev-v6-navigation-settling-root-review-v1",
+  "stage": "root_source_reviewed_actual_fixture_tests_passed_before_site_model_ablation",
+  "profile": "composed-visible-controls-settled-v6",
+  "parent": "composed-visible-controls-v4",
+  "sources": [
+    {
+      "path": "scripts/jev_observation_profile_v6.py",
+      "sha256": "cd78f6e2a600705aeeb1255aafd54fa5570d03937200099a983096ccbf238be5",
+      "size_bytes": 23604
+    },
+    {
+      "path": "scripts/jev_browser_profile_v6_benchmark.py",
+      "sha256": "147b055f287c942d62981a99e3990a0cffef1b20ec204775a438ebae41989eb9",
+      "size_bytes": 12154
+    },
+    {
+      "path": "tests/test_jev_observation_profile_v6.py",
+      "sha256": "2323e019609bb0b94d4804ea0816ed3ae2d48bcc4b10c79e9a7c669e66afab5f",
+      "size_bytes": 36877
+    }
+  ],
+  "HOLD01": {
+    "path": "artifacts/jev-runtime/native-navigation-v6-20261018-01/source-HOLD-01/HOLD.json",
+    "sha256": "7c32b6162e14acb7faac2afac96f81fd80ce62495a22a75c03288eb5af253103",
+    "size_bytes": 16222
+  },
+  "mechanism": "Only derived Browser.observe retries the exact native missing-body StalePage(Document is navigating) until a2s per-call monotonic target. An available valid snapshot returns immediately even when ready_state remains loading. Full native observation/screenshot/readiness cost counts; late results are refused with actual elapsed/overshoot evidence. Unknown transport, JavaScript and profile errors propagate immediately.",
+  "unchanged": "Exact v4 discovery/actions/freshness/executor, Agent/history/model/golds/16decisions/20smodel-helper remain. Snapshot has one reversible profile identity literal; other browser bytes outside observe equal v4. CSS-hover v5 is a separate ablation.",
+  "root_validation": {
+    "full_source_read": "626line helper,256line isolated launcher,865line tests, exact derived observer patch",
+    "all_HOLD_references_rehashed": 42,
+    "pytest": "36passed in17.42s with JEV_BROWSER_TESTS=1;22source and14real localChromium tests",
+    "ruff": "passed all3files",
+    "fixtures": [
+      "Actual streaming loopback navigation recovers0.35/.8/1.5s bodydelays with one trusted click and no input replay.",
+      "3.2s bodydelay times out around2.001s; later reachability is separate.",
+      "Real CDP response and screenshot with injected2.05s transport delay are rejected as late, retaining overshoot.",
+      "Valid body while loading returns fast; actual JS/evidence/after-input errors propagate; old proxy freshness and executor guards remain enforced."
+    ],
+    "closure": "18file canonical/runtime/three-helper profile and isolated11/12file runners rederived and verified."
+  },
+  "limitations": [
+    "Target is per observe call and synchronous CDP can overshoot; it is not a hard execution deadline.",
+    "Existing Agent.tick may observe a second time, accumulating another call.",
+    "Only exact missing-body navigation is transient; other navigation transport/evaluation failures still propagate.",
+    "Normal runtime stores settling telemetry on Browser and timeout exception; no telemetry is added to model observations.",
+    "First test round kept35passes and1fixture setup failure; only bounded read-only body-present fixture synchronization changed. Original source/log/XML receipts remain unchanged.",
+    "No actual website/model improvement has been measured for v6 at this commit; new six cases are development exposed."
+  ],
+  "actual_model_GPU_Modal_calls": 0,
+  "task_performance_attested": false
+}
