@@ -1,8 +1,8 @@
 {
   "status": "reviewed_experimental_loss_module_not_fitted_or_qualified",
   "problem": "The current teacher-forced token metric includes singleton grammar positions. A new experimental module makes legal-branch objectives explicit without changing the historical fitter or deployment.",
-  "source": "src/s1/jev_cfg_action_loss.py",
-  "source_sha256": "3bcde8f1fa75c1963da673fa653d1d5ea042048073e9caf790280ef03c63ac21",
+  "source": "scripts/jev_cfg_action_loss.py",
+  "source_sha256": "b422f055cfe22c8d4b6c34780c189d8c78f21bb78e5ea564e67cd9ab79e80aad",
   "objectives": {
     "B": "Full-vocabulary cross entropy averaged over positions with more than one actual legal token.",
     "C": "Cross entropy normalized over the actual legal token set, averaged over those branch positions.",
@@ -17,15 +17,17 @@
   ],
   "verification": {
     "root_full_source_and_tests_review": true,
-    "independent_CPU_Torch_tests": "37 passed in 1.49s",
+    "independent_CPU_Torch_tests": "37 passed in 1.51s after relocation",
     "ruff_check_and_format": "PASS",
     "existing_120_train_and_22_development_plans": "All 142 match the sealed independent audit: complete allowed masks, target IDs, positions, request and inventory hashes.",
     "gradient_checks": "Forced readout positions have zero direct loss gradient; C also has zero direct gradient for forbidden logits. Causal context remains complete.",
     "failure_checks": "Changed requests, candidates, tokens, masks, positions, forged plans, nonfinite logits and zero-decision paths refuse.",
-    "source_HOLD": "artifacts/jev-runtime/native-cfg-loss-module-20261018-01/source-HOLD-01/HOLD.json",
-    "source_HOLD_sha256": "8133e981414fbd069550a9c8c209bf2a9532456a531804dc33c146e3fbdeb1c5"
+    "source_HOLD": "artifacts/jev-runtime/public-native-cfg-matched-fit-20261018-01/source-HOLD-02/HOLD.json",
+    "source_HOLD_sha256": "68e2fb459e84c99dd63483d3ec4d86de92cb9c9d1995944ca1cca7695df8738b",
+    "historical_source_HOLD": "artifacts/jev-runtime/native-cfg-loss-module-20261018-01/source-HOLD-01/HOLD.json"
   },
   "model_loads_or_training_updates": 0,
   "browser_success_result": null,
-  "next": "Implement an explicit versioned matched A/C producer, artifact contract and fresh qualification. Then measure complete native actions and real browser tasks."
+  "next": "Implement an explicit versioned matched A/C producer, artifact contract and fresh qualification. Then measure complete native actions and real browser tasks.",
+  "placement": "The experimental module lives in scripts to preserve the exact original84 core inventory required by nested public admission. Only its two imports changed during relocation; actual701/142 admission and every142 plan byte were rechecked."
 }

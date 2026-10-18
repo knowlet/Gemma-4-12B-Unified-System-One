@@ -7,13 +7,13 @@ from dataclasses import replace
 from types import SimpleNamespace
 
 import pytest
-
-from s1.jev_cfg_action_loss import (
+from jev_cfg_action_loss import (
     _decision_indices,
     action_loss,
     compile_action_plan,
     decision_token_loss,
 )
+
 from s1.jev_generated import INSTRUCTIONS, POLICY
 
 

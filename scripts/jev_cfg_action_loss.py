@@ -11,7 +11,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 
-from .jev_action_grammar import LegalActionTokenTrie
+from s1.jev_action_grammar import LegalActionTokenTrie
 
 _PLAN_PROOF = object()
 _SEQUENCE_KEYS = {
@@ -107,7 +107,7 @@ def _decision_indices(allowed):
 
 def compile_action_plan(row, payload, tokenizer):
     """Use the actual inference request validator and public grammar callback."""
-    from .jev_generated import INSTRUCTIONS, POLICY, _request
+    from s1.jev_generated import INSTRUCTIONS, POLICY, _request
 
     snapshot = _snapshot(row)
     record, inputs = snapshot["record"], snapshot["inputs"]
