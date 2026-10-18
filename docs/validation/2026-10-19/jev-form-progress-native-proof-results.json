@@ -1,0 +1,411 @@
+{
+  "schema_id": "jev-owned-form-progress-native-proof-results-v1",
+  "status": "NATIVE_MECHANISM_PROVED_CANDIDATES_UNADMITTED_UNCOMPILED",
+  "problem": "Observed browser failures included selecting a draft view without committing it and remaining in a local tab with a matching heading instead of navigating to the required document. These fixtures supply actual native operation/state evidence for those missing progress decisions.",
+  "method": {
+    "primary_episodes": 12,
+    "wrong_document_counterexamples": 4,
+    "families": 6,
+    "variants_each": 2,
+    "train_development_family_split": [
+      4,
+      2
+    ],
+    "teacher": "Fixed authored routes; no model policy or helper calls.",
+    "runtime": "Frozen v5 observe/fresh/act and original executor, owned Playwright CDPSession bridge,1120x780 viewport, original host reserve gate. Initial navigation only uses Playwright.goto; all27 teacher/counter operations use the original native executor.",
+    "network": "Owned loopback GET/HEAD only; all20 recorded responses200, no blocked/external/POST attempt.",
+    "output_scope": "43 complete ordered native request body files, including12 primary final proof requests and8 counterexample requests; only23 primary decision states exported as unadmitted candidates."
+  },
+  "result": {
+    "episodes": 16,
+    "primary_semantic_complete": 12,
+    "wronglocal_semantic_false": 4,
+    "statuses": {
+      "COMPLETE_NATIVE_ROUTE_UNADMITTED": 12,
+      "COMPLETE_WRONG_DOCUMENT_COUNTEREXAMPLE": 4
+    },
+    "joins": {
+      "network_responses": 20,
+      "request_snapshot_body_joins": 43,
+      "draft_edit_not_applied_joins": 8,
+      "SELECT_no_Input_untrusted_events": 3,
+      "selected_native_action_joins": 27,
+      "same_document_trusted_click_joins": 20,
+      "Input_calls": 63,
+      "navigation_discards_old_DOM_event_arrays": 4
+    },
+    "operation_counts_including_counterexamples": {
+      "SELECT": 3,
+      "CLICK": 19,
+      "TYPE_TEXT": 5
+    },
+    "Input_types": {
+      "mousePressed": 24,
+      "mouseReleased": 24,
+      "keyDown": 5,
+      "keyUp": 5,
+      "Input.insertText": 5
+    },
+    "unadmitted_wires": 23,
+    "decision_split": {
+      "train": 13,
+      "development": 10
+    },
+    "fresh_context_target_session_identities": 16,
+    "model_helper_POST_calls": 0,
+    "tokenizer_compiler_calls": 0,
+    "admitted_rows": 0
+  },
+  "primary_operation_counts": {
+    "CLICK": 15,
+    "TYPE_TEXT": 5,
+    "SELECT": 3
+  },
+  "checked_progress": [
+    "Three native SELECT operations resolve actual offered head keys, set the demonstrated DOM value, and retain the original untrusted input/change events with zero pointer Input calls.",
+    "Five TYPE_TEXT operations preserve exact native pointer/key/insertText call shapes and actual field values. Eight draft edits leave applied state and result rows unchanged until an explicit commit.",
+    "All12 main routes satisfy fresh correct-document/title/complete visible results, applied summary and preserved scope. Four wrong-local-tab clones retain semantic false even when a matching local heading is present.",
+    "All43 observed snapshots/fingerprints join original native request-constructor bodies without head/context pruning. Exact compact UTF8 body bytes/SHA are retained;23 candidate wires reference the original saved body files."
+  ],
+  "source_repair": {
+    "problem": "A save failure after executing an episode could label that slot unexecuted; a later placeholder save failure could hide the primary error and skip terminal evidence.",
+    "change": "Track started and returned episodes independently of saved summaries; retain incomplete/unknown effect counts, preserve primary plus secondary IO errors, and publish a terminal file only after its reserved-capacity pending write completes.",
+    "validation": "29 pure tests pass, including4 mocked execution/persistence failure cases; Ruff, format and compile checks pass. Source-only failure tests do not represent actual browser success."
+  },
+  "ownership": {
+    "controller_exit": 0,
+    "whole_closed": true,
+    "observed_PID_start_identities": 23,
+    "worker_groups": 2,
+    "controller_original_group_and_owned_HTTP_listener_absent": true,
+    "cleanup_signals": 0,
+    "closed_files": 236,
+    "closed_bytes": 11438498
+  },
+  "episodes": [
+    {
+      "ordinal": 0,
+      "case_id": "dispatch-register-v1",
+      "family": "dispatch-register",
+      "candidate_split": "train",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 3,
+      "native_actions": 2,
+      "Input_calls": 2,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/00.json",
+        "sha256": "adb3f3f967032a2c30c7db05ba77f8541be551213ea71efff85bd8f82c525a0f",
+        "size_bytes": 2135
+      }
+    },
+    {
+      "ordinal": 1,
+      "case_id": "dispatch-register-v2",
+      "family": "dispatch-register",
+      "candidate_split": "train",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 2,
+      "native_actions": 1,
+      "Input_calls": 2,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/01.json",
+        "sha256": "bbf8d35e4eaadfc0fbcd9c0d7b37ad3923853acde92e6ae980897e9ccb282257",
+        "size_bytes": 1982
+      }
+    },
+    {
+      "ordinal": 2,
+      "case_id": "instrument-index-v1",
+      "family": "instrument-index",
+      "candidate_split": "train",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 3,
+      "native_actions": 2,
+      "Input_calls": 7,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/02.json",
+        "sha256": "c0e25af8c7d15ab8840bc3efd4cab757340d2dea132aeddaed47a3b408ec97a1",
+        "size_bytes": 2134
+      }
+    },
+    {
+      "ordinal": 3,
+      "case_id": "instrument-index-v2",
+      "family": "instrument-index",
+      "candidate_split": "train",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 2,
+      "native_actions": 1,
+      "Input_calls": 2,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/03.json",
+        "sha256": "48ed5f933b604e03708ec8097f8340c6b3452d72e12764ce1a88a4b912ab8a1b",
+        "size_bytes": 1980
+      }
+    },
+    {
+      "ordinal": 4,
+      "case_id": "workroom-reference-v1",
+      "family": "workroom-reference",
+      "candidate_split": "train",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 3,
+      "native_actions": 2,
+      "Input_calls": 4,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/04.json",
+        "sha256": "7419d4bee3b22a959327b75d3276371e2f2851f57d0915a89c72d582b9580bde",
+        "size_bytes": 2135
+      }
+    },
+    {
+      "ordinal": 5,
+      "case_id": "workroom-reference-v2",
+      "family": "workroom-reference",
+      "candidate_split": "train",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 2,
+      "native_actions": 1,
+      "Input_calls": 2,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/05.json",
+        "sha256": "42c868df94e57f8bbb835a123e5562537c38fd437d7a9264871d69163072340e",
+        "size_bytes": 1981
+      }
+    },
+    {
+      "ordinal": 6,
+      "case_id": "repair-queue-v1",
+      "family": "repair-queue",
+      "candidate_split": "train",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 4,
+      "native_actions": 3,
+      "Input_calls": 7,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/06.json",
+        "sha256": "0ee21d8c7ce2f98673814644ed52ac06168a6731cbd4527b9145b1e7b7f68d68",
+        "size_bytes": 2284
+      }
+    },
+    {
+      "ordinal": 7,
+      "case_id": "repair-queue-v2",
+      "family": "repair-queue",
+      "candidate_split": "train",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 2,
+      "native_actions": 1,
+      "Input_calls": 2,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/07.json",
+        "sha256": "14d82229f216794bcffa14ba3d6c4bf8d24b1f91ab1548b434c691901b772a19",
+        "size_bytes": 1977
+      }
+    },
+    {
+      "ordinal": 8,
+      "case_id": "restoration-archive-v1",
+      "family": "restoration-archive",
+      "candidate_split": "development",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 4,
+      "native_actions": 3,
+      "Input_calls": 7,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/08.json",
+        "sha256": "b55acdc8be0ca17db704e5f47906ed8f6d7d0a46ed0e18cbde5e4b51ab3b9f84",
+        "size_bytes": 2291
+      }
+    },
+    {
+      "ordinal": 9,
+      "case_id": "restoration-archive-v2",
+      "family": "restoration-archive",
+      "candidate_split": "development",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 3,
+      "native_actions": 2,
+      "Input_calls": 7,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/09.json",
+        "sha256": "b955b5ec6c381b2427bd01a0190f7e74e7b41c75e4ae671f1eddc4900ef4fe5e",
+        "size_bytes": 2138
+      }
+    },
+    {
+      "ordinal": 10,
+      "case_id": "field-reference-v1",
+      "family": "field-reference",
+      "candidate_split": "development",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 4,
+      "native_actions": 3,
+      "Input_calls": 9,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/10.json",
+        "sha256": "142aa9817c57b0f1f8cf638ab11dcbb675b3262440389728089c3f44ceeb4858",
+        "size_bytes": 2288
+      }
+    },
+    {
+      "ordinal": 11,
+      "case_id": "field-reference-v2",
+      "family": "field-reference",
+      "candidate_split": "development",
+      "counterexample": false,
+      "semantic_complete": true,
+      "constructed_requests": 3,
+      "native_actions": 2,
+      "Input_calls": 4,
+      "status": "COMPLETE_NATIVE_ROUTE_UNADMITTED",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/11.json",
+        "sha256": "b981092aa5225dde8ee09173faaa06a9a7697e84c273a0c38d30b2c47690dd8d",
+        "size_bytes": 2134
+      }
+    },
+    {
+      "ordinal": 12,
+      "case_id": "workroom-reference-v1",
+      "family": "workroom-reference",
+      "candidate_split": null,
+      "counterexample": true,
+      "semantic_complete": false,
+      "constructed_requests": 2,
+      "native_actions": 1,
+      "Input_calls": 2,
+      "status": "COMPLETE_WRONG_DOCUMENT_COUNTEREXAMPLE",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/12.json",
+        "sha256": "e7f8c412f958658f7034ca00f9b4d9b62e93482d6d5a88dcb9e197fbfb89b0a3",
+        "size_bytes": 1987
+      }
+    },
+    {
+      "ordinal": 13,
+      "case_id": "workroom-reference-v2",
+      "family": "workroom-reference",
+      "candidate_split": null,
+      "counterexample": true,
+      "semantic_complete": false,
+      "constructed_requests": 2,
+      "native_actions": 1,
+      "Input_calls": 2,
+      "status": "COMPLETE_WRONG_DOCUMENT_COUNTEREXAMPLE",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/13.json",
+        "sha256": "7c21e603cf181cb4eb32ad71ab34fffc4fbef4300df57cc5cddffa02400e6e11",
+        "size_bytes": 1987
+      }
+    },
+    {
+      "ordinal": 14,
+      "case_id": "field-reference-v1",
+      "family": "field-reference",
+      "candidate_split": null,
+      "counterexample": true,
+      "semantic_complete": false,
+      "constructed_requests": 2,
+      "native_actions": 1,
+      "Input_calls": 2,
+      "status": "COMPLETE_WRONG_DOCUMENT_COUNTEREXAMPLE",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/14.json",
+        "sha256": "7d48041c9b83b4b0e452d4019859cba3bd383e0fc0082deb4d90732019b66f35",
+        "size_bytes": 1984
+      }
+    },
+    {
+      "ordinal": 15,
+      "case_id": "field-reference-v2",
+      "family": "field-reference",
+      "candidate_split": null,
+      "counterexample": true,
+      "semantic_complete": false,
+      "constructed_requests": 2,
+      "native_actions": 1,
+      "Input_calls": 2,
+      "status": "COMPLETE_WRONG_DOCUMENT_COUNTEREXAMPLE",
+      "episode_metadata": {
+        "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/episodes/15.json",
+        "sha256": "bf6f9d9c86eb219f81aaaae3e1621b1897b888e289de7ce298af6d03a718b539",
+        "size_bytes": 1984
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/source-HOLD-03/HOLD.json",
+      "sha256": "36783a4231f18e1831985797f0b8f9b9755e656da2a86e8692c7e140844100de",
+      "size_bytes": 8019
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/root-HOLD03-source-review-01.json",
+      "sha256": "5e111c306bbe3f41d88c1fcddbd0318b0b6f5ec31c0b71377dc348d13e1a75f4",
+      "size_bytes": 3017
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/root-actual01-start-01.json",
+      "sha256": "2520ba21b009f4fb0b330be8190ef727bc9e9f945fbaa54aa0ad51b95a8cb89b",
+      "size_bytes": 1853
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/root-actual01-exit-review-01.json",
+      "sha256": "c3bed7e854a796cc5833194e74f7c3f5c659dd472877b4e64d35644c761ed36b",
+      "size_bytes": 2322
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/root-actual01-closed-index-01.json",
+      "sha256": "00eed5a57f169145cd661f91c65db3ea547b847123ee2d2719f9b3cdc9c098eb",
+      "size_bytes": 59297
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/independent-actual01-closed-review-01.json",
+      "sha256": "1e4828c5ca5ca5f67dacea7892c66879c1d9912f0b25475da9826315d1eedc7c",
+      "size_bytes": 20313
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/actual-01/candidate-native-wire-requests.jsonl",
+      "sha256": "d7e6bca4c02751cdcf60d8dc163dbb73e7bf93225b8c9af156bf3a604056a0b2",
+      "size_bytes": 387726
+    }
+  ],
+  "limits": [
+    "This is one bounded authored local native mechanism proof with deterministic teacher choices, not model-selected behavior, benchmark/generalization quality or training gain.",
+    "All23 exported rows remain UNADMITTED and uncompiled. A separate typed validator/admission must authenticate this proof/source/closure/splits before tokenizer/fullprocessor/CFG preparation or any fitting.",
+    "Original native CLICK/TYPE Input calls return empty CDP receipts. Trusted DOM click evidence was checked on same-document actions;4 reference navigations discard old-document event arrays, so no persistent trusted old-document event claim is made.",
+    "SELECT remains the original executor-owned value assignment plus untrusted input/change dispatch; it is not trusted pointer input. No new operation or Enter action was added.",
+    "Raw READ_STATE is deep-copied before native fingerprint mutation in this worker; this preserves that response value but is still an application CDP log, not an independent network packet capture.",
+    "All43 body byte authorities are original compact encode(payload) UTF8 in the owned collector convention; no HTTP POST occurred, so actual provider HTTP transport bytes were not captured.",
+    "Browser.__init__/daemon is intentionally bypassed by the reviewed owned CDPSession bridge. The proof exercises frozen v5 observe/fresh/act/executor and authored-page initialization, not production daemon lifecycle.",
+    "Recorded page routes/server ledger contain only owned GET/HEAD200 and no blocked/external/POST attempt. This is not a host-wide packet or universal browser-descendant network proof.",
+    "Private complete_text/geometry observations and exact expected contents support this1120x780 fixture state, not arbitrary responsive layouts, stale mutations or append capacity.",
+    "Both variant2 wronglocal clicks may be no-ops; matching local headings/page_changed false do not imply reference-document progress. Four negatives remain semantic failures, not primary task successes.",
+    "Fresh closure verifies23 observed PID/start identities,2 worker groups,root controller/group and loopback listener absent. It does not prove every unobserved short-lived descendant was sampled."
+  ],
+  "next": "Authenticate the23 candidates through a new typed collection admission, then genuine fullprocessor target/mask/EOS/CFG compilation before adding a separately identified fit regime. Existing public120/22 and mixed129/27 remain unchanged. This16-episode teacher proof does not change the model browser baseline of5/10 or establish competitor superiority.",
+  "local_only": true
+}
