@@ -1,0 +1,37 @@
+{
+  "status": "pure_grammar_and_cache_verified_not_integrated_or_runtime_qualified",
+  "problem": "Real browser attempts failed when the base field helper emitted a thought prefix before JSON. This prototype constrains generated syntax while leaving field values unrestricted.",
+  "source": "scripts/jev_field_json_grammar.py",
+  "source_sha256": "3efe0870aa03fd036a89a83dd9c56fdba32dac673231a81bb0507aeccdedb6de",
+  "language": "Exactly one decoded text key with a Unicode scalar string or null; JSON whitespace and escapes allowed, paired surrogates required. Extra keys, fences and thought prefixes refuse.",
+  "decoder": "Preserves Replace then ByteFallback then Fuse semantics. A fallback byte run retains valid and replacement projections until it ends; a later invalid byte can replace the entire run.",
+  "native_vocabulary": {
+    "all_ids_retained": 262144,
+    "ordinary": 261864,
+    "fallback_bytes": 256,
+    "configured_EOS": [1, 106, 50],
+    "other_special_tokens_refused": 21,
+    "JSON_states": 54
+  },
+  "verification": {
+    "root_full_source_tests_and_validation_script_review": true,
+    "independent_CPU_tests": "71 passed in 4.76s",
+    "Ruff": "PASS",
+    "root_closed_cache_load_and_pin_verification": true,
+    "compiler_seconds": 9.685079502000008,
+    "compiler_peak_RSS_KiB": 324388,
+    "compiler_address_cap_bytes": 3221225472,
+    "complete_cache_bytes": 33461006,
+    "cache_cap_bytes": 536870912,
+    "matrix_cells_and_mask_bits_checked": 14155776,
+    "independent_direct_DFA_samples": 53940,
+    "actual_Rust_decoder_oracle_cases": 800,
+    "cache_manifest_sha256": "6e5ac130fa1f5b6bb315f71d17cb8d3d1b8f2552eef319a1e695c06ebf5b0dc6",
+    "result": "artifacts/jev-runtime/field-json-grammar-20261018-01/result-01.json",
+    "result_sha256": "9e9f02611db7fc14422ce42dc4dc76f6cccae467b41fd4dab3eebea2656b8a78"
+  },
+  "model_GPU_HTTP_or_fit_calls": 0,
+  "browser_success_result": null,
+  "limits": "The existing helper and qualified service are unchanged. This is neither a live latency result nor a field-value correctness result. Null, blank and oversized values still require the existing consumer refusal; reaching128 tokens does not justify appending EOS or repairing output.",
+  "next": "Integrate through a separately reviewed helper adapter and fresh runtime qualification, then test real browser tasks."
+}
