@@ -1,0 +1,116 @@
+{
+  "schema_id": "jev-v4-six-initial-launch-protocol-mismatch-v1",
+  "source_profile_sha256": "f96fb0553c4c8ef1a163633577bfb3ddbb03ddbc1ff6644c36d8fbe2c06d4b43",
+  "summary": {
+    "path": "artifacts/jev-runtime/public07-six-v4-browser-20261018-01/results/summary.json",
+    "sha256": "a4d133750c5ab4d04cae313741d3716411d3c46f8339cdc54876d883e344c496",
+    "size_bytes": 445584
+  },
+  "closed_index": {
+    "path": "artifacts/jev-runtime/public07-six-v4-browser-20261018-01-closed-index.json",
+    "sha256": "bd8314209438224f7897b74bd97b8e91e5d010f6441538027b4382725ac32e93",
+    "size_bytes": 14333
+  },
+  "closed_files": 79,
+  "closed_bytes": 21790323,
+  "owned_exit_code": 0,
+  "raw_successes": 2,
+  "denominator": 6,
+  "policy_calls": 40,
+  "text_calls": 1,
+  "observation_profile_failed": false,
+  "outcomes": [
+    {
+      "case_id": "heldout-public-000-000",
+      "status": "done",
+      "goal_satisfied": true,
+      "success": true,
+      "error": null,
+      "error_stage": null,
+      "premature_done": false,
+      "policy_calls": 3,
+      "text_calls": 0,
+      "elapsed_ms": 23474
+    },
+    {
+      "case_id": "heldout-public-001-000",
+      "status": "done",
+      "goal_satisfied": true,
+      "success": true,
+      "error": null,
+      "error_stage": null,
+      "premature_done": false,
+      "policy_calls": 3,
+      "text_calls": 0,
+      "elapsed_ms": 25832
+    },
+    {
+      "case_id": "heldout-public-002-000",
+      "status": "ready",
+      "goal_satisfied": false,
+      "success": false,
+      "error": "Runner stopped at the 16-decision budget",
+      "error_stage": "decision_budget",
+      "premature_done": false,
+      "policy_calls": 16,
+      "text_calls": 0,
+      "elapsed_ms": 116857
+    },
+    {
+      "case_id": "heldout-public-003-000",
+      "status": "ready",
+      "goal_satisfied": false,
+      "success": false,
+      "error": "StalePage: Document is navigating",
+      "error_stage": "execution",
+      "premature_done": false,
+      "policy_calls": 10,
+      "text_calls": 0,
+      "elapsed_ms": 86833
+    },
+    {
+      "case_id": "heldout-public-004-000",
+      "status": "blocked",
+      "goal_satisfied": false,
+      "success": false,
+      "error": "Public navigation scope or request observation failed",
+      "error_stage": "public_navigation_scope",
+      "premature_done": false,
+      "policy_calls": 3,
+      "text_calls": 0,
+      "elapsed_ms": 23680
+    },
+    {
+      "case_id": "heldout-public-005-000",
+      "status": "predicted",
+      "goal_satisfied": false,
+      "success": false,
+      "error": "RuntimeError: Model provider returned HTTP 422; no action executed.",
+      "error_stage": "execution",
+      "premature_done": false,
+      "policy_calls": 5,
+      "text_calls": 1,
+      "elapsed_ms": 46559
+    }
+  ],
+  "protocol_mismatch": {
+    "cause": "The root launch omitted TEXT_MODEL_REASONING=none. Upstream default emitted reasoning.effort=low; the unchanged qualified helper accepts only reasoning.enabled=false. The actual helper rejected this before generation with HTTP422 helper_schema / Limited native helper request profile.",
+    "original_v3_protocol": {
+      "TEXT_MODEL_REASONING": "none",
+      "reasoning": {
+        "enabled": false
+      }
+    },
+    "actual_v4_attempt01": {
+      "TEXT_MODEL_REASONING": "not explicitly set",
+      "reasoning": {
+        "effort": "low"
+      }
+    },
+    "status": "Preserve all six original outcomes and repeat the entire six-task v4 arm with the fixed original environment. Do not select successful tasks or relax the helper contract."
+  },
+  "controlled_v3_comparison_attested": false,
+  "profile_improvement_attested": false,
+  "case005_interface_exposed": true,
+  "original_v3_result": "Unchanged 3/6; this attempt is a separate raw 2/6 run with a helper transport mismatch. The pandas navigation StalePage is retained as a distinct failure."
+}

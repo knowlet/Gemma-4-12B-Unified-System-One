@@ -1,0 +1,98 @@
+{
+  "schema_id": "jev-decision3-actual-cpu02-root-review-v1",
+  "success": true,
+  "profile": {
+    "path": "artifacts/jev-runtime/decision3-public-weights-20261018-01/actual-download-02/complete-weight-profile.json",
+    "sha256": "ec90ce2f97876dae070e9fcd267d51300f956ec3d42488d8bb8898e92d02677d",
+    "size_bytes": 26706
+  },
+  "closed_files": 14,
+  "closed_index": {
+    "sha256": "006102e46f3a0c1bc82708162c14f12f0aa3ff470cbddcc075492fcdacac641b",
+    "size_bytes": 1623
+  },
+  "original_profile_bytes_preserved": true,
+  "root_source18_authenticated": true,
+  "CPU_child_exit_confirmed": true,
+  "model_loads": 0,
+  "GPU_requested": false,
+  "models": {
+    "d3": {
+      "revision": "225be8b1e2270becab69c5fe05b26f99cbbdd66b",
+      "manifest_sha256": "4959df7ee964c2fad24a8e853df8e3cda9bae61636fa5650cc1a0fed78539677",
+      "runtime_files": 30,
+      "backbone_layout": "indexed_shards",
+      "loaded_parameters": 26086635760,
+      "resident_file_bytes": 52176025120,
+      "readout_shape": [
+        255,
+        5120
+      ]
+    },
+    "d3-flash": {
+      "revision": "8b35c853b90e777595ec36bacae820fe08ea077a",
+      "manifest_sha256": "abdafb9f4a3e39595a54b7ca977e6bd7a3279c57745231319e3a171a43976e65",
+      "runtime_files": 23,
+      "backbone_layout": "indexed_shards",
+      "loaded_parameters": 8393739504,
+      "resident_file_bytes": 16789656976,
+      "readout_shape": [
+        255,
+        4096
+      ]
+    },
+    "d3-mini": {
+      "revision": "97dd054df4b3e0b3beb6af23ab8c82b7c0052e0e",
+      "manifest_sha256": "bc638e17982411f6ad0f524d33d0dc1f0db81ad7995c1bfdf93dba7674df5e48",
+      "runtime_files": 21,
+      "backbone_layout": "indexed_shards",
+      "loaded_parameters": 4539918336,
+      "resident_file_bytes": 9081227360,
+      "readout_shape": [
+        255,
+        2560
+      ]
+    },
+    "d3-nano": {
+      "revision": "aeb70d4dd53ed25b855c3b0a66394b8fe265db7f",
+      "manifest_sha256": "db2139c5b5b7060f8f95150ec70ca2fe7e69e6bf4249e5766df5388bf35977f2",
+      "runtime_files": 19,
+      "backbone_layout": "single_file",
+      "loaded_parameters": 2213763904,
+      "resident_file_bytes": 4428644200,
+      "readout_shape": [
+        255,
+        2048
+      ]
+    },
+    "d3-lite": {
+      "revision": "9c10703193afc7c7d28c88201c0364bfbbf58320",
+      "manifest_sha256": "31f0ff94ff26619c0a063ccac803edcfe34c56c92e5c9c50b703b62893f125dd",
+      "runtime_files": 20,
+      "backbone_layout": "indexed_shards",
+      "loaded_parameters": 853247040,
+      "resident_file_bytes": 1707072248,
+      "readout_shape": [
+        255,
+        1024
+      ]
+    },
+    "d3-edge": {
+      "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+      "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+      "runtime_files": 20,
+      "backbone_layout": "indexed_shards",
+      "loaded_parameters": 594582720,
+      "resident_file_bytes": 1189722528,
+      "readout_shape": [
+        255,
+        1024
+      ]
+    }
+  },
+  "scope": "Local closed artifact/full source/profile validation; runtime tensor SHA/header checks were performed by the actual CPU child and must be independently repeated before each GPU worker. Root did not redownload public tensor payloads.",
+  "actual_app": "ap-7KxHcJwv94OHABYlUPPu47",
+  "actual_run_id": "d3-public-six-cpu-20261018-02",
+  "independent_review": "Full closed export/source/profile bytes and every runtime file SHA/size/set independently compared against six locally retained official MODEL_MANIFEST files whose own SHA matches fixed CHECKPOINTS. No cloud tensor rehash by reviewers; actual CPU child performed those checks, GPU workers must independently repeat them.",
+  "performance_attested": false
+}
