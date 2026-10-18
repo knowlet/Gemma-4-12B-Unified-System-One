@@ -1,0 +1,149 @@
+{
+  "schema_id": "jev_public07_six_new_browser_results_v1",
+  "status": "genuine_six_case_v3_complete",
+  "successes": 3,
+  "denominator": 6,
+  "success_rate": 0.5,
+  "successful_tasks": [
+    "SQLite row_number documentation",
+    "NumPy reshape order documentation",
+    "pandas Series.map na_action documentation"
+  ],
+  "summary": {
+    "path": "artifacts/jev-runtime/public07-six-heldout-browser-20261018-01/results/summary.json",
+    "sha256": "a3d2c03eecaf9f090edfdd9640be904fb4fd18519583f9dd5b895c34adeb937b",
+    "size_bytes": 447004
+  },
+  "complete_tree": {
+    "path": "artifacts/jev-runtime/public07-six-heldout-browser-20261018-01-closed-index.json",
+    "sha256": "078ca2ccc5519374f56632b67c56d0bdd38a3abd476f5f4a5b5eb981e93b0f52",
+    "size_bytes": 13077
+  },
+  "evaluator_bundle": {
+    "path": "artifacts/jev-runtime/public07-six-heldout-browser-20261018-01/runtime-bundle/bundle-manifest.json",
+    "sha256": "1e7ddff6f201f236dcdfb2aee9c18979565a50810c8274ceff5f8ace8254683d",
+    "size_bytes": 5630
+  },
+  "launch_receipt": {
+    "path": "artifacts/jev-runtime/public07-six-heldout-browser-20261018-01/runtime-bundle/launch-receipt.json",
+    "sha256": "ad623e35a3c0819947025357e8198c2435efc6c9f4f75661deb5e4aed9a277e8",
+    "size_bytes": 967
+  },
+  "candidate_native_readiness": {
+    "path": "artifacts/jev-runtime/public-native-heldout-capacity-20261018-03/capacity-summary.json",
+    "sha256": "a782db6c31633e15aee579222112807744ba630fe005e8fbe9df54a8aa75a120",
+    "size_bytes": 49032
+  },
+  "actual_cpu_token_capacity": {
+    "path": "artifacts/jev-runtime/public-native-heldout-token-capacity-20261018-02/summary.json",
+    "sha256": "68071eca32124128eb1d265b0d64787bc3e1ab7d693ff5faed2c7e52c454fb99",
+    "size_bytes": 8089
+  },
+  "model_child_manifest_sha256": "75b17c0a6bd5c381426e5e872298c915335310d80c24768dc4a0b0f3b1a27362",
+  "model_qualification_sha256": "c1fea3d45a7841c410f9c9c20eba32d3794025611ded8a68eeb9422baab50125",
+  "observation_profile": "composed-visible-text-v3",
+  "max_decisions": 16,
+  "repeats": 1,
+  "seed": 20261014,
+  "policy_calls": 41,
+  "text_calls": 1,
+  "premature_done_count": 0,
+  "observation_profile_failed": false,
+  "outcomes": [
+    {
+      "case_id": "heldout-public-000-000",
+      "task_id": "heldout-public-000",
+      "status": "done",
+      "goal_satisfied": true,
+      "success": true,
+      "premature_done": false,
+      "error": null,
+      "error_stage": null,
+      "policy_calls": 3,
+      "text_calls": 0,
+      "elapsed_ms": 22431
+    },
+    {
+      "case_id": "heldout-public-001-000",
+      "task_id": "heldout-public-001",
+      "status": "done",
+      "goal_satisfied": true,
+      "success": true,
+      "premature_done": false,
+      "error": null,
+      "error_stage": null,
+      "policy_calls": 3,
+      "text_calls": 0,
+      "elapsed_ms": 24962
+    },
+    {
+      "case_id": "heldout-public-002-000",
+      "task_id": "heldout-public-002",
+      "status": "ready",
+      "goal_satisfied": false,
+      "success": false,
+      "premature_done": false,
+      "error": "Runner stopped at the 16-decision budget",
+      "error_stage": "decision_budget",
+      "policy_calls": 16,
+      "text_calls": 0,
+      "elapsed_ms": 113227
+    },
+    {
+      "case_id": "heldout-public-003-000",
+      "task_id": "heldout-public-003",
+      "status": "done",
+      "goal_satisfied": true,
+      "success": true,
+      "premature_done": false,
+      "error": null,
+      "error_stage": null,
+      "policy_calls": 12,
+      "text_calls": 0,
+      "elapsed_ms": 100796
+    },
+    {
+      "case_id": "heldout-public-004-000",
+      "task_id": "heldout-public-004",
+      "status": "blocked",
+      "goal_satisfied": false,
+      "success": false,
+      "premature_done": false,
+      "error": null,
+      "error_stage": null,
+      "policy_calls": 1,
+      "text_calls": 0,
+      "elapsed_ms": 5694
+    },
+    {
+      "case_id": "heldout-public-005-000",
+      "task_id": "heldout-public-005",
+      "status": "predicted",
+      "goal_satisfied": false,
+      "success": false,
+      "premature_done": false,
+      "error": "RuntimeError: Model provider returned HTTP 502; no action executed.",
+      "error_stage": "execution",
+      "policy_calls": 6,
+      "text_calls": 1,
+      "elapsed_ms": 61227
+    }
+  ],
+  "failed_case_classification": {
+    "002": "curl exhausted16 decisions; model/navigation failure retained.",
+    "004": "Unchanged PubMed home repeatedlyHTTP403 in preflight and actualrun; model returnedBLOCKED. Infrastructure-unready remains in denominator6.",
+    "005": "Actualrun failed execution when common pinned-base helper emitted thought/codefence around JSON; strict validation returned502 and no action executed. A separate no-model preflight also found associated-label checkbox targets omitted by canonical/v3 discovery; that defect is not the immediate502 error."
+  },
+  "helper_failure": {
+    "raw_output": "thought\n```json\n{\"text\": \"migraine\"}\n```",
+    "action_adapter_state": "disabled_for_pinned_base_helper",
+    "actual_model_input_tokens": 641,
+    "actual_output_tokens": 16,
+    "max_new_tokens": 128,
+    "failure": "FieldTextError: Text helper did not generate valid JSON",
+    "do_not_infer": "Not action-LoRA contamination or context-limit failure."
+  },
+  "exposure_scope": "Six tasks absent from this120-example adaptation collection and not used for weight fitting. Case005 was inspected during interface diagnostics and must not be called interface-blind. No heldout result was used to select this already-trained child.",
+  "comparison": "Six Decision3 models still pending real browser execution. This is a small one-repeat50% observed task result, not a general superiority claim.",
+  "goal_complete": false
+}
