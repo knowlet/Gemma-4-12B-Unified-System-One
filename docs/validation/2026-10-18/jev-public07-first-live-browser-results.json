@@ -1,0 +1,94 @@
+{
+  "schema_id": "jev_public07_first_live_browser_results_v1",
+  "status": "four_known_public_tasks_complete",
+  "source": "Pinned original Jev code through unchanged native HTTP harness, v3 observations, actual public website states and fresh independent judges.",
+  "child_manifest_sha256": "75b17c0a6bd5c381426e5e872298c915335310d80c24768dc4a0b0f3b1a27362",
+  "technical_qualification_sha256": "c1fea3d45a7841c410f9c9c20eba32d3794025611ded8a68eeb9422baab50125",
+  "summary": {
+    "path": "artifacts/jev-runtime/public07-known-public-browser-20261018-01/summary.json",
+    "sha256": "ec58851aee4ba67643c3c7786ff3460f3819417c10c2bd85f23a1fcb0cbac170",
+    "size_bytes": 325734
+  },
+  "complete_benchmark_tree": {
+    "path": "artifacts/jev-runtime/public07-known-public-browser-20261018-01-closed-index.json",
+    "sha256": "9aa43d84134793e53c81b2a804b898769594f5629a16ba93d773eb408d0cb700",
+    "size_bytes": 8995
+  },
+  "successes": 1,
+  "denominator": 4,
+  "success_rate": 0.25,
+  "max_decisions": 16,
+  "repeats": 1,
+  "policy_calls": 42,
+  "text_calls": 4,
+  "observation_profile_failed": false,
+  "outcomes": [
+    {
+      "case_id": "public-arxiv-title-filter-results-v1-000",
+      "task_id": "public-arxiv-title-filter-results-v1",
+      "status": "done",
+      "goal_satisfied": false,
+      "success": false,
+      "premature_done": true,
+      "error": null,
+      "error_stage": null,
+      "policy_calls": 5,
+      "text_calls": 1,
+      "elapsed_ms": 57482
+    },
+    {
+      "case_id": "public-arxiv-original-paper-open-v1-000",
+      "task_id": "public-arxiv-original-paper-open-v1",
+      "status": "ready",
+      "goal_satisfied": false,
+      "success": false,
+      "premature_done": false,
+      "error": "Runner stopped at the 16-decision budget",
+      "error_stage": "decision_budget",
+      "policy_calls": 16,
+      "text_calls": 1,
+      "elapsed_ms": 182658
+    },
+    {
+      "case_id": "public-python-counter-most-common-v1-000",
+      "task_id": "public-python-counter-most-common-v1",
+      "status": "done",
+      "goal_satisfied": true,
+      "success": true,
+      "premature_done": false,
+      "error": null,
+      "error_stage": null,
+      "policy_calls": 5,
+      "text_calls": 1,
+      "elapsed_ms": 57844
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1-000",
+      "task_id": "public-nasa-mars-facts-moons-v1",
+      "status": "ready",
+      "goal_satisfied": false,
+      "success": false,
+      "premature_done": false,
+      "error": "Runner stopped at the 16-decision budget",
+      "error_stage": "decision_budget",
+      "policy_calls": 16,
+      "text_calls": 1,
+      "elapsed_ms": 126412
+    }
+  ],
+  "observed_failure_mechanisms": [
+    "Arxiv exact-title task selected Title and Hide abstracts but helper emitted unquoted query; final action DONE failed exact-query judge.",
+    "Arxiv original-paper task looped next/previous results and sort/search controls; no original-paper terminal state within16.",
+    "NASA task spent most budget on repeated scrolls; reached MarsFacts#h-moons at final action but had no DONE; unchanged strict result is failure."
+  ],
+  "known_exposed_diagnostic_only": true,
+  "new_six_case_model_results": null,
+  "policy_http_latency_ms": {
+    "median": 7695.933999999999,
+    "min": 6130.081,
+    "max": 11358.846,
+    "hardware": "local NVIDIA GB10; includes HTTP/runner overhead; not H200 compute comparison"
+  },
+  "comparison": "No Decision3 live model result yet; no superiority claim.",
+  "goal_complete": false
+}
