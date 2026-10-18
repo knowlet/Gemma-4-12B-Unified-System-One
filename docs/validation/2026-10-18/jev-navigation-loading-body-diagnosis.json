@@ -1,0 +1,54 @@
+{
+  "schema_id": "jev-native-navigation-loading-body-diagnosis-v1",
+  "stage": "actual_loopback_reproduction_not_browser_task_score",
+  "diagnostic_source": {
+    "path": "artifacts/jev-runtime/native-navigation-settling-20261018-01/probe.py",
+    "sha256": "73798772cc40d51c7adfbfaea9b359b5b22562d5c68f9e5cacb1c2b265fefdeb",
+    "size_bytes": 22244
+  },
+  "receipt": {
+    "path": "artifacts/jev-runtime/native-navigation-settling-20261018-01/probe-01/probe.json",
+    "sha256": "aad148672574001df93d213fd766b3c046d2bde859d5e03bb61491c476537279",
+    "size_bytes": 142062
+  },
+  "independent_review": {
+    "path": "artifacts/jev-runtime/native-navigation-settling-20261018-01/independent-review.json",
+    "sha256": "b77a3b803c2b5e535897e5315677474900660540207cb5aef95027f9861eee65",
+    "size_bytes": 6030
+  },
+  "prior_real_failure": {
+    "path": "artifacts/jev-runtime/public07-six-v4-browser-20261018-02/results/attempts/heldout-public-003-000/outcome.json",
+    "sha256": "07c1646f0abb1b1012f780ed5fd673affc0a7bbbd6e83cb93786c71519553651",
+    "size_bytes": 6744
+  },
+  "cause": "After the correct Series.map click the new page URL had committed but ready_state was loading and body/main were absent. Canonical observe makes ten reads about20ms apart, then raises Document is navigating. Canonical and v4 observe AST are identical; label proxy causation is not established.",
+  "root_full_fixture_source_and_four_raw_cases_read": true,
+  "actual_fixture": {
+    "delays_seconds": [
+      0.35,
+      0.8,
+      1.5,
+      3.2
+    ],
+    "native_stale_cases": 4,
+    "initial_native_reads_each": 10,
+    "initial_observe_seconds_range": [
+      0.28856,
+      0.29489
+    ],
+    "read_only_external_retry_target_seconds": 2.0,
+    "recovered_within_target_cases": 3,
+    "long_case": "3.2second bodydelay times out at2.000077seconds; later final reachability is separate and not credited.",
+    "native_clicks_each": 1,
+    "input_events_each": 2,
+    "trusted_click_each": true,
+    "model_or_helper_calls": 0
+  },
+  "next": "Separate explicit v6 derived from v4 will test bounded observation settling without changing policy/helper20s,16actions, input execution, history or golds. CSS-hover v5 remains a separate ablation.",
+  "timing_limits": [
+    "Synchronous CDP can overshoot a wallclock target; late snapshots must not count as timely success.",
+    "Existing Agent.tick may call observe twice; per-call2seconds is not a total post-action2second bound."
+  ],
+  "production_changed_by_diagnostic": false,
+  "task_performance_attested": false
+}
