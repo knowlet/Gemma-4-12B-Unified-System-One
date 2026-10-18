@@ -1,0 +1,220 @@
+{
+  "schema_id": "jev_decision3_browser_wire_gap_v1",
+  "status": "confirmed_source_shape_gap",
+  "review_scope": "Read-only source audit plus source-derived pure JSON shape probe; no model, GPU, backend, FastAPI, historical Python import, network or Modal execution",
+  "source_commit_at_probe": "048579d139246574c91bc009b4b93433d3df52c5",
+  "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "source_pins": {
+    "src/s1/jev_decision3_native.py": {
+      "sha256": "67616bb70a8acdbf96b1d2e4c1407cf8cc2a24db51b5ca383e33b4d9a0488de9",
+      "size_bytes": 8958,
+      "lines": 212
+    },
+    "src/s1/api.py": {
+      "sha256": "a9f7e0297a2e52f5d6ec46fa332987957ab8533d61f58fd0287b0b40e66d76e1",
+      "size_bytes": 12666,
+      "lines": 304
+    },
+    "src/s1/evaluation/decision3.py": {
+      "sha256": "aaa21ab6f2ecf5ae0e00694b43755541dc75fc0310ba10d945ade2a4511add52",
+      "size_bytes": 24613,
+      "lines": 549
+    },
+    "scripts/jev_local_model.py": {
+      "sha256": "09d1e9b6d7a50eb26029444307e10abbf1e5e1898b3aca9b1564a753bc7fe311",
+      "size_bytes": 36820,
+      "lines": 815
+    },
+    "artifacts/jev-runtime/upstream/jev_ultrafast/model.py": {
+      "sha256": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3",
+      "size_bytes": 8469,
+      "lines": 198
+    },
+    "tests/test_jev_decision3_native.py": {
+      "sha256": "9c2fc9e21ae3bcd77aa816582a624cc563f9df64d0da08ac0e845062dc5f352e",
+      "size_bytes": 19279,
+      "lines": 536
+    },
+    "scripts/jev_decision3_public_dev22_gpu_replay.py": {
+      "sha256": "69baedec7efeb7b361ef0b9f8d3c7fdcc70aac30cc19ffba3a74b2a88f54a029",
+      "size_bytes": 57765,
+      "lines": 1428
+    },
+    "apps/modal/decision3_public_replay.py": {
+      "sha256": "cf23bc6c4ff0068c622e2c6bb1a3ba7122a6093d5afda96a66dced0816826eac",
+      "size_bytes": 50565,
+      "lines": 1302
+    }
+  },
+  "causal_path": [
+    {
+      "path": "src/s1/evaluation/decision3.py",
+      "lines": [
+        320,
+        399
+      ],
+      "finding": "normalize_native_response validates and returns answers as a named object"
+    },
+    {
+      "path": "src/s1/jev_decision3_native.py",
+      "lines": [
+        195,
+        203
+      ],
+      "finding": "JevDecision3NativeAdapter.predict overwrites named answers with an ordered list"
+    },
+    {
+      "path": "src/s1/api.py",
+      "lines": [
+        207,
+        225,
+        229,
+        249,
+        295,
+        299
+      ],
+      "finding": "Compatible HTTP route selects this adapter and returns its result without changing answer-container shape"
+    },
+    {
+      "path": "artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+      "lines": [
+        118,
+        120,
+        125,
+        128
+      ],
+      "finding": "Pinned upstream choose calls result[answers].get(operation, {}) before an action can be selected"
+    }
+  ],
+  "pure_shape_probe": {
+    "input_provenance": "Synthetic two-head JSON only; numeric values are not model probabilities or benchmark evidence",
+    "synthetic_normalized_response": {
+      "answers": {
+        "operation": {
+          "id": "operation",
+          "type": "choice",
+          "choice": "CLICK",
+          "probabilities": {
+            "CLICK": 0.75,
+            "DONE": 0.25
+          },
+          "confidence": 0.75,
+          "margin": 0.5
+        },
+        "click_target": {
+          "id": "click_target",
+          "type": "choice",
+          "choice": "1",
+          "probabilities": {
+            "1": 0.6,
+            "2": 0.4
+          },
+          "confidence": 0.6,
+          "margin": 0.2
+        }
+      }
+    },
+    "producer_expression": "[copy.deepcopy(result[\"answers\"][q.id]) for q in request.questions]",
+    "receiver_expression": "result[\"answers\"].get(\"operation\", {})",
+    "execution": "Compile/evaluate only the two already-read AST expressions with standard-library copy/json and synthetic SimpleNamespace question IDs; no local modules imported",
+    "json_roundtrip_response": {
+      "answers": [
+        {
+          "id": "operation",
+          "type": "choice",
+          "choice": "CLICK",
+          "probabilities": {
+            "CLICK": 0.75,
+            "DONE": 0.25
+          },
+          "confidence": 0.75,
+          "margin": 0.5
+        },
+        {
+          "id": "click_target",
+          "type": "choice",
+          "choice": "1",
+          "probabilities": {
+            "1": 0.6,
+            "2": 0.4
+          },
+          "confidence": 0.6,
+          "margin": 0.2
+        }
+      ]
+    },
+    "observed_answer_container_type": "list",
+    "observed_failure": {
+      "type": "AttributeError",
+      "message": "'list' object has no attribute 'get'"
+    },
+    "named_object_control": {
+      "same_operation_answer_lookup_succeeds": true,
+      "answer": {
+        "id": "operation",
+        "type": "choice",
+        "choice": "CLICK",
+        "probabilities": {
+          "CLICK": 0.75,
+          "DONE": 0.25
+        },
+        "confidence": 0.75,
+        "margin": 0.5
+      }
+    },
+    "model_loads": 0,
+    "inference_calls": 0,
+    "browser_actions": 0
+  },
+  "existing_test_gap": [
+    {
+      "path": "tests/test_jev_decision3_native.py",
+      "lines": [
+        117,
+        121,
+        222,
+        223
+      ],
+      "finding": "Adapter tests explicitly index answers as a list, so they enforce the incompatible container shape"
+    },
+    {
+      "path": "tests/test_jev_decision3_native.py",
+      "lines": [
+        326,
+        345
+      ],
+      "finding": "API test checks HTTP200/profile/events and width rejection, but does not feed successful response into pinned upstream choose or validate named-answer lookup"
+    }
+  ],
+  "impact": {
+    "affected_arms": [
+      "d3",
+      "d3-flash",
+      "d3-mini",
+      "d3-nano",
+      "d3-lite",
+      "d3-edge"
+    ],
+    "trigger": "Any successful response from current --decision3-native compatible HTTP route consumed by pinned upstream choose",
+    "consequence": "AttributeError before operation validation or browser action, independent of model efficacy",
+    "observed_actual_D3_browser_run": false,
+    "scope_limit": "Pure interface proof, not an actual H200 inference or browser-performance measurement"
+  },
+  "offline_core_unaffected": {
+    "core_sha256": "69baedec7efeb7b361ef0b9f8d3c7fdcc70aac30cc19ffba3a74b2a88f54a029",
+    "wrapper_sha256": "cf23bc6c4ff0068c622e2c6bb1a3ba7122a6093d5afda96a66dced0816826eac",
+    "evidence_lines": {
+      "core_imports": [
+        1022,
+        1029
+      ],
+      "core_forward": [
+        853,
+        856
+      ]
+    },
+    "reason": "Frozen core imports parse_native_payload and directly calls Decision3Backend.predict; it does not invoke JevDecision3NativeAdapter.predict or the HTTP answer-list conversion",
+    "historical_numerical_evidence_reinterpreted": false
+  },
+  "minimal_followup": "Separately pin and review an HTTP wire conversion that preserves each answer and its real probabilities under its question id, plus a producer-to-pinned-upstream consumer regression. Preserve frozen source12/core69bae and existing replay records; no production change made by this proof."
+}
