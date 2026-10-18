@@ -45,8 +45,9 @@ def tiny_tensor(path, header, data):
     path.write_bytes(struct.pack("<Q", len(blob)) + blob + data)
 
 
-def cache(tmp_path):
-    backbone, readout = "model-00001-of-00001.safetensors", "readout.safetensors"
+def cache(tmp_path, *, single_file=False):
+    backbone = "model.safetensors" if single_file else "model-00001-of-00001.safetensors"
+    readout = "readout.safetensors"
     tiny_tensor(
         tmp_path / backbone,
         {"weight": {"dtype": "BF16", "shape": [2], "data_offsets": [0, 4]}},
@@ -57,9 +58,10 @@ def cache(tmp_path):
         {"weight": {"dtype": "F32", "shape": [255, 2], "data_offsets": [0, 2040]}},
         b"\0" * 2040,
     )
-    (tmp_path / "model.safetensors.index.json").write_text(
-        json.dumps({"weight_map": {"weight": backbone}})
-    )
+    if not single_file:
+        (tmp_path / "model.safetensors.index.json").write_text(
+            json.dumps({"weight_map": {"weight": backbone}})
+        )
     (tmp_path / "config.json").write_text('{"fixture":"no model"}')
     files = {p.name: CORE.pin(p) for p in tmp_path.iterdir()}
     manifest = {
@@ -104,9 +106,16 @@ def test_source18_is_service17_plus_only_downloader_and_preparation_is_stdlib(tm
         WEIGHTS.prepare(tmp_path / "prepared")
 
 
-@pytest.mark.parametrize("fault", [None, "readout_shape", "missing_shard", "parameters"])
-def test_real_stdlib_tensor_header_and_all_shard_geometry(tmp_path, fault):
-    staging, identity, manifest, files = cache(tmp_path)
+@pytest.mark.parametrize("single_file", [False, True])
+@pytest.mark.parametrize(
+    "fault",
+    [None, "readout_shape", "missing_shard", "parameters", "empty_backbone", "backbone_dtype"],
+)
+def test_real_stdlib_tensor_header_and_all_shard_geometry(tmp_path, fault, single_file):
+    staging, identity, manifest, files = cache(tmp_path, single_file=single_file)
+    backbone = next(
+        name for name in files if name.endswith(".safetensors") and name != "readout.safetensors"
+    )
     if fault == "readout_shape":
         tiny_tensor(
             tmp_path / "readout.safetensors",
@@ -114,15 +123,26 @@ def test_real_stdlib_tensor_header_and_all_shard_geometry(tmp_path, fault):
             b"\0" * 2040,
         )
     elif fault == "missing_shard":
-        files.pop("model-00001-of-00001.safetensors")
+        files.pop(backbone)
     elif fault == "parameters":
         identity["loaded_parameters"] += 1
+    elif fault == "empty_backbone":
+        tiny_tensor(tmp_path / backbone, {}, b"")
+    elif fault == "backbone_dtype":
+        tiny_tensor(
+            tmp_path / backbone,
+            {"weight": {"dtype": "F32", "shape": [2], "data_offsets": [0, 8]}},
+            b"\0" * 8,
+        )
     if fault:
         with pytest.raises(RuntimeError):
             WEIGHTS.verify_geometry(CORE, staging, {}, identity, manifest, files)
     else:
         result = WEIGHTS.verify_geometry(CORE, staging, {}, identity, manifest, files)
         assert result["readout_shape"] == [255, 2] and result["full_payload_sha256_authenticated"]
+        assert result["backbone_layout"] == ("single_file" if single_file else "indexed_shards")
+        assert result["index_file"] == (None if single_file else "model.safetensors.index.json")
+        assert (tmp_path / "model.safetensors.index.json").exists() is not single_file
 
 
 @pytest.mark.parametrize("corrupt", [False, True])
@@ -138,6 +158,7 @@ def test_download_requests_only_exact_public_files_and_full_sha(tmp_path, monkey
     }
     fake_core = SimpleNamespace(
         pin=CORE.pin,
+        backbone_layout=CORE.backbone_layout,
         tensor_header=CORE.tensor_header,
         require=CORE.require,
         resource_snapshot=lambda: {"synthetic": "CPU-only"},
@@ -258,9 +279,7 @@ def test_sdk_download_is_cpu_only_named_mounts_without_input_data_or_public_endp
     )
 
 
-def test_owned_download_creates_fresh_directory_with_real_file_only_core_api(
-    tmp_path, monkeypatch
-):
+def test_owned_download_creates_fresh_directory_with_real_file_only_core_api(tmp_path, monkeypatch):
     """Reach the child boundary using the real core input-file validator."""
     output = tmp_path / "public-weights-fresh-test"
     with pytest.raises(FileNotFoundError):
@@ -279,9 +298,9 @@ def test_owned_download_creates_fresh_directory_with_real_file_only_core_api(
         capture_mount=lambda alias: {"alias": alias},
         child_environment=lambda _mode: {"CUDA_VISIBLE_DEVICES": ""},
         tree_inventory=tree_inventory,
-        publish_output=lambda path, _binding, confirmed: SERVICE.pin(path / "export-index.json")
-        if confirmed
-        else None,
+        publish_output=lambda path, _binding, confirmed: (
+            SERVICE.pin(path / "export-index.json") if confirmed else None
+        ),
     )
     launches = []
 

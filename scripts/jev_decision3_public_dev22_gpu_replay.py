@@ -530,6 +530,56 @@ def tensor_header(path):
     return tensors, count
 
 
+def backbone_layout(files, read_index):
+    """Select only a manifest-authenticated indexed or single-file backbone.
+
+    Callers authenticate every runtime file's full SHA/size first. Filesystem
+    presence never invents an index or changes the declared checkpoint layout.
+    """
+    require(
+        type(files) is dict
+        and all(type(label) is str for label in files)
+        and "readout.safetensors" in files,
+        "Authenticated runtime file inventory/readout required",
+    )
+    backbone = {
+        label
+        for label in files
+        if label.endswith(".safetensors") and label != "readout.safetensors"
+    }
+    index_file = "model.safetensors.index.json"
+    if index_file in files:
+        index = read_index(index_file)
+        weight_map = index.get("weight_map") if type(index) is dict else None
+        require(
+            type(weight_map) is dict
+            and bool(weight_map)
+            and all(
+                type(key) is str and bool(key) and type(value) is str and bool(value)
+                for key, value in weight_map.items()
+            ),
+            "Nonempty string tensor-to-shard map required",
+        )
+        shards = sorted(set(weight_map.values()))
+        require(set(shards) == backbone, "All backbone shards must equal index/manifest")
+        return {
+            "layout": "indexed_shards",
+            "index_file": index_file,
+            "shards": shards,
+            "weight_map": weight_map,
+        }
+    require(
+        backbone == {"model.safetensors"},
+        "Unindexed checkpoint requires exactly one model.safetensors backbone",
+    )
+    return {
+        "layout": "single_file",
+        "index_file": None,
+        "shards": ["model.safetensors"],
+        "weight_map": None,
+    }
+
+
 def authenticate_cache(name, identity, output, gates, phase):
     snapshot = (
         HUB
@@ -566,25 +616,22 @@ def authenticate_cache(name, identity, output, gates, phase):
             records[label] == {"sha256": sha, "size_bytes": manifest["files_bytes"][label]},
             "full runtime cache authentication failed: " + label,
         )
-    index = read(cache_file(snapshot, "model.safetensors.index.json"))
-    shards = sorted(set(index["weight_map"].values()))
-    require(
-        set(shards)
-        == {p for p in wanted if p.endswith(".safetensors") and p != "readout.safetensors"},
-        "all backbone shards must equal index and manifest",
-    )
+    layout = backbone_layout(records, lambda label: read(cache_file(snapshot, label)))
+    shards, weight_map = layout["shards"], layout["weight_map"]
     union, total_parameters = {}, 0
     for shard in shards:
         entries, count = tensor_header(cache_file(snapshot, shard))
         require(
-            not set(entries).intersection(union)
+            bool(entries)
+            and not set(entries).intersection(union)
             and all(v["dtype"] == "BF16" for v in entries.values()),
-            "duplicate/non-BF16 backbone tensor",
+            "empty/duplicate/non-BF16 backbone tensor",
         )
-        require(
-            {key for key, value in index["weight_map"].items() if value == shard} == set(entries),
-            "shard header/index keys differ",
-        )
+        if weight_map is not None:
+            require(
+                {key for key, value in weight_map.items() if value == shard} == set(entries),
+                "shard header/index keys differ",
+            )
         union.update(entries)
         total_parameters += count
     head, head_parameters = tensor_header(cache_file(snapshot, "readout.safetensors"))
@@ -601,7 +648,7 @@ def authenticate_cache(name, identity, output, gates, phase):
         "fixed model-specific FP32 readout differs",
     )
     require(
-        set(union) == set(index["weight_map"])
+        (weight_map is None or set(union) == set(weight_map))
         and head_parameters == 255 * width
         and total_parameters + head_parameters == identity["loaded_parameters"]
         and sum(records[label]["size_bytes"] for label in [*shards, "readout.safetensors"])
@@ -614,6 +661,8 @@ def authenticate_cache(name, identity, output, gates, phase):
         "files": records,
         "manifest_sha256": identity["manifest_sha256"],
         "all_shards": shards,
+        "backbone_layout": layout["layout"],
+        "index_file": layout["index_file"],
         "backbone_parameters": total_parameters,
         "readout_shape": [255, width],
         "full_payload_sha256_authenticated": True,

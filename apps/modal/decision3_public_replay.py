@@ -29,7 +29,7 @@ from types import SimpleNamespace
 ROOT = Path("/home/albert_hsieh/Gemma-4-12B-Unified-System-One")
 SCRIPT = ROOT / "apps/modal/decision3_public_replay.py"
 CORE = ROOT / "scripts/jev_decision3_public_dev22_gpu_replay.py"
-CORE_SHA = "69baedec7efeb7b361ef0b9f8d3c7fdcc70aac30cc19ffba3a74b2a88f54a029"
+CORE_SHA = "9919e3b1dd5d5a68377b8e74c1b313c9a368a1716400d32af72e8a548ef02b4c"
 SPEC = ROOT / "src/s1/evaluation/decision3.py"
 SPEC_SHA = "aaa21ab6f2ecf5ae0e00694b43755541dc75fc0310ba10d945ade2a4511add52"
 PUBLIC = ROOT / "artifacts/jev-browser/20261016-public-native-training-collection-07"

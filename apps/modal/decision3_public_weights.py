@@ -23,7 +23,7 @@ from pathlib import Path
 ROOT = Path("/home/albert_hsieh/Gemma-4-12B-Unified-System-One")
 SCRIPT = ROOT / "apps/modal/decision3_public_weights.py"
 SERVICE = ROOT / "apps/modal/decision3_browser_service.py"
-SERVICE_SHA = "b4287a80e3e3eefcfd96329d7de1bfe6ef8852861553de4fb3d59bab2f87e12f"
+SERVICE_SHA = "0b4953a09be492f817e83937b487f8f552c81f5dc9a741b576de1828e53503f4"
 INTERPRETER = "/opt/decision3/bin/python"
 SCHEMA = "decision3-public-cpu-weight-source18-v1"
 MAX_LOG, DEADLINE = 16 * 1024**2, 14400
@@ -106,30 +106,23 @@ def verify_geometry(core, staging, binding, identity, manifest, files):
     def file_at(label):
         return staging.provider_cache_file(binding, identity, label)
 
-    index = core.read(file_at("model.safetensors.index.json"))
-    shards = sorted(set(index["weight_map"].values()))
-    core.require(
-        set(shards)
-        == {
-            name
-            for name in files
-            if name.endswith(".safetensors") and name != "readout.safetensors"
-        },
-        "All backbone shards must equal index/manifest",
-    )
+    layout = core.backbone_layout(files, lambda label: core.read(file_at(label)))
+    shards, weight_map = layout["shards"], layout["weight_map"]
     union, parameters = {}, 0
     for shard in shards:
         entries, count = core.tensor_header(file_at(shard))
         core.require(
-            not set(union).intersection(entries)
+            bool(entries)
+            and not set(union).intersection(entries)
             and all(row["dtype"] == "BF16" for row in entries.values()),
-            "Duplicate/non-BF16 backbone tensor",
+            "Empty/duplicate/non-BF16 backbone tensor",
         )
-        core.require(
-            {name for name, filename in index["weight_map"].items() if filename == shard}
-            == set(entries),
-            "Shard header/index keys differ",
-        )
+        if weight_map is not None:
+            core.require(
+                {name for name, filename in weight_map.items() if filename == shard}
+                == set(entries),
+                "Shard header/index keys differ",
+            )
         union.update(entries)
         parameters += count
     head, head_parameters = core.tensor_header(file_at("readout.safetensors"))
@@ -146,7 +139,7 @@ def verify_geometry(core, staging, binding, identity, manifest, files):
         "Fixed255 FP32 readout differs",
     )
     core.require(
-        set(union) == set(index["weight_map"])
+        (weight_map is None or set(union) == set(weight_map))
         and head_parameters == 255 * width
         and parameters + head_parameters == identity["loaded_parameters"]
         and sum(files[name]["size_bytes"] for name in [*shards, "readout.safetensors"])
@@ -159,6 +152,8 @@ def verify_geometry(core, staging, binding, identity, manifest, files):
     )
     return {
         "all_shards": shards,
+        "backbone_layout": layout["layout"],
+        "index_file": layout["index_file"],
         "backbone_parameters": parameters,
         "readout_shape": [255, width],
         "full_payload_sha256_authenticated": True,

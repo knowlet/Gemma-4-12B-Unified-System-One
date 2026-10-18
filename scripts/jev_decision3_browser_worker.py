@@ -27,9 +27,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = Path(__file__).resolve()
 CORE_PATH = ROOT / "scripts/jev_decision3_public_dev22_gpu_replay.py"
-CORE_SHA = "69baedec7efeb7b361ef0b9f8d3c7fdcc70aac30cc19ffba3a74b2a88f54a029"
+CORE_SHA = "9919e3b1dd5d5a68377b8e74c1b313c9a368a1716400d32af72e8a548ef02b4c"
 WRAPPER_PATH = ROOT / "apps/modal/decision3_public_replay.py"
-WRAPPER_SHA = "cf23bc6c4ff0068c622e2c6bb1a3ba7122a6093d5afda96a66dced0816826eac"
+WRAPPER_SHA = "1cd90e5e98ad1c7c63985cdc5c9b7795021bf252b6ca1b5437bdc653d065f533"
 WIRE_PATH = ROOT / "scripts/jev_decision3_browser_wire.py"
 WIRE_SHA = "c048d7779e60fce5d1a56b38e26b9ddf5ed9e1ff9c6adc478786d0267cca3027"
 SERVICE_PATH = ROOT / "apps/modal/decision3_browser_service.py"

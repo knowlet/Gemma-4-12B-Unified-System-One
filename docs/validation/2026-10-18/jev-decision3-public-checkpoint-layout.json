@@ -1,0 +1,32 @@
+{
+  "schema_id": "jev-decision3-public-checkpoint-layout-reviewed-v1",
+  "actual_failed_download": {
+    "app_id": "ap-UEXjKAbx6OdvgaP4CAOOdo",
+    "run_id": "d3-public-six-cpu-20261018-01",
+    "path": "artifacts/jev-runtime/decision3-public-weights-20261018-01/actual-download-01",
+    "success": false,
+    "owned_exit_confirmed": true,
+    "GPU_requested": false,
+    "model_loads": 0,
+    "export_index_sha256": "1c2cf58b956d3f0a5eb1e36b0732ef535641a2f22423288f7664a302926744d3",
+    "closed_files_including_index": 11,
+    "root_reverified_all_file_hashes_sizes_and_population": true,
+    "failure": "The public d3-nano snapshot has model.safetensors and no model.safetensors.index.json; the indexed-shard-only verifier raised FileNotFoundError. The first three models had completed their download and verification. Original failure and raw logs remain unchanged."
+  },
+  "reviewed_fix": {
+    "HOLD": "artifacts/jev-runtime/decision3-checkpoint-layout-20261018-01/source-HOLD-01/HOLD.json",
+    "HOLD_sha256": "6973e510de509846f8f62608bb163b393dddca76fe8a75dc4b129ed82e806341",
+    "core_sha256": "9919e3b1dd5d5a68377b8e74c1b313c9a368a1716400d32af72e8a548ef02b4c",
+    "source17_sha256": "66bcc892563be1121c7740568679162503d695f1a0ac832c256abb82f72bd53e",
+    "source18_sha256": "e2a3ef3655fe7338080f815988b232f4c6c04ac44f0e101f1b3669212a446b06",
+    "behavior": "Authenticate the actual publisher manifest first. Accept an indexed checkpoint only with an exact nonempty weight map and matching shard/header keys. Without an index accept exactly model.safetensors. Both layouts require complete file hashes, nonempty BF16 backbone tensors, the original parameter/resident-byte bounds and the 255-column FP32 readout. Never synthesize an index or rewrite the publisher cache.",
+    "root_reviewed_full_patch": true,
+    "root_reverified_all_seven_source_copies_and_both_manifest_populations": true,
+    "root_tests": "73 passed, 52 subtests passed in 2.07s across GPU replay, Modal replay, browser service and public-weight staging pure tests; no actual model or GPU execution",
+    "ruff_check_and_format": "PASS",
+    "resource_and_latency_gates_changed": false,
+    "frozen_gemma90_sources_changed": false,
+    "actual_retry_executed_at_review": false
+  },
+  "performance_attested": false
+}

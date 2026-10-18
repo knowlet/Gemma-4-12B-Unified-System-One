@@ -216,6 +216,8 @@ class ReplayTests(unittest.TestCase):
                     report["all_shards"], ["model-1.safetensors", "model-2.safetensors"]
                 )
                 self.assertEqual(report["readout_shape"], [255, 2])
+                self.assertEqual(report["backbone_layout"], "indexed_shards")
+                self.assertEqual(report["index_file"], "model.safetensors.index.json")
                 with self.assertRaisesRegex(RuntimeError, "readout differs"):
                     m.authenticate_cache(
                         "fake",
@@ -227,6 +229,112 @@ class ReplayTests(unittest.TestCase):
                 (snapshot / "model-2.safetensors").unlink()
                 with self.assertRaises(FileNotFoundError):
                     m.authenticate_cache("fake", identity, output, gates, "missing-shard")
+
+    def test_single_backbone_full_sha_header_and_counts_without_invented_index(self):
+        for fault in (None, "payload", "empty_backbone", "backbone_dtype", "parameters"):
+            with self.subTest(fault=fault), tempfile.TemporaryDirectory() as temporary:
+                hub = Path(temporary) / "hub"
+                snapshot = hub / "models--vllm-sr--fake" / "snapshots" / ("a" * 40)
+                snapshot.mkdir(parents=True)
+
+                def tensor(name, entries, data):
+                    header = m.encode(entries)
+                    (snapshot / name).write_bytes(struct.pack("<Q", len(header)) + header + data)
+
+                tensor(
+                    "model.safetensors",
+                    {"weight": {"dtype": "BF16", "shape": [2], "data_offsets": [0, 4]}},
+                    b"\0" * 4,
+                )
+                if fault == "empty_backbone":
+                    tensor("model.safetensors", {}, b"")
+                elif fault == "backbone_dtype":
+                    tensor(
+                        "model.safetensors",
+                        {"weight": {"dtype": "F32", "shape": [2], "data_offsets": [0, 8]}},
+                        b"\0" * 8,
+                    )
+                tensor(
+                    "readout.safetensors",
+                    {"weight": {"dtype": "F32", "shape": [255, 2], "data_offsets": [0, 2040]}},
+                    b"\0" * 2040,
+                )
+                pins = {path.name: m.pin(path) for path in snapshot.iterdir()}
+                manifest = {
+                    "schema": "d3-package-manifest/1",
+                    "model_name": "fake",
+                    "repo_id": "vllm-sr/fake",
+                    "files_sha256": {name: value["sha256"] for name, value in pins.items()},
+                    "files_bytes": {name: value["size_bytes"] for name, value in pins.items()},
+                }
+                blob = m.encode(manifest)
+                (snapshot / "MODEL_MANIFEST.json").write_bytes(blob)
+                identity = {
+                    "model_id": "vllm-sr/fake",
+                    "revision": "a" * 40,
+                    "manifest_sha256": hashlib.sha256(blob).hexdigest(),
+                    "loaded_parameters": 513 if fault == "parameters" else 512,
+                    "readout_tensor_bytes": 2040,
+                    "resident_file_bytes": sum(value["size_bytes"] for value in pins.values()),
+                }
+                if fault == "payload":
+                    path = snapshot / "model.safetensors"
+                    path.write_bytes(path.read_bytes()[:-1] + b"\1")
+                output = Path(temporary) / "output"
+                output.mkdir()
+                before = set(path.name for path in snapshot.iterdir())
+                with patch.object(m, "HUB", hub):
+                    if fault:
+                        with self.assertRaises(RuntimeError):
+                            m.authenticate_cache(
+                                "fake",
+                                identity,
+                                output,
+                                SimpleNamespace(check=lambda stage: None),
+                                "single",
+                            )
+                    else:
+                        result = m.authenticate_cache(
+                            "fake",
+                            identity,
+                            output,
+                            SimpleNamespace(check=lambda stage: None),
+                            "single",
+                        )
+                        self.assertEqual(result["backbone_layout"], "single_file")
+                        self.assertIsNone(result["index_file"])
+                        self.assertEqual(result["all_shards"], ["model.safetensors"])
+                        self.assertEqual(result["readout_shape"], [255, 2])
+                self.assertEqual(set(path.name for path in snapshot.iterdir()), before)
+                self.assertNotIn("model.safetensors.index.json", before)
+
+    def test_layout_uses_authenticated_inventory_and_rejects_malformed_maps(self):
+        files = {"model.safetensors": {}, "readout.safetensors": {}}
+        unread = Mock(side_effect=AssertionError("Undeclared index must never be read"))
+        self.assertEqual(m.backbone_layout(files, unread)["layout"], "single_file")
+        unread.assert_not_called()
+        with self.assertRaises(RuntimeError):
+            m.backbone_layout({**files, "other.safetensors": {}}, unread)
+        for weight_map in (
+            None,
+            {},
+            [],
+            {"": "model.safetensors"},
+            {1: "model.safetensors"},
+            {"weight": None},
+            {"weight": ""},
+            {"weight": "missing.safetensors"},
+        ):
+            with self.subTest(weight_map=weight_map), self.assertRaises(RuntimeError):
+                m.backbone_layout(
+                    {**files, "model.safetensors.index.json": {}},
+                    lambda _label: {"weight_map": weight_map},
+                )
+        with self.assertRaises(FileNotFoundError):
+            m.backbone_layout(
+                {**files, "model.safetensors.index.json": {}},
+                Mock(side_effect=FileNotFoundError("Declared index missing")),
+            )
 
     def test_cgroup_can_only_restrict_existing_full_memory_floor(self):
         snapshot = {
