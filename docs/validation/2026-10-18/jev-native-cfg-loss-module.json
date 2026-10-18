@@ -1,0 +1,31 @@
+{
+  "status": "reviewed_experimental_loss_module_not_fitted_or_qualified",
+  "problem": "The current teacher-forced token metric includes singleton grammar positions. A new experimental module makes legal-branch objectives explicit without changing the historical fitter or deployment.",
+  "source": "src/s1/jev_cfg_action_loss.py",
+  "source_sha256": "3bcde8f1fa75c1963da673fa653d1d5ea042048073e9caf790280ef03c63ac21",
+  "objectives": {
+    "B": "Full-vocabulary cross entropy averaged over positions with more than one actual legal token.",
+    "C": "Cross entropy normalized over the actual legal token set, averaged over those branch positions.",
+    "interpretation": "C versus the historical all-token objective changes both position weighting and normalization. It is not whole-action conditional negative log likelihood."
+  },
+  "preserved": [
+    "Complete original ordered request and all original legal candidates.",
+    "Original prompt, full causal inputs, every target including EOS, and every original logits readout position.",
+    "Actual LegalActionTokenTrie callback and complete legal gold-path validation.",
+    "One full teacher-forced forward and finite checks for all target logits.",
+    "Historical kernel, artifact contract, generated policy, grammar, source closures and live qualified serve."
+  ],
+  "verification": {
+    "root_full_source_and_tests_review": true,
+    "independent_CPU_Torch_tests": "37 passed in 1.49s",
+    "ruff_check_and_format": "PASS",
+    "existing_120_train_and_22_development_plans": "All 142 match the sealed independent audit: complete allowed masks, target IDs, positions, request and inventory hashes.",
+    "gradient_checks": "Forced readout positions have zero direct loss gradient; C also has zero direct gradient for forbidden logits. Causal context remains complete.",
+    "failure_checks": "Changed requests, candidates, tokens, masks, positions, forged plans, nonfinite logits and zero-decision paths refuse.",
+    "source_HOLD": "artifacts/jev-runtime/native-cfg-loss-module-20261018-01/source-HOLD-01/HOLD.json",
+    "source_HOLD_sha256": "8133e981414fbd069550a9c8c209bf2a9532456a531804dc33c146e3fbdeb1c5"
+  },
+  "model_loads_or_training_updates": 0,
+  "browser_success_result": null,
+  "next": "Implement an explicit versioned matched A/C producer, artifact contract and fresh qualification. Then measure complete native actions and real browser tasks."
+}
