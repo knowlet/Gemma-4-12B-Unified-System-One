@@ -44,6 +44,7 @@ MODEL = "knowlet/Gemma-4-12B-Unified-System-One"
 REVISION = "a66f836b56605039fe040f330180e336d19b3362"
 HUB = ROOT / "artifacts/jev-local-hf/hub"
 CACHE = HUB / ("models--" + MODEL.replace("/", "--")) / "snapshots" / REVISION
+DECLARED_MOUNTS = {"/weights", "/input", "/export"}
 BASE = {
     "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
     "size_bytes": 23919549408,
@@ -155,6 +156,48 @@ def ordinary(path):
     return path
 
 
+def capture_mount(alias):
+    """Resolve only a declared provider boundary; descendants stay ordinary."""
+    require(alias in DECLARED_MOUNTS, "Undeclared provider mount")
+    root = ordinary(Path(alias).resolve(strict=True))
+    require(root.is_dir(), "Provider mount must resolve to a directory")
+    before = root.stat()
+    result = {
+        "alias": alias,
+        "root": str(root),
+        "device": before.st_dev,
+        "inode": before.st_ino,
+    }
+    require(
+        Path(alias).resolve(strict=True) == root
+        and (root.stat().st_dev, root.stat().st_ino) == (before.st_dev, before.st_ino),
+        "Provider mount changed during capture",
+    )
+    return result
+
+
+def mount_root(binding):
+    require(capture_mount(binding["alias"]) == binding, "Provider mount alias/identity changed")
+    return ordinary(binding["root"])
+
+
+def remote_cache(config):
+    hub = mount_root(config["mounts"]["/weights"])
+    return hub, ordinary(hub / ("models--" + MODEL.replace("/", "--")) / "snapshots" / REVISION)
+
+
+def named_input(config, index=None):
+    require(
+        re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", config["run_id"]) is not None,
+        "Bounded named input run",
+    )
+    root = mount_root(config["mounts"]["/input"]) / config["run_id"]
+    if index is None:
+        return ordinary(root / "manifest.json")
+    require(type(index) is int and 0 <= index < MAX_FILES, "Bounded flat named input index")
+    return ordinary(root / "files" / f"{index:05d}")
+
+
 def relative(name):
     path = PurePosixPath(name)
     require(
@@ -207,6 +250,71 @@ def create(path, blob):
         stream.write(blob)
         stream.flush()
         os.fsync(stream.fileno())
+
+
+def stream_copy(source, destination, expected):
+    """Copy one pinned ordinary file without holding a checkpoint in RAM."""
+    source, destination = ordinary(source), ordinary(destination)
+    require(
+        set(expected) == {"sha256", "size_bytes"}
+        and type(expected["size_bytes"]) is int
+        and 0 <= expected["size_bytes"] <= max(GIB, BASE["size_bytes"])
+        and type(expected["sha256"]) is str
+        and re.fullmatch(r"[0-9a-f]{64}", expected["sha256"]) is not None,
+        "Bounded exact streamed file pin",
+    )
+    before = source.stat()
+    require(
+        stat.S_ISREG(before.st_mode) and before.st_size == expected["size_bytes"],
+        "Pinned copy source size/type differs",
+    )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    digest, count = hashlib.sha256(), 0
+    with source.open("rb") as incoming, destination.open("xb") as outgoing:
+        while chunk := incoming.read(1024**2):
+            count += len(chunk)
+            require(count <= expected["size_bytes"], "Streamed copy grew")
+            require(outgoing.write(chunk) == len(chunk), "Short streamed copy")
+            digest.update(chunk)
+        after = os.fstat(incoming.fileno())
+        outgoing.flush()
+        os.fsync(outgoing.fileno())
+    current = source.stat()
+    require(
+        (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns)
+        == (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns)
+        == (
+            current.st_dev,
+            current.st_ino,
+            current.st_size,
+            current.st_mtime_ns,
+            current.st_ctime_ns,
+        )
+        and {"sha256": digest.hexdigest(), "size_bytes": count} == expected
+        and pin(destination, expected["size_bytes"]) == expected,
+        "Streamed copy source/content changed",
+    )
+
+
+def stage_weights(config, output):
+    """Only the remote fit child fills an empty, ordinary fixed HF cache."""
+    hub, cache = remote_cache(config)
+    ordinary(HUB)
+    require(not HUB.exists() or not any(HUB.iterdir()), "Fixed local HF cache must be empty")
+    for name, expected in BASE_METADATA.items():
+        source = ordinary((cache / name).resolve(strict=True))
+        require(source.is_relative_to(hub), "Provider metadata escaped its cache")
+        stream_copy(source, CACHE / name, expected)
+    admit(output / "preflight-gates.jsonl", "load", config["boot_id"])
+    source = ordinary((cache / "model.safetensors").resolve(strict=True))
+    require(source.is_relative_to(hub), "Provider checkpoint escaped its cache")
+    stream_copy(source, CACHE / "model.safetensors", BASE)
+    admit(output / "preflight-gates.jsonl", "load", config["boot_id"])
+    require(mount_root(config["mounts"]["/weights"]) == hub, "Provider weight mount drift")
+    create(
+        output / "cache-staging.json",
+        encode({"metadata": BASE_METADATA, "checkpoint": BASE, "fixed_cache": str(CACHE)}),
+    )
 
 
 def complete_cgroup(group):
@@ -598,25 +706,26 @@ def install_dependencies():
 def download_child(config):
     output = ordinary(config["output"])
     admit(output / "preflight-gates.jsonl", "cpu", config["boot_id"])
+    hub, cache = remote_cache(config)
     from huggingface_hub import snapshot_download
 
     snapshot_download(
         repo_id=MODEL,
         revision=REVISION,
-        cache_dir=str(HUB),
+        cache_dir=str(hub),
         token=False,
         allow_patterns=sorted(BASE_METADATA),
         max_workers=1,
     )
     for name, expected in BASE_METADATA.items():
-        path = (CACHE / name).resolve(strict=True)
+        path = ordinary((cache / name).resolve(strict=True))
         require(
-            path.is_relative_to(ordinary(HUB)) and pin(path) == expected,
+            path.is_relative_to(hub) and pin(path) == expected,
             "Exact public HF metadata bytes",
         )
-        target = CACHE / name
+        target = cache / name
         if target.is_symlink():
-            temporary = CACHE / (name + ".public07-regular.pending")
+            temporary = cache / (name + ".public07-regular.pending")
             create(temporary, read(path))
             os.replace(temporary, target)
         require(
@@ -627,7 +736,7 @@ def download_child(config):
     snapshot_download(
         repo_id=MODEL,
         revision=REVISION,
-        cache_dir=str(HUB),
+        cache_dir=str(hub),
         token=False,
         allow_patterns=["model.safetensors"],
         max_workers=1,
@@ -637,9 +746,10 @@ def download_child(config):
     import jev_public_action_artifact as artifact
 
     require(
-        pin(artifact.resolve_base_checkpoint(CACHE), BASE["size_bytes"]) == BASE,
+        pin(artifact.resolve_base_checkpoint(cache), BASE["size_bytes"]) == BASE,
         "Full fixed public BF16 checkpoint hash/size",
     )
+    require(mount_root(config["mounts"]["/weights"]) == hub, "Provider weight mount drift")
     create(
         output / "download-result.json",
         encode(
@@ -661,7 +771,7 @@ def download_child(config):
 def fit_child(config):
     output = ordinary(config["output"])
     admit(output / "preflight-gates.jsonl", "cpu", config["boot_id"])
-    manifest_blob = read(Path("/input") / config["run_id"] / "manifest.json")
+    manifest_blob = read(named_input(config))
     require(
         hashlib.sha256(manifest_blob).hexdigest() == config["manifest_sha256"],
         "External named upload manifest",
@@ -685,7 +795,7 @@ def fit_child(config):
     }
     for index, row in enumerate(manifest["rows"]):
         if row["path"] in anchors:
-            source = Path("/input") / config["run_id"] / "files" / f"{index:05d}"
+            source = named_input(config, index)
             require(
                 row["pin"]["sha256"] == anchors[row["path"]] and pin(source) == row["pin"],
                 "Fixed uploaded metadata anchor",
@@ -700,7 +810,7 @@ def fit_child(config):
     parent_row = next(
         (i, row) for i, row in enumerate(manifest["rows"]) if row["path"] == parent_anchor
     )
-    source = Path("/input") / config["run_id"] / "files" / f"{parent_row[0]:05d}"
+    source = named_input(config, parent_row[0])
     require(
         parent_row[1]["pin"]
         == stage["staged_evidence_files_excluding_receipt"]["parent-capture.json"]
@@ -716,7 +826,7 @@ def fit_child(config):
         "Remote named input declaration differs from fixed authorities",
     )
     for index, row in enumerate(manifest["rows"]):
-        source = Path("/input") / config["run_id"] / "files" / f"{index:05d}"
+        source = named_input(config, index)
         require(pin(source) == row["pin"], "Uploaded named file differs")
         for destination in row["destinations"]:
             target = ordinary(destination)
@@ -732,6 +842,7 @@ def fit_child(config):
             else:
                 create(target, read(source))
             require(pin(target) == row["pin"], "Materialized input differs")
+    stage_weights(config, output)
     versions = reference_environment()
     admit(output / "preflight-gates.jsonl", "train", config["boot_id"])
     gpu = subprocess.run(
@@ -902,16 +1013,40 @@ def tree_inventory(root):
     return dict(sorted(found.items()))
 
 
+def copy_output(output, binding):
+    """A closed ephemeral tree is copied and rehashed before its export marker."""
+    expected = tree_inventory(output)
+    root = mount_root(binding)
+    destination = ordinary(root / output.name)
+    require(not destination.exists(), "Fresh provider export destination")
+    destination.mkdir()
+    for label, entry in expected.items():
+        stream_copy(output / relative(label), destination / relative(label), entry)
+    require(
+        tree_inventory(output) == expected == tree_inventory(destination)
+        and mount_root(binding) == root,
+        "Closed full export copy/anchor differs",
+    )
+    return destination, expected
+
+
 def owned(mode, run_id, manifest_sha256=None):
     require(re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", run_id) is not None, "Bounded fresh run ID")
-    output = ordinary(Path("/export") / (run_id + "-" + mode))
+    require(mode in {"download", "fit"}, "Declared owned mode")
+    output = ordinary(RUNTIME / "owned-public07" / (run_id + "-" + mode))
     require(not output.exists(), "Fresh owned remote output")
-    output.mkdir()
+    output.mkdir(parents=True)
     config = {
         "run_id": run_id,
         "output": str(output),
         "boot_id": host()["boot_id"],
         "manifest_sha256": manifest_sha256,
+        "mounts": {
+            alias: capture_mount(alias)
+            for alias in (
+                ("/weights", "/export", "/input") if mode == "fit" else ("/weights", "/export")
+            )
+        },
     }
     create(output / "child-config.json", encode(config))
     environment = {
@@ -990,7 +1125,7 @@ def owned(mode, run_id, manifest_sha256=None):
                         primary = secondary
                     else:
                         primary.add_note("Bounded log preservation: " + repr(secondary))
-    report = None
+    report, destination = None, None
     try:
         report = {
             "child_success": primary is None and confirmed,
@@ -1013,24 +1148,31 @@ def owned(mode, run_id, manifest_sha256=None):
         }
         create(output / "controller-receipt.json", encode(report))
         if confirmed:
-            index = tree_inventory(output)
+            destination, index = copy_output(output, config["mounts"]["/export"])
+            for binding in config["mounts"].values():
+                mount_root(binding)
+            if mode == "download":
+                weights.commit()
             create(
-                output / "export-index.json",
+                destination / "export-index.json",
                 encode({"root": output.name, "files": index, "complete_owned_exit": True}),
             )
-            export_pin = pin(output / "export-index.json")
+            export_pin = pin(destination / "export-index.json")
+        results.commit()
     except BaseException as secondary:
+        export_pin = None
         if primary is None:
             primary = secondary
         else:
             primary.add_note("Closed output publication: " + repr(secondary))
-    try:
-        results.commit()
-    except BaseException as secondary:
-        if primary is None:
-            primary = secondary
-        else:
-            primary.add_note("Output volume persistence: " + repr(secondary))
+        if destination is not None and (destination / "export-index.json").exists():
+            try:
+                os.replace(
+                    destination / "export-index.json", destination / "export-index.invalid.json"
+                )
+                results.commit()
+            except BaseException as cleanup:
+                primary.add_note("Failed export marker invalidation: " + repr(cleanup))
     if primary is not None and not isinstance(primary, Exception):
         raise primary
     return {
@@ -1057,12 +1199,10 @@ def owned(mode, run_id, manifest_sha256=None):
     retries=0,
     single_use_containers=True,
     include_source=False,
-    volumes={str(HUB): weights, "/export": results},
+    volumes={"/weights": weights, "/export": results},
 )
 def download(run_id: str):
-    result = owned("download", run_id)
-    weights.commit()
-    return result
+    return owned("download", run_id)
 
 
 @app.function(
@@ -1078,7 +1218,7 @@ def download(run_id: str):
     include_source=False,
     block_network=True,
     volumes={
-        str(HUB): weights.with_mount_options(read_only=True),
+        "/weights": weights.with_mount_options(read_only=True),
         "/input": inputs.with_mount_options(read_only=True),
         "/export": results,
     },

@@ -1,0 +1,38 @@
+{
+  "CLI_exit_code": 0,
+  "app_id": "ap-Vp36xYDEfvMGrSuRXLnG2D",
+  "date": "2026-10-18",
+  "implication": "Frozen ART and Decision3 cache verifiers correctly refuse symlink ancestors. Preserve those verifiers: mount weights at a separate provider entrance, copy exactly pinned runtime files into the fixed ordinary cache, stage outputs in ordinary ephemeral directories, and publish complete closed evidence through only declared provider anchors. Do not hardcode provider-internal path conventions.",
+  "observed": {
+    "HF_hub_input_export_mounts_are_symlinks": true,
+    "model_loads": 0,
+    "resolved_targets": "three distinct provider-managed volume roots; exact values retained in local result",
+    "root_home_repository_ordinary": true,
+    "training_updates": 0,
+    "volume_writes": 0
+  },
+  "official_volume_statfs_reference": "https://modal.com/docs/guide/volumes#disk-usage-reporting",
+  "probe_source": {
+    "path": "apps/modal/public_action_mount_probe.py",
+    "sha256": "1d410bf16f81b6132478f6f881b4713baf867e6ff92ff2d32b7e0e55aa117b5b",
+    "size_bytes": 2132
+  },
+  "result": {
+    "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-mount-probe-02.json",
+    "sha256": "5361ede2a047c834901a195b1bd016d8ae43e17e793f2dc50af8dc041850ae6d",
+    "size_bytes": 2861
+  },
+  "scope": "Actual filesystem diagnostic only; no model score, trained child, qualification or browser success.",
+  "status": "actual_provider_mount_aliases_confirmed_CPU_only",
+  "stderr": {
+    "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/mount-probe-02.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size_bytes": 0
+  },
+  "stdout": {
+    "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/mount-probe-02.stdout.log",
+    "sha256": "f88f319faeadca896c6166eab4e1be5988948c941ecd06b6c1fdc17c8281c717",
+    "size_bytes": 15105
+  },
+  "volume_statfs_scope": "Provider reports placeholders, so disk_usage(volume) is not proof of available storage. This does not alter RAM floors."
+}

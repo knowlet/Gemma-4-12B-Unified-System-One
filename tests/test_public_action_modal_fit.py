@@ -26,10 +26,16 @@ def extracted_helpers(tmp_path):
         "encode",
         "parse",
         "ordinary",
+        "capture_mount",
+        "mount_root",
+        "remote_cache",
+        "named_input",
         "relative",
         "read",
         "pin",
         "create",
+        "stream_copy",
+        "stage_weights",
         "complete_cgroup",
         "cgroup_memory",
         "host",
@@ -38,6 +44,7 @@ def extracted_helpers(tmp_path):
         "group_alive",
         "stop_owned",
         "tree_inventory",
+        "copy_output",
         "owned",
     }
     body = [
@@ -54,12 +61,18 @@ def extracted_helpers(tmp_path):
         for definition in body
         for node in ast.walk(definition)
     )
-    export_root = tmp_path / "export"
-    export_root.mkdir()
+    mounts = {}
+    for name in ("export", "weights", "input"):
+        root = tmp_path / ("provider-" + name)
+        root.mkdir()
+        alias = tmp_path / name
+        alias.symlink_to(root, target_is_directory=True)
+        mounts["/" + name] = alias
+    export_root = mounts["/export"].resolve()
 
     def task_path(value, *parts):
         path = Path(value, *parts)
-        return export_root if path == Path("/export") else path
+        return mounts.get(str(path), path)
 
     namespace = {
         "hashlib": hashlib,
@@ -73,13 +86,17 @@ def extracted_helpers(tmp_path):
         "MAX_FILES": 10000,
         "MAX_LOG": 16 * 1024**2,
         "BASE": {"size_bytes": 23919549408},
+        "DECLARED_MOUNTS": {"/weights", "/input", "/export"},
         "ROOT": tmp_path / "source",
+        "RUNTIME": tmp_path / "source/artifacts/jev-runtime",
         "SCRIPT": tmp_path / "source/apps/modal/public_action_fit.py",
         "OVERLAY": tmp_path / "source/overlay",
         "HUB": tmp_path / "cache/hub",
         "INTERPRETER": "/synthetic-only/python",
         "time": SimpleNamespace(monotonic=lambda: 100.0),
-        "os": SimpleNamespace(fsync=os.fsync, fstat=os.fstat, scandir=os.scandir, environ={}),
+        "os": SimpleNamespace(
+            fsync=os.fsync, fstat=os.fstat, scandir=os.scandir, replace=os.replace, environ={}
+        ),
         "tempfile": SimpleNamespace(TemporaryFile=lambda: tempfile.TemporaryFile(dir=tmp_path)),
     }
     exec(compile(ast.Module(body=body, type_ignores=[]), str(APP), "exec"), namespace)
@@ -287,8 +304,10 @@ def test_owned_exit_receipt_never_claims_overall_success_before_export_and_volum
         namespace["tree_inventory"] = unavailable_inventory
     result = namespace["owned"]("fit", "synthetic-run", "a" * 64)
     root = export_root / "synthetic-run-fit"
-    saved = json.loads((root / "controller-receipt.json").read_bytes())
-    assert len(launches) == 1 and probes and commits == [True]
+    ephemeral = namespace["RUNTIME"] / "owned-public07/synthetic-run-fit"
+    saved = json.loads((ephemeral / "controller-receipt.json").read_bytes())
+    assert len(launches) == 1 and probes
+    assert len(commits) == {None: 1, "inventory": 0, "commit": 2}[fault]
     assert (
         saved["child_success"] is True
         and saved["owned_exit_confirmed"] is True
@@ -310,4 +329,238 @@ def test_owned_exit_receipt_never_claims_overall_success_before_export_and_volum
     else:
         assert result["error"]["type"] == "OSError"
         assert "synthetic" in result["error"]["message"]
-        assert (result["export_index"] is None) is (fault == "inventory")
+        assert result["export_index"] is None
+        assert not (root / "export-index.json").exists()
+        if fault == "commit":
+            assert (root / "export-index.invalid.json").is_file()
+
+
+def test_only_declared_mount_boundaries_resolve_and_retargeting_is_rejected(tmp_path):
+    namespace, _ = extracted_helpers(tmp_path)
+    with pytest.raises(ValueError, match="Ordinary path"):
+        namespace["ordinary"]("/weights")
+    with pytest.raises(ValueError, match="Undeclared"):
+        namespace["capture_mount"]("/unrelated")
+    binding = namespace["capture_mount"]("/weights")
+    assert namespace["mount_root"](binding) == tmp_path / "provider-weights"
+    alias = namespace["Path"]("/weights")
+    alias.unlink()
+    replacement = tmp_path / "other-provider-directory"
+    replacement.mkdir()
+    alias.symlink_to(replacement, target_is_directory=True)
+    with pytest.raises(ValueError, match="alias/identity changed"):
+        namespace["mount_root"](binding)
+
+
+def test_canonical_input_projection_preserves_flat_named_bytes_and_rejects_descendant_links(
+    tmp_path,
+):
+    namespace, _ = extracted_helpers(tmp_path)
+    config = {"run_id": "case-01", "mounts": {"/input": namespace["capture_mount"]("/input")}}
+    manifest = namespace["named_input"](config)
+    named = namespace["named_input"](config, 7)
+    namespace["create"](manifest, b'{"files":1}')
+    namespace["create"](named, b"exact uploaded evidence")
+    assert named.relative_to(tmp_path / "provider-input").as_posix() == "case-01/files/00007"
+    copied = tmp_path / "ordinary-root/evidence.bin"
+    namespace["stream_copy"](named, copied, namespace["pin"](named))
+    assert copied.read_bytes() == named.read_bytes()
+    for value in (-1, True, "../7"):
+        with pytest.raises(ValueError, match="index"):
+            namespace["named_input"](config, value)
+    with pytest.raises(ValueError, match="run"):
+        namespace["named_input"]({**config, "run_id": "../escape"})
+    named.unlink()
+    named.symlink_to(copied)
+    with pytest.raises(ValueError, match="Ordinary path"):
+        namespace["named_input"](config, 7)
+
+
+def tiny_provider_weights(namespace, tmp_path):
+    namespace.update(MODEL="public/fixture", REVISION="fixed")
+    config = {
+        "boot_id": "fixture-boot",
+        "mounts": {"/weights": namespace["capture_mount"]("/weights")},
+    }
+    hub, cache = namespace["remote_cache"](config)
+    cache.mkdir(parents=True)
+    local = tmp_path / "ordinary-cache"
+    namespace.update(HUB=local, CACHE=local / cache.relative_to(hub))
+    metadata = {}
+    for index in range(8):
+        name, blob = f"metadata-{index}.json", json.dumps({"index": index}).encode()
+        (cache / name).write_bytes(blob)
+        metadata[name] = namespace["pin"](cache / name)
+    blob = hub / "models--public--fixture/blobs/base"
+    blob.parent.mkdir()
+    blob.write_bytes(b"genuine synthetic checkpoint bytes" * 1024)
+    (cache / "model.safetensors").symlink_to(blob)
+    namespace.update(BASE_METADATA=metadata, BASE=namespace["pin"](blob))
+    return config, cache, blob
+
+
+def test_remote_stage_copies_all_eight_metadata_and_full_base_with_fresh_load_gates(tmp_path):
+    namespace, _ = extracted_helpers(tmp_path)
+    config, cache, base = tiny_provider_weights(namespace, tmp_path)
+    observations = []
+
+    def admit(path, scope, boot):
+        assert boot == "fixture-boot" and scope == "load"
+        observations.append((scope, (namespace["CACHE"] / "model.safetensors").exists()))
+
+    namespace["admit"] = admit
+    output = tmp_path / "ordinary-output"
+    namespace["stage_weights"](config, output)
+    assert observations == [("load", False), ("load", True)]
+    staged = namespace["CACHE"]
+    assert {p.name for p in staged.iterdir()} == {*namespace["BASE_METADATA"], "model.safetensors"}
+    assert all(not p.is_symlink() for p in (staged, *staged.parents, *staged.iterdir()))
+    assert (staged / "model.safetensors").read_bytes() == base.read_bytes()
+    assert (cache / "model.safetensors").is_symlink()
+    assert (
+        json.loads((output / "cache-staging.json").read_bytes())["checkpoint"] == namespace["BASE"]
+    )
+    # Exercise the unchanged production resolver at both arbitrary canonical
+    # provider HF layout and the ordinary fixed snapshot; no module/ML import.
+    artifact = APP.parents[2] / "scripts/jev_public_action_artifact.py"
+    definitions = [
+        node
+        for node in ast.parse(artifact.read_bytes()).body
+        if isinstance(node, ast.FunctionDef)
+        and node.name in {"ordinary", "require", "resolve_base_checkpoint"}
+    ]
+    resolver = {"Path": Path, "MODEL_ID": namespace["MODEL"], "REVISION": namespace["REVISION"]}
+    exec(compile(ast.Module(body=definitions, type_ignores=[]), str(artifact), "exec"), resolver)
+    assert resolver["resolve_base_checkpoint"](cache) == base
+    assert resolver["resolve_base_checkpoint"](staged) == staged / "model.safetensors"
+
+
+def test_remote_stage_refuses_corrupt_full_base_and_keeps_failure_bytes(tmp_path):
+    namespace, _ = extracted_helpers(tmp_path)
+    config, _, base = tiny_provider_weights(namespace, tmp_path)
+    base.write_bytes(b"x" * namespace["BASE"]["size_bytes"])
+    gates = []
+    namespace["admit"] = lambda *args: gates.append(args[1])
+    output = tmp_path / "ordinary-output"
+    with pytest.raises(ValueError, match="source/content changed"):
+        namespace["stage_weights"](config, output)
+    assert gates == ["load"]
+    assert not (output / "cache-staging.json").exists()
+    assert (namespace["CACHE"] / "model.safetensors").read_bytes() == base.read_bytes()
+
+
+def test_remote_stage_never_deletes_or_overwrites_an_existing_local_cache(tmp_path):
+    namespace, _ = extracted_helpers(tmp_path)
+    config, _, _ = tiny_provider_weights(namespace, tmp_path)
+    local = namespace["HUB"]
+    local.mkdir()
+    (local / "existing-local-model").write_bytes(b"must survive")
+    namespace["admit"] = lambda *args: pytest.fail("must refuse before any checkpoint gate/read")
+    with pytest.raises(ValueError, match="must be empty"):
+        namespace["stage_weights"](config, tmp_path / "output")
+    assert list(local.iterdir()) == [local / "existing-local-model"]
+    assert (local / "existing-local-model").read_bytes() == b"must survive"
+
+
+def test_streamed_copy_refuses_existing_destination_and_source_mutation(tmp_path):
+    namespace, _ = extracted_helpers(tmp_path)
+    source, target = tmp_path / "source.bin", tmp_path / "target.bin"
+    source.write_bytes(b"real source bytes")
+    expected = namespace["pin"](source)
+    target.write_bytes(b"existing destination")
+    with pytest.raises(FileExistsError):
+        namespace["stream_copy"](source, target, expected)
+    assert target.read_bytes() == b"existing destination"
+    target.unlink()
+
+    def changed_after_read(fd):
+        observed = os.fstat(fd)
+        source.write_bytes(b"changed after original read")
+        return observed
+
+    namespace["os"].fstat = changed_after_read
+    with pytest.raises(ValueError, match="source/content changed"):
+        namespace["stream_copy"](source, target, expected)
+    assert target.read_bytes() == b"real source bytes"
+
+
+@pytest.mark.parametrize("weights_fail", [False, True])
+def test_download_publication_commits_weights_before_marker_and_results(tmp_path, weights_fail):
+    namespace, export_root = extracted_helpers(tmp_path)
+    events = []
+
+    class Process:
+        pid, returncode = 52, 0
+
+        def __init__(self, command, **kwargs):
+            assert command[-2] == "--download-child"
+
+        def poll(self):
+            return self.returncode
+
+    def absent_group(*args):
+        raise ProcessLookupError()
+
+    marker = export_root / "download-01-download/export-index.json"
+
+    def weights_commit():
+        assert not marker.exists()
+        events.append("weights")
+        if weights_fail:
+            raise OSError("weights publication failed")
+
+    def results_commit():
+        assert marker.exists()
+        events.append("results")
+
+    namespace.update(
+        subprocess=SimpleNamespace(Popen=Process, DEVNULL=-3),
+        host=lambda: {"boot_id": "fixture-boot"},
+        app=SimpleNamespace(app_id="fixture-app"),
+        modal=SimpleNamespace(current_function_call_id=lambda: "fixture-call"),
+        weights=SimpleNamespace(commit=weights_commit),
+        results=SimpleNamespace(commit=results_commit),
+    )
+    namespace["os"].killpg = absent_group
+    result = namespace["owned"]("download", "download-01")
+    assert result["success"] is (not weights_fail)
+    assert events == (["weights"] if weights_fail else ["weights", "results"])
+    assert marker.exists() is (not weights_fail)
+    if weights_fail:
+        assert result["export_index"] is None
+        assert result["error"]["message"] == "weights publication failed"
+
+
+def test_failed_child_primary_survives_failed_full_export_copy(tmp_path):
+    namespace, export_root = extracted_helpers(tmp_path)
+
+    class Process:
+        pid, returncode = 53, 17
+
+        def __init__(self, command, **kwargs):
+            pass
+
+        def poll(self):
+            return self.returncode
+
+    def absent_group(*args):
+        raise ProcessLookupError()
+
+    def broken_copy(*args):
+        raise OSError("full export copy failed")
+
+    namespace.update(
+        subprocess=SimpleNamespace(Popen=Process, DEVNULL=-3),
+        host=lambda: {"boot_id": "fixture-boot"},
+        app=SimpleNamespace(app_id="fixture-app"),
+        modal=SimpleNamespace(current_function_call_id=lambda: "fixture-call"),
+        results=SimpleNamespace(commit=lambda: None),
+        copy_output=broken_copy,
+    )
+    namespace["os"].killpg = absent_group
+    result = namespace["owned"]("fit", "failed-01", "a" * 64)
+    assert result["success"] is False and result["export_index"] is None
+    assert result["error"]["type"] == "ValueError"
+    assert result["error"]["message"] == "Owned child failed: 17"
+    assert any("full export copy failed" in note for note in result["error"]["notes"])
+    assert not list(export_root.rglob("export-index.json"))
