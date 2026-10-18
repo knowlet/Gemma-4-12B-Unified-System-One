@@ -1,0 +1,135 @@
+{
+  "HOLD": {
+    "path": "artifacts/jev-runtime/public-native-heldout-plan-20261018-01/code-HOLD-01/HOLD.json",
+    "sha256": "50c8a11bbfc77f1948295a5579f48251c87d6908a9e6aefeff401ee1bd76f439",
+    "size_bytes": 2915
+  },
+  "case_count": 6,
+  "cases": [
+    {
+      "allowed_top_level_hosts": [
+        "www.sqlite.org",
+        "sqlite.org"
+      ],
+      "case_id": "heldout-public-000",
+      "goal": "Open the SQLite window functions reference, then bring the row_number() built-in function entry and its description into view. Stop there.",
+      "start_url": "https://www.sqlite.org/docs.html"
+    },
+    {
+      "allowed_top_level_hosts": [
+        "numpy.org"
+      ],
+      "case_id": "heldout-public-001",
+      "goal": "In the NumPy 2.3 documentation, open numpy.reshape and bring the order parameter and its description of C and Fortran indexing into view. Stop with that parameter visible.",
+      "start_url": "https://numpy.org/doc/2.3/reference/routines.array-manipulation.html"
+    },
+    {
+      "allowed_top_level_hosts": [
+        "curl.se"
+      ],
+      "case_id": "heldout-public-002",
+      "goal": "Open the curl command-line man page and bring the --retry-max-time option heading and its explanation into view. Stop on that option.",
+      "start_url": "https://curl.se/docs/"
+    },
+    {
+      "allowed_top_level_hosts": [
+        "pandas.pydata.org"
+      ],
+      "case_id": "heldout-public-003",
+      "goal": "In the pandas 2.3 Series reference, open Series.map and bring the na_action parameter and the explanation of ignore into view. Stop there.",
+      "start_url": "https://pandas.pydata.org/pandas-docs/version/2.3/reference/series.html"
+    },
+    {
+      "allowed_top_level_hosts": [
+        "pubmed.ncbi.nlm.nih.gov"
+      ],
+      "case_id": "heldout-public-004",
+      "goal": "Search PubMed for asthma. Apply both the Clinical Trial and Free full text sidebar filters, then leave the filtered search results open.",
+      "start_url": "https://pubmed.ncbi.nlm.nih.gov/"
+    },
+    {
+      "allowed_top_level_hosts": [
+        "pubmed.ncbi.nlm.nih.gov"
+      ],
+      "case_id": "heldout-public-005",
+      "goal": "Change the PubMed search to migraine. Keep Free full text enabled, remove the Clinical Trial filter, and leave the resulting search results open.",
+      "start_url": "https://pubmed.ncbi.nlm.nih.gov/?term=asthma&filter=pubt.clinicaltrial&filter=simsearch2.ffrft"
+    }
+  ],
+  "constraints": {
+    "HTTP_timeout": "original25s",
+    "child_exit_is_task_success": false,
+    "decisions": 16,
+    "default_cases": "all6; explicit subsets labeled diagnostics and preserve selection_count6",
+    "observation_profile": "composed-visible-text-v3",
+    "policy_deadline": "original20s cooperative",
+    "repeats": 1,
+    "seed": 20261014,
+    "source_only_prepare_is_model_evaluation": false
+  },
+  "date": "2026-10-18",
+  "exposure_scope": "Five new domains and target terms had zero literal hits in public701 and24 prior supervision wire files, as inventoried in proposal. This bounds recorded browser adaptation exposure; it does not attest absence from base pretraining.",
+  "implementation": "Prepare a fresh evaluator bundle from the pinned original benchmark and common DOM helpers. Only one benchmark import line changes, selecting the separate case module; serving/training/source90/91 remain untouched. Per-case judges read fresh DOM once, validate exact scoped content and real visibility, and never scroll or act. Original success still requires judgeTrue+DONE+no error.",
+  "native_readiness": {
+    "SQLite_target": "independent diagnostic locator whitespace timeout; positive native target viewport not certified",
+    "all_start_judges_false": true,
+    "case004_start": "HTTP403; retained infrastructure-unready, not replaced or silently dropped",
+    "evidence": {
+      "path": "artifacts/jev-runtime/public-native-heldout-plan-20261018-01/native-preflight/observations.json",
+      "sha256": "0a6fdce57aebfd4cff46970fa1cf4dfb113db7ab6b671365ade66af4816d24fa",
+      "size_bytes": 1027474
+    },
+    "form_submissions": 0,
+    "model_calls": 0,
+    "other5_target_judges": "positive after direct prepared target GET; not native policy navigation",
+    "pending": [
+      "GET-only form/filter interaction reachability",
+      "actual full candidate/context capacity",
+      "fresh per-attempt initial-state qualification; launcher does not enforce this gate"
+    ]
+  },
+  "prepared_bundle": {
+    "path": "artifacts/jev-runtime/public-native-heldout-plan-20261018-01/prepared-evaluator-01/bundle-manifest.json",
+    "sha256": "1e7ddff6f201f236dcdfb2aee9c18979565a50810c8274ceff5f8ace8254683d",
+    "size_bytes": 5630
+  },
+  "schema_id": "jev-six-new-website-evaluator-v1",
+  "scope": "No model/browser campaign result or model superiority. All6 declared cases remain in outer campaign accounting, including inaccessible and not-started cases.",
+  "selection": {
+    "path": "artifacts/jev-runtime/public-native-heldout-plan-20261018-01/proposal.json",
+    "sha256": "4596e56d2f769f283ae606e42390236e82a2a7bbb59199a815f5ed2f7b13881c",
+    "size_bytes": 28166
+  },
+  "sources": [
+    {
+      "path": "scripts/jev_browser_heldout_benchmark.py",
+      "sha256": "e8cf8de413202db27ead401da816bc7d62dc22100b7492a4cf9912ca8f37d601",
+      "size_bytes": 9862
+    },
+    {
+      "path": "scripts/jev_heldout_public_cases.py",
+      "sha256": "339cddf596a25ab433ca66e23924631b6261e62efc06f351878d4ef5c3f6f8f9",
+      "size_bytes": 16622
+    },
+    {
+      "path": "tests/test_jev_browser_heldout_benchmark.py",
+      "sha256": "3b3e27835e4a6f96b8ced48c314958ce4b4bc0766a28d15ca4f258cda66f11aa",
+      "size_bytes": 9428
+    },
+    {
+      "path": "tests/test_jev_heldout_public_cases.py",
+      "sha256": "d8d233ea18b4bc20f4ec3d4510f0fb37dc527265e915c7e130e168eb14a7c9a0",
+      "size_bytes": 15595
+    }
+  ],
+  "status": "reviewed_source_with_explicit_pending_site_readiness",
+  "validation": {
+    "independent_review": "audit_benchmarks CLEAR source/wholeAST oneimportdelta/proposal6cases/source90 actualpins",
+    "root_elapsed_seconds": 2.83,
+    "root_entire_four_sources_read": true,
+    "root_focused_tests_passed": 165,
+    "root_real_Chromium_local_HTML_checks": 6,
+    "writer_focused_plus_existing_public_tests_passed": 298,
+    "writer_ruff_check_and_format": "passed"
+  }
+}
