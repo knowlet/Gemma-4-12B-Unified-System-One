@@ -1,0 +1,64 @@
+{
+  "schema_id": "decision3-warm-start-external-failure-v1",
+  "stage": "workspace_disabled_before_authenticated_READY",
+  "app": "ap-DH7T6d6IuLyiLGJTYYaMqz",
+  "workload": "public-six",
+  "source17_sha256": "bcf45a3388c2ab3d43ec071ee7b6cd9243b11efd7d0fa1a180161fea5565dfe2",
+  "weight_profile_sha256": "ec90ce2f97876dae070e9fcd267d51300f956ec3d42488d8bb8898e92d02677d",
+  "shared_helper_qualification_sha256": "9bf5bff5f43d15e461c1f5002932419bf0623bb27ad4e15a8596d0a0f4b3fb1e",
+  "failure": {
+    "type": "ConflictError",
+    "message": "workspace ac-9NWrgCtsSUtgACWaD5gcX7 is disabled",
+    "notes": [],
+    "campaign_stop": true
+  },
+  "service_error": {
+    "path": "artifacts/jev-runtime/decision3-public-browser-warm-20261018-01/public-six/actual-campaign-01/controller-error.json",
+    "sha256": "45e2f39edf123d430b8b552d5c79e66090ef8e233c5a9a8ad39d31c058f4331d",
+    "size_bytes": 116
+  },
+  "owned_service_CLI_exit": {
+    "path": "artifacts/jev-runtime/decision3-public-browser-warm-20261018-01/public-six/owned-service-exit-01.json",
+    "sha256": "bebfa76afee5faadc575eb00b0d8987ab76c2d9d410d510ead95a6ffa30b0e1d",
+    "size_bytes": 109
+  },
+  "controller_receipt": {
+    "path": "artifacts/jev-runtime/decision3-public-browser-warm-20261018-01/public-six/controller-01/receipt.json",
+    "sha256": "1b8d762db97887a33826c49dc1864903152e9a2c263f04cbf2a1e8d66b2d83ed",
+    "size_bytes": 910
+  },
+  "closed_local_evidence": {
+    "path": "artifacts/jev-runtime/decision3-public-browser-warm-20261018-01/public-six/closed-local-attempt-index-01.json",
+    "sha256": "79079fa258b92a693fb20669c5cfa02a4f18d25265721ba45859f62209d7f4f5",
+    "size_bytes": 1876
+  },
+  "closed_local_files": 11,
+  "closed_local_bytes": 15073,
+  "actual_observation": {
+    "service_CLI_exit_code": 1,
+    "local_controller_exit_code": 1,
+    "authenticated_READY_received": false,
+    "browser_groups_started": 0,
+    "browser_results": 0,
+    "raw_warmup_calls_confirmed": null,
+    "remote_startup_progress": "unknown; do not infer zero model/GPU work from absence of READY",
+    "cleanup": "SDK attempted stop-only cleanup, also refused with same workspace-disabled error. Owned local CLI PID723141 is absent. Read-only app container list reports none; complete authenticated worker exit/export is unavailable.",
+    "container_query": {
+      "path": "artifacts/jev-runtime/decision3-public-browser-warm-20261018-01/public-six/container-status-observation-01.json",
+      "sha256": "f924566ec48456a9df14b4bb11a707c5ac6c8c00b78d86932e43672841357189",
+      "size_bytes": 557
+    }
+  },
+  "unrun_models": [
+    "d3",
+    "d3-flash",
+    "d3-mini",
+    "d3-nano",
+    "d3-lite",
+    "d3-edge"
+  ],
+  "known_four_campaign_started": false,
+  "warm_browser_task_score": null,
+  "interpretation": "Infrastructure/access failure, not a decision-quality score. Preserve previous six-model cold results; do not replace this failure with guessed warmup or browser outcomes.",
+  "continued_work": "Existing qualified local240 service remains available. Continue local menu policy replay and source-only grammar/loss improvements; no alternate workspace, limit relaxation or guessed remote cleanup."
+}
