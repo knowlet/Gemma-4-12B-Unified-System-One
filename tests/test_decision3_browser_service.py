@@ -1543,3 +1543,259 @@ def test_delivery_metadata_cost_is_inside_original_gateway_20s(tmp_path):
     assert evidence["request_pin"] == SERVICE.pin(path)
     row = SERVICE.parse(path.read_bytes())
     assert row["late_after_response_binding"] and row["gateway_action_authorized"] is False
+
+
+def warm_evidence(model="d3-edge", *, workload="public-six", manifest_sha="a" * 64):
+    """Explicit fake GPU metadata for binding tests, never actual execution proof."""
+    startup = SERVICE.startup_configuration("publisher-text48-v1", workload)
+    identities = SERVICE.literal(ROOT / "src/s1/evaluation/decision3.py", "CHECKPOINTS")
+    models = {
+        name: {"files": {"d3_runtime.py": {"sha256": "c" * 64, "size_bytes": 99}}}
+        for name in SERVICE.MODELS
+    }
+    identity = identities[model]
+    cache = {
+        "full_payload_sha256_authenticated": True,
+        "revision": identity["revision"],
+        "manifest_sha256": identity["manifest_sha256"],
+        "files": copy.deepcopy(models[model]["files"]),
+    }
+    provenance, packages = {"model_name": model}, {"fake_components_only": "no ML"}
+    evidence = {
+        "startup": startup,
+        "warmup_calls": 48,
+        "publisher_warmup_invocations": 1,
+        "warmup": {
+            "stage": "complete",
+            "images": False,
+            "lengths": list(WORKER.WARM_LENGTHS),
+            "secondary_errors": [],
+            "error": None,
+            "publisher_warmup_invocations": 1,
+            "attempted_probability_calls": 48,
+            "entered_probability_calls": 48,
+            "completed_probability_calls": 48,
+            "validated_probability_calls": 48,
+            "synthetic_sequence_rows": 216,
+            "synthetic_input_tokens": 96544,
+            "publisher_source": models[model]["files"]["d3_runtime.py"],
+            "journal_pin": {"sha256": "d" * 64, "size_bytes": 100},
+        },
+        "cache_before": cache,
+        "cache_post_warmup": copy.deepcopy(cache),
+        "cache_after": copy.deepcopy(cache),
+        "runtime": {"packages": packages, "provenance": provenance},
+        "post_warmup_checks": {
+            "source_manifest_sha256": manifest_sha,
+            "readout_shape": [255, identity["readout_tensor_bytes"] // (255 * 4)],
+            "loaded_parameters": identity["loaded_parameters"],
+            "backbone_dtype": "bfloat16",
+            "readout_dtype": "float32",
+            "device": "cuda:0",
+            "packages": packages,
+            "provenance": provenance,
+        },
+    }
+    return startup, models, evidence
+
+
+@pytest.mark.parametrize("model", SERVICE.MODELS)
+def test_warm_evidence_requires_external_settings_source_and_closed_weight_binding(model):
+    startup, models, evidence = warm_evidence(model)
+    assert SERVICE.validate_startup(startup) == WORKER.validate_startup(startup)
+    SERVICE.validate_startup_evidence(
+        evidence, startup, model=model, source_manifest_sha256="a" * 64, weight_models=models
+    )
+    with pytest.raises(ValueError):
+        SERVICE.validate_startup_evidence(evidence, None, model=model)
+    with pytest.raises(ValueError):
+        SERVICE.validate_startup_evidence(
+            evidence, startup, model=model, source_manifest_sha256="b" * 64, weight_models=models
+        )
+
+
+@pytest.mark.parametrize(
+    "path,value",
+    [
+        (("startup", "max_browser_envelopes"), 160),
+        (("warmup_calls",), True),
+        (("publisher_warmup_invocations",), True),
+        (("warmup", "completed_probability_calls"), 47),
+        (("warmup", "synthetic_sequence_rows"), 216.0),
+        (("warmup", "synthetic_input_tokens"), True),
+        (("warmup", "publisher_source", "sha256"), "b" * 64),
+        (("cache_post_warmup", "manifest_sha256"), "b" * 64),
+        (("post_warmup_checks", "loaded_parameters"), 1),
+        (("post_warmup_checks", "backbone_dtype"), "float32"),
+        (("post_warmup_checks", "source_manifest_sha256"), "b" * 64),
+        (("post_warmup_checks", "packages"), {"different": "version"}),
+    ],
+)
+def test_warm_receipt_claims_cannot_replace_external_binding(path, value):
+    startup, models, evidence = warm_evidence()
+    expected = copy.deepcopy(startup)
+    node = evidence
+    for key in path[:-1]:
+        node = node[key]
+    node[path[-1]] = value
+    with pytest.raises(ValueError):
+        SERVICE.validate_startup_evidence(
+            evidence,
+            expected,
+            model="d3-edge",
+            source_manifest_sha256="a" * 64,
+            weight_models=models,
+        )
+
+
+@pytest.mark.parametrize(
+    "workload,limit,files", [("public-six", 96, 1605), ("known-four", 64, 1221)]
+)
+def test_warm_gateway_enforces_external_workload_gate_and_retains_retry_refusals(
+    tmp_path, workload, limit, files
+):
+    startup, models, evidence = warm_evidence(workload=workload)
+    assert SERVICE.startup_file_budget(startup)["planned_files"] == files < 2044
+    calls = []
+
+    def rpc(nonce, request_id, body, _remaining):
+        calls.append(body)
+        return {
+            "event": "response",
+            "request_id": request_id,
+            "http_sha256": hashlib.sha256(body).hexdigest(),
+            "model": "d3-edge",
+            "nonce": nonce,
+            "gpu_uuid": "GPU-test-only",
+            "success": True,
+            "campaign_stop": False,
+            "wire_body_utf8": '{"answers":{"operation":{"choice":"DONE"}}}',
+            "journal": {
+                "startup": startup,
+                "task_native_calls": {
+                    "backend_predict_entries": 1,
+                    "system_one_entries": 1,
+                    "probabilities_entries": 1,
+                    "sequence_rows": 2,
+                    "input_tokens": 30,
+                },
+            },
+        }
+
+    gateway = SERVICE.Gateway(
+        rpc,
+        tmp_path / "local",
+        {},
+        startup=startup,
+        source_manifest_sha256="a" * 64,
+        weight_models=models,
+    )
+    reply = ready_reply()
+    reply["ready"].update(copy.deepcopy(evidence))
+    gateway.accept_begin(reply)
+    gateway.arm_forwarded_envelopes = limit - 1
+    body = SERVICE.encode(payload())
+    assert gateway.request(body)[0] == 200
+    assert gateway.request(body)[0] == gateway.request(body)[0] == 504
+    assert len(calls) == 1 and gateway.arm_forwarded_envelopes == limit
+    rows = [SERVICE.parse(p.read_bytes()) for p in (tmp_path / "local/requests").glob("*.json")]
+    assert len(rows) == 3 and all(row["raw_http_hex"] == body.hex() for row in rows)
+    assert sorted(row["gateway_policy_ingress_count"] for row in rows) == [1, 2, 3]
+    assert sum(row["gateway_action_authorized"] for row in rows) == 1
+    assert gateway.blocked and not gateway.halted
+    bad = copy.deepcopy(startup)
+    bad["max_browser_envelopes"] = 160
+    with pytest.raises(ValueError):
+        SERVICE.startup_file_budget(bad)
+
+
+def test_warmed_terminal_requires_matching_external_profile_and_exact_worker_envelope_count():
+    startup, models, evidence = warm_evidence()
+    closed = closed_frame()
+    closed["receipt"].update(
+        copy.deepcopy(evidence), profile=WORKER.WARM_PROFILE, browser_envelopes_seen=0
+    )
+    kwargs = {
+        "model": "d3-edge",
+        "nonce": "nonce-test-only",
+        "pid": 1001,
+        "gpu_uuid": "GPU-test-only",
+        "returncode": 0,
+        "startup": startup,
+        "source_manifest_sha256": "a" * 64,
+        "weight_models": models,
+    }
+    assert SERVICE.closed_worker_success(closed, **kwargs) is True
+    with pytest.raises(ValueError):
+        SERVICE.closed_worker_success(
+            closed,
+            **{
+                **kwargs,
+                "startup": SERVICE.startup_configuration("publisher-text48-v1", "known-four"),
+            },
+        )
+    for value in (True, 1, 97):
+        forged = copy.deepcopy(closed)
+        forged["receipt"]["browser_envelopes_seen"] = value
+        with pytest.raises(ValueError):
+            SERVICE.closed_worker_success(forged, **kwargs)
+
+
+def test_all_six_warm_arms_bind_config_ready_rpc_and_closed_receipt_to_external_selection(
+    tmp_path, monkeypatch
+):
+    session, _records, launched, published = session_harness(tmp_path, monkeypatch)
+    startup, models, _ = warm_evidence("d3")
+    session.startup, session.weight_models = startup, models
+    session.startup_budget = SERVICE.startup_file_budget(startup)
+    manifest_sha = hashlib.sha256(SERVICE.encode(session.manifest)).hexdigest()
+    original_control = session.read_control
+
+    def read_control():
+        value = original_control()
+        model = session.process.config["model"]
+        _, _, evidence = warm_evidence(model, manifest_sha=manifest_sha)
+        if value["event"] == "ready":
+            value.update(copy.deepcopy(evidence))
+        elif value["event"] == "response":
+            value["journal"].update(
+                startup=copy.deepcopy(startup),
+                task_native_calls={
+                    "backend_predict_entries": 1,
+                    "system_one_entries": 1,
+                    "probabilities_entries": 1,
+                    "sequence_rows": 1,
+                    "input_tokens": 100,
+                },
+            )
+        else:
+            value["receipt"].update(
+                copy.deepcopy(evidence),
+                profile=WORKER.WARM_PROFILE,
+                browser_envelopes_seen=len(value["receipt"]["requests"]),
+            )
+        session.last_control = copy.deepcopy(value)
+        return value
+
+    session.read_control = read_control
+    gateway = SERVICE.Gateway(
+        session.predict,
+        tmp_path / "warm-local",
+        {},
+        startup=startup,
+        source_manifest_sha256=manifest_sha,
+        weight_models=models,
+    )
+    for model in SERVICE.MODELS:
+        reply = session.begin(model, gateway.nonce)
+        gateway.accept_begin(reply)
+        status, _ = gateway.request(SERVICE.encode({**payload(), "model": model}))
+        assert status == 200
+        end = gateway.accept_end(session.end(gateway.nonce))
+        assert end["gateway_arm_success"] and end["continuation_authorized"]
+    receipt = session.close(gateway.nonce)
+    assert receipt["success"] and receipt["owned_exit_confirmed"] and receipt["unrun"] == []
+    assert receipt["startup"] == startup and len(launched) == len(receipt["arms"]) == 6
+    assert len({process.pid for process, _ in launched}) == 6
+    assert all(process.config["startup"] == startup for process, _ in launched)
+    assert published[-1][2] is True

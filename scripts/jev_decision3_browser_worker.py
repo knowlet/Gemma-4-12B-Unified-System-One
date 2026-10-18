@@ -35,6 +35,8 @@ WIRE_SHA = "c048d7779e60fce5d1a56b38e26b9ddf5ed9e1ff9c6adc478786d0267cca3027"
 SERVICE_PATH = ROOT / "apps/modal/decision3_browser_service.py"
 INTERPRETER = "/opt/decision3/bin/python"
 PROFILE = "decision3-browser-local-rpc-v1"
+WARM_PROFILE = "decision3-browser-publisher-text48-v1"
+WARM_LENGTHS = (37, 64, 320, 333, 1000, 1024)
 MAX_BODY, MAX_FRAME, MAX_RESPONSE, MAX_REQUESTS = 1_000_000, 4 * 1024**2, 16 * 1024**2, 192
 SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,95}\Z")
 CORE = None
@@ -153,11 +155,239 @@ def same_uuid(left, right):
     return bool(normalized(left)) and normalized(left) == normalized(right)
 
 
+def startup_configuration(profile="cold", workload=None):
+    if profile == "cold":
+        require(workload is None, "Cold startup has no warm workload setting")
+        return None
+    require(profile == "publisher-text48-v1", "Unknown explicit startup profile")
+    require(workload in {"public-six", "known-four"}, "Explicit warm workload required")
+    return {
+        "schema_id": "decision3-publisher-startup-v1",
+        "profile": profile,
+        "workload": workload,
+        "max_browser_envelopes": 96 if workload == "public-six" else 64,
+        "lengths": list(WARM_LENGTHS),
+        "images": False,
+        "native_batch_size": 8,
+        "permutation_average": False,
+    }
+
+
+def validate_startup(value):
+    if value is None:
+        return None
+    require(type(value) is dict, "External startup object required")
+    expected = startup_configuration(value.get("profile"), value.get("workload"))
+    require(
+        expected is not None
+        and json.dumps(value, sort_keys=True, allow_nan=False)
+        == json.dumps(expected, sort_keys=True, allow_nan=False),
+        "Exact typed external startup configuration required",
+    )
+    return expected
+
+
+def publisher_warmup(
+    runtime, torch, gates, output, state, gpu_uuid, source_pin, *, clock=time.monotonic
+):
+    """Audit the genuine pinned publisher method; synthetic work never enters RPC."""
+    require(
+        runtime.fast is None
+        and not getattr(torch.version, "hip", None)
+        and type(runtime.batch_size) is int
+        and runtime.batch_size == 8
+        and runtime.permutation_average is False,
+        "Text48 requires native NVIDIA batch8 without graph capture/permutation",
+    )
+    for function in (runtime.warmup, runtime.probabilities):
+        require(
+            pin(function.__func__.__code__.co_filename) == source_pin,
+            "Actual publisher warmup/probabilities source differs",
+        )
+    tokens = runtime.token_ids
+    require(
+        type(tokens) is list
+        and len(tokens) == 255
+        and all(type(token) is int and token >= 0 for token in tokens),
+        "Actual255 publisher token IDs required",
+    )
+    path, started = Path(output) / "warmup.json", clock()
+    report = {
+        "profile": "publisher-text48-v1",
+        "stage": "starting",
+        "images": False,
+        "lengths": list(WARM_LENGTHS),
+        "publisher_source": source_pin,
+        "publisher_warmup_invocations": 0,
+        "attempted_probability_calls": 0,
+        "entered_probability_calls": 0,
+        "completed_probability_calls": 0,
+        "validated_probability_calls": 0,
+        "synthetic_sequence_rows": 0,
+        "synthetic_input_tokens": 0,
+        "records": [],
+        "error": None,
+        "secondary_errors": [],
+        "peak_scope": "process cumulative including load/warmup",
+        "counter_scope": "publisher API entry calls, not GPU kernel launches",
+    }
+
+    def checkpoint():
+        report["elapsed_seconds"] = clock() - started
+        state["warmup_calls"] = report["entered_probability_calls"]
+        state["publisher_warmup_invocations"] = report["publisher_warmup_invocations"]
+        state["warmup"] = {
+            key: copy.deepcopy(value) for key, value in report.items() if key != "records"
+        }
+        state["warmup"]["journal_path"] = str(path)
+        try:
+            persist(path, report)
+            state["warmup"]["journal_pin"] = pin(path)
+        except BaseException:
+            state["warmup_failure_evidence"] = evidence_value(report)
+            raise
+
+    original = runtime.probabilities
+    owned = "probabilities" in runtime.__dict__
+    previous = runtime.__dict__.get("probabilities")
+
+    def audited(sequences, counts):
+        index = report["attempted_probability_calls"]
+        require(index < 48, "Publisher warmup exceeded48 calls")
+        size, length = index // 6 + 1, WARM_LENGTHS[index % 6]
+        expected = [
+            [tokens[(i + j) % len(tokens)] for j in range(max(8, length - 7 * i))]
+            for i in range(size)
+        ]
+        require(
+            encode(sequences) == encode(expected) and encode(counts) == encode([2] * size),
+            "Publisher synthetic schedule differs",
+        )
+        row = {
+            "index": index,
+            "sequences": copy.deepcopy(sequences),
+            "counts": copy.deepcopy(counts),
+            "stage": "before_gate",
+            "raw_returned": False,
+            "raw_probabilities": None,
+            "secondary_errors": [],
+        }
+        report["records"].append(row)
+        report["attempted_probability_calls"] += 1
+        call_started, primary = clock(), None
+        try:
+            checkpoint()
+            torch.cuda.synchronize(0)
+            gate = gates.check(f"warmup-before-probabilities-{index:02d}")
+            require(
+                same_uuid(gate["snapshot"]["cuda"]["uuid"], gpu_uuid), "Warmup CUDA UUID differs"
+            )
+            row["resources_before"] = gate["snapshot"]
+            row["stage"] = "publisher_entry"
+            report["entered_probability_calls"] += 1
+            report["synthetic_sequence_rows"] += size
+            report["synthetic_input_tokens"] += sum(map(len, sequences))
+            checkpoint()
+            result = original(sequences, counts)
+            row.update(raw_returned=True, raw_probabilities=evidence_value(result))
+            report["completed_probability_calls"] += 1
+            checkpoint()  # Retain raw values before validation or the final CUDA fence.
+            require(
+                type(result) is list
+                and len(result) == size
+                and all(
+                    type(values) is list
+                    and len(values) == 2
+                    and all(
+                        type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 1 for v in values
+                    )
+                    and abs(sum(values) - 1) < 0.02
+                    for values in result
+                ),
+                "Malformed actual warmup probabilities",
+            )
+            report["validated_probability_calls"] += 1
+            row["stage"] = "complete"
+        except BaseException as exc:
+            primary = exc
+            row.update(stage="failed", error=error_info(exc))
+        finally:
+            try:
+                torch.cuda.synchronize(0)
+                row["cuda_synchronized_elapsed_seconds"] = clock() - call_started
+                if CORE is not None:
+                    row["resources_after"] = CORE.resource_snapshot(torch)
+                checkpoint()
+            except BaseException as exc:
+                row["secondary_errors"].append(error_info(exc))
+                if primary is None:
+                    primary = exc
+                else:
+                    primary.add_note("Warmup fence/evidence also failed: " + repr(exc))
+        if primary is not None:
+            raise primary
+        return result
+
+    primary = None
+    try:
+        runtime.probabilities = audited
+        report.update(stage="running", publisher_warmup_invocations=1)
+        checkpoint()
+        publisher_seconds = runtime.warmup(lengths=WARM_LENGTHS, images=False)
+        report["publisher_reported_seconds"] = evidence_value(publisher_seconds)
+        require(
+            type(publisher_seconds) in (int, float)
+            and math.isfinite(publisher_seconds)
+            and publisher_seconds >= 0,
+            "Invalid publisher warmup elapsed time",
+        )
+        require(
+            all(
+                report[key] == 48
+                for key in (
+                    "attempted_probability_calls",
+                    "entered_probability_calls",
+                    "completed_probability_calls",
+                    "validated_probability_calls",
+                )
+            )
+            and report["synthetic_sequence_rows"] == 216
+            and report["synthetic_input_tokens"] == 96544,
+            "Incomplete publisher text48 warmup",
+        )
+        report["stage"] = "complete"
+    except BaseException as exc:
+        primary = exc
+        report.update(stage="failed", error=error_info(exc))
+    finally:
+        try:
+            if owned:
+                runtime.probabilities = previous
+            else:
+                del runtime.probabilities
+        except BaseException as exc:
+            report["secondary_errors"].append(error_info(exc))
+            if primary is None:
+                primary = exc
+            else:
+                primary.add_note("Publisher method restoration also failed: " + repr(exc))
+        try:
+            checkpoint()
+        except BaseException as exc:
+            if primary is None:
+                primary = exc
+            else:
+                primary.add_note("Final warmup evidence also failed: " + repr(exc))
+    if primary is not None:
+        raise primary
+    return state["warmup"]
+
+
 class DeadlineBackend:
     """Pass the outer timer through the legacy adapter's ordinary backend call."""
 
-    def __init__(self, backend, check):
-        self.backend, self.check = backend, check
+    def __init__(self, backend, check, counts=None):
+        self.backend, self.check, self.counts = backend, check, counts
 
     def __getattr__(self, name):
         return getattr(self.backend, name)
@@ -175,6 +405,8 @@ class DeadlineBackend:
             check()
 
         check()
+        if self.counts is not None:
+            self.counts["backend_predict_entries"] += 1
         result = self.backend.predict(request, deadline=check, evidence_sink=event)
         check()
         return result
@@ -191,6 +423,8 @@ def process_request(
     model,
     nonce,
     gpu_uuid,
+    startup=None,
+    started=None,
     clock=time.monotonic,
 ):
     """Run one unchanged native request, retaining raw output even after timeout.
@@ -199,7 +433,8 @@ def process_request(
     replace persist(). Every failure closes the campaign; late converted JSON
     remains evidence and is never offered as an HTTP response.
     """
-    started, remaining, primary = clock(), None, None
+    started = clock() if started is None else started
+    remaining, primary = None, None
     output = Path(output)
     row = {
         "profile": PROFILE,
@@ -222,12 +457,15 @@ def process_request(
         "task_score": None,
         "wire_body_utf8": None,
     }
+    if startup is not None:
+        row.update(profile=WARM_PROFILE, startup=validate_startup(startup))
     directory = output / "requests"
     path = directory / "invalid-request.json"
     sink_errors = []
     previous_sink = getattr(adapter, "evidence_sink", None)
     previous_backend = getattr(adapter, "backend", None)
     sink_installed = backend_installed = False
+    native_restorations = []
 
     def checkpoint():
         row["journal_path"] = str(path)
@@ -326,7 +564,36 @@ def process_request(
         adapter.evidence_sink = event
         sink_installed = True
         if previous_backend is not None:
-            adapter.backend = DeadlineBackend(previous_backend, check)
+            counts = None
+            if startup is not None:
+                counts = {
+                    "backend_predict_entries": 0,
+                    "system_one_entries": 0,
+                    "probabilities_entries": 0,
+                    "sequence_rows": 0,
+                    "input_tokens": 0,
+                    "scope": "actual publisher API entries; not GPU kernel launch counts",
+                }
+                row["task_native_calls"] = counts
+
+                def count_method(target, name, field):
+                    original = getattr(target, name)
+                    owned, previous = name in target.__dict__, target.__dict__.get(name)
+
+                    def counted(*args, **kwargs):
+                        counts[field] += 1
+                        if name == "probabilities":
+                            sequences = args[0] if args else kwargs["sequences"]
+                            counts["sequence_rows"] += len(sequences)
+                            counts["input_tokens"] += sum(map(len, sequences))
+                        return original(*args, **kwargs)
+
+                    setattr(target, name, counted)
+                    native_restorations.append((target, name, owned, previous))
+
+                count_method(previous_backend.model, "system_one", "system_one_entries")
+                count_method(previous_backend.runtime, "probabilities", "probabilities_entries")
+            adapter.backend = DeadlineBackend(previous_backend, check, counts)
             backend_installed = True
         row["stage"] = "native_predict"
         checkpoint()
@@ -349,6 +616,14 @@ def process_request(
                 row[name] = value
                 raw_from(value, overwrite=name == "decision3_provider_evidence")
     finally:
+        for target, name, owned, previous in reversed(native_restorations):
+            try:
+                if owned:
+                    setattr(target, name, previous)
+                else:
+                    delattr(target, name)
+            except BaseException as exc:
+                secondary(exc, "restore_native_counter_method")
         if sink_installed:
             try:
                 adapter.evidence_sink = previous_sink
@@ -524,7 +799,15 @@ def initialize(config, state, output):
         and sys.dont_write_bytecode,
         "Dedicated Decision3 Python3.13 -B -s worker required",
     )
+    startup = validate_startup(config.get("startup"))
+    initialization_started = time.monotonic() if startup is not None else None
+    if startup is not None:
+        state["startup_timing"] = {}
     identities = authenticate_sources(config["source_manifest"])
+    if startup is not None:
+        state["startup_timing"]["initial_source_authentication_seconds"] = (
+            time.monotonic() - initialization_started
+        )
     name = config["model"]
     require(name in CORE.MODEL_ORDER and config["alias"] == name, "Fixed Decision3 alias required")
     identity = identities[name]
@@ -532,7 +815,12 @@ def initialize(config, state, output):
     state["_identity"], state["_gates"] = identity, gates
     state["initial_resources"] = CORE.resource_snapshot()
     gates.check("before-input-and-framework")
+    cache_started = time.monotonic() if startup is not None else None
     state["cache_before"] = CORE.authenticate_cache(name, identity, output, gates, "initial")
+    if startup is not None:
+        state["startup_timing"]["initial_cache_authentication_seconds"] = (
+            time.monotonic() - cache_started
+        )
     # Generated publisher module copies are runtime cache, never raw evidence.
     # Keep them fresh per owned arm outside the core's2048-file evidence tree.
     modules = ROOT / "artifacts/jev-d3-browser-module-cache" / config["nonce"] / name
@@ -595,6 +883,11 @@ def initialize(config, state, output):
     }
     state["stage"] = "model_loading"
     persist(output / "receipt.json", public_state(state))
+    load_started = time.monotonic() if startup is not None else None
+    if startup is not None:
+        state["startup_timing"]["before_model_constructor_seconds"] = (
+            load_started - initialization_started
+        )
     backend = Decision3Backend(
         decision3_spec(name, device="cuda:0"),
         expected_boot_id=config["expected_boot_id"],
@@ -603,6 +896,8 @@ def initialize(config, state, output):
     # Keep an owned backend available to finally even if geometry checks fail.
     state["_backend"] = backend
     state["_torch"] = torch
+    if startup is not None:
+        state["startup_timing"]["model_constructor_seconds"] = time.monotonic() - load_started
     runtime, width = backend.runtime, identity["readout_tensor_bytes"] // (255 * 4)
     require(
         all(
@@ -640,6 +935,61 @@ def initialize(config, state, output):
         "packages": state["packages"],
     }
     state["resources_after_load"] = CORE.resource_snapshot(torch)
+    startup = validate_startup(config.get("startup"))
+    if startup is not None:
+        warm_started = time.monotonic()
+        state["stage"] = "publisher_warmup"
+        persist(output / "receipt.json", public_state(state))
+        publisher_warmup(
+            runtime,
+            torch,
+            gates,
+            output,
+            state,
+            config["expected_gpu_uuid"],
+            state["cache_before"]["files"]["d3_runtime.py"],
+        )
+        state["startup_timing"]["warmup_instrumented_seconds"] = time.monotonic() - warm_started
+        post_started = time.monotonic()
+        authenticate_sources(config["source_manifest"])
+        state["cache_post_warmup"] = CORE.authenticate_cache(
+            name, identity, output, gates, "post-warmup"
+        )
+        require(
+            state["cache_post_warmup"] == state["cache_before"],
+            "Post-warmup complete cache changed",
+        )
+        require(
+            all(
+                p.device == torch.device("cuda:0") and p.dtype == torch.bfloat16
+                for p in runtime.backbone.parameters()
+            )
+            and runtime.readout.device == torch.device("cuda:0")
+            and runtime.readout.dtype == torch.float32
+            and list(runtime.readout.shape) == [255, width]
+            and sum(p.numel() for p in runtime.backbone.parameters()) + runtime.readout.numel()
+            == identity["loaded_parameters"]
+            and runtime.provenance() == provenance
+            and package_versions() == state["packages"],
+            "Post-warmup geometry/provenance/package version differs",
+        )
+        torch.cuda.synchronize(0)
+        state["resources_after_warmup"] = CORE.resource_snapshot(torch)
+        require(
+            same_uuid(state["resources_after_warmup"]["cuda"]["uuid"], config["expected_gpu_uuid"]),
+            "Post-warmup GPU differs",
+        )
+        state["post_warmup_checks"] = {
+            "source_manifest_sha256": hashlib.sha256(encode(config["source_manifest"])).hexdigest(),
+            "readout_shape": list(runtime.readout.shape),
+            "loaded_parameters": identity["loaded_parameters"],
+            "backbone_dtype": "bfloat16",
+            "readout_dtype": "float32",
+            "device": "cuda:0",
+            "packages": state["packages"],
+            "provenance": provenance,
+        }
+        state["startup_timing"]["postwarm_authentication_seconds"] = time.monotonic() - post_started
     wire = load_file("jev_decision3_browser_named_wire", WIRE_PATH)
     adapter = JevDecision3NativeAdapter(backend, model_identity=config["alias"])
     return adapter, wire, torch, gates, identity, blocked
@@ -693,6 +1043,14 @@ def run(config, control):
         "task_score": None,
         "final_resources": None,
     }
+    startup = validate_startup(config.get("startup"))
+    if startup is not None:
+        state.update(
+            profile=WARM_PROFILE,
+            startup=startup,
+            browser_envelopes_seen=0,
+            publisher_warmup_invocations=0,
+        )
     started, primary, adapter, torch, identity, blocked = (
         time.monotonic(),
         None,
@@ -724,31 +1082,64 @@ def run(config, control):
     try:
         persist(output / "receipt.json", state)
         adapter, wire, torch, gates, identity, blocked = initialize(config, state, output)
+        if startup is not None:
+            state["startup_timing"]["total_worker_to_ready_seconds"] = time.monotonic() - started
         state.update(stage="ready", success=True)
         persist(output / "receipt.json", public_state(state))
-        send(
-            control,
-            {
-                "event": "ready",
-                "model": config["model"],
-                "alias": config["alias"],
-                "nonce": config["nonce"],
-                "gpu_uuid": config["expected_gpu_uuid"],
-                "pid": os.getpid(),
-                "resources": state["resources_after_load"],
-                "runtime": state["runtime"],
-            },
-        )
+        ready = {
+            "event": "ready",
+            "model": config["model"],
+            "alias": config["alias"],
+            "nonce": config["nonce"],
+            "gpu_uuid": config["expected_gpu_uuid"],
+            "pid": os.getpid(),
+            "resources": state["resources_after_load"],
+            "runtime": state["runtime"],
+        }
+        if startup is not None:
+            ready.update(
+                {
+                    key: copy.deepcopy(state[key])
+                    for key in (
+                        "startup",
+                        "warmup",
+                        "warmup_calls",
+                        "publisher_warmup_invocations",
+                        "cache_before",
+                        "cache_post_warmup",
+                        "post_warmup_checks",
+                        "startup_timing",
+                    )
+                }
+            )
+        if startup is not None:
+            ready["resources_after_load"] = state["resources_after_load"]
+            ready["resources"] = state["resources_after_warmup"]
+        send(control, ready)
         while True:
             line = sys.stdin.buffer.readline(MAX_FRAME + 1)
             require(
                 line and len(line) <= MAX_FRAME and line.endswith(b"\n"),
                 "Bounded complete RPC line required",
             )
+            received_started = time.monotonic() if startup is not None else None
             # Avoid parsing an HTTP request before process_request starts its timer.
             if len(line) <= 64 and re.fullmatch(rb'\s*\{\s*"command"\s*:\s*"close"\s*\}\s*', line):
                 state["stage"] = "closing"
                 break
+            if startup is not None:
+                state["browser_envelopes_seen"] += 1
+                if state["browser_envelopes_seen"] > startup["max_browser_envelopes"]:
+                    state["envelope_limit_refusal"] = {
+                        "limit": startup["max_browser_envelopes"],
+                        "raw_envelope_hex": line.hex(),
+                        "sha256": hashlib.sha256(line).hexdigest(),
+                    }
+                    persist(output / "receipt.json", public_state(state), terminal=True)
+                    raise ValueError(
+                        "External warm workload browser envelope limit exceeded; no inference"
+                    )
+                persist(output / "receipt.json", public_state(state))
             require(len(state["requests"]) < MAX_REQUESTS, "At most192 requests per worker")
             response = process_request(
                 line,
@@ -760,6 +1151,9 @@ def run(config, control):
                 model=config["model"],
                 nonce=config["nonce"],
                 gpu_uuid=config["expected_gpu_uuid"],
+                **(
+                    {"startup": startup, "started": received_started} if startup is not None else {}
+                ),
             )
             journal = response["journal"]
             if not response["success"]:

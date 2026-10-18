@@ -45,6 +45,8 @@ SECONDS, WATCHDOG = 20.0, 1800.0
 SOURCE_SCHEMA = "decision3-browser-source-inventory-v1"
 WEIGHT_SCHEMA = "decision3-browser-complete-weight-profile-v1"
 LIFECYCLE_SCHEMA = "decision3-browser-arm-lifecycle-v2"
+WARM_PROFILE = "decision3-browser-publisher-text48-v1"
+WARM_LENGTHS = (37, 64, 320, 333, 1000, 1024)
 
 
 class ArmRequestFailure(ValueError):
@@ -54,6 +56,148 @@ class ArmRequestFailure(ValueError):
 def require(condition, message):
     if not condition:
         raise ValueError(message)
+
+
+def startup_configuration(profile="cold", workload=None):
+    if profile == "cold":
+        require(workload is None, "Cold startup has no warm workload setting")
+        return None
+    require(profile == "publisher-text48-v1", "Unknown explicit startup profile")
+    require(workload in {"public-six", "known-four"}, "Explicit warm workload required")
+    return {
+        "schema_id": "decision3-publisher-startup-v1",
+        "profile": profile,
+        "workload": workload,
+        "max_browser_envelopes": 96 if workload == "public-six" else 64,
+        "lengths": list(WARM_LENGTHS),
+        "images": False,
+        "native_batch_size": 8,
+        "permutation_average": False,
+    }
+
+
+def validate_startup(value):
+    if value is None:
+        return None
+    require(type(value) is dict, "External startup object required")
+    expected = startup_configuration(value.get("profile"), value.get("workload"))
+    require(
+        expected is not None
+        and json.dumps(value, sort_keys=True, allow_nan=False)
+        == json.dumps(expected, sort_keys=True, allow_nan=False),
+        "Exact typed external startup configuration required",
+    )
+    return expected
+
+
+def startup_file_budget(startup):
+    startup = validate_startup(startup)
+    require(startup is not None, "Explicit warmed workload required for file admission")
+    limit = startup["max_browser_envelopes"]
+    total = 121 + 12 * limit + 332
+    require(total < 2044, "Warmed campaign exceeds unchanged evidence file floor")
+    return {
+        "fixed": 121,
+        "per_envelope_six_arms": 12,
+        "warmup_and_postauth": 332,
+        "envelopes_per_arm": limit,
+        "planned_files": total,
+        "nonterminal_count_limit": 2044,
+        "MAX_FILES": 2048,
+        "MAX_BYTES": 512 * 1024**2,
+        "actual_inventory_still_enforced": True,
+    }
+
+
+def validate_startup_evidence(
+    value, startup, *, model, source_manifest_sha256=None, weight_models=None
+):
+    """Bind authenticated worker evidence to externally selected settings/weight bytes."""
+    startup = validate_startup(startup)
+    if startup is None:
+        require(
+            "startup" not in value and "warmup" not in value,
+            "Cold endpoint received warmed evidence",
+        )
+        if "warmup_calls" in value:
+            require(
+                type(value["warmup_calls"]) is int and value["warmup_calls"] == 0,
+                "Cold warmup counter differs",
+            )
+        return
+    require(
+        value.get("startup") == startup and validate_startup(value.get("startup")) == startup,
+        "Worker startup differs from external selection",
+    )
+    warm = value.get("warmup")
+    require(
+        type(warm) is dict
+        and warm.get("stage") == "complete"
+        and warm.get("images") is False
+        and warm.get("lengths") == list(WARM_LENGTHS)
+        and warm.get("secondary_errors") == []
+        and warm.get("error") is None,
+        "Incomplete or failed actual publisher warmup",
+    )
+    expected = {
+        "publisher_warmup_invocations": 1,
+        "attempted_probability_calls": 48,
+        "entered_probability_calls": 48,
+        "completed_probability_calls": 48,
+        "validated_probability_calls": 48,
+        "synthetic_sequence_rows": 216,
+        "synthetic_input_tokens": 96544,
+    }
+    require(
+        all(type(warm.get(key)) is int and warm[key] == number for key, number in expected.items())
+        and type(value.get("warmup_calls")) is int
+        and value["warmup_calls"] == 48
+        and type(value.get("publisher_warmup_invocations")) is int
+        and value["publisher_warmup_invocations"] == 1,
+        "Actual typed warmup counts differ",
+    )
+    require(
+        type(source_manifest_sha256) is str
+        and re.fullmatch(r"[0-9a-f]{64}", source_manifest_sha256)
+        and type(weight_models) is dict
+        and model in weight_models,
+        "External startup source/weight binding required",
+    )
+    identity = literal(ROOT / "src/s1/evaluation/decision3.py", "CHECKPOINTS")[model]
+    cache, post = value.get("cache_before"), value.get("cache_post_warmup")
+    require(
+        type(cache) is dict
+        and cache == post
+        and cache.get("full_payload_sha256_authenticated") is True
+        and cache.get("revision") == identity["revision"]
+        and cache.get("manifest_sha256") == identity["manifest_sha256"]
+        and cache.get("files") == weight_models[model]["files"]
+        and warm.get("publisher_source") == weight_models[model]["files"]["d3_runtime.py"],
+        "Actual warmup checkpoint/source differs from selected closed profile",
+    )
+    checked = value.get("post_warmup_checks")
+    width = identity["readout_tensor_bytes"] // (255 * 4)
+    require(
+        type(checked) is dict
+        and checked.get("source_manifest_sha256") == source_manifest_sha256
+        and checked.get("readout_shape") == [255, width]
+        and all(type(n) is int for n in checked["readout_shape"])
+        and type(checked.get("loaded_parameters")) is int
+        and checked["loaded_parameters"] == identity["loaded_parameters"]
+        and checked.get("backbone_dtype") == "bfloat16"
+        and checked.get("readout_dtype") == "float32"
+        and checked.get("device") == "cuda:0"
+        and checked.get("packages") == value.get("runtime", {}).get("packages")
+        and checked.get("provenance") == value.get("runtime", {}).get("provenance"),
+        "Post-warmup full source/geometry/version binding differs",
+    )
+    require(
+        type(warm.get("journal_pin")) is dict
+        and type(warm["journal_pin"].get("size_bytes")) is int
+        and 0 < warm["journal_pin"]["size_bytes"] <= 16 * 1024**2
+        and re.fullmatch(r"[0-9a-f]{64}", warm["journal_pin"].get("sha256", "")),
+        "Complete raw warmup journal pin required",
+    )
 
 
 def encode(value):
@@ -276,7 +420,18 @@ def gpu_identity():
     return {"name": name, "uuid": uuid}
 
 
-def closed_worker_success(closed, *, model, nonce, pid, gpu_uuid, returncode):
+def closed_worker_success(
+    closed,
+    *,
+    model,
+    nonce,
+    pid,
+    gpu_uuid,
+    returncode,
+    startup=None,
+    source_manifest_sha256=None,
+    weight_models=None,
+):
     """Authenticate a terminal arm receipt, independently of its performance outcome."""
     require(type(closed) is dict and closed.get("event") == "closed", "Actual CLOSED required")
     receipt = closed.get("receipt")
@@ -289,7 +444,8 @@ def closed_worker_success(closed, *, model, nonce, pid, gpu_uuid, returncode):
         )
 
     require(
-        receipt.get("profile") == literal(WORKER, "PROFILE")
+        receipt.get("profile")
+        == (WARM_PROFILE if startup is not None else literal(WORKER, "PROFILE"))
         and receipt.get("model") == receipt.get("alias") == model
         and receipt.get("nonce") == nonce
         and type(receipt.get("pid")) is int
@@ -297,6 +453,21 @@ def closed_worker_success(closed, *, model, nonce, pid, gpu_uuid, returncode):
         and same_uuid(receipt.get("gpu_uuid")),
         "Final worker identity differs",
     )
+    validate_startup_evidence(
+        receipt,
+        startup,
+        model=model,
+        source_manifest_sha256=source_manifest_sha256,
+        weight_models=weight_models,
+    )
+    if startup is not None:
+        require(
+            type(receipt.get("browser_envelopes_seen")) is int
+            and receipt["browser_envelopes_seen"] <= startup["max_browser_envelopes"]
+            and type(receipt.get("requests")) is list
+            and len(receipt["requests"]) == receipt["browser_envelopes_seen"],
+            "Warm worker browser envelope accounting differs",
+        )
     require(
         receipt.get("secondary_errors") == []
         and receipt.get("network_attempts_blocked") == []
@@ -367,7 +538,7 @@ def closed_worker_success(closed, *, model, nonce, pid, gpu_uuid, returncode):
 class Session:
     """One SDK parent allocation, six ordered fresh owned model subprocesses."""
 
-    def __init__(self, run_id, manifest_blob, profile_blob, profile_sha):
+    def __init__(self, run_id, manifest_blob, profile_blob, profile_sha, startup=None):
         require(
             re.fullmatch(r"[a-z0-9][a-z0-9-]{0,47}", run_id), "Fresh bounded campaign ID required"
         )
@@ -379,6 +550,14 @@ class Session:
         self.core = self.staging.load_core()
         self.identities = self.core.authenticate_source(CORE_SHA)
         self.profile = validate_weight_profile(profile_blob, profile_sha, self.identities)
+        self.startup = validate_startup(startup)
+        if self.startup is not None:
+            self.weight_models = parse(self.profile["closed_download"]["result_json"])["models"]
+            self.startup_budget = startup_file_budget(self.startup)
+            require(
+                self.core.MAX_FILES == 2048 and self.core.MAX_BYTES == 512 * 1024**2,
+                "Unchanged core evidence bounds required",
+            )
         self.output = ordinary(self.core.OUTPUT_ROOT / ("browser-" + run_id))
         require(not self.output.exists(), "Fresh cloud browser output required")
         self.output.mkdir(parents=True)
@@ -651,6 +830,10 @@ class Session:
             "expected_gpu_uuid": self.gpu["uuid"],
             "source_manifest": self.manifest,
         }
+        startup = getattr(self, "startup", None)
+        if startup is not None:
+            config["startup"] = copy.deepcopy(startup)
+            self.forwarded_envelopes = 0
         self.core.write(arm / "config.json", config)
         self.stderr = arm / "stderr.log"
         self.marker = self.nonce + ":" + model
@@ -683,6 +866,19 @@ class Session:
                 == self.gpu["uuid"].removeprefix("GPU-").lower(),
                 "Actual worker identity/UUID readiness differs",
             )
+            validate_startup_evidence(
+                ready,
+                startup,
+                model=model,
+                **(
+                    {
+                        "source_manifest_sha256": hashlib.sha256(encode(self.manifest)).hexdigest(),
+                        "weight_models": self.weight_models,
+                    }
+                    if startup is not None
+                    else {}
+                ),
+            )
             self.active = model
             return {
                 "success": True,
@@ -714,6 +910,12 @@ class Session:
         digest = hashlib.sha256(body).hexdigest()
         self.last_control = None
         try:
+            if getattr(self, "startup", None) is not None:
+                require(
+                    self.forwarded_envelopes < self.startup["max_browser_envelopes"],
+                    "External warm envelope budget exhausted; no worker inference",
+                )
+                self.forwarded_envelopes += 1
             envelope = {
                 "request_id": request_id,
                 "payload_json": body.decode("utf-8"),
@@ -738,6 +940,11 @@ class Session:
                 == self.gpu["uuid"].removeprefix("GPU-").lower(),
                 "Owned response binding differs",
             )
+            if getattr(self, "startup", None) is not None:
+                require(
+                    result.get("journal", {}).get("startup") == self.startup,
+                    "Worker response startup differs from external selection",
+                )
             self.check(nonce)
             if (
                 not result["success"]
@@ -823,7 +1030,21 @@ class Session:
                 pid=pid,
                 gpu_uuid=self.gpu["uuid"],
                 returncode=getattr(self, "last_returncode", None),
+                **(
+                    {
+                        "startup": self.startup,
+                        "source_manifest_sha256": hashlib.sha256(encode(self.manifest)).hexdigest(),
+                        "weight_models": self.weight_models,
+                    }
+                    if getattr(self, "startup", None) is not None
+                    else {}
+                ),
             )
+            if getattr(self, "startup", None) is not None:
+                require(
+                    closed["receipt"]["browser_envelopes_seen"] == self.forwarded_envelopes,
+                    "Worker envelope count differs from actual SDK forwards",
+                )
         except BaseException as exc:
             self.halted = self.blocked = True
             errors.append(
@@ -891,6 +1112,8 @@ class Session:
             "optimizer_updates": 0,
             "task_score": None,
         }
+        if getattr(self, "startup", None) is not None:
+            receipt.update(startup=self.startup, startup_file_budget=self.startup_budget)
         self.record("campaign-receipt.json", receipt)
         if confirmed:
             self.record(
@@ -908,7 +1131,17 @@ class Session:
 class Gateway:
     """Local handler-to-durable-evidence timing; client RTT remains external."""
 
-    def __init__(self, rpc, output, helper, *, clock=time.monotonic):
+    def __init__(
+        self,
+        rpc,
+        output,
+        helper,
+        *,
+        clock=time.monotonic,
+        startup=None,
+        source_manifest_sha256=None,
+        weight_models=None,
+    ):
         self.rpc, self.output, self.helper, self.clock = (
             rpc,
             Path(output),
@@ -918,6 +1151,21 @@ class Gateway:
         self.lock, self.blocked, self.active, self.nonce = threading.Lock(), False, None, None
         self.halted, self.gpu, self.pid = False, None, None
         self.counter, self.counter_lock = 0, threading.Lock()
+        self.startup = validate_startup(startup)
+        self.source_manifest_sha256, self.weight_models = (
+            source_manifest_sha256,
+            copy.deepcopy(weight_models),
+        )
+        self.arm_forwarded_envelopes = 0
+        if self.startup is not None:
+            startup_file_budget(self.startup)
+            require(
+                type(source_manifest_sha256) is str
+                and re.fullmatch(r"[0-9a-f]{64}", source_manifest_sha256)
+                and type(weight_models) is dict
+                and set(weight_models) == set(MODELS),
+                "External warm source/weight binding required",
+            )
 
     def accept_begin(self, reply):
         """Bind the actual ready allocation; this cannot clear an earlier halt."""
@@ -947,8 +1195,16 @@ class Gateway:
                 and ready.get("gpu_uuid") == reply["gpu"]["uuid"],
                 "Actual ready worker binding differs",
             )
+            validate_startup_evidence(
+                ready,
+                self.startup,
+                model=reply["model"],
+                source_manifest_sha256=self.source_manifest_sha256,
+                weight_models=self.weight_models,
+            )
             self.nonce, self.active, self.gpu = reply["nonce"], reply["model"], reply["gpu"]
             self.pid = ready["pid"]
+            self.arm_forwarded_envelopes = 0
         except BaseException:
             self.halted = self.blocked = True
             raise
@@ -975,7 +1231,16 @@ class Gateway:
                 pid=self.pid,
                 gpu_uuid=self.gpu["uuid"],
                 returncode=reply.get("returncode"),
+                startup=self.startup,
+                source_manifest_sha256=self.source_manifest_sha256,
+                weight_models=self.weight_models,
             )
+            if self.startup is not None:
+                require(
+                    reply["worker"]["receipt"]["browser_envelopes_seen"]
+                    == self.arm_forwarded_envelopes,
+                    "Closed worker envelope count differs from gateway forwards",
+                )
             require(
                 not reply["success"] or worker_success,
                 "Failed worker outcome cannot become success",
@@ -1079,6 +1344,12 @@ class Gateway:
             "timing_scope": "local handler entry through observable queue, RPC, conversion, body encoding and durable evidence; excludes socket accept queue, response delivery, client RTT and upstream retries",
             "gateway_action_authorized": False,
         }
+        if self.startup is not None:
+            row.update(
+                startup=self.startup,
+                gateway_policy_ingress_count=self.counter,
+                arm_forwarded_envelopes=self.arm_forwarded_envelopes,
+            )
         status, response = 503, {"detail": "Decision service unavailable; no action"}
 
         def bind_delivery(status, response, *, no_action_snapshot=None):
@@ -1144,6 +1415,13 @@ class Gateway:
                 remaining = SECONDS - (self.clock() - started)
                 if remaining <= 0:
                     raise ArmRequestFailure("Local decode/queue deadline exceeded")
+                if self.startup is not None:
+                    if self.arm_forwarded_envelopes >= self.startup["max_browser_envelopes"]:
+                        raise ArmRequestFailure(
+                            "External warm browser envelope budget exhausted; no action"
+                        )
+                    self.arm_forwarded_envelopes += 1
+                    row["arm_forwarded_envelopes"] = self.arm_forwarded_envelopes
                 result = self.rpc(self.nonce, request_id, body, remaining)
                 row["rpc"] = result
                 require(
@@ -1153,6 +1431,30 @@ class Gateway:
                     and result["model"] == self.active,
                     "Authenticated RPC response identity differs",
                 )
+                if self.startup is not None:
+                    require(
+                        result.get("journal", {}).get("startup") == self.startup,
+                        "RPC startup differs from external selection",
+                    )
+                    if result.get("success") is True:
+                        counts = result["journal"].get("task_native_calls")
+                        require(
+                            type(counts) is dict
+                            and all(
+                                type(counts.get(key)) is int and counts[key] >= 1
+                                for key in (
+                                    "backend_predict_entries",
+                                    "system_one_entries",
+                                    "probabilities_entries",
+                                    "sequence_rows",
+                                    "input_tokens",
+                                )
+                            )
+                            and counts["backend_predict_entries"]
+                            == counts["system_one_entries"]
+                            == 1,
+                            "Successful warm request lacks actual typed native call accounting",
+                        )
                 if (
                     result.get("success") is False
                     and result.get("campaign_stop") is True
@@ -1346,8 +1648,11 @@ class PersistentWorker:
         self.lock = threading.RLock()
 
     @modal.method()
-    def begin(self, run_id, model, manifest_blob, profile_blob, profile_sha, nonce=None):
+    def begin(
+        self, run_id, model, manifest_blob, profile_blob, profile_sha, nonce=None, startup=None
+    ):
         with self.lock:
+            startup = validate_startup(startup)
             require(
                 self.initialization_failure is None,
                 "Failed allocation initialization cannot resume",
@@ -1358,7 +1663,13 @@ class PersistentWorker:
                     "Restarted allocation cannot continue a campaign",
                 )
                 try:
-                    self.session = Session(run_id, manifest_blob, profile_blob, profile_sha)
+                    self.session = Session(
+                        run_id,
+                        manifest_blob,
+                        profile_blob,
+                        profile_sha,
+                        **({"startup": startup} if startup is not None else {}),
+                    )
                 except BaseException as primary:
                     self.initialization_failure = getattr(
                         primary,
@@ -1381,6 +1692,10 @@ class PersistentWorker:
                             "Initialization failure volume commit also failed: " + repr(secondary)
                         )
                     raise
+            require(
+                getattr(self.session, "startup", None) == startup,
+                "Persistent startup selection changed",
+            )
             return self.session.begin(model, nonce)
 
     @modal.method()
@@ -1424,8 +1739,11 @@ def main(
     token_file: str,
     run_id: str,
     run: bool = False,
+    startup_profile: str = "cold",
+    workload: str = "",
 ):
     require(run, "Explicit --run after source/inventory/weight-profile review required")
+    startup = startup_configuration(startup_profile, workload or None)
     destination = ordinary(output)
     require(not destination.exists(), "Fresh local campaign output required")
     manifest_blob = ordinary(manifest).read_bytes()
@@ -1435,6 +1753,15 @@ def main(
         hashlib.sha256(profile_blob).hexdigest() == weight_profile_sha256,
         "Externally selected actual complete weight profile required",
     )
+    warm_binding = {}
+    if startup is not None:
+        identities = literal(ROOT / "src/s1/evaluation/decision3.py", "CHECKPOINTS")
+        selected_profile = validate_weight_profile(profile_blob, weight_profile_sha256, identities)
+        warm_binding = {
+            "startup": startup,
+            "source_manifest_sha256": hashlib.sha256(manifest_blob).hexdigest(),
+            "weight_models": parse(selected_profile["closed_download"]["result_json"])["models"],
+        }
     helper_url = urlsplit(helper_endpoint)
     require(
         helper_url.scheme == "http"
@@ -1457,7 +1784,9 @@ def main(
     destination.mkdir(parents=True)
     helper = {"endpoint": helper_endpoint, "qualification_sha256": helper_qualification_sha256}
     remote = PersistentWorker()
-    gateway = Gateway(lambda *args: remote.predict.remote(*args), destination, helper)
+    gateway = Gateway(
+        lambda *args: remote.predict.remote(*args), destination, helper, **warm_binding
+    )
     server = http_server(gateway, token)
     sequence, closed, begin_attempted = 1, False, False
     primary, thread, thread_started = None, None, False
@@ -1473,6 +1802,11 @@ def main(
                 "helper": helper,
                 "lifecycle_schema_id": LIFECYCLE_SCHEMA,
                 "control": "Write control-0001.json, control-0002.json... with action begin/model, end, or close. No policy request changes an arm.",
+                **(
+                    {"startup": startup, "startup_file_budget": startup_file_budget(startup)}
+                    if startup is not None
+                    else {}
+                ),
             },
         )
         while not closed:
@@ -1496,6 +1830,7 @@ def main(
                         profile_blob,
                         weight_profile_sha256,
                         gateway.nonce,
+                        **({"startup": startup} if startup is not None else {}),
                     )
                     gateway.accept_begin(reply)
                 elif action == "end":

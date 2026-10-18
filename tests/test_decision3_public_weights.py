@@ -258,6 +258,14 @@ def test_profile_preserves_original_closed_export_bytes_and_refuses_failed_cpu(t
         assert (
             profile["closed_download"]["result_json"].encode() == originals["download-result.json"]
         )
+        # Warmed serving selects settings separately; it cannot rewrite the
+        # original CPU closure or require the new serving source in old bytes.
+        for workload in ("public-six", "known-four"):
+            setting = SERVICE.startup_configuration("publisher-text48-v1", workload)
+            assert setting["max_browser_envelopes"] in (64, 96)
+            assert SERVICE.validate_weight_profile(blob, sha, identities) == profile
+            assert hashlib.sha256(blob).hexdigest() == sha
+            assert "startup" not in SERVICE.parse(blob)
 
 
 def test_sdk_download_is_cpu_only_named_mounts_without_input_data_or_public_endpoint():
