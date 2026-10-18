@@ -1,0 +1,87 @@
+{
+  "D3_manifest": {
+    "path": "artifacts/jev-runtime/decision3-modal-public-replay-20261018-01/named-upload-manifest-draft-04.json",
+    "sha256": "94f9108a7d80e862f274f394ddae08ba0121054ddf19ed22bc862e278508a3f8",
+    "size_bytes": 258839
+  },
+  "D3_manifest_other716rows_unchanged": true,
+  "actual_attempt": {
+    "CLI_exit_code": 1,
+    "CPU_floor_bytes": 174620692480,
+    "MemTotal_bytes": 851628625920,
+    "app_id": "ap-dviY6Pshxlzj31i4S2f6Nh",
+    "cause": "legacy v1 memory mount was not read; unknown observation correctly refused",
+    "closed_export": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-05/download/export-index.json",
+      "sha256": "bd492ced2bcf7fc0b7870c6afb01fcb7c8769d6713df87824c793fbe8cee5ce2",
+      "size_bytes": 775
+    },
+    "failure": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-05/download/child-failure.json",
+      "sha256": "e8e7b6badeacb9e721d94a19b718ce1ff84025493ee0337fffc86451dc98646d",
+      "size_bytes": 1216
+    },
+    "failure_stage": "remote CPU gate before any HF or model load",
+    "owned_exit_confirmed": true,
+    "reserve_bytes": 170325725184,
+    "resource_gate": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-05/download/preflight-gates.jsonl",
+      "sha256": "ccbdcf279f29b47522a9102a5a40ce82903c530c8d49618200bae97a59859fa2",
+      "size_bytes": 1293
+    },
+    "successful_integration": "ordinary output staging, closed SHA export and local receipt retrieval completed; training did not start"
+  },
+  "date": "2026-10-18",
+  "fix": {
+    "GPU": "H200",
+    "GPU_count": 1,
+    "applies_to": "Gemma and Decision3 CPU/GPU workers",
+    "host_memory_request_MiB": 524288,
+    "reason": "request enough host RAM for the observed full conservative floors instead of relying on burst capacity; all actual gates still apply",
+    "training_steps": 120,
+    "unchanged": "v2 discovery, ordinary/staging rules, full admission formula, zero resident/swap credit, model code/source90/91, all training data and recipe",
+    "v1": "memory controller membership plus mount-root mapping; read actual limit_in_bytes/usage_in_bytes and every visible ancestor, retain raw paths/values/version"
+  },
+  "independent_review": {
+    "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/independent-cgroup-v1-review-01.json",
+    "sha256": "19df5193655c81b94e173f95fd41ad2dd77806ce0e8c4715a13c67dd7320570d",
+    "size_bytes": 1388
+  },
+  "references": [
+    "https://docs.kernel.org/admin-guide/cgroup-v1/memory.html",
+    "https://modal.com/docs/guide/resources"
+  ],
+  "root_semantic_proof": "Gemma entire AST unchanged after restoring only cgroup_memory and two allocation literals; Decision3 bytes differ only by two allocation literals and the expected test value",
+  "scope": "No successful fit or model/browser score yet. This corrects real platform integration and increases provisioning without weakening gates.",
+  "sources": [
+    {
+      "path": "apps/modal/public_action_fit.py",
+      "sha256": "57b00ab0911ce06db7144220c22b8d5837900a0e6b5a93b04428e40085cc7c6b",
+      "size_bytes": 51798
+    },
+    {
+      "path": "tests/test_public_action_modal_fit.py",
+      "sha256": "a9665d049082ce645a52c45b62e9333682cfdb46d895df005390d70ef06eb219",
+      "size_bytes": 28599
+    },
+    {
+      "path": "apps/modal/decision3_public_replay.py",
+      "sha256": "eec7d5f1ae9ede3304d705e4dbb6c5271ad4bb0a6b5b09af3f0bbd9c5cc34979",
+      "size_bytes": 50565
+    },
+    {
+      "path": "tests/test_decision3_modal_replay.py",
+      "sha256": "ce2b8e8739bfd6efcc36216078629d79f5cc77dbf346067ba82c64318667acbc",
+      "size_bytes": 21028
+    }
+  ],
+  "status": "actual_v1_refusal_corrected_and_full_resource_floors_provisioned",
+  "validation": {
+    "D3_post_allocation_root_targeted_test_passed": 1,
+    "D3_unchanged_H03_root_full_suite_passed": 15,
+    "D3_writer_full_suite_passed": 15,
+    "Gemma_root_tests_passed": 39,
+    "elapsed_seconds": 1.22,
+    "ruff_check_and_format": "passed"
+  }
+}

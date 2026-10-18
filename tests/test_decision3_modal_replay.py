@@ -152,7 +152,7 @@ def test_exact_resource_and_named_upload_declarations_are_not_imported():
         configuration = {item.arg: item.value for item in function.decorator_list[0].keywords}
         for key, value in {
             "cpu": 2,
-            "memory": 262144,
+            "memory": 524288,
             "ephemeral_disk": 524288,
             "max_containers": 1,
             "retries": 0,

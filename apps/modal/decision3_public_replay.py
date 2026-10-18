@@ -1193,7 +1193,7 @@ image = (
 @app.function(
     image=image,
     cpu=2,
-    memory=262144,
+    memory=524288,
     ephemeral_disk=524288,
     timeout=14400,
     max_containers=1,
@@ -1214,7 +1214,7 @@ def download(run_id: str, manifest_sha256: str):
     image=image,
     gpu="H200",
     cpu=2,
-    memory=262144,
+    memory=524288,
     ephemeral_disk=524288,
     timeout=25200,
     max_containers=1,

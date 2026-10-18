@@ -331,12 +331,31 @@ def complete_cgroup(group):
 
 
 def cgroup_memory(memberships, mountinfo):
-    """Read current unified membership and every visible controlling ancestor."""
-    members = [row.split(":", 2)[2] for row in memberships.splitlines() if row.startswith("0::")]
+    """Read v1 memory or v2 membership and every visible controlling ancestor."""
+    members = {1: [], 2: []}
+    for line in memberships.splitlines():
+        fields = line.split(":", 2)
+        if len(fields) == 3:
+            if fields[0] == "0" and fields[1] == "":
+                members[2].append(fields[2])
+            elif "memory" in fields[1].split(","):
+                members[1].append(fields[2])
     observations, seen = [], set()
     for line in mountinfo.splitlines():
         before, separator, after = line.partition(" - ")
-        if not separator or after.split()[0] != "cgroup2":
+        mount_fields = after.split()
+        if not separator or len(mount_fields) < 3:
+            continue
+        if mount_fields[0] == "cgroup2":
+            version = 2
+            files = {"memory.max": "memory.max", "memory.current": "memory.current"}
+        elif mount_fields[0] == "cgroup" and "memory" in mount_fields[2].split(","):
+            version = 1
+            files = {
+                "memory.max": "memory.limit_in_bytes",
+                "memory.current": "memory.usage_in_bytes",
+            }
+        else:
             continue
         fields = before.split()
 
@@ -344,32 +363,43 @@ def cgroup_memory(memberships, mountinfo):
             return re.sub(r"\\([0-7]{3})", lambda match: chr(int(match[1], 8)), value)
 
         mount_root, mount = Path(unescape(fields[3])), Path(unescape(fields[4]))
-        for member in members:
+        for member in members[version]:
             member = Path(member)
             if not member.is_absolute() or ".." in member.parts:
-                observations.append({"error": "invalid unified membership"})
+                observations.append({"version": version, "error": "invalid memory membership"})
                 continue
             candidates = [mount / str(member).lstrip("/")]
             if member.is_relative_to(mount_root):
                 candidates.insert(0, mount / member.relative_to(mount_root))
             directory = next((path for path in candidates if path.is_dir()), None)
             if directory is None:
-                observations.append({"error": "unresolved unified membership"})
+                observations.append({"version": version, "error": "unresolved memory membership"})
                 continue
             while directory.is_relative_to(mount):
-                if directory not in seen:
-                    seen.add(directory)
-                    # Linux's actual hierarchy root has no memory.max. A
-                    # subtree/namespace mount root is still a controlling group.
+                if (version, directory) not in seen:
+                    seen.add((version, directory))
+                    # Only the real v2 hierarchy root lacks memory.max; a
+                    # v1 or subtree/namespace root is still controlling.
                     global_root = directory == mount and mount_root == Path("/")
-                    if not global_root or any(
-                        (directory / name).exists() for name in ("memory.max", "memory.current")
+                    if (
+                        version == 1
+                        or not global_root
+                        or any((directory / name).exists() for name in files.values())
                     ):
-                        row = {"path": str(directory), "memory": {}}
+                        row = {
+                            "path": str(directory),
+                            "version": version,
+                            "paths": {key: str(directory / name) for key, name in files.items()},
+                            "raw": {},
+                            "memory": {},
+                        }
                         try:
-                            for name in ("memory.max", "memory.current"):
+                            for key, name in files.items():
                                 raw = (directory / name).read_text().strip()
-                                row["memory"][name] = None if raw == "max" else int(raw)
+                                row["raw"][name] = raw
+                                row["memory"][key] = (
+                                    None if version == 2 and raw == "max" else int(raw)
+                                )
                         except (OSError, ValueError) as exc:
                             row["error"] = type(exc).__name__
                         observations.append(row)
@@ -1192,7 +1222,7 @@ def owned(mode, run_id, manifest_sha256=None):
 @app.function(
     image=image,
     cpu=2,
-    memory=163840,
+    memory=524288,
     ephemeral_disk=524288,
     timeout=7800,
     max_containers=1,
@@ -1209,7 +1239,7 @@ def download(run_id: str):
     image=image,
     gpu="H200",
     cpu=2,
-    memory=163840,
+    memory=524288,
     ephemeral_disk=524288,
     timeout=7800,
     max_containers=1,

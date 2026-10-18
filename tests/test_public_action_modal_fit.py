@@ -224,6 +224,122 @@ def test_cgroup_namespace_mount_root_is_a_controlling_group(tmp_path, member):
 
 
 @pytest.mark.parametrize(
+    "mode",
+    [
+        "namespace_current",
+        "finite_ancestor",
+        "partial",
+        "negative_usage",
+        "nonmemory",
+        "unlimited_integer",
+    ],
+)
+def test_v1_memory_namespace_ancestors_and_incomplete_observations(tmp_path, mode):
+    namespace, _ = extracted_helpers(tmp_path)
+    mount = tmp_path / "v1-memory"
+    mount.mkdir()
+    leaf = mount / "job" if mode == "finite_ancestor" else mount
+    leaf.mkdir(exist_ok=True)
+    limit = 9223372036854771712 if mode == "unlimited_integer" else 512 * GIB
+    for directory in {mount, leaf}:
+        (directory / "memory.limit_in_bytes").write_text(str(limit))
+        (directory / "memory.usage_in_bytes").write_text(str(GIB))
+    if mode == "finite_ancestor":
+        (mount / "memory.usage_in_bytes").write_text(str(350 * GIB))
+    elif mode == "partial":
+        (mount / "memory.usage_in_bytes").unlink()
+    elif mode == "negative_usage":
+        (mount / "memory.usage_in_bytes").write_text("-1")
+    member = "/ta-real/job" if mode == "finite_ancestor" else "/ta-real"
+    controllers = "cpuacct" if mode == "nonmemory" else "memory"
+    memberships = "7:pids:" + member + "\n6:" + controllers + ":" + member + "\n"
+    mountinfo = f"31 25 0:15 /ta-real {mount} rw - cgroup none rw,{controllers}\n"
+    cpu = tmp_path / "v1-cpu"
+    cpu.mkdir()
+    mountinfo += f"32 25 0:16 /ta-real {cpu} rw - cgroup none rw,cpu\n"
+    memberships += "1:cpu:" + member + "\n"
+    proc = tmp_path / "proc"
+    (proc / "self").mkdir(parents=True)
+    (proc / "sys/kernel/random").mkdir(parents=True)
+    (proc / "meminfo").write_text("MemTotal: 831668580 kB\nMemAvailable: 831599080 kB\n")
+    (proc / "sys/kernel/random/boot_id").write_text("v1-boot")
+    (proc / "self/cgroup").write_text(memberships)
+    (proc / "self/mountinfo").write_text(mountinfo)
+
+    def fake_path(value, *parts):
+        path = Path(value, *parts)
+        return proc / path.relative_to("/proc") if path.is_relative_to("/proc") else path
+
+    namespace["Path"] = fake_path
+    snapshot = namespace["host"]()
+    observed = snapshot["cgroup_ancestors"]
+    if mode == "nonmemory":
+        assert observed == [] and snapshot["cgroup"] == {}
+    else:
+        assert all(row["version"] == 1 and row["path"] != str(cpu) for row in observed)
+        assert observed[-1]["path"] == str(mount)
+        assert observed[-1]["paths"] == {
+            "memory.max": str(mount / "memory.limit_in_bytes"),
+            "memory.current": str(mount / "memory.usage_in_bytes"),
+        }
+        assert observed[-1]["raw"]["memory.limit_in_bytes"] == str(limit)
+        if mode in {"partial", "negative_usage"}:
+            assert snapshot["cgroup"] == {}
+        else:
+            assert snapshot["cgroup"] == {
+                "memory.max": limit,
+                "memory.current": (350 if mode == "finite_ancestor" else 1) * GIB,
+            }
+    journal = tmp_path / "v1-gate.jsonl"
+    if mode in {"namespace_current", "unlimited_integer"}:
+        namespace["admit"](journal, "train", "v1-boot")
+    else:
+        with pytest.raises(ValueError, match="admission refused"):
+            namespace["admit"](journal, "train", "v1-boot")
+    saved = json.loads(journal.read_bytes())
+    assert saved["reserve_bytes"] == 170325725184
+    assert saved["required_bytes"] == 170325725184 + 2 * 23919549408 + 30 * GIB + 256 * 1024**2
+    assert saved["swap_or_resident_credit_bytes"] == 0
+    if mode == "finite_ancestor":
+        assert [row["path"] for row in observed] == [str(leaf), str(mount)]
+    if mode == "unlimited_integer":
+        assert type(saved["observation"]["cgroup"]["memory.max"]) is int
+        (proc / "meminfo").write_text("MemTotal: 831668580 kB\nMemAvailable: 1000 kB\n")
+        with pytest.raises(ValueError, match="admission refused"):
+            namespace["admit"](tmp_path / "host-low.jsonl", "cpu", "v1-boot")
+
+
+def test_modal_ram_request_increases_without_changing_cpu_gpu_disk_or_recipe():
+    tree = ast.parse(APP.read_bytes())
+    functions = {node.name: node for node in tree.body if isinstance(node, ast.FunctionDef)}
+    for name in ("download", "fit"):
+        decorator = functions[name].decorator_list[0]
+        options = {keyword.arg: keyword.value for keyword in decorator.keywords}
+        assert ast.literal_eval(options["memory"]) == 524288
+        assert ast.literal_eval(options["cpu"]) == 2
+        assert ast.literal_eval(options["ephemeral_disk"]) == 524288
+        if name == "fit":
+            assert ast.literal_eval(options["gpu"]) == "H200"
+    calls = [
+        node
+        for node in ast.walk(functions["fit_child"])
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "fit_public_actions"
+    ]
+    assert len(calls) == 1
+    assert {
+        keyword.arg: ast.literal_eval(keyword.value)
+        for keyword in calls[0].keywords
+        if keyword.arg in {"steps", "learning_rate", "seed"}
+    } == {
+        "steps": 120,
+        "learning_rate": 5e-5,
+        "seed": 42,
+    }
+
+
+@pytest.mark.parametrize(
     "group,accepted",
     [
         ({}, False),
