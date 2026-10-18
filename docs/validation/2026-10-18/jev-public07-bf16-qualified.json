@@ -1,0 +1,89 @@
+{
+  "schema_id": "jev_public07_bf16_technical_qualification_v1",
+  "status": "qualified_and_independently_verified",
+  "training": {
+    "completed_updates": 120,
+    "model_loads": 1,
+    "development_updates": 0,
+    "manifest_sha256": "75b17c0a6bd5c381426e5e872298c915335310d80c24768dc4a0b0f3b1a27362",
+    "receipt_sha256": "e8c9126fd925bd44ad27de09ab1a13dfe09ed23f7af13ef6989f22c574d612bc"
+  },
+  "qualifier": {
+    "path": "scripts/jev_qualify_public_actions_bf16.py",
+    "sha256": "d8cc51a8a66a26f95a0ec0f665f8ee1d95f29044ee301d02d24f1495420ee3ea",
+    "size_bytes": 155151
+  },
+  "execution": {
+    "path": "artifacts/jev-runtime/public-native-action-qualification-execution-20261018-02/execution-91.json",
+    "sha256": "5e85fa36f1f3633e0957e4feeb3983e649c78ca77b64466741ed7e1565e7c6b2",
+    "size_bytes": 14388
+  },
+  "inputs": {
+    "path": "artifacts/jev-runtime/public-native-action-local-qualification-20261018-01/prepare-02/inputs.json",
+    "sha256": "11958096e079b99034a2b74051f6fe78062ad2e81ea560b628b43f16d2ac4c26",
+    "size_bytes": 1182424
+  },
+  "external_inputs_review": {
+    "path": "artifacts/jev-runtime/public-native-action-local-qualification-20261018-01/inputs-review-02.json",
+    "sha256": "908eeab77df6b08daf2a1caeceec43ad1b303ebb3fe3856d49018cef39ee4f1b",
+    "size_bytes": 786
+  },
+  "qualification": {
+    "path": "artifacts/jev-runtime/public-native-action-local-qualification-20261018-01/qualify-02/qualification.json",
+    "sha256": "c1fea3d45a7841c410f9c9c20eba32d3794025611ded8a68eeb9422baab50125",
+    "size_bytes": 361638
+  },
+  "external_qualification_review": {
+    "path": "artifacts/jev-runtime/public-native-action-local-qualification-20261018-01/qualification-review-02.json",
+    "sha256": "553f0302b1543f1d33c3caa1bdc532d1d05f5aacb6383cdbe81ce41002c9cb4a",
+    "size_bytes": 1078
+  },
+  "verification": {
+    "path": "artifacts/jev-runtime/public-native-action-local-qualification-20261018-01/verify-02/verification.json",
+    "sha256": "7f6b54689e6c800b5b33faa3fb6bd2dd93c48d1a6800a58bb512abed5042dea8",
+    "size_bytes": 192
+  },
+  "qualification_result": {
+    "real_http_cases": 41,
+    "all_terminal_passed": true,
+    "model_loads": 1,
+    "owned_exit_confirmed": true,
+    "closed_files_verified": 2063,
+    "closed_bytes_verified": 324359071,
+    "elapsed_ms": 374112.5855999999,
+    "load_ms": 12008.323970978381,
+    "observer_errors": [],
+    "final_invariants": {
+      "all_176_exact": true,
+      "all_modules_eval": true,
+      "all_parameters_frozen": true,
+      "full_head_sha256": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+      "peft_behavior_unchanged": true,
+      "success": true
+    }
+  },
+  "scope": "Genuine native BF16 HTTP technical qualification plus independent saved-byte/source/tensor verification. No website task success is attested.",
+  "known_exposed_development_diagnostic": {
+    "agreement": 16,
+    "denominator": 22,
+    "browser_task_score": null,
+    "teacherforced": false,
+    "source": {
+      "path": "artifacts/jev-runtime/public-native-action-local-qualification-20261018-01/qualify-02/development-generation-metrics.json",
+      "sha256": "9bb8bf1ec18b1e6d7f4067d7782dfc8390ecf11c079bc0051ff2f0a4631b1506",
+      "size_bytes": 3393
+    }
+  },
+  "prior_failure_preserved": "qualify-01 passed41 but verify-01/verify-diagnostic-02 exposed dictionary-order DTO bug. Those old sealed records remain unchanged; source fix1e9edb3 and new execution/input/qualification are separately selected.",
+  "same_training90_and_plan_runtime": true,
+  "serve": "Starting owned local BF16 HTTP serve; website campaign follows only after endpoint readiness.",
+  "local_hardware": "NVIDIA GB10; cross-hardware timings cannot attest H200 speed superiority.",
+  "comparison_plan": {
+    "path": "artifacts/jev-runtime/public-browser-comparison-20261018-01/comparison-plan.json",
+    "sha256": "f6d83167ab3d70f85b371cfddb927e200c41800e280d28bdeec5e03136e32851",
+    "size_bytes": 3338
+  },
+  "task_performance_attested": false,
+  "browser_task_score": null,
+  "goal_complete": false
+}
