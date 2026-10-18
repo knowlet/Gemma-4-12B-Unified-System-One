@@ -1,0 +1,133 @@
+{
+  "schema_id": "jev-public07-v5-six-browser-results-v1",
+  "stage": "all_six_completed_original_failures_preserved",
+  "summary": {
+    "path": "artifacts/jev-runtime/public07-six-v5-browser-20261018-01/results/summary.json",
+    "sha256": "7c59a6c282f8ea3c7a160ca611c8bbea3ebeed586fe4ea4044f809214914dfcf",
+    "size_bytes": 447070
+  },
+  "closed_evidence_index": {
+    "path": "artifacts/jev-runtime/public07-six-v5-browser-20261018-01/closed-index-01.json",
+    "sha256": "1f91e40a7f4819c1dadd8e2196c709ecc6b783c5bd3842ddf05fde9ad2303c12",
+    "size_bytes": 16275
+  },
+  "closed_files_excluding_index": 89,
+  "closed_bytes_excluding_index": 23965798,
+  "profile": "composed-visible-hover-entries-v5",
+  "qualification_sha256": "c1fea3d45a7841c410f9c9c20eba32d3794025611ded8a68eeb9422baab50125",
+  "protocol": "Same120 adapter/fixed base helper,all6,repeats1,max16,seed20261014,TEXT_MODEL_REASONING=none,1120x780,strictDONE+freshDOMjudge; interfaces exposed.",
+  "score": {
+    "successes": 3,
+    "attempts": 6,
+    "policy_calls": 40,
+    "helper_calls": 1,
+    "observation_profile_failed": false
+  },
+  "tasks": [
+    {
+      "case_id": "heldout-public-000-000",
+      "success": true,
+      "goal_satisfied": true,
+      "error": null,
+      "policy_calls": 3,
+      "text_calls": 0
+    },
+    {
+      "case_id": "heldout-public-001-000",
+      "success": true,
+      "goal_satisfied": true,
+      "error": null,
+      "policy_calls": 3,
+      "text_calls": 0
+    },
+    {
+      "case_id": "heldout-public-002-000",
+      "success": false,
+      "goal_satisfied": false,
+      "error": "Runner stopped at the 16-decision budget",
+      "policy_calls": 16,
+      "text_calls": 0
+    },
+    {
+      "case_id": "heldout-public-003-000",
+      "success": true,
+      "goal_satisfied": true,
+      "error": null,
+      "policy_calls": 12,
+      "text_calls": 0
+    },
+    {
+      "case_id": "heldout-public-004-000",
+      "success": false,
+      "goal_satisfied": false,
+      "error": null,
+      "policy_calls": 1,
+      "text_calls": 0
+    },
+    {
+      "case_id": "heldout-public-005-000",
+      "success": false,
+      "goal_satisfied": false,
+      "error": "RuntimeError: Model provider returned HTTP 502; no action executed.",
+      "policy_calls": 5,
+      "text_calls": 1
+    }
+  ],
+  "curl_diagnosis": {
+    "actual_policy_requests": 16,
+    "HTTP_attempts_each": 1,
+    "Options_in_actual_elements_and_click_criteria_calls": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "all_14_still_chose": "SCROLL_DOWN",
+    "only_click_candidate_Options_calls": [
+      4,
+      8,
+      9,
+      10
+    ],
+    "click_target_head": "unused/not evaluated after scroll operation; no claim it selected the wrong target",
+    "initial_call2": "Earlier snapshot had e251Options; fresh observation and actual request did not include it. Do not count this as offered to model.",
+    "outcome": "One correct manpage click followed15native downward scrolls,16decision limit; no helper or latency/context failure."
+  },
+  "helper_failure": {
+    "task": "heldout-public-005",
+    "HTTP_status": 502,
+    "raw_output": "thought\n```json\n{\"text\": \"migraine\"}\n```",
+    "input_tokens": 641,
+    "output_tokens": 16,
+    "actual_output_limit": 128,
+    "failure_stage": "validation",
+    "adapter_state": "disabled_for_pinned_base_helper",
+    "semantic_caveat": "Policy first selected Clear all, already removing the required preserved filter. Format correction alone does not establish task success."
+  },
+  "comparison": {
+    "v3": {
+      "successes": 3,
+      "attempts": 6
+    },
+    "corrected_v4": {
+      "successes": 2,
+      "attempts": 6
+    },
+    "v5": {
+      "successes": 3,
+      "attempts": 6
+    },
+    "interpretation": "No gain over v3. pandas passed this time; this alone does not prove CSS discovery causally repaired its earlier navigation timing race."
+  },
+  "relative_model_victory_attested": false
+}
