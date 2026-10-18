@@ -1,0 +1,757 @@
+{
+  "schema_id": "jev-hover-affordance-fixture-matrix-report-v1",
+  "status": "REVIEWED_LOCAL_ZERO_LLM_FIXTURE_RESULT_WITH_TWO_INTERACTION_FAILURES",
+  "problem": "The v7 observation profile inherits v3 native semantic discovery and does not expose supported CSS-proven roleless hover entries. The proposed artifact-only v8 combines bounded v5 hover discovery with v7 observation settling.",
+  "result": "For each of stable-hover-pointer, stable-hover-auto, and nested-owner-inherited-pointer, v7 offered no roleless hover entry; v5 and proposed-v8 each offered one current entry, the native press/release clicked the same trusted leaf, and a new observation showed the popup and current semantic anchor. Each of v5/v8 also retained one overlay-after-press interaction failure and8 negative/no-duplicate outcomes. This is a6-cell mechanism result within a36-cell fixed matrix, not a model or task quality gain.",
+  "conditions": {
+    "local_only": true,
+    "zero_LLM": true,
+    "fixed_generic_goal": "Inspect the currently offered local fixture controls.",
+    "generic_goal_sha256": "c67debcab148c0aee27edbea307836fcfa82f7fb8966abbf3659700f015ef917",
+    "deterministic_evaluator_selects_actual_unique_offer": true,
+    "fresh_context_per_cell": true,
+    "viewport": [
+      1120,
+      780
+    ],
+    "Chromium_version": "145.0.7632.0",
+    "native_executor": "Original native CLICK: mousePressed then mouseReleased at current hit-tested center, once per offered cell;0 mouseMoved, retries, JS clicks, or hidden-target replays."
+  },
+  "summary": {
+    "fixed_denominator": 36,
+    "variants": 3,
+    "fixtures_per_variant": 12,
+    "statuses": {
+      "EXPECTED_NO_AFFORDANCE": 28,
+      "NATIVE_CLICK_REVEALED_ANCHOR": 6,
+      "LIMITATION_TARGET_CHANGED": 2
+    },
+    "per_variant": {
+      "v7": {
+        "EXPECTED_NO_AFFORDANCE": 12
+      },
+      "v5": {
+        "NATIVE_CLICK_REVEALED_ANCHOR": 3,
+        "EXPECTED_NO_AFFORDANCE": 8,
+        "LIMITATION_TARGET_CHANGED": 1
+      },
+      "v8": {
+        "NATIVE_CLICK_REVEALED_ANCHOR": 3,
+        "EXPECTED_NO_AFFORDANCE": 8,
+        "LIMITATION_TARGET_CHANGED": 1
+      }
+    },
+    "stable_positive_fixture_pairs": [
+      "stable-hover-pointer",
+      "stable-hover-auto",
+      "nested-owner-inherited-pointer"
+    ],
+    "stable_positive_interactions": {
+      "v7": 0,
+      "v5": 3,
+      "v8": 3
+    },
+    "offered_native_CLICKs": 8,
+    "native_input_events": {
+      "mousePressed": 8,
+      "mouseReleased": 8
+    },
+    "CDP_calls": {
+      "Runtime.evaluate": 76,
+      "Input.dispatchMouseEvent": 16
+    },
+    "DOM_event_counts": {
+      "pointerover": 10,
+      "pointerenter": 46,
+      "mouseover": 10,
+      "mouseenter": 46,
+      "pointerdown": 8,
+      "mousedown": 8,
+      "pointerup": 8,
+      "mouseup": 8,
+      "click": 8
+    },
+    "snapshot_joins": 44,
+    "fingerprint_recomputations": 44,
+    "request_prefix_payload_and_SHA_joins": 44,
+    "selected_CLICK_head_joins": 8,
+    "current_freshness_guard_reads": 16,
+    "settling_snapshot_joins": 28,
+    "external_network_attempts": 0,
+    "model_HTTP_calls": 0,
+    "framework_browser_model_HTTP_Modal_runs_by_auditor": 0,
+    "negative_or_no_duplicate_per_v5_v8": 8,
+    "task_success_claimed": false,
+    "model_improvement_claimed": false
+  },
+  "fixture_matrix": [
+    {
+      "fixture": "stable-hover-pointer",
+      "variants": {
+        "v7": {
+          "ordinal": 0,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 12,
+          "offered_hover_actions": 1,
+          "status": "NATIVE_CLICK_REVEALED_ANCHOR",
+          "interaction_success": true
+        },
+        "v8": {
+          "ordinal": 24,
+          "offered_hover_actions": 1,
+          "status": "NATIVE_CLICK_REVEALED_ANCHOR",
+          "interaction_success": true
+        }
+      }
+    },
+    {
+      "fixture": "stable-hover-auto",
+      "variants": {
+        "v7": {
+          "ordinal": 1,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 13,
+          "offered_hover_actions": 1,
+          "status": "NATIVE_CLICK_REVEALED_ANCHOR",
+          "interaction_success": true
+        },
+        "v8": {
+          "ordinal": 25,
+          "offered_hover_actions": 1,
+          "status": "NATIVE_CLICK_REVEALED_ANCHOR",
+          "interaction_success": true
+        }
+      }
+    },
+    {
+      "fixture": "hidden-trigger",
+      "variants": {
+        "v7": {
+          "ordinal": 2,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 14,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v8": {
+          "ordinal": 26,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        }
+      }
+    },
+    {
+      "fixture": "offscreen-owner",
+      "variants": {
+        "v7": {
+          "ordinal": 3,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 15,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v8": {
+          "ordinal": 27,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        }
+      }
+    },
+    {
+      "fixture": "occluded-trigger",
+      "variants": {
+        "v7": {
+          "ordinal": 4,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 16,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v8": {
+          "ordinal": 28,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        }
+      }
+    },
+    {
+      "fixture": "nested-owner-inherited-pointer",
+      "variants": {
+        "v7": {
+          "ordinal": 5,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 17,
+          "offered_hover_actions": 1,
+          "status": "NATIVE_CLICK_REVEALED_ANCHOR",
+          "interaction_success": true
+        },
+        "v8": {
+          "ordinal": 29,
+          "offered_hover_actions": 1,
+          "status": "NATIVE_CLICK_REVEALED_ANCHOR",
+          "interaction_success": true
+        }
+      }
+    },
+    {
+      "fixture": "semantic-trigger",
+      "variants": {
+        "v7": {
+          "ordinal": 6,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 18,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v8": {
+          "ordinal": 30,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        }
+      }
+    },
+    {
+      "fixture": "ambiguous-two-leaves",
+      "variants": {
+        "v7": {
+          "ordinal": 7,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 19,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v8": {
+          "ordinal": 31,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        }
+      }
+    },
+    {
+      "fixture": "pointer-only-no-hover-proof",
+      "variants": {
+        "v7": {
+          "ordinal": 8,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 20,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v8": {
+          "ordinal": 32,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        }
+      }
+    },
+    {
+      "fixture": "overlay-after-press",
+      "variants": {
+        "v7": {
+          "ordinal": 9,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 21,
+          "offered_hover_actions": 1,
+          "status": "LIMITATION_TARGET_CHANGED",
+          "interaction_success": false
+        },
+        "v8": {
+          "ordinal": 33,
+          "offered_hover_actions": 1,
+          "status": "LIMITATION_TARGET_CHANGED",
+          "interaction_success": false
+        }
+      }
+    },
+    {
+      "fixture": "inert-owner",
+      "variants": {
+        "v7": {
+          "ordinal": 10,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 22,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v8": {
+          "ordinal": 34,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        }
+      }
+    },
+    {
+      "fixture": "aria-hidden-owner",
+      "variants": {
+        "v7": {
+          "ordinal": 11,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v5": {
+          "ordinal": 23,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        },
+        "v8": {
+          "ordinal": 35,
+          "offered_hover_actions": 0,
+          "status": "EXPECTED_NO_AFFORDANCE",
+          "interaction_success": false
+        }
+      }
+    }
+  ],
+  "overlay_failures": [
+    {
+      "ordinal": 21,
+      "variant": "v5",
+      "fixture": "overlay-after-press",
+      "evidence": {
+        "path": "artifacts/jev-runtime/public-affordance-matrix-correctness-20261019-01/cells/21.json",
+        "sha256": "7f30d5cc010baf3f6ee1e606c4b57e64fd3a6456bcaa86457d06bbb7f232bc22",
+        "size_bytes": 72982
+      },
+      "status": "LIMITATION_TARGET_CHANGED",
+      "interaction_success": false,
+      "offered_hover_actions": 1,
+      "admission_evidence": {
+        "target_visible": true,
+        "target_in_viewport": true,
+        "target_hit": true,
+        "target_inert": false,
+        "target_aria_hidden": false,
+        "hover_discovery": {
+          "owners": 1,
+          "ambiguous_owners": 0,
+          "no_stable_trigger": 0,
+          "duplicate_bindings": 0,
+          "coverage_complete": true,
+          "extension_status": "admitted_supported_scope"
+        }
+      },
+      "phases": {
+        "before": {
+          "question_payload_sha256": "de14916eefe55670994dc36bb6910885238defb95e14c6738582ab169da39a25",
+          "returned_snapshot_sha256": "15ee363cbf77d888f7c512c8fd9b60eb7300fa6a84bd63c39c0280790257913f",
+          "READ_STATE_sha256": "17a2e57362f9654abc8acea94a714dcaf6945594ba2ac0d57b8494f0b458a9a1",
+          "CDP_index": 0,
+          "fingerprint": "1c782be1c6b49a68a9c33f8ca85a27236eb32d9532b860c5dd66fc5480de0070"
+        },
+        "after": {
+          "question_payload_sha256": "b9bdf4f3484342979a4275c39520bd0a20b7ab27f08944c3d9b13500912a6bef",
+          "returned_snapshot_sha256": "ecbca0a09f1b3d1cda651439e593887fdcef4fa104f27858d375c7bb9cf0d80a",
+          "READ_STATE_sha256": "17a2e57362f9654abc8acea94a714dcaf6945594ba2ac0d57b8494f0b458a9a1",
+          "CDP_index": 7,
+          "fingerprint": "9b25f2665e6ef0e2633370eb6466fa7bd1b850627c65a6fe3132a3ca820fddd1"
+        }
+      },
+      "selected": {
+        "action_id": "e2",
+        "node": 2,
+        "DOM_id": "trigger",
+        "CLICK_head_index": "2",
+        "criterion": {
+          "current_value": "",
+          "element": "[2] Open palette",
+          "role": "generic"
+        },
+        "current_rect": {
+          "h": 40,
+          "w": 180,
+          "x": 100,
+          "y": 100
+        },
+        "cursor": "auto",
+        "native_xy": {
+          "x": 190.0,
+          "y": 120.0
+        },
+        "fresh_checks": 2,
+        "trusted_targets": {
+          "pointerdown": "trigger",
+          "pointerup": "cover",
+          "click": "BODY"
+        },
+        "trusted_DOM_events": [
+          {
+            "target": "trigger",
+            "trusted": true,
+            "type": "pointerdown",
+            "x": 190,
+            "y": 120
+          },
+          {
+            "target": "trigger",
+            "trusted": true,
+            "type": "mousedown",
+            "x": 190,
+            "y": 120
+          },
+          {
+            "target": "cover",
+            "trusted": true,
+            "type": "pointerup",
+            "x": 190,
+            "y": 120
+          },
+          {
+            "target": "cover",
+            "trusted": true,
+            "type": "mouseup",
+            "x": 190,
+            "y": 120
+          },
+          {
+            "target": "BODY",
+            "trusted": true,
+            "type": "click",
+            "x": 190,
+            "y": 120
+          }
+        ],
+        "popup_visible_after": false,
+        "semantic_anchor_offered_after": false,
+        "anchor_guard_present": false
+      }
+    },
+    {
+      "ordinal": 33,
+      "variant": "v8",
+      "fixture": "overlay-after-press",
+      "evidence": {
+        "path": "artifacts/jev-runtime/public-affordance-matrix-correctness-20261019-01/cells/33.json",
+        "sha256": "d5266aae39114edd79872f11a9741bbbb5a63d330dab860d7dc5abc3be96716b",
+        "size_bytes": 74897
+      },
+      "status": "LIMITATION_TARGET_CHANGED",
+      "interaction_success": false,
+      "offered_hover_actions": 1,
+      "admission_evidence": {
+        "target_visible": true,
+        "target_in_viewport": true,
+        "target_hit": true,
+        "target_inert": false,
+        "target_aria_hidden": false,
+        "hover_discovery": {
+          "owners": 1,
+          "ambiguous_owners": 0,
+          "no_stable_trigger": 0,
+          "duplicate_bindings": 0,
+          "coverage_complete": true,
+          "extension_status": "admitted_supported_scope"
+        }
+      },
+      "phases": {
+        "before": {
+          "question_payload_sha256": "de14916eefe55670994dc36bb6910885238defb95e14c6738582ab169da39a25",
+          "returned_snapshot_sha256": "d4b15030baff530dc71d9f0f2a634de10a068492731b04e0fcdcc78ac5513562",
+          "READ_STATE_sha256": "44a3b5df762bae7ffe505314fd18ba3171e6d54f55bc6af963337b5dc6b3bd04",
+          "CDP_index": 0,
+          "fingerprint": "1c782be1c6b49a68a9c33f8ca85a27236eb32d9532b860c5dd66fc5480de0070"
+        },
+        "after": {
+          "question_payload_sha256": "b9bdf4f3484342979a4275c39520bd0a20b7ab27f08944c3d9b13500912a6bef",
+          "returned_snapshot_sha256": "6878d5a4559e54d5a20f9dba13ed8f3bb0661dec2ceca9031cd8f4710f4c4806",
+          "READ_STATE_sha256": "44a3b5df762bae7ffe505314fd18ba3171e6d54f55bc6af963337b5dc6b3bd04",
+          "CDP_index": 7,
+          "fingerprint": "9b25f2665e6ef0e2633370eb6466fa7bd1b850627c65a6fe3132a3ca820fddd1"
+        }
+      },
+      "selected": {
+        "action_id": "e2",
+        "node": 2,
+        "DOM_id": "trigger",
+        "CLICK_head_index": "2",
+        "criterion": {
+          "current_value": "",
+          "element": "[2] Open palette",
+          "role": "generic"
+        },
+        "current_rect": {
+          "h": 40,
+          "w": 180,
+          "x": 100,
+          "y": 100
+        },
+        "cursor": "auto",
+        "native_xy": {
+          "x": 190.0,
+          "y": 120.0
+        },
+        "fresh_checks": 2,
+        "trusted_targets": {
+          "pointerdown": "trigger",
+          "pointerup": "cover",
+          "click": "BODY"
+        },
+        "trusted_DOM_events": [
+          {
+            "target": "trigger",
+            "trusted": true,
+            "type": "pointerdown",
+            "x": 190,
+            "y": 120
+          },
+          {
+            "target": "trigger",
+            "trusted": true,
+            "type": "mousedown",
+            "x": 190,
+            "y": 120
+          },
+          {
+            "target": "cover",
+            "trusted": true,
+            "type": "pointerup",
+            "x": 190,
+            "y": 120
+          },
+          {
+            "target": "cover",
+            "trusted": true,
+            "type": "mouseup",
+            "x": 190,
+            "y": 120
+          },
+          {
+            "target": "BODY",
+            "trusted": true,
+            "type": "click",
+            "x": 190,
+            "y": 120
+          }
+        ],
+        "popup_visible_after": false,
+        "semantic_anchor_offered_after": false,
+        "anchor_guard_present": false
+      }
+    }
+  ],
+  "verification": {
+    "HOLD31_files_verified": true,
+    "composition26_files_verified": true,
+    "all86_closed_output_files_stream_SHA_size_verified": true,
+    "closed_output_total_bytes": 1420555,
+    "all44_persisted_CDP_value_snapshot_fingerprint_and_request_body_SHA_joins": true,
+    "all8_selected_native_CLICK_head_bindings_current_geometry_and_two_fresh_reads": true,
+    "native_CLICK_count": 8,
+    "native_mousePressed": 8,
+    "native_mouseReleased": 8,
+    "mouseMoved": 0,
+    "network_attempts": 0,
+    "model_HTTP_calls": 0,
+    "auditor_framework_browser_model_HTTP_Modal_executions": 0
+  },
+  "closure": {
+    "controller_returncode": 1,
+    "interpretation": "Both overlay target-change limitations remain failures and cause worker/controller exit1; no primary or cleanup error.",
+    "owned_PID_start_ticks_count": 43,
+    "groups": [
+      825790,
+      825840
+    ],
+    "fresh_all_owned_identities_and_groups_absent": true,
+    "root_controller_absent": true
+  },
+  "evidence": {
+    "independent_closed_review": {
+      "path": "artifacts/jev-runtime/public-affordance-matrix-harness-20261019-01/independent-closed-review-01.json",
+      "sha256": "cd11b2e8de0a40f55866fa0c548d3a2bfe3db93442d8e4421c1fe6d0d5f24c0d",
+      "size_bytes": 179928
+    },
+    "harness_HOLD": {
+      "path": "artifacts/jev-runtime/public-affordance-matrix-harness-20261019-01/source-HOLD-01/HOLD.json",
+      "sha256": "d379a83bb8e3c1a185aa3f204e9968fda42f67d7ea32507db5fd449beefec892",
+      "size_bytes": 8517
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/public-affordance-matrix-harness-20261019-01/plan-01.json",
+      "sha256": "f0ab7a5fa66e28464f52b1cc06b7baf2f9c344a458a31684394d59589a66dfed",
+      "size_bytes": 17376
+    },
+    "readiness": {
+      "path": "artifacts/jev-runtime/public-affordance-matrix-harness-20261019-01/readiness-01.json",
+      "sha256": "0ebf1cccf23d7b48f10682f86cd5f5c46f0689eb5e543c24cbb0db60c62ca669",
+      "size_bytes": 9835
+    },
+    "composition_proof": {
+      "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/derived-source-01/source-proof.json",
+      "sha256": "12c737f55296bc0e5f04d17972cdaa0185990ba3fc88de057adbba3c30720354",
+      "size_bytes": 7352
+    },
+    "fixture_manifest": {
+      "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixture-manifest.json",
+      "sha256": "5739d0e50555bce1c43c76be316d3dad4e86da45a00d89116f69557397ffb883",
+      "size_bytes": 8945
+    },
+    "root_source_review": {
+      "path": "artifacts/jev-runtime/public-affordance-matrix-harness-20261019-01/root-source-review-01.json",
+      "sha256": "6e745991942e00b12022a856f63a959f8edcc2275757174018617d71df49f929",
+      "size_bytes": 2477
+    },
+    "closed_index": {
+      "path": "artifacts/jev-runtime/public-affordance-matrix-harness-20261019-01/root-actual01-closed-index-01.json",
+      "sha256": "fde37202c62081736e12999067afefbc91b9e791f9487efcc9b0c004c28a60dd",
+      "size_bytes": 20214
+    },
+    "root_exit_review": {
+      "path": "artifacts/jev-runtime/public-affordance-matrix-harness-20261019-01/root-actual01-exit-review-01.json",
+      "sha256": "fd341be579c8223d08c8a6ca17c74fbea5640ada1ddaa6aafedcf9f0228cc8bd",
+      "size_bytes": 1382
+    },
+    "controller_terminal": {
+      "path": "artifacts/jev-runtime/public-affordance-matrix-correctness-20261019-01/controller-terminal.json",
+      "sha256": "f829cfdb4b06c5fa5dd9c57d6dfae6476b99991b96cdf1f1fbe93f0079021a55",
+      "size_bytes": 7677
+    },
+    "worker_terminal": {
+      "path": "artifacts/jev-runtime/public-affordance-matrix-correctness-20261019-01/worker-terminal.json",
+      "sha256": "bc5c5097c7296e9714ccbfa2b6c93e321aec5990976f6a65b14cf6763676b9a2",
+      "size_bytes": 5011
+    },
+    "fixture_refs": [
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/stable-hover-pointer.html",
+        "sha256": "7815f8c37539518dd206bd8f37033dd087a549c4cdcd0b5c16291589f2c8563b",
+        "size_bytes": 1702
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/stable-hover-auto.html",
+        "sha256": "00ce0695f8765bdcd36cd480e0ec0fad43f6fad715f16b5eb2d3a57af3f4a1c2",
+        "size_bytes": 1696
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/hidden-trigger.html",
+        "sha256": "03106332502e808f268192d9c03b0436ff431483332ef692d0b5b6ea840005b9",
+        "size_bytes": 1694
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/offscreen-owner.html",
+        "sha256": "358e79055dba6ce1c07ad29bae016a127f50869850a79cbeb597a3fb06c83b31",
+        "size_bytes": 1693
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/occluded-trigger.html",
+        "sha256": "874c953a4229e35497739ed095e51f2c150caae8f44ef8a593826313ced4e6a6",
+        "size_bytes": 1710
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/nested-owner-inherited-pointer.html",
+        "sha256": "c42d5734bf94da3c358c0aa46d4b1fd8d99bc3072b7f0182b16d932182f0d191",
+        "size_bytes": 1898
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/semantic-trigger.html",
+        "sha256": "50bf0dac4873f0852d38acf883b1a09b3d3dea72732eec2c2d182b3fb963a636",
+        "size_bytes": 1680
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/ambiguous-two-leaves.html",
+        "sha256": "6d5503300ac8d525d524ebf32805c6cc0d427ec670280f4a58bbd12ba2e4207a",
+        "size_bytes": 1712
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/pointer-only-no-hover-proof.html",
+        "sha256": "bcef4cf6d4616e0d0e1d9a4eb7a8f1917807f800b1c58e063bf0ae9f4d868338",
+        "size_bytes": 1665
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/overlay-after-press.html",
+        "sha256": "d0067753854eab0dacadea692c7a16a5940bf484d24bc445c8b207040dfe71f1",
+        "size_bytes": 1720
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/inert-owner.html",
+        "sha256": "5514e626e5d3a0b3b5d3b3dc6863b14125a43dc2963248cd28130b0ad828e97d",
+        "size_bytes": 1675
+      },
+      {
+        "path": "artifacts/jev-runtime/public-affordance-v5-v7-composition-20261019-01/fixtures/aria-hidden-owner.html",
+        "sha256": "ab1a8acefd38ff8ef5e9c31b19b55dc8ed7f993d07a6c98d23d164f5eaad89c2",
+        "size_bytes": 1694
+      }
+    ]
+  },
+  "limits": [
+    "This is one local Chromium fixture mechanism matrix with a fixed 36-cell denominator. No model ran or chose an action, and no task/model quality, latency, generalization, or production v8 qualification follows.",
+    "28 EXPECTED_NO_AFFORDANCE cells establish extension admission/refusal or no duplication only; none is counted as task/interaction success. The 12 v7 cells intentionally have no roleless hover offer and no input.",
+    "Only the actually offered unique hover entry was selected deterministically by the evaluator. CLICK-head joining proves availability and identity binding, not a model-selected operation or target.",
+    "Persisted cdp Runtime.evaluate results are mutable Python response objects, not immutable independent CDP wire captures: worker cdp() stores and returns the same result; native browser_operation adds fingerprint to result.result.value in-place. All44 such fingerprints are source-recomputed and all44 persisted values equal returned snapshots. Full caller-source review found this fingerprint assignment as the sole mutation of these response values; freshness/target/readiness results are compared or read without mutation. This audit cannot reconstruct an independently frozen original wire response.",
+    "Semantic-trigger preserves exactly one native semantic button and adds no hover action, but the harness never clicks that button or the ordinary button. Their native interaction success remains untested.",
+    "No stale-mutation tests ran in this36-cell harness. Current guard equality and two current freshness reads on8 offered actions do not qualify proposed-v8 freshness under document/CSS mutation.",
+    "The native250 cap is applied before v4 proxy and hover entries are appended. These tiny fixtures report zero native omissions; they do not qualify appended candidate capacity or model/service capacity beyond250.",
+    "The two overlay-after-press cells remain interaction failures: trusted pointerdown trigger, pointerup cover, click BODY; popup hidden and semantic anchor absent after observation. Controller/worker exit1 reflects these limitations, not a crash, and cleanup success does not turn them into interaction success.",
+    "The6 successful cells only attest popup visibility and a current observed/guarded semantic anchor after native press/release; no follow-up click on that anchor or destination-task completion was executed.",
+    "Zero external/network attempts is scoped to the36 offline routed page contexts and recorded native CDP/source boundary; no independent packet capture or host-wide Chrome network claim is made.",
+    "Owned cleanup covers43 observed PID/start identities and2 groups. Fresh audit reads /proc stat metadata only, never unrelated command lines; it does not prove no unobserved short-lived descendant ever existed."
+  ],
+  "qualification_blockers": [
+    "2 overlay interaction failures",
+    "semantic native-button interaction not executed",
+    "proposed-v8 stale mutation tests not executed",
+    "candidate append capacity/model-service qualification beyond250 not executed",
+    "no model-chosen/browser task evaluation"
+  ],
+  "production_or_service_change": false
+}
