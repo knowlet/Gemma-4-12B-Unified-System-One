@@ -1,0 +1,47 @@
+{
+  "schema_id": "jev-associated-label-profile-v4-reviewed-v1",
+  "profile": "composed-visible-controls-v4",
+  "problem": "A visible label can activate an offscreen checkbox or radio input, but the original candidate discovery offers neither node as a usable action. This was reproduced on the PubMed continuation task's sidebar and article-type dialog.",
+  "implementation": "Append visible, enabled associated-label click targets after existing native candidates. Bind each proxy to its actual control identity/type/name/form/checked state, validate both discovery and the fresh execution boundary, and use original native mouse dispatch. Rebuild the proxy binding map per snapshot. Preserve original candidate order, cap and omitted accounting; do not assign checkbox state or synthesize events.",
+  "source_HOLD": {
+    "path": "artifacts/jev-runtime/public-native-control-v4-20261018-01/source-HOLD-02/HOLD.json",
+    "sha256": "de22cc18015ea937204d1421f581df256d9e56bc8a3b10c92ea387c2959b7e94"
+  },
+  "profile_helper_sha256": "f96fb0553c4c8ef1a163633577bfb3ddbb03ddbc1ff6644c36d8fbe2c06d4b43",
+  "wrapper_sha256": "1f446a9e36f2a554df216c9ed0c35ad6b7f256583b6eb5b03fb7b3272778ae44",
+  "prepared_profile_manifest_sha256": "45ef13a734c414926b5ded3062cc30de785af4a75f8abd70491b35d2aa9f73f6",
+  "validation": {
+    "root_read_full_sources_tests_and_final_deltas": true,
+    "root_tests": "58 passed in 7.30s, including actual Chromium native mouse dispatch and stale-target guards",
+    "ruff_check_and_format": "PASS",
+    "public_site_receipt": "artifacts/jev-runtime/public-native-control-v4-20261018-01/public-site-receipt-02.json",
+    "public_site_receipt_sha256": "a18c2212f985687432f20885b7ce317dc010200d8b92a7c16518a994dde6b785",
+    "root_reverified_artifact_references": 49,
+    "fresh_contexts": 2,
+    "sidebar_native_actions": 4,
+    "dialog_native_actions": 6,
+    "both_original_start_judges": false,
+    "both_original_fresh_final_judges": true,
+    "document_GETs": 6,
+    "all_document_statuses": 200,
+    "viewport": [1120, 780],
+    "full_captured_requests": 7,
+    "maximum_head_candidates": 34,
+    "omitted_candidates": 0,
+    "policy_HTTP_calls": 0,
+    "model_calls": 0,
+    "processor_calls": 0,
+    "observer_tracker_or_navigation_errors": 0,
+    "owned_child_exit": 0,
+    "source_integrity_verified": true
+  },
+  "limitations": [
+    "This is interface reachability with manually selected offered actions and text, not a model score, latency or token-capacity result. Captured requests have empty histories.",
+    "The PubMed continuation task was exposed during interface development; it is not blind to this profile.",
+    "The original v3 six-task result remains 3/6. The independent PubMed homepage 403 failure remains in its denominator.",
+    "The helper's invalid JSON response is a separate observed failure and is not repaired by this profile.",
+    "The owner radio name/form binding is checked; mutation of another radio's group membership is not covered."
+  ],
+  "original_frozen84_90_91_and_upstream_sources_changed": false,
+  "performance_attested": false
+}
