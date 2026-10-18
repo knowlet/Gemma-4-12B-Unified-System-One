@@ -1,0 +1,34 @@
+{
+  "HOLD": {
+    "path": "artifacts/jev-runtime/decision3-browser-wire-20261018-01/source-HOLD-01.json",
+    "sha256": "ddacf66ef0b0f6ad70e3dbfdf32cdd009e01c998cf530e87ced37bff395585bd",
+    "size_bytes": 2434
+  },
+  "change": "Request-bound deep-copy conversion of the list into a named object with separate wire provenance. Full ordered original request JSON and SHA, legacy profile and exact ordered head identity must match; malformed or previously converted results are refused. All answer values, probabilities, model identity, usage, cost and native audit remain unchanged.",
+  "date": "2026-10-18",
+  "problem": "Legacy adapter returns ordered answer list, pinned upstream browser caller expects answers.get(question_id).",
+  "schema_id": "jev-decision3-named-browser-wire-helper-v1",
+  "scope": "No model prediction, H200 run, HTTP service or browser task result is claimed. Existing API remains incompatible until a separate serving entrypoint explicitly uses this helper.",
+  "sources": [
+    {
+      "path": "scripts/jev_decision3_browser_wire.py",
+      "sha256": "c048d7779e60fce5d1a56b38e26b9ddf5ed9e1ff9c6adc478786d0267cca3027",
+      "size_bytes": 4132
+    },
+    {
+      "path": "tests/test_jev_decision3_browser_wire.py",
+      "sha256": "ed233d3549ab23b7ffb17492c5edf33d8815a44b50f1282d4160035ec3d51d15",
+      "size_bytes": 10614
+    }
+  ],
+  "status": "opt_in_helper_reviewed_not_connected_to_API",
+  "unchanged": "Existing API route, source12/90/91, offline replaycore69bae and Modalwrappercf23 remain unchanged.",
+  "validation": {
+    "independent_review": "modal_env_preflight CLEAR actualfrozen/live helper/test and source90/upstream/core pins",
+    "real_source_integration": "Actual legacy producer with synthetic non-ML backend to checksum-pinned upstream choose: all8 operations and3target branches; baseline AttributeError, strict malformed refusal and deepcopy isolation.",
+    "root_full_source_and_tests_read": true,
+    "root_seconds": 0.3,
+    "root_tests_passed": 23,
+    "writer_ruff_check_and_format": "passed"
+  }
+}
