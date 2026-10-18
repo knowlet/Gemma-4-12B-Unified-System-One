@@ -30,6 +30,9 @@ def extracted_helpers(tmp_path):
         "read",
         "pin",
         "create",
+        "complete_cgroup",
+        "cgroup_memory",
+        "host",
         "admit",
         "group_alive",
         "stop_owned",
@@ -80,6 +83,88 @@ def extracted_helpers(tmp_path):
     }
     exec(compile(ast.Module(body=body, type_ignores=[]), str(APP), "exec"), namespace)
     return namespace, export_root
+
+
+@pytest.mark.parametrize(
+    "mode", ["unlimited", "ancestor_limit", "child_limit", "partial", "missing", "root_partial"]
+)
+def test_host_observes_membership_and_all_controlling_ancestors(tmp_path, mode):
+    namespace, _export = extracted_helpers(tmp_path)
+    mount = tmp_path / "cgroup"
+    parent, leaf = mount / "user.slice", mount / "user.slice/session.scope"
+    leaf.mkdir(parents=True)
+    for directory, current in ((parent, 20 * GIB), (leaf, GIB)):
+        (directory / "memory.max").write_text("max")
+        (directory / "memory.current").write_text(str(current))
+    if mode == "ancestor_limit":
+        (parent / "memory.max").write_text(str(110 * GIB))
+    elif mode == "child_limit":
+        (parent / "memory.max").write_text(str(160 * GIB))
+        (leaf / "memory.max").write_text(str(100 * GIB))
+    elif mode == "partial":
+        (parent / "memory.current").unlink()
+    elif mode == "root_partial":
+        (mount / "memory.current").write_text(str(20 * GIB))
+    member = "/missing.scope" if mode == "missing" else "/user.slice/session.scope"
+    proc = tmp_path / "proc"
+    (proc / "self").mkdir(parents=True)
+    (proc / "sys/kernel/random").mkdir(parents=True)
+    (proc / "meminfo").write_text(
+        f"MemTotal: {160 * GIB // 1024} kB\nMemAvailable: {150 * GIB // 1024} kB\n"
+    )
+    (proc / "sys/kernel/random/boot_id").write_text("fixture-boot")
+    (proc / "self/cgroup").write_text("0::" + member + "\n")
+    (proc / "self/mountinfo").write_text(f"39 29 0:33 / {mount} rw - cgroup2 cgroup2 rw\n")
+
+    def fake_path(value, *parts):
+        path = Path(value, *parts)
+        return proc / path.relative_to("/proc") if path.is_relative_to("/proc") else path
+
+    namespace["Path"] = fake_path
+    snapshot = namespace["host"]()
+    assert snapshot["cgroup_membership"] == "0::" + member + "\n"
+    if mode in {"partial", "missing", "root_partial"}:
+        assert snapshot["cgroup"] == {}
+        assert any("error" in row for row in snapshot["cgroup_ancestors"])
+    else:
+        assert [row["path"] for row in snapshot["cgroup_ancestors"]] == [str(leaf), str(parent)]
+        expected = {"memory.max": None, "memory.current": GIB}
+        if mode == "ancestor_limit":
+            expected = {"memory.max": 110 * GIB, "memory.current": 20 * GIB}
+        elif mode == "child_limit":
+            expected = {"memory.max": 100 * GIB, "memory.current": GIB}
+        assert snapshot["cgroup"] == expected
+    journal = tmp_path / "admission.jsonl"
+    if mode == "unlimited":
+        assert namespace["admit"](journal, "train", "fixture-boot")["admitted"]
+    else:
+        with pytest.raises(ValueError, match="admission refused"):
+            namespace["admit"](journal, "train", "fixture-boot")
+    saved = json.loads(journal.read_bytes())
+    assert saved["reserve_bytes"] == 32 * GIB
+    assert saved["required_bytes"] == 32 * GIB + 2 * 23919549408 + 30 * GIB + 256 * 1024**2
+    assert saved["swap_or_resident_credit_bytes"] == 0
+
+
+@pytest.mark.parametrize("member", ["/tenant/job", "/job", "/"])
+def test_cgroup_namespace_mount_root_is_a_controlling_group(tmp_path, member):
+    namespace, _export = extracted_helpers(tmp_path)
+    mount = tmp_path / "mounted-subtree"
+    current = mount if member == "/" else mount / "job"
+    current.mkdir(parents=True)
+    for directory in {mount, current}:
+        (directory / "memory.max").write_text(str(110 * GIB))
+        (directory / "memory.current").write_text(str(20 * GIB))
+    observed = namespace["cgroup_memory"](
+        "0::" + member + "\n", f"39 29 0:33 /tenant {mount} rw - cgroup2 cgroup2 rw\n"
+    )
+    assert observed[-1]["path"] == str(mount)
+    assert all(row["memory"]["memory.max"] == 110 * GIB for row in observed)
+    (mount / "memory.current").unlink()
+    incomplete = namespace["cgroup_memory"](
+        "0::" + member + "\n", f"39 29 0:33 /tenant {mount} rw - cgroup2 cgroup2 rw\n"
+    )
+    assert incomplete[-1]["error"] == "FileNotFoundError"
 
 
 @pytest.mark.parametrize(

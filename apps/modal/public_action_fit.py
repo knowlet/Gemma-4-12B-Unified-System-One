@@ -209,6 +209,68 @@ def create(path, blob):
         os.fsync(stream.fileno())
 
 
+def complete_cgroup(group):
+    return (
+        set(group) == {"memory.max", "memory.current"}
+        and type(group["memory.current"]) is int
+        and group["memory.current"] >= 0
+        and (
+            group["memory.max"] is None
+            or type(group["memory.max"]) is int
+            and group["memory.max"] > 0
+        )
+    )
+
+
+def cgroup_memory(memberships, mountinfo):
+    """Read current unified membership and every visible controlling ancestor."""
+    members = [row.split(":", 2)[2] for row in memberships.splitlines() if row.startswith("0::")]
+    observations, seen = [], set()
+    for line in mountinfo.splitlines():
+        before, separator, after = line.partition(" - ")
+        if not separator or after.split()[0] != "cgroup2":
+            continue
+        fields = before.split()
+
+        def unescape(value):
+            return re.sub(r"\\([0-7]{3})", lambda match: chr(int(match[1], 8)), value)
+
+        mount_root, mount = Path(unescape(fields[3])), Path(unescape(fields[4]))
+        for member in members:
+            member = Path(member)
+            if not member.is_absolute() or ".." in member.parts:
+                observations.append({"error": "invalid unified membership"})
+                continue
+            candidates = [mount / str(member).lstrip("/")]
+            if member.is_relative_to(mount_root):
+                candidates.insert(0, mount / member.relative_to(mount_root))
+            directory = next((path for path in candidates if path.is_dir()), None)
+            if directory is None:
+                observations.append({"error": "unresolved unified membership"})
+                continue
+            while directory.is_relative_to(mount):
+                if directory not in seen:
+                    seen.add(directory)
+                    # Linux's actual hierarchy root has no memory.max. A
+                    # subtree/namespace mount root is still a controlling group.
+                    global_root = directory == mount and mount_root == Path("/")
+                    if not global_root or any(
+                        (directory / name).exists() for name in ("memory.max", "memory.current")
+                    ):
+                        row = {"path": str(directory), "memory": {}}
+                        try:
+                            for name in ("memory.max", "memory.current"):
+                                raw = (directory / name).read_text().strip()
+                                row["memory"][name] = None if raw == "max" else int(raw)
+                        except (OSError, ValueError) as exc:
+                            row["error"] = type(exc).__name__
+                        observations.append(row)
+                if directory == mount:
+                    break
+                directory = directory.parent
+    return observations
+
+
 def host():
     memory = {}
     for line in Path("/proc/meminfo").read_text().splitlines():
@@ -218,13 +280,29 @@ def host():
             require(unit == "kB", "Memory units")
             memory[name] = int(number) * 1024
     memory["boot_id"] = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
-    cgroup = {}
-    for name in ("memory.max", "memory.current"):
-        path = Path("/sys/fs/cgroup") / name
-        if path.exists():
-            raw = path.read_text().strip()
-            cgroup[name] = None if raw == "max" else int(raw)
-    memory["cgroup"] = cgroup
+    memberships = Path("/proc/self/cgroup").read_text()
+    mounts = "\n".join(
+        row for row in Path("/proc/self/mountinfo").read_text().splitlines() if " - cgroup" in row
+    )
+    observations = cgroup_memory(memberships, mounts)
+    complete = bool(observations) and all(
+        "error" not in row and complete_cgroup(row.get("memory", {})) for row in observations
+    )
+    effective = {}
+    if complete:
+        pairs = [row["memory"] for row in observations]
+        finite = [pair for pair in pairs if pair["memory.max"] is not None]
+        effective = (
+            min(finite, key=lambda pair: pair["memory.max"] - pair["memory.current"])
+            if finite
+            else pairs[0]
+        )
+    memory.update(
+        cgroup=effective,
+        cgroup_membership=memberships,
+        cgroup_mountinfo=mounts,
+        cgroup_ancestors=observations,
+    )
     return memory
 
 
@@ -235,16 +313,7 @@ def admit(path, scope, expected_boot):
     if scope == "train":
         required += 30 * GIB + 256 * 1024**2
     group = observation["cgroup"]
-    observed = (
-        set(group) == {"memory.max", "memory.current"}
-        and type(group["memory.current"]) is int
-        and group["memory.current"] >= 0
-        and (
-            group["memory.max"] is None
-            or type(group["memory.max"]) is int
-            and group["memory.max"] > 0
-        )
-    )
+    observed = complete_cgroup(group)
     passed = (
         observed
         and observation["boot_id"] == expected_boot

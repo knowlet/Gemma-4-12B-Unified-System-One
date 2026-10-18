@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-18",
+  "fix": {
+    "all_visible_controlling_ancestors_read": true,
+    "effective_finite_headroom": "minimum of actual limit minus actual current",
+    "global_root_both_files_absent_only": "skip noncontrolling hierarchy root; actual subtree mount root remains required",
+    "membership_and_mount_mapping": true,
+    "named_payload_unchanged": true,
+    "original_resource_floors_unchanged": true,
+    "resident_or_swap_credit_bytes": 0,
+    "unknown_or_partial_refused": true
+  },
+  "prior_attempt": {
+    "app_id": "ap-0Y1mvCD9sXRixBnIloTQf2",
+    "authoritative_modal_state": "stopped",
+    "cause": "read only cgroup mount root; real unified session and three visible controlling ancestors had explicit unlimited limits and valid current usage",
+    "cli_exit_code": 1,
+    "failed_gate": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/actual-fit-02/upload-gates.jsonl",
+      "sha256": "9b751cb777fd0a09f194a9364e5a391fb0e9db94bc25864436106c3bf8ef0bcc",
+      "size_bytes": 318
+    },
+    "gpu_fit_started": false,
+    "stderr": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/modal-run-02.stderr.log",
+      "sha256": "fcb4e02a45d579853d5a101e24b9d86922de58ea382fd4cd551c044e4c035c4e",
+      "size_bytes": 2223
+    },
+    "stdout": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/modal-run-02.stdout.log",
+      "sha256": "ad084c9cf3a31ddaee8e710ef96ac5350d5eb75130b8391d2f7bdbc7d50db893",
+      "size_bytes": 36716
+    },
+    "tasks": 0,
+    "training_updates": 0
+  },
+  "scope": "Resource discovery correction verified locally. No training, qualification or browser/model comparison result is claimed.",
+  "source": {
+    "path": "apps/modal/public_action_fit.py",
+    "sha256": "f0ab7fc3898e1b6754b99f482e3cdddd9a46428ba3ee9bdb523597619ea31857",
+    "size_bytes": 42685
+  },
+  "status": "cgroup_membership_discovery_fixed_and_verified_before_retry",
+  "tests": {
+    "path": "tests/test_public_action_modal_fit.py",
+    "sha256": "ead6fd5b29fa2395e542407c28c589643054d56b38340df6add6822b64ee24c5",
+    "size_bytes": 10964
+  },
+  "validation": {
+    "actual_local_cpu_admitted": true,
+    "actual_local_cpu_gate": {
+      "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/cgroup-discovery-fix-02/actual-local-cpu-gate.jsonl",
+      "sha256": "069f5c617828376aabe47fc0e3f21f2bd8bca350c89e6d8307cd479637b90926",
+      "size_bytes": 930
+    },
+    "actual_required_bytes": 30414139392,
+    "elapsed_seconds": 0.44,
+    "framework_or_Modal_imports": [],
+    "independent_review": "CLEAR",
+    "observed_ancestors": 3,
+    "observed_available_bytes": 123498426368,
+    "pure_tests_passed": 17,
+    "ruff_check": "passed",
+    "ruff_format_check": "passed"
+  }
+}
