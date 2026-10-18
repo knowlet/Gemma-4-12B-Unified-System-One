@@ -1,0 +1,483 @@
+{
+  "schema_id": "jev-field-syntax-helper-full10-browser-results-v1",
+  "status": "COMPLETE_CLOSED_5_OF_10_NO_MODEL_SUPERIORITY",
+  "result": {
+    "known4": {
+      "successes": 2,
+      "denominator": 4
+    },
+    "public6": {
+      "successes": 3,
+      "denominator": 6
+    },
+    "combined": {
+      "successes": 5,
+      "denominator": 10
+    },
+    "prior_Q93_same_v7": {
+      "successes": 4,
+      "denominator": 10
+    },
+    "only_new_passing_case": "public-arxiv-title-filter-results-v1",
+    "all_failures_retained": true
+  },
+  "change": "The separately qualified generic helper instruction preserves requested query syntax and literal characters. Original public240 model/artifact, policy prompts/math, grammar/decoder, action adapter disable/restore, v7 observation profile, cases and budgets are retained. This comparison performs no training or output repair.",
+  "conditions": {
+    "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+    "profile": "composed-visible-text-settled-v7",
+    "v7_profile_source_sha256": "d9f4236d1d46c9472c3d6c1551342639ecb870e6c0dd419246927645410ea868",
+    "v7_profile_manifest_sha256": "4869432a47eae2cd5c85edd3927b4c25dc992288f85e80f47fadf6fbc12a6545",
+    "candidate_qualification_sha256": "d33bfcac49f90c47b626c3915baf3d5fcbfb2e32522bfaccbbfec59dce35d8db",
+    "candidate_profile": "field-syntax-preserving-base-helper-v1",
+    "public240_manifest_sha256": "1b56f7697b551ca1869eda098fb4a82941ee0c5ab19259b1c8c9ea44cbcba78c",
+    "order": [
+      "known4",
+      "public6"
+    ],
+    "repeats": 1,
+    "seed": 20261014,
+    "max_policy_decisions_per_case": 16,
+    "model_seconds": 20,
+    "helper_seconds": 20,
+    "SDK_seconds": 25,
+    "context_tokens": 8192,
+    "policy_tokens": 32,
+    "helper_tokens_including_EOS": 128,
+    "reasoning": "none",
+    "viewport": [
+      1120,
+      780
+    ],
+    "screenshots": false,
+    "judge": "Original strict final DONE plus fresh independent DOM success, goal satisfied and no error. Blocked/403/decision-budget outcomes remain failures. A model DONE or HTTP200 alone does not count as success.",
+    "fresh_services": "The synthetic arms used separate sequential services. The browser candidate used a separate fresh service, so synthetic requests do not warm this browser run."
+  },
+  "cases": [
+    {
+      "case_id": "public-arxiv-title-filter-results-v1",
+      "goal": "Search arXiv for the exact phrase \"Attention Is All You Need\" in the Title field, choose Hide abstracts, and leave the search results open.",
+      "judge_kind": "arxiv_search",
+      "baseline_Q93_v7_strict_success": false,
+      "candidate_strict_success": true,
+      "final_status": "done",
+      "goal_satisfied": true,
+      "premature_done": false,
+      "error_stage": null,
+      "error": null,
+      "policy_calls": 5,
+      "helper_calls": 1,
+      "outcome": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-title-filter-results-v1-000/outcome.json",
+        "sha256": "794eb8208505560548c5f2f4722fcbe63a37067947ce158458eb64f43f045ed7",
+        "size_bytes": 58306
+      },
+      "model_calls": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-title-filter-results-v1-000/model_calls.json",
+        "sha256": "14604807ace1e9239a8981fbc056570b1ad4dea14ba7e4234806a6858a7fafe0",
+        "size_bytes": 1198764
+      }
+    },
+    {
+      "case_id": "public-arxiv-original-paper-open-v1",
+      "goal": "Find and open the arXiv abstract page for the original 2017 paper Attention Is All You Need by Ashish Vaswani and colleagues. Stop with the abstract page open.",
+      "judge_kind": "arxiv_paper",
+      "baseline_Q93_v7_strict_success": false,
+      "candidate_strict_success": false,
+      "final_status": "ready",
+      "goal_satisfied": false,
+      "premature_done": false,
+      "error_stage": "decision_budget",
+      "error": "Runner stopped at the 16-decision budget",
+      "policy_calls": 16,
+      "helper_calls": 2,
+      "outcome": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/outcome.json",
+        "sha256": "be3ec4b463cc9a5ef50e94a1d7c104f3a62fbf4a361000381025fee869f984ba",
+        "size_bytes": 37215
+      },
+      "model_calls": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+        "sha256": "aa3ac6487722eef17d3979b42dad8e868c5a5acb535bdf789acb81cb98fb9484",
+        "size_bytes": 4842417
+      }
+    },
+    {
+      "case_id": "public-python-counter-most-common-v1",
+      "goal": "In the Python 3.14 documentation, open the collections reference and bring the Counter.most_common() method signature and description into view.",
+      "judge_kind": "python",
+      "baseline_Q93_v7_strict_success": true,
+      "candidate_strict_success": true,
+      "final_status": "done",
+      "goal_satisfied": true,
+      "premature_done": false,
+      "error_stage": null,
+      "error": null,
+      "policy_calls": 6,
+      "helper_calls": 0,
+      "outcome": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-python-counter-most-common-v1-000/outcome.json",
+        "sha256": "fab9203fcec792c350d9ea649640174639ff0ecf650035081b00ffa7abc49b87",
+        "size_bytes": 68609
+      },
+      "model_calls": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-python-counter-most-common-v1-000/model_calls.json",
+        "sha256": "537ec22db381712cebfd4c41cd398f341bb723b1aa593925233751819081ab6d",
+        "size_bytes": 1476508
+      }
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1",
+      "goal": "Open NASA Science's Mars Facts page and bring its Moons section into view. Stop on that section.",
+      "judge_kind": "nasa",
+      "baseline_Q93_v7_strict_success": false,
+      "candidate_strict_success": false,
+      "final_status": "ready",
+      "goal_satisfied": false,
+      "premature_done": false,
+      "error_stage": "decision_budget",
+      "error": "Runner stopped at the 16-decision budget",
+      "policy_calls": 16,
+      "helper_calls": 1,
+      "outcome": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-nasa-mars-facts-moons-v1-000/outcome.json",
+        "sha256": "304d7528b125079949a2b88a21271ffb1aafdfe2da234ec43a6d4bec378127bc",
+        "size_bytes": 93344
+      },
+      "model_calls": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-nasa-mars-facts-moons-v1-000/model_calls.json",
+        "sha256": "30cec00d94fe8cc5353abd5c79336d30002ad170b0ea87b0ae409d4d4e8aefcd",
+        "size_bytes": 1979727
+      }
+    },
+    {
+      "case_id": "heldout-public-000",
+      "goal": "Open the SQLite window functions reference, then bring the row_number() built-in function entry and its description into view. Stop there.",
+      "judge_kind": "sqlite",
+      "baseline_Q93_v7_strict_success": true,
+      "candidate_strict_success": true,
+      "final_status": "done",
+      "goal_satisfied": true,
+      "premature_done": false,
+      "error_stage": null,
+      "error": null,
+      "policy_calls": 3,
+      "helper_calls": 0,
+      "outcome": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-000-000/outcome.json",
+        "sha256": "7f02290c1f56813f787c887ed378be800fb8d78b143d7efb9d2fc042cee3f5ab",
+        "size_bytes": 46188
+      },
+      "model_calls": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-000-000/model_calls.json",
+        "sha256": "5fe264124a0457184ed6923784fd6da2a2a5aeaf8ae8b6854666b0153b3281dd",
+        "size_bytes": 476116
+      }
+    },
+    {
+      "case_id": "heldout-public-001",
+      "goal": "In the NumPy 2.3 documentation, open numpy.reshape and bring the order parameter and its description of C and Fortran indexing into view. Stop with that parameter visible.",
+      "judge_kind": "numpy",
+      "baseline_Q93_v7_strict_success": true,
+      "candidate_strict_success": true,
+      "final_status": "done",
+      "goal_satisfied": true,
+      "premature_done": false,
+      "error_stage": null,
+      "error": null,
+      "policy_calls": 3,
+      "helper_calls": 0,
+      "outcome": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-001-000/outcome.json",
+        "sha256": "ddd1ff4bc62d52ae02b1399a1c199bf2eb0050db72d1640816291603e5f31681",
+        "size_bytes": 14030
+      },
+      "model_calls": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-001-000/model_calls.json",
+        "sha256": "e184ba423c64ba1b7d618a6dd2b90a2f43fca9cb0fcb1f36e97a7f5861360ba1",
+        "size_bytes": 616356
+      }
+    },
+    {
+      "case_id": "heldout-public-002",
+      "goal": "Open the curl command-line man page and bring the --retry-max-time option heading and its explanation into view. Stop on that option.",
+      "judge_kind": "curl",
+      "baseline_Q93_v7_strict_success": false,
+      "candidate_strict_success": false,
+      "final_status": "ready",
+      "goal_satisfied": false,
+      "premature_done": false,
+      "error_stage": "decision_budget",
+      "error": "Runner stopped at the 16-decision budget",
+      "policy_calls": 16,
+      "helper_calls": 0,
+      "outcome": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-002-000/outcome.json",
+        "sha256": "360976a77493f33b7c58b447b9482a9c7a44cd61b974fb3502661588163189c8",
+        "size_bytes": 288220
+      },
+      "model_calls": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-002-000/model_calls.json",
+        "sha256": "29809274d67e5dadd3b1a55f01eb85d6cd7c5645c19319ab3501673b1f000c14",
+        "size_bytes": 1739800
+      }
+    },
+    {
+      "case_id": "heldout-public-003",
+      "goal": "In the pandas 2.3 Series reference, open Series.map and bring the na_action parameter and the explanation of ignore into view. Stop there.",
+      "judge_kind": "pandas",
+      "baseline_Q93_v7_strict_success": true,
+      "candidate_strict_success": true,
+      "final_status": "done",
+      "goal_satisfied": true,
+      "premature_done": false,
+      "error_stage": null,
+      "error": null,
+      "policy_calls": 12,
+      "helper_calls": 0,
+      "outcome": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-003-000/outcome.json",
+        "sha256": "19c53d735213f4711aba543ec922646fe09b891357cf621f4d1290b23f1ecbe0",
+        "size_bytes": 11169
+      },
+      "model_calls": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-003-000/model_calls.json",
+        "sha256": "ba8d47641309c25a8e5a32b8bc81e2b2ce03d1fd1dc0e9dfc80a0018abffb743",
+        "size_bytes": 2752066
+      }
+    },
+    {
+      "case_id": "heldout-public-004",
+      "goal": "Search PubMed for asthma. Apply both the Clinical Trial and Free full text sidebar filters, then leave the filtered search results open.",
+      "judge_kind": "pubmed_search",
+      "baseline_Q93_v7_strict_success": false,
+      "candidate_strict_success": false,
+      "final_status": "blocked",
+      "goal_satisfied": false,
+      "premature_done": false,
+      "error_stage": null,
+      "error": null,
+      "policy_calls": 1,
+      "helper_calls": 0,
+      "outcome": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-004-000/outcome.json",
+        "sha256": "ddde707283bd2940e3126ffcb9e369626d27166c0ae3421b1069d5e6c6524ad8",
+        "size_bytes": 5657
+      },
+      "model_calls": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-004-000/model_calls.json",
+        "sha256": "aa5f74211a55c285873fa10b142dedcda24e11a6a5d8543278dc6278072db248",
+        "size_bytes": 43662
+      }
+    },
+    {
+      "case_id": "heldout-public-005",
+      "goal": "Change the PubMed search to migraine. Keep Free full text enabled, remove the Clinical Trial filter, and leave the resulting search results open.",
+      "judge_kind": "pubmed_change",
+      "baseline_Q93_v7_strict_success": false,
+      "candidate_strict_success": false,
+      "final_status": "blocked",
+      "goal_satisfied": false,
+      "premature_done": false,
+      "error_stage": null,
+      "error": null,
+      "policy_calls": 8,
+      "helper_calls": 2,
+      "outcome": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-005-000/outcome.json",
+        "sha256": "c2ad93fb7e7a72c38544439446faddcf88eed6d35e9fc3f688ebe73a1ceef2cb",
+        "size_bytes": 32652
+      },
+      "model_calls": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-005-000/model_calls.json",
+        "sha256": "188978c3f2a742f19a92e8820e50a5724ea23db904e03448746500f835c14b1b",
+        "size_bytes": 1535433
+      }
+    }
+  ],
+  "transport": {
+    "selected_HTTP_attempts": 92,
+    "distinct_RIDs": 92,
+    "policy": 86,
+    "helper": 6,
+    "HTTP200": 92,
+    "SDK_retries": 0,
+    "unknown_deliveries": 0,
+    "request_scoped_original_gate_rows": 1422,
+    "native_autoregressive_forward_records": 1054,
+    "all_request_gates_admitted": true,
+    "exact_SDK_body_status_RID_native_server_raw_outer_joins": true,
+    "request_service_leaves": 196,
+    "entire_196_request_leaf_population_matches_root_service_index_metadata": true
+  },
+  "helper_validation": {
+    "positive_fullmask_EOS_decoder_disable_restore_and_final_outer_join": 6,
+    "candidate_instruction_sha256": "7afe698b6c1ad71743c668c71b26f1124f0fe18af2a4561b316fd3e22cc2d7f6",
+    "qualified_vocabulary": 262144,
+    "policy_intrinsic_fullmask_reconstruction_claimed": false,
+    "allowed_EOS_token_IDs": [
+      1,
+      106,
+      50
+    ],
+    "observed_terminal_EOS_token_IDs": [
+      106
+    ],
+    "observed_terminal_EOS_counts": {
+      "106": 6
+    },
+    "terminal_EOS_observation": {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/independent-full10-projection-02/terminal-EOS-observations.json",
+      "sha256": "7ee49663c36d9cb833c10180b0a0873e92c346d1b4ec354c91d61ba16096f4e6",
+      "size_bytes": 5424
+    }
+  },
+  "arxiv_exact_phrase": {
+    "goal": "Search arXiv for the exact phrase \"Attention Is All You Need\" in the Title field, choose Hide abstracts, and leave the search results open.",
+    "same2018_byte_SDK_request_sha256": "1d732f29ac5bc20e8b954a8605a0401031e2e45c1012784f945fb716e9515257",
+    "baseline_consumer_text": "Attention Is All You Need",
+    "candidate_consumer_text": "\"Attention Is All You Need\"",
+    "baseline_strict_success": false,
+    "candidate_strict_success": true,
+    "baseline_premature_DONE": true,
+    "candidate_premature_DONE": false,
+    "matched_native_review": {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/matched-arxiv-title-native-join-01/review.json",
+      "sha256": "846fc97aff67e5e53a09c50e3ade57221226a7b355f94737576940b9cefef558",
+      "size_bytes": 12599
+    },
+    "finding": "The complete source-literal instruction, actual native prefix/first forward and native output IDs are joined to exact delivered response bytes/status/headerRID in both arms. Baseline433 input tokens produce11 output IDs; candidate543 produce12, both including terminal EOS106. The first output divergence is index3 with the same full-vocabulary allowed mask, so grammar did not force the added query quotation marks.",
+    "scope": "One previously seen identical helper payload supports an instruction-conditioned response difference; full-browser causality and general superiority are not established."
+  },
+  "public005": {
+    "strict_success": false,
+    "final_status": "blocked",
+    "policy_calls": 8,
+    "helper_calls": 2,
+    "both_HTTP_status": 200,
+    "both_consumer_text": "migraine",
+    "request_ids": [
+      "1e3178f759488db4f4ba62028fccd4aa",
+      "c4e95ff16b4af8e07df8fb3e87eed8c5"
+    ],
+    "interpretation": "Both helper deliveries are retained and validated; they do not establish task success or correct advanced-form submission. The five failed tasks remain in the original denominator."
+  },
+  "navigation": {
+    "profile": "composed-visible-text-settled-v7",
+    "manifest_sha256": "4869432a47eae2cd5c85edd3927b4c25dc992288f85e80f47fadf6fbc12a6545",
+    "source_sha256": "d9f4236d1d46c9472c3d6c1551342639ecb870e6c0dd419246927645410ea868",
+    "accepted_snapshot_SHA_joins": 105,
+    "observe_records": 105,
+    "null_navigation_operations": 86,
+    "terminal_unknown": 0,
+    "max_observe_seconds": 1.260855109023396,
+    "max_observe_overshoot_seconds": 0,
+    "null_retry_performs_extra_LLM_calls": false
+  },
+  "synthetic_control": {
+    "record": {
+      "path": "docs/validation/2026-10-19/jev-field-syntax-helper-semantic-comparison.json",
+      "sha256": "d68fb8aab187b47a36bdea7822d2275102704511c8b1c72c74bcb1ed1fccd473",
+      "size_bytes": 9708
+    },
+    "baseline": "12/16",
+    "candidate": "12/16",
+    "rescues": 0,
+    "regressions": 0,
+    "identical_native_output_ID_sequences_and_scalars": 16,
+    "interpretation": "The new instruction reached the real native inputs but did not improve this fixed exposed synthetic set. The predeclared ordinary-message punctuation gold has ambiguity and is not rescored."
+  },
+  "closure": {
+    "root_full10_model_wholeclosure": {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/root-full10-model-wholeclosure-01.json",
+      "sha256": "dae91e45070c1f8d53c9f401483dae399fe4f09b74f61dbf84c14951a352dfe5",
+      "size_bytes": 2089
+    },
+    "group_wholeclosures": {
+      "known4": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/root-known4-wholeclosure-01.json",
+        "sha256": "02c1db9ec37a170286ac65f0d9c8ba9de75a19a947ab7a3200e129cd4481811b",
+        "size_bytes": 3309
+      },
+      "public6": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/root-public6-wholeclosure-01.json",
+        "sha256": "6aaa010b8a8b1cbfb64d3344f0e2bb3a001de364521b2cc700cb83f1d542f597",
+        "size_bytes": 3616
+      }
+    },
+    "root_service_closed_index": {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/root-service-closed-index-01.json",
+      "sha256": "b629847de19329639c3112f5189fbf34628eea0a2641450f451b19f04339c6b8",
+      "size_bytes": 1342560
+    },
+    "service_closed_population": {
+      "files": 4322,
+      "bytes": 756894293
+    },
+    "independent_metadata_only_service_join": true
+  },
+  "limits": [
+    "The ten cases are fixed and previously exposed; one live-web repeat per case establishes no unseen generalization, statistical superiority, latency win or win over another model. Five failures remain in the denominator.",
+    "Only one observed arXiv helper request is an exact matched input pair. It supports an instruction-conditioned response difference on that input; it does not isolate the helper as the cause of the complete browser-score difference.",
+    "The separate 16 synthetic inputs remain baseline12/16 and candidate12/16, with zero rescues/regressions and identical native output token sequences and consumer values. The ordinary-message punctuation case has predeclared-gold ambiguity; no rescoring.",
+    "Full262144 allowed masks/EOS/decoder/disable-restore/outer authorization were independently replayed for all six positive helper deliveries. Policy intrinsic full-vocabulary masks were not independently reconstructed by this group reviewer.",
+    "OS process/Chrome/Playwright/listener wholeclosure and the complete4322-file service tree are supplied by externally pinned root attestations and index metadata. This projection does not repeat OS scans, resident-tensor checks or the service payload hash pass.",
+    "No HTTP/browser/model/native-framework/Modal calls, privateconfig parse/copy/print or external original tensor/cache/DSO payload reads occur in this projection. Heavy group hashing and helper cache replay were finished and root notified before native09; only generated small metadata was read thereafter."
+  ],
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/independent-full10-projection-02/review.json",
+      "sha256": "d187dd88dbe137c5ee3c77b0ac8b4f91bc907c7c036325b8922ac065cd631445",
+      "size_bytes": 46435
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/independent-known4-join-review-01/review.json",
+      "sha256": "4c1875dc3d652a3ba2f1c85a6587f007639e03bf999e4343a8a43d39bd0072a8",
+      "size_bytes": 74055
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/independent-public6-join-review-01/review.json",
+      "sha256": "9b7a2273ba278e8e4ee862757458295426b8c73ae6b683af2fdf57737b5a6062",
+      "size_bytes": 70879
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/independent-known4-join-review-01/review.json",
+      "sha256": "46d0eb8073f6f1a7928fc8155f472ac4cd49e379ee447c8628a7e9f06b65739b",
+      "size_bytes": 74913
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/independent-public6-join-review-01/review.json",
+      "sha256": "57b7810ece82597dc9129b8fb20ae41965ffb73195c869cb461df7c7b70064b4",
+      "size_bytes": 69483
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/root-auditor-source-review-01.json",
+      "sha256": "1aa6e62ad058c95040100145cd4d2be016ce572c160c92d80c6462200c572ba7",
+      "size_bytes": 1453
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/auditor-source-HOLD-01/HOLD.json",
+      "sha256": "93ee6ac6940ac8ad7b17f3564087af6c86a18069d10af0c811167d3009d27685",
+      "size_bytes": 11079
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/auditor-plan-01.json",
+      "sha256": "54eccc53504687fa5e14fc57fcb7b2f3ae341a4cd34d92bce54624f2a6cc979e",
+      "size_bytes": 9686
+    },
+    {
+      "path": "artifacts/jev-runtime/field-json-qualified-browser-retest-20261018-01/case-manifest-01.json",
+      "sha256": "af8b1ac262e0f45577a3aee8e1ab6de451a8aa1779626b83d8591896bfab6e28",
+      "size_bytes": 11019
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/matched-arxiv-title-native-join-01/review.json",
+      "sha256": "846fc97aff67e5e53a09c50e3ade57221226a7b355f94737576940b9cefef558",
+      "size_bytes": 12599
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/matched-arxiv-title-native-join-01/native-replay-01.json",
+      "sha256": "121dc79c14c98dbda8ad7123106f29f4d0c472ecbf6211f6169a51b24d47ee7a",
+      "size_bytes": 1354
+    }
+  ]
+}
