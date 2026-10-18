@@ -1,0 +1,106 @@
+{
+  "schema_id": "decision3-gb10-warm-comparison-readiness-v1",
+  "status": "METADATA_REVIEW_ONLY_ALL_SIX_NOT_ADMISSIBLE_UNDER_EXISTING_LOCAL_PROFILE",
+  "problem": "Determine whether the six publisher-warmed Decision3 models can replace the unavailable H200 comparison with a same-machine GB10 run. This is a feasibility review, not a new model benchmark.",
+  "host_gate": {
+    "source": "scripts/jev_decision3_public_dev22_gpu_replay.py:memory_decision",
+    "formula": "max(24 GiB, ceil(MemTotal/5)) + 2 * resident_file_bytes + 2 GiB; cgroup headroom can only reduce available memory",
+    "MemTotal_bytes": 130595860480,
+    "reserve_bytes": 26119172096,
+    "largest_model_resident_file_bytes": 52176025120,
+    "largest_model_required_available_bytes": 132618705984,
+    "excess_over_entire_host_bytes": 2022845504,
+    "interpretation": "The largest d3 model cannot pass this unchanged conservative gate even if all host RAM were available. This is resource unavailable, not a decision-quality failure. The formula is a prospective admission rule, not a measured physical peak.",
+    "gate_or_resident_credit_changes": false
+  },
+  "models": [
+    {
+      "model": "d3",
+      "revision": "225be8b1e2270becab69c5fe05b26f99cbbdd66b",
+      "resident_file_bytes": 52176025120,
+      "required_available_bytes": 132618705984,
+      "local_runtime_payload_status": "Required tensor files absent in both checked local cache roots"
+    },
+    {
+      "model": "d3-flash",
+      "revision": "8b35c853b90e777595ec36bacae820fe08ea077a",
+      "resident_file_bytes": 16789656976,
+      "required_available_bytes": 61845969696,
+      "local_runtime_payload_status": "Required tensor files absent in both checked local cache roots"
+    },
+    {
+      "model": "d3-mini",
+      "revision": "97dd054df4b3e0b3beb6af23ab8c82b7c0052e0e",
+      "resident_file_bytes": 9081227360,
+      "required_available_bytes": 46429110464,
+      "local_runtime_payload_status": "Required tensor files absent in both checked local cache roots"
+    },
+    {
+      "model": "d3-nano",
+      "revision": "aeb70d4dd53ed25b855c3b0a66394b8fe265db7f",
+      "resident_file_bytes": 4428644200,
+      "required_available_bytes": 37123944144,
+      "local_runtime_payload_status": "Required tensor files absent in both checked local cache roots"
+    },
+    {
+      "model": "d3-lite",
+      "revision": "9c10703193afc7c7d28c88201c0364bfbbf58320",
+      "resident_file_bytes": 1707072248,
+      "required_available_bytes": 31680800240,
+      "local_runtime_payload_status": "All required files stat-present with matching sizes; contents not reverified"
+    },
+    {
+      "model": "d3-edge",
+      "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+      "resident_file_bytes": 1189722528,
+      "required_available_bytes": 30646100800,
+      "local_runtime_payload_status": "All required files stat-present with matching sizes; contents not reverified"
+    }
+  ],
+  "other_limits": [
+    "The frozen service requires an H200 identity and its dedicated x86 runtime. Local GB10 is aarch64 with a different Torch environment; FLA/causal-conv1d and fast-kernel correctness remain unverified.",
+    "The four larger models lack 82,475,553,656 bytes of tensor files in the checked local roots. Lite/edge files have matching stat sizes only; no tensor/header/SHA verification was performed.",
+    "A read-only Modal app-list query succeeds, but this does not establish permission to launch GPU workloads or resolve the previous compute-disabled error. Publisher-warmed six-model browser results remain outstanding."
+  ],
+  "comparison_rules": "Preserve all six declared models, resource refusals and all ten fixed development cases. Use a common explicit browser profile, identical judges/16 decisions/20-second task-call limits and the same qualified field helper. Record actual publisher text48 warmup separately. Earlier cold H200 refusals do not establish ten quality failures per model or a same-GB10 superiority claim.",
+  "actions": {
+    "model_calls": 0,
+    "GPU_queries": 0,
+    "downloads": 0,
+    "tensor_bytes_read_or_hashed": 0,
+    "new_runtime_or_worker_implementation": false
+  },
+  "evidence": {
+    "path": "artifacts/jev-runtime/decision3-gb10-warm-feasibility-20261018-01/metadata-review-01.json",
+    "sha256": "535523c9ccdf4c05c7768cd101690a7b5f93abd2775fba5c1c850525d0b4c7f3",
+    "size_bytes": 15652
+  },
+  "source_refs": [
+    {
+      "path": "scripts/jev_decision3_public_dev22_gpu_replay.py",
+      "sha256": "9919e3b1dd5d5a68377b8e74c1b313c9a368a1716400d32af72e8a548ef02b4c",
+      "size_bytes": 59545
+    },
+    {
+      "path": "scripts/jev_decision3_browser_worker.py",
+      "sha256": "2623f965326b9035c53eb64f5ce0af1b80c493e20fc196b453256e7d04b5cb7d",
+      "size_bytes": 50393
+    },
+    {
+      "path": "apps/modal/decision3_browser_service.py",
+      "sha256": "55229ac0215b9d070c26535e5e5e781f8e1eff8b0f322112a0466023d56e4023",
+      "size_bytes": 78181
+    },
+    {
+      "path": "apps/modal/decision3_public_replay.py",
+      "sha256": "1cd90e5e98ad1c7c63985cdc5c9b7795021bf252b6ca1b5437bdc653d065f533",
+      "size_bytes": 50565
+    },
+    {
+      "path": "src/s1/evaluation/decision3.py",
+      "sha256": "aaa21ab6f2ecf5ae0e00694b43755541dc75fc0310ba10d945ade2a4511add52",
+      "size_bytes": 24613
+    }
+  ],
+  "superiority_attested": false
+}
