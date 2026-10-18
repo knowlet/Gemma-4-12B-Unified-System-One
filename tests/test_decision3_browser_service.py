@@ -35,6 +35,12 @@ def load_source(name, path, *, before_modal=False):
             compile(ast.Module(body=tree.body[:boundary], type_ignores=[]), str(path), "exec"),
             module.__dict__,
         )
+        # Keep the deployment's named-source bytes and digests unchanged while
+        # pure tests use this checkout instead of Modal's copied absolute paths.
+        deployed_root = module.ROOT
+        for constant_name, value in list(vars(module).items()):
+            if isinstance(value, Path) and value.is_relative_to(deployed_root):
+                setattr(module, constant_name, ROOT / value.relative_to(deployed_root))
         return module
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
