@@ -1,0 +1,74 @@
+{
+  "schema_id": "jev-native-fixed-cache-probe-results-v1",
+  "status": "PARTIAL_NOT_FULL_TRAINING_CAPACITY",
+  "problem": "Original native training phases exhausted the fixed device-free reserve after successful forwards/backward. Test fixed unused-cache release after every successful train/dev forward and backward while preserving all original model math, workload and admission gates.",
+  "native_profile": "fixed-post-forward-backward-unused-cache-release-v1",
+  "actual_run": "actual-12",
+  "results": {
+    "A": {
+      "model_loads": 1,
+      "synchronized_optimizer_updates": 2,
+      "development_forward_rows": 2,
+      "cache_release_completions": 6,
+      "new_saved_weights": 0,
+      "peak_native_allocated_bytes": 28070871040,
+      "peak_native_reserved_bytes": 29095886848,
+      "elapsed_seconds": 238.28350700100418,
+      "outcome": "Two disposable updates and two development forwards completed."
+    },
+    "C": {
+      "model_loads": 1,
+      "synchronized_optimizer_updates": 1,
+      "cache_release_completions": 3,
+      "new_saved_weights": 0,
+      "elapsed_seconds": 210.86384340800578,
+      "outcome": "Second train forward and cache release completed; the next backward entry was refused by the unchanged native device-free guard.",
+      "device_free_bytes": 43902300160,
+      "required_device_free_bytes": 44023414784,
+      "shortfall_bytes": 121114624,
+      "allocated_bytes": 25979875328,
+      "reserved_bytes": 26516389888
+    }
+  },
+  "invariants": [
+    "One freshly verified nonquantized BF16 model per arm; original176 FP32 LoRA parameters and full262144 output head.",
+    "Original rows, train ordering, AdamW updates, attention/gradient checkpointing, sequence length, phase order and fixed resource thresholds retained. Recorded attention operators retain48-layer counts.",
+    "All9 successful cache releases kept memory_allocated unchanged and allocator peaks nondecreasing; storage identity checks pass. Reserved-minus-allocated is not guaranteed reclaimable.",
+    "Fixed40GiB cgroup limit,41GiB device-free gate,39.5GiB reserved soft stop, zero unit swap,1800s per-arm watchdog and1GiB campaign evidence cap retained.",
+    "Both workers, controller, owned unit cgroups and original process group are closed. Entire1113-file closed campaign was SHA-indexed."
+  ],
+  "interpretation": [
+    "This is a disposable memory probe, not a saved training result or browser-score gain. A completes the intended short probe; C still fails, so overall full A/C capacity is not established.",
+    "C shortfall after release is121114624B (about115.5MiB). No retry or gate reduction is justified by this result. Full120/129-update execution remains pending.",
+    "A native allocator peaks and retained same-invocation systemd lifetime peaks describe separate resource axes. C did not reach the success-only native-work-end snapshot/ACK; missing values remain unknown.",
+    "Current real-browser baseline remains5/10 on one exposed repeat. No competitor superiority is claimed."
+  ],
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/root-H13-source-review-01.json",
+      "sha256": "fe2e53f37d29cf46f3fb7770476cff0163f63cbcc8c61816fb78f2cba7d2239c",
+      "size_bytes": 2131
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/independent-H13-source-review-01.json",
+      "sha256": "bea09659431517e8de4ac7c25d33b2fd16a20eac1ee87f404616b51fedea7730",
+      "size_bytes": 191351
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/root-native-actual12-start-01.json",
+      "sha256": "8745681e5bab75df802fa3bb4070eb762f88b8c026a1cbb451cde51f6339b9e1",
+      "size_bytes": 2434
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/root-actual12-exit-review-01.json",
+      "sha256": "e131b91708bdf78d0b66292160ac2a4b749b860597c71fc8f89e05ecfa197bd7",
+      "size_bytes": 20168
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/root-actual12-closed-index-01.json",
+      "sha256": "c01602d5257a6bc1872e3cec2e21a9549e60764113561ec05b3a9f9ed2f8821b",
+      "size_bytes": 318666
+    }
+  ],
+  "local_only": true
+}
