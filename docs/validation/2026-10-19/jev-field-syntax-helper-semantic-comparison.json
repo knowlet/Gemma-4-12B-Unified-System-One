@@ -1,0 +1,129 @@
+{
+  "schema_id": "jev-field-syntax-helper-semantic-comparison-v1",
+  "status": "CLOSED_PAIRED16_NO_SEMANTIC_IMPROVEMENT_BROWSER_REVIEW_PENDING",
+  "problem": "A technically valid field JSON response can omit characters required by the requested value. This comparison tests whether a generic syntax-preservation instruction improves the original constrained helper on a fixed synthetic set.",
+  "change": "The candidate changes the helper instruction and its separately qualified source identity. Both arms use the same original public240 artifact, full native grammar and decoder, greedy base-model helper with the action adapter disabled and restored, and original resource limits. No training, output repair or policy-prompt change occurs in this experiment.",
+  "result": {
+    "predeclared_payloads": 16,
+    "requests_per_arm": 16,
+    "total_requests": 32,
+    "order": "Original Q93 baseline, then the independently qualified field-syntax candidate, in separate sequential owned local services.",
+    "baseline_exact_text": "12/16",
+    "candidate_exact_text": "12/16",
+    "rescues": 0,
+    "regressions": 0,
+    "identical_consumer_scalars": 16,
+    "identical_actual_native_output_token_ID_sequences": 16,
+    "retries": 0,
+    "policy_calls": 0,
+    "HTTP200_per_arm": 16,
+    "transport_or_consumer_errors_per_arm": 0,
+    "interpretation": "The new instruction reached the recorded native model inputs, but produced no change in greedy output tokens or field values on these 16 inputs. This result does not indicate a stale branch or a change confined to a response profile label."
+  },
+  "actual_prompt_binding": {
+    "candidate_instruction_sha256": "7afe698b6c1ad71743c668c71b26f1124f0fe18af2a4561b316fd3e22cc2d7f6",
+    "full_prepared_prompts": "All 16 candidate prompts exactly equal the reviewed new instruction literal plus the original payload context and native template. Their prompt digests differ from the baseline.",
+    "native_first_forwards": "All 32 saved first forwards contain the complete corresponding native prefix IDs and attention masks. Every candidate prefix digest differs from its baseline counterpart.",
+    "actual_input_token_increase_each_case": 110,
+    "actual_added_input_tokens_total": 1760,
+    "baseline_input_token_range": [145, 160],
+    "candidate_input_token_range": [255, 270],
+    "instruction_digest_in_generation": "The candidate instruction digest also matches the prepared helper and actual generation receipts; profile claims alone are not the basis of this finding."
+  },
+  "unchanged_mismatches": [
+    {
+      "ordinal": 0,
+      "id": "synthetic-field-00-phrase",
+      "goal": "Search for the exact phrase \"moss lantern\".",
+      "original_gold": "\"moss lantern\"",
+      "both_actual": "moss lantern",
+      "strict_exact_match": false,
+      "finding": "The required exact-phrase quotation marks are omitted."
+    },
+    {
+      "ordinal": 5,
+      "id": "synthetic-field-05-ordinary-operators-control",
+      "goal": "Search for the ordinary keywords title moss lantern draft. Do not add query operators.",
+      "original_gold": "title moss lantern draft",
+      "both_actual": "moss lantern draft",
+      "strict_exact_match": false,
+      "finding": "The requested ordinary keyword title is omitted."
+    },
+    {
+      "ordinal": 9,
+      "id": "synthetic-field-09-plain-code-control",
+      "goal": "Enter the ordinary message print moss.",
+      "original_gold": "print moss",
+      "both_actual": "print moss.",
+      "strict_exact_match": false,
+      "finding": "The original strict gold excludes the trailing period. The goal leaves room to read that period as instruction punctuation or part of the requested message, so this mismatch is not unqualified evidence of a semantic error. The predeclared gold and 12/16 scores remain unchanged; no post hoc rescoring is applied."
+    },
+    {
+      "ordinal": 12,
+      "id": "synthetic-field-12-embedded-quotes",
+      "goal": "Enter exactly these characters: label says \"north\"",
+      "original_gold": "label says \"north\"",
+      "both_actual": "north",
+      "strict_exact_match": false,
+      "finding": "The requested literal prefix and quotation marks are omitted."
+    }
+  ],
+  "verification": {
+    "payloads_and_delivery": "Each arm sends exactly the same 16 predeclared payloads once, producing 32 requests with unique server request IDs. Case IDs, categories and evaluator gold fields are not appended to model prompts. Exact request and response bytes, HTTP status, request ID and the server's final selected outer-completion body/status are joined for every request; a raw server candidate alone is not treated as delivery.",
+    "native_execution": "Each arm has 178 actual autoregressive forwards. All 262144-vocabulary allowed masks, their prefix/count/digest bindings, emitted tokens, actual terminal EOS, original decoder projection, durable helper events and disabled-adapter restoration are independently replayed from closed saved copies without loading a native decoder or model.",
+    "preserved_limits": "128 helper tokens including actual EOS, 8192 context, 20 seconds for the whole helper and 25 seconds for the HTTP client; no extra helper calls, repairs or retries.",
+    "model_and_resources": "One verified model load per arm; all 279 original resource gates per arm pass independent boot, sequence, floor-math and zero resident/swap-credit checks. The bound guard source and saved final invariants attest all original 176 FP32 adapter tensors, frozen/eval state, PEFT behavior and full head SHA. This is not post-exit resident-tensor reexecution.",
+    "full_head_sha256": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+    "same_public240_artifact": "All 1463 saved public-artifact inventory entries match between arms. The paired audit references the previously sealed baseline index rather than rehashing baseline payloads.",
+    "baseline_closed_population": {"files": 4166, "bytes": 726820492},
+    "candidate_closed_population": {"files": 4170, "bytes": 727450416},
+    "closure": "Both clients and services return EXIT0. Whole owned leader/process-group closure is independently checked for baseline PID807283 and candidate PID809127. Closed identities authorize no future calls.",
+    "privacy": "Private controller configs are streamed only for SHA, size and mode, never parsed, printed or copied by the independent audits. External original tensor/cache/DSO payloads are not read.",
+    "response_representation": "The original server places the validated scalar in a compact JSON response container. Raw model JSON whitespace remains separately recorded; the field scalar is unchanged and the full selected response wire bytes are verified."
+  },
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/semantic-probes-01.json",
+      "sha256": "716ad6dd78864b8cbb0c8e6dd1a53ae6559eb43e410dd55bdec37ae2cf815769",
+      "size_bytes": 21977
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/independent-semantic-baseline-review-01/review.json",
+      "sha256": "bd66a64c1bb3b14f93ae80cb35a87ee4f4da07576d2caafa02e34213ce2e3e12",
+      "size_bytes": 7939
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/independent-semantic-candidate-review-01/review.json",
+      "sha256": "95306bb32d0672c2f1aa2d32417ca0c40aa0efa4bd27af831367e7474bc80db4",
+      "size_bytes": 9139
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/independent-semantic-candidate-review-01/paired-comparison-01.json",
+      "sha256": "b4d245d2bd8b25ac870e282a42e54312b56c6f04e9503562bb8af61d9d5a1b8d",
+      "size_bytes": 34600
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/independent-semantic-candidate-review-01/paired-check-01.json",
+      "sha256": "fead3f8c5b42f4fbe229cc8ee59e95a4a50f45190f68c8e97c1bd6d79b274865",
+      "size_bytes": 971
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/independent-semantic-baseline-review-01/native-replay-01.json",
+      "sha256": "5dd462472d32ee799af5cb37960565e93fcbdc8f6db08d3eb27a0259f6bd1448",
+      "size_bytes": 5152
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/independent-semantic-candidate-review-01/native-replay-01.json",
+      "sha256": "9674213e3eddaf23f762424f1c4f1fab2da4bc05ff264fb2df87a0a34e842032",
+      "size_bytes": 6705
+    }
+  ],
+  "next": "The separate full 10-case v7 browser comparison still requires independent closed-evidence judgment with the original cases, budgets, strict success rule and all failures retained. No new browser score is asserted here.",
+  "limits": [
+    "These are authored, exposed synthetic exact-text cases, not browser tasks or unseen generalization. Technical validity and HTTP200 do not establish semantic correctness.",
+    "Identical greedy output IDs and scalars do not imply identical logits or probabilities, or no instruction effect on every other input.",
+    "The fixed sequential comparison establishes no statistical superiority, win over another model or latency improvement. The additional 1760 input tokens are measured input usage, not a latency or cost estimate.",
+    "Saved client request-ID fields are joined to exact bodies/status and native/outer records; no raw packet capture or duplicate response-header capture is claimed.",
+    "Modal work is deferred at the user's instruction because the monthly quota is exhausted; work continues locally. This document attests no Modal allocation or six-model Decision3 warm comparison."
+  ]
+}
