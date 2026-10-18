@@ -1,0 +1,60 @@
+{
+  "status": "diagnosed_stage_budget_mismatch_not_OOM_or_training_peak",
+  "problem": "The original gate requires the entire prospective base-load plus training budget as additional free MemAvailable even after the base model is loaded. On the local130.596GB host this makes postload training admission practically self-refusing. The implementation and verifier match their original explicit design.",
+  "formula": {
+    "ResourceGate_old_and_CFG_AST_identity_equal": true,
+    "ResourceGate_AST_sha256": "eb49d344b4ff4f20119f957ef79f0950ae177eb760d8fc921124a53fbfe66116",
+    "base_checkpoint_bytes": 23919549408,
+    "MemTotal_bytes": 130595860480,
+    "MemTotal_GiB": 121.62687301635742,
+    "reserve_formula": "max(24GiB, ceil(MemTotal/5))",
+    "reserve_bytes": 26119172096,
+    "load_formula": "reserve +2*base_checkpoint_bytes",
+    "load_required_bytes": 73958270912,
+    "train_formula": "reserve +2*base_checkpoint_bytes +30GiB +256MiB",
+    "train_required_bytes": 106438961088,
+    "train_required_GiB": 99.1290072798729,
+    "cpu_formula": "reserve +4GiB",
+    "resident_credit_bytes": 0,
+    "same_formula_enforced_by_artifact_verifier": true
+  },
+  "observed_local_fit_refusal": {
+    "before_constructor_MemAvailable": 119927267328,
+    "postload_before_parent_injection_MemAvailable": 94667264000,
+    "required_MemAvailable": 106438961088,
+    "shortfall_bytes": 11771697088,
+    "model_loads": 1,
+    "training_updates": 0,
+    "error": "Fresh same-boot train memory admission refused",
+    "interpretation": "Admission refused before parent injection, compile, optimizer or native training; not an observed OOM."
+  },
+  "existing_H200_evidence": {
+    "completed_updates": 240,
+    "peak_cuda_allocated_bytes": 28111598592,
+    "peak_cuda_reserved_bytes": 31077695488,
+    "host_topology": "Discrete H200 on a1.759TB host; these counters are not local unified-memory physical bounds.",
+    "actual_full_input_extremes": {
+      "max_train_tokens": 5055,
+      "max_development_tokens": 3652,
+      "max_target_readouts": 13
+    }
+  },
+  "next": "Prepare an independent bounded local memory-peak diagnostic using original full native requests/gradient checkpointing and same A/C parent. Preserve old gates/artifacts; record stage-live OS/cgroup/CUDA axes and actual optimizer steps separately before proposing a new training memory profile.",
+  "limits": [
+    "Checkpoint file size, hostRSS and CUDAallocated are distinct proxies; do not add observed RSS and CUDA counters on unified memory.",
+    "Historical H200 peak does not prove a safe local floor or all future request peaks.",
+    "Original8192-context and32-target contracts remain; observed row maxima do not authorize truncation.",
+    "No production gate was reduced, no model trained, and no old refusal receipt changed."
+  ],
+  "root_verification": {
+    "source_and_evidence_file_pins": 16,
+    "original_and_CFG_gate_AST_identical": true,
+    "formula_recomputed": true,
+    "whole_report_fullread": true
+  },
+  "evidence": {
+    "path": "artifacts/jev-runtime/public-native-fit-memory-analysis-20261018-01/report-01.json",
+    "sha256": "918a1933af950468b9f2492c950fef65cdffd309b335ae809f3daeaef4184645",
+    "size_bytes": 15907
+  }
+}
