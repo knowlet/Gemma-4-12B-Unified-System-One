@@ -10,11 +10,13 @@ from apps.modal.public_action_fit import HUB, ROOT, image, inputs, results, weig
 
 POINTS = ("/", "/home", str(ROOT), str(HUB), "/input", "/export")
 app = modal.App("public07-readonly-mount-probe", include_source=False)
+probe_image = image.add_local_file(
+    str(Path(__file__).resolve()), str(Path(__file__).resolve()), copy=True
+)
 
 
 @app.function(
-    image=image,
-    serialized=True,
+    image=probe_image,
     cpu=1,
     memory=4096,
     ephemeral_disk=524288,
