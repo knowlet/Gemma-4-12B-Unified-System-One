@@ -1222,7 +1222,7 @@ def owned(mode, run_id, manifest_sha256=None):
 @app.function(
     image=image,
     cpu=2,
-    memory=524288,
+    memory=344064,
     ephemeral_disk=524288,
     timeout=7800,
     max_containers=1,
@@ -1239,7 +1239,7 @@ def download(run_id: str):
     image=image,
     gpu="H200",
     cpu=2,
-    memory=524288,
+    memory=344064,
     ephemeral_disk=524288,
     timeout=7800,
     max_containers=1,

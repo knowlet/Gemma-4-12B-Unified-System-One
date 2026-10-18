@@ -1,0 +1,68 @@
+{
+  "actual_attempt": {
+    "app_id": "ap-Q3a9C0jGhcOSDjLZV7DKJB",
+    "cli_exit_code": 1,
+    "error": "Function memory request out of bounds. Must be between 128 and 344064 MiB.",
+    "logs": [
+      {
+        "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/modal-run-06.stdout.log",
+        "sha256": "36c57abd65864b93de58cb9545cb73ec6679b1c515942bd017abb147fd85b94a",
+        "size_bytes": 22122
+      },
+      {
+        "path": "artifacts/jev-runtime/public-native-action-modal-fit-20261016-01/modal-run-06.stderr.log",
+        "sha256": "47dea2965cbbb4d18b7da07fff941b245d34afa26fc7776b90ca6856e59ccb84",
+        "size_bytes": 553
+      }
+    ],
+    "model_loaded": false,
+    "run_id": "public07-h200-120-20261018-06",
+    "stage": "provider function creation before local entrypoint/upload or workers",
+    "training_updates": 0
+  },
+  "date": "2026-10-18",
+  "decision3_manifest_delta": "Only wrapper pin changed; all other716 rows verified against actual bytes. No Decision3 upload or run occurred.",
+  "decision3_new_manifest": {
+    "path": "artifacts/jev-runtime/decision3-modal-public-replay-20261018-01/named-upload-manifest-draft-05.json",
+    "sha256": "3d00daa82e374765377e04844303e9ecb2d4e89a107ee7f2503dd4f46bcce834",
+    "size_bytes": 258839
+  },
+  "fix": {
+    "CPU_GPU_workers": "Gemma and Decision3",
+    "GPU": "H200",
+    "GPU_count": 1,
+    "ephemeral_disk_MiB": 524288,
+    "memory_GiB": 336,
+    "memory_MiB": 344064,
+    "training_steps": 120,
+    "unchanged": "Exact byte comparisons against 6607cc4 show only four app memory literals and two test expected values changed. cgroup parsing, all admission formulas, sources90/91, payload1452, training recipe and staging remain unchanged."
+  },
+  "schema_id": "jev-modal-supported-memory-correction-v1",
+  "scope": "This corrects an actual provider allocation rejection; no trained model or browser score exists yet.",
+  "source_pins": [
+    {
+      "path": "apps/modal/public_action_fit.py",
+      "sha256": "596305a7efa89bf7da29fc61c5716dbb6f8600d8c763ea1e6b37b0f9a016736c",
+      "size_bytes": 51798
+    },
+    {
+      "path": "apps/modal/decision3_public_replay.py",
+      "sha256": "cf23bc6c4ff0068c622e2c6bb1a3ba7122a6093d5afda96a66dced0816826eac",
+      "size_bytes": 50565
+    },
+    {
+      "path": "tests/test_public_action_modal_fit.py",
+      "sha256": "0f60adcc1c1d6c3d061bab959ef651b1804f99b799df7cbabd63a8d87b3cf00f",
+      "size_bytes": 28599
+    },
+    {
+      "path": "tests/test_decision3_modal_replay.py",
+      "sha256": "ea7204018493fb7a9afc4b4c31efe10eb7b23e0d626fdbccd1312055596aa69f",
+      "size_bytes": 21028
+    }
+  ],
+  "validation": {
+    "elapsed_seconds": 0.21,
+    "existing_allocation_tests_passed": 2
+  }
+}

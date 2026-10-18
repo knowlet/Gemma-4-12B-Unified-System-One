@@ -315,7 +315,7 @@ def test_modal_ram_request_increases_without_changing_cpu_gpu_disk_or_recipe():
     for name in ("download", "fit"):
         decorator = functions[name].decorator_list[0]
         options = {keyword.arg: keyword.value for keyword in decorator.keywords}
-        assert ast.literal_eval(options["memory"]) == 524288
+        assert ast.literal_eval(options["memory"]) == 344064
         assert ast.literal_eval(options["cpu"]) == 2
         assert ast.literal_eval(options["ephemeral_disk"]) == 524288
         if name == "fit":
