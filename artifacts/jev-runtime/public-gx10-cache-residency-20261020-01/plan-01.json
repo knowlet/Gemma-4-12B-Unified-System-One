@@ -1,0 +1,48 @@
+{
+  "schema": "GX10_cache_residency_plan_v1",
+  "status": "SOURCE_ONLY_NO_ACTUAL_MEASUREMENT",
+  "snapshot": "artifacts/jev-local-hf/hub/models--knowlet--Gemma-4-12B-Unified-System-One/snapshots/a66f836b56605039fe040f330180e336d19b3362/model.safetensors",
+  "canonical_blob": "artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+  "checkpoint_size_bytes": 23919549408,
+  "checkpoint_metadata": {
+    "dev": 66306,
+    "inode": 11034709,
+    "size_bytes": 23919549408,
+    "uid": 1001,
+    "gid": 1001,
+    "mode": 256,
+    "nlink": 2,
+    "mtime_ns": 1791911933623815346,
+    "ctime_ns": 1792315930876946537
+  },
+  "expected_boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0",
+  "page_size": 4096,
+  "chunk_bytes": 268435456,
+  "vector_cap_bytes": 65536,
+  "output_cap_bytes": 2097152,
+  "wall_seconds": 120,
+  "CPU_phase": "before-any-project-framework-or-parent-payload",
+  "swap_or_resident_credit_bytes": 0,
+  "source_dependencies": {
+    "scripts/jev_public_action_artifact.py": {
+      "sha256": "dbd1eb660d3bebc8dbc0b3f7e58b7bac66f5ab0a4ea9d687dc463ce830f1672d",
+      "size_bytes": 55142
+    },
+    "scripts/jev_browser_fit_public_actions.py": {
+      "sha256": "a38bbab599f6f8ec8117d1b912e02913330ea7bb11cd67e4e6793ed80da01ca7",
+      "size_bytes": 26294
+    }
+  },
+  "requirements": [
+    "Original ResourceGate CPU reserve max(24GiB,ceil(MemTotal/5))+4GiB unchanged, same boot, fsync before protected stage, no credit.",
+    "Fixed read-only O_NOFOLLOW inode, exact metadata, owner/euid equality, no aliases sum.",
+    "mmap(PROT_NONE,MAP_PRIVATE) then mincore then munmap, 90 sequential windows, no mapped payload read or cache advice.",
+    "Unknown on any gate or identity or syscall or persistence failure, no retry, no benchmark/training claim."
+  ],
+  "research_report": {
+    "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/research-report-01.json",
+    "sha256": "ba84ef2e1e67c88d532d982b1d443c2a8f1f27a535e06f23fe8a2409c5b50b98",
+    "size_bytes": 20543
+  },
+  "wall_semantics": "120 seconds is checked cooperatively before each chunk; a running mmap/mincore/munmap or fsync is not interrupted. No native syscall hard-deadline claim."
+}

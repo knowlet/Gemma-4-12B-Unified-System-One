@@ -1,0 +1,177 @@
+{
+  "schema": "jev_GX10_cache_residency_results_v1",
+  "status": "CLOSED_READ_ONLY_SNAPSHOT_ROOT_AND_INDEPENDENT_REVIEWED",
+  "date": "2026-10-20",
+  "summary": "GX10 fixed base checkpoint residency was6868992B across1677pages of23919549408B. This current inode does not explain about26GB globalCached or the historical48-49GB host/CUDA discrepancy.",
+  "result": {
+    "queried_file_bytes": 23919549408,
+    "pages": 5839734,
+    "resident_pages": 1677,
+    "resident_file_bytes": 6868992,
+    "resident_page_bytes": 6868992,
+    "chunks": 90,
+    "inode_count": 1,
+    "aliases_not_added": 2,
+    "descriptor_closed": true
+  },
+  "resident_percent_of_file": 0.028717062695598417,
+  "elapsed_observation_seconds": 1.1813953639939427,
+  "memory_observations": {
+    "before": {
+      "Active(file)": 10788888576,
+      "Buffers": 267313152,
+      "Cached": 26084528128,
+      "Dirty": 8929280,
+      "Inactive(file)": 15652020224,
+      "MemAvailable": 121138987008,
+      "MemFree": 95102611456,
+      "MemTotal": 130595860480,
+      "Mlocked": 38203392,
+      "SReclaimable": 764006400,
+      "Shmem": 138768384,
+      "SwapFree": 13416218624,
+      "SwapTotal": 17179865088,
+      "Unevictable": 38203392,
+      "Writeback": 0
+    },
+    "after": {
+      "Active(file)": 10788888576,
+      "Buffers": 269619200,
+      "Cached": 26084499456,
+      "Dirty": 9113600,
+      "Inactive(file)": 15654117376,
+      "MemAvailable": 121127022592,
+      "MemFree": 95088496640,
+      "MemTotal": 130595860480,
+      "Mlocked": 38203392,
+      "SReclaimable": 764059648,
+      "Shmem": 138768384,
+      "SwapFree": 13416222720,
+      "SwapTotal": 17179865088,
+      "Unevictable": 38203392,
+      "Writeback": 0
+    },
+    "process_read_bytes_delta": 0,
+    "process_major_faults_delta": 0,
+    "host_MemAvailable_was_already121138987008_before_probe": true
+  },
+  "protection": {
+    "original_CPU_gate_records": 93,
+    "unchanged_CPU_required_bytes": 30414139392,
+    "minimum_observed_MemAvailable": 121115144192,
+    "same_boot_and_zero_swap_or_resident_credit": true,
+    "method": "One fixed owner inode, read-onlyNOFOLLOW fd;90 sequential256MiB PROT_NONE/MAP_PRIVATE windows, mincore vector<=64KiB, no mapping dereference; stable path/fd identity, unmap/close after use.",
+    "evidence_files": 5,
+    "evidence_total_bytes": 73292,
+    "evidence_cap_bytes": 2097152,
+    "deadline_scope": "120s cooperative chunkstart check; not a native syscall harddeadline.",
+    "closed_process": {
+      "pid": 1375044,
+      "start_ticks": 42769525,
+      "fresh_absent": true,
+      "original_PG_members": 0,
+      "signals_sent": 0
+    }
+  },
+  "evidence": {
+    "root_source_review": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/root-source-review-01.json",
+      "sha256": "97dbc5f10fdf871e3a91f1f254fce59a0af67239d65e3f4675ebde10bf559470",
+      "size_bytes": 1403
+    },
+    "root_exit_review": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/root-actual01-exit-review-01.json",
+      "sha256": "01889a136738101c03c2568b0f3729b1870d86ae0e6c15e7e0cb5e6e7e8c6a06",
+      "size_bytes": 614
+    },
+    "independent_closed_review": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/independent-actual01-closed-review-01.json",
+      "sha256": "0882574d5996356abd768662fd97acd52a711079407818054b119ac7736ba03c",
+      "size_bytes": 12748
+    },
+    "terminal": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/actual-01/terminal.json",
+      "sha256": "b4415f5668bab0d2ccdb708617fdb22af90e8b4681d873303615472170aad732",
+      "size_bytes": 2385
+    },
+    "measurement": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/actual-01/measurement.json",
+      "sha256": "7e4dd271f381dbd3d4370b0317e1d6fe8f13ac592e7905d20660069538c32e07",
+      "size_bytes": 2361
+    },
+    "chunks": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/actual-01/chunks.jsonl",
+      "sha256": "011a99aea4a2e93eff2d6822c4f753438d15f7763f2c87b64638990bb3a9e574",
+      "size_bytes": 25664
+    },
+    "original_CPU_gates": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/actual-01/resource-gates.jsonl",
+      "sha256": "cb81519cef5ec308575594ba5a9641fbb149fe35320aa64479313d6349423f2e",
+      "size_bytes": 42013
+    },
+    "binding": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/actual-01/binding.json",
+      "sha256": "6848e593c56da5374b90bd9210ab1c5aaf30fdf967a88aa028a0a3cbb7cac2e6",
+      "size_bytes": 869
+    },
+    "source_HOLD": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/source-HOLD-01/HOLD.json",
+      "sha256": "dec799a1301c2f7d31900ebed02ca272f360cd40e02433621ec1f006861bf564",
+      "size_bytes": 6815
+    },
+    "root_closed_historical_phase_recalculation": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/root-research-verification-01.json",
+      "sha256": "66f814612eccb864e747e1475d7639eddc18fa71c31d136872d803c57dead4df",
+      "size_bytes": 1302
+    }
+  },
+  "interpretation": [
+    "The current snapshot contradicts the hypothesis that this base checkpoint inode occupies the current about26GB Cached value. Residency of this inode was about6.55MiB, with both hardlink aliases counted once.",
+    "LinuxMemAvailable includes reclaim estimates; globalCached includes more than this inode and also tmpfs/shmem. Neither metric equals file-residency, reclaimability or CUDA allocation capacity.",
+    "The old actual12/13 host-minus-CUDA gap already existed before each run hash with0 native allocated/reserved bytes. The snapshot has a later host state and cannot reconstruct historical cache residency or identify the fullgap cause.",
+    "The host had121.14GB MemAvailable before this read-only probe. No memory-release effect by the probe is claimed.",
+    "Zero process disk-read bytes and majorfault delta corroborate a low-IO observation. Those counters alone cannot rule out RAM-cached payload reads; no checkpoint payload read follows the reviewed PROT_NONE/no-dereference source contract.",
+    "Perpage vectors were not saved; the independent review recomputed everychunk aggregate, gate binding, fileidentity andSHA, not each kernel-returned bit. Sequential residency can change during or after measurement.",
+    "No model/GPU/framework/browser/HTTP/cache-advice operation occurred in this probe. Fulltrainingcapacity, availableCUDA bytes, improvedJev taskscore andmodel superiority remain unproven."
+  ],
+  "primary_sources": [
+    {
+      "title": "NVIDIA DGX Spark known issues: UMA memory reporting",
+      "url": "https://docs.nvidia.com/dgx/dgx-spark/known-issues.html",
+      "scope": "Vendor explains sharedDRAM and possibleSWAP reclamation; this does not prove this file is reclaimable or justify changing the existing zero-credit gates."
+    },
+    {
+      "title": "Linux proc meminfo documentation",
+      "url": "https://www.kernel.org/doc/html/latest/filesystems/proc.html#meminfo",
+      "scope": "MemAvailable estimation and Cached scope."
+    },
+    {
+      "title": "Linux6.17 mincore implementation",
+      "url": "https://github.com/torvalds/linux/blob/v6.17/mm/mincore.c",
+      "scope": "Incore page-cache lookup, owner-or-write visibility, perpage snapshot behavior. Upstream source semantics; not a vendor-kernel binary attestation."
+    }
+  ],
+  "sources": {
+    "cache_residency_probe.py": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/cache_residency_probe.py",
+      "sha256": "c833940147d46dec0e47527b57cdd2ed79173982f18f21794fd8508bffd90ebe",
+      "size_bytes": 22313
+    },
+    "test_cache_residency_probe.py": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/test_cache_residency_probe.py",
+      "sha256": "23a7062891136fedace97cca7cb442f205433a42343b5113a23e22f99fe4b280",
+      "size_bytes": 14638
+    },
+    "plan-01.json": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/plan-01.json",
+      "sha256": "51073e1f6d3c3c9a02b28c4235c8272009da21279ee86d8c2ff5066ecfc24305",
+      "size_bytes": 2229
+    },
+    "research-report-01.json": {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/research-report-01.json",
+      "sha256": "ba84ef2e1e67c88d532d982b1d443c2a8f1f27a535e06f23fe8a2409c5b50b98",
+      "size_bytes": 20543
+    }
+  },
+  "pure_verification": "34 synthetic tests passed1.69s; Ruff, format and defaultdry PASS; root read final raw logs, no redundant rerun"
+}
