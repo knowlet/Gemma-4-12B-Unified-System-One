@@ -1,0 +1,54 @@
+{
+  "schema_id": "jev-decision3-flash-complete-local-storage-transfer-results-v1",
+  "status": "COMPLETE_TRANSFER_HASHED_AND_BOUNDED_HEADER_GEOMETRY_MATCH_NOT_MODEL_QUALIFIED",
+  "model": "d3-flash",
+  "revision": "8b35c853b90e777595ec36bacae820fe08ea077a",
+  "transfer_receipt": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/d3-flash-transfer-01.json",
+    "sha256": "71d295798df138937b8b7251af809a187ed7912eda641e19f217b94365f79d34",
+    "size_bytes": 9238
+  },
+  "outer_exit": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/root-flash-exit-01.json",
+    "sha256": "e5f6b47cfd44a6b750e9d6dd908ac38f0c4c1c58a96f4a3deb4a2722e33b48ad",
+    "size_bytes": 3801
+  },
+  "root_storage_verification": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/root-flash-storage-verification-01.json",
+    "sha256": "98445ba590e3caf7a0dd8094ef235e35ab672be4c4ef538832721ade1845104a",
+    "size_bytes": 9034
+  },
+  "files": 24,
+  "bytes": 16812829752,
+  "transfer_outer_seconds": 2390.448383808136,
+  "transfer_complete_file_SHA_size_checked": true,
+  "source_before_after_unchanged": true,
+  "owned_pid_start": {
+    "pid": 1464938,
+    "start_ticks": 43771212,
+    "pgid": 1464938,
+    "sid": 1464938,
+    "closed": true
+  },
+  "bounded_header_checks": {
+    "core_source_sha256": "9919e3b1dd5d5a68377b8e74c1b313c9a368a1716400d32af72e8a548ef02b4c",
+    "maximum_header_bytes_per_tensor_file": 4194304,
+    "BF16_backbone_tensor_count": 759,
+    "BF16_backbone_parameters": 8392695024,
+    "FP32_readout_parameters": 1044480,
+    "FP32_readout_shape": [
+      255,
+      4096
+    ],
+    "total_parameters": 8393739504,
+    "expected_total_parameters": 8393739504,
+    "index_key_to_shard_header_locations_match": true,
+    "full_tensor_payloads_reread_by_this_review": false
+  },
+  "review_scope": "Root matched all24 receipt/manifest selections and resolved-file stats, rehashed19 non-tensor files, and read bounded headers for4 backbone shards plus readout underoriginalstoragegate/AS512MiB. Everyindex key-to-shardheader location matches. Large payloadSHA relies onexecutedfrozen downloader/closedreceipt; no secondtensorpayloadhash/model execution.",
+  "independent_readonly_review": "Activegx10 agent matchedall24 plan/manifest/receipt selections andstats, rehashed16small source/config/index/manifest files andverifiedPID/PG/SIDabsence. No tensor/header/bigtokenizerpayload reads or reviewerJSON claimed.",
+  "model_framework_GPU_processor_browser_calls": 0,
+  "runtime_qualified": false,
+  "quality_or_superiority_claim": false,
+  "remaining": "Fresh original model memory/cache/header admission andactualwarmup/browsercomparison. FinalD3 storagetransfer startedsequentially afterFlashclosure. Allsixmatchedwarmcomparisons remainincomplete; largestoriginalmemoryfloor exceedsGX10physicalRAM."
+}
