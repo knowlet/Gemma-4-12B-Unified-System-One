@@ -1,0 +1,54 @@
+{
+  "schema_id": "root-GX10-edge-warm-diagnostic-resource-window-v1",
+  "started_unix": 1792496759.3030667,
+  "max_observe_seconds": 300,
+  "poll_seconds": 2,
+  "required_available_bytes": 30646100800,
+  "three_consecutive_original_admitted_samples_required": true,
+  "samples": [
+    {
+      "time_unix": 1792496759.304229,
+      "host_available_bytes": 30706585600,
+      "available_bytes": 30706585600,
+      "admitted": true,
+      "cgroup_complete": true
+    },
+    {
+      "time_unix": 1792496761.3059094,
+      "host_available_bytes": 30684315648,
+      "available_bytes": 30684315648,
+      "admitted": true,
+      "cgroup_complete": true
+    },
+    {
+      "time_unix": 1792496763.3079169,
+      "host_available_bytes": 30664515584,
+      "available_bytes": 30664515584,
+      "admitted": true,
+      "cgroup_complete": true
+    }
+  ],
+  "actual_started": true,
+  "quality_claim": false,
+  "launch_unix": 1792496763.3847895,
+  "parent_identity": {
+    "pid": 1439556,
+    "state": "R",
+    "pgid": 1439556,
+    "sid": 1439556,
+    "start_ticks": 43484079
+  },
+  "actual": {
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py\", line 531, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py\", line 527, in main\n    return parent_main(args)\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py\", line 399, in parent_main\n    initial = observe()  # No output/module cache/child before this admission.\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py\", line 377, in observe\n    require(\n    ~~~~~~~^\n        decision[\"admitted\"], \"Unchanged full policy floor refused: \" + json.dumps(decision)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py\", line 36, in require\n    raise ValueError(message)\nValueError: Unchanged full policy floor refused: {\"admitted\": false, \"cgroup_observation_complete\": true, \"refusal_reason\": null, \"host_available_bytes\": 30635520000, \"available_bytes\": 30635520000, \"required_available_bytes\": 30646100800, \"reserve_bytes\": 26119172096, \"resident_file_bytes\": 1189722528, \"full_transient_bytes\": 1189722528, \"framework_runtime_buffer_bytes\": 2147483648, \"swap_or_resident_credit_bytes\": 0, \"basis\": \"unchanged conservative host floor; cgroup further restricts, not measured peak\"}\n",
+    "finished_unix": 1792496763.6027577,
+    "parent_absent": true
+  },
+  "status": "ACTUAL_PARENT_EXITED_REVIEW_PENDING",
+  "finished_unix": 1792496763.6029916,
+  "elapsed_seconds": 4.299928876978811,
+  "maximum_available_bytes": 30706585600,
+  "actual_output_exists": false,
+  "module_cache_exists": false
+}
