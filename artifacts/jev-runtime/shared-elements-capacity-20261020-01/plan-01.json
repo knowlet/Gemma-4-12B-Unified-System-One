@@ -1,0 +1,61 @@
+{
+  "schema_id": "jev_shared_elements_paired_cpu_capacity_v1",
+  "self_source": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261020-01/paired_capacity.py",
+    "sha256": "bc5aea1547ce483e9f94023e54cbff01fed9cf5ef4efdb13b9d1cbb9d2cf869f",
+    "size_bytes": 39812
+  },
+  "cpu_source": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261020-01/cpu_prepare_form_3g.py",
+    "sha256": "a3da1fde8a2e542e622db249452d95b7b7ae0e5dee5b1eda4ad8d60128948e22",
+    "size_bytes": 70678
+  },
+  "production_sources": {
+    "src/s1/api.py": {
+      "sha256": "8c8fb743f6c7b3cebdc37780c6e936832f8d9f948b4c9f4666226076a361925c",
+      "size_bytes": 13174
+    },
+    "src/s1/jev_generated.py": {
+      "sha256": "c0dc3a6426445c0a9d6f052aec98a321c3be754ef0b1c059def787185ee37d21",
+      "size_bytes": 21229
+    },
+    "src/s1/jev_prompt.py": {
+      "sha256": "2580b83c9ad7b7a6b7b0fc3e0629999235e1eb101337fb9cbbadf65084d2c149",
+      "size_bytes": 12727
+    }
+  },
+  "baseline_terminal": {
+    "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/actual-01/worker/terminal.json",
+    "sha256": "5ee726d2ec8707e22075d94451fbc46c1f990ced017f291e3802c40ce208ddfc",
+    "size_bytes": 1744782
+  },
+  "output": "artifacts/jev-runtime/shared-elements-capacity-20261020-01/actual-01",
+  "unit": {
+    "boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0",
+    "cgroup_path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-cpu3g-20261020-03.service"
+  },
+  "python": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+  "environment": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TOKENIZERS_PARALLELISM": "false",
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "HF_HUB_CACHE": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub",
+    "PYTHONPATH": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "resource_limits": {
+    "unit_memory_max": 3221225472,
+    "unit_swap_max": 0,
+    "parent_AS_soft": 2147483648,
+    "AS_hard": 8589934592,
+    "worker_wall": 600,
+    "parent_wall": 630,
+    "unit_wall": 660,
+    "output_bytes": 1073741824,
+    "file_bytes": 67108864
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "schema_id": "jev_shared_elements_v1_actual_paired_cpu_results_v1",
+  "status": "COMPLETE_CLOSED_CPU_ONLY_FORMAT_NOT_ADOPTED",
+  "implementation_git": "58458f3465f35449b8f63536a39762a55700129e",
+  "at_utc": "2026-10-20T16:04:44.406404+00:00",
+  "evidence_index": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261020-01/evidence-index-01.json",
+    "sha256": "2ae40498c1d601611d7214725a2e77d0ed94d4667fdcf6f978aa46d61e7a8762",
+    "size_bytes": 233095
+  },
+  "external_closure": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261020-01/root-external-closure-01.json",
+    "sha256": "8c1749e6eb4611e74f98c87e1c0185a6e77936745c07cf5e3745dc9763fa0872",
+    "size_bytes": 2128
+  },
+  "plan": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261020-01/plan-01.json",
+    "sha256": "f6cfeaad92acddfa62fb1d899193048a48aaf145e8c7ca63d081d0c92b7226d8",
+    "size_bytes": 2416
+  },
+  "source_authority": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261020-01/source-authority-union-01.json",
+    "sha256": "93c436443c78f1c173e9bb31bed3f6e9bcf2cbadaa23982303e8527b3b2e265a",
+    "size_bytes": 22207
+  },
+  "results": {
+    "paired_original_rows": 75,
+    "source_population": 127,
+    "original95_unchanged": 93,
+    "original95_replaced": 2,
+    "new_production_module": "src/s1/jev_prompt.py",
+    "old95_qualification_attested": false,
+    "raw_full_ids_masks_prompts_outcomes_match_frozen75": true,
+    "counts": {
+      "raw-json-v1": {
+        "ACCEPTED": 71,
+        "REFUSED_CONTEXT": 3,
+        "REFUSED_SCHEMA": 1
+      },
+      "shared-elements-v1": {
+        "ACCEPTED": 70,
+        "REFUSED_CONTEXT": 4,
+        "REFUSED_SCHEMA": 1
+      }
+    },
+    "policy68_accepted": {
+      "raw-json-v1": 67,
+      "shared-elements-v1": 67
+    },
+    "changed_outcomes": [
+      {
+        "ordinal": 71,
+        "id": "policy-near-context",
+        "raw": "ACCEPTED",
+        "shared": "REFUSED_CONTEXT",
+        "raw_tokens": 8151,
+        "shared_tokens": 8308
+      }
+    ],
+    "curl_counterfactual": {
+      "id": "trace-curl-01",
+      "provenance": {
+        "cohort_selection": {
+          "baseline_ref": {
+            "path": "baseline/51.json",
+            "sha256": "50ea51deb9e714354290a2d232894d3b8a56039429b8f3432fdcdd477777930b",
+            "size_bytes": 49326
+          },
+          "capacity_admission_measured": false,
+          "case_id": "trace-curl-01",
+          "guards_sha256": "2da51d1b8adfa4094f6baae352037706f2582e1752c7a81db2b6c89622020cd2",
+          "metadata": {
+            "exact": {
+              "previous_observation_sequences": [],
+              "scope": "same document, complete observed page_key/guards/actions/geometry; excludes only screenshot and supplied fingerprint",
+              "sha256": "0771d720e45cbd0a74295ba2866ef9ee0cce175331afcf9c3c8ae801bdb4c0da"
+            },
+            "observation_notes": [],
+            "observation_sequence": 1,
+            "profile": "guarded-observation-revisit-experimental-v1",
+            "projection": {
+              "previous_observation_sequences": [],
+              "scope": "defined observed content/editable values/ordered action descriptors/scroll/viewport; excludes document time, known native bindings, geometry and guards; not complete state or action identity",
+              "sha256": "18be33c3f63db6bdf01e5cc0f501d9b67d4018e198cb8e76c65e65201a8b93b6"
+            },
+            "window_limit": 32
+          },
+          "payload_ref": {
+            "path": "payloads/51.json",
+            "sha256": "e39569b86109036d93e9315bc7500bf9f3675f30ab10190b6228ae67628ccf8b",
+            "size_bytes": 49334
+          },
+          "provenance": {
+            "missing_intermediate_predict_refreshes_possible": true,
+            "saved_snapshot_index": 1,
+            "source_states": {
+              "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-002-000/states.json",
+              "sha256": "37f9e1bc1e348c32255036abf2185951fc55160f0379fc212f342f723e0537b7",
+              "size_bytes": 3084784
+            }
+          },
+          "raw_observation_profile": {
+            "depth_limit": 128,
+            "depth_limit_reached": false,
+            "id": "composed-visible-text-settled-v7",
+            "node_limit": 20000,
+            "node_limit_reached": false,
+            "visited_nodes": 13081
+          },
+          "raw_page_sha256": "a72192e7b388253d22e92b016bcd4b004b798dfd5da434d7a10a69bc69952196",
+          "same_historical_HTTP_wire_claimed": false,
+          "scope": "COUNTERFACTUAL_V7_SAVED_SNAPSHOT_SEQUENCE_NOT_COMPLETE_AGENT_OBSERVE_JOURNAL"
+        },
+        "scope": "COUNTERFACTUAL_V7_SAVED_SNAPSHOT_SEQUENCE_NOT_COMPLETE_AGENT_OBSERVE_JOURNAL"
+      },
+      "original_bytes": 49334,
+      "shared_bytes": 20741,
+      "raw_tokens": 15495,
+      "shared_tokens": 9220,
+      "outcome_both": "REFUSED_CONTEXT",
+      "elements_retained": 250,
+      "criteria_refs": 250,
+      "source_roundtrip": "exact ordered UTF-8 JSON bytes"
+    },
+    "supplemental_controls": [
+      {
+        "id": "compact-band-8128",
+        "kind": "policy",
+        "outcome": "ACCEPTED",
+        "token_count": 8148
+      },
+      {
+        "id": "compact-band-8161",
+        "kind": "policy",
+        "outcome": "REFUSED_CONTEXT",
+        "token_count": 8180
+      },
+      {
+        "id": "compact-band-8065",
+        "kind": "helper",
+        "outcome": "REFUSED_CONTEXT",
+        "token_count": 8085
+      }
+    ]
+  },
+  "resources": {
+    "unit": "jev-cpu3g-20261020-03.service",
+    "InvocationID": "dc7c154de8f743eabf02e11f43f8b8d2",
+    "memory_max_bytes": 3221225472,
+    "swap_max_bytes": 0,
+    "host_reserve_bytes": 26119172096,
+    "unit_memory_peak_bytes": 1391910912,
+    "unit_swap_peak_bytes": 0,
+    "worker_gates": 1771,
+    "worker_gates_all_admitted": true,
+    "worker_min_MemAvailable": 29920370688,
+    "unit_exit_code": 0,
+    "worker_exit_code": 0,
+    "whole_owned_pid_pgid_sid_absent": true,
+    "source_before_after_unchanged": true,
+    "postexit_cgroup_counters": null,
+    "counter_scope": "cgroup removed after successful exit; final counters unavailable. Last pre-exit parent/gate evidence is retained separately. No final zero-OOM claim."
+  },
+  "validation": {
+    "focused_driver_tests": "13 passed in6.65s; no heavy imports or actors",
+    "production_tests": "232 passed,2 skipped,2 inference deselected; 2 skipped upstream tests separately resolved and passed with pinned offline checkout",
+    "upstream_followup_command": "JEV_UPSTREAM_PATH=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream .venv/bin/python -B -m pytest -q tests/test_jev_generated.py -k actual_pinned_upstream_choose",
+    "upstream_followup": "2 passed,78 deselected in0.50s",
+    "ruff": "check and format passed for production and trial files",
+    "independent_review": "Source lineage, full75/raw equality, original ordered head reconstruction and separate supplemental bands reviewed; no blocking issues."
+  },
+  "scope": {
+    "actual_processor": "Pinned Gemma AutoProcessor and native chat template, complete IDs/masks retained; unchanged348 runtime and58 processor reference files",
+    "native_model": false,
+    "forward_calls": 0,
+    "CUDA_initialized": false,
+    "model_HTTP_calls": 0,
+    "browser_calls": 0,
+    "training": false,
+    "task_quality_attested": false,
+    "all68_benchmark_ready": false,
+    "generalization": "Known genuine, declared saved-snapshot counterfactual and technical control populations; no unseen task-quality inference.",
+    "actual_prior_curl": "Original live requests were889..2543 tokens; this saved snapshot was not a live next-policy request. It does not explain prior curl task failure."
+  },
+  "decision": "Do not adopt shared-elements-v1. It fails to fit the declared large snapshot and regresses the original near-context positive control. Retain complete results; next explicit format must reduce reference duplication and transparently retain raw text where representation overhead is unhelpful.",
+  "evidence_distribution": {
+    "public_export": "Implementation/test source, plan, SHA-only source/evidence indices, external closure, aggregate outcomes and public arXiv witness only.",
+    "raw_artifacts": "Full original payloads/prompts, per-row token IDs/masks, raw process/resource journals and copied runtime reference files remain local; they are not part of this narrowed push.",
+    "local_archive_commit": "ab89607",
+    "reason": "Automatic approval rejected exporting the full951-file raw evidence set. Narrowed export excludes raw study data and runtime snapshots; general milestone push authorization remains applicable."
+  }
+}

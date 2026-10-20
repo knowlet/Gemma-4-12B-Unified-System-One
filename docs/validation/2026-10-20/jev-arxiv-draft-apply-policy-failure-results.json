@@ -1,0 +1,596 @@
+{
+  "schema_id": "jev_arxiv_draft_apply_policy_failure_witness_v1",
+  "recorded_date": "2026-10-20",
+  "status": "ORIGINAL_LIVE_FAILURE_WITNESS_NO_NEW_TASK_RESULT",
+  "scope": "Original delivered HTTP requests/responses and saved actions/snapshots. Only this report is new; no model, browser, tokenizer, training or resource request performed.",
+  "case": {
+    "case_id": "public-arxiv-original-paper-open-v1",
+    "goal": "Find and open the arXiv abstract page for the original 2017 paper Attention Is All You Need by Ashish Vaswani and colleagues. Stop with the abstract page open.",
+    "goal_ref": {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/outcome.json",
+      "sha256": "be3ec4b463cc9a5ef50e94a1d7c104f3a62fbf4a361000381025fee869f984ba",
+      "size_bytes": 37215,
+      "json_pointer": "/goal"
+    },
+    "start_URL": "https://arxiv.org/search/",
+    "original_full10_score": "5/10; this failed case remains in that denominator",
+    "priority_reason": "An actual apply control is offered before history truncation. The selected NASA/curl traces do not establish equally concrete alternative-route controls."
+  },
+  "evidence": {
+    "model_calls": {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+      "sha256": "aa3ac6487722eef17d3979b42dad8e868c5a5acb535bdf789acb81cb98fb9484",
+      "size_bytes": 4842417
+    },
+    "saved_states": {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/states.json",
+      "sha256": "2925106f5e5063ca2193d143efdcfe3017edd02f06dfccfbeaa6a4734c56c12e",
+      "size_bytes": 5785465
+    },
+    "outcome": {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/outcome.json",
+      "sha256": "be3ec4b463cc9a5ef50e94a1d7c104f3a62fbf4a361000381025fee869f984ba",
+      "size_bytes": 37215
+    },
+    "original_full10_results": {
+      "path": "docs/validation/2026-10-19/jev-field-syntax-helper-full-browser-results.json",
+      "sha256": "963074e111ed8083ca34592f18d7d0db2952b99eda888dab4d839621de01a78d",
+      "size_bytes": 24002
+    },
+    "original_failure_diagnosis": {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/independent-three-failure-diagnostics-summary-01.json",
+      "sha256": "87eb95ddf2ce9f7ad41d584e2b92e2b7a2755dfbc02ddedfe1042842823ba9c4",
+      "size_bytes": 18363
+    }
+  },
+  "original_conditions": {
+    "observation_profile": "composed-visible-text-settled-v7",
+    "model_requested": "generated-actions-none",
+    "policy_calls": 16,
+    "helper_calls": 2,
+    "max_policy_decisions": 16,
+    "policy_context_limit": 8192,
+    "policy_output_reserve": 32,
+    "all_policy_input_token_counts": [
+      3332,
+      3374,
+      5088,
+      5117,
+      5131,
+      4788,
+      5181,
+      4827,
+      4856,
+      5248,
+      5263,
+      5269,
+      4114,
+      5193,
+      5212,
+      4008
+    ],
+    "policy_input_tokens_range": [
+      3332,
+      5269
+    ],
+    "policy_context_fit_for_this_trace": true,
+    "all_policy_HTTP_statuses": [
+      200
+    ],
+    "helper_values": [
+      "Attention Is All You Need",
+      "Attention Is All You Need"
+    ],
+    "helper_refs": [
+      {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+        "sha256": "aa3ac6487722eef17d3979b42dad8e868c5a5acb535bdf789acb81cb98fb9484",
+        "size_bytes": 4842417,
+        "json_pointer": "/1/response/choices/0/message/content"
+      },
+      {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+        "sha256": "aa3ac6487722eef17d3979b42dad8e868c5a5acb535bdf789acb81cb98fb9484",
+        "size_bytes": 4842417,
+        "json_pointer": "/15/response/choices/0/message/content"
+      }
+    ],
+    "helper_scope": "Both delivered title strings are valid JSON text values; semantic sufficiency for finding the original paper is not established."
+  },
+  "actual_policy_sequence": [
+    {
+      "policy_decision1": 1,
+      "model_log_row0": 0,
+      "operation": "TYPE_TEXT",
+      "target": "9",
+      "offered_description": "[9] Search term or terms",
+      "input_tokens": 3332
+    },
+    {
+      "policy_decision1": 2,
+      "model_log_row0": 2,
+      "operation": "CLICK",
+      "target": "11",
+      "offered_description": "[11] Search",
+      "input_tokens": 3374
+    },
+    {
+      "policy_decision1": 3,
+      "model_log_row0": 3,
+      "operation": "SELECT",
+      "target": "16:1",
+      "offered_description": "[16:1] Sort results by → Announcement date (oldest first)",
+      "input_tokens": 5088
+    },
+    {
+      "policy_decision1": 4,
+      "model_log_row0": 4,
+      "operation": "SELECT",
+      "target": "16:4",
+      "offered_description": "[16:4] Sort results by → Relevance",
+      "input_tokens": 5117
+    },
+    {
+      "policy_decision1": 5,
+      "model_log_row0": 5,
+      "operation": "CLICK",
+      "target": "18",
+      "offered_description": "[18] Next",
+      "input_tokens": 5131
+    },
+    {
+      "policy_decision1": 6,
+      "model_log_row0": 6,
+      "operation": "CLICK",
+      "target": "20",
+      "offered_description": "[20] Goto page 1",
+      "input_tokens": 4788
+    },
+    {
+      "policy_decision1": 7,
+      "model_log_row0": 7,
+      "operation": "CLICK",
+      "target": "18",
+      "offered_description": "[18] Next",
+      "input_tokens": 5181
+    },
+    {
+      "policy_decision1": 8,
+      "model_log_row0": 8,
+      "operation": "SELECT",
+      "target": "16:1",
+      "offered_description": "[16:1] Sort results by → Announcement date (oldest first)",
+      "input_tokens": 4827
+    },
+    {
+      "policy_decision1": 9,
+      "model_log_row0": 9,
+      "operation": "CLICK",
+      "target": "20",
+      "offered_description": "[20] Goto page 1",
+      "input_tokens": 4856
+    },
+    {
+      "policy_decision1": 10,
+      "model_log_row0": 10,
+      "operation": "SELECT",
+      "target": "16:4",
+      "offered_description": "[16:4] Sort results by → Relevance",
+      "input_tokens": 5248
+    },
+    {
+      "policy_decision1": 11,
+      "model_log_row0": 11,
+      "operation": "CLICK",
+      "target": "14",
+      "offered_description": "[14] Advanced Search",
+      "input_tokens": 5263
+    },
+    {
+      "policy_decision1": 12,
+      "model_log_row0": 12,
+      "operation": "CLICK",
+      "target": "13",
+      "offered_description": "[13] Search",
+      "input_tokens": 5269
+    },
+    {
+      "policy_decision1": 13,
+      "model_log_row0": 13,
+      "operation": "CLICK",
+      "target": "11",
+      "offered_description": "[11] New search",
+      "input_tokens": 4114
+    },
+    {
+      "policy_decision1": 14,
+      "model_log_row0": 14,
+      "operation": "TYPE_TEXT",
+      "target": "10",
+      "offered_description": "[10] Search term",
+      "input_tokens": 5193
+    },
+    {
+      "policy_decision1": 15,
+      "model_log_row0": 16,
+      "operation": "CLICK",
+      "target": "13",
+      "offered_description": "[13] Search",
+      "input_tokens": 5212
+    },
+    {
+      "policy_decision1": 16,
+      "model_log_row0": 17,
+      "operation": "CLICK",
+      "target": "16",
+      "offered_description": "[16] Next",
+      "input_tokens": 4008
+    }
+  ],
+  "first_divergence_witnesses": [
+    {
+      "policy_decision1": 3,
+      "model_log_row0": 3,
+      "request": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/http-transport/0009/request.bin",
+        "sha256": "bcab6cbec8df497c0bdbc46e81af65d780bbf3f8cd99910248034735040dae50",
+        "size_bytes": 18778
+      },
+      "response": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/http-transport/0009/response.bin",
+        "sha256": "69e8c372eaba124a791dde3add608de25e7d74f1280ccbb21159344e2fbac2fb",
+        "size_bytes": 56788
+      },
+      "exchange": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/http-transport/0009/exchange.json",
+        "sha256": "f9fe7c585d08636e22b4da0cbb3331e13a5d430de238b70c2421a25d53cd268d",
+        "size_bytes": 1256
+      },
+      "request_id": "f9da49a44a3c25d61e302dcc471b6499",
+      "HTTP_status": 200,
+      "source_request_sha256_matches_actual_ordered_HTTP_wire": true,
+      "native_raw_action": "{\"operation\":\"SELECT\",\"target\":\"16:1\"}",
+      "decoded_action": {
+        "operation": "SELECT",
+        "target": "16:1"
+      },
+      "action_ref": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+        "sha256": "aa3ac6487722eef17d3979b42dad8e868c5a5acb535bdf789acb81cb98fb9484",
+        "size_bytes": 4842417,
+        "json_pointer": "/3/response/generation/decoded_action"
+      },
+      "input_tokens": 5088,
+      "saved_full_native_prompt": {
+        "ref": {
+          "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+          "sha256": "aa3ac6487722eef17d3979b42dad8e868c5a5acb535bdf789acb81cb98fb9484",
+          "size_bytes": 4842417,
+          "json_pointer": "/3/response/generation/prompt"
+        },
+        "UTF8_sha256": "2339003b8e7c5ea9d93439033281bdaa45e61c2aee5840e930192ff7d644855f"
+      },
+      "selected_sort": "Announcement date (newest first)",
+      "observed_URL": "https://arxiv.org/search/?query=Attention+Is+All+You+Need&searchtype=all&abstracts=show&order=-announced_date_first&size=50",
+      "observed_applied_order_parameter": "-announced_date_first",
+      "offered_apply_candidate": {
+        "key": "17",
+        "description": {
+          "element": "[17] Go",
+          "current_value": "",
+          "role": "button"
+        }
+      },
+      "request_history": [
+        {
+          "action": "Search term or terms",
+          "kind": "fill",
+          "text": "Attention Is All You Need",
+          "page_changed": true
+        },
+        {
+          "action": "Search",
+          "kind": "click",
+          "text": null,
+          "page_changed": true
+        }
+      ],
+      "saved_snapshot": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/states.json",
+        "sha256": "2925106f5e5063ca2193d143efdcfe3017edd02f06dfccfbeaa6a4734c56c12e",
+        "size_bytes": 5785465,
+        "json_pointer": "/2/page"
+      },
+      "snapshot_scope": "Saved native snapshot agrees on URL and selected sort; separate actual HTTP request is authoritative policy input. No whole raw snapshot/model-payload equality claimed.",
+      "saved_apply_control": {
+        "node": 17,
+        "role": "button",
+        "label": "Go",
+        "rect": {
+          "x": 748.4375,
+          "y": 308.625,
+          "w": 35.71875,
+          "h": 26.765625
+        },
+        "kind": "click",
+        "id": "e37"
+      },
+      "last_executed_action_ref": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/states.json",
+        "sha256": "2925106f5e5063ca2193d143efdcfe3017edd02f06dfccfbeaa6a4734c56c12e",
+        "size_bytes": 5785465,
+        "json_pointer": "/2/history/1"
+      }
+    },
+    {
+      "policy_decision1": 4,
+      "model_log_row0": 4,
+      "request": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/http-transport/0010/request.bin",
+        "sha256": "5a51816578934e90788ab21a264e1ccedddfd3dc0798af20c9142fa6d1a5f352",
+        "size_bytes": 18893
+      },
+      "response": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/http-transport/0010/response.bin",
+        "sha256": "e62feb37716eb3bc12005222be8bbab46c2c8b6a5f80f0af40b136ba854dbc1b",
+        "size_bytes": 57068
+      },
+      "exchange": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/http-transport/0010/exchange.json",
+        "sha256": "b3df37d2359540f9105a484a6bc5ac09de9ab9562a05943cdc14cc0a39e9ddb0",
+        "size_bytes": 1258
+      },
+      "request_id": "378b46a10e3a3321556c9e0c31cdeaf2",
+      "HTTP_status": 200,
+      "source_request_sha256_matches_actual_ordered_HTTP_wire": true,
+      "native_raw_action": "{\"operation\":\"SELECT\",\"target\":\"16:4\"}",
+      "decoded_action": {
+        "operation": "SELECT",
+        "target": "16:4"
+      },
+      "action_ref": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+        "sha256": "aa3ac6487722eef17d3979b42dad8e868c5a5acb535bdf789acb81cb98fb9484",
+        "size_bytes": 4842417,
+        "json_pointer": "/4/response/generation/decoded_action"
+      },
+      "input_tokens": 5117,
+      "saved_full_native_prompt": {
+        "ref": {
+          "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+          "sha256": "aa3ac6487722eef17d3979b42dad8e868c5a5acb535bdf789acb81cb98fb9484",
+          "size_bytes": 4842417,
+          "json_pointer": "/4/response/generation/prompt"
+        },
+        "UTF8_sha256": "01bfa175b4dba78a330dad838d5bf617268b1d4a3caad4a08ef017911d70d322"
+      },
+      "selected_sort": "Announcement date (oldest first)",
+      "observed_URL": "https://arxiv.org/search/?query=Attention+Is+All+You+Need&searchtype=all&abstracts=show&order=-announced_date_first&size=50",
+      "observed_applied_order_parameter": "-announced_date_first",
+      "offered_apply_candidate": {
+        "key": "17",
+        "description": {
+          "element": "[17] Go",
+          "current_value": "",
+          "role": "button"
+        }
+      },
+      "request_history": [
+        {
+          "action": "Search term or terms",
+          "kind": "fill",
+          "text": "Attention Is All You Need",
+          "page_changed": true
+        },
+        {
+          "action": "Search",
+          "kind": "click",
+          "text": null,
+          "page_changed": true
+        },
+        {
+          "action": "Sort results by → Announcement date (oldest first)",
+          "kind": "select",
+          "text": null,
+          "page_changed": true
+        }
+      ],
+      "saved_snapshot": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/states.json",
+        "sha256": "2925106f5e5063ca2193d143efdcfe3017edd02f06dfccfbeaa6a4734c56c12e",
+        "size_bytes": 5785465,
+        "json_pointer": "/3/page"
+      },
+      "snapshot_scope": "Saved native snapshot agrees on URL and selected sort; separate actual HTTP request is authoritative policy input. No whole raw snapshot/model-payload equality claimed.",
+      "saved_apply_control": {
+        "node": 17,
+        "role": "button",
+        "label": "Go",
+        "rect": {
+          "x": 777.875,
+          "y": 307.625,
+          "w": 35.71875,
+          "h": 26.765625
+        },
+        "kind": "click",
+        "id": "e37"
+      },
+      "last_executed_action_ref": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/states.json",
+        "sha256": "2925106f5e5063ca2193d143efdcfe3017edd02f06dfccfbeaa6a4734c56c12e",
+        "size_bytes": 5785465,
+        "json_pointer": "/3/history/2"
+      }
+    },
+    {
+      "policy_decision1": 5,
+      "model_log_row0": 5,
+      "request": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/http-transport/0011/request.bin",
+        "sha256": "a4d22a52ed7a0b7da8c46ea0e41b2ce665fbc62daac83f22c8b0e89da11d9202",
+        "size_bytes": 18935
+      },
+      "response": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/http-transport/0011/response.bin",
+        "sha256": "d632767baac25f8ea76ac9abbf11a4f588cf0c16105e61bede3db24460712717",
+        "size_bytes": 57033
+      },
+      "exchange": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/http-transport/0011/exchange.json",
+        "sha256": "43a29cf955f77fb5a42b83210a3fcc147caf97bdb20b3539d26ee3a848f042c7",
+        "size_bytes": 1258
+      },
+      "request_id": "ba76c2beb840c9202eea61670dfe2d69",
+      "HTTP_status": 200,
+      "source_request_sha256_matches_actual_ordered_HTTP_wire": true,
+      "native_raw_action": "{\"operation\":\"CLICK\",\"target\":\"18\"}",
+      "decoded_action": {
+        "operation": "CLICK",
+        "target": "18"
+      },
+      "action_ref": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+        "sha256": "aa3ac6487722eef17d3979b42dad8e868c5a5acb535bdf789acb81cb98fb9484",
+        "size_bytes": 4842417,
+        "json_pointer": "/5/response/generation/decoded_action"
+      },
+      "input_tokens": 5131,
+      "saved_full_native_prompt": {
+        "ref": {
+          "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+          "sha256": "aa3ac6487722eef17d3979b42dad8e868c5a5acb535bdf789acb81cb98fb9484",
+          "size_bytes": 4842417,
+          "json_pointer": "/5/response/generation/prompt"
+        },
+        "UTF8_sha256": "4bd4c9263d028ce9603217c16c0c36e1c4bd4eca68c54467e69613703a65225c"
+      },
+      "selected_sort": "Relevance",
+      "observed_URL": "https://arxiv.org/search/?query=Attention+Is+All+You+Need&searchtype=all&abstracts=show&order=-announced_date_first&size=50",
+      "observed_applied_order_parameter": "-announced_date_first",
+      "offered_apply_candidate": {
+        "key": "17",
+        "description": {
+          "element": "[17] Go",
+          "current_value": "",
+          "role": "button"
+        }
+      },
+      "request_history": [
+        {
+          "action": "Search term or terms",
+          "kind": "fill",
+          "text": "Attention Is All You Need",
+          "page_changed": true
+        },
+        {
+          "action": "Search",
+          "kind": "click",
+          "text": null,
+          "page_changed": true
+        },
+        {
+          "action": "Sort results by → Announcement date (oldest first)",
+          "kind": "select",
+          "text": null,
+          "page_changed": true
+        },
+        {
+          "action": "Sort results by → Relevance",
+          "kind": "select",
+          "text": null,
+          "page_changed": true
+        }
+      ],
+      "saved_snapshot": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/states.json",
+        "sha256": "2925106f5e5063ca2193d143efdcfe3017edd02f06dfccfbeaa6a4734c56c12e",
+        "size_bytes": 5785465,
+        "json_pointer": "/4/page"
+      },
+      "snapshot_scope": "Saved native snapshot agrees on URL and selected sort; separate actual HTTP request is authoritative policy input. No whole raw snapshot/model-payload equality claimed.",
+      "saved_apply_control": {
+        "node": 17,
+        "role": "button",
+        "label": "Go",
+        "rect": {
+          "x": 777.875,
+          "y": 307.625,
+          "w": 35.71875,
+          "h": 26.765625
+        },
+        "kind": "click",
+        "id": "e37"
+      },
+      "last_executed_action_ref": {
+        "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/states.json",
+        "sha256": "2925106f5e5063ca2193d143efdcfe3017edd02f06dfccfbeaa6a4734c56c12e",
+        "size_bytes": 5785465,
+        "json_pointer": "/4/history/3"
+      }
+    }
+  ],
+  "observed_failure": {
+    "summary": "SELECT oldest-first changes the observed control but not the URL order. Next policy SELECTs Relevance instead of applying; following policy CLICKs Next while URL remains newest-first. Later page1/Next/select cycles consume decisions without opening the requested paper.",
+    "selected_sort_values": [
+      "Announcement date (newest first)",
+      "Announcement date (oldest first)",
+      "Relevance"
+    ],
+    "applied_URL_order_values": [
+      "-announced_date_first",
+      "-announced_date_first",
+      "-announced_date_first"
+    ],
+    "SELECT_page_changed_flags": [
+      true,
+      true
+    ],
+    "page_changed_scope": "Observed page mutation is not proof that server-side results/sort were applied.",
+    "Go_offered_policy_decisions1": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      13,
+      16
+    ],
+    "Go_chosen_count": 0,
+    "terminal_status": "ready",
+    "error": "Runner stopped at the 16-decision budget",
+    "goal_satisfied": false,
+    "strict_success": false,
+    "DONE_observed": false,
+    "final_URL": "https://arxiv.org/search/advanced?advanced=&terms-0-operator=AND&terms-0-term=Attention+Is+All+You+Need&terms-0-field=title&classification-physics_archives=all&classification-include_cross_list=include&date-filter_by=all_dates&date-year=&date-from_date=&date-to_date=&date-date_type=submitted_date&abstracts=show&size=50&order=-announced_date_first&start=50"
+  },
+  "proven": [
+    "Exact delivered native requests/responses show legalSELECT16:1, SELECT16:4 andCLICK18; candidate17 Go is offered in all three witnesses.",
+    "Selected control values differ from unchanged URL order before the10-action history window is full.",
+    "All16 original policy requests fit8192+32; this is not an observed context refusal.",
+    "There is no helper JSON-format failure or prematureDONE in this task."
+  ],
+  "unproven": [
+    "No counterfactual Go click was executed. Its presence plus noapply/stale URL establishes missed-submit behavior, not that clicking it would find the2017 paper or satisfy the goal. No unique teacher is proved.",
+    "The broad title query may increase planning burden; quotes/year/author changes alone are not a proven repair.",
+    "A saved native snapshot is not substituted for the authoritative actual policy request wire.",
+    "The15,495-token/250-candidate curl row51 is a separately declared saved-snapshot counterfactual, not an oversized historical live request."
+  ],
+  "shared_prompt_relation": {
+    "capacity_cause_for_this_failure": false,
+    "semantic_relation": "Unproven. Factoring repetition may alter model preferences; smaller bytes or token counts establish no policy/completion improvement.",
+    "new_format_task_quality_or_performance_claimed": false,
+    "isolation": "Keep the current raw-json-v1/shared-elements-v1 condition separate from any training, instruction, helper, grammar, observation, weight or budget change."
+  },
+  "recommended_next_step": {
+    "training": "Create a bounded generic draft-versus-applied form family from independent training-only scenes and a training oracle: separate draft/applied sort/filter/query state; offer actual apply buttons plus pagination/reset distractors; teach applying goal-relevant pending edits before treating results as updated.",
+    "counterexamples": "Include automatic-apply controls, already-applied controls and irrelevant/unrequested edits soSELECT does not always imply submit. Randomize labels, target IDs and positions.",
+    "data_boundary": "Do not fit this exposed arXiv goal, fixture, requests/snapshots or Go17 identity as new data. Keep existing heldout data unchanged and split whole scene families.",
+    "next_matched_real_retest": "Finish the selected format-only capacity condition first. Then run a fresh complete arXiv task with the original strict fresh-DOM judge and16-policy/20-second/8192+32 budgets. Compare one intervention at a time. Any later training candidate and parent control must use the same chosen format, observation profile, grammar and helper.",
+    "success_condition": "Observe actual application/navigation, then the requested original2017 paper with matching author and visible abstract. AcceptedDONE plus original fresh-DOM judge must pass within16 decisions. Go click or static next-action agreement alone is not success.",
+    "score_scope": "This exposed single-case regression is not fresh heldout generalization; retain the original10-case denominator for any broader result."
+  }
+}
