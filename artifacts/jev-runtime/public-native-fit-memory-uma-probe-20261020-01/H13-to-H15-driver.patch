@@ -1,0 +1,480 @@
+--- artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/source-HOLD-13/native_peak_probe_01.py
++++ artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/native_uma_peak_probe_01.py
+@@ -18,7 +18,17 @@
+ 
+ ROOT = Path(__file__).resolve().parents[3]
+ BASE = Path(__file__).resolve().parent
+-PLAN = BASE / "plan-18.json"
++PLAN = BASE / "plan-01.json"
++UMA_KIND = "gb10-native-fixed-cache-uma-memavailable-capacity-v1"
++UMA_LIBCUDA = "/usr/lib/aarch64-linux-gnu/libcuda.so.580.178.04"
++UMA_TOTAL = 130595860480
++UMA_SYMBOLS = (
++    "cuCtxGetDevice",
++    "cuDeviceGetAttribute",
++    "cuDeviceGetUuid",
++    "cuDeviceGetName",
++    "cuDeviceTotalMem_v2",
++)
+ GIB = 1024**3
+ MIB = 1024**2
+ CAP = 40 * GIB
+@@ -174,10 +184,24 @@
+     values = {}
+     for line in read("/proc/meminfo").decode().splitlines():
+         key, value = line.split(":", 1)
+-        if key in {"MemTotal", "MemAvailable", "SwapTotal", "SwapFree"}:
++        if key in {
++            "MemTotal",
++            "MemAvailable",
++            "MemFree",
++            "Cached",
++            "SReclaimable",
++            "SwapTotal",
++            "SwapFree",
++            "Hugepagesize",
++            "Hugetlb",
++        }:
+             number, unit = value.split()
+             require(unit == "kB", "Native memory unit")
+             values[key] = int(number) * 1024
++        elif key in {"HugePages_Total", "HugePages_Free"}:
++            fields = value.split()
++            require(len(fields) == 1, "Typed hugetlb page count")
++            values[key] = int(fields[0])
+     values["boot_id"] = boot_id()
+     return values
+ 
+@@ -701,10 +725,232 @@
+     return sorted(mapped)
+ 
+ 
++def uma_host_identity(host, config):
++    byte_fields = (
++        "MemTotal",
++        "MemAvailable",
++        "MemFree",
++        "Cached",
++        "SReclaimable",
++        "SwapTotal",
++        "SwapFree",
++        "Hugepagesize",
++        "Hugetlb",
++    )
++    require(
++        all(type(host.get(k)) is int and host[k] >= 0 for k in byte_fields)
++        and all(type(host.get(k)) is int for k in ("HugePages_Total", "HugePages_Free")),
++        "Complete typed UMA host observation",
++    )
++    require(
++        host["boot_id"] == config["boot_id"]
++        and host["MemTotal"] == UMA_TOTAL
++        and 0 < host["MemAvailable"] <= UMA_TOTAL
++        and host["MemFree"] <= UMA_TOTAL
++        and host["SwapFree"] <= host["SwapTotal"]
++        and host["Hugepagesize"] > 0
++        and host["HugePages_Total"] == host["HugePages_Free"] == host["Hugetlb"] == 0,
++        "Explicit same-boot GB10 UMA host with no hugetlb pool",
++    )
++
++
++def uma_uuid(value):
++    require(type(value) is str, "Typed device UUID")
++    return uuid.UUID(value.lower().removeprefix("gpu-")).hex
++
++
++def uma_validate_identity(driver, allocator, host, config):
++    uma_host_identity(host, config)
++    require(
++        type(driver.get("integrated")) is int
++        and driver["integrated"] == 1
++        and driver.get("name") == allocator["name"] == "NVIDIA GB10"
++        and type(driver.get("total_bytes")) is int
++        and driver["total_bytes"] == allocator["total_bytes"] == host["MemTotal"]
++        and uma_uuid(driver["uuid"])
++        == uma_uuid(allocator["uuid"])
++        == uma_uuid(config["device_uuid"])
++        and driver.get("boot_id") == host["boot_id"],
++        "Driver integrated/UUID/name/total/boot must match selected Torch GB10",
++    )
++
++
++def uma_driver_metadata(runtime):
++    origins = runtime["cuda_link_origins"]
++    require(
++        len(origins) == 2
++        and {x["path"] for x in origins}
++        == {
++            "/lib/aarch64-linux-gnu/libcuda.so.1",
++            "/usr/lib/aarch64-linux-gnu/libcuda.so.1",
++        },
++        "Exact inherited libcuda metadata aliases",
++    )
++    for spec in origins:
++        target = Path(spec["path"]).resolve(strict=True)
++        observed = target.stat()
++        require(
++            str(target) == spec["resolved"] == UMA_LIBCUDA
++            and stat.S_ISREG(observed.st_mode)
++            and (observed.st_size, observed.st_mtime_ns, observed.st_dev, observed.st_ino)
++            == tuple(spec[k] for k in ("size_bytes", "mtime_ns", "device", "inode")),
++            "Inherited canonical libcuda metadata drift",
++        )
++    require(
++        all(
++            origins[0][k] == origins[1][k]
++            for k in (
++                "resolved",
++                "size_bytes",
++                "mtime_ns",
++                "device",
++                "inode",
++            )
++        ),
++        "libcuda aliases must identify one inode",
++    )
++    return {
++        k: origins[0][k]
++        for k in (
++            "resolved",
++            "size_bytes",
++            "mtime_ns",
++            "device",
++            "inode",
++        )
++    }
++
++
++def uma_symbol_mappings(raw_maps, addresses, metadata):
++    require(set(addresses) == set(UMA_SYMBOLS), "Exact Driver API symbol set")
++    mappings = []
++    for line in raw_maps.splitlines():
++        fields = line.split(maxsplit=5)
++        if len(fields) != 6 or not Path(fields[5]).name.startswith("libcuda.so"):
++            continue
++        start, end = (int(x, 16) for x in fields[0].split("-"))
++        device = os.makedev(*(int(x, 16) for x in fields[3].split(":")))
++        require(
++            fields[5] == metadata["resolved"] == UMA_LIBCUDA
++            and device == metadata["device"]
++            and int(fields[4]) == metadata["inode"],
++            "Mapped libcuda path/dev/inode drift",
++        )
++        if "x" in fields[1]:
++            mappings.append((start, end))
++    require(
++        mappings
++        and all(
++            type(address) is int
++            and address > 0
++            and any(start <= address < end for start, end in mappings)
++            for address in addresses.values()
++        ),
++        "Every Driver API symbol must belong to exact executable libcuda mapping",
++    )
++    return {name: addresses[name] for name in UMA_SYMBOLS}
++
++
++def uma_driver_read(symbols, ctypes):
++    signatures = {
++        "cuCtxGetDevice": [ctypes.POINTER(ctypes.c_int)],
++        "cuDeviceGetAttribute": [ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int],
++        "cuDeviceGetUuid": [ctypes.c_void_p, ctypes.c_int],
++        "cuDeviceGetName": [ctypes.c_void_p, ctypes.c_int, ctypes.c_int],
++        "cuDeviceTotalMem_v2": [ctypes.POINTER(ctypes.c_size_t), ctypes.c_int],
++    }
++    for name, args in signatures.items():
++        symbols[name].argtypes, symbols[name].restype = args, ctypes.c_int
++
++    def call(name, *args):
++        result = symbols[name](*args)
++        require(type(result) is int and result == 0, "Driver identity query failed: " + name)
++
++    device, integrated, total = ctypes.c_int(-1), ctypes.c_int(-1), ctypes.c_size_t(0)
++    identifier, name = (ctypes.c_ubyte * 16)(), ctypes.create_string_buffer(128)
++    call("cuCtxGetDevice", ctypes.byref(device))
++    require(device.value >= 0, "Current CUDA context device")
++    call("cuDeviceGetAttribute", ctypes.byref(integrated), 18, device.value)
++    call("cuDeviceGetUuid", identifier, device.value)
++    call("cuDeviceGetName", name, len(name), device.value)
++    call("cuDeviceTotalMem_v2", ctypes.byref(total), device.value)
++    return {
++        "context_device": device.value,
++        "integrated": integrated.value,
++        "uuid": uuid.UUID(bytes=bytes(identifier)).hex,
++        "name": name.value.decode("ascii", errors="strict"),
++        "total_bytes": total.value,
++    }
++
++
++def uma_driver_identity(runtime, allocator, host, config):
++    uma_host_identity(host, config)
++    require(
++        host["MemAvailable"] >= research_floor(host, startup=True)["required_bytes"],
++        "Fresh unchanged startup floor before Driver identity query",
++    )
++    metadata = uma_driver_metadata(runtime)
++    require(
++        all(hasattr(os, key) for key in ("RTLD_NOLOAD", "RTLD_NOW", "RTLD_LOCAL")),
++        "Explicit already-loaded libcuda handle support required",
++    )
++    import ctypes
++
++    library = ctypes.CDLL(UMA_LIBCUDA, mode=os.RTLD_NOLOAD | os.RTLD_NOW | os.RTLD_LOCAL)
++    symbols = {name: getattr(library, name) for name in UMA_SYMBOLS}
++    addresses = {name: ctypes.cast(fn, ctypes.c_void_p).value for name, fn in symbols.items()}
++    maps = Path("/proc") / str(os.getpid()) / "maps"
++    uma_symbol_mappings(read(maps, 8 * MIB).decode(), addresses, metadata)
++    driver = uma_driver_read(symbols, ctypes)
++    driver["boot_id"] = host["boot_id"]
++    uma_validate_identity(driver, allocator, host, config)
++    require(uma_driver_metadata(runtime) == metadata, "Stable libcuda metadata after query")
++    uma_symbol_mappings(read(maps, 8 * MIB).decode(), addresses, metadata)
++    require(boot_id() == host["boot_id"], "Same boot after Driver query")
++    return {
++        **driver,
++        "profile_kind": UMA_KIND,
++        "library_metadata": metadata,
++        "symbol_addresses": addresses,
++        "load_mode": "exact-canonical-RTLD_NOLOAD",
++        "pin_scope": "Inherited runtime02 metadata pins and executable symbol mappings; not a libcuda payload SHA attestation",
++    }
++
++
++def uma_memory_decision(host, cuda, identity, allocator, config):
++    uma_validate_identity(identity, allocator, host, config)
++    require(
++        all(type(cuda[k]) is int and cuda[k] >= 0 for k in ("free", "total", "reserved"))
++        and cuda["free"] <= cuda["total"] == UMA_TOTAL,
++        "Typed stable raw CUDA counters",
++    )
++    old_free = cuda["free"] >= CAP + GIB
++    native = (
++        cuda["backend"] == "native"
++        and cuda["fraction"] == allocator["fraction"]
++        and cuda["reserved"] < STOP
++    )
++    return {
++        "memory_admission_profile_kind": UMA_KIND,
++        "original_cuda_free_required_bytes": CAP + GIB,
++        "original_cuda_free_predicate_pass": old_free,
++        "original_cuda_free_would_refuse": not old_free,
++        "original_native_device_guard_would_refuse": not (old_free and native),
++        "UMA_estimate_metric": "proc_MemAvailable",
++        "UMA_estimate_bytes": host["MemAvailable"],
++        "UMA_required_bytes": CAP + GIB,
++        "UMA_predicate_pass": host["MemAvailable"] >= CAP + GIB,
++        "native_allocator_predicate_pass": native,
++        "identity_sha256": sha(encode(identity)),
++        "swap_credit_bytes": 0,
++        "semantic_delta": "Explicit UMA estimate removes old raw CUDAfree veto;41GiB estimate is redundant under unchanged higher host floors",
++    }
++
++
+ class Research:
+     """New research gate; never valid old fitter resource evidence."""
+ 
+-    def __init__(self, torch, output, config, binding, allocator):
++    def __init__(self, torch, output, config, binding, allocator, uma_identity):
+         self.torch, self.output, self.config, self.binding, self.allocator = (
+             torch,
+             output,
+@@ -712,6 +958,7 @@
+             binding,
+             allocator,
+         )
++        self.uma_identity = uma_identity
+         self.loaded = False
+         self.sequence = 0
+         self.peak_allocated = self.peak_reserved = 0
+@@ -719,6 +966,10 @@
+     def cuda(self):
+         t = self.torch
+         free, total = t.cuda.mem_get_info(0)
++        require(
++            type(free) is int and type(total) is int and 0 <= free <= total,
++            "Typed raw CUDA free/total query required; no fabricated UMA replacement",
++        )
+         require(int(total) == self.allocator["total_bytes"], "Stable visible device capacity")
+         return {
+             "allocated": int(t.cuda.memory_allocated(0)),
+@@ -734,44 +985,81 @@
+ 
+     def check(self, phase, scope):
+         require(scope in {"cpu", "train", "research"}, "Explicit research protection scope")
+-        obs = host_memory()
+-        floor = research_floor(obs, startup=not self.loaded)
+-        cg = cgroup_snapshot(self.binding["ControlGroup"])
+-        cuda = self.cuda()
+-        require(
+-            obs["boot_id"] == self.config["boot_id"]
+-            and obs["MemAvailable"] >= floor["required_bytes"],
+-            "Fresh independent research memory admission refused",
+-        )
+-        require(
+-            cuda["backend"] == "native"
+-            and cuda["fraction"] == self.allocator["fraction"]
+-            and cuda["free"] >= CAP + GIB
+-            and cuda["reserved"] < STOP,
+-            "Native allocator/device guard refused",
+-        )
+-        require(
+-            cg["max"] == CAP
+-            and cg["high"] is None
+-            and cg["swap_max"] == 0
+-            and cg["oom_group"] == 1
+-            and not pressure_stop({"available": obs["MemAvailable"], **cg}, floor["reserve_bytes"]),
+-            "Owned cgroup pressure or limit drift",
+-        )
++        row = {
++            "event": "research-gate",
++            "phase": phase,
++            "scope": scope,
++            "memory_admission_profile_kind": UMA_KIND,
++            "admitted": False,
++            "status": "UNKNOWN",
++            "resident_credit_bytes": 0,
++            "swap_credit_bytes": 0,
++            "original_cuda_free_predicate_pass": None,
++            "original_cuda_free_would_refuse": None,
++            "UMA_predicate_pass": None,
++            "UMA_identity_pass": False,
++        }
++        try:
++            obs = host_memory()
++            row["observation"] = obs
++            floor = research_floor(obs, startup=not self.loaded)
++            row.update(floor)
++            cg = cgroup_snapshot(self.binding["ControlGroup"])
++            row["cgroup"] = cg
++            cuda = self.cuda()
++            row["cuda"] = cuda
++            if (
++                type(cuda.get("free")) is int
++                and type(cuda.get("total")) is int
++                and 0 <= cuda["free"] <= cuda["total"] == UMA_TOTAL
++            ):
++                row["original_cuda_free_predicate_pass"] = cuda["free"] >= CAP + GIB
++                row["original_cuda_free_would_refuse"] = not row[
++                    "original_cuda_free_predicate_pass"
++                ]
++            row.update(
++                uma_memory_decision(obs, cuda, self.uma_identity, self.allocator, self.config)
++            )
++            row["UMA_identity_pass"] = True
++            row["unchanged_research_host_floor_pass"] = (
++                obs["boot_id"] == self.config["boot_id"]
++                and obs["MemAvailable"] >= floor["required_bytes"]
++            )
++            row["unchanged_cgroup_pressure_pass"] = (
++                cg["max"] == CAP
++                and cg["high"] is None
++                and cg["swap_max"] == 0
++                and cg["oom_group"] == 1
++                and not pressure_stop(
++                    {"available": obs["MemAvailable"], **cg}, floor["reserve_bytes"]
++                )
++            )
++            row["admitted"] = all(
++                row[k]
++                for k in (
++                    "UMA_predicate_pass",
++                    "native_allocator_predicate_pass",
++                    "unchanged_research_host_floor_pass",
++                    "unchanged_cgroup_pressure_pass",
++                )
++            )
++            row["status"] = "ADMITTED" if row["admitted"] else "REFUSED"
++        except BaseException as exc:
++            row["error"] = {"type": type(exc).__name__, "message": str(exc)}
++            try:
++                arm_bound(self.output)
++                append(self.output / "phases.jsonl", row, LIMITS["phases.jsonl"])
++            except BaseException as evidence_error:
++                exc.add_note(
++                    "Secondary UMA admission evidence failure: "
++                    + type(evidence_error).__name__
++                    + ": "
++                    + str(evidence_error)
++                )
++            raise
+         arm_bound(self.output)
+-        append(
+-            self.output / "phases.jsonl",
+-            {
+-                "event": "research-gate",
+-                "phase": phase,
+-                "scope": scope,
+-                "observation": obs,
+-                **floor,
+-                "resident_credit_bytes": 0,
+-                "admitted": True,
+-            },
+-            LIMITS["phases.jsonl"],
+-        )
++        append(self.output / "phases.jsonl", row, LIMITS["phases.jsonl"])
++        require(row["admitted"], "Explicit UMA research/native/cgroup admission refused")
+         return True
+ 
+     def phase(self, name, fn):
+@@ -1942,7 +2230,7 @@
+     }
+     require(ready["boot_id"] == config["boot_id"], "Same boot before worker release")
+     state = {
+-        "kind": "memory_probe_only",
++        "kind": UMA_KIND,
+         "qualified": False,
+         "stage": "pre-framework-barrier",
+         "mode": config["mode"],
+@@ -2067,7 +2355,23 @@
+             "driver_version_text": read("/proc/driver/nvidia/version").decode(),
+             "native_binary_pins": runtime,
+         }
+-        gate = Research(torch, output, config, binding, cap)
++        state["stage"] = "UMA-device-identity"
++        replace(output / "progress.json", state)
++        old.check("immediately-before-legacy-parent-capture-and-Torch", "cpu")
++        uma_pins = parse(ref_read(plan["UMA_driver_identity_metadata_pins"]))
++        require(
++            uma_pins["schema"] == "gb10-UMA-driver-metadata-pins-v1"
++            and uma_pins["inherited_runtime"] == plan["native_toolchain_runtime_pins"]
++            and uma_pins["cuda_link_origins"] == tools.runtime["cuda_link_origins"],
++            "Separate inherited-metadata UMA driver authority",
++        )
++        uma = uma_driver_identity(uma_pins, cap, host_memory(), config)
++        write(output / "uma-device-identity.json", uma)
++        state["uma_device_identity"] = {
++            "path": str(output / "uma-device-identity.json"),
++            **file_pin(output / "uma-device-identity.json"),
++        }
++        gate = Research(torch, output, config, binding, cap, uma)
+         state["stage"] = "full-checkpoint-hash"
+         old.check("before-checkpoint-payload-hash-and-BF16-loader", "load")
+         checkpoint = artifact.resolve_base_checkpoint(producer.CACHE)
+@@ -2588,6 +2892,7 @@
+             json.dumps(
+                 {
+                     "status": "prepared-only-no-unit-no-GPU",
++                    "memory_admission_profile_kind": UMA_KIND,
+                     "research_sources": len(inventory["files"]),
+                     "unit_cap_bytes": CAP,
+                     "native_allocator_cap_bytes": CAP,
+@@ -2611,14 +2916,16 @@
+     )
+     output.mkdir(mode=0o700)
+     state = {
+-        "kind": "memory_probe_only",
++        "kind": UMA_KIND,
+         "qualified": False,
+         "success": False,
+         "planned_arms": ["A", "C"],
+         "arms": [],
+         "unrun": ["A", "C"],
+         "error": None,
+-        "old_gates_unchanged": True,
++        "original_CPU_host_caps_unchanged": True,
++        "memory_admission_profile_kind": UMA_KIND,
++        "old_CUDA_free_veto_removed_for_verified_UMA_only": True,
+     }
+     primary = None
+     try:

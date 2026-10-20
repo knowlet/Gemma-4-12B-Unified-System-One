@@ -1,0 +1,149 @@
+{
+  "schema": "GX10_explicit_UMA_memory_guard_comparison_research_v1",
+  "created_unix": 1792490812.03296,
+  "status": "PRIMARY_RESEARCH_AND_DESIGN_ONLY_NO_SOURCE_CHANGE_OR_EXECUTION",
+  "scope": "Only existing small source/evidence reads and primary documentation were used. No model/framework import, checkpoint payload read/hash, GPU query, new residency measurement, cache advice, ComfyUI operation or native workload was performed by this task.",
+  "recommendation": "Prefer a separately named, explicitly selected GB10 UMA-only memory admission profile before implementing file-specific DONTNEED. Change only the independent allocatable-estimate predicate under verified integrated shared-memory identity; preserve raw CUDA measurements, old CUDA predicate outcomes and all other physical/allocator/cgroup/CPU guards. This is a new experimental admission policy, not proof that an old CUDA-free guard passed.",
+  "evidence_refs": [
+    {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/research-report-01.json",
+      "sha256": "ba84ef2e1e67c88d532d982b1d443c2a8f1f27a535e06f23fe8a2409c5b50b98",
+      "size_bytes": 20543
+    },
+    {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/independent-actual01-closed-review-01.json",
+      "sha256": "0882574d5996356abd768662fd97acd52a711079407818054b119ac7736ba03c",
+      "size_bytes": 12748
+    },
+    {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/actual-01/measurement.json",
+      "sha256": "7e4dd271f381dbd3d4370b0317e1d6fe8f13ac592e7905d20660069538c32e07",
+      "size_bytes": 2361
+    },
+    {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/after-constructor-file-cache-research-01.json",
+      "sha256": "dbd057afb641e1fb6801bccd89ac08e584a1901bae6c0885fc9e88de9ab68b98",
+      "size_bytes": 11072
+    },
+    {
+      "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/after-constructor-file-cache-experiment-design-01.json",
+      "sha256": "c01557d345773dd82ac063f8f2974764e2b4c5f7ce2ab3ed2a3319fa1dfc183b",
+      "size_bytes": 8128
+    }
+  ],
+  "historical_source_refs": [
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/source-HOLD-13/native_peak_probe_01.py",
+      "sha256": "5fcd54d8a5fc8ce23631d7140361e668059f21b63a7656940b12c5789c695710",
+      "size_bytes": 106259
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/source-HOLD-13/plan-18.json",
+      "sha256": "f7a20aad057d9370c4da4ba2a83a68e2bcc97fbaa3efc39e60457ea922ef2ed5",
+      "size_bytes": 70605
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/source-HOLD-13/HOLD.json",
+      "sha256": "c038feb389dcb8a1454f1d7590cf0f59959fdd5131e2a954aa1b909be6d6da50",
+      "size_bytes": 10626
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/source-HOLD-14/HOLD.json",
+      "sha256": "dc0da6b09f6b1333ca9d58919d3fe6e1e8841cb639642cdb16fc40854544b863",
+      "size_bytes": 7910
+    }
+  ],
+  "primary_sources": [
+    {
+      "url": "https://docs.nvidia.com/dgx/dgx-spark/known-issues.html",
+      "read_section": "Guidance for reporting memory resources with unified memory architecture, updated2026-09-10",
+      "supports": "NVIDIA describes CPU/GPU shared DRAM, warns that cudaMemGetInfo can understate capacity and advises another estimator. Its example reads MemAvailable and SwapFree, with a separate explicit-hugetlb branch. The prose emphasizes SWAP; it does not establish that this host gap is all file cache.",
+      "does_not_support": "No endorsement of41GiB, our40GiB/39.5GiB policy, zero-swap CUDA allocation guarantee, or exact installed-driver behavior."
+    },
+    {
+      "url": "https://www.kernel.org/doc/html/latest/filesystems/proc.html#meminfo",
+      "read_section": "MemTotal, MemFree, MemAvailable and Cached",
+      "supports": "MemAvailable estimates capacity for new applications without swapping, accounting for file LRUs, reclaimable slab and watermarks. This supports using it without adding SwapFree; it remains a host estimate, not a per-process CUDA or cgroup entitlement. Cached also contains tmpfs/shmem, so it cannot be equated with freely reclaimable checkpoint bytes."
+    },
+    {
+      "url": "https://docs.nvidia.com/cuda/archive/13.0.0/cuda-runtime-api/group__CUDART__MEMORY.html",
+      "read_section": "cudaMemGetInfo Description",
+      "supports": "CUDA13.0 describes free as an OS-reported value and explicitly denies a guarantee that CUDA can allocate it all. The exact installed Torch reports CUDA13.0, but documentation does not attest its installed native binaries."
+    },
+    {
+      "url": "https://docs.nvidia.com/cuda/cuda-runtime-api/cuda_runtime_api/group__CUDART__MEMORY.html",
+      "read_section": "CUDA13.4 cudaMemGetInfo",
+      "supports": "Current documentation additionally discusses concurrent-allocation races and integrated-SoC shared-memory/swap accounting. Those limitations apply to interpreting counters; this is not an exact13.0 implementation proof."
+    },
+    {
+      "url": "https://docs.nvidia.com/cuda/archive/13.0.0/cuda-driver-api/group__CUDA__TYPES.html",
+      "read_section": "CUdevice_attribute",
+      "supports": "The versioned13.0 enum assigns CU_DEVICE_ATTRIBUTE_INTEGRATED=18 and defines integration with host memory. This gives a versioned identity query, not a capacity guarantee."
+    },
+    {
+      "url": "https://docs.nvidia.com/cuda/cuda-driver-api/cuda_driver_api/group__CUDA__DEVICE.html",
+      "read_section": "cuDeviceGetAttribute, cuDeviceGetUuid and cuDeviceTotalMem",
+      "supports": "A queried device attribute is tied to a CUdevice; UUID identifies that device. A future implementation must bind the Driver API device to the same selected Torch device, rather than assume ordinal equality across APIs."
+    },
+    {
+      "url": "https://www.asus.com/us/networking-iot-servers/desktop-ai-supercomputer/ultra-small-ai-supercomputers/asus-ascent-gx10/techspec/",
+      "read_section": "CPU, graphics, memory",
+      "supports": "ASUS lists GX10 as GB10 with integrated graphics and unified LPDDR5x system memory. This supports applying UMA reasoning to this product family; static marketing identity cannot replace fresh runtime integrated/UUID/total/boot checks."
+    }
+  ],
+  "closed_local_findings": [
+    "Historical actual12/13 showed host MemAvailable roughly92-96GB while raw CUDAfree was43-47GB on a reported130595860480B shared total. The48-49GB gap already existed before the current full checkpoint hash when this worker had no own native allocations. It cannot be attributed solely to this worker allocator splitting or the current hash.",
+    "Default H13 actual12 A completed2updates+2dev; C refused at the original CUDAfree guard. H14 maxsplit128 actual13 A refused before its first backward. Their original failure classifications remain unchanged; no real OOM was demonstrated by those guard refusals.",
+    "The independently closed current exact-inode mincore snapshot found6868992 resident bytes out of23919549408 file bytes. This contradicts the current-base-occupies26GB-Cached hypothesis. It cannot reconstruct cache state during old actual12/13 or prove allocatability.",
+    "The full normal-buffered hash and Linux mmap constructor can warm the full base checkpoint. The retained amount, memcg charging and post-constructor references must be measured in an actual owned worker before making claims about cache release."
+  ],
+  "policy_arithmetic": {
+    "report_host_MemTotal_bytes": 130595860480,
+    "host_reserve_bytes": 26119172096,
+    "original_old_train_required_bytes": 106438961088,
+    "research_startup_required_bytes": 116313485312,
+    "resident_research_required_bytes": 77658779648,
+    "monitor_host_stop_threshold_bytes": 28266655744,
+    "native_and_memcg_cap_bytes": 42949672960,
+    "reserved_soft_stop_bytes": 42412802048,
+    "retained_numeric_memory_min_bytes": 44023414784,
+    "swap_credit_bytes": 0,
+    "resident_credit_bytes": 0
+  },
+  "semantic_change": {
+    "old_device_predicate": "raw_cuda_free_bytes >=44023414784",
+    "proposed_new_predicate": "verified_explicit_GB10_UMA_identity AND fresh_host_MemAvailable_bytes >=44023414784",
+    "important_redundancy": "The unchanged resident research floor77658779648B is already greater than44023414784B. Therefore the new41GiB MemAvailable predicate adds no independent capacity restriction when that host floor is also required. Keeping the number41 does not retain the old device-free semantics. The change deliberately removes raw CUDAfree as an additional veto only for this new profile.",
+    "recording": "Keep cuda.free and cuda.total raw at every existing phase/gate. Add separately named new UMA predicate fields, original CUDA-free predicate pass/would_refuse, exact identity evidence and zero swap credit. Never overwrite or relabel cuda.free with MemAvailable.",
+    "no_equivalence_claim": "MemAvailable is not added to raw CUDAfree and is not reduced by observed RSS/PSS/memory.current or reserved CUDA memory. Shared DRAM must not be double-counted. All old original CPU/load/train and independent research floors remain independent requirements."
+  },
+  "options": [
+    {
+      "candidate": "Explicit verified-GB10 UMA MemAvailable profile",
+      "rank": 1,
+      "advantage": "Targets the documented metric mismatch without requesting page-cache invalidation or modifying other processes. Requires a small explicit guard/schema/identity change and a real native capacity experiment.",
+      "cost": "Permits a native phase that the former raw CUDAfree guard would refuse. Host estimate, CUDA allocator limits, cgroup limits and driver allocation behavior differ; real OOM or memcg failure may still occur."
+    },
+    {
+      "candidate": "After-constructor exact-inode DONTNEED",
+      "rank": 2,
+      "advantage": "Could raise physical/device free if the original constructor leaves substantial clean unused checkpoint pages resident; the separate prior design preserves the old raw CUDAfree predicate.",
+      "cost": "Nonbinding shared-inode cache advice; needs new cleanliness, host-storage-lifetime and other-consumer visibility evidence. It can affect other users of aliases/open handles and may trigger writeback. Present idle snapshot alone offers only6.87MB cache to remove. More complex and more intrusive than changing an explicitly new UMA admission estimate."
+    },
+    {
+      "candidate": "Direct-I/O hash or alternate safetensors backend",
+      "rank": 3,
+      "advantage": "A future direct-I/O hash might avoid warming pages on that one read.",
+      "cost": "Broader alignment/filesystem/verification rewrite; the unchanged constructor still reads/mmap-materializes the same weights. disable_mmap and pread are buffered paths, not cache bypass. Not the minimal next experiment."
+    }
+  ],
+  "uncertainties_and_risks": [
+    "Even a valid MemAvailable estimate does not guarantee CUDA allocations, address-space/physical-contiguity requirements, driver-reserved pools or nonallocator allocations. CUDA13.0 mem_get_info also gives no allocation guarantee.",
+    "Kernel reclaim can add latency or pressure other active working sets; avoiding explicit cache advice does not guarantee no interference. Existing host reserve, PSI/heartbeat/unit limits and owned stopping remain necessary.",
+    "Global MemAvailable can be high while the dedicated40GiB memory cgroup is near its own limit, especially after a cold full-hash/constructor charges file cache. Preserve cgroup memory.stat/current/peak/events and genuine OOM evidence; do not prewarm outside the unit to move charges.",
+    "The native fraction caps only the selected PyTorch native caching allocator. The40GiB cgroup cap covers its kernel-accounted workload; neither is proof of a universal aggregate40GiB GPU process quota.",
+    "Do not extrapolate this explicit local profile to discrete GPUs, another GB10 SKU, a container with different host visibility, nonzero hugetlb pools, multi-device setup or identity/total drift.",
+    "A short capacity pass is not a full-fit success, better model quality or a Jev win. New qualified artifact and matched real-browser evaluation remain separate work."
+  ],
+  "scope_conclusion": "Primary documentation supports testing a distinct UMA estimator policy. It does not prove the hypothesis or authorize changing historical evidence. Prefer this narrowly identified experiment and retain genuine failures rather than combining allocator tuning, loader changes and cache advice in one trial."
+}

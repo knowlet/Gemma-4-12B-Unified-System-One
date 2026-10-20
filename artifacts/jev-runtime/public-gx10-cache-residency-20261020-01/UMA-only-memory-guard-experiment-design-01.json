@@ -1,0 +1,78 @@
+{
+  "schema": "GX10_explicit_UMA_memory_guard_experiment_design_v1",
+  "status": "REVIEWABLE_DESIGN_ONLY_NOT_IMPLEMENTED_OR_RUN",
+  "research": {
+    "path": "artifacts/jev-runtime/public-gx10-cache-residency-20261020-01/UMA-memory-guard-comparison-research-01.json",
+    "sha256": "8ea41fe6ec026988d0cc3c9b5f75c099a6da0fff973b64a20b41aac40a58071a",
+    "size_bytes": 12697
+  },
+  "proposed_kind": "gb10_native_fixed_cache_uma_memavailable_capacity_v1",
+  "baseline": "Frozen H13 default native allocator and original workload. Old H13/H14 sources, kind names and actual12/13 receipts remain immutable; no H14 maxsplit128 or hidden fallback.",
+  "single_semantic_delta": "Only the declared new UMA allocatable-estimate predicate may admit a phase with raw CUDAfree below41GiB. Add explicit identity/evidence fields. Preserve all original model/loss/operator data math, runtime pins, host floors, stop rules and owned cleanup.",
+  "fixed_limits": {
+    "report_host_MemTotal_bytes": 130595860480,
+    "host_reserve_bytes": 26119172096,
+    "original_old_train_required_bytes": 106438961088,
+    "research_startup_required_bytes": 116313485312,
+    "resident_research_required_bytes": 77658779648,
+    "monitor_host_stop_threshold_bytes": 28266655744,
+    "native_and_memcg_cap_bytes": 42949672960,
+    "reserved_soft_stop_bytes": 42412802048,
+    "retained_numeric_memory_min_bytes": 44023414784,
+    "swap_credit_bytes": 0,
+    "resident_credit_bytes": 0
+  },
+  "identity_required_before_any_UMA_admission": [
+    "Explicit reviewed new-kind selection, exact pinned native runtime and exact selected GPU UUID; one visible device and native backend as before.",
+    "Query CU_DEVICE_ATTRIBUTE_INTEGRATED=18 through the reviewed pinned libcuda already belonging to this runtime, after original CPU/runtime admission. Require success and exact integer1. Do not query a different library by generic search path.",
+    "Bind Driver API CUdevice to the same Torch device by UUID and name NVIDIA GB10; bind the same Linux boot and selected device. CUdevice ordinal0 alone is insufficient.",
+    "Require raw Torch device properties total, mem_get_info.total, reviewed Driver API device total if used, and fresh /proc MemTotal to equal the exact declared130595860480B. Total equality is corroborating local-profile identity, never proof of UMA without integrated=1.",
+    "Fresh complete typed /proc fields include MemFree,MemAvailable,MemTotal,Cached,SReclaimable,SwapTotal,SwapFree,HugePages_Total,HugePages_Free,Hugepagesize,Hugetlb and boot. For this first narrow profile require explicit hugetlb pool0 and reject missing/nonzero/contradictory hugetlb fields; do not copy NVIDIA hugetlb branch incompletely.",
+    "Same original zero-swap policy and zero added SwapFree credit; record swap counters separately. An unsupported/error/missing/inconsistent identity check refuses this profile and preserves UNKNOWN/failure, without automatic fallback or retry."
+  ],
+  "per_gate_record_contract": {
+    "raw_unchanged": "Complete original cuda.free/total/allocated/reserved/peaks/stats/backend/fraction; host and cgroup snapshots retain their names and units.",
+    "added_fields": [
+      "memory_admission_profile_kind",
+      "identity_evidence_ref_and_sha",
+      "original_cuda_free_required_bytes=44023414784",
+      "original_cuda_free_predicate_pass",
+      "original_cuda_free_would_refuse",
+      "UMA_estimate_metric=proc_MemAvailable",
+      "UMA_estimate_bytes",
+      "UMA_required_bytes=44023414784",
+      "UMA_predicate_pass",
+      "unchanged_research_host_floor_bytes",
+      "unchanged_research_host_floor_pass",
+      "swap_credit_bytes=0",
+      "resident_credit_bytes=0"
+    ],
+    "predicate": "Preserved host research floor AND new verified-UMA41GiB estimate predicate AND original native backend/fraction/reserved<39.5GiB AND original cgroup/pressure/CPU gates. A failed CUDA API query remains an error, even when free itself is not this profile veto.",
+    "ordering": "Durably record observed metrics and both old/new predicate outcomes before reporting pass or refusal; record unknown/error outcome without manufacturing a numeric measurement.",
+    "honesty": "A new profile PASS with original_cuda_free_would_refuse=true is allowed only as explicitly labeled new-policy evidence. It never upgrades old kind or old actual12/13 to PASS."
+  },
+  "ordered_work": [
+    "Create separately named source/plan/schema and immutable HOLD after parent/independent review. Meaningful pure tests must establish exact source delta and identity/gate behavior before native execution.",
+    "Fresh original CPU gates, protected-process/resource conditions, exact runtime/source/device/boot binding and startup floor; no external warming, cache mutation, swap/config changes or model preload outside the owned unit.",
+    "Fresh A worker: original full buffered checkpoint authentication, original constructor/head/trainable checks, original142 processor/CFG references and selected5055/4337 train and3652/3383dev rows, full262144 vocabulary head/48 SDPA layers/176 FP32 q/v trainables/frozen BF16, seed42/LR5e-5/AdamW wd0/clip1.",
+    "Preserve H13 fixed successful-forward/backward unused-native-cache releases and all synchronization/peak accounting. Only the new admission predicate differs; no new cache advice or allocator tuning.",
+    "Perform original2 disposable synchronized optimizer updates and2 dev phases. Preserve heartbeat, controller host/memcg stops, work-end ACK, source closure and kernel/unit lifetime peak/exit proof. Save no trained artifact in this capacity experiment.",
+    "Only whole A success and owned-process closure permits a fresh C worker with the same new profile and2updates+2dev. Do not reuse hot model or automatically retry any failing arm."
+  ],
+  "meaningful_pure_test_cases": [
+    "Verified UMA identity plus MemAvailable above unchanged host floor, raw CUDAfree below41GiB: new predicate admits while old would_refuse is true and raw free remains exact.",
+    "Integrated0/error/missing, UUID/device/boot/total/name mismatch, unsupported profile, nonzero/missing hugetlb evidence: refuse with no fallback.",
+    "Host floor one byte below/equal boundaries;41GiB estimate one byte below/equal; demonstrate41GiB predicate redundant at resident host floor rather than claim equivalent old protection.",
+    "Reserved one byte below/equal39.5GiB, native fraction/backend/cgroup cap drift, own swap/events, stale/missing observations all retain original refusal behavior.",
+    "Legacy H13/H14 kind and historical source/receipt pins remain byte-identical and still require original raw CUDAfree>=41GiB.",
+    "Record genuine CUDA OOM/memcg failure/constructor failure distinctly from an admission refusal; zero retries, preserved primary error and bounded cleanup evidence."
+  ],
+  "outcome_rules": [
+    "PASS requires both fresh arms complete all original work, finite losses/gradients, expected updated adapter state in memory, all cap/soft/host/no-swap invariants, complete source/runtime receipts, owned process exit and independent closure. A passed estimate alone is not a capacity PASS.",
+    "Retain any native CUDA OOM, memcg max/oom/oom_kill event, cgroup cap/host-reserve failure, missing evidence or unsupported identity as terminal failure/UNKNOWN. Do not reduce geometry, raise limits or retry under another guard.",
+    "Compare same-phase host/CUDA/cgroup/allocator axes and elapsed/IO/PSI with old failures. Different background/cache state means one new PASS is evidence of that execution, not causal proof that the predicate change alone fixed capacity.",
+    "Only after source-reviewed short capacity success should a separately declared producer/qualifier/profile artifact path be considered for full-fit and Jev evaluation. No reuse of a legacy qualifier as if its old CUDA gate were met."
+  ],
+  "deferred": "File-specific DONTNEED remains a separately reviewed fallback research design, not combined with this trial. No advice implementation or execution is proposed as part of this minimal UMA test.",
+  "execution_so_far": "No new model/GPU/cache/native execution. These are small append-only review artifacts only."
+}
