@@ -26,7 +26,7 @@ def test_default_production_text_is_exactly_the_original_native_text(payload):
     assert evidence["format"] == "raw-json-v1"
 
 
-@pytest.mark.parametrize("mode", ["raw-json-v1", "shared-elements-v1"])
+@pytest.mark.parametrize("mode", ["raw-json-v1", "shared-elements-v1", "shared-elements-v2"])
 def test_original_400_labels_and_schema401_boundary_survive(mode, backend, payload):
     payload = copy.deepcopy(payload)
     payload["questions"]["click_target"]["criteria"] = {
@@ -52,26 +52,26 @@ def test_original_400_labels_and_schema401_boundary_survive(mode, backend, paylo
     assert len(backend.model.calls) == before_calls
 
 
-def test_shared_roundtrip_failure_stops_before_native_forward(monkeypatch, backend, payload):
+@pytest.mark.parametrize("mode", ["shared-elements-v1", "shared-elements-v2"])
+def test_shared_roundtrip_failure_stops_before_native_forward(monkeypatch, backend, payload, mode):
     from s1 import jev_prompt
 
     monkeypatch.setattr(jev_prompt, "unpack_payload", lambda _encoded: {})
     with pytest.raises(RequestValidationError, match="complete ordered request"):
-        JevGeneratedActionAdapter(
-            backend, model_identity="experiment", prompt_format="shared-elements-v1"
-        ).predict(payload)
+        JevGeneratedActionAdapter(backend, model_identity="experiment", prompt_format=mode).predict(
+            payload
+        )
     assert not backend.model.calls and not backend.model.forwards
 
 
 @pytest.mark.parametrize("length,accepted", [(8160, True), (8161, False)])
+@pytest.mark.parametrize("mode", ["shared-elements-v1", "shared-elements-v2"])
 def test_shared_prefix_keeps_full_8192_budget_and_32_output_reserve(
-    backend, payload, length, accepted
+    backend, payload, length, accepted, mode
 ):
     backend.model.max_context = 16384
     backend.model.processor.length = length
-    adapter = JevGeneratedActionAdapter(
-        backend, model_identity="experiment", prompt_format="shared-elements-v1"
-    )
+    adapter = JevGeneratedActionAdapter(backend, model_identity="experiment", prompt_format=mode)
     if accepted:
         assert adapter.predict(payload)["usage"]["input_tokens"] == length
     else:
@@ -112,17 +112,50 @@ def test_shared_mode_requires_generated_actions(backend):
         create_app(backend, jev_compatible=True, jev_generated_prompt_format="shared-elements-v1")
 
 
-def test_http_opt_in_uses_the_same_production_renderer(backend, payload):
+def test_v2_fallback_keeps_raw_text_and_discloses_both_candidate_costs(payload):
+    raw, source, labels, _ = format_action_request(payload, "experiment")
+    chosen, original, offered, evidence = format_action_request(
+        payload, "experiment", prompt_format="shared-elements-v2"
+    )
+    assert chosen == raw and source == original and wire(labels) == wire(offered)
+    assert evidence["requested_format"] == "shared-elements-v2"
+    assert evidence["format"] == "raw-json-v1"
+    assert evidence["selection_basis"] == "complete_user_text_utf8_bytes"
+    costs = evidence["candidate_user_text_bytes"]
+    assert costs["raw-json-v1"] == len(raw.encode())
+    assert costs["shared-elements-v2"] >= costs["raw-json-v1"]
+    assert evidence["encoded_sha256"] == hashlib.sha256(original).hexdigest()
+    assert evidence["element_rows"] == evidence["criterion_refs"] == 0
+    assert evidence["candidate_shared_representation"]["format"] == "shared-elements-v2"
+    assert evidence["fallback_reason"] == "shared_user_text_is_not_smaller"
+
+
+def test_v1_remains_explicit_even_when_its_prompt_is_larger(payload):
+    from s1.jev_prompt import SHARED_ELEMENT_INSTRUCTIONS, format_payload
+
+    raw, *_ = format_action_request(payload, "experiment")
+    text, _, _, evidence = format_action_request(
+        payload, "experiment", prompt_format="shared-elements-v1"
+    )
+    packed, _ = format_payload(payload, prompt_format="shared-elements-v1")
+    assert text == jev_generated.INSTRUCTIONS + "\n" + SHARED_ELEMENT_INSTRUCTIONS + "\n" + packed
+    assert len(text.encode()) > len(raw.encode())
+    assert evidence["format"] == "shared-elements-v1"
+    assert "fallback_reason" not in evidence and "requested_format" not in evidence
+
+
+@pytest.mark.parametrize("mode", ["shared-elements-v1", "shared-elements-v2"])
+def test_http_opt_in_uses_the_same_production_renderer(backend, payload, mode):
     from fastapi.testclient import TestClient
 
     expected_text, original, labels, _ = format_action_request(
-        payload, "experiment", prompt_format="shared-elements-v1"
+        payload, "experiment", prompt_format=mode
     )
     app = create_app(
         backend,
         jev_compatible=True,
         jev_generated_actions=True,
-        jev_generated_prompt_format="shared-elements-v1",
+        jev_generated_prompt_format=mode,
         model_identity="experiment",
         api_key="test-secret",
     )

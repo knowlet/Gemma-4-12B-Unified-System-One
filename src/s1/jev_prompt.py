@@ -10,8 +10,9 @@ import copy
 import json
 import math
 
-PROMPT_FORMATS = ("raw-json-v1", "shared-elements-v1")
+PROMPT_FORMATS = ("raw-json-v1", "shared-elements-v1", "shared-elements-v2")
 SHARED_FORMAT = PROMPT_FORMATS[1]
+SHARED_V2_FORMAT = PROMPT_FORMATS[2]
 TARGET_HEADS = ("click_target", "type_text_target", "select_target")
 CRITERIA_ALIASES = ("criteria", "options", "levels")
 DESCRIPTION_FIELDS = frozenset(
@@ -24,6 +25,19 @@ SHARED_ELEMENT_INSTRUCTIONS = (
     "supply fixed columns, so rows contain the other fields in order. "
     "A criteria entry [key,row,shape] references the zero-based element row and "
     "ordered description-field shape; [key,literal] keeps a literal description. "
+    "For references, element is '['+key+'] '+label, current_value is value or '' "
+    "when value is absent, and other fields copy the element field exactly. "
+    "Every original candidate key is retained; return the exact offered key."
+)
+SHARED_ELEMENT_V2_INSTRUCTIONS = (
+    "The input uses shared-elements-v2. Read payload as the original request. "
+    "Its null elements/criteria slots are supplied by the envelope sections. "
+    "Element blocks give fields once and every literal row in order; constants "
+    "supply fixed columns, so rows contain the other fields in order. "
+    "In criteria entries, an integer references that zero-based element row "
+    "using default_shape; [row,shape] uses another ordered description-field shape. "
+    "The candidate key is the referenced element's exact index string. "
+    "An entry [stringkey,literal] keeps its original key and description. "
     "For references, element is '['+key+'] '+label, current_value is value or '' "
     "when value is absent, and other fields copy the element field exactly. "
     "Every original candidate key is retained; return the exact offered key."
@@ -186,6 +200,8 @@ def format_payload(payload, *, prompt_format):
     _require(
         type(prompt_format) is str and prompt_format in PROMPT_FORMATS, "Unknown prompt format"
     )
+    if prompt_format == SHARED_V2_FORMAT:
+        return _format_v2(payload)
     _json_value(payload)
     original = _wire(payload)
     original_bytes = len(original.encode("utf-8"))
@@ -243,6 +259,8 @@ def format_payload(payload, *, prompt_format):
 def unpack_payload(encoded):
     """Decode SHARED only; literal marker-like user objects are never interpreted."""
     envelope = _parse(encoded)
+    if isinstance(envelope, dict) and envelope.get("format") == SHARED_V2_FORMAT:
+        return _unpack_v2(envelope)
     _require(
         type(envelope) is dict
         and set(envelope) == {"format", "payload", "elements", "criteria"}
@@ -315,3 +333,86 @@ def unpack_payload(encoded):
         question[alias] = criteria
     _json_value(result)
     return result
+
+
+def _default_shape(entries):
+    counts = {}
+    for entry in entries:
+        if type(entry) is list and len(entry) == 3:
+            shape = entry[2]
+            counts[shape] = counts.get(shape, 0) + 1
+    _require(bool(counts), "A shared criterion section must contain references")
+    return min(counts, key=lambda shape: (-counts[shape], shape))
+
+
+def _format_v2(payload):
+    encoded, metadata = format_payload(payload, prompt_format=SHARED_FORMAT)
+    envelope = _parse(encoded)
+    envelope["format"] = SHARED_V2_FORMAT
+    for section in envelope["criteria"]:
+        default = _default_shape(section["entries"])
+        section["default_shape"] = default
+        section["entries"] = [
+            (entry[1] if entry[2] == default else entry[1:]) if len(entry) == 3 else entry
+            for entry in section["entries"]
+        ]
+    encoded = _wire(envelope)
+    _require(_wire(unpack_payload(encoded)) == _wire(payload), "V2 must roundtrip exactly")
+    return encoded, {
+        **metadata,
+        "format": SHARED_V2_FORMAT,
+        "encoded_bytes": len(encoded.encode("utf-8")),
+    }
+
+
+def _unpack_v2(envelope):
+    _require(
+        set(envelope) == {"format", "payload", "elements", "criteria"}
+        and type(envelope["criteria"]) is list,
+        "Exact shared-elements-v2 envelope required",
+    )
+    blocks = envelope["elements"]
+    elements = _elements(blocks) if blocks is not None else None
+    for section in envelope["criteria"]:
+        _require(
+            type(section) is dict
+            and set(section) == {"head", "alias", "shapes", "entries", "default_shape"},
+            "Exact V2 criterion section",
+        )
+        default, shapes, entries = (section[k] for k in ("default_shape", "shapes", "entries"))
+        _require(
+            elements is not None
+            and type(shapes) is list
+            and type(entries) is list
+            and type(default) is int
+            and 0 <= default < len(shapes),
+            "Bounded V2 default shape and element table required",
+        )
+        expanded = []
+        for entry in entries:
+            if type(entry) is list and len(entry) == 2 and type(entry[0]) is str:
+                expanded.append(entry)
+                continue
+            if type(entry) is int:
+                ordinal, shape = entry, default
+            else:
+                _require(
+                    type(entry) is list
+                    and len(entry) == 2
+                    and all(type(value) is int for value in entry)
+                    and entry[1] != default,
+                    "V2 references require an ordinal or a nondefault ordinal/shape pair",
+                )
+                ordinal, shape = entry
+            _require(
+                0 <= ordinal < len(elements) and 0 <= shape < len(shapes),
+                "Bounded V2 element and shape references required",
+            )
+            key = elements[ordinal].get("index")
+            _require(type(key) is str, "V2 referenced element index must be a string")
+            expanded.append([key, ordinal, shape])
+        _require(default == _default_shape(expanded), "Canonical most frequent V2 default shape")
+        section["entries"] = expanded
+        del section["default_shape"]
+    envelope["format"] = SHARED_FORMAT
+    return unpack_payload(_wire(envelope))

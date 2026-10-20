@@ -1,0 +1,61 @@
+{
+  "schema_id": "jev_shared_elements_v2_implementation_results_v1",
+  "status": "IMPLEMENTED_OPT_IN_PENDING_ACTUAL_TOKEN_CAPACITY_AND_MODEL_QUALITY",
+  "previous_implementation_git": "58458f3465f35449b8f63536a39762a55700129e",
+  "v1_actual_results": {
+    "path": "docs/validation/2026-10-20/jev-shared-elements-v1-paired-cpu-results.json",
+    "sha256": "786cfcd2dea66551ab1336e132d7e526cabe0ce757ca97cbb399e4a970a48de3",
+    "size_bytes": 8783
+  },
+  "source_decision": {
+    "basis": "Observed actualV1 paired75: curl15495→9220 still refused; positive8151→8308 regressed. Reuse exact-wire structural factoring researched beforeV1 implementation; no external code copied or new dependency.",
+    "mechanism": "V2 criterion sections share most frequent shape (tie lowest index), represent references as element ordinals or ordinal+nondefault shape; literal records retain string key and value. Original key reconstructed from exact element.index. Existing V1 encoder and strict decoder are reused with independently typed V2 conversion.",
+    "selection": "Only explicitV2 may choose exact raw text when completeV2 user text UTF-8 bytes are not smaller. Validate complete original request and shared roundtrip first; record requested/effective format, candidate costs and unused shared metadata separately. Byte selection does not guarantee token improvement on arbitrary inputs.",
+    "invariants": "Raw and V1 text, metadata and instructions unchanged; no pruning, truncation, repair, semantic rule, context expansion, output/grammar math or browser freshness change."
+  },
+  "sources": [
+    {
+      "path": "src/s1/jev_prompt.py",
+      "sha256": "2891ecbe94e5cbb01b7a2de6d7be9ed35ee55d26f904cfeb6b401416254b5f3c",
+      "size_bytes": 17207
+    },
+    {
+      "path": "src/s1/jev_generated.py",
+      "sha256": "e37efa5ed65b79fe49e117e809ba5a6b175fd5b8ffe84bfd5f4c368617990d7c",
+      "size_bytes": 22534
+    },
+    {
+      "path": "tests/test_jev_prompt.py",
+      "sha256": "0661ce5e4b90ed11311b03f07322e5023dedff38aaca9d753c9524708b18a8f1",
+      "size_bytes": 13577
+    },
+    {
+      "path": "tests/test_jev_generated_prompt.py",
+      "sha256": "baf4a3cf57075bf3706a7486612753509a824e340887a67ac38c561a44239cfc",
+      "size_bytes": 8187
+    }
+  ],
+  "validation": {
+    "command": "JEV_UPSTREAM_PATH=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream .venv/bin/python -B -m pytest -q tests/test_jev_prompt.py tests/test_jev_generated_prompt.py tests/test_jev_generated.py tests/test_api.py -m 'not inference'",
+    "passed": 258,
+    "deselected": 2,
+    "skipped": 0,
+    "seconds": 2.84,
+    "warning": "Existing Starlette/httpx deprecation warning.",
+    "codec_tests": "38 pure tests:37 portable synthetic/adversarial tests plus1 optional local archived-curl regression. The raw curl fixture is not published or required byCI.",
+    "ruff": "check/format passed for5 touched or reviewed Python files",
+    "v1_regression": "Fixed synthetic golden and653B instruction identity. Optional local archivedcurl exact20741B/SHA0eace5e6e78de6f08cd763db19df96f45f4f829711f855ffce3d826c75c3dc29 unchanged.",
+    "local_v2_byte_only": "18371B/SHA778afd045d19cebec8c3f8fa25095e7073dbe94e064fff17eca53ecc8e463334;249 default-shape ordinal refs+1 nondefault pair, all250 keys/rows retained and ordered-wire exact. V2 instructions787B. No processor/token measurement in this check."
+  },
+  "scope": {
+    "native_model": false,
+    "forward": false,
+    "CUDA": false,
+    "real_browser": false,
+    "training": false,
+    "task_quality": "not assessed",
+    "benchmark_ready": false,
+    "actual_paired_cpu": "pending fresh invocation with same75 original payloads and3 independently regenerated controls",
+    "source_authority": "New production source hashes required; old historical95/source-handoff qualification is not reused."
+  }
+}

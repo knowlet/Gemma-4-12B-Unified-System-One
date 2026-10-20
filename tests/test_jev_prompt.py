@@ -1,12 +1,18 @@
 """Exact reversible representation tests; no model or processor is imported."""
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 
 import pytest
 
-from s1.jev_prompt import PROMPT_FORMATS, format_payload, unpack_payload
+from s1.jev_prompt import (
+    PROMPT_FORMATS,
+    SHARED_ELEMENT_INSTRUCTIONS,
+    format_payload,
+    unpack_payload,
+)
 
 
 def wire(value):
@@ -229,6 +235,124 @@ def test_duplicate_keys_and_nonfinite_values_are_not_silently_normalized():
             unpack_payload(encoded)
 
 
+def test_v1_bytes_and_instructions_remain_exactly_the_pre_v2_fixture(payload):
+    encoded, metadata = format_payload(payload, prompt_format="shared-elements-v1")
+    assert metadata["format"] == "shared-elements-v1" and len(encoded.encode()) == 1465
+    assert (
+        hashlib.sha256(encoded.encode()).hexdigest()
+        == "2aed5d1358fb97eedc3f6b6d933e4fe4940ab59fa2aa355c365a18ff691351b8"
+    )
+    assert (
+        hashlib.sha256(SHARED_ELEMENT_INSTRUCTIONS.encode()).hexdigest()
+        == "7bd25ee2b6cc9bd118e4e83a773b84f8f2fee1564ffaa0adafcac47d00bc5377"
+    )
+
+
+def shape_payload(checked_rows):
+    elements = [
+        {
+            "index": str(i),
+            "label": "literal label" + str(i),
+            "value": "",
+            "role": "checkbox",
+            **({"checked": False} if i in checked_rows else {}),
+        }
+        for i in range(4)
+    ]
+    return {
+        "state": {"elements": elements},
+        "questions": {
+            "click_target": {
+                "criteria": {el["index"]: description(el, el["index"]) for el in elements}
+            }
+        },
+    }
+
+
+@pytest.mark.parametrize("checked_rows,default", [({0}, 1), ({0, 3}, 0)])
+def test_v2_uses_most_frequent_shape_and_lowest_index_tie(checked_rows, default):
+    payload = shape_payload(checked_rows)
+    encoded, metadata = format_payload(payload, prompt_format="shared-elements-v2")
+    section = json.loads(encoded)["criteria"][0]
+    assert section["default_shape"] == default
+    assert all(type(entry) is int or len(entry) == 2 for entry in section["entries"])
+    if checked_rows == {0}:
+        assert section["entries"] == [[0, 0], 1, 2, 3]
+    assert metadata["format"] == "shared-elements-v2" and metadata["criterion_refs"] == 4
+    assert wire(unpack_payload(encoded)) == wire(payload)
+
+
+def test_v2_preserves_literal_overrides_and_marker_like_user_values(payload):
+    encoded, metadata = format_payload(payload, prompt_format="shared-elements-v2")
+    section = json.loads(encoded)["criteria"][0]
+    assert section["entries"][0] == 0
+    assert section["entries"][1] == ["3", payload["questions"]["click_target"]["criteria"]["3"]]
+    assert section["entries"][2] == [
+        "unknown",
+        payload["questions"]["click_target"]["criteria"]["unknown"],
+    ]
+    assert wire(unpack_payload(encoded)) == wire(payload)
+    assert metadata["criterion_refs"] == 2 and metadata["literal_criteria"] == 3
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "bool-ordinal",
+        "negative",
+        "large",
+        "bool-shape",
+        "nonstring-index",
+        "missing-index",
+        "duplicate-key",
+        "bad-default",
+        "explicit-default",
+        "v1-triple",
+        "extra-section",
+    ],
+)
+def test_v2_rejects_malformed_or_ambiguous_references(payload, mutation):
+    encoded, _ = format_payload(payload, prompt_format="shared-elements-v2")
+    envelope = json.loads(encoded)
+    section = envelope["criteria"][0]
+    if mutation == "bool-ordinal":
+        section["entries"][0] = True
+    elif mutation == "negative":
+        section["entries"][0] = -1
+    elif mutation == "large":
+        section["entries"][0] = 10000
+    elif mutation == "bool-shape":
+        section["entries"][0] = [0, False]
+    elif mutation == "nonstring-index":
+        block = envelope["elements"][0]
+        block["rows"][0][block["fields"].index("index")] = 7
+    elif mutation == "missing-index":
+        block = envelope["elements"][0]
+        block["fields"][block["fields"].index("index")] = "unknown-index"
+    elif mutation == "duplicate-key":
+        section["entries"].append(0)
+    elif mutation == "bad-default":
+        section["default_shape"] = False
+    elif mutation == "explicit-default":
+        section["entries"][0] = [0, section["default_shape"]]
+    elif mutation == "v1-triple":
+        section["entries"][0] = ["7", 0, 0]
+    else:
+        section["unknown"] = True
+    with pytest.raises(ValueError):
+        unpack_payload(wire(envelope))
+
+
+def test_v2_rejects_a_nonmodal_default_even_when_references_can_be_decoded():
+    encoded, _ = format_payload(shape_payload({0}), prompt_format="shared-elements-v2")
+    envelope = json.loads(encoded)
+    section = envelope["criteria"][0]
+    section["default_shape"] = 0
+    section["entries"] = [0, [1, 1], [2, 1], [3, 1]]
+    with pytest.raises(ValueError, match="most frequent"):
+        unpack_payload(wire(envelope))
+
+
 def test_local_full_curl_regression_if_saved_evidence_is_available():
     path = (
         Path(__file__).resolve().parents[1]
@@ -242,4 +366,8 @@ def test_local_full_curl_regression_if_saved_evidence_is_available():
     encoded, metadata = format_payload(payload, prompt_format="shared-elements-v1")
     assert wire(unpack_payload(encoded)).encode() == before
     assert metadata["criterion_refs"] == 250 and metadata["element_rows"] == 250
-    assert len(encoded.encode()) < len(before)
+    assert len(encoded.encode()) == 20741
+    assert (
+        hashlib.sha256(encoded.encode()).hexdigest()
+        == "0eace5e6e78de6f08cd763db19df96f45f4f829711f855ffce3d826c75c3dc29"
+    )

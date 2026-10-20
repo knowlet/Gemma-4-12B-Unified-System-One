@@ -113,7 +113,12 @@ def format_action_request(payload, identity, *, prompt_format="raw-json-v1"):
                 "ordered_roundtrip_verified": True,
             },
         )
-    from .jev_prompt import SHARED_ELEMENT_INSTRUCTIONS, format_payload, unpack_payload
+    from .jev_prompt import (
+        SHARED_ELEMENT_INSTRUCTIONS,
+        SHARED_ELEMENT_V2_INSTRUCTIONS,
+        format_payload,
+        unpack_payload,
+    )
 
     try:
         packed, metadata = format_payload(payload, prompt_format=prompt_format)
@@ -126,18 +131,50 @@ def format_action_request(payload, identity, *, prompt_format="raw-json-v1"):
         ) from exc
     if reconstructed != source:
         raise RequestValidationError("shared-element prompt changed the complete ordered request")
+    instructions = (
+        SHARED_ELEMENT_V2_INSTRUCTIONS
+        if prompt_format == "shared-elements-v2"
+        else SHARED_ELEMENT_INSTRUCTIONS
+    )
+    shared_text = INSTRUCTIONS + "\n" + instructions + "\n" + packed
+    evidence = {
+        **metadata,
+        "format": prompt_format,
+        "original_bytes": len(source),
+        "encoded_bytes": len(packed.encode()),
+        "encoded_sha256": hashlib.sha256(packed.encode()).hexdigest(),
+        "ordered_roundtrip_verified": True,
+    }
+    if prompt_format == "shared-elements-v2":
+        raw_text = INSTRUCTIONS + "\n" + encoded
+        evidence.update(
+            requested_format=prompt_format,
+            selection_basis="complete_user_text_utf8_bytes",
+            candidate_user_text_bytes={
+                "raw-json-v1": len(raw_text.encode()),
+                prompt_format: len(shared_text.encode()),
+            },
+        )
+        if len(shared_text.encode()) >= len(raw_text.encode()):
+            evidence.update(
+                format="raw-json-v1",
+                encoded_bytes=len(source),
+                encoded_sha256=hashlib.sha256(source).hexdigest(),
+                element_rows=0,
+                criterion_refs=0,
+                literal_criteria=0,
+                candidate_shared_representation={
+                    **metadata,
+                    "encoded_sha256": hashlib.sha256(packed.encode()).hexdigest(),
+                },
+                fallback_reason="shared_user_text_is_not_smaller",
+            )
+            return raw_text, source, labels, evidence
     return (
-        INSTRUCTIONS + "\n" + SHARED_ELEMENT_INSTRUCTIONS + "\n" + packed,
+        shared_text,
         source,
         labels,
-        {
-            **metadata,
-            "format": prompt_format,
-            "original_bytes": len(source),
-            "encoded_bytes": len(packed.encode()),
-            "encoded_sha256": hashlib.sha256(packed.encode()).hexdigest(),
-            "ordered_roundtrip_verified": True,
-        },
+        evidence,
     )
 
 
