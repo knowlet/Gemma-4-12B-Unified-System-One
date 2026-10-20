@@ -1,0 +1,101 @@
+{
+  "schema_id": "root-GX10-standalone-text48-diagnostic-launch-proposal-v1",
+  "profile": "decision3-gx10-publisher-text48-standalone-diagnostic-v1",
+  "source": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py",
+    "sha256": "f674f01dad902f8184fbf1be5af2b25f0ba366387080baff53e9e6032de01bac",
+    "size_bytes": 19406
+  },
+  "plan": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/diagnostic-edge-plan-01.json",
+    "sha256": "c58977f42b9436597411956d71190387507259ad7c471fc7cd113acecd0e6a76",
+    "size_bytes": 4812
+  },
+  "runtime": {
+    "path": "artifacts/jev-runtime/decision3-GX10-local-runtime-20261020-01/runtime-selection-01.json",
+    "sha256": "e9ebda0433eb7ecaddac64f19f512b65c8685f67af99fa1d38f15c5197197377",
+    "size_bytes": 14204
+  },
+  "source_union_files": 19,
+  "argv": [
+    "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+    "-B",
+    "-s",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py",
+    "--run",
+    "--plan",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/diagnostic-edge-plan-01.json",
+    "--plan-sha256",
+    "c58977f42b9436597411956d71190387507259ad7c471fc7cd113acecd0e6a76"
+  ],
+  "environment_updates": {
+    "PYTHONPATH": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "environment_unset": [
+    "CUDA_VISIBLE_DEVICES"
+  ],
+  "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+  "preparation_snapshot": {
+    "proc_meminfo": {
+      "MemTotal": 130595860480,
+      "MemAvailable": 28417638400,
+      "SwapTotal": 17179865088,
+      "SwapFree": 13708730368
+    },
+    "boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0",
+    "cgroup_membership": "0::/user.slice/user-1001.slice/session-85.scope\n",
+    "cgroup_mountinfo": "39 29 0:33 / /sys/fs/cgroup rw,nosuid,nodev,noexec,relatime shared:10 - cgroup2 cgroup2 rw,nsdelegate,memory_recursiveprot",
+    "cgroup_memory": [
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1001.slice/session-85.scope",
+        "version": "cgroup2",
+        "limit": null,
+        "current": 5176254464,
+        "peak": 58195296256
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1001.slice",
+        "version": "cgroup2",
+        "limit": null,
+        "current": 74089668608,
+        "peak": 92263395328
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice",
+        "version": "cgroup2",
+        "limit": null,
+        "current": 74166550528,
+        "peak": 92323475456
+      }
+    ],
+    "cuda": null
+  },
+  "preparation_memory_decision": {
+    "admitted": false,
+    "cgroup_observation_complete": true,
+    "refusal_reason": null,
+    "host_available_bytes": 28417638400,
+    "available_bytes": 28417638400,
+    "required_available_bytes": 30646100800,
+    "reserve_bytes": 26119172096,
+    "resident_file_bytes": 1189722528,
+    "full_transient_bytes": 1189722528,
+    "framework_runtime_buffer_bytes": 2147483648,
+    "swap_or_resident_credit_bytes": 0,
+    "basis": "unchanged conservative host floor; cgroup further restricts, not measured peak"
+  },
+  "prepared_unix": 1792496542.144165,
+  "limits": {
+    "wall_seconds": 1800,
+    "per_file_RLIMIT_FSIZE": 4194304,
+    "RLIMIT_CORE": 0,
+    "evidence_max_files": 2048,
+    "evidence_max_bytes": 536870912,
+    "parent_sampling_interval_seconds": 0.25,
+    "soft_sampling_is_not_a_kernel_memory_or_disk_quota": true
+  },
+  "scope": "Standalone d3-edge genuine publisher text48 readiness/latency diagnostic only. No helper/browser/request/task score. Preserve original conservative policy floors, full cache SHA/header, BF16 backbone/FP32 readout255, batch8/noncausal and original text48 schedule. Complete owned PID/start/PG/SID exit and final source/runtime/resource checks required.",
+  "actual_started": false
+}
