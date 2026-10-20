@@ -1,0 +1,81 @@
+{
+  "schema_id": "jev_decision3_full_d3_complete_local_storage_transfer_results_v1",
+  "at_utc": "2026-10-20T15:28:46.579114+00:00",
+  "status": "COMPLETE_SELECTED_RUNTIME_TRANSFER_HASHED_AND_BOUNDED_HEADERS_MATCH_NOT_MODEL_QUALIFIED",
+  "model": "d3",
+  "revision": "225be8b1e2270becab69c5fe05b26f99cbbdd66b",
+  "selected_runtime_files": 31,
+  "selected_runtime_bytes": 52199243753,
+  "selection_scope": "Exact frozen downloader selection from publisher manifest; LICENSE/NOTICE/requirements/.gitattributes/Markdown/assets/LICENSES paths excluded by the previously frozen explicit rule. Completion applies to the31selected execution files.",
+  "transfer_receipt": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/d3-transfer-01.json",
+    "sha256": "f7982395ddccbd85748ee65f386d5f79c3672821d9a8bada4b54f6e4afd9edb6",
+    "size_bytes": 11620
+  },
+  "outer_exit": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/root-d3-exit-01.json",
+    "sha256": "79514df8e812e3b1fa6ba6ce372b165d0381ed91732056586864231b22354f45",
+    "size_bytes": 4443
+  },
+  "live_start": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/root-d3-live-01.json",
+    "sha256": "1f8101f459cd26afa4c0b519ae392d7466435e335e2465db45c8759c67664a5f",
+    "size_bytes": 815
+  },
+  "root_storage_verification": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/root-d3-storage-verification-01.json",
+    "sha256": "7282e56ab657909ace2582665786271460b244d048833e30bb969aa638011d4d",
+    "size_bytes": 14555
+  },
+  "downloader_source": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/download_runtime.py",
+    "sha256": "9be84f2e4a7c82b03f80cf58579911fa316f8c56365d9b316519ae383f200c11",
+    "size_bytes": 9949
+  },
+  "transfer_seconds": 7423.660980463028,
+  "source_before_after_unchanged": true,
+  "download_owner": {
+    "pid": 1486139,
+    "start_ticks": 44053779,
+    "pgid": 1486139,
+    "sid": 1486139
+  },
+  "outer_exit_code": 0,
+  "owner_PID_PG_SID_absent_independently_observed": true,
+  "whole_file_SHA_and_size_checked_for_every_selected_file_by_frozen_transfer": true,
+  "bounded_header_checks": {
+    "core_source_sha256": "9919e3b1dd5d5a68377b8e74c1b313c9a368a1716400d32af72e8a548ef02b4c",
+    "maximum_header_bytes_per_tensor_file": 4194304,
+    "backbone_shards": 11,
+    "BF16_backbone_tensors": 1183,
+    "BF16_backbone_parameters": 26085330160,
+    "BF16_backbone_payload_bytes": 52170660320,
+    "FP32_readout_shape": [
+      255,
+      5120
+    ],
+    "FP32_readout_parameters": 1305600,
+    "total_parameters": 26086635760,
+    "tensor_files": 12,
+    "tensor_file_bytes_including_headers": 52176025120,
+    "index_key_to_exact_shard_header_locations_match": true,
+    "full_tensor_payloads_reread_by_root": false
+  },
+  "root_review_scope": "UnderAS512MiB and original storage host/cgroup/disk gates, joined31transfer/manifest pin selections and canonical regular file stats, rehashed19non-tensor files, then used original tensor_header/backbone_layout on all12tensorfiles. Large-payloadSHA relies on the closed frozen downloader; no second52GBweight hash or model load.",
+  "all_six_current_inventory": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/root-all6-post-d3-storage-inventory-01.json",
+    "sha256": "d7d17391e295e218bc57471f08c4b8578390a31cff45bdacb3f107c97702b820",
+    "size_bytes": 1712
+  },
+  "all_six_inventory_scope": "139selected files/85,511,296,857B acrossd3,flash,mini,nano,lite,edge. This current inventory verifies manifest identities and canonical file sizes only; earlier individual fullSHA/header evidence remains separate. No repeated weight hashing or inference.",
+  "runtime_qualified": false,
+  "framework_GPU_model_processor_browser_calls_in_this_transfer_and_review": 0,
+  "quality_or_superiority_claim": false,
+  "remaining": "All6matchedwarm/Gemmahelper readiness and actual real-browser comparison remain unfinished. The unchanged fullD3 conservative native floor132,618,705,984B exceedsGX10physical130,595,860,480B before other workloads; storage completion does not solve model load/peak accounting. Preserve old results and use an explicitly reviewed resource/loader condition for future measurements.",
+  "independent_readonly_review": "gx10_memory_diagnosis CLEAR_STORAGE_ONLY:exactfrozen source/live/exitowner+allPIDPGSIDabsence,31manifest/plan/transfer names/allpinfields+canonicalregularsizes; independently hashed16small\u2264128KiB files333,295B; no12tensorheaders/payloads or3large tokenizer/merges/vocab reads. Index1183keys/11shardcounts andtensorfilebytes agree.",
+  "full_D3_modeling_source_now_cached_and_authenticated": {
+    "sha256": "f8f8db23ff58f1a990ffa24977d744a50e1b4446d02a64c22070967705b6dbef",
+    "size_bytes": 12079,
+    "matches_previous_five_model_wrapper_pin": true
+  }
+}
