@@ -1,0 +1,125 @@
+{
+  "schema_id": "decision3-gx10-cache-staging-independent-closed-review-v1",
+  "status": "CLEAR_METADATA_STAGING_ONLY_UNVERIFIED_PAYLOAD",
+  "reviewer": "/root/affordance_closed_audit",
+  "refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-GX10-cache-staging-20261020-01/intent.json",
+      "sha256": "d9bd2a667c2c86fc5706c84f9aeb8e4cb0c7abdbbae31bd4e576b0b51a11a353",
+      "size_bytes": 20465
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-GX10-cache-staging-20261020-01/receipt.json",
+      "sha256": "be3ff46a5b1797e9963ce338479cbde86f5eacacfa72ad9c15cba41111ff745f",
+      "size_bytes": 36780
+    },
+    {
+      "path": "scripts/jev_decision3_public_dev22_gpu_replay.py",
+      "sha256": "9919e3b1dd5d5a68377b8e74c1b313c9a368a1716400d32af72e8a548ef02b4c",
+      "size_bytes": 59545
+    }
+  ],
+  "counts": {
+    "models": 2,
+    "exact_target_files_each": 21,
+    "hardlinks": 42,
+    "source_target_stat_pairs": 42,
+    "small_manifest_and_python_SHA_reads": 18,
+    "tensor_tokenizer_merges_vocab_header_or_payload_reads": 0
+  },
+  "checks": {
+    "fresh_source_and_target_dev_inode_size_mtime_ctime_nlink_match_saved_after": true,
+    "all_nlink_1_to_2_and_ctime_advanced": true,
+    "exact_population_rederived_from_original_CORE_exclusions": true,
+    "manifest_identity_matches_original_checkpoint_authority": true,
+    "all_original_source17_small_project_source_pins_verified": true,
+    "owner_PID_absent": true,
+    "owner_PG_absent": true
+  },
+  "owner": {
+    "pid": 1411361,
+    "start_ticks": 43197159,
+    "pgid": 1411360,
+    "boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0"
+  },
+  "effects": "Only42 new hardlinks in two fresh canonical snapshots. Each aliases its source inode; nlink1->2 and ctime change are expected. No chmod/utime/content mutation. Small non-payload sources authenticated; original CORE full-weight SHA/header/admission must still run before model loading.",
+  "limitations": [
+    "Hardlinks intentionally share writable inode content; nlink/ctime changed, source bytes were not copied or reserialized. No old receipt or manifest was relabelled.",
+    "Metadata-staged status does not authenticate tensor/tokenizer/merge/vocab bytes, tensor headers or native capacity. Original CORE.authenticate_cache fullSHA/header after fresh unchanged gate remains required.",
+    "No framework/model/processor/browser/HTTP/systemd unit/cache payload execution was run by this independent review."
+  ],
+  "blockers": [],
+  "small_SHA_scope": {
+    "manifest_refs": [
+      {
+        "path": "artifacts/jev-d3-native/offline-cache/d3-lite-9c10703193afc7c7d28c88201c0364bfbbf58320/MODEL_MANIFEST.json",
+        "sha256": "31f0ff94ff26619c0a063ccac803edcfe34c56c92e5c9c50b703b62893f125dd",
+        "size_bytes": 11428
+      },
+      {
+        "path": "artifacts/jev-d3-native/offline-cache/d3-edge-cab71e6ad3461b8086d51ddb572c656babd63b0b/MODEL_MANIFEST.json",
+        "sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+        "size_bytes": 11428
+      }
+    ],
+    "python_source_names_each": [
+      "d3_engine.py",
+      "d3_fast.py",
+      "d3_format.py",
+      "d3_kernels.py",
+      "d3_runtime.py",
+      "d3_server.py",
+      "modeling_d3.py",
+      "pipeline_d3.py"
+    ],
+    "python_SHA_matches_original_manifest_all": true
+  },
+  "population": {
+    "d3-lite": [
+      "MODEL_MANIFEST.json",
+      "chat_template.jinja",
+      "config.json",
+      "d3_engine.py",
+      "d3_fast.py",
+      "d3_format.py",
+      "d3_kernels.py",
+      "d3_runtime.py",
+      "d3_server.py",
+      "decision_config.json",
+      "merges.txt",
+      "model-00001-of-00001.safetensors",
+      "model.safetensors.index.json",
+      "modeling_d3.py",
+      "pipeline_d3.py",
+      "preprocessor_config.json",
+      "readout.safetensors",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "video_preprocessor_config.json",
+      "vocab.json"
+    ],
+    "d3-edge": [
+      "MODEL_MANIFEST.json",
+      "chat_template.jinja",
+      "config.json",
+      "d3_engine.py",
+      "d3_fast.py",
+      "d3_format.py",
+      "d3_kernels.py",
+      "d3_runtime.py",
+      "d3_server.py",
+      "decision_config.json",
+      "merges.txt",
+      "model-00001-of-00001.safetensors",
+      "model.safetensors.index.json",
+      "modeling_d3.py",
+      "pipeline_d3.py",
+      "preprocessor_config.json",
+      "readout.safetensors",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "video_preprocessor_config.json",
+      "vocab.json"
+    ]
+  }
+}

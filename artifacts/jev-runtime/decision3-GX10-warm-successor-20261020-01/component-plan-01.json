@@ -1,0 +1,101 @@
+{
+  "schema_id": "decision3-gx10-q95-warm-component-plan-v1",
+  "status": "SOURCE_ONLY_COMPONENT_NO_ACTUAL_LAUNCH",
+  "profile": "decision3-gx10-v7-q95-text48-component-v1",
+  "source": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-successor-20261020-01/gx10_warm_bootstrap.py",
+    "sha256": "4f383edd45dc4ce3d5e6be90a83bed0a431f42dcb115f92fcbb20be25e62f91a",
+    "size_bytes": 25273
+  },
+  "tests": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-successor-20261020-01/test_gx10_warm_bootstrap.py",
+    "sha256": "30458f3e506ed2a054c3b139e37c31ab630ac711fcae56a3e9a342f9929a56b9",
+    "size_bytes": 28034
+  },
+  "source_inventory": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-successor-20261020-01/source-inventory-01.json",
+    "sha256": "c0dec687ca6cca1cf3af6543bf4a97965f183904c7afabe9c7a568517fb80bee",
+    "size_bytes": 9281
+  },
+  "source_inventory_kind": "decision3-gx10-warm-component-source-inventory-v1",
+  "inventory_rule": "Exact original17 projection plus independent new bootstrap path; deduplicated population derives files count, no forced authority count. Q95 helper95 is a separate service closure, not merged into original17.",
+  "six_model_scope": [
+    "d3",
+    "d3-flash",
+    "d3-mini",
+    "d3-nano",
+    "d3-lite",
+    "d3-edge"
+  ],
+  "currently_permitted_cache_candidates": [
+    "d3-lite",
+    "d3-edge"
+  ],
+  "other_four": "Remain required, explicitly refused pending weight availability/original gates; never removed from objective.",
+  "workloads": {
+    "known-four": {
+      "tasks": 4,
+      "max_browser_envelopes": 64
+    },
+    "public-six": {
+      "tasks": 6,
+      "max_browser_envelopes": 96
+    }
+  },
+  "lifecycle": "For each candidate model×workload use a fresh owned policy worker. Aggregate both groups to10 tasks/model; each group has separate original text48 warmup and evidence. All actual scheduling remains unwired.",
+  "preserved": {
+    "observation_profile": "composed-visible-text-settled-v7",
+    "max_steps": 16,
+    "repeats": 1,
+    "seed": 20261014,
+    "policy_whole_request_seconds": 20,
+    "HTTP_client_seconds": 25,
+    "helper_whole_request_seconds": 20,
+    "helper_tokens_including_EOS": 128,
+    "context": 8192,
+    "native_head_width": 255,
+    "native_batch_size": 8,
+    "warmup_calls": 48,
+    "warmup_sequence_rows": 216,
+    "warmup_input_tokens": 96544,
+    "warmup_images": false,
+    "MAX_FILES": 2048,
+    "MAX_BYTES": 536870912
+  },
+  "helper": {
+    "profile": "field-syntax-preserving-base-helper-v1",
+    "qualification_sha256": "d33bfcac49f90c47b626c3915baf3d5fcbfb2e32522bfaccbbfec59dce35d8db",
+    "source_count": 95,
+    "comparison": "New Q95 regime, not old Q93 relabel. Old warm results do not exist. Historical cold V3 and older/Q93 runs are not matched warm/fair controls.",
+    "freshness": "External checker must bind boot/PID/start/PG/SID/endpoint and full original helper+co-resident admission; qualification SHA alone is insufficient."
+  },
+  "gates": {
+    "policy": "Unchanged CORE.Gates, including exact before-model-constructor stage and original host/cgroup/CUDA floors; UUIDGates adds equality checks without altering memory policy.",
+    "policy_floor_formula": "max(24GiB,ceil(MemTotal/5))+2*resident_file_bytes+2GiB; no swap/resident credit",
+    "helper_source_CPU_floor_at_recorded_MemTotal": 30414139392,
+    "helper_source_load_request_floor_at_recorded_MemTotal": 73958270912,
+    "full_comparison": "Policy floor alone never admits the whole helper+policy comparison; full fresh helper and co-resident admission are pending. Native CUDA/host counters are not additive unified-memory capacity."
+  },
+  "cache_state": "Root reports canonical lite/edge HF snapshots metadata-staged; no payload authenticity/capacity asserted. Original authenticate_cache full SHA/header remains mandatory after fresh gate.",
+  "component_close": "Backend close and CUDA fence only; final source/cache/UUID authentication, complete owned process cleanup and durable closed receipt remain supervisor duties.",
+  "dry_argv": [
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python3.12",
+    "-B",
+    "-s",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-successor-20261020-01/gx10_warm_bootstrap.py"
+  ],
+  "actual_argv": null,
+  "run_cli_behavior": "--run always returns2 before dynamic import; no actor exposed. This prevents bypass of missing complete supervisor/runtime/helper/co-resident admission.",
+  "limitations": [
+    "No actual warmup/model load/helper/native request/browser/HTTP/systemd unit performed.",
+    "Pure tests use explicitly synthetic numerical components; they do not qualify local runtime, kernel correctness, capacity, performance or quality.",
+    "Publisher text48 schedule covers its fixed48 classes; it does not guarantee every future8192-token shape avoids compilation.",
+    "No six-model matching, superiority, unseen/generalization or model improvement attested.",
+    "Bootstrap is630 physical lines including bounded metadata validation,30 above initial600-line target; no78KB H200 service duplicated."
+  ],
+  "research_decision": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-successor-20261020-01/research-decision-01.json",
+    "sha256": "035b84bd6a0cbc0fe3f838e4f69fdd7c196a34991f50f280a50f20155300fda0",
+    "size_bytes": 3822
+  }
+}
