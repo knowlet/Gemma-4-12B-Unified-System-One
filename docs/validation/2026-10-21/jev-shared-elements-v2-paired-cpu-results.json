@@ -84,12 +84,14 @@
       "context_limit": 8192,
       "v2_outcome": "ACCEPTED",
       "elements": 250,
-      "all_offered_candidate_keys": 250,
       "candidate_refs": 250,
       "default_shape_refs": 249,
       "nondefault_shape_refs": 1,
       "ordered_UTF8_wire_roundtrip": "exact",
-      "scope": "Declared saved-postaction snapshot. It was not delivered as the next policy request in the original live curl run."
+      "scope": "Declared saved-postaction snapshot. It was not delivered as the next policy request in the original live curl run.",
+      "click_target_candidate_keys": 250,
+      "operation_candidate_keys": 5,
+      "total_offered_keys_across_heads": 255
     },
     "original_near_positive": {
       "raw_tokens": 8151,
@@ -155,7 +157,7 @@
     "production_codec_generated_API_pinned_upstream_tests": "258 passed,2 inference tests deselected,2.84s; includes1 optional local archivedcurl codec regression. PortableCI may skip that1 local test.",
     "repeat_driver_tests": "9 focused fake-processor tests passed11.73s; no actors or heavy imports",
     "ruff": "check/format passed",
-    "independent_review": "Wrapper,codec and repeat wiring reviewed; separate readonly audit confirmed raw75 full-prefix equality, effective-format counts, curl7610 and nearpositive8151 after worker terminal."
+    "independent_review": "Wrapper,codec and repeat wiring reviewed; separate readonly audit confirmed raw75 full-prefix equality, effective-format counts, curl7610 and nearpositive8151 after worker terminal. Final field-name correction distinguishes250 click-target keys from5 operation keys; all255 original offered keys retained."
   },
   "scope": {
     "actual_native_processor": "Pinned AutoProcessor/native chat template, complete IDs/masks retained",

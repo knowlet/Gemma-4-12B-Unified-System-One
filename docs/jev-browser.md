@@ -52,7 +52,7 @@ requires measurement with the actual processor.
 
 The [V2 paired CPU replay](validation/2026-10-21/jev-shared-elements-v2-paired-cpu-results.json)
 measured that same large snapshot at **7,610 tokens**, retaining all 250 offered
-candidates. All 68 policy inputs fit, compared with 67 for raw text; the original
+click targets and five operation keys. All 68 policy inputs fit, compared with 67 for raw text; the original
 75-row population and refusal controls remain intact. The 8,151-token positive
 control keeps its exact raw prompt through the disclosed fallback. These are
 input-capacity outcomes, with no model forward or browser task execution.
