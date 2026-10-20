@@ -1,0 +1,92 @@
+{
+  "schema_id": "jev_full75_cpu3g_v2_external_launch_intent_v1",
+  "proposal_sha256": "cdaba5e5ce41b3c72aee1896edc2e32e14e11dafbe9fa4d7aa287b0a7982ae57",
+  "argv": [
+    "systemd-run",
+    "--user",
+    "--slice=app.slice",
+    "--unit=jev-cpu3g-20261020-02.service",
+    "--property=Type=exec",
+    "--property=MemoryAccounting=yes",
+    "--property=MemoryMax=3221225472",
+    "--property=MemorySwapMax=0",
+    "--property=MemoryHigh=infinity",
+    "--property=OOMPolicy=kill",
+    "--property=KillMode=control-group",
+    "--property=TimeoutStopSec=10s",
+    "--property=RuntimeMaxSec=660s",
+    "--property=RemainAfterExit=yes",
+    "--property=WorkingDirectory=/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+    "--property=StandardOutput=append:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/unit-service-01.log",
+    "--property=StandardError=append:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/unit-service-01.log",
+    "--setenv=HF_HUB_OFFLINE=1",
+    "--setenv=TRANSFORMERS_OFFLINE=1",
+    "--setenv=PYTHONDONTWRITEBYTECODE=1",
+    "--setenv=TOKENIZERS_PARALLELISM=false",
+    "--setenv=OMP_NUM_THREADS=2",
+    "--setenv=MKL_NUM_THREADS=2",
+    "--setenv=OPENBLAS_NUM_THREADS=2",
+    "--setenv=HF_HUB_CACHE=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub",
+    "--setenv=PYTHONPATH=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts",
+    "--setenv=CUDA_VISIBLE_DEVICES=",
+    "--setenv=JEV_CPU3G_BOOT=9d508fa8-c124-402c-9769-7fa83afcbef0",
+    "--setenv=JEV_CPU3G_CGROUP=/user.slice/user-1001.slice/user@1001.service/app.slice/jev-cpu3g-20261020-02.service",
+    "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+    "-B",
+    "-s",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/unit_runner.py",
+    "--plan",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/unit-plan-01.json",
+    "--plan-sha256",
+    "54a83e03f2f15c92ed9824476b94262f3061b19cb227bc3e559c7e3783e4f525",
+    "--run"
+  ],
+  "waiting_started_unix": 1792509247.6716998,
+  "final_prelaunch_unix": 1792509247.695105,
+  "final_available_bytes": 31153180672,
+  "final_Comfy_queue_counts": [
+    0,
+    0
+  ],
+  "observations": [
+    {
+      "at_unix": 1792509247.6763046,
+      "MemAvailable": 31153635328,
+      "queue_counts": [
+        0,
+        0
+      ],
+      "external_operator_RSS_bytes": 22343680
+    }
+  ],
+  "shared_ancestors": [
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice",
+      "memory.max": "max",
+      "memory.current": 58417565696
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service",
+      "memory.max": "max",
+      "memory.current": 59040702464
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1001.slice",
+      "memory.max": "max",
+      "memory.current": 67949838336
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice",
+      "memory.max": "max",
+      "memory.current": 68027002880
+    }
+  ],
+  "source_union_verified_before": {
+    "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/source-authority-union-01.json",
+    "sha256": "db26e05efb786f7f2e899528773a40350267f1c072980c72f47cadc3fe3d5e42",
+    "size_bytes": 20910
+  },
+  "external_operator_RSS_budget_bytes": 67108864,
+  "external_operator_AS_cap_bytes": 536870912,
+  "actual_unit_includes_supervisor_controller_worker": true
+}
