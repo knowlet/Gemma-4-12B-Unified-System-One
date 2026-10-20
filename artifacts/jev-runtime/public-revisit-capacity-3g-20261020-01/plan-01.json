@@ -1,0 +1,59 @@
+{
+  "schema_id": "jev_revisit_cpu_processor_capacity_controller_3g_v1",
+  "profile": "composed-visible-hover-entries-settled-revisit-v1",
+  "python": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+  "environment": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TOKENIZERS_PARALLELISM": "false",
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "HF_HUB_CACHE": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub",
+    "PYTHONPATH": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "parent_source": {
+    "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/revisit_capacity_controller.py",
+    "sha256": "d12d8f539779596bea88bb4e79e0fdcc713b53e42b25d1a4155c15f0892fdfcc",
+    "size_bytes": 21598
+  },
+  "worker_source": {
+    "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/revisit_capacity_worker.py",
+    "sha256": "07dc1a41a6417fac16df1530c15a10bf672b246396766aa25ad59f7deea0384f",
+    "size_bytes": 28322
+  },
+  "cohort": {
+    "path": "artifacts/jev-runtime/public-revisit-capacity-payloads-20261020-01/prepared-01/payload-cohort.json",
+    "sha256": "c39984b1af50d49686a79492f78f618fa37f590aabc423934ee4d8da9d793091",
+    "size_bytes": 146149
+  },
+  "technical_plan": {
+    "path": "artifacts/jev-runtime/public-v8-capacity-preflight-20261019-02/plan-01.json",
+    "sha256": "d6cbc3b14948e2f15fb0e5a98e528c928d3ad3101ed4dae12a6019f20c7058fb",
+    "size_bytes": 20983
+  },
+  "processor_plan": {
+    "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/CPU-v3-launch-plan-01.json",
+    "sha256": "327e3d2bf6980bceca2d60cfe81ac8b0343bc45149bc1969cb35bc897259b620",
+    "size_bytes": 18393
+  },
+  "output": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/actual-01",
+  "limits": {
+    "parent_AS_soft": 2147483648,
+    "parent_AS_hard": 8589934592,
+    "worker_AS_soft_and_hard": 8589934592,
+    "tracked_parent_and_owned_RSS": 3221225472,
+    "resource_profile": "CPU_REFERENCE_ONLY_3G_V1",
+    "whole_unit_memory_max": 3221225472,
+    "whole_unit_swap_max": 0,
+    "wall_seconds": 600,
+    "monitor_interval_seconds": 0.05,
+    "output_bytes": 1073741824,
+    "file_bytes": 67108864,
+    "sampled_log_bytes_each": 1048576,
+    "terminal_reserve_bytes": 1048576,
+    "swap_or_resident_credit_bytes": 0
+  }
+}
