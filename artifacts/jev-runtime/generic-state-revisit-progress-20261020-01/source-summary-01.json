@@ -1,0 +1,112 @@
+{
+  "schema": "experimental_bounded_observation_revisit_source_summary_v1",
+  "status": "SOURCE_AND_PURE_TESTS_AND_CLOSED_STATE_REPLAY_ONLY_NOT_WIRED",
+  "artifacts": {
+    "source": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/observation_revisit.py",
+      "sha256": "80249cdd386619b9121160c94d3a071f586cfa40d75977a7e751138175a6b5d0",
+      "size_bytes": 10461
+    },
+    "tests": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/test_observation_revisit.py",
+      "sha256": "417a0c6956204bd06f502a68c70f67ed7097d39764948c0ea110d8d355bbc277",
+      "size_bytes": 11209
+    },
+    "pure_validation": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/pure-validation-summary-01.json",
+      "sha256": "88015f68f145d1465a53789576be2f6e99ed93aa081483b3c85c563041e47e70",
+      "size_bytes": 1897
+    },
+    "closed_replay": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/closed-state-replay-01.json",
+      "sha256": "e8603635f57d0b401e4414ccc408226e0249a8b8116bb8567573c8f258e01e6b",
+      "size_bytes": 9524
+    }
+  },
+  "problem_evidence": {
+    "runtime": "V8 Agent only stops three consecutive page_changed=false actions excluding WAIT; observed changed=true cycles can continue. Existing legacy fingerprint omits top-level page_key and guards. Model.choose has no bounded observation-revisit metadata.",
+    "existing_progress_module": "scripts/jev_owned_form_progress.py is an offline authored-route admission/reference compiler, not this runtime loop mechanism.",
+    "source_locations": [
+      "artifacts/jev-runtime/public-native-hover-settled-v8-20261019-01/profile-01/runtime/jev_ultrafast/agent.py:153",
+      "artifacts/jev-runtime/public-native-hover-settled-v8-20261019-01/profile-01/runtime/jev_ultrafast/browser.py:223",
+      "artifacts/jev-runtime/public-native-hover-settled-v8-20261019-01/profile-01/runtime/jev_ultrafast/model.py:81",
+      "artifacts/jev-runtime/public-native-hover-settled-v8-20261019-01/profile-01/runtime/jev_ultrafast/snapshot.js"
+    ]
+  },
+  "contract": {
+    "exact": "Hashes all accepted page fields including document page_key, guards, complete ordered actions/rects and profile diagnostics; excludes only screenshot and supplied legacy fingerprint. Same URL alone is insufficient.",
+    "optional_projection": "Explicit opt-in. Hashes URL/title/all existing observed text/profile id/viewport/full scroll/editable values plus ordered semantic action descriptors. Removes only recognized native e{position} bindings, their node/rect and known proxy/hover bindings, plus three fixed native control IDs. Does not remove semantic DOM id/name/URL/value strings. Omits document time, geometry and guard payloads; equality is not complete state or action identity.",
+    "bounded": "At most 32 retained digest tuples, no raw page/guard/candidate text retained; sequence integers 0..2^53-1; repeated identical sequence is idempotent, backwards or contradictory sequence refuses. Output <=4096 bytes.",
+    "notes": "Factual retained observation-sequence matches only. Does not assert no effect/no progress/goal state; does not choose, block, reorder or trim any action, candidate, history, goal or head. Fresh original guards are never changed or reused.",
+    "original_text_scope": "Original snapshot text is already bounded by the existing native observer; this source performs no additional truncation. All already-observed editable state is hashed, including value/checked/select/disabled/readOnly; raw values are not output."
+  },
+  "validation": {
+    "pure_tests": 51,
+    "pytest": "51 passed in 0.18s",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "source_and_tests_unchanged_across_checks": true,
+    "meaningful_cases": [
+      "A-B-A versus consecutive equality",
+      "same URL with changed contents/value/check/select/scroll/viewport/action order",
+      "document reload/node/geometry/guard identity versus explicitly weaker projection",
+      "unknown semantic DOM id/name and literal e42-like values retained",
+      "all observed editable fields and full existing text retained",
+      "window eviction/idempotence/returned-output mutation/long bounded sequences",
+      "malformed or contradictory JSON/sequence refuses atomically"
+    ],
+    "real_saved_observations_processed": 51,
+    "real_replay_errors": 0,
+    "input_nonmutation": true,
+    "real_replay": [
+      {
+        "case": "arxiv",
+        "observations": 17,
+        "exact_events": 0,
+        "projection_events": 1,
+        "cross_document_projection_events": 1
+      },
+      {
+        "case": "nasa",
+        "observations": 17,
+        "exact_events": 12,
+        "projection_events": 12,
+        "cross_document_projection_events": 0
+      },
+      {
+        "case": "curl",
+        "observations": 17,
+        "exact_events": 0,
+        "projection_events": 0,
+        "cross_document_projection_events": 0
+      }
+    ]
+  },
+  "limitations": [
+    "All three original task outcomes remain decision-budget failures. Replay proves detection on saved states, not task-quality improvement.",
+    "The curl trace is not covered because its observed scroll state changes; no ineffective-scroll claim is made.",
+    "No Model.choose integration, new request/schema/token budget/native decode qualification, browser rerun, GPU/framework/model/processor run, resource-gate change or cache operation occurred.",
+    "A future separately named experimental profile may place this small metadata inside existing observation/state input; it must preserve strict outer schema, instructions, candidates/order, labels/heads/decoder/model math and undergo fresh capacity plus real browser evaluation. Old V8/Q95 capacity evidence does not cover the new prompt."
+  ],
+  "research_before_code": {
+    "decision": "New tiny stdlib core rather than an action-override framework or full V8 copy. Use bounded informational context principle only; no upstream source/normalization copied and no new dependency.",
+    "references": [
+      {
+        "url": "https://raw.githubusercontent.com/browser-use/browser-use/main/browser_use/agent/views.py",
+        "detail": "ActionLoopDetector; MIT, main content read 2026-10-20, not immutable commit-pinned. Bounded context principle; upstream weak URL/text/action matching is not adopted as exact guard identity."
+      },
+      {
+        "url": "https://raw.githubusercontent.com/browser-use/browser-use/main/LICENSE",
+        "detail": "MIT inspected."
+      },
+      {
+        "url": "https://raw.githubusercontent.com/browser-use/jev-ultrafast/1231850a0bf1a0c0341fe408ef1668dbbfdfac46/jev_ultrafast/agent.py",
+        "detail": "Pinned upstream runtime control flow inspected alongside local V8."
+      },
+      {
+        "url": "https://raw.githubusercontent.com/browser-use/jev-ultrafast/1231850a0bf1a0c0341fe408ef1668dbbfdfac46/LICENSE",
+        "detail": "MIT inspected."
+      }
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "root-bounded-observation-revisit-source-review-v1",
+  "status": "CLEAR_SOURCE_AND_CLOSED_REPLAY_ONLY_NOT_WIRED",
+  "time_unix": 1792494862.8070085,
+  "reviewed": "Complete10461B source/11209B tests, source and validation summary, original51state replay and independent digest/event recomputation report; raw51PASS/Ruff/format records. Root did not rerun tests or original state replay.",
+  "refs": {
+    "source": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/observation_revisit.py",
+      "sha256": "80249cdd386619b9121160c94d3a071f586cfa40d75977a7e751138175a6b5d0",
+      "size_bytes": 10461
+    },
+    "tests": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/test_observation_revisit.py",
+      "sha256": "417a0c6956204bd06f502a68c70f67ed7097d39764948c0ea110d8d355bbc277",
+      "size_bytes": 11209
+    },
+    "independent": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/independent-source-closed-replay-review-01.json",
+      "sha256": "ecaede35be9dab57148dbc03e52c0ceec7f20e2ccf470a0fa5f5b27b3c67bcc0",
+      "size_bytes": 7031
+    },
+    "replay": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/closed-state-replay-01.json",
+      "sha256": "e8603635f57d0b401e4414ccc408226e0249a8b8116bb8567573c8f258e01e6b",
+      "size_bytes": 9524
+    }
+  },
+  "checks": {
+    "small_refs_SHA_size": 11,
+    "large_refs_stat_only": {
+      "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/states.json": 5785465,
+      "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-nasa-mars-facts-moons-v1-000/states.json": 2703154,
+      "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-002-000/states.json": 3084784
+    }
+  },
+  "contract": "Bounded32 digest tuples plus bounded latest metadata/sequence; no raw state retained. Exact hashes all observed keys except screenshot/legacyfingerprint. Optional fixed-field projection excludes document/binding/geometry/guards, retains ordered action semantic fields and observed values/scroll. Unknown top-level fields are not universally retained by projection. Informational only; no effect/goal/action authority inferred.",
+  "replay_result": "51savedstates processed unchanged; arxiv sequence5->7 content projection1crossdocument/exact0, NASA12exact+12projection, curl0. These are the newer Q95 failures, not the older11Go trace. All original tasks remain budget failures.",
+  "remaining": "Wire a separately named experiment into accepted observation sequencing and existing request state; fresh prompt capacity/native/browser test, no old V8 capacity claim."
+}
