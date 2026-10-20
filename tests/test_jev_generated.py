@@ -55,10 +55,15 @@ class Processor:
     def __init__(self, tok):
         self.tok, self.messages, self.flags = tok, [], []
         self.length = None
+        self.native_envelope = False
 
     def apply_chat_template(self, messages, **kwargs):
         self.messages.append(copy.deepcopy(messages))
         self.flags.append(kwargs)
+        if self.native_envelope:
+            from s1.browser_action_prompt import native_prompt
+
+            return native_prompt(messages[0]["content"][0]["text"])
         return "<user>" + messages[0]["content"][0]["text"] + "</user><assistant>"
 
     def __call__(self, *, text, return_tensors, add_special_tokens):
@@ -181,6 +186,143 @@ def payload():
 
 def adapter(backend):
     return JevGeneratedActionAdapter(backend, model_identity="experiment")
+
+
+def artifact_metadata(kind):
+    metadata = {"kind": kind, "manifest_sha256": "explicit-test-artifact"}
+    if kind == "jev_native_action_lora_v2":
+        from s1.browser_action_prompt import prompt_contract
+
+        metadata.update(prompt_format="shared-elements-v2", prompt_contract=prompt_contract())
+    return metadata
+
+
+@pytest.mark.parametrize(
+    "kind,requested",
+    [
+        ("jev_action_lora_v1", "shared-elements-v1"),
+        ("jev_action_lora_v1", "shared-elements-v2"),
+        ("jev_native_action_lora_v2", "raw-json-v1"),
+        ("jev_native_action_lora_v2", "shared-elements-v1"),
+    ],
+)
+def test_attached_format_mismatch_refuses_at_adapter_construction(backend, kind, requested):
+    backend.model.action_adapter = SimpleNamespace(metadata=artifact_metadata(kind))
+    with pytest.raises(ValueError, match="differs from trained adapter"):
+        JevGeneratedActionAdapter(backend, model_identity="experiment", prompt_format=requested)
+    assert not backend.model.processor.messages and not backend.model.calls
+
+
+@pytest.mark.parametrize(
+    "change", ["attach_after_init", "metadata_after_init", "requested_after_init"]
+)
+def test_every_request_rechecks_adapter_format_before_render_or_forward(
+    backend, payload, monkeypatch, change
+):
+    if change != "attach_after_init":
+        backend.model.action_adapter = SimpleNamespace(
+            metadata=artifact_metadata("jev_action_lora_v1")
+        )
+    chosen = adapter(backend)
+    if change == "requested_after_init":
+        chosen.prompt_format = "shared-elements-v2"
+    elif change == "metadata_after_init":
+        backend.model.action_adapter.metadata = artifact_metadata("jev_native_action_lora_v2")
+    else:
+        backend.model.action_adapter = SimpleNamespace(
+            metadata=artifact_metadata("jev_native_action_lora_v2")
+        )
+    monkeypatch.setattr(
+        jev_generated,
+        "format_action_request",
+        lambda *_a, **_k: pytest.fail("Mismatched adapter reached formatting"),
+    )
+    with pytest.raises(ValueError, match="differs from trained adapter") as caught:
+        chosen.predict(payload)
+    assert caught.value.generation["phase"] == "adapter_prompt_preflight"
+    assert caught.value.generation["forward_calls"] == 0
+    assert not backend.model.processor.messages and not backend.model.calls
+
+
+def test_v2_adapter_keeps_explicit_format_evidence_and_disables_for_base_helper(
+    backend, payload, monkeypatch
+):
+    from s1 import browser_text
+    from s1.browser_action_adapter import base_field_text
+
+    state = {"enabled": True}
+    events = []
+
+    @contextmanager
+    def decision_context():
+        assert state["enabled"]
+        events.append("decision")
+        yield
+
+    @contextmanager
+    def base_context():
+        state["enabled"] = False
+        events.append("disabled")
+        try:
+            yield
+        finally:
+            state["enabled"] = True
+            events.append("restored")
+
+    backend.model.action_adapter = SimpleNamespace(
+        metadata=artifact_metadata("jev_native_action_lora_v2"),
+        decision_context=decision_context,
+        base_context=base_context,
+    )
+    backend.model.processor.native_envelope = True
+    result = JevGeneratedActionAdapter(
+        backend, model_identity="experiment", prompt_format="shared-elements-v2"
+    ).predict(payload)
+    assert result["generation"]["prompt_format"] == "shared-elements-v2"
+    representation = result["generation"]["prompt_representation"]
+    assert representation["requested_format"] == "shared-elements-v2"
+    assert (
+        representation["format"] == "raw-json-v1"
+    )  # This tiny request takes the explicit fallback.
+    context = {"goal": "Enter the requested query", "field": {"label": "Query", "value": ""}}
+
+    def helper(model, actual):
+        assert model is backend.model and actual is context and state["enabled"] is False
+        return "requested query", {"generation": "explicit_fake_base"}
+
+    monkeypatch.setattr(browser_text, "generate_field_text", helper)
+    value, evidence = base_field_text(backend.model, context)
+    assert value == "requested query"
+    assert evidence["action_adapter_state"] == "disabled_for_pinned_base_helper"
+    assert state["enabled"] is True and events == ["decision", "disabled", "restored"]
+
+
+def test_native_v2_shifted_template_refuses_before_tokenization_or_generation(
+    backend, payload, monkeypatch
+):
+    backend.model.action_adapter = SimpleNamespace(
+        metadata=artifact_metadata("jev_native_action_lora_v2")
+    )
+    backend.model.processor.native_envelope = True
+    render = backend.model.processor.apply_chat_template
+    monkeypatch.setattr(
+        backend.model.processor, "apply_chat_template", lambda *a, **k: render(*a, **k) + "\n"
+    )
+    monkeypatch.setattr(
+        Processor,
+        "__call__",
+        lambda *_a, **_k: pytest.fail("Shifted template reached tokenization"),
+    )
+    chosen = JevGeneratedActionAdapter(
+        backend, model_identity="experiment", prompt_format="shared-elements-v2"
+    )
+    with pytest.raises(RequestValidationError, match="trained envelope") as caught:
+        chosen.predict(payload)
+    evidence = caught.value.generation
+    assert evidence["phase"] == "adapter_prompt_envelope"
+    assert evidence["prompt"].endswith("\n")
+    assert evidence["usage"]["input_tokens"] is None and evidence["forward_calls"] == 0
+    assert not backend.model.calls and not backend.model.forwards and not backend.model.hooks
 
 
 @pytest.mark.parametrize(
@@ -418,7 +560,8 @@ def test_adapter_lock_wait_counts_in_unchanged_budget_before_any_forward(
         yield
 
     backend.model.action_adapter = SimpleNamespace(
-        metadata={"manifest_sha256": "actual-adapter-identity"}, decision_context=wait_then_acquire
+        metadata={"kind": "jev_action_lora_v1", "manifest_sha256": "actual-adapter-identity"},
+        decision_context=wait_then_acquire,
     )
     with pytest.raises(BackendTimeoutError) as caught:
         adapter(backend).predict(payload)

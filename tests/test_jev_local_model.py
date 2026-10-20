@@ -24,6 +24,95 @@ finally:
 
 
 @pytest.mark.parametrize(
+    "prompt_format,kind,policy",
+    [
+        ("raw-json-v1", "jev_action_lora_v1", "grammar"),
+        ("shared-elements-v1", "jev_action_lora_v1", "grammar"),
+        ("shared-elements-v2", "jev_action_lora_v1", "grammar"),
+        ("shared-elements-v2", "jev_native_action_lora_v2", "adapted"),
+    ],
+)
+def test_explicit_format_reaches_app_receipt_and_isolated_helper_without_real_runtime(
+    tmp_path, monkeypatch, prompt_format, kind, policy
+):
+    test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_runtime(
+        tmp_path,
+        monkeypatch,
+        mode=None,
+        journal_mode="off",
+        policy=policy,
+        prompt_format=prompt_format,
+        artifact_kind=kind,
+    )
+
+
+@pytest.mark.parametrize(
+    "kind,requested",
+    [
+        ("jev_action_lora_v1", "shared-elements-v1"),
+        ("jev_action_lora_v1", "shared-elements-v2"),
+        ("jev_native_action_lora_v2", "raw-json-v1"),
+        ("jev_native_action_lora_v2", "shared-elements-v1"),
+    ],
+)
+def test_adapter_format_mismatch_precedes_upstream_weights_and_output(
+    tmp_path, monkeypatch, kind, requested
+):
+    from s1 import browser_action_adapter, unified
+    from s1.browser_action_prompt import prompt_contract
+
+    metadata = {"kind": kind}
+    if kind == "jev_native_action_lora_v2":
+        metadata.update(prompt_format="shared-elements-v2", prompt_contract=prompt_contract())
+    verified = SimpleNamespace(telemetry=lambda: metadata)
+    monkeypatch.setattr(browser_action_adapter, "verify_action_adapter", lambda *_a, **_k: verified)
+    monkeypatch.setattr(
+        DRIVER, "upstream_manifest", lambda *_a: pytest.fail("Mismatch reached upstream")
+    )
+    monkeypatch.setattr(
+        unified, "UnifiedDecisionModel", lambda *_a, **_k: pytest.fail("Mismatch loaded weights")
+    )
+    output = tmp_path / "run"
+    with pytest.raises(SystemExit) as caught:
+        DRIVER.main(
+            [
+                "--upstream-path",
+                "unused",
+                "--output-dir",
+                str(output),
+                "--generated-actions",
+                "--generated-action-adapter",
+                "unused",
+                "--generated-prompt-format",
+                requested,
+            ]
+        )
+    assert caught.value.code == 2 and not output.exists()
+
+
+@pytest.mark.parametrize("prompt_format", ["unknown", "shared-elements-v1", "shared-elements-v2"])
+def test_unknown_or_unused_generated_format_refuses_before_upstream(
+    tmp_path, monkeypatch, prompt_format
+):
+    monkeypatch.setattr(
+        DRIVER, "upstream_manifest", lambda *_a: pytest.fail("Invalid format reached upstream")
+    )
+    output = tmp_path / "run"
+    with pytest.raises(SystemExit) as caught:
+        DRIVER.main(
+            [
+                "--upstream-path",
+                "unused",
+                "--output-dir",
+                str(output),
+                "--generated-prompt-format",
+                prompt_format,
+            ]
+        )
+    assert caught.value.code == 2 and not output.exists()
+
+
+@pytest.mark.parametrize(
     "options",
     [
         [],
@@ -97,7 +186,9 @@ def test_qualified_diagnostic_inputs_record_actual_scope_without_model_access(
 
     historical = {"scope": "original plus known exposed13 diagnostics only"}
     verified = SimpleNamespace(
-        artifact=SimpleNamespace(telemetry=lambda: {"manifest_sha256": "test-fit"}),
+        artifact=SimpleNamespace(
+            telemetry=lambda: {"kind": "jev_action_lora_v1", "manifest_sha256": "test-fit"}
+        ),
         telemetry=lambda: {"observed_diagnostics": historical},
     )
     monkeypatch.setattr(
@@ -285,7 +376,10 @@ def test_qualified_cli_prints_final_write_error_and_reraises_primary(
         if helper_failure
         else RuntimeError("model primary")
     )
-    verified = SimpleNamespace(artifact=SimpleNamespace(telemetry=lambda: {}), telemetry=lambda: {})
+    verified = SimpleNamespace(
+        artifact=SimpleNamespace(telemetry=lambda: {"kind": "jev_action_lora_v1"}),
+        telemetry=lambda: {},
+    )
     monkeypatch.setattr(
         browser_action_qualification, "verify_bf16_action_qualification", lambda *_args: verified
     )
@@ -465,7 +559,13 @@ def test_travel_challenges_reject_incompatible_scope_before_upstream_or_weights(
     "journal_mode", ["off", "completed", "pending", "observer_failure", "snapshot_failure"]
 )
 def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_runtime(
-    tmp_path, monkeypatch, mode, journal_mode, policy
+    tmp_path,
+    monkeypatch,
+    mode,
+    journal_mode,
+    policy,
+    prompt_format=None,
+    artifact_kind="jev_action_lora_v1",
 ):
     import json
     from types import SimpleNamespace
@@ -490,7 +590,14 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
     output = tmp_path / "run"
     generated = policy != "native"
     adapter_calls, helper_calls = [], []
-    verified = SimpleNamespace(telemetry=lambda: {"manifest_sha256": "verified-test-bytes"})
+    artifact_metadata = {"kind": artifact_kind, "manifest_sha256": "verified-test-bytes"}
+    if artifact_kind == "jev_native_action_lora_v2":
+        from s1.browser_action_prompt import prompt_contract
+
+        artifact_metadata.update(
+            prompt_format="shared-elements-v2", prompt_contract=prompt_contract()
+        )
+    verified = SimpleNamespace(telemetry=lambda: artifact_metadata)
 
     def verify_adapter(path, **pins):
         assert path == Path("test-adapter")
@@ -671,6 +778,8 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
         options.append("--server-evidence")
     if generated:
         options.append("--generated-actions")
+    if prompt_format is not None:
+        options.extend(["--generated-prompt-format", prompt_format])
     if policy == "grammar":
         options.append("--generated-action-grammar")
     if policy == "adapted":
@@ -685,8 +794,10 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
     assert len(initial_receipts) == len(benchmark_calls) == len(model_calls) == 1
     assert initial_receipts[0]["travel_challenges_only"] is (mode == "challenges")
     assert initial_receipts[0]["generated_actions"] is generated
+    assert initial_receipts[0]["generated_prompt_format"] == (prompt_format or "raw-json-v1")
     assert app_options[0]["jev_generated_actions"] is generated
     assert app_options[0]["jev_generated_action_grammar"] is (policy == "grammar")
+    assert app_options[0]["jev_generated_prompt_format"] == (prompt_format or "raw-json-v1")
     assert initial_receipts[0]["generated_action_grammar"] is (policy == "grammar")
     assert benchmark_calls[0]["model"] == ("generated-actions-nf4" if generated else "native-nf4")
     assert benchmark_calls[0]["travel_challenges_only"] is (mode == "challenges")
@@ -710,6 +821,7 @@ def test_travel_modes_default_and_flags_are_recorded_and_forwarded_without_real_
         assert not adapter_calls and not helper_calls
     if generated:
         assert receipt["decision_model"]["policy"] == "greedy_legal_action_v2"
+        assert receipt["decision_model"]["prompt_format"] == (prompt_format or "raw-json-v1")
         assert receipt["decision_model"]["decoding_constraint"] == (
             "legal_action_token_trie_v1" if policy == "grammar" else "none"
         )

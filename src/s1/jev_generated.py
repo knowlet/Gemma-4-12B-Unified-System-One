@@ -232,6 +232,11 @@ class JevGeneratedActionAdapter:
             or self.model.max_context < 1
         ):
             raise ValueError("generated actions require a complete native model descriptor")
+        action_adapter = getattr(self.model, "action_adapter", None)
+        if action_adapter is not None:
+            from .browser_action_prompt import expected_format
+
+            expected_format(action_adapter.metadata, self.prompt_format)
 
     def predict(self, payload, *, evidence_sink=None):
         import torch
@@ -239,6 +244,7 @@ class JevGeneratedActionAdapter:
         started, model = time.monotonic(), self.model
         generation = {
             "policy": POLICY,
+            "prompt_format": self.prompt_format,
             "model": model.name,
             "revision": model.revision,
             "quantization": model.quantization,
@@ -281,6 +287,13 @@ class JevGeneratedActionAdapter:
 
         capture, hook = None, None
         try:
+            native_envelope_required = False
+            if action_adapter is not None:
+                from .browser_action_prompt import NATIVE_KIND, expected_format, native_prompt
+
+                generation["phase"] = "adapter_prompt_preflight"
+                expected_format(action_adapter.metadata, self.prompt_format)
+                native_envelope_required = action_adapter.metadata.get("kind") == NATIVE_KIND
             user_text, source, labels, representation = format_action_request(
                 payload, self.identity, prompt_format=self.prompt_format
             )
@@ -301,6 +314,11 @@ class JevGeneratedActionAdapter:
                 add_generation_prompt=True,
                 enable_thinking=False,
             )
+            if native_envelope_required and prompt != native_prompt(user_text):
+                generation.update(phase="adapter_prompt_envelope", prompt=prompt)
+                raise RequestValidationError(
+                    "native action adapter processor prompt differs from its trained envelope"
+                )
             inputs = dict(
                 model.processor(text=prompt, return_tensors="pt", add_special_tokens=False)
             )
