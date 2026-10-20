@@ -27,10 +27,21 @@ def create_app(
     jev_decision3_native=False,
     jev_generated_actions=False,
     jev_generated_action_grammar=False,
+    jev_generated_prompt_format="raw-json-v1",
     model_identity=None,
     request_evidence_sink=None,
 ):
     from fastapi import Depends, FastAPI, Header, HTTPException
+
+    from .jev_prompt import PROMPT_FORMATS
+
+    if (
+        type(jev_generated_prompt_format) is not str
+        or jev_generated_prompt_format not in PROMPT_FORMATS
+    ):
+        raise ValueError("unsupported generated-action prompt format")
+    if jev_generated_prompt_format != "raw-json-v1" and not jev_generated_actions:
+        raise ValueError("shared-element prompt requires generated actions")
 
     if type(jev_decision3_native) is not bool:
         raise ValueError("Decision3 native profile must be an explicit boolean")
@@ -92,6 +103,7 @@ def create_app(
             backend,
             model_identity=model_identity,
             constrain_actions=jev_generated_action_grammar,
+            prompt_format=jev_generated_prompt_format,
         )
     app = FastAPI(title="Gemma Unified System One", version="0.1.0")
     lock = threading.Lock()

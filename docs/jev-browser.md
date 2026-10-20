@@ -11,6 +11,42 @@ The prior [October 13 local report](https://github.com/knowlet/Gemma-4-12B-Unifi
 recorded 0/3 travel and 0/5 completion tasks. BoolQ and public231 decision accuracy
 are different populations and do not establish browser task success.
 
+## Explicit shared-element prompt experiment — October 20
+
+The generated-action adapter accepts an experimental `shared-elements-v1`
+prompt. It factors repeated element fields and candidate descriptions into a
+shared table while retaining every original candidate, field, value and order.
+The complete original request passes the ordinary validator first; decoding the
+representation must reproduce its exact ordered UTF-8 JSON bytes before the
+native processor or model runs. Nonmatching candidate descriptions stay literal.
+
+Enable it through the existing application factory:
+
+```python
+app = create_app(
+    backend,
+    jev_compatible=True,
+    jev_generated_actions=True,
+    jev_generated_prompt_format="shared-elements-v1",
+    model_identity="experiment",
+    api_key=api_key,
+)
+```
+
+The default `raw-json-v1` keeps the original prompt text. Context admission,
+the 32-token output reserve, action grammar, output-key validation and browser
+freshness guards are unchanged. Responses record the selected representation
+under `generation.prompt_representation` alongside the original request hash
+and candidate labels.
+
+This format is a separate model-input condition. Existing raw-prompt training
+and native/browser qualification do not cover it. The first implementation
+passed 232 codec, generated-action and API tests; tokenizer capacity and real
+task completion are measured separately. Smaller JSON bytes alone establish
+neither token fit nor a browser success improvement. Source decisions and test
+scope are recorded in the
+[implementation report](validation/2026-10-20/jev-shared-elements-implementation-results.json).
+
 ## Current BF16 diagnostic status
 
 The October 15 child adapter completed the original gate **1/1** and the known

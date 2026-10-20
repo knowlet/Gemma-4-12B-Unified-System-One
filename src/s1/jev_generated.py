@@ -16,6 +16,7 @@ from .browser_text import _FieldTokenCapture
 from .errors import BackendResponseError, BackendTimeoutError, RequestValidationError
 from .jev import _parse_payload
 from .jev_hierarchy import _check_json, _criteria
+from .jev_prompt import PROMPT_FORMATS
 
 POLICY = "greedy_legal_action_v2"
 PROBABILITIES = "deterministic_decoded_policy_point_mass_not_model_posterior"
@@ -91,6 +92,55 @@ def _unique_object(pairs):
     return result
 
 
+def format_action_request(payload, identity, *, prompt_format="raw-json-v1"):
+    """Render one fully validated request without changing its wire or labels.
+
+    Inference and capacity measurements use this same text. A shared encoding
+    must reconstruct the exact ordered JSON bytes before the model can see it.
+    """
+    if type(prompt_format) is not str or prompt_format not in PROMPT_FORMATS:
+        raise ValueError("unsupported generated-action prompt format")
+    encoded, source, labels = _request(payload, identity)
+    if prompt_format == "raw-json-v1":
+        return (
+            INSTRUCTIONS + "\n" + encoded,
+            source,
+            labels,
+            {
+                "format": prompt_format,
+                "original_bytes": len(source),
+                "encoded_bytes": len(source),
+                "ordered_roundtrip_verified": True,
+            },
+        )
+    from .jev_prompt import SHARED_ELEMENT_INSTRUCTIONS, format_payload, unpack_payload
+
+    try:
+        packed, metadata = format_payload(payload, prompt_format=prompt_format)
+        reconstructed = json.dumps(
+            unpack_payload(packed), ensure_ascii=False, separators=(",", ":"), allow_nan=False
+        ).encode()
+    except (ValueError, TypeError, OverflowError, UnicodeError) as exc:
+        raise RequestValidationError(
+            "shared-element prompt could not preserve the complete ordered request"
+        ) from exc
+    if reconstructed != source:
+        raise RequestValidationError("shared-element prompt changed the complete ordered request")
+    return (
+        INSTRUCTIONS + "\n" + SHARED_ELEMENT_INSTRUCTIONS + "\n" + packed,
+        source,
+        labels,
+        {
+            **metadata,
+            "format": prompt_format,
+            "original_bytes": len(source),
+            "encoded_bytes": len(packed.encode()),
+            "encoded_sha256": hashlib.sha256(packed.encode()).hexdigest(),
+            "ordered_roundtrip_verified": True,
+        },
+    )
+
+
 class JevGeneratedActionAdapter:
     """One greedy native decode, validated before any upstream browser action.
 
@@ -98,10 +148,15 @@ class JevGeneratedActionAdapter:
     cancelled. A late returned decode is retained as evidence and never acted on.
     """
 
-    def __init__(self, backend, *, model_identity=None, constrain_actions=False):
+    def __init__(
+        self, backend, *, model_identity=None, constrain_actions=False, prompt_format="raw-json-v1"
+    ):
         if type(constrain_actions) is not bool:
             raise ValueError("generated-action grammar must be an explicit boolean")
+        if type(prompt_format) is not str or prompt_format not in PROMPT_FORMATS:
+            raise ValueError("unsupported generated-action prompt format")
         self.constrain_actions = constrain_actions
+        self.prompt_format = prompt_format
         self.model = getattr(backend, "model", None)
         self.identity = backend.name if model_identity is None else model_identity
         if not isinstance(self.identity, str) or not self.identity.strip():
@@ -189,17 +244,20 @@ class JevGeneratedActionAdapter:
 
         capture, hook = None, None
         try:
-            encoded, source, labels = _request(payload, self.identity)
+            user_text, source, labels, representation = format_action_request(
+                payload, self.identity, prompt_format=self.prompt_format
+            )
             generation.update(
                 original_request_sha256=hashlib.sha256(source).hexdigest(),
                 candidate_labels=labels,
+                prompt_representation=representation,
                 phase="preflight",
             )
             prompt = model.processor.apply_chat_template(
                 [
                     {
                         "role": "user",
-                        "content": [{"type": "text", "text": INSTRUCTIONS + "\n" + encoded}],
+                        "content": [{"type": "text", "text": user_text}],
                     }
                 ],
                 tokenize=False,

@@ -1,0 +1,81 @@
+{
+  "schema_id": "jev_shared_elements_implementation_results_v1",
+  "status": "IMPLEMENTED_OPT_IN_NOT_NATIVE_OR_BROWSER_QUALIFIED",
+  "baseline_git": "3f0276976e520af67fdab1c8eb9630dc7208756b",
+  "source_decision": {
+    "path": "artifacts/jev-runtime/shared-elements-format-20261020-01/research-decision-01.json",
+    "sha256": "0e5fb40a1341866d373e09ce5cbcb203dbec57ecf00f6936701b7c0e7acf0b72",
+    "size_bytes": 4412
+  },
+  "implementation": [
+    {
+      "path": "src/s1/jev_prompt.py",
+      "sha256": "2580b83c9ad7b7a6b7b0fc3e0629999235e1eb101337fb9cbbadf65084d2c149",
+      "size_bytes": 12727
+    },
+    {
+      "path": "src/s1/jev_generated.py",
+      "sha256": "c0dc3a6426445c0a9d6f052aec98a321c3be754ef0b1c059def787185ee37d21",
+      "size_bytes": 21229
+    },
+    {
+      "path": "src/s1/api.py",
+      "sha256": "8c8fb743f6c7b3cebdc37780c6e936832f8d9f948b4c9f4666226076a361925c",
+      "size_bytes": 13174
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jev_prompt.py",
+      "sha256": "89948aad973c6af8c9b438a5c57d30a64ac992a13ef06548a7acd7e7d2cb84fc",
+      "size_bytes": 8951
+    },
+    {
+      "path": "tests/test_jev_generated_prompt.py",
+      "sha256": "1e2486e723085eca18628768a52139eb5206b3632b8131d2146367bbfb6af4ba",
+      "size_bytes": 6256
+    }
+  ],
+  "changes": [
+    "Explicit raw-json-v1 default and shared-elements-v1 opt-in, shared production renderer for inference and CPU measurement.",
+    "Consecutive ordered element tables, exact typed constant columns, exact matching candidate references; all other descriptions remain literal.",
+    "Validate complete original request first; require byte-for-byte ordered UTF-8 JSON reconstruction before native template, processor or forward.",
+    "Retain original request hash and all candidate labels; add prompt representation evidence.",
+    "Leave request schema, 400/401 candidate boundary, native 8192 context with 32 output tokens, grammar, output validation and browser freshness unchanged."
+  ],
+  "validation": {
+    "command": ".venv/bin/python -B -m pytest -q tests/test_jev_prompt.py tests/test_jev_generated_prompt.py tests/test_jev_generated.py tests/test_api.py -m 'not inference'",
+    "exit_code": 0,
+    "passed": 232,
+    "skipped": 2,
+    "deselected": 2,
+    "seconds": 2.46,
+    "skips": "Two existing tests require JEV_UPSTREAM_PATH to the pinned offline checkout; two inference tests deselected. No native model loaded.",
+    "warning": "Existing Starlette/httpx TestClient deprecation warning.",
+    "covered": [
+      "Exact default text",
+      "400 retained candidate keys; 401 rejected before forward",
+      "Ordered typed roundtrip; unknown optional data; nested marker-like literal objects",
+      "Invalid shared reconstruction refused before forward",
+      "8160 accepted and 8161 refused under unchanged8192+32 budget using fake processor",
+      "Grammar preflight and original output-key validation",
+      "Explicit API opt-in and authentication"
+    ],
+    "ruff_check": "passed all five changed Python files",
+    "ruff_format": "passed after formatting jev_generated.py",
+    "independent_source_review": "No blocking issue after canonical format metadata alignment; codec typed constants, ordered fields, bounded references and exact wire guard reviewed."
+  },
+  "scope": {
+    "native_model": false,
+    "forward": false,
+    "gpu": false,
+    "http_test": "in-process fake-backend TestClient only",
+    "real_browser": false,
+    "tokenizer_capacity": "pending separate paired actual CPU measurement",
+    "task_quality": "not assessed",
+    "benchmark_ready": false,
+    "training": "Existing raw-prompt LoRA and qualification are not transferred to this new input condition.",
+    "historical_sources": "Original source-handoff artifacts remain unchanged and reproducible at baseline_git. Main production edits introduce a new source population and require a fresh authority for future actors.",
+    "known_risk": "Representation instructions and envelope add overhead on inputs with little duplication. Measure original negative/near-limit controls without changing their expectations."
+  }
+}
