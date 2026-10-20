@@ -34,11 +34,11 @@ no additional fields. Unknown or inconsistent modes must reject.
 Tests cover raw compatibility, selected V2 and raw fallback,
 teacher-free prefixes, all original candidates, changed representation metadata,
 wrong-format validation, tensor boundary/mask/EOS/context refusal, and unchanged
-target/grammar inventories. The lightweight environment reports 42 passing tests
-and 62 skips for unavailable ML dependencies. The separate bounded ML-environment
-attempt was interrupted when ComfyUI became busy; it is not a passing result.
-Its invalid singleton fixture regression was corrected and now runs without
-Torch. Actual CPU preparation should reuse all 23 authored
+target/grammar inventories. The initial lightweight run had 42 passing tests and
+62 skips. After correcting the invalid singleton fixture, the bounded GX10 ML
+environment passed all 104 tests. Its CUDA enumeration warning is retained; CUDA
+was not initialized. The earlier interrupted attempt remains separate evidence.
+Actual CPU preparation should reuse all 23 authored
 rows and the original public population under the proven 3 GiB resource profile.
 Historical data evidence and current execution sources must be separately
 authenticated; old source-handoff qualification cannot be silently transferred.
