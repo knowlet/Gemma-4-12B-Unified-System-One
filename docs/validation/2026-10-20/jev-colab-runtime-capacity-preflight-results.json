@@ -1,0 +1,109 @@
+{
+  "schema": "jev-colab-runtime-capacity-preflight-results-v1",
+  "date": "2026-10-20",
+  "status": "LIVE_CPU_PREFLIGHT_SUCCESS_NO_MODEL_RUN",
+  "official_CLI": {
+    "project": "https://github.com/googlecolab/google-colab-cli",
+    "installed_version": "0.7.4",
+    "auth": "Existing OAuth accepted; no credentials copied or shared",
+    "skill": "colab-workbench:colab-operator, existing checked helper"
+  },
+  "account_before_allocation": {
+    "balance_compute_units": 0.0,
+    "active_assignments": 0
+  },
+  "execution": {
+    "hardware_requested": "CPU",
+    "verified_cells": 1,
+    "expected_cells": 1,
+    "execution_status": "succeeded",
+    "errors": 0,
+    "full_source_and_download_exact": true,
+    "download_SHA": {
+      "path": "artifacts/jev-runtime/colab-workbench-20261020-01/runtime-preflight-01.json",
+      "sha256": "0eb470b948843177034e199c4a282d0fc357f229f483bd52cec9241b67cbbe9f",
+      "size_bytes": 1053
+    },
+    "output_notebook": {
+      "path": "artifacts/jev-runtime/colab-workbench-20261020-01/runtime-preflight-output-01.ipynb",
+      "sha256": "730e53008a6bbbfbddb27bba139d6473ab3c7282bc2b5bff544249a47ff5a17a",
+      "size_bytes": 3776
+    },
+    "published_probe": {
+      "path": "scripts/jev_colab_runtime_preflight.py",
+      "sha256": "e9833afbef7f0fd11900d0ea3c3a63328658788802d3cfa4e40e2f2ba4200892",
+      "size_bytes": 1885
+    },
+    "published_source_scope": "Ruff-format-only copy; entire AST equals1853B source actually executed. No model/framework/GPU calls.",
+    "Ruff_check": "PASS"
+  },
+  "actual_runtime": {
+    "schema": "jev-colab-runtime-metadata-preflight-v1",
+    "at_utc": "2026-10-20T08:59:55.173948+00:00",
+    "requested_hardware": "CPU",
+    "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+    "system": "Linux",
+    "machine": "x86_64",
+    "memory_bytes": {
+      "MemTotal": 13605822464,
+      "MemAvailable": 12667985920,
+      "SwapTotal": 0,
+      "SwapFree": 0
+    },
+    "cgroup_memory_values": {
+      "memory.max": "max",
+      "memory.current": "2796654592",
+      "memory.swap.max": "max"
+    },
+    "content_disk_bytes": {
+      "total": 115658190848,
+      "free": 93635452928
+    },
+    "installed_package_versions_metadata_only": {
+      "torch": "2.11.0+cpu",
+      "transformers": "5.20.1",
+      "tokenizers": "0.23.3",
+      "huggingface-hub": "1.33.0",
+      "safetensors": "0.8.0",
+      "peft": "0.21.2",
+      "numpy": "2.1.3",
+      "Pillow": "11.3.0",
+      "jinja2": "3.1.6",
+      "google-colab": "1.0.0"
+    },
+    "nvidia_smi_binary_present": false,
+    "scope": "Stdlib metadata only; no framework import, GPU call, model construction, training, decoding or benchmark."
+  },
+  "capacity": {
+    "base_BF16_file_bytes": 23919549408,
+    "host_total_bytes": 13605822464,
+    "host_available_bytes": 12667985920,
+    "fits_base_file_alone": false,
+    "old_CPU_floor_minimum_bytes": 30064771072,
+    "old_CPU_gate_admits_this_host": false,
+    "runtime_qualification": "x86_64/Python3.13.16/Torch2.11CPU/transformers5.20.1 differ from GB10ARM64/pinnedruntime. Existing runtime qualification cannot be reused.",
+    "interpretation": "Free CPU runtime is usable for bounded preparation, but does not meet the unchanged native training or CPU qualification gates. No precision/geometry/gate relaxation performed."
+  },
+  "resource_disposition": {
+    "session": "jev-preflight-20261020-01",
+    "stop": "exec31752 reported terminated, official CLI exit0 and termination event; helper status termination_reported_unverified because backend list is empty",
+    "fresh_backend_sessions": "exec71016 EXIT0/no active sessions/no auth errors",
+    "usage_after_stop": {
+      "path": "artifacts/jev-runtime/colab-workbench-20261020-01/usage-after-stop-01.json",
+      "sha256": "ecb3f243b7ff4b63226ecc2f1342f39b355be71068d0b90d3505a4ad76eb49b3",
+      "size_bytes": 384
+    },
+    "limitation": "Helper alone did not verify release from an empty list; separate successful account usage reports0activeassignments and fresh backend list is empty. No automatic retry or replacement allocation."
+  },
+  "review": {
+    "path": "artifacts/jev-runtime/colab-workbench-20261020-01/root-preflight-review-01.json",
+    "sha256": "3f0634ee16479e489ddbf43f1faeb5ff1b9e18a72a25853cf3f78a135ba8f506",
+    "size_bytes": 3532
+  },
+  "limits": [
+    "No GPU availability established; no GPU request made",
+    "No input/LoRA/base weight upload or download",
+    "No training, decoding, browser task result or Decision3 superiority",
+    "GPU preference requested separately; user has not yet selected GPU"
+  ]
+}

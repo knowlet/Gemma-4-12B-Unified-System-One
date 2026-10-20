@@ -1,0 +1,118 @@
+{
+  "schema": "jev-local-maxsplit128-probe-results-v1",
+  "date": "2026-10-20",
+  "status": "FAILED_A_FIRST_BACKWARD_ENTRY_C_NOT_RUN_WHOLE_CLOSED",
+  "hypothesis": "Fixed native max_split_size_mb128 might reduce inactive split pressure from the prior default allocator run. It was an experiment, not a claimed optimum.",
+  "result": {
+    "allocator": {
+      "uuid": "e3429caa-b057-cbe0-917d-d3b85b313be7",
+      "name": "NVIDIA GB10",
+      "total_bytes": 130595860480,
+      "fraction": 0.328842572024531,
+      "allowed_bytes_upper": 42945478656,
+      "backend": "native",
+      "max_split_size_bytes": 134217728,
+      "selected_environment": {
+        "PYTORCH_ALLOC_CONF": "backend:native,max_split_size_mb:128",
+        "PYTORCH_CUDA_ALLOC_CONF": "backend:native,max_split_size_mb:128"
+      }
+    },
+    "one_verified_model": 1,
+    "native_phases": [
+      {
+        "event": "intent",
+        "phase": "native-train-forward",
+        "sequence": 8
+      },
+      {
+        "event": "complete",
+        "phase": "native-train-forward",
+        "sequence": 8
+      }
+    ],
+    "synchronized_updates": 0,
+    "optimizer_attempts": 0,
+    "development_updates": 0,
+    "C": "NOT_RUN_OR_CONSTRUCTED_AFTER_A_FAILURE",
+    "work_end_ACK": "NOT_PRODUCED_FAILED_ARM",
+    "error": {
+      "type": "ValueError",
+      "message": "Native allocator/device guard refused"
+    },
+    "elapsed_seconds": 186.94145946000936,
+    "first_forward_cache_after": {
+      "allocated": 26128781312,
+      "reserved": 26952597504,
+      "free": 42899861504,
+      "peak_allocated": 26584053248,
+      "peak_reserved": 28049408000
+    },
+    "free_required_bytes": 44023414784,
+    "shortfall_bytes": 1123553280,
+    "release_returned_reserved_bytes": 1096810496,
+    "release_device_free_increase_bytes": 1105629184,
+    "storage_and_occupied_bytes_and_highwaters_preserved": true,
+    "max_split_readback": 134217728,
+    "inactive_split_after_bytes": 823816192,
+    "allocation_retry_count": 0,
+    "allocator_oom_count": 0
+  },
+  "memory_axes": {
+    "torch_allocator": "Peakallocated26,584,053,248B/peakreserved28,049,408,000B; preserved lifetime highwaters",
+    "unit_memcg": "MemoryPeak2,588,725,248B/MemorySwapPeak0 from retained same-Invocation failed unit; not added to or substituted for allocator peaks"
+  },
+  "closure": {
+    "unit": "jev-native-memory-peak-a-f6e99d8b4b96499c97c3a7baf4cc4c1e.service",
+    "invocation": "a7b2c9f9c3954fb9a3412980fd36fbb6",
+    "fresh_unit": {
+      "MainPID": "0",
+      "Result": "exit-code",
+      "ExecMainStatus": "1",
+      "ControlGroup": "",
+      "MemoryPeak": "2588725248",
+      "MemorySwapPeak": "0",
+      "LoadState": "loaded",
+      "ActiveState": "failed",
+      "SubState": "failed",
+      "InvocationID": "a7b2c9f9c3954fb9a3412980fd36fbb6"
+    },
+    "worker_PID": 847510,
+    "original_start_ticks": 28612182,
+    "known_PIDs_absent": [
+      847506,
+      847505,
+      847510
+    ],
+    "owned_PG_members": [],
+    "original_cgroup_absent": true,
+    "cgroup_members": [],
+    "cleanup": "Original typed owned-unit only; root sent no signal",
+    "limits": "Observed identities/groups only; unobserved short-lived descendants not independently tracked"
+  },
+  "evidence": {
+    "root_review": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/root-actual13-exit-review-01.json",
+      "sha256": "d7352e4b11e477c9c376facb3b5f40a380fec18a8bcbbabf36279e67c87ebf86",
+      "size_bytes": 6141
+    },
+    "closed_index": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/root-actual13-closed-index-01.json",
+      "sha256": "eac36df5c08a562a82975654c78cae7b396dbe3a988b3708636d8ac4d3a7bc5d",
+      "size_bytes": 159026
+    },
+    "source_review": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/root-H14-source-final-review-01.json",
+      "sha256": "32b3cc86f6e69152798ba0d6fc5849a907649d89a2158da920f382281c979107",
+      "size_bytes": 14190
+    },
+    "independent_source_review": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/independent-H14-source-review-01.json",
+      "sha256": "62a4264260f4e5b09ff70baa0eaaededa6a2478c88a035490e697dd844eb53c3",
+      "size_bytes": 5442
+    }
+  },
+  "denominator": "One verified fresh A model, one forward and one successful fixed cache release; zero recorded backward entries/optimizer attempts/updates/dev forwards; C not constructed. No updated-weight files.",
+  "interpretation": "Configuration readback passed, but free42,899,861,504B remained1,123,553,280B below unchanged41GiB guard. H13 A previously completed2updates+2dev, so this fixed128 experiment did not establish capacity and had worse observed completion. Host/external-memory conditions also vary; it does not prove a single allocator parameter caused the entire gap.",
+  "preserved": "Original full input/head/precision/math and all ceilings/gates/ownership/no-retry/no-save rules; H13 source, old failures and frozenv2 producer unchanged.",
+  "remaining": "Local complete training still unproven; use separately reviewed next configuration or authorized adequate remote hardware. No new model/task or universal capacity claim."
+}
