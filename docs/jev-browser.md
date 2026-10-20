@@ -50,6 +50,13 @@ The response records both requested and effective formats, both byte costs,
 and the fallback reason. This is a byte-based choice; token capacity still
 requires measurement with the actual processor.
 
+The [V2 paired CPU replay](validation/2026-10-21/jev-shared-elements-v2-paired-cpu-results.json)
+measured that same large snapshot at **7,610 tokens**, retaining all 250 offered
+candidates. All 68 policy inputs fit, compared with 67 for raw text; the original
+75-row population and refusal controls remain intact. The 8,151-token positive
+control keeps its exact raw prompt through the disclosed fallback. These are
+input-capacity outcomes, with no model forward or browser task execution.
+
 This format is a separate model-input condition. Existing raw-prompt training
 and native/browser qualification do not cover it. V2 passed 258 codec,
 generated-action, pinned upstream and API tests; tokenizer capacity and real

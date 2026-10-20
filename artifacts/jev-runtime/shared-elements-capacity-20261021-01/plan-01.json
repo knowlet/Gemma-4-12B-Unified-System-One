@@ -1,0 +1,51 @@
+{
+  "schema_id": "jev_shared_elements_v2_paired_cpu_capacity_v1",
+  "self_source": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261021-01/repeat_capacity.py",
+    "sha256": "63ced1c0fec638aea11793209f3fe795faa46fccbccf41e988f45a8a6116dd1f",
+    "size_bytes": 31295
+  },
+  "production_sources": {
+    "src/s1/api.py": {
+      "sha256": "8c8fb743f6c7b3cebdc37780c6e936832f8d9f948b4c9f4666226076a361925c",
+      "size_bytes": 13174
+    },
+    "src/s1/jev_generated.py": {
+      "sha256": "e37efa5ed65b79fe49e117e809ba5a6b175fd5b8ffe84bfd5f4c368617990d7c",
+      "size_bytes": 22534
+    },
+    "src/s1/jev_prompt.py": {
+      "sha256": "2891ecbe94e5cbb01b7a2de6d7be9ed35ee55d26f904cfeb6b401416254b5f3c",
+      "size_bytes": 17207
+    }
+  },
+  "unit": {
+    "boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0",
+    "cgroup_path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-cpu3g-20261020-03.service"
+  },
+  "output": "artifacts/jev-runtime/shared-elements-capacity-20261021-01/actual-01",
+  "python": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+  "environment": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TOKENIZERS_PARALLELISM": "false",
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "HF_HUB_CACHE": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub",
+    "PYTHONPATH": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "resource_limits": {
+    "unit_memory_max": 3221225472,
+    "unit_swap_max": 0,
+    "parent_AS_soft": 2147483648,
+    "AS_hard": 8589934592,
+    "worker_wall": 600,
+    "parent_wall": 630,
+    "unit_wall": 660,
+    "output_bytes": 1073741824,
+    "file_bytes": 67108864
+  }
+}
