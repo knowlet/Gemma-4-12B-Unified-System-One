@@ -1,0 +1,50 @@
+{
+  "schema": "jev-colab-form-index-small-research-v1",
+  "date": "2026-10-20",
+  "scope": "Official Colab CLI remote preflight and small closed-evidence index ordering fix; no new training contract or GPU request",
+  "candidates": [
+    {
+      "project": "googlecolab/google-colab-cli",
+      "source": "https://github.com/googlecolab/google-colab-cli",
+      "version": "installed0.7.4",
+      "license": "Apache-2.0, upstream LICENSE read",
+      "match": "existing authenticated Colab runtime/file lifecycle",
+      "decision": "Directly use existing checked colab-operator helper; no new CLI wrapper or copied upstream code"
+    },
+    {
+      "project": "python/cpython",
+      "source": "https://github.com/python/cpython/blob/v3.12.3/Lib/pathlib.py#L483",
+      "version": "installed Python3.12.3 / upstream v3.12.3 source",
+      "mechanism": "PurePath.__lt__ compares normalized path-part lists, rather than entire path strings. Thus episodes/00/file can precede episodes/00.json while string order differs.",
+      "license": "Python/PSF standard-library dependency; no code copied",
+      "decision": "Keep immutable index bytes/order. Compare unique complete file population with explicitly normalized sorted string paths; snapshot may retain externally pinned original order."
+    }
+  ],
+  "local_evidence": {
+    "index": "artifacts/jev-runtime/generic-form-progress-native-proof-20261019-01/root-actual01-closed-index-01.json",
+    "fixed_population": 236,
+    "bytes": 11438498,
+    "blocker": "H01 capture_snapshot requires string sorted index but genuine root index uses sorted Path objects. No genuine admission performed under H01.",
+    "Google": "official CLI0.7.4 usage accepted existing OAuth; current balance0.00,activeassignments0 before task-owned CPU allocation"
+  },
+  "read_symbols": [
+    "colab-operator Operator.checked_exec, history_since, workflow_lock, stored_session; source read",
+    "CPythonv3.12.3 PurePath.__lt__; full necessary upstream context read",
+    "jev_owned_form_progress.capture_snapshot and original full library/tests read"
+  ],
+  "references_only_no_copy": [
+    "CLI/helper lifecycle uses existing implementation",
+    "CPython sorting semantics informs comparison; no new algorithm abstraction"
+  ],
+  "validation_plan": [
+    "Bounded stdlib Colab environment probe with per-cell execution evidence and verified output download",
+    "Stop only own CPU runtime and verify release",
+    "Fix form snapshot population comparison with realistic nested Path-order regression plus duplicate/missing/extra/mutated file negatives",
+    "Freeze successor source/plan and keep H01 immutable; actual admission/compiler remains separate"
+  ],
+  "remaining": [
+    "Colab actual memory/package/architecture not yet measured",
+    "No GPU allocation or training/inference/task performance claim",
+    "Forms owned CPU launcher is incomplete/unreviewed after previous author interruption"
+  ]
+}
