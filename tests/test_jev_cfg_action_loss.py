@@ -14,7 +14,7 @@ from jev_cfg_action_loss import (
     decision_token_loss,
 )
 
-from s1.jev_generated import INSTRUCTIONS, POLICY
+from s1.jev_generated import INSTRUCTIONS, POLICY, format_action_request
 
 
 def encode(value):
@@ -49,8 +49,10 @@ class TinyTokenizer:
         return [10] + self.operations[action["operation"]] + [11] + target + [13]
 
 
-def compiled(*, zero_decisions=False):
-    torch = pytest.importorskip("torch")
+def compiled(
+    *, zero_decisions=False, prompt_format="raw-json-v1", compressible=False, tensor_inputs=True
+):
+    torch = pytest.importorskip("torch") if tensor_inputs else None
     payload = {
         "model": "generated-actions-none",
         "state": {"goal": "Open a record", "history": []},
@@ -68,6 +70,25 @@ def compiled(*, zero_decisions=False):
             "type": "choice",
             "criteria": {"1": "One", "10": "Ten"},
         }
+    if compressible:
+        payload["state"]["elements"] = [
+            {
+                "index": str(index),
+                "label": "Open the complete original catalog entry " + str(index),
+                "value": "",
+                "role": "button",
+                "operations": ["CLICK"],
+            }
+            for index in range(1, 65)
+        ]
+        payload["questions"]["click_target"]["criteria"] = {
+            element["index"]: {
+                "element": "[" + element["index"] + "] " + element["label"],
+                "current_value": element["value"],
+                "role": element["role"],
+            }
+            for element in payload["state"]["elements"]
+        }
     for question in payload["questions"].values():
         question["instructions"] = "Choose one supplied original criterion key."
     target = {
@@ -75,7 +96,14 @@ def compiled(*, zero_decisions=False):
         "target": None if zero_decisions else "1",
     }
     tok = TinyTokenizer()
-    tok.prompt = "<native-user>" + INSTRUCTIONS + "\n" + encode(payload).decode() + "<native-model>"
+    if zero_decisions:
+        assert prompt_format == "raw-json-v1"
+        user_text = INSTRUCTIONS + "\n" + encode(payload).decode()
+    else:
+        user_text, _, _, representation = format_action_request(
+            payload, payload["model"], prompt_format=prompt_format
+        )
+    tok.prompt = "<native-user>" + user_text + "<native-model>"
     target_json = encode(target).decode()
     ids = tok.encode(tok.prompt + target_json + "<turn|>")
     targets = tok.encode(target_json) + [99]
@@ -100,11 +128,13 @@ def compiled(*, zero_decisions=False):
         "logits_positions": positions,
         "processor_tensors": copy.deepcopy(tensors),
     }
+    if prompt_format != "raw-json-v1":
+        record.update(prompt_format=prompt_format, prompt_representation=representation)
     row = {
         "record": record,
-        "inputs": {k: torch.tensor(v) for k, v in tensors.items()},
-        "positions": torch.tensor(positions),
-        "targets": torch.tensor(targets),
+        "inputs": {k: torch.tensor(v) if torch else v for k, v in tensors.items()},
+        "positions": torch.tensor(positions) if torch else positions,
+        "targets": torch.tensor(targets) if torch else targets,
     }
     return row, payload, tok
 
@@ -120,6 +150,129 @@ def test_plan_uses_complete_original_inventory_and_includes_syntax_looking_branc
     assert plan.allowed_ids[-1] == (99,)
     assert plan.request_sha256 == hashlib.sha256(encode(payload)).hexdigest()
     assert plan.evidence()["allowed_ids"] == plan.allowed_ids
+
+
+@pytest.mark.parametrize("prompt_format", ["shared-elements-v1", "shared-elements-v2"])
+def test_shared_compilation_keeps_complete_grammar_and_teacher_path(prompt_format):
+    raw, raw_payload, raw_tok = compiled(compressible=True, tensor_inputs=False)
+    row, payload, tok = compiled(
+        prompt_format=prompt_format, compressible=True, tensor_inputs=False
+    )
+    raw_plan = compile_action_plan(raw, raw_payload, raw_tok)
+    plan = compile_action_plan(row, payload, tok, prompt_format=prompt_format)
+    assert row["record"]["prompt_representation"]["format"] == prompt_format
+    assert plan.legal_action_count == raw_plan.legal_action_count == 65
+    assert plan.canonical_inventory_sha256 == raw_plan.canonical_inventory_sha256
+    assert plan.encoded_inventory_sha256 == raw_plan.encoded_inventory_sha256
+    assert plan.target_ids == raw_plan.target_ids
+    assert plan.allowed_ids == raw_plan.allowed_ids
+    assert plan.decision_indices == raw_plan.decision_indices
+    assert plan.request_sha256 == raw_plan.request_sha256
+    assert plan.compiled_row_sha256 != raw_plan.compiled_row_sha256
+
+
+def test_explicit_v2_raw_fallback_retains_requested_mode_and_exact_metadata():
+    row, payload, tok = compiled(prompt_format="shared-elements-v2", tensor_inputs=False)
+    metadata = row["record"]["prompt_representation"]
+    assert metadata["format"] == "raw-json-v1"
+    assert metadata["requested_format"] == "shared-elements-v2"
+    plan = compile_action_plan(row, payload, tok, prompt_format="shared-elements-v2")
+    assert plan.legal_action_count == 3
+    with pytest.raises(ValueError, match="Historical raw"):
+        compile_action_plan(row, payload, tok)
+
+
+def test_metadata_object_order_is_irrelevant_but_values_are_authenticated():
+    row, payload, tok = compiled(prompt_format="shared-elements-v2", tensor_inputs=False)
+
+    def reversed_objects(value):
+        if type(value) is dict:
+            return {key: reversed_objects(value[key]) for key in reversed(value)}
+        if type(value) is list:
+            return [reversed_objects(item) for item in value]
+        return value
+
+    row["record"]["prompt_representation"] = reversed_objects(
+        row["record"]["prompt_representation"]
+    )
+    assert (
+        compile_action_plan(
+            row, payload, tok, prompt_format="shared-elements-v2"
+        ).legal_action_count
+        == 3
+    )
+
+
+@pytest.mark.parametrize("prompt_format", [None, True, 1, [], "unknown", ""])
+def test_unknown_or_untyped_trusted_mode_rejects_before_row_work(prompt_format):
+    with pytest.raises(ValueError, match="supported native prompt format"):
+        compile_action_plan(None, None, None, prompt_format=prompt_format)
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        "missing_mode",
+        "wrong_mode",
+        "missing_metadata",
+        "effective_mode",
+        "boolean_as_integer",
+        "extra_field",
+        "nonfinite",
+        "raw_prompt",
+    ],
+)
+def test_shared_forged_mode_metadata_or_prompt_rejects_before_grammar(monkeypatch, change):
+    row, payload, tok = compiled(
+        prompt_format="shared-elements-v2", compressible=True, tensor_inputs=False
+    )
+    record = row["record"]
+    metadata = record["prompt_representation"]
+    if change == "missing_mode":
+        del record["prompt_format"]
+    elif change == "wrong_mode":
+        record["prompt_format"] = "shared-elements-v1"
+    elif change == "missing_metadata":
+        del record["prompt_representation"]
+    elif change == "effective_mode":
+        metadata["format"] = "raw-json-v1"
+    elif change == "boolean_as_integer":
+        metadata["ordered_roundtrip_verified"] = 1
+    elif change == "extra_field":
+        metadata["unverified"] = True
+    elif change == "nonfinite":
+        metadata["original_bytes"] = float("nan")
+    else:
+        raw_text, _, _, _ = format_action_request(payload, payload["model"])
+        record["prompt"] = "<native-user>" + raw_text + "<native-model>"
+
+    def forbidden_grammar(*args, **kwargs):
+        pytest.fail("Invalid representation reached grammar construction")
+
+    monkeypatch.setattr("jev_cfg_action_loss.LegalActionTokenTrie", forbidden_grammar)
+    with pytest.raises(ValueError):
+        compile_action_plan(row, payload, tok, prompt_format="shared-elements-v2")
+
+
+def test_explicit_trusted_mode_cannot_be_inferred_or_replaced_from_record():
+    row, payload, tok = compiled(
+        prompt_format="shared-elements-v2", compressible=True, tensor_inputs=False
+    )
+    with pytest.raises(ValueError, match="Historical raw"):
+        compile_action_plan(row, payload, tok)
+    with pytest.raises(ValueError, match="explicit trusted mode"):
+        compile_action_plan(row, payload, tok, prompt_format="shared-elements-v1")
+    raw, payload, tok = compiled(tensor_inputs=False)
+    with pytest.raises(ValueError, match="explicit trusted mode"):
+        compile_action_plan(raw, payload, tok, prompt_format="shared-elements-v2")
+
+
+@pytest.mark.parametrize("field", ["prompt_format", "prompt_representation"])
+def test_legacy_raw_record_rejects_new_shared_fields_even_if_null(field):
+    row, payload, tok = compiled(tensor_inputs=False)
+    row["record"][field] = None
+    with pytest.raises(ValueError, match="Historical raw"):
+        compile_action_plan(row, payload, tok)
 
 
 @pytest.mark.parametrize("mode", ["B", "C"])
@@ -208,7 +361,7 @@ def test_all_logits_nonfinite_refusal_includes_forbidden_and_forced_positions(wh
 
 
 def test_zero_decision_row_refuses_before_any_forward():
-    row, payload, tok = compiled(zero_decisions=True)
+    row, payload, tok = compiled(zero_decisions=True, tensor_inputs=False)
     # The existing strict request API refuses a sole operation before grammar construction.
     with pytest.raises(ValueError, match="choice needs 2"):
         compile_action_plan(row, payload, tok)

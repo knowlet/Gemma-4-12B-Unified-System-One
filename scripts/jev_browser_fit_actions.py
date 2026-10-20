@@ -84,17 +84,22 @@ def _resources(model):
     return result
 
 
-def compile_actions(model, cases, snapshot, *, identity=IDENTITY):
+def compile_actions(model, cases, snapshot, *, identity=IDENTITY, prompt_format="raw-json-v1"):
     """Compile the exact inference prefix; gold never enters that prefix.
 
     Completed-assistant chat templates can differ from the native generation
     prefix. Append to the actual inference prompt and verify every token/mask
     prefix instead of assuming those templates are interchangeable.
     """
+    from s1.jev_prompt import PROMPT_FORMATS
+
+    if type(prompt_format) is not str or prompt_format not in PROMPT_FORMATS:
+        raise ValueError("Explicit supported action-training prompt format required")
+
     import torch
 
     from s1.evaluation.datasets import request_fingerprint
-    from s1.jev_generated import INSTRUCTIONS, POLICY, TARGETS, _request
+    from s1.jev_generated import POLICY, TARGETS, format_action_request
 
     wires = [
         integrity._json(line)
@@ -117,7 +122,9 @@ def compile_actions(model, cases, snapshot, *, identity=IDENTITY):
         original = wire["payload"]
         payload = copy.deepcopy(original)
         payload["model"] = identity
-        encoded, source, labels = _request(payload, identity)
+        user_text, source, labels, representation = format_action_request(
+            payload, identity, prompt_format=prompt_format
+        )
         action = copy.deepcopy(wire["teacher_choice"])
         operation = case.gold["operation"]
         head = TARGETS.get(operation)
@@ -142,7 +149,7 @@ def compile_actions(model, cases, snapshot, *, identity=IDENTITY):
             [
                 {
                     "role": "user",
-                    "content": [{"type": "text", "text": INSTRUCTIONS + "\n" + encoded}],
+                    "content": [{"type": "text", "text": user_text}],
                 }
             ],
             tokenize=False,
@@ -218,6 +225,8 @@ def compile_actions(model, cases, snapshot, *, identity=IDENTITY):
             "logits_positions": positions.tolist(),
             "processor_tensors": {key: value.tolist() for key, value in inputs.items()},
         }
+        if prompt_format != "raw-json-v1":
+            record.update(prompt_format=prompt_format, prompt_representation=representation)
         rows.append(
             {"record": record, "inputs": inputs, "positions": positions, "targets": ids[p:].clone()}
         )

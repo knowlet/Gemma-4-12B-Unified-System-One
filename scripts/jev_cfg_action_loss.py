@@ -105,15 +105,46 @@ def _decision_indices(allowed):
     return decisions
 
 
-def compile_action_plan(row, payload, tokenizer):
+def compile_action_plan(row, payload, tokenizer, *, prompt_format="raw-json-v1"):
     """Use the actual inference request validator and public grammar callback."""
-    from s1.jev_generated import INSTRUCTIONS, POLICY, _request
+    from s1.jev_generated import POLICY, format_action_request
+    from s1.jev_prompt import PROMPT_FORMATS
+
+    _require(
+        type(prompt_format) is str and prompt_format in PROMPT_FORMATS,
+        "Explicit supported native prompt format required",
+    )
 
     snapshot = _snapshot(row)
     record, inputs = snapshot["record"], snapshot["inputs"]
     identity = record.get("inference_model_identity")
     _require(type(identity) is str and bool(identity), "Compiled native model identity required")
-    encoded, source, labels = _request(payload, identity)
+    user_text, source, labels, representation = format_action_request(
+        payload, identity, prompt_format=prompt_format
+    )
+    if prompt_format == "raw-json-v1":
+        _require(
+            not {"prompt_format", "prompt_representation"} & set(record),
+            "Historical raw compiled records must not declare a shared prompt format",
+        )
+    else:
+        _require(
+            type(record.get("prompt_format")) is str
+            and record["prompt_format"] == prompt_format
+            and type(record.get("prompt_representation")) is dict,
+            "Compiled shared prompt format differs from the explicit trusted mode",
+        )
+        try:
+            actual_representation = json.dumps(
+                record["prompt_representation"], sort_keys=True, allow_nan=False
+            )
+            expected_representation = json.dumps(representation, sort_keys=True, allow_nan=False)
+        except (ValueError, TypeError, OverflowError, UnicodeError) as exc:
+            raise ValueError("Compiled shared prompt representation must be finite JSON") from exc
+        _require(
+            actual_representation == expected_representation,
+            "Compiled shared prompt representation differs from production formatting",
+        )
     _require(
         record.get("normalized_wire_sha256") == hashlib.sha256(source).hexdigest(),
         "Complete original request differs from compiled row",
@@ -121,7 +152,7 @@ def compile_action_plan(row, payload, tokenizer):
     _require(record.get("policy") == POLICY, "Native generated-action policy differs")
     prompt, target_json = record.get("prompt"), record.get("target_json")
     _require(
-        type(prompt) is str and prompt.count(INSTRUCTIONS + "\n" + encoded) == 1,
+        type(prompt) is str and prompt.count(user_text) == 1,
         "Complete original request/instructions must remain in the native prompt",
     )
     _require(type(target_json) is str, "Compiled canonical target required")
