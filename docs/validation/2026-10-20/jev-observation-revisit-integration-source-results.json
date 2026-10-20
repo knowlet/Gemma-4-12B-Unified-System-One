@@ -1,0 +1,47 @@
+{
+  "schema_id": "jev-observation-revisit-integration-source-results-v1",
+  "date": "2026-10-20",
+  "status_at_milestone": "ROOT_SOURCE_REVIEW_CLEAR_FAKE_RUNTIME_TESTED_NOT_MATERIALIZED",
+  "change": "Wire the bounded observation tracker into a separately named experimental Agent/model source derivative. Original V8 files and tracker core remain unchanged.",
+  "behavior": "Each successful accepted observation advances a per-task sequence through the same wrapper across all4native observation paths. Repeated prediction does not count again; failed observations retain prior sequence/hint, and executed action history survives a later observe failure. Snapshots copy metadata independently.",
+  "policy_input": "Only actual revisit notes add a field inside existing request.state. Send matched scopes/prior sequence numbers and factual notes; omit opaque hashes/unmatched scopes. No-note requests serialize exactly like the original. Original questions/instructions/candidate order/full heads/goal/elements and existing10-action prompt history remain.",
+  "validation": {
+    "pure_fake_tests": 18,
+    "pytest_seconds": 0.71,
+    "Ruff_and_format": "PASS",
+    "literal_blocks": 11,
+    "whole_byte_inverse_and_AST": "PASS",
+    "unaffected_function_AST": "PASS",
+    "original_core_byte_identity": "PASS",
+    "full300_way_candidate_head_preserved": true,
+    "root_small_refs_SHA_size": 11
+  },
+  "evidence": {
+    "source": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/revisit_integration.py",
+      "sha256": "081310eee8e20908c3131f89d8c3e2f7a2870c9a0e04e7788c6fe44bdd62e9c8",
+      "size_bytes": 8427
+    },
+    "tests": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/test_revisit_integration.py",
+      "sha256": "0794b0b11e81ef35e2b99ad0e63822f98fbecefb40a09f88cc497335c414215d",
+      "size_bytes": 17817
+    },
+    "proof": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/build-proof-01.json",
+      "sha256": "f45f3193e8715c771380404d4e01e60d3bbc9ed538137433db3ffda9169e0906",
+      "size_bytes": 3691
+    },
+    "validation": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/pure-validation-summary-01.json",
+      "sha256": "1227b0e509198b9b16c9050592d2021f81d799941fe297f14a5e4e4afce561f0",
+      "size_bytes": 1964
+    },
+    "root_review": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/root-source-integration-review-01.json",
+      "sha256": "c9d279cff19cfa5ba61f7008c2a63765b26d5d4265b94be8973bd8d6881b9530",
+      "size_bytes": 2218
+    }
+  },
+  "remaining": "Three adjacent package module bytes have been generated in memory/fake modules. Materialize and verify a complete separately named runtime profile and launcher, then obtain fresh complete prompt capacity/native/browser results. This is not a live deployment, oldV8/Q95 capacity qualification or model/task gain. Full10score remains5/10."
+}

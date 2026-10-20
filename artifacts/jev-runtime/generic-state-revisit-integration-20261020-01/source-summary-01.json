@@ -1,0 +1,72 @@
+{
+  "schema": "experimental_revisit_integration_source_summary_v1",
+  "profile": "guarded-observation-revisit-integration-experimental-v1",
+  "status": "SOURCE_AND_FAKE_TESTS_ONLY_THREE_MODULE_BYTES_IN_MEMORY_NO_MATERIALIZED_PROFILE",
+  "files": {
+    "transformer": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/revisit_integration.py",
+      "sha256": "081310eee8e20908c3131f89d8c3e2f7a2870c9a0e04e7788c6fe44bdd62e9c8",
+      "size_bytes": 8427
+    },
+    "tests": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/test_revisit_integration.py",
+      "sha256": "0794b0b11e81ef35e2b99ad0e63822f98fbecefb40a09f88cc497335c414215d",
+      "size_bytes": 17817
+    },
+    "mechanical_proof": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/build-proof-01.json",
+      "sha256": "f45f3193e8715c771380404d4e01e60d3bbc9ed538137433db3ffda9169e0906",
+      "size_bytes": 3691
+    },
+    "validation": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/pure-validation-summary-01.json",
+      "sha256": "1227b0e509198b9b16c9050592d2021f81d799941fe297f14a5e4e4afce561f0",
+      "size_bytes": 1964
+    }
+  },
+  "implementation": [
+    "Pure exact-SHA/size transformation of frozen V8 agent.py/model.py plus unchanged80249 core. Outputs three adjacent package module bytes in memory; does not copy the V8 builder or import/materialize a runtime.",
+    "Agent owns its tracker per task. All four existing observe entrypoints use one wrapper: constructor, tick stale refresh, predict freshness refresh and post-action observation. Successful observe plus core validation records the next sequence; exceptions retain sequence, metadata and tracker state. Repeated predict without observation does not create a new revisit.",
+    "Raw page, page_key, guards and action descriptors are returned unchanged. Complete metadata lives in Agent attributes and an independent deepcopy in each snapshot. The original history-before-post-observe ordering remains intact on failed observations.",
+    "choose receives explicit observation_revisit keyword. Only nonempty factual notes add a field inside existing body.state; non-revisit body is byte-identical to original serialization. Policy hint includes profile/sequence/notes and matched exact/projection scope plus prior sequence numbers, omitting hashes and unmatched scopes.",
+    "Original outer keys, questions/instructions/criteria order, all candidates, original goal/elements and existing10-action history remain unchanged. Action math/decoder/validation/field helper/transport rules are unchanged."
+  ],
+  "proof": {
+    "literal_blocks": 11,
+    "later_observe_block_occurrences": 3,
+    "exact_original_byte_inverse": true,
+    "whole_inverse_AST_equal": true,
+    "unchanged_function_AST": "Agent enter/exit/close/run and all five non-choose model functions unchanged; only init/snapshot/command/choose changed and Agent._observe added.",
+    "parent_V8_and_80249_core_unchanged": true
+  },
+  "validation": {
+    "pure_tests": 18,
+    "pytest": "18 passed in 0.71s",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "source_and_tests_unchanged_during_final_checks": true,
+    "coverage": [
+      "Repeated predict versus successful observations",
+      "A-B-A exact and cross-document projection hints",
+      "All four observe entrypoints including stale tick",
+      "Failed native observation/core validation/initial observe and owned fake cleanup",
+      "Executed action history survives post-observe failure",
+      "Separate task trackers and returned snapshot/hint non-aliasing",
+      "Byte-identical non-revisit request; hints only inside state",
+      "Full300-way candidate head/order/goal/instructions/original history preserved structurally",
+      "Exact input pins, per-block inverse, unaffected AST and unchanged adjacent core"
+    ]
+  },
+  "remaining_work": [
+    "No full runtime/browser profile has been materialized; new agent/model/core bytes only exist in pure composition and fake in-memory modules. Parent V8 and core remain frozen.",
+    "No browser, GPU, framework, processor, native decode or real task run was performed.",
+    "This is a new prompt experiment. New source/runtime union and fresh whole request capacity, helper/co-resident admission and real browser quality must be checked before any success claim. Existing V8/Q95 evidence does not qualify it.",
+    "Original browser score remains5/10; the prior core closed-state replay establishes detection only, and its curl scroll failure remains uncovered."
+  ],
+  "research_before_code": "Reuse exact frozen local V8 Agent/model and independently tested core. Existing browser-use bounded informational context principle and MIT/source refs are already in core source-summary-01.json. No upstream code copied, no dependency or generic action override introduced.",
+  "raw_preliminary_check": {
+    "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/checks-01/pytest.json",
+    "sha256": "408f5fc087d748ea8a4002f72faa125a983e6b4b462bca5a3f09988a419c8db7",
+    "size_bytes": 431
+  }
+}
