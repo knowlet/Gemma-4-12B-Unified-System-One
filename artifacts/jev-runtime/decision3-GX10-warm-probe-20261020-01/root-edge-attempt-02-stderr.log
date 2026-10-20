@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py", line 531, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py", line 527, in main
+    return parent_main(args)
+  File "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py", line 482, in parent_main
+    persist_closed(worker, output / "closed.json", state, primary)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py", line 360, in persist_closed
+    raise primary
+  File "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py", line 322, in supervise
+    observe()
+    ~~~~~~~^^
+  File "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py", line 377, in observe
+    require(
+    ~~~~~~~^
+        decision["admitted"], "Unchanged full policy floor refused: " + json.dumps(decision)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py", line 36, in require
+    raise ValueError(message)
+ValueError: Unchanged full policy floor refused: {"admitted": false, "cgroup_observation_complete": true, "refusal_reason": null, "host_available_bytes": 30570053632, "available_bytes": 30570053632, "required_available_bytes": 30646100800, "reserve_bytes": 26119172096, "resident_file_bytes": 1189722528, "full_transient_bytes": 1189722528, "framework_runtime_buffer_bytes": 2147483648, "swap_or_resident_credit_bytes": 0, "basis": "unchanged conservative host floor; cgroup further restricts, not measured peak"}

@@ -1,0 +1,104 @@
+{
+  "schema_id": "root_D3_edge_exact_retry_preflight_v1",
+  "status": "THREE_PRELIMINARY_NATIVE_GATES_ADMITTED",
+  "source": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py",
+    "sha256": "f674f01dad902f8184fbf1be5af2b25f0ba366387080baff53e9e6032de01bac",
+    "size_bytes": 19406
+  },
+  "plan": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/diagnostic-edge-plan-01.json",
+    "sha256": "c58977f42b9436597411956d71190387507259ad7c471fc7cd113acecd0e6a76",
+    "size_bytes": 4812
+  },
+  "samples": [
+    {
+      "observed_unix": 1792504805.1722348,
+      "Comfy_queue": {
+        "running_count": 0,
+        "pending_count": 0
+      },
+      "memory_decision": {
+        "admitted": true,
+        "cgroup_observation_complete": true,
+        "refusal_reason": null,
+        "host_available_bytes": 31030816768,
+        "available_bytes": 31030816768,
+        "required_available_bytes": 30646100800,
+        "reserve_bytes": 26119172096,
+        "resident_file_bytes": 1189722528,
+        "full_transient_bytes": 1189722528,
+        "framework_runtime_buffer_bytes": 2147483648,
+        "swap_or_resident_credit_bytes": 0,
+        "basis": "unchanged conservative host floor; cgroup further restricts, not measured peak"
+      },
+      "checks": {
+        "queue_idle": true,
+        "original_memory_gate": true,
+        "same_boot": true,
+        "actual_output_absent": true,
+        "module_cache_absent": true
+      }
+    },
+    {
+      "observed_unix": 1792504805.2755725,
+      "Comfy_queue": {
+        "running_count": 0,
+        "pending_count": 0
+      },
+      "memory_decision": {
+        "admitted": true,
+        "cgroup_observation_complete": true,
+        "refusal_reason": null,
+        "host_available_bytes": 30998638592,
+        "available_bytes": 30998638592,
+        "required_available_bytes": 30646100800,
+        "reserve_bytes": 26119172096,
+        "resident_file_bytes": 1189722528,
+        "full_transient_bytes": 1189722528,
+        "framework_runtime_buffer_bytes": 2147483648,
+        "swap_or_resident_credit_bytes": 0,
+        "basis": "unchanged conservative host floor; cgroup further restricts, not measured peak"
+      },
+      "checks": {
+        "queue_idle": true,
+        "original_memory_gate": true,
+        "same_boot": true,
+        "actual_output_absent": true,
+        "module_cache_absent": true
+      }
+    },
+    {
+      "observed_unix": 1792504805.3780878,
+      "Comfy_queue": {
+        "running_count": 0,
+        "pending_count": 0
+      },
+      "memory_decision": {
+        "admitted": true,
+        "cgroup_observation_complete": true,
+        "refusal_reason": null,
+        "host_available_bytes": 31004479488,
+        "available_bytes": 31004479488,
+        "required_available_bytes": 30646100800,
+        "reserve_bytes": 26119172096,
+        "resident_file_bytes": 1189722528,
+        "full_transient_bytes": 1189722528,
+        "framework_runtime_buffer_bytes": 2147483648,
+        "swap_or_resident_credit_bytes": 0,
+        "basis": "unchanged conservative host floor; cgroup further restricts, not measured peak"
+      },
+      "checks": {
+        "queue_idle": true,
+        "original_memory_gate": true,
+        "same_boot": true,
+        "actual_output_absent": true,
+        "module_cache_absent": true
+      }
+    }
+  ],
+  "policy_floor_unchanged": true,
+  "future_parent_would_recheck": true,
+  "actual_worker_started": false,
+  "root_preflight_corrections": "First root tooling Python3.12 was correctly refused by selected interpreter check; corrected Comfy3.13 -B -s preliminary command then failed an assertion without naming its condition. Neither launched actor or wrote output. This final bounded check records each condition explicitly."
+}
