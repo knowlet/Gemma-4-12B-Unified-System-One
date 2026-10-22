@@ -1,0 +1,30 @@
+{
+  "schema_id": "nativeV2-find-source-parity-v1",
+  "original": {
+    "path": "scripts/jev_native_v2_browser.py",
+    "sha256": "c513dc5bcb091de4fd0d4bd7a0776078e82be16106328b6de9d8424e32f2ee11",
+    "size_bytes": 45824
+  },
+  "derived_sha256": "349413e78b4cb117e3dc1e2e100fbadb2f039264174ba8acb3840f0479ca688f",
+  "declared_edits": [
+    {
+      "before": "from s1.api import create_app",
+      "after": "from s1._experimental_find_api import create_app",
+      "occurrences": 1
+    }
+  ],
+  "full_source_inverse_exact": true,
+  "new_selector": {
+    "path": "artifacts/jev-runtime/browser-find-text-s1-nativev2-integration-20261022-01/selection.py",
+    "sha256": "c3712f8d29851a521a3e9b5a1691d3fb8cf7ae9f82aeb1051c27aa8c64b04c1a",
+    "size_bytes": 6304
+  },
+  "unchanged_by_source_inverse": [
+    "model_constructor_and_LoRA_attachment",
+    "native_prompt_and_shared-elements-v2",
+    "helper_route_and_resource_gates",
+    "serial_request_lock_and_HTTP_publication_deadline",
+    "original_run_client_body"
+  ],
+  "future_client_binding": "Still required; source selection alone does not install FIND Agent into V7 campaign"
+}

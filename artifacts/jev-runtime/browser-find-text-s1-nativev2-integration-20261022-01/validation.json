@@ -1,0 +1,69 @@
+{
+  "schema_id": "nativeV2-find-source-validation-v1",
+  "created_at_utc": "2026-10-22T22:02:30.221757+00:00",
+  "source": {
+    "path": "artifacts/jev-runtime/browser-find-text-s1-nativev2-integration-20261022-01/selection.py",
+    "sha256": "c3712f8d29851a521a3e9b5a1691d3fb8cf7ae9f82aeb1051c27aa8c64b04c1a",
+    "size_bytes": 6304
+  },
+  "test_source": {
+    "path": "artifacts/jev-runtime/browser-find-text-s1-nativev2-integration-20261022-01/test_selection.py",
+    "sha256": "3d4a18a9399cfcc98bba3e76efab377af32c7d41bcfac25490b734d31806cc14",
+    "size_bytes": 13339
+  },
+  "selection": {
+    "path": "artifacts/jev-runtime/browser-find-text-s1-nativev2-integration-20261022-01/selection.json",
+    "sha256": "b54a709873c6c3a6ed41894c5fb12aca0ba806791afa718820578346e0ee5d14",
+    "size_bytes": 6707
+  },
+  "source_parity": {
+    "path": "artifacts/jev-runtime/browser-find-text-s1-nativev2-integration-20261022-01/source-parity.json",
+    "sha256": "4b26adcb4e8067a4f5c925cbff91122d6f3e382302bd590ef4b8a9f879733360",
+    "size_bytes": 1134
+  },
+  "independent_review": {
+    "path": "artifacts/jev-runtime/browser-find-text-s1-nativev2-integration-20261022-01/independent-review.json",
+    "sha256": "54ce0cfe78541c4cc83a60057222f394792f4ee5a5bfb40519f78c94248583f5",
+    "size_bytes": 3120
+  },
+  "CPU_tests": {
+    "count": 10,
+    "errors": 0,
+    "failures": 0,
+    "elapsed_seconds": 3.88,
+    "receipt": {
+      "path": "artifacts/jev-runtime/browser-find-text-s1-nativev2-integration-20261022-01/cpu-tests-04.xml",
+      "sha256": "721334b04a12abcfc4a4fdec47935f61dbdd3e7b39a41190660e70fbf54fc197",
+      "size_bytes": 2167
+    },
+    "address_space_bytes": 1073741824,
+    "CPU_seconds": 30,
+    "wall_seconds": 45,
+    "core_limit": 0,
+    "scope": "Actual original c513 make_application/BrowserDecisionBackend/native-prompt compatibility/grammar/API/HTTP journal with simulated LM and adapter context; two final-source-path regressions and bounded-read regression"
+  },
+  "ruff": {
+    "status": "PASS",
+    "rayon_threads": 1,
+    "cpu_affinity": "0",
+    "address_space_limit": null,
+    "core_limit": 0
+  },
+  "initial_test_correction": "The S1 generated policy intentionally returns only selected heads. Initial assertion incorrectly assumed all-head native D3 semantics; corrected test retains original output contract and verifies full ordered input grammar inventory. Final10tests include two reviewed production guard fixes.",
+  "caps_preserved": {
+    "max_new_tokens": 32,
+    "max_legal_actions": 1205,
+    "HTTP_budget_seconds": 20,
+    "prompt_context": 8192,
+    "target255_case_legal_actions": 771,
+    "target400_all_three_heads_1206_actions": "refused whole without pruning"
+  },
+  "actual_weights_or_model_or_GPU_Comfy_calls": false,
+  "actual_HTTP_network_listener_or_browser_started": false,
+  "inprocess_TestClient_only": true,
+  "fake_adapter_contract_not_N3_artifact_qualification": true,
+  "runtime_V7_owner_Q95_binding_qualified": false,
+  "quality_score": null,
+  "best_current_browser": "4/10 unchanged",
+  "next": "Bind explicit FIND Agent into unchanged10caseV7 client and fresh source-sealed sharedQ95 nativeV2 worker/owner; prove actual model/runtime/request/closure receipts before matched control+FIND quality run"
+}

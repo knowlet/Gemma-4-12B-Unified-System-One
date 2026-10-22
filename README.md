@@ -57,6 +57,11 @@ passed 20 CPU checks for bounded review of proposed DONE decisions.
 A [composed CPU browser fixture](artifacts/jev-runtime/browser-completion-review-cpu-browser-20261022-01/README.md)
 then verified veto, actual FIND_TEXT scrolling and completion approval in one flow
 using simulated policy/reviewer responses and current visible observations.
+The [current native V2 service integration](artifacts/jev-runtime/browser-find-text-s1-nativev2-integration-20261022-01/README.md)
+passed ten CPU checks through its original prompt, token grammar and HTTP journal.
+This browser policy uses N3 LoRA and generated JSON actions; its returned choice
+scores are deterministic decoded point masses. The JevBench rows above measure
+the released BF16 native decision profile.
 Complete model evaluations for these experimental agent profiles remain pending.
 
 ## Public JevBench screening — October 8, 2026
