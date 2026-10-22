@@ -1,0 +1,46 @@
+{
+  "schema_id": "v7-find-budget-research-decision-v1",
+  "created_at_utc": "2026-10-22T22:47:15.844387+00:00",
+  "observed_failure": {
+    "attempt": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/actual-01",
+    "outcome": "Canonical MAX_STEPS60 rejected by selector16 guard before any policy/helper HTTP",
+    "source": {
+      "path": "artifacts/jev-runtime/browser-find-text-v7-client-integration-20261023-01/find_client_selector.py",
+      "sha256": "0c663f03f9900c5b7c1d0d3e7c64ad51908133eedfea53bd2baf4b5ba3253150",
+      "size_bytes": 15765
+    }
+  },
+  "read_sources": [
+    {
+      "path": "artifacts/jev-runtime/upstream/jev_ultrafast/questions.py",
+      "sha256": "66a7054b85040b949e1757311257ea0c5a843c635f9a40c99f6d15ad660fb422",
+      "size_bytes": 2048
+    },
+    {
+      "path": "artifacts/jev-runtime/upstream/jev_ultrafast/agent.py",
+      "sha256": "aaf8b271cb0ee6643fe7beb525328ab80de8568c7ac044d02b9c6721161e7c8b",
+      "size_bytes": 7880
+    },
+    {
+      "path": "scripts/jev_browser_benchmark.py",
+      "sha256": "fe1410675e4decb06a8491a5a83d2ec965629c99f8912b797446c4cb2c155f6c",
+      "size_bytes": 101360
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-find-text-profile-20261022-01/find_profile.py",
+      "sha256": "98c7fa29265e2c0c25bdcae0825522cebcd35dc86c16ed53aa7609bd52e6a08d",
+      "size_bytes": 13344
+    }
+  ],
+  "findings": [
+    "Canonical questions.MAX_STEPS60 is imported by Agent; original benchmark enforces outer range(max_steps)16, without setting canonical MAX_STEPS",
+    "The98c private factory clones command globals from its supplied agent namespace and independently requires16; original Agent globals need not be changed",
+    "Prior17-test fixture had already assigned16 and did not cover actual upstream default60"
+  ],
+  "decision": "New explicit opt-in successor supplies an unregistered private module namespace copy with16 to the unchanged98c factory; canonical MAX_STEPS60/Agent/choose stay unchanged and original runner outer16 stays unchanged",
+  "limits": [
+    "No relaxation of action budget or source guards; known canonical60 and prior fixture16 only",
+    "CPU regression must use genuine load_upstream default60 and exercise the selected constructor hook, plus private16 history refusal",
+    "No model/browser quality result follows from source repair"
+  ]
+}
