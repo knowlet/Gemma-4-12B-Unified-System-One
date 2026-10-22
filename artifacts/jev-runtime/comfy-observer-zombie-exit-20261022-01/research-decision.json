@@ -1,0 +1,10 @@
+{
+  "schema_id": "jev-comfy-zombie-exit-research-decision-v1",
+  "source": "artifacts/jev-runtime/comfy-observer-resolved-context-20261022-01/comfy_observer.py",
+  "source_sha256": "103804b05e3047011aa5daf099c04ee71a60b3e1435c0690dc7b0377bd486df7",
+  "primary_reference": "https://man7.org/linux/man-pages/man2/pidfd_open.2.html",
+  "finding": "Without PIDFD_THREAD, readable pidfd proves last thread exited; an unreaped process may remain visible as Z. Baseline scans already classify Z as non_runtime_zombie, but natural-exit resolution waits for PID disappearance.",
+  "proposal": "Only initially generic eligible uncertainty may resolve with pidfd exit AND freshly observed same-start Z; otherwise preserve all current guards and budgets. Retain failed resolution reason and finish time.",
+  "actual_Q95_PID91598_failure": "Original reason/state-transition was not retained; zombie versus still-live cause is unknown. Do not attribute the individual actual failure to this mechanism.",
+  "verification": "Actual owned child exits and remains unreaped: baseline refuses, successor resolves; actual alive child refuses, initial intrinsicComfy refuses, wrongidentity refuses. No Comfy or existing service mutation."
+}
