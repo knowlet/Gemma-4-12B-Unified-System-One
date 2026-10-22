@@ -54,6 +54,9 @@ passed 19 checks, including a simulated native backend through the private API,
 wire and actual browser. The separate
 [completion-review client](artifacts/jev-runtime/browser-completion-review-profile-20261022-01/README.md)
 passed 20 CPU checks for bounded review of proposed DONE decisions.
+A [composed CPU browser fixture](artifacts/jev-runtime/browser-completion-review-cpu-browser-20261022-01/README.md)
+then verified veto, actual FIND_TEXT scrolling and completion approval in one flow
+using simulated policy/reviewer responses and current visible observations.
 Complete model evaluations for these experimental agent profiles remain pending.
 
 ## Public JevBench screening — October 8, 2026

@@ -1,0 +1,9 @@
+{
+  "cause": "Audit compared stored named-answer dict key order to original head order. Fixture persistence sort_keys=True sorts dictionaries; explicit head_ids/native head_ids/wire.question_ids lists preserve original order.",
+  "correction": "Use explicit lists for order and named-answer key sets for completeness. No actual run/source changes.",
+  "error_type": "AssertionError",
+  "exit_code": 1,
+  "schema_id": "completion-browser-audit-attempt-v1",
+  "scope": "Read-only saved-data audit only; actual browser flow remains PASS and was not rerun.",
+  "status": "failed_audit_assumption"
+}
