@@ -206,6 +206,8 @@ def predict_prefix(model, rows, *, prompt_mode, readout=None, max_suffix_batch_s
     import torch
     from transformers.cache_utils import DynamicCache
 
+    from .browser_prefix_cache import fork_prefix_cache
+
     started = time.perf_counter()
     batch_id = uuid.uuid4().hex
     trace = {
@@ -269,6 +271,7 @@ def predict_prefix(model, rows, *, prompt_mode, readout=None, max_suffix_batch_s
             raise BrowserPrefixUnsupported("max_suffix_batch_size must be the integer 1 or 2")
         trace["requests"] = [row["request"].model_dump(exclude_none=True) for row in rows]
         records, prefix = _validate(model, rows, prompt_mode, trace)
+        attention_implementation = model.backbone.config.get_text_config()._attn_implementation
         pad_token_id = getattr(model.backbone.config.get_text_config(), "pad_token_id", None)
         if max_suffix_batch_size == 2 and (
             type(pad_token_id) is not int
@@ -343,7 +346,8 @@ def predict_prefix(model, rows, *, prompt_mode, readout=None, max_suffix_batch_s
                 branch = {"row_index": first, "row_indices": indices, "status": "forking"}
                 trace["branches"].append(branch)
                 began = time.perf_counter()
-                fork = copy.deepcopy(cache)
+                fork = fork_prefix_cache(cache, attention_implementation=attention_implementation)
+                branch["attention_key_layout"] = getattr(fork, "key_layout", "native")
                 if len(indices) > 1:
                     fork.batch_repeat_interleave(len(indices))
                 branch["fork_elapsed_ms"] = (time.perf_counter() - began) * 1000
@@ -359,6 +363,7 @@ def predict_prefix(model, rows, *, prompt_mode, readout=None, max_suffix_batch_s
                     indices,
                     sum(record["length"] - prefix for record in chunk_records),
                 )
+                branch["attention_key_alignment"] = getattr(fork, "alignment_records", [])
                 branch["cache_logical_tokens_after_forward"] = fork.get_seq_length()
                 branch["cache_layers_after_forward"] = [
                     {
@@ -445,6 +450,7 @@ def predict_prefix(model, rows, *, prompt_mode, readout=None, max_suffix_batch_s
                                 "padding_input_tokens": width - (record["length"] - prefix),
                                 "max_forward_batch_size": max_suffix_batch_size,
                                 "suffix_batch_size": len(indices),
+                                "attention_key_layout": branch["attention_key_layout"],
                                 "context_input_tokens": record["length"],
                                 "question_input_tokens": {question.id: record["length"]},
                                 "reused_prefix_tokens": prefix if index else 0,
