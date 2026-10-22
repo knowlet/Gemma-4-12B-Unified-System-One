@@ -1,0 +1,110 @@
+{
+  "schema_id": "jev-native-N3-independent-cpu-fit-audit-v1",
+  "status": "complete142_fit_and_external_closure_verified",
+  "training_updates": 142,
+  "development_examples": 37,
+  "development_updates": 0,
+  "training_loss_mean": 0.1334360690278986,
+  "development_loss_mean": 0.09862891899739053,
+  "scope": "Teacher-forced historical179 fitting diagnostics only. No browser success or model qualification inferred; interrupted119/72 attempts are not summed.",
+  "adapter": {
+    "manifest": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/fit-01/adapter/manifest.json",
+      "sha256": "8d4f014be160f632936678db32be8c73d3413f301c368eb86d6c69644ac7727c",
+      "size_bytes": 43017
+    },
+    "weights": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/fit-01/adapter/adapter_model.safetensors",
+      "sha256": "34a3e20e7587cb80cad397defbb828b6bc9be5eb5f07e238ad8ed1b52eed2e97",
+      "size_bytes": 20800952
+    },
+    "tensor_count": 176,
+    "parameters": 5193728,
+    "stored_dtype": "F32",
+    "tensor_layout_full_contiguous": true,
+    "tensor_payload_full_SHA_verified_without_ML_imports": true
+  },
+  "source_counts": {
+    "owner_population": 104,
+    "captured_runtime_sources": 96,
+    "all_full_small_file_hashes_verified": true
+  },
+  "pure_original_validators": {
+    "_native_training": "PASS; complete ordered actual ledgers, forward traces and token totals",
+    "_native_resources": "PASS; pinned original resource components and complete source evidence replay"
+  },
+  "forward_accounting": {
+    "backbone_forward_calls": 179,
+    "max_forward_batch_size": 1,
+    "physical_input_positions": 380852,
+    "logical_input_tokens": 380852,
+    "target_projection_positions": 2042,
+    "decoder_layer_calls_including_checkpoint_recomputation": 15408,
+    "scope": "whole training and held-aside evaluation; no padding/candidate pruning"
+  },
+  "original_head_and_base_unchanged_recorded": true,
+  "full_base_payload_read": false,
+  "external": {
+    "invocation_id": "74051f6f307c4f1b9466b5ca925da57e",
+    "unit": "jev-native-v2-training-20261022-01.service",
+    "terminal_success": true,
+    "two_clean_scans": true,
+    "current_actor_and_cgroup_absent": true,
+    "final_host_known_sameboot_total": true
+  },
+  "refs": {
+    "plan": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/launch-plan-02.json",
+      "sha256": "41435aa11dca758f91fab77cc739a5595dfe2d20ac37f62d28a98a837bb76a48",
+      "size_bytes": 26606
+    },
+    "receipt": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/fit-01/receipt.json",
+      "sha256": "24c8cb9e2559d837bb8cdc706a28cd29248aeb42053faf5d6977173477db5da1",
+      "size_bytes": 257306
+    },
+    "training": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/fit-01/training.json",
+      "sha256": "81bcf27e5624d53102206511dd35e530ad4378d3c5e795d434d80d3555658c4d",
+      "size_bytes": 66136
+    },
+    "updates": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/fit-01/updates.jsonl",
+      "sha256": "438be1d4d08250780c6b899c275151448c66afbc0208131e97d3fcd84e428791",
+      "size_bytes": 99882
+    },
+    "development": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/fit-01/development.jsonl",
+      "sha256": "7749e5e9796c95254238a0f1a6ea9d0cc0be7d5c2b54c280ecde3db83ecb0f0d",
+      "size_bytes": 8996
+    },
+    "source_manifest": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/fit-01/sources/manifest.json",
+      "sha256": "fa00cb510f6b7278a3694f31f0c00d83d63162cda0aa128dd76a52cbe1266950",
+      "size_bytes": 20393
+    },
+    "resource_evidence": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/fit-01/resource-gates.jsonl",
+      "sha256": "07455f3c99255bc647d0d9910bcc4f512b4d3d86cac3a1681ef2a03821633674",
+      "size_bytes": 1197815
+    },
+    "external_closure": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/root-external-closure-01.json",
+      "sha256": "747bc746097bae233e6a2e3800c5b65d8cb1b91a6dbc60bfbd71eda88f439212",
+      "size_bytes": 1780061
+    },
+    "root_strict_verifier": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/root-strict-artifact-verification-01.json",
+      "sha256": "c20ab1900cefb34852a025cd9201caae2f2c2564ca289005ed73a9b7297afc13",
+      "size_bytes": 2592
+    }
+  },
+  "audit": {
+    "ML_framework_or_GPU_or_model_or_browser_or_unit_mutation": false,
+    "small_files_streamed_only": true,
+    "max_individual_file_bytes": 20800952,
+    "elapsed_seconds": 0.9836368600008427,
+    "auditor_path": "/tmp/audit_native_n3.py",
+    "auditor_sha256": "b2b2fa694843d04e839924059bd1a617aa411184b1c83a26202804ce0bce51c7"
+  }
+}

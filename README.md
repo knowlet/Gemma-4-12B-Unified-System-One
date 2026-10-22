@@ -18,18 +18,24 @@ are not measurements of this Unified model. See [upstream notes](docs/upstream.m
 | Benchmark Heaven public231 accuracy | Released BF16 causal multislot | **84.42%** (195/231) |
 | JevBench coherence mini | Same BF16 profile | **41.26/100** |
 | Real Chromium V7 tasks | Current NF4 + raw96 action adapter | **20%** (2/10) |
+| Same ten Chromium V7 tasks and NF4 helper | Current NF4 + native V2 adapter | **40%** (4/10) |
 
 Both JevBench suites completed with independently reproduced scores; the coherence
 95% case-bootstrap interval is 38.43–43.80. The browser run retained all ten tasks:
 three premature completion claims, four decision-budget failures and one blocked
 task account for the eight failures. Independent replay of the final DOM judges
-confirmed 2/10, and both browser groups and the model process closed successfully.
-These separate execution paths do not establish a precision or adapter ablation.
+confirmed 2/10. The matched V2 run completed 4/10, gaining two tasks with no lost
+successes; independent DOM replay and process closure passed for both arms.
+V2 changes both the adapter and prompt serialization, so the comparison does not
+isolate either cause. Six browser tasks still fail. The separate BF16 JevBench
+and NF4 browser paths do not establish a precision ablation.
 
 See [both JevBench results](docs/validation/2026-10-22/jevbench-both-fresh-gx10-results.md),
 [complete browser baseline](docs/validation/2026-10-22/jev-current-nf4-raw-complete-results.md)
-and [observed browser failures](docs/validation/2026-10-22/jev-current-nf4-raw-partial-diagnosis-01.md).
-A matched native V2 browser comparison and actual Decision3 baselines remain pending.
+and [matched V2 browser results](docs/validation/2026-10-22/jev-current-nf4-v2-complete-results.md).
+The [native V2 fit](docs/validation/2026-10-22/jev-native-v2-complete-training-results.md)
+completed 142 updates and 37 development examples without development updates.
+Actual Decision3 baselines remain pending.
 No official leaderboard rank or cross-model superiority is claimed for this run.
 
 ## Public JevBench screening — October 8, 2026

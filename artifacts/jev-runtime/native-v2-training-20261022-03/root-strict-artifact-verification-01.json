@@ -1,0 +1,62 @@
+{
+  "strict_verified": true,
+  "CUDA_context_created": false,
+  "model_constructors": 0,
+  "telemetry": {
+    "kind": "jev_native_action_lora_v2",
+    "manifest_sha256": "8d4f014be160f632936678db32be8c73d3413f301c368eb86d6c69644ac7727c",
+    "weights_sha256": "34a3e20e7587cb80cad397defbb828b6bc9be5eb5f07e238ad8ed1b52eed2e97",
+    "training_receipt_sha256": "24c8cb9e2559d837bb8cdc706a28cd29248aeb42053faf5d6977173477db5da1",
+    "policy": "greedy_legal_action_v2",
+    "base_model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+    "base_revision": "a66f836b56605039fe040f330180e336d19b3362",
+    "training_quantization": "none",
+    "training_dtype": "bfloat16",
+    "deployment_quantization": "nf4",
+    "train_cases": 142,
+    "development_cases": 37,
+    "source_scope": "development_only",
+    "prompt_format": "shared-elements-v2",
+    "prompt_contract": {
+      "schema_id": "jev-native-action-prompt-v2",
+      "requested_format": "shared-elements-v2",
+      "effective_formats": [
+        "shared-elements-v2",
+        "raw-json-v1"
+      ],
+      "selection_basis": "complete_user_text_utf8_bytes",
+      "shared_selection": "strictly_smaller_than_raw; ties_use_raw",
+      "roundtrip": "exact_complete_ordered_original_request_before_selection",
+      "native_prefix": "<bos><|turn>user\n",
+      "native_suffix": "<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "instructions_sha256": "63874de795580b95edbcb1f7c6a6857e86f458dabba77e33814d8f08f158d68a",
+      "shared_instructions_sha256": "dc3863d67a0d48cfdf35cad8d0cbead621e6029c6403349dc35e653455a0e8ca",
+      "sources": {
+        "s1/jev_generated.py": {
+          "sha256": "c356e0eb3c046cb0787d7be0c5960803006231e8bdb414de644ae2167e72d849",
+          "size_bytes": 23569
+        },
+        "s1/jev_prompt.py": {
+          "sha256": "2891ecbe94e5cbb01b7a2de6d7be9ed35ee55d26f904cfeb6b401416254b5f3c",
+          "size_bytes": 17207
+        }
+      }
+    },
+    "qualified": false,
+    "task_score": null,
+    "tensor_count": 176,
+    "parameters": 5193728,
+    "stored_dtypes": [
+      "torch.float32"
+    ],
+    "training_resource_profile": {
+      "name": "gx10-uma-native-40gib-v1",
+      "expected_unit": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-native-v2-training-20261022-01.service",
+      "expected_boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005"
+    },
+    "lineage_depth": 2,
+    "historical_training_cases": 521,
+    "historical_completed_updates": 521
+  },
+  "resource_scope": "CPU-only artifact and tensor verification;16GiB virtualAS,CPU60s,wall90s;visibleCUDAdevicesempty"
+}

@@ -1,0 +1,11 @@
+# Complete native V2 training on GX10
+
+2026-10-22. A fresh run completed **142 training updates and 37 development examples with zero development updates**. It started from the original raw96 parent; interrupted runs of 119 and 72 updates were not resumed or summed. The strict native V2 adapter was written, independently checked, and the selected process and cgroup closed successfully.
+
+The run used BF16, learning rate 0.00005, seed 42 and 5,193,728 trainable LoRA parameters. Deployment remains NF4 with shared-elements-v2 prompts. Tracked frozen-base parameter versions and the original readout head digest were unchanged. Training loss averaged **0.13344**; development loss averaged **0.09863**. Development teacher-forced exact sequences were **25/37**, with **390/403** correct target tokens. These diagnostics use supplied correct prefixes and do not establish generated-action or browser success.
+
+The native allocator and memcg each retained their separate 40 GiB caps; swap was zero. Measured peak CUDA allocation was 26,847,614,464 bytes and reservation 27,730,640,896 bytes. No combined host/CUDA hard bound or final zero-OOM claim is made. External closure confirmed the exact invocation, successful worker exit, cgroup absence, two empty process scans, known final host and 104 unchanged selected sources.
+
+Independent auditing checked the full 142/37 ledgers, compiled and CFG evidence, resource evidence, source/input/parent bindings, adapter payload/layout and closure. A separate full tensor/artifact verifier passed on CPU with no CUDA context or model construction. Earlier attempts with a portable CPU environment were limited by its address-space cap and missing Torch; they were verification attempts, not additional training runs.
+
+The matched full ten-task browser arm is a separate evaluation. The prior current-NF4 raw control scored 2/10. Its helper, tasks, judges, candidate population, seed and limits are retained for this comparison; both the adapter and prompt serialization change, so this does not isolate serialization alone. See the [aggregate evidence](jev-native-v2-complete-training-results.json) for exact hashes. Raw inputs and model weights remain local.
