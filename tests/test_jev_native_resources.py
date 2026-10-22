@@ -26,10 +26,10 @@ def no_framework_or_actor(monkeypatch):
     monkeypatch.setattr(r.subprocess, "Popen", lambda *_a, **_k: pytest.fail("Actor started"))
 
 
-def host(available=118 * r.GIB):
+def host(available=118 * r.GIB, *, total=r.TOTAL, boot=BOOT):
     return {
-        "boot_id": BOOT,
-        "MemTotal": r.TOTAL,
+        "boot_id": boot,
+        "MemTotal": total,
         "MemAvailable": available,
         "MemFree": 40 * r.GIB,
         "Cached": 2 * r.GIB,
@@ -65,18 +65,18 @@ def unit(_expected=r.EXPECTED_UNIT):
     }
 
 
-def native():
+def native(*, total=r.TOTAL, boot=BOOT):
     h = r.mechanism()
     metadata = json.loads(r._component("driver")[1])["cuda_link_origins"][0]
-    fraction = float((r.CAP - 4 * r.MIB) / r.TOTAL)
+    fraction = float((r.CAP - 4 * r.MIB) / total)
     return {
         "identity": {
             "context_device": 0,
             "integrated": 1,
             "name": "NVIDIA GB10",
-            "total_bytes": r.TOTAL,
+            "total_bytes": total,
             "uuid": r.EXPECTED_UUID.replace("-", ""),
-            "boot_id": BOOT,
+            "boot_id": boot,
             "library_metadata": {
                 k: metadata[k] for k in ("resolved", "size_bytes", "mtime_ns", "device", "inode")
             },
@@ -87,14 +87,14 @@ def native():
         "allocator": {
             "uuid": r.EXPECTED_UUID,
             "name": "NVIDIA GB10",
-            "total_bytes": r.TOTAL,
+            "total_bytes": total,
             "fraction": fraction,
             "backend": "native",
-            "allowed_bytes_upper": int(fraction * r.TOTAL),
+            "allowed_bytes_upper": int(fraction * total),
         },
         "cuda": {
             "free": 0,
-            "total": r.TOTAL,
+            "total": total,
             "allocated": 24 * r.GIB,
             "reserved": 26 * r.GIB,
             "peak_allocated": 25 * r.GIB,
@@ -109,18 +109,18 @@ class FakeAPI:
         self.releases = 0
 
     def snapshot(self, _host):
-        return native()
+        return native(total=_host["MemTotal"], boot=_host["boot_id"])
 
     def release(self):
         self.releases += 1
 
 
-def exercise(tmp_path, *, parent=True, steps=142):
-    observed = host()
+def exercise(tmp_path, *, parent=True, steps=142, total=r.TOTAL, boot=BOOT):
+    observed = host(total=total, boot=boot)
     observed["MemAvailable"] = r.floor(observed, loaded=False)["required_bytes"]
     g = r.Gate(
         tmp_path / "resource-gates.jsonl",
-        BOOT,
+        boot,
         observer=lambda: copy.deepcopy(observed),
         unit_reader=unit,
         api_factory=FakeAPI,
@@ -162,6 +162,89 @@ def test_floors_retain_full_reserve_and_no_residency_credit():
     }
     assert r.floor(h, loaded=True)["required_bytes"] == 77658779648
     assert r.CAP == 42949672960 and r.STOP == 42412802048
+
+
+@pytest.mark.parametrize(
+    "total,boot",
+    [(r.TOTAL, BOOT), (r.TOTAL + 4096, "22222222-3333-4444-8555-666666666666")],
+)
+def test_physical_total_is_selected_for_each_boot_without_rewriting_raw_evidence(
+    tmp_path, total, boot
+):
+    g, _ = exercise(tmp_path, steps=1, total=total, boot=boot)
+    result = r.validate_evidence(
+        g.path.read_bytes(),
+        expected_unit=r.EXPECTED_UNIT,
+        expected_boot_id=boot,
+        steps=1,
+        parent_present=True,
+    )
+    rows = [json.loads(x) for x in g.path.read_bytes().splitlines()]
+    assert g.expected_memtotal == total
+    assert all(row["observation"]["MemTotal"] == total for row in rows)
+    assert all(
+        row["native"]["identity"]["total_bytes"]
+        == row["native"]["allocator"]["total_bytes"]
+        == row["native"]["cuda"]["total"]
+        == total
+        for row in rows
+        if row["native"] is not None
+    )
+    assert (
+        result["startup_required_bytes"]
+        == r.floor(host(total=total), loaded=False)["required_bytes"]
+    )
+    assert r.CAP == 40 * r.GIB and r.STOP == r.CAP - r.GIB // 2
+
+
+def test_live_host_total_cannot_drift_within_the_selected_boot(tmp_path):
+    observed = host()
+    g = r.Gate(
+        tmp_path / "gate.jsonl",
+        BOOT,
+        observer=lambda: observed,
+        unit_reader=unit,
+        api_factory=FakeAPI,
+    )
+    g.check("before-any-project-framework-or-parent-payload", "cpu")
+    observed["MemTotal"] += 4096
+    with pytest.raises(ValueError, match="selected total"):
+        g.check("immediately-before-legacy-parent-capture-and-Torch", "cpu")
+    assert g.expected_memtotal == r.TOTAL
+    assert json.loads(g.path.read_text().splitlines()[-1])["admitted"] is False
+
+
+@pytest.mark.parametrize("part", ["identity", "allocator", "cuda"])
+def test_native_totals_must_all_equal_the_selected_raw_host_total(part):
+    total = r.TOTAL + 4096
+    n = native(total=total)
+    n[part]["total" if part == "cuda" else "total_bytes"] = r.TOTAL
+    with pytest.raises(ValueError):
+        r.validate_native(n, host(total=total), BOOT)
+
+
+def test_offline_evidence_refuses_internally_consistent_total_change(tmp_path):
+    g, _ = exercise(tmp_path, steps=1)
+    rows = [json.loads(x) for x in g.path.read_bytes().splitlines()]
+    for row in rows[1:]:
+        observed = row["observation"]
+        observed["MemTotal"] += 4096
+        policy = r.floor(observed, loaded=row["loaded"])
+        observed["MemAvailable"] = max(observed["MemAvailable"], policy["required_bytes"])
+        row.update(policy)
+        row["original_train_would_refuse"] = (
+            observed["MemAvailable"] < policy["old_train_required_bytes"]
+        )
+        if row["native"] is not None:
+            row["native"] = native(total=observed["MemTotal"])
+    with pytest.raises(ValueError, match="selected total"):
+        r.validate_evidence(
+            b"\n".join(r.encode(row) for row in rows),
+            expected_unit=r.EXPECTED_UNIT,
+            expected_boot_id=BOOT,
+            steps=1,
+            parent_present=True,
+        )
 
 
 @pytest.mark.parametrize("loaded", [False, True])

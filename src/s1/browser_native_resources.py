@@ -1,7 +1,8 @@
 """Explicit GB10 UMA training resource profile; the original fitter is unchanged.
 
-Reuses byte-pinned H15 identity/floor functions, never its source qualification
-or actor. Allocator and memcg limits are separate, not a combined physical cap.
+Reuses byte-pinned H15 allocator/driver mechanisms, never its qualification or
+actor. Local identity checks bind raw host/Driver/Torch totals to this boot.
+Allocator and memcg limits are separate, not a combined physical cap.
 """
 
 from __future__ import annotations
@@ -24,6 +25,7 @@ PROFILE = "gx10-uma-native-40gib-v1"
 SCHEMA = "jev-native-resource-gate-gx10-uma-v1"
 GIB, MIB = 1024**3, 1024**2
 CAP, STOP = 40 * GIB, 40 * GIB - GIB // 2
+# Historical observation retained for old evidence fixtures, never a live identity pin.
 TOTAL = 130595860480
 EXPECTED_UUID = "e3429caa-b057-cbe0-917d-d3b85b313be7"
 EXPECTED_UNIT = "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-native-v2-training-20261022-01.service"
@@ -292,6 +294,57 @@ def _properties(unit):
     return observed
 
 
+def host_identity(host, boot_id, expected_total):
+    """Bind raw UMA observations to this boot's selected physical total."""
+    byte_fields = (
+        "MemTotal",
+        "MemAvailable",
+        "MemFree",
+        "Cached",
+        "SReclaimable",
+        "SwapTotal",
+        "SwapFree",
+        "Hugepagesize",
+        "Hugetlb",
+    )
+    require(
+        type(expected_total) is int
+        and expected_total > 0
+        and all(type(host.get(k)) is int and host[k] >= 0 for k in byte_fields)
+        and all(type(host.get(k)) is int for k in ("HugePages_Total", "HugePages_Free")),
+        "Complete typed UMA host observation",
+    )
+    require(
+        host["boot_id"] == boot_id
+        and host["MemTotal"] == expected_total
+        and 0 < host["MemAvailable"] <= expected_total
+        and host["MemFree"] <= expected_total
+        and host["SwapFree"] <= host["SwapTotal"]
+        and host["Hugepagesize"] > 0
+        and host["HugePages_Total"] == host["HugePages_Free"] == host["Hugetlb"] == 0,
+        "Explicit same-boot GB10 UMA host and selected total with no hugetlb pool",
+    )
+
+
+def uma_identity(driver, allocator, host, config):
+    """Preserve raw Driver/Torch/host equality without a past boot's total."""
+    host_identity(host, config["boot_id"], config["expected_memtotal"])
+    h = mechanism()
+    require(
+        type(driver.get("integrated")) is int
+        and driver["integrated"] == 1
+        and driver.get("name") == allocator["name"] == "NVIDIA GB10"
+        and type(driver.get("total_bytes")) is int
+        and type(allocator.get("total_bytes")) is int
+        and driver["total_bytes"] == allocator["total_bytes"] == host["MemTotal"]
+        and h.uma_uuid(driver["uuid"])
+        == h.uma_uuid(allocator["uuid"])
+        == h.uma_uuid(config["device_uuid"])
+        and driver.get("boot_id") == host["boot_id"],
+        "Driver integrated/UUID/name/total/boot must match selected Torch GB10",
+    )
+
+
 class Runtime:
     """Only called after a fresh startup admission; touches this process's CUDA."""
 
@@ -301,7 +354,11 @@ class Runtime:
         self.t, self.h = torch, mechanism()
         self.allocator_runtime = json.loads(_component("allocator")[1])
         self.driver_runtime = json.loads(_component("driver")[1])
-        self.config = {"boot_id": host["boot_id"], "device_uuid": EXPECTED_UUID}
+        self.config = {
+            "boot_id": host["boot_id"],
+            "device_uuid": EXPECTED_UUID,
+            "expected_memtotal": host["MemTotal"],
+        }
         self.allocator = self.h.allocator_cap(torch, self.config["device_uuid"])
         torch.cuda.synchronize(0)
         self.origins = self.h.allocator_origins(torch, self.allocator_runtime)
@@ -319,7 +376,7 @@ class Runtime:
         maps = Path("/proc") / str(os.getpid()) / "maps"
         h.uma_symbol_mappings(h.read(maps, 8 * MIB).decode(), addresses, metadata)
         driver = {**h.uma_driver_read(symbols, ctypes), "boot_id": host["boot_id"]}
-        h.uma_validate_identity(driver, allocator, host, self.config)
+        uma_identity(driver, allocator, host, self.config)
         require(h.uma_driver_metadata(self.driver_runtime) == metadata, "Stable libcuda metadata")
         h.uma_symbol_mappings(h.read(maps, 8 * MIB).decode(), addresses, metadata)
         return {
@@ -383,8 +440,11 @@ def validate_native(snapshot, host, boot_id):
         and identity["context_device"] >= 0,
         "Exact current Driver device evidence",
     )
-    h.uma_validate_identity(
-        identity, allocator, host, {"boot_id": boot_id, "device_uuid": EXPECTED_UUID}
+    uma_identity(
+        identity,
+        allocator,
+        host,
+        {"boot_id": boot_id, "device_uuid": EXPECTED_UUID, "expected_memtotal": host["MemTotal"]},
     )
     require(
         set(allocator)
@@ -394,14 +454,16 @@ def validate_native(snapshot, host, boot_id):
         and type(allocator["allowed_bytes_upper"]) is int
         and type(allocator["fraction"]) is float
         and math.isfinite(allocator["fraction"])
-        and allocator["allowed_bytes_upper"] == math.floor(allocator["fraction"] * TOTAL)
+        and 0 < allocator["fraction"] <= 1
+        and allocator["allowed_bytes_upper"]
+        == math.floor(allocator["fraction"] * allocator["total_bytes"])
         and CAP - 8 * MIB <= allocator["allowed_bytes_upper"] <= CAP,
         "Conservative40GiB native fraction readback",
     )
     require(
         set(cuda) == {"free", "total", "allocated", "reserved", "peak_allocated", "peak_reserved"}
         and all(type(v) is int and v >= 0 for v in cuda.values())
-        and 0 <= cuda["free"] <= cuda["total"] == TOTAL
+        and 0 <= cuda["free"] <= cuda["total"] == host["MemTotal"]
         and cuda["allocated"] <= cuda["reserved"] < STOP
         and cuda["allocated"] <= cuda["peak_allocated"] <= CAP
         and cuda["reserved"] <= cuda["peak_reserved"] <= CAP,
@@ -452,6 +514,7 @@ class Gate:
         self.observe = mechanism().host_memory if observer is None else observer
         self.unit_reader, self.api_factory = unit_reader, api_factory
         self.loaded, self.api, self.sequence, self.bytes = False, None, 0, 0
+        self.expected_memtotal = None
         self.start = time.monotonic()
         require(
             not self.path.exists() and not self.path.is_symlink(), "Fresh native resource evidence"
@@ -498,7 +561,9 @@ class Gate:
         try:
             require(row["monotonic"] - self.start < 10800, "Native3hour wall bound")
             host = self.observe()
-            mechanism().uma_host_identity(host, {"boot_id": self.boot_id})
+            if self.expected_memtotal is None:
+                self.expected_memtotal = host.get("MemTotal")
+            host_identity(host, self.boot_id, self.expected_memtotal)
             unit = self.unit_reader(self.expected_unit)
             validate_unit(unit, self.expected_unit)
             require(
@@ -512,7 +577,7 @@ class Gate:
                 self.api.release()
                 row["own_unused_cache_released"] = True
                 host = self.observe()
-                mechanism().uma_host_identity(host, {"boot_id": self.boot_id})
+                host_identity(host, self.boot_id, self.expected_memtotal)
             policy = floor(host, loaded=self.loaded)
             row.update(
                 observation=host,
@@ -529,7 +594,7 @@ class Gate:
             if self.api is not None:
                 row["native"] = self.api.snapshot(host)
                 host = self.observe()
-                mechanism().uma_host_identity(host, {"boot_id": self.boot_id})
+                host_identity(host, self.boot_id, self.expected_memtotal)
                 unit = self.unit_reader(self.expected_unit)
                 validate_unit(unit, self.expected_unit)
                 require(_unit_key(unit) == _unit_key(self.unit), "Same unit after native query")
@@ -621,6 +686,7 @@ def validate_evidence(blob, *, expected_unit, expected_boot_id, steps, parent_pr
         "Complete exact142/37 compile/train/development/transition resource sequence",
     )
     key, native_seen, previous, device_key = None, False, -math.inf, None
+    expected_memtotal = rows[0]["observation"]["MemTotal"]
     for i, row in enumerate(rows):
         require(
             set(row)
@@ -650,7 +716,7 @@ def validate_evidence(blob, *, expected_unit, expected_boot_id, steps, parent_pr
         )
         loaded = i >= phases.index("model-verified-loaded")
         host = row["observation"]
-        mechanism().uma_host_identity(host, {"boot_id": expected_boot_id})
+        host_identity(host, expected_boot_id, expected_memtotal)
         policy = floor(host, loaded=loaded)
         validate_unit(row["unit"], expected_unit)
         current = _unit_key(row["unit"])
