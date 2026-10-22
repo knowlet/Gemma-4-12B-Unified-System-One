@@ -1,0 +1,55 @@
+{
+  "schema_id": "jev-native-v2-browser-focused-pure-tests-v1",
+  "at_utc": "2026-10-22T05:15:50.460210+00:00",
+  "status": "PASS",
+  "passed": 34,
+  "failed": 0,
+  "skipped": 0,
+  "pytest_reported_seconds": 1.88,
+  "JUnit_suite_seconds": 1.623,
+  "exit_code": 0,
+  "address_space_limit_bytes": 268435456,
+  "CPU_limit_seconds": 30,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "argv": [
+    ".venv/bin/pytest",
+    "-q",
+    "tests/test_jev_native_v2_browser.py",
+    "--junitxml=/tmp/jev-native-v2-browser-fixes-20261022.xml"
+  ],
+  "JUnit": {
+    "path": "artifacts/jev-runtime/native-v2-training-20261022-01/browser-tests-01.xml",
+    "sha256": "79842b9478a41a5f1cec724a4a784ea4f1671db9da73ea0e23d31d39b14cc009",
+    "size_bytes": 5293
+  },
+  "sources": [
+    {
+      "path": "scripts/jev_native_v2_browser.py",
+      "sha256": "033e0b5e96e39d6d65d38b8b4ee4df86d19ee965afbb42a190b9629d5afd563e",
+      "size_bytes": 40549
+    },
+    {
+      "path": "tests/test_jev_native_v2_browser.py",
+      "sha256": "0975017f1f5dd02dd6442f394df77c1f2dc1b038a35297cc378df0e8184a8438",
+      "size_bytes": 26512
+    },
+    {
+      "path": "docs/research/jev-native-v2-browser.md",
+      "sha256": "0fa75fb730480d8ad3d146c538ccab64b6c7bb051f29817145e75223bedec5c2",
+      "size_bytes": 5475
+    }
+  ],
+  "Ruff_check": "PASS",
+  "Ruff_format_check": "PASS",
+  "Ruff_environment": {
+    "MALLOC_ARENA_MAX": "1",
+    "RAYON_NUM_THREADS": "1"
+  },
+  "prior_Ruff_format_AS_exhaustion": true,
+  "scope": "Fake runtime and real in-process FastAPI contracts. No model, CUDA, Chromium, cloud worker or external browser execution.",
+  "independent_readonly_review": "CLEAR for exact final source hashes; no test rerun or actor by reviewer."
+}

@@ -1,0 +1,61 @@
+{
+  "profile": "CPU-only3GiB-16GiB-host-v1",
+  "host_before": {
+    "mem_available_bytes": 30165606400,
+    "comfy_running": 0,
+    "comfy_pending": 0
+  },
+  "CPU_host_floor_bytes": 17179869184,
+  "unit_memory_max_bytes": 3221225472,
+  "argv": [
+    "systemd-run",
+    "--user",
+    "--unit=jev-native-v2-check-tests-03-20261022.service",
+    "--working-directory=/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+    "--property=Type=exec",
+    "--property=RemainAfterExit=yes",
+    "--property=MemoryAccounting=yes",
+    "--property=MemoryMax=3221225472",
+    "--property=MemorySwapMax=0",
+    "--property=OOMPolicy=kill",
+    "--property=KillMode=control-group",
+    "--property=RuntimeMaxSec=600",
+    "--property=TimeoutStopSec=10",
+    "--property=Description=CPU-only3GiB-16GiB-host-972c92e4d160868ad55518654984ac46",
+    "--property=StandardOutput=append:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/native-v2-training-20261022-01/tests-03/integration-tests-service.log",
+    "--property=StandardError=append:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/native-v2-training-20261022-01/tests-03/integration-tests-service.log",
+    "--setenv=HF_HUB_OFFLINE=1",
+    "--setenv=TRANSFORMERS_OFFLINE=1",
+    "--setenv=PYTHONDONTWRITEBYTECODE=1",
+    "--setenv=TOKENIZERS_PARALLELISM=false",
+    "--setenv=OMP_NUM_THREADS=2",
+    "--setenv=MKL_NUM_THREADS=2",
+    "--setenv=OPENBLAS_NUM_THREADS=2",
+    "--setenv=HF_HUB_CACHE=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub",
+    "--setenv=PYTHONPATH=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts",
+    "--setenv=CUDA_VISIBLE_DEVICES=",
+    "--setenv=PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+    "--setenv=JEV_NATIVE_V2_CPU_TESTS=tiny-regression-only-v1",
+    "--setenv=JEV_NATIVE_V2_TEST_ATTEMPT=tests-03",
+    "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+    "-B",
+    "-s",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/native-v2-training-20261022-01/integration_tests.py"
+  ],
+  "status_host_authority": {
+    "path": "artifacts/jev-runtime/v2-action-training-prepare-20261021-01/run_compiler_tests.py",
+    "sha256": "df3365005a2a86077ff4c82b28bf9f7b5ce146b0080d7ee03e69cf61f3cfad4d",
+    "size_bytes": 7000
+  },
+  "sources": {
+    "artifacts/jev-runtime/native-v2-training-20261022-01/run_cpu_regressions.py": {
+      "sha256": "e295d63cdf434c8d1866c0890729bd03e2d78ffd2166ed5a4fe7d3093346db98",
+      "size_bytes": 10887
+    },
+    "artifacts/jev-runtime/native-v2-training-20261022-01/integration_tests.py": {
+      "sha256": "dc0b867f3ba6e81eaa843de078d9c2970494a6a315cc002ac932430071989f20",
+      "size_bytes": 3812
+    }
+  },
+  "scope": "CPU regressions only; CUDA hidden. No large-model resource admission, GPU training or browser quality qualification."
+}
