@@ -666,7 +666,7 @@ def test_whole_http_timeout_returns_504_and_never_authorizes_action(
     checks = []
     deadline = driver.http_deadline
 
-    def measured(started):
+    def measured(started, **_kwargs):
         checks.append(True)
         expires_at = {"after_serial_lock": 1, "before_dispatch": 2, "after_candidate": 3}
         expired = len(checks) >= expires_at[timeout_phase]
@@ -693,3 +693,391 @@ def test_whole_http_timeout_returns_504_and_never_authorizes_action(
     else:
         assert not (tmp_path / "http/0000/candidate-response.bin").exists()
         assert not journal.snapshot()["requests"]
+
+
+class PublicationClock:
+    def __init__(self):
+        self.now = 0.0
+
+    def __call__(self):
+        return self.now
+
+
+def publication_application(tmp_path, monkeypatch, clock, *, primary=None):
+    """Real middleware/ASGI, fake policy; the framework's own clock is untouched."""
+    from s1 import jev_generated
+    from s1.browser_server_evidence import ServerEvidenceJournal
+
+    model = model_fixture()
+    driver.CurrentNF4HelperGuard(model)
+    expected = {"model": driver.IDENTITY, "answers": {"operation": {"choice": "DONE"}}}
+    monkeypatch.setattr(
+        jev_generated.JevGeneratedActionAdapter,
+        "predict",
+        lambda _self, _payload, *, evidence_sink: expected,
+    )
+
+    def check(phase):
+        if primary is not None and phase == "before-http-request":
+            raise primary
+
+    app = driver.make_application(
+        model,
+        None,
+        ServerEvidenceJournal(tmp_path / "server"),
+        SimpleNamespace(check=check),
+        tmp_path,
+        "private-test-token",
+        "raw-json-v1",
+        "original system",
+        clock=clock,
+    )
+    return app, expected
+
+
+def post_policy(app):
+    from fastapi.testclient import TestClient
+
+    with TestClient(app) as client:
+        return client.post(
+            "/v1/systemone",
+            json={"model": driver.IDENTITY},
+            headers={"Authorization": "Bearer private-test-token"},
+        )
+
+
+@pytest.mark.parametrize("phase", ["response_fsync", "response_pin", "exchange_fsync"])
+@pytest.mark.parametrize("elapsed,status", [(19.999, 200), (20.0, 504), (26.0, 504)])
+def test_actual_response_start_charges_all_final_publication(
+    tmp_path, monkeypatch, phase, elapsed, status
+):
+    clock = PublicationClock()
+    app, candidate = publication_application(tmp_path, monkeypatch, clock)
+    original_write, original_pin = driver.write, driver.pin
+    delays = []
+
+    def slow_write(path, value, *, raw=False):
+        original_write(path, value, raw=raw)
+        selected = (phase == "response_fsync" and Path(path).name.startswith(".response.bin.")) or (
+            phase == "exchange_fsync" and Path(path).name.startswith(".exchange.json.")
+        )
+        if selected and not delays:
+            delays.append(phase)
+            clock.now = elapsed
+
+    def slow_pin(path):
+        result = original_pin(path)
+        if phase == "response_pin" and Path(path).name == "response.bin" and not delays:
+            delays.append(phase)
+            clock.now = elapsed
+        return result
+
+    monkeypatch.setattr(driver, "write", slow_write)
+    monkeypatch.setattr(driver, "pin", slow_pin)
+    response = post_policy(app)
+    assert delays == [phase] and response.status_code == status
+    folder = tmp_path / "http/0000"
+    assert json.loads((folder / "candidate-response.bin").read_bytes()) == candidate
+    assert (folder / "response.bin").read_bytes() == response.content
+    record = json.loads((folder / "exchange.json").read_bytes())
+    assert record["status"] == status
+    assert record["response"] == original_pin(folder / "response.bin")
+    assert record["request"] == original_pin(folder / "request.bin")
+    assert record["api_request_id"] == response.headers["X-Request-ID"]
+    assert record["deadline_gate"] == "after_all_publication_at_ASGI_http.response.start"
+    assert record["elapsed_seconds_scope"] == "after_response_binding_before_this_exchange_fsync"
+    assert int(response.headers["Content-Length"]) == len(response.content)
+    assert response.headers["Content-Type"] == "application/json"
+    if status == 504:
+        assert record["elapsed_seconds"] >= 20
+        assert response.json()["detail"]["type"] == "TimeoutError"
+        assert record["error"] == response.json()["detail"] and "answers" not in response.json()
+    else:
+        assert response.json() == candidate
+    assert not list(folder.glob(".*.pending"))
+    assert (folder / "response.bin").stat().st_mode & 0o777 == 0o600
+    assert (folder / "exchange.json").stat().st_mode & 0o777 == 0o600
+
+
+def test_headers_are_built_before_last_successful_deadline_gate(tmp_path, monkeypatch):
+    from starlette.responses import Response
+
+    clock = PublicationClock()
+    app, candidate = publication_application(tmp_path, monkeypatch, clock)
+    init_headers = Response.init_headers
+    header_work = []
+
+    def slow_headers(response, headers=None):
+        init_headers(response, headers)
+        if (
+            type(response).__name__ == "PublishedResponse"
+            and (tmp_path / "http/0000/exchange.json").exists()
+        ):
+            header_work.append(response.status_code)
+            clock.now = 20
+
+    monkeypatch.setattr(Response, "init_headers", slow_headers)
+    response = post_policy(app)
+    assert header_work == [200, 504]
+    assert response.status_code == 504
+    assert int(response.headers["Content-Length"]) == len(response.content)
+    folder = tmp_path / "http/0000"
+    assert json.loads((folder / "candidate-response.bin").read_bytes()) == candidate
+    assert (folder / "response.bin").read_bytes() == response.content
+
+
+def test_event_loop_delay_before_response_start_is_charged(tmp_path, monkeypatch):
+    from starlette.responses import Response
+
+    clock = PublicationClock()
+    app, _candidate = publication_application(tmp_path, monkeypatch, clock)
+    original_call = Response.__call__
+
+    async def delayed_call(response, scope, receive, send):
+        if type(response).__name__ == "PublishedResponse":
+            clock.now = 20  # After dispatch returned, before actual ASGI start.
+        await original_call(response, scope, receive, send)
+
+    monkeypatch.setattr(Response, "__call__", delayed_call)
+    response = post_policy(app)
+    assert response.status_code == 504
+    record = json.loads((tmp_path / "http/0000/exchange.json").read_bytes())
+    assert record["status"] == 504 and record["elapsed_seconds"] >= 20
+
+
+@pytest.mark.parametrize(
+    "primary,status",
+    [
+        (ValueError("original resource refusal"), 502),
+        (TimeoutError("original deadline refusal"), 504),
+    ],
+)
+def test_late_failure_publication_preserves_existing_refusal(
+    tmp_path, monkeypatch, primary, status
+):
+    clock = PublicationClock()
+    app, _candidate = publication_application(tmp_path, monkeypatch, clock, primary=primary)
+    original_write = driver.write
+
+    def slow_write(path, value, *, raw=False):
+        original_write(path, value, raw=raw)
+        if Path(path).name.startswith(".exchange.json."):
+            clock.now = 26
+
+    monkeypatch.setattr(driver, "write", slow_write)
+    response = post_policy(app)
+    assert response.status_code == status
+    assert response.json()["detail"] == {"type": type(primary).__name__, "message": str(primary)}
+    folder = tmp_path / "http/0000"
+    record = json.loads((folder / "exchange.json").read_bytes())
+    assert record["status"] == status and record["error"] == response.json()["detail"]
+    assert (folder / "response.bin").read_bytes() == response.content
+    assert not (folder / "candidate-response.bin").exists()
+
+
+class TraceProbe:
+    """Observe restoration across TestClient's thread without touching its contextvars."""
+
+    def __init__(self, *, fail_reset=False):
+        self.value, self.fail_reset, self.resets = None, fail_reset, 0
+
+    def get(self):
+        return self.value
+
+    def set(self, value):
+        previous, self.value = self.value, value
+        return previous
+
+    def reset(self, previous):
+        self.resets += 1
+        if self.fail_reset:
+            raise OSError("TRACE reset refused")
+        self.value = previous
+
+
+@pytest.mark.parametrize("name", ["response.bin", "exchange.json"])
+@pytest.mark.parametrize("has_primary", [False, True])
+def test_publication_error_never_masks_request_error_or_leaks_trace(
+    tmp_path, monkeypatch, name, has_primary
+):
+    clock = PublicationClock()
+    primary = TimeoutError("original timeout") if has_primary else None
+    app, candidate = publication_application(tmp_path, monkeypatch, clock, primary=primary)
+    trace = TraceProbe()
+    monkeypatch.setattr(driver, "TRACE", trace)
+    publication_error = OSError("terminal fsync refused")
+    replace = driver._replace_http_evidence
+
+    def fail(directory, target, value, *, raw=False):
+        if target == name:
+            raise publication_error
+        replace(directory, target, value, raw=raw)
+
+    monkeypatch.setattr(driver, "_replace_http_evidence", fail)
+    expected = primary if primary is not None else publication_error
+    with pytest.raises(type(expected), match=str(expected)) as caught:
+        post_policy(app)
+    assert caught.value is expected
+    if primary is not None:
+        assert "terminal fsync refused" in " ".join(primary.__notes__)
+    else:
+        assert json.loads((tmp_path / "http/0000/candidate-response.bin").read_bytes()) == candidate
+    assert trace.get() is None and trace.resets == 1
+
+
+def test_late_candidate_refusal_write_preserves_primary_timeout(tmp_path, monkeypatch):
+    clock = PublicationClock()
+    app, candidate = publication_application(tmp_path, monkeypatch, clock)
+    replace = driver._replace_http_evidence
+    count = 0
+
+    def fail_refusal(directory, name, value, *, raw=False):
+        nonlocal count
+        if name == "exchange.json":
+            clock.now = 20
+        if name == "response.bin":
+            count += 1
+            if count == 2:
+                raise OSError("late refusal evidence unavailable")
+        replace(directory, name, value, raw=raw)
+
+    monkeypatch.setattr(driver, "_replace_http_evidence", fail_refusal)
+    with pytest.raises(TimeoutError, match="Whole HTTP") as caught:
+        post_policy(app)
+    assert "late refusal evidence unavailable" in " ".join(caught.value.__notes__)
+    assert json.loads((tmp_path / "http/0000/candidate-response.bin").read_bytes()) == candidate
+
+
+@pytest.mark.parametrize("has_primary", [False, True])
+def test_trace_reset_failure_restores_previous_context_and_preserves_primary(
+    tmp_path, monkeypatch, has_primary
+):
+    clock = PublicationClock()
+    primary = ValueError("original gate failure") if has_primary else None
+    app, _candidate = publication_application(tmp_path, monkeypatch, clock, primary=primary)
+    trace = TraceProbe(fail_reset=True)
+    previous = {"outer": "context"}
+    trace.set(previous)
+    monkeypatch.setattr(driver, "TRACE", trace)
+    with pytest.raises(type(primary) if has_primary else OSError) as caught:
+        post_policy(app)
+    if primary is not None:
+        assert caught.value is primary
+        assert "TRACE reset refused" in " ".join(primary.__notes__)
+    else:
+        assert str(caught.value) == "TRACE reset refused"
+    assert trace.get() is previous and trace.resets == 1
+
+
+def test_atomic_http_writer_is_confined_private_and_cleans_failed_temporary(tmp_path, monkeypatch):
+    folder = tmp_path / "http/0000"
+    with pytest.raises(ValueError, match="terminal evidence"):
+        driver._replace_http_evidence(folder, "../escaped.bin", b"no", raw=True)
+    assert not folder.exists()
+    driver._replace_http_evidence(folder, "response.bin", b"original", raw=True)
+    original_write = driver.write
+
+    def fail_after_fsync(path, value, *, raw=False):
+        original_write(path, value, raw=raw)
+        raise OSError("temporary write failed")
+
+    monkeypatch.setattr(driver, "write", fail_after_fsync)
+    with pytest.raises(OSError, match="temporary write failed"):
+        driver._replace_http_evidence(folder, "response.bin", b"replacement", raw=True)
+    assert (folder / "response.bin").read_bytes() == b"original"
+    assert (folder / "response.bin").stat().st_mode & 0o777 == 0o600
+    assert not list(folder.glob(".*.pending"))
+
+
+@pytest.mark.parametrize("alias", ["directory", "target"])
+def test_atomic_http_writer_refuses_symlink_escapes(tmp_path, alias):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    protected = outside / "response.bin"
+    protected.write_bytes(b"unrelated")
+    folder = tmp_path / "request"
+    if alias == "directory":
+        folder.symlink_to(outside, target_is_directory=True)
+    else:
+        folder.mkdir()
+        (folder / "response.bin").symlink_to(protected)
+    with pytest.raises(ValueError, match="Ordinary"):
+        driver._replace_http_evidence(folder, "response.bin", b"must not escape", raw=True)
+    assert protected.read_bytes() == b"unrelated"
+    assert not list(outside.glob(".*.pending"))
+
+
+@pytest.mark.parametrize("elapsed,status", [(0.0, 200), (20.0, 504)])
+def test_concurrent_real_asgi_requests_keep_their_own_terminal_bindings(
+    tmp_path, monkeypatch, elapsed, status
+):
+    import asyncio
+    import threading
+
+    import httpx
+
+    from s1 import jev_generated
+
+    clock = PublicationClock()
+    app, _candidate = publication_application(tmp_path, monkeypatch, clock)
+    publication_active = threading.Event()
+
+    def predict(_self, payload, *, evidence_sink):
+        assert not publication_active.is_set(), "Policy overlapped terminal publication"
+        return {
+            "model": driver.IDENTITY,
+            "probe": payload["probe"],
+            "answers": {"operation": {"choice": "DONE"}},
+        }
+
+    monkeypatch.setattr(jev_generated.JevGeneratedActionAdapter, "predict", predict)
+    replace = driver._replace_http_evidence
+
+    def publish(directory, name, value, *, raw=False):
+        assert not publication_active.is_set()
+        publication_active.set()
+        try:
+            replace(directory, name, value, raw=raw)
+            clock.now = elapsed
+        finally:
+            publication_active.clear()
+
+    monkeypatch.setattr(driver, "_replace_http_evidence", publish)
+
+    async def requests():
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+        ) as client:
+            return await asyncio.gather(
+                *[
+                    client.post(
+                        "/v1/systemone",
+                        json={"model": driver.IDENTITY, "probe": value},
+                        headers={"Authorization": "Bearer private-test-token"},
+                    )
+                    for value in ("alpha", "beta")
+                ]
+            )
+
+    responses = asyncio.run(requests())
+    assert [response.status_code for response in responses] == [status, status]
+    assert len({response.headers["X-Request-ID"] for response in responses}) == 2
+    exchanges = {
+        json.loads(path.read_bytes())["api_request_id"]: path.parent
+        for path in (tmp_path / "http").glob("*/exchange.json")
+    }
+    assert len(exchanges) == 2
+    for expected, response in zip(("alpha", "beta"), responses, strict=True):
+        folder = exchanges[response.headers["X-Request-ID"]]
+        assert json.loads((folder / "request.bin").read_bytes())["probe"] == expected
+        assert json.loads((folder / "candidate-response.bin").read_bytes())["probe"] == expected
+        assert (folder / "response.bin").read_bytes() == response.content
+        exchange = json.loads((folder / "exchange.json").read_bytes())
+        assert exchange["status"] == status and exchange["response"] == driver.pin(
+            folder / "response.bin"
+        )
+        assert int(response.headers["Content-Length"]) == len(response.content)
+        if status == 200:
+            assert response.json()["probe"] == expected
+        else:
+            assert "answers" not in response.json() and exchange["elapsed_seconds"] >= 20

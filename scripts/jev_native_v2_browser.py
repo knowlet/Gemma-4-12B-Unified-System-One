@@ -377,7 +377,38 @@ def http_deadline(started, *, clock=time.monotonic):
         raise TimeoutError("Whole HTTP model/helper20s exceeded")
 
 
-def make_application(model, prepared, journal, gate, output, token, prompt_format, system_prompt):
+def _replace_http_evidence(directory, name, value, *, raw=False):
+    """Atomically rebind only this request's final response/exchange, mode0600."""
+    require(name in {"response.bin", "exchange.json"}, "Owned HTTP terminal evidence only")
+    directory = ordinary(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    target = ordinary(directory / name)
+    require(not target.exists() or target.is_file(), "Ordinary owned terminal file required")
+    pending = directory / ("." + name + "." + secrets.token_hex(8) + ".pending")
+    primary = None
+    try:
+        write(pending, value, raw=raw)
+        os.replace(pending, target)
+        descriptor = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except BaseException as exc:
+        primary = exc
+        raise
+    finally:
+        try:
+            pending.unlink(missing_ok=True)
+        except BaseException as exc:
+            if primary is None:
+                raise
+            primary.add_note("HTTP pending evidence cleanup also failed: " + repr(exc))
+
+
+def make_application(
+    model, prepared, journal, gate, output, token, prompt_format, system_prompt, *, clock=None
+):
     """One current NF4 model, serial policy/helper requests, no historical qualification."""
     import jev_field_syntax_helper as helper
     from fastapi import Header, HTTPException
@@ -412,11 +443,12 @@ def make_application(model, prepared, journal, gate, output, token, prompt_forma
     )
     serial = asyncio.Lock()
     sequence = 0
+    clock = time.monotonic if clock is None else clock
 
     @app.middleware("http")
     async def record_http(request, call_next):
         nonlocal sequence
-        started = time.monotonic()
+        started = clock()
         async with serial:
             number, sequence = sequence, sequence + 1
             directory = Path(output) / "http" / f"{number:04d}"
@@ -425,7 +457,9 @@ def make_application(model, prepared, journal, gate, output, token, prompt_forma
                 "api_request_id": None,
                 "started": started,
             }
+            previous = TRACE.get()
             handle = TRACE.set(trace)
+            primary = None
             status, body = 500, encode({"detail": "Request failed; no action authorized"})
             record = {
                 "sequence": number,
@@ -435,7 +469,7 @@ def make_application(model, prepared, journal, gate, output, token, prompt_forma
                 "request_id": trace["request_id"],
             }
             try:
-                http_deadline(started)
+                http_deadline(started, clock=clock)
                 require(
                     (request.method, request.url.path)
                     in {
@@ -449,32 +483,101 @@ def make_application(model, prepared, journal, gate, output, token, prompt_forma
                 require(len(original) <= MAX_BODY, "Bounded original HTTP body")
                 write(directory / "request.bin", original, raw=True)
                 gate.check("before-http-request")
-                http_deadline(started)
+                http_deadline(started, clock=clock)
                 response = await call_next(request)
                 candidate = b"".join([part async for part in response.body_iterator])
                 write(directory / "candidate-response.bin", candidate, raw=True)
                 status, body = response.status_code, candidate
                 gate.check("after-http-request")
                 require(not app.state.request_evidence_errors, "Policy evidence failure is latched")
-                http_deadline(started)
-            except Exception as exc:
+                http_deadline(started, clock=clock)
+            except BaseException as exc:
+                primary = exc
                 status = 504 if isinstance(exc, TimeoutError) else 502
                 record["error"] = {"type": type(exc).__name__, "message": str(exc)}
                 body = encode({"detail": record["error"]})
+                if not isinstance(exc, Exception):
+                    raise
             finally:
+                try:
+                    TRACE.reset(handle)
+                except BaseException as exc:
+                    try:
+                        TRACE.set(previous)
+                    except BaseException as extra:
+                        exc.add_note("HTTP TRACE fallback also failed: " + repr(extra))
+                    if primary is not None:
+                        primary.add_note("HTTP TRACE reset also failed: " + repr(exc))
+                        raise primary from exc
+                    raise
+
+            def publish():
+                _replace_http_evidence(directory, "response.bin", body, raw=True)
                 record.update(
                     status=status,
                     api_request_id=trace["api_request_id"],
-                    elapsed_seconds=time.monotonic() - started,
+                    request=pin(directory / "request.bin")
+                    if (directory / "request.bin").exists()
+                    else None,
+                    response=pin(directory / "response.bin"),
+                    elapsed_seconds=clock() - started,
+                    elapsed_seconds_scope="after_response_binding_before_this_exchange_fsync",
+                    deadline_gate="after_all_publication_at_ASGI_http.response.start",
                 )
-                write(directory / "response.bin", body, raw=True)
-                record["request"] = (
-                    pin(directory / "request.bin") if (directory / "request.bin").exists() else None
-                )
-                record["response"] = pin(directory / "response.bin")
-                write(directory / "exchange.json", record)
-                TRACE.reset(handle)
-            return Response(
+                _replace_http_evidence(directory, "exchange.json", record)
+
+            def finalize(delivery, start_message):
+                nonlocal status, body, primary
+
+                def bind():
+                    delivery.status_code, delivery.body = status, body
+                    delivery.init_headers(
+                        {"X-Request-ID": trace["api_request_id"] or trace["request_id"]}
+                    )
+                    return {
+                        **start_message,
+                        "status": delivery.status_code,
+                        "headers": delivery.raw_headers,
+                    }
+
+                try:
+                    publish()
+                    message = bind()
+                    if status == 200:
+                        try:
+                            http_deadline(started, clock=clock)
+                        except TimeoutError as exc:
+                            primary = exc
+                            status = 504
+                            record["error"] = {"type": type(exc).__name__, "message": str(exc)}
+                            body = encode({"detail": record["error"]})
+                            # Refusal publication can be late; it never authorizes
+                            # the retained candidate and needs no recursive gate.
+                            publish()
+                            message = bind()
+                except BaseException as exc:
+                    if primary is not None and exc is not primary:
+                        primary.add_note("HTTP final evidence also failed: " + repr(exc))
+                        raise primary from exc
+                    raise
+                return message
+
+            class PublishedResponse(Response):
+                async def __call__(self, scope, receive, send):
+                    async def final_send(message):
+                        if message["type"] == "http.response.start":
+                            # Reacquire safely at this ASGI boundary instead of
+                            # transferring a held lock across dispatch's return.
+                            # Queue time remains inside the original20s budget.
+                            async with serial:
+                                message = finalize(self, message)
+                        # This is the last cooperative authorization boundary.
+                        # Awaiting send does not prove network/client delivery.
+                        await send(message)
+
+                    await super().__call__(scope, receive, final_send)
+
+            return PublishedResponse(
                 body,
                 status_code=status,
                 media_type="application/json",
