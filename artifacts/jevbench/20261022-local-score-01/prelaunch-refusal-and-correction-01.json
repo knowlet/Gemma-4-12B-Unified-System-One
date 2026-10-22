@@ -1,0 +1,22 @@
+{
+  "schema_id": "jevbench-score-prelaunch-path-refusal-and-correction-v1",
+  "at_utc": "2026-10-22T05:54:55.896280+00:00",
+  "failed_plan": {
+    "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-01.json",
+    "sha256": "6b5dc9bc8fdf377e4eeb802aaef542b7c28daa53745e754affd84ba3cc47faa1",
+    "size_bytes": 45344
+  },
+  "refusal_before_actor": true,
+  "model_loads": 0,
+  "unit_started": false,
+  "cause": "HF snapshot metadata symlinks were included as ordinary plan source files. No source or resource gate was weakened.",
+  "corrected_plan": {
+    "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-02.json",
+    "sha256": "4bde64f2b26cc50440f2615b5bc65e5a91f45fc7803e592b31c36f6ea817db78",
+    "size_bytes": 51862
+  },
+  "resolved_cache_aliases": 10,
+  "source_refs": 202,
+  "all_resolved_source_files_ordinary_and_hash_matched": true,
+  "acceptance_rule": "All recorded runtime metadata hashes must match these predetermined logical metadata references; aliases resolve to pinned ordinary HF blob files. Worker also checks all metadata before/after unchanged."
+}
