@@ -1282,7 +1282,7 @@ def guarded_public(monkeypatch):
         model,
         artifact=artifact,
         metadata={
-            "artifact": {"qualified": False},
+            "artifact": {"kind": ART.KIND, "qualified": False},
             "qualification": {"qualified": False, "scope": "synthetic provisional"},
         },
         runtime=QUAL.runtime_profile(),
