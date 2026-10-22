@@ -1,0 +1,322 @@
+{
+  "schema_version": 1,
+  "status": "PASS_OFFICIAL_PUBLIC_AND_COMPLETE_RAW_COHERENCE_REPLAY",
+  "scored_at_utc": "2026-10-22T06:00:16.086880+00:00",
+  "historical_inference_date": "2026-10-08",
+  "score_recompute_date": "2026-10-22",
+  "scope": "Official CPU rescore and complete raw-cache replay of historical A100 answers; no new GX10 inference.",
+  "model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+  "model_revision": "a66f836b56605039fe040f330180e336d19b3362",
+  "default_profile": "s1-bf16",
+  "published_temperature": 2.7830344470383452,
+  "official_sources": {
+    "public": {
+      "repository": "https://github.com/fstandhartinger/jevbench",
+      "scorer_revision": "bb05a335bc809e61b20c0f745d25499a82b326fc",
+      "current_revision": "609a664e81f46e03731600bd7bd9f1b7a61257c5",
+      "verified_current_source_task_bytes_identical": true,
+      "canonical_dataset_sha256": "dc3995d8ae1e2fc8e81ce38431add509eb8bb39b85aadfd0c7c32079382dde51",
+      "population": "legacy_public231",
+      "n_planned": 231,
+      "source_groups": 195,
+      "excluded": 0,
+      "missing_gold": 0
+    },
+    "coherence": {
+      "repository": "https://github.com/JevBench/jevbench",
+      "revision": "e18733694623aa93058e279c3534f8b8e2edefa3",
+      "suite": "jevbench-mini",
+      "seed": 0,
+      "aggregation": "Mean of five dimension scores; each dimension averages relation-level pass rates. Not pooled outcome-row accuracy."
+    }
+  },
+  "profiles": {
+    "s1-bf16": {
+      "is_released_default": true,
+      "historical_source_run": "20261008-public-01",
+      "historical_gpu": "NVIDIA A100-SXM4-80GB",
+      "identity": {
+        "execution": "causal_multislot; SDPA; no cache; selected 52 rows",
+        "model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+        "precision": "bfloat16",
+        "revision": "a66f836b56605039fe040f330180e336d19b3362",
+        "variant": "s1-bf16",
+        "versions": {
+          "huggingface-hub": "1.33.0",
+          "numpy": "2.5.3",
+          "safetensors": "0.8.0",
+          "torch": "2.10.0",
+          "transformers": "5.17.0"
+        }
+      },
+      "original_receipt_sha256": "b40f76a8de4d334e4f09619b78a6d14b9bcd63221a535db348879d56e0963638",
+      "original_checkpoint_inventory_sha256": "fa96debc68209c193338d8edee4ec4258a9f603e4f2156d4688c16364703d15d",
+      "original_source_proof_scope": "Recorded historical source hashes retained; run01 does not record a full campaign/package execution inventory. Archive bytes do not strengthen unrecorded execution provenance.",
+      "public231": {
+        "n_planned": 231,
+        "n_attempted": 231,
+        "n_valid": 231,
+        "n_correct": 197,
+        "accuracy": 0.8528138528138528,
+        "macro_accuracy": 0.8618254514281346,
+        "brier_mean": 0.22953568292717702,
+        "ordinal_mae": 0.22598817396081156,
+        "schema_validity": 1.0,
+        "schema_validity_strict": 1.0,
+        "n_renormalized": 0,
+        "ece": 0.048495372636364664,
+        "ece_n": 231,
+        "by_type": {
+          "choice": {
+            "n_planned": 139,
+            "n_correct": 120,
+            "accuracy": 0.8633093525179856,
+            "brier_mean": 0.21954600841483457,
+            "ordinal_mae": null
+          },
+          "noul": {
+            "n_planned": 74,
+            "n_correct": 62,
+            "accuracy": 0.8378378378378378,
+            "brier_mean": 0.25056936147182873,
+            "ordinal_mae": null
+          },
+          "score": {
+            "n_planned": 18,
+            "n_correct": 15,
+            "accuracy": 0.8333333333333334,
+            "brier_mean": 0.220206379866698,
+            "ordinal_mae": 0.22598817396081156
+          }
+        }
+      },
+      "coherence_mini": {
+        "status": "verified_raw_replay",
+        "overall": 0.4050490196078431,
+        "ci95": [
+          0.3773378539725336,
+          0.4310867279969461
+        ],
+        "dimensions": {
+          "BAT": 0.38333333333333336,
+          "CHO": 0.20833333333333334,
+          "LOG": 0.6958333333333333,
+          "MEA": 0.15441176470588236,
+          "REP": 0.5833333333333333
+        },
+        "n_cases": 240,
+        "n_checks": 50,
+        "errors": 0,
+        "incomplete": [],
+        "settings": {
+          "bootstrap": 1000,
+          "min_coverage": 0.95,
+          "min_n": 5,
+          "tolerance": 0.05
+        },
+        "planned_tests": 1200,
+        "raw_cached_requests": 1248,
+        "outcome_rows_exactly_replayed": 1468,
+        "raw_cache_inventory_sha256": "5bd37f03c535d3c5dfdbb1650d8473cd11496c0f5a2e258a00c389a399f89016",
+        "ordered_request_fingerprints_sha256": "6f39547526a1a83198adb280c751e80870bc64dc260c6f8df3bde222956a8b2d",
+        "all_deterministic_outcome_fields_exactly_compared": true,
+        "scores_float_aggregate_tolerance": {
+          "abs": 1e-12,
+          "rel": 1e-12
+        }
+      }
+    },
+    "s1-independent": {
+      "is_released_default": false,
+      "historical_source_run": "20261008-public-02",
+      "historical_gpu": "NVIDIA A100 80GB PCIe",
+      "identity": {
+        "execution": "Existing G4 independent question batching; separate per-question prompts with real right-padding masks; SDPA; shipped calibration",
+        "model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+        "precision": "bfloat16",
+        "revision": "a66f836b56605039fe040f330180e336d19b3362",
+        "variant": "s1-independent",
+        "versions": {
+          "huggingface-hub": "1.33.0",
+          "numpy": "2.5.3",
+          "safetensors": "0.8.0",
+          "torch": "2.10.0",
+          "transformers": "5.17.0"
+        }
+      },
+      "original_receipt_sha256": "87224cf69c2d8c7a1b3db55f61bddd651ae7d73cf3e2381a23e66dab6c0adbf8",
+      "original_checkpoint_inventory_sha256": "fa96debc68209c193338d8edee4ec4258a9f603e4f2156d4688c16364703d15d",
+      "original_source_proof_scope": "Recorded historical source hashes retained; run01 does not record a full campaign/package execution inventory. Archive bytes do not strengthen unrecorded execution provenance.",
+      "public231": {
+        "n_planned": 231,
+        "n_attempted": 231,
+        "n_valid": 231,
+        "n_correct": 197,
+        "accuracy": 0.8528138528138528,
+        "macro_accuracy": 0.8618254514281346,
+        "brier_mean": 0.22953568292717702,
+        "ordinal_mae": 0.22598817396081156,
+        "schema_validity": 1.0,
+        "schema_validity_strict": 1.0,
+        "n_renormalized": 0,
+        "ece": 0.048495372636364664,
+        "ece_n": 231,
+        "by_type": {
+          "choice": {
+            "n_planned": 139,
+            "n_correct": 120,
+            "accuracy": 0.8633093525179856,
+            "brier_mean": 0.21954600841483457,
+            "ordinal_mae": null
+          },
+          "noul": {
+            "n_planned": 74,
+            "n_correct": 62,
+            "accuracy": 0.8378378378378378,
+            "brier_mean": 0.25056936147182873,
+            "ordinal_mae": null
+          },
+          "score": {
+            "n_planned": 18,
+            "n_correct": 15,
+            "accuracy": 0.8333333333333334,
+            "brier_mean": 0.220206379866698,
+            "ordinal_mae": 0.22598817396081156
+          }
+        }
+      },
+      "coherence_mini": {
+        "status": "verified_raw_replay",
+        "overall": 0.7195915032679738,
+        "ci95": [
+          0.6926723398086645,
+          0.7433491532740669
+        ],
+        "dimensions": {
+          "BAT": 0.9666666666666667,
+          "CHO": 0.6666666666666667,
+          "LOG": 0.8541666666666666,
+          "MEA": 0.3799019607843137,
+          "REP": 0.7305555555555555
+        },
+        "n_cases": 240,
+        "n_checks": 50,
+        "errors": 0,
+        "incomplete": [],
+        "settings": {
+          "bootstrap": 1000,
+          "min_coverage": 0.95,
+          "min_n": 5,
+          "tolerance": 0.05
+        },
+        "planned_tests": 1200,
+        "raw_cached_requests": 1248,
+        "outcome_rows_exactly_replayed": 1468,
+        "raw_cache_inventory_sha256": "2a6d75f96718fe0525d9a81c35db4aa75193523ee9e300104f2e6e6cf43ade9f",
+        "ordered_request_fingerprints_sha256": "2b6b32d9c55d6eb297246c70097d4817838606ff0fb80eba39f4d6bf2f1ad149",
+        "all_deterministic_outcome_fields_exactly_compared": true,
+        "scores_float_aggregate_tolerance": {
+          "abs": 1e-12,
+          "rel": 1e-12
+        }
+      }
+    }
+  },
+  "interpretation": [
+    "The public score measures typed single-question decisions, not browser task completion.",
+    "The higher independent coherence result is a separately named execution profile, not the released default causal score.",
+    "Independent was a development profile evaluated after observing causal batching issues; it is not an untouched holdout or a newly released default.",
+    "The two historical profiles used different A100 GPU labels and have different recorded source inventories; differences are descriptive, not an isolated causal or latency experiment.",
+    "Weak causal batch invariance is a diagnosis to verify with a matched current-device experiment.",
+    "Historical run01 records only the public runner hash, not a complete package/campaign execution inventory; archive integrity cannot strengthen missing original execution provenance.",
+    "Current official Capability, Composite and ranking require other versioned populations and serving/cost evidence; they cannot be computed from public231 or coherence mini."
+  ],
+  "paired_public_accuracy": {
+    "n_paired": 231,
+    "source_groups": 195,
+    "reference": "s1-bf16",
+    "candidate": "s1-independent",
+    "reference_only_correct": 0,
+    "candidate_only_correct": 0,
+    "delta_accuracy": 0.0,
+    "ci95": [
+      0.0,
+      0.0
+    ]
+  },
+  "official_capability": null,
+  "official_composite": null,
+  "official_rank": null,
+  "sealed_evaluation": "not_run",
+  "current_latency_measurement": null,
+  "cost_estimate": null,
+  "cpu_rescore": {
+    "elapsed_seconds": 12.967342969030142,
+    "model_calls": 0,
+    "model_loaded": false,
+    "ml_frameworks_imported": false,
+    "training_executed": false,
+    "fresh_gx10_model_inference": false,
+    "limits": {
+      "address_space_bytes": 1073741824,
+      "blas_threads": 1,
+      "cpu_seconds": 290,
+      "cuda_visible_devices": "",
+      "per_file_bytes": 67108864,
+      "wall_alarm_seconds": 295
+    },
+    "reported_usage": {
+      "children": {
+        "max_rss_kib": 75808,
+        "system_seconds": 0.324463,
+        "user_seconds": 9.307776
+      },
+      "self": {
+        "max_rss_kib": 1854936,
+        "system_seconds": 0.549797,
+        "user_seconds": 2.845954
+      }
+    },
+    "usage_scope": "RLIMIT_AS bounds virtual address space; ru_maxrss is the reported high-water metric, not a current RSS or proven per-replay resident-memory bound.",
+    "sources_unchanged": true
+  },
+  "references": {
+    "replay_entry": {
+      "path": "artifacts/jevbench/20261022-local-score-01/historical_replay_01.py",
+      "sha256": "d8fd8de0a95780215b69f3221b6e4b153748565b8ca241c1a6230546287184bc",
+      "size_bytes": 12690
+    },
+    "replay_receipt_local_only": {
+      "path": "artifacts/jevbench/20261022-local-score-01/historical-replay-01/rescore-receipt.json",
+      "sha256": "2fba685e6374265b84e9a14ebf6c1b7dd388fefc4cacbba61817fd60ea916aee",
+      "size_bytes": 41048
+    },
+    "complete_audit_local_only": {
+      "path": "artifacts/jevbench/20261022-local-score-01/historical-replay-01/official-audit.json",
+      "sha256": "01dcd0c12579b42b4745bdf98fe060dbc022427d18d6c40998e1b915df5d0393",
+      "size_bytes": 560824
+    },
+    "original_archive_local_only": {
+      "path": "docs/validation/2026-10-08/jevbench/raw-evidence.zip",
+      "sha256": "b85b4471d655a05e5fc682d2d22c157ae86af9b42a05a926e2bd78655223f53b",
+      "size_bytes": 10932994
+    },
+    "original_archive_manifest": {
+      "path": "docs/validation/2026-10-08/jevbench/raw-evidence.manifest.json",
+      "sha256": "5cea21069490c69b59f8b9f12fd76062aeb2ed3b395a0ba3fe6a86d5d8d7b44d",
+      "size_bytes": 2127644
+    },
+    "current_public_equivalence": {
+      "path": "artifacts/jevbench/20261022-local-score-01/current-heaven-public-equivalence-01.json",
+      "sha256": "e13d90f9edcc20110b0d8d58906f7b64b24bfbf3cf97436f7ee904f241cfbea0",
+      "size_bytes": 7709
+    }
+  },
+  "publication": {
+    "raw_questions": false,
+    "raw_answers": false,
+    "per_case_probabilities": false,
+    "raw_cache": false,
+    "weights": false
+  }
+}
