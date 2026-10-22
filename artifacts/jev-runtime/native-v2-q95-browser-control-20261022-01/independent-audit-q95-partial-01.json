@@ -1,0 +1,1256 @@
+{
+  "schema_id": "gemma-q95-interrupted-independent-audit-v1",
+  "UTC": "2026-10-22T11:42:55.863021+00:00",
+  "status": "infrastructure_interrupted_owned_processes_closed",
+  "evaluation_complete": false,
+  "full_score": null,
+  "planned_denominator": 10,
+  "completed_groups": 0,
+  "durable_complete_attempt_bundles": 0,
+  "partial_attempts": [
+    {
+      "group": "known4",
+      "case_id": "public-arxiv-title-filter-results-v1-000",
+      "status": "ready",
+      "error_stage": "verification",
+      "execution_error_present": true,
+      "reported_policy_calls": 12,
+      "reported_text_calls": 1,
+      "durable_complete_attempt_bundle": false,
+      "missing_files": [
+        "model_calls.json",
+        "final_state.json",
+        "states.json"
+      ],
+      "outcome": {
+        "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/known4/results/attempts/public-arxiv-title-filter-results-v1-000/outcome.json",
+        "sha256": "891fa8f57467bb99de85d659dc1402ecefa88e2e5da576dfdecc4994e4946dc7",
+        "size_bytes": 14153
+      }
+    }
+  ],
+  "primary_failure": {
+    "type": "ObservationError",
+    "reason": "Separate Q95/native owners conservatively refused unresolved UID0 Python cwd identity",
+    "offenders": [
+      {
+        "pid": 120154,
+        "start_ticks": 1800891
+      },
+      {
+        "pid": 120155,
+        "start_ticks": 1800893
+      }
+    ],
+    "provenance_of_uid0_processes": "Not inferred by this audit; parent investigation owns attribution",
+    "native_external_receipt": {
+      "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/root-external-closure.json",
+      "sha256": "e09559b146a7370e6a7f028d8050eefe4490832ea44aba7db5e1eeb8da97bd73",
+      "size_bytes": 366533
+    },
+    "separate_helper_final": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-03/owner-03/owner-final.json",
+      "sha256": "173612f6f936a2598f99c1298ddebc6faf769a06688e5afea21893533ddee67d",
+      "size_bytes": 15481
+    }
+  },
+  "secondary_helper_refusal": {
+    "phase": "after-native-policy-11",
+    "admitted": false,
+    "error_type": "FileNotFoundError",
+    "error_code": "OBSERVATION_FAILED",
+    "elapsed_seconds": 0.15073409899923718,
+    "receipt": {
+      "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0027.json",
+      "sha256": "d849be50c151e3c64dd06bf940cabe3d3525b874b8e39caa033b28228e1a1800",
+      "size_bytes": 727
+    }
+  },
+  "native_policy": {
+    "original_candidate_http200": 12,
+    "outer_admitted_http200": 11,
+    "outer_refused_http503": 1,
+    "exact_native_outer_body_and_server_joins": true,
+    "publication_attempts": [
+      {
+        "sequence": 0,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0000/exchange.json",
+          "sha256": "a1df3912bd1426f483a0470a1aa787153a5a464a554446be5462cca454d3cfb1",
+          "size_bytes": 630
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0000/candidate-admission.json",
+          "sha256": "dde572991a2b0485b05c29185938a1460cb9d2bf8b9c398a4227e2c942521c5b",
+          "size_bytes": 1393
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0000/publication-attempt.json",
+          "sha256": "6f7ade4dae95f2045c659dc699813eefe41590f0fcc66e1f576069e42ec27672",
+          "size_bytes": 1371
+        }
+      },
+      {
+        "sequence": 1,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0001/exchange.json",
+          "sha256": "4d4fb448020bfa822f2a7f7ab041e6b30ca638e008023c0bc18a4b75272f1c4d",
+          "size_bytes": 631
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0001/candidate-admission.json",
+          "sha256": "d1c37a0cb0e3a34b33212c76293023676feaa029b84271e871e86094e4de374e",
+          "size_bytes": 1393
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0001/publication-attempt.json",
+          "sha256": "8b5b7e1b011e3212a03e94aef2ae135f20320f4169888f37648bd7f6426e9e86",
+          "size_bytes": 1369
+        }
+      },
+      {
+        "sequence": 2,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0002/exchange.json",
+          "sha256": "c1b6fe43b96ec4d3bef6cb951bbef3f6465a1aa0f0085f7988d0ad37c99e1918",
+          "size_bytes": 629
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0002/candidate-admission.json",
+          "sha256": "b5d916b14d95f16e82d8bb7822764fc2d985085a476214e50010989c6f5dca91",
+          "size_bytes": 1393
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0002/publication-attempt.json",
+          "sha256": "7c41adf33590b4622b5dafc893a68f3c0cab7f50a58fb279d0bd447651329b50",
+          "size_bytes": 1370
+        }
+      },
+      {
+        "sequence": 3,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0003/exchange.json",
+          "sha256": "7ca209938e02a4c24e76a877cbdafbfbd02635ae4a9013fdfae8757a23631c84",
+          "size_bytes": 631
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0003/candidate-admission.json",
+          "sha256": "a380792a389b7d90c5877aff46af8e7974f85747875d8fa341447365be499afe",
+          "size_bytes": 1393
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0003/publication-attempt.json",
+          "sha256": "be89130a669d8086678412c24f40a03cb16c1160eb5d3885097717bc920c1dae",
+          "size_bytes": 1371
+        }
+      },
+      {
+        "sequence": 4,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0004/exchange.json",
+          "sha256": "48ea6db05834d3e743c2e1e69a77124b8588ce8c1c6145d5b89399a6e391e6ef",
+          "size_bytes": 630
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0004/candidate-admission.json",
+          "sha256": "f76613cae38f2dd570ab2b385b4502a331204356689e7bd1f961ccff2f99cced",
+          "size_bytes": 1393
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0004/publication-attempt.json",
+          "sha256": "a77458d1b6efe24b0779b8b00d566a0d3bbfbbc91353e8792cc77c5099fc943e",
+          "size_bytes": 1370
+        }
+      },
+      {
+        "sequence": 5,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0005/exchange.json",
+          "sha256": "8d63cca43484e52e709c88801b9d8ce37c43c43850e0ed19994c4ede35c55289",
+          "size_bytes": 630
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0005/candidate-admission.json",
+          "sha256": "aff446e75187483992d3d9136915ca8ad97090355987d638f7f7fb375fb448df",
+          "size_bytes": 1393
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0005/publication-attempt.json",
+          "sha256": "42fc2a50aa072f36d02382075cdbde558a03a7d056773a08211250972b7bcb22",
+          "size_bytes": 1371
+        }
+      },
+      {
+        "sequence": 6,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0006/exchange.json",
+          "sha256": "1e62ac461a6350d98970efc81221dbeecdfa3720594f81a2a2c78f6132f688af",
+          "size_bytes": 630
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0006/candidate-admission.json",
+          "sha256": "d60e5ee3171ba2b9ae538b6e6be78cc516d9e6ef11d6daf465ddd237362000cc",
+          "size_bytes": 1393
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0006/publication-attempt.json",
+          "sha256": "78bb95584d7a085b3b43d22cfcd5d2b457c30863cb45617f3002dfbb40e521f7",
+          "size_bytes": 1370
+        }
+      },
+      {
+        "sequence": 7,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0007/exchange.json",
+          "sha256": "ee801647a6209ac1976c3985d798557df1aed98c6202927ad19a75f0f28d688a",
+          "size_bytes": 630
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0007/candidate-admission.json",
+          "sha256": "bc46672c387a47dae867e50770642cd14a72bf517bb9ae7083fd1b2559479b00",
+          "size_bytes": 1393
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0007/publication-attempt.json",
+          "sha256": "8c637432a36b4aad9d28db7853cefa4247900c8e789c4121667ce23e6886691e",
+          "size_bytes": 1370
+        }
+      },
+      {
+        "sequence": 8,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0008/exchange.json",
+          "sha256": "c7af856dec3c6f246d8b80e02c3e34325fe5f3d4f233172741e0c03148d54c01",
+          "size_bytes": 630
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0008/candidate-admission.json",
+          "sha256": "83dd4dc56a19c931398824116ee72f7ba60dbf5d86ab649362e5b6c5342833ac",
+          "size_bytes": 1393
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0008/publication-attempt.json",
+          "sha256": "d5aa1f54606ace0025fffb53c8c486910bd07bf3b4827b7950dd1ef87f8dc7a8",
+          "size_bytes": 1370
+        }
+      },
+      {
+        "sequence": 9,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0009/exchange.json",
+          "sha256": "8581b244c48641b7c95afb681daf40c73d246a124f1fbd9a3662fc198d190a89",
+          "size_bytes": 631
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0009/candidate-admission.json",
+          "sha256": "d3fd86c094f93caa4bd97b786a4e3f314969815fe56b50e2f80447b5703b3f71",
+          "size_bytes": 1393
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0009/publication-attempt.json",
+          "sha256": "1f096ebe49ef3477c95f53b61cb254566b35a75996203475c96c9146b3f37ed0",
+          "size_bytes": 1371
+        }
+      },
+      {
+        "sequence": 10,
+        "native_candidate_status": 200,
+        "outer_selected_status": 200,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0010/exchange.json",
+          "sha256": "1d7c1e2fcaa8da53955778faf3b1e56f99717db84d12d08f90596619318a42ed",
+          "size_bytes": 631
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0010/candidate-admission.json",
+          "sha256": "268e39139b4e4c6c31ceb0f4b2aaa9744a6400141047bc62ecc4c8b53dd1bbaa",
+          "size_bytes": 1396
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0010/publication-attempt.json",
+          "sha256": "7c96d6531fb955879e3ae4fd37717b4a7bc71402310a3c7c8a923fa42dc91fa0",
+          "size_bytes": 1374
+        }
+      },
+      {
+        "sequence": 11,
+        "native_candidate_status": 200,
+        "outer_selected_status": 503,
+        "native_exchange": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/http/0011/exchange.json",
+          "sha256": "c62f5bf13f53f1d70590c444109e5eee7b361f5f646f7ea0946241d7d87093d9",
+          "size_bytes": 631
+        },
+        "candidate_admission": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0011/candidate-admission.json",
+          "sha256": "a14890ea1625c49cea5f4ccaa242e88a6661290ba3b0784b6932029cb9d7836e",
+          "size_bytes": 947
+        },
+        "publication_attempt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/policy/policy-0011/publication-attempt.json",
+          "sha256": "2664543ed40eb3d10178738ba86350beb49e9ce009b4607457ef2c7cbb259392",
+          "size_bytes": 850
+        }
+      }
+    ],
+    "client_delivery_proven": false
+  },
+  "helper_checks": {
+    "count": 28,
+    "admitted": 27,
+    "refused": 1,
+    "receipts": [
+      {
+        "phase": "before-native-driver-imports",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.690960495998297,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0000.json",
+          "sha256": "f4bf00ab2df00ecec59ea204c93f216f9fdc52c4e0dd6e44868c3af13861d7f8",
+          "size_bytes": 7104
+        }
+      },
+      {
+        "phase": "browser-text-connection",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.7521663469997293,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0001.json",
+          "sha256": "e278bafd93b81e695da25b6a04980d80dcd37de6748415570bca465f226e7562",
+          "size_bytes": 7100
+        }
+      },
+      {
+        "phase": "before-native-constructor",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.4349623210000573,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0002.json",
+          "sha256": "d723be8d3fed3b872cae984292d835afa9ee8ab498b4505537e264c0603d34d5",
+          "size_bytes": 7104
+        }
+      },
+      {
+        "phase": "before-browser-group-0",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.452227319001395,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0003.json",
+          "sha256": "d54e237d5218c5a08afaa27c87cd10c0254054186a49c9b52a583f2d66821a17",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "before-native-policy-0",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.543675721000909,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0004.json",
+          "sha256": "fa490e3a78cddc456c12617adcf3f8ed3e01fae393f5919c657d8d273deb19c4",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "after-native-policy-0",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.4853583770018304,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0005.json",
+          "sha256": "9bc8d43a5f059c3eda868dc5b1089fed3f4dce4cf5dedee13203a69e19164f2d",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "before-native-policy-1",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.459207037001761,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0006.json",
+          "sha256": "7bd3a772e9385811dd702c1ecf72606ea60e2bb1cb45b93e99e272800e199d43",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "after-native-policy-1",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.4487219820002792,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0007.json",
+          "sha256": "cd9c8635e2fdd2d1490fb82db15c8012aa5b16f5bcfc7ae031e334354331bb64",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "before-native-policy-2",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.5628629230013757,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0008.json",
+          "sha256": "6896756f440c48c8b306a429a57244f1ad66b51aa57569f11421c593e2ca8826",
+          "size_bytes": 7103
+        }
+      },
+      {
+        "phase": "after-native-policy-2",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.568127013000776,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0009.json",
+          "sha256": "2188a8651f99dce540364df1aade451115cca81cd85763a099d806b2e4597c54",
+          "size_bytes": 7101
+        }
+      },
+      {
+        "phase": "before-native-policy-3",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.66134317900287,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0010.json",
+          "sha256": "d0bb5a23bc8e2ce5e2518348ffbd2193c083566fbca8b6aee2659905fbd4c34e",
+          "size_bytes": 7101
+        }
+      },
+      {
+        "phase": "after-native-policy-3",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.499229313001706,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0011.json",
+          "sha256": "59ae5058caefa37bfee1f75b11b666f751446aadc045f81905de9844d584c30c",
+          "size_bytes": 7101
+        }
+      },
+      {
+        "phase": "before-native-policy-4",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.396376644999691,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0012.json",
+          "sha256": "14a1c961564bf12e1ceb47ff30224dca012489632bc455b3b1cdd88d2df4959f",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "after-native-policy-4",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.477929344000586,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0013.json",
+          "sha256": "628768bd4d847c9aaa4d6533b51e4a5938d5af46fc833c026a33df7afeaad91f",
+          "size_bytes": 7101
+        }
+      },
+      {
+        "phase": "before-native-policy-5",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.4929177699996217,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0014.json",
+          "sha256": "552faec7fcac6a0f14829159a845a454f9dd2d5deb550e198ae83b5711577472",
+          "size_bytes": 7103
+        }
+      },
+      {
+        "phase": "after-native-policy-5",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.6439694789987698,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0015.json",
+          "sha256": "81a6d407b8d028137032137efc8362763343effefaa4440e2876fa4a446b0ef2",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "before-native-policy-6",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.5885454939998453,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0016.json",
+          "sha256": "3f308585cd274916a4a97781b0e211e1025b9af0e0297d076889b12bf8bb4c39",
+          "size_bytes": 7103
+        }
+      },
+      {
+        "phase": "after-native-policy-6",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.44136508900192,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0017.json",
+          "sha256": "1f361a8bf7cfb2d065410da7f03f701f25e52ca2c22ae2bb2debe6980d939839",
+          "size_bytes": 7100
+        }
+      },
+      {
+        "phase": "before-native-policy-7",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.453749678999884,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0018.json",
+          "sha256": "9a07460536ea114a3940cd5d625f6c9094ffad342680f1abb0d287c553adbc96",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "after-native-policy-7",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.521462734002853,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0019.json",
+          "sha256": "c538970b72c016120c38776a35ad393dc244bbab40c6a3967b46faeca63338ae",
+          "size_bytes": 7101
+        }
+      },
+      {
+        "phase": "before-native-policy-8",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.468064647000574,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0020.json",
+          "sha256": "643f6e150f54858757a87a6553bc9e05b85c11766271c2c7dc9ffb07300687ba",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "after-native-policy-8",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.5929308570011926,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0021.json",
+          "sha256": "2bfe66ccba5fc212aee3ef3ee4e45f59c7fb498f1878221689a4663203d34d41",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "before-native-policy-9",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.4447357169992756,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0022.json",
+          "sha256": "d96b558132b0691f5af600571057877f083d6e9c2e4af53fb4d4b2889c056b30",
+          "size_bytes": 7103
+        }
+      },
+      {
+        "phase": "after-native-policy-9",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.6167122580009163,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0023.json",
+          "sha256": "68af8d47ad2f9ada459c8de74c395549dbcf0f5bebb7d981c884b892bf3c77fc",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "before-native-policy-10",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.460325397998531,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0024.json",
+          "sha256": "73c97a60e98141271d3a411c81f90f84dcf1aba2f154b09851ef74a6c777f050",
+          "size_bytes": 7103
+        }
+      },
+      {
+        "phase": "after-native-policy-10",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.526556264998362,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0025.json",
+          "sha256": "2c20752b17d0175affc24f89096bd71bf0739ee0af532549abd57527aa9122ed",
+          "size_bytes": 7102
+        }
+      },
+      {
+        "phase": "before-native-policy-11",
+        "admitted": true,
+        "error_type": null,
+        "error_code": null,
+        "elapsed_seconds": 2.8196846610007924,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0026.json",
+          "sha256": "3ae5cf4f35ef4fc9fd0b10143dd2a96fed741f707b80336e202eba2e02be7b7f",
+          "size_bytes": 7104
+        }
+      },
+      {
+        "phase": "after-native-policy-11",
+        "admitted": false,
+        "error_type": "FileNotFoundError",
+        "error_code": "OBSERVATION_FAILED",
+        "elapsed_seconds": 0.15073409899923718,
+        "receipt": {
+          "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/helper/helper-check-0027.json",
+          "sha256": "d849be50c151e3c64dd06bf940cabe3d3525b874b8e39caa033b28228e1a1800",
+          "size_bytes": 727
+        }
+      }
+    ]
+  },
+  "q95_requests": {
+    "observed_full_service_population": [
+      {
+        "request_id": "17cd8becc8e3ae93482b1ffc7827ba56",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2585.05098599926,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/17cd8becc8e3ae93482b1ffc7827ba56/raw.json",
+          "sha256": "eaf42a6179456e75b495fed726d05d56a2d0c744a3da0d23b4e9ba2d09a58829",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/17cd8becc8e3ae93482b1ffc7827ba56/outer-completion.json",
+          "sha256": "580a7c4103dc41f1a2b960bb59638b23939d5bd5c930921770b576da45204e3d",
+          "size_bytes": 551
+        }
+      },
+      {
+        "request_id": "2a263c022443b79960e5299ce23588bf",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2273.009391999949,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/2a263c022443b79960e5299ce23588bf/raw.json",
+          "sha256": "2dddceb80e2190bfa4e9872be38ab00c53cb63752293c2ae5c04fbb50aff798f",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/2a263c022443b79960e5299ce23588bf/outer-completion.json",
+          "sha256": "953282e2724f48bd368a0ebfdb45e871b500b0ab909911574ae9a98f2b3205a6",
+          "size_bytes": 552
+        }
+      },
+      {
+        "request_id": "326c6098ee32153b3f3b3f1ac74e49c0",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2278.8545940020413,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/326c6098ee32153b3f3b3f1ac74e49c0/raw.json",
+          "sha256": "58f19cd428f75be84cf9611356040d9dfc5ef9e1b897ce948a5fd7dbeb4c616b",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/326c6098ee32153b3f3b3f1ac74e49c0/outer-completion.json",
+          "sha256": "49d16d85fbaac5f8805754e0a500666831e0e1cf00bc560cc630b6d5461dc606",
+          "size_bytes": 554
+        }
+      },
+      {
+        "request_id": "3458cbf38a80b3737d4f6ebf237312aa",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2180.5365849977534,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/3458cbf38a80b3737d4f6ebf237312aa/raw.json",
+          "sha256": "58116f578a038f4e650ae7ea66b4f8e58a84623c25c92eda0ee05a98a1125efb",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/3458cbf38a80b3737d4f6ebf237312aa/outer-completion.json",
+          "sha256": "82c81680532db5856f4f5c6ecf33f18f740b20560c4e7f7781c43f88e0a1af4c",
+          "size_bytes": 554
+        }
+      },
+      {
+        "request_id": "5bb0cf62f5c5648d52421b9b5002f417",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2195.488060999196,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/5bb0cf62f5c5648d52421b9b5002f417/raw.json",
+          "sha256": "f783cd5bc9c9d7b41798a2b571dcc04fb4e2bf08ce8851f4bb449c8aaa965168",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/5bb0cf62f5c5648d52421b9b5002f417/outer-completion.json",
+          "sha256": "3611f562a6cf6487e20a79d8aaba0e1d58a62fbed85e5f8a008b0a650dc5155f",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "5f2e247342e62279db998f0780d2c665",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2282.1949169992877,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/5f2e247342e62279db998f0780d2c665/raw.json",
+          "sha256": "975f5dea51040406e842929403f9de821dcae6086bd24fcc7921c4010e9509d2",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/5f2e247342e62279db998f0780d2c665/outer-completion.json",
+          "sha256": "350f936584241cb59f61ed5e0ce078a8b85d89bef108aa07c7133161175ea38d",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "61b982089fa8e7106671d00442bc1980",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2308.6189810019278,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/61b982089fa8e7106671d00442bc1980/raw.json",
+          "sha256": "0480b94a6e7117efd17d41a3d92038728597fa2cc7a2ede0caa88505118ba311",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/61b982089fa8e7106671d00442bc1980/outer-completion.json",
+          "sha256": "44ec24c03bf6eae0e5036490193097997ef05b194886bb22112a1851756cc8ae",
+          "size_bytes": 554
+        }
+      },
+      {
+        "request_id": "6224454bc43e08cdab7258c05ec505c8",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2251.4926610019756,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/6224454bc43e08cdab7258c05ec505c8/raw.json",
+          "sha256": "0354034cc004fd1eef03d30924b2af22e0c55f7bb3c3d0c0fa83dbc9ed125513",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/6224454bc43e08cdab7258c05ec505c8/outer-completion.json",
+          "sha256": "b4d478a7eb3bd6d67cb61df63a70a6bf1c78cd7a1c12fcd95b959c08ddf87982",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "6560f2f2ab6b52318c25eb1aaf531e02",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2236.494663000485,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/6560f2f2ab6b52318c25eb1aaf531e02/raw.json",
+          "sha256": "9e74554b43d85b0168cfb3f88f62ace4cb8e82ea80a6b3f8b35a682463e86ec0",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/6560f2f2ab6b52318c25eb1aaf531e02/outer-completion.json",
+          "sha256": "5fd96402915b173c0b2261f7ff82c5b88a3c5f2a3ad106989aae760e76c6749e",
+          "size_bytes": 552
+        }
+      },
+      {
+        "request_id": "6d9b51ad95abab0365e4c1daf5c9254d",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2292.7465940010734,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/6d9b51ad95abab0365e4c1daf5c9254d/raw.json",
+          "sha256": "b0a41f607af39292886a54b6ab2f0cc73c0a1016d3e577d13622b15476df0d6c",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/6d9b51ad95abab0365e4c1daf5c9254d/outer-completion.json",
+          "sha256": "fca70da217cc4761a44838878dfcd48177efe72ffe2d046e47fe21c3f472830b",
+          "size_bytes": 554
+        }
+      },
+      {
+        "request_id": "7e7ca9ca63109a3fdbec5e2f2deceebe",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2265.182235998509,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/7e7ca9ca63109a3fdbec5e2f2deceebe/raw.json",
+          "sha256": "299a1049704a0a42c56084829fdd4241cff3068bee7a08632800f0158e9fb30a",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/7e7ca9ca63109a3fdbec5e2f2deceebe/outer-completion.json",
+          "sha256": "f4558729c86a398485a32f24b806c1dbaf70c9c21bcea91db1532515bcc1b177",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "894e8165943dae0a14d61f2332d757aa",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2332.795570997405,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/894e8165943dae0a14d61f2332d757aa/raw.json",
+          "sha256": "da7f2639bd16f9a2e2450b0c508265cbbd3dce99c159fd9606433256c78ae571",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/894e8165943dae0a14d61f2332d757aa/outer-completion.json",
+          "sha256": "0c921fb2332702ca3e2cd2c7637ac0c8f94c04e9163e52babbac346c9b0526ff",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "8de7b3069d23ac7c356772f4e9cab0d7",
+        "kind": "field_text",
+        "payload_sha256": "78f45f4fc7005b139f2e1f72b0004e44898403e30c2c20b2ae3c0f03ee4edc8c",
+        "selected_status": 200,
+        "outer_elapsed_ms": 13592.625674998999,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/8de7b3069d23ac7c356772f4e9cab0d7/raw.json",
+          "sha256": "6d63706b4b3defdb2960a4448ebfc7e973f5fb81312203a5114741ecd39b994d",
+          "size_bytes": 38780
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/8de7b3069d23ac7c356772f4e9cab0d7/outer-completion.json",
+          "sha256": "238126e1dbc9b6fc68e995f7ff83e9774ae63177df1bdf5848738a7a7567b4fe",
+          "size_bytes": 555
+        },
+        "output_tokens": 15,
+        "native_forwards": 15,
+        "raw_generation_latency_ms": 12051.792477999697,
+        "client_delivery_proven": false
+      },
+      {
+        "request_id": "8f9203249f0b8da22f1f1ed28bc2e7d8",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2266.4860709992354,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/8f9203249f0b8da22f1f1ed28bc2e7d8/raw.json",
+          "sha256": "384f9d742e16468ec468bda99df1f34fbc31a78d2eecf4ff469f98a861b2dc89",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/8f9203249f0b8da22f1f1ed28bc2e7d8/outer-completion.json",
+          "sha256": "d8e39187470a6733828cbbe99d5574911cd43b7cbc0082a8471e8ddf562b91f8",
+          "size_bytes": 554
+        }
+      },
+      {
+        "request_id": "9304d9150c785183c90764ca6db7b684",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2325.028363997262,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/9304d9150c785183c90764ca6db7b684/raw.json",
+          "sha256": "d2bdbbea7c64c3c06f86cdc353cbe6b132789d746c561106d716ff5e48ffe6ad",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/9304d9150c785183c90764ca6db7b684/outer-completion.json",
+          "sha256": "6a7b31a44c0fa6983634c1cab4362f51a49e3684df62dfdd7af93ad0b07dd3c2",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "adf10840537a1c3fad4a09c1521d0871",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2437.0760269994207,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/adf10840537a1c3fad4a09c1521d0871/raw.json",
+          "sha256": "d7839d1d4dbb8e9cebf5782b56eb60d5b12b37b52db22f43590ab5ffc6b94b46",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/adf10840537a1c3fad4a09c1521d0871/outer-completion.json",
+          "sha256": "196da8764692ef0114362aa076b5bf35243bbc924e7e1911510d35ea45f63113",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "b02751476a35db6507acffa786b2d485",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2180.4060920003394,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/b02751476a35db6507acffa786b2d485/raw.json",
+          "sha256": "5969854536d3a3c04c962017c96a3b856edfafe04ef2da366493b4aadf5b1f44",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/b02751476a35db6507acffa786b2d485/outer-completion.json",
+          "sha256": "ea1b0b36ff1acfd7eb400a2b980107959b681ddde82d6d19815d921c446c125c",
+          "size_bytes": 554
+        }
+      },
+      {
+        "request_id": "b562556a41dba3fc79e208b022e46b2a",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2225.182351001422,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/b562556a41dba3fc79e208b022e46b2a/raw.json",
+          "sha256": "9f37020223414bebe47340399c6733787495296eb687cae8daf70e67f1812955",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/b562556a41dba3fc79e208b022e46b2a/outer-completion.json",
+          "sha256": "360233dd9f14a89362228c357859f5440849b12a5c9c2acbd57d8ccbf64ace19",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "b596f8082a728e3bcfb5943ea8291fe3",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2188.015814001119,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/b596f8082a728e3bcfb5943ea8291fe3/raw.json",
+          "sha256": "af8b648f48a1e9dd665267ae3fe1c9ea19bdfa79bfd309a99db742075b0b33c8",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/b596f8082a728e3bcfb5943ea8291fe3/outer-completion.json",
+          "sha256": "1805989471949717fabe00a349caf91b0060c48cda790e33ae768536b851f9fe",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "cc47f06d001b82fed08399fe1d2fe321",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2248.159348000627,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/cc47f06d001b82fed08399fe1d2fe321/raw.json",
+          "sha256": "f08a0b3875dff8876fc6e5cd4ced4723b70839801fb03f4aaa227724c7a106e1",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/cc47f06d001b82fed08399fe1d2fe321/outer-completion.json",
+          "sha256": "7febd1fd42a365f56c392a58ab7233ef1d7ae2cd87c685267f432d4c6a4576cf",
+          "size_bytes": 552
+        }
+      },
+      {
+        "request_id": "ccbbf1f300702fe5794ab1db5dd6cc97",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2294.161036999867,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/ccbbf1f300702fe5794ab1db5dd6cc97/raw.json",
+          "sha256": "f20cadd7e895051dd6d6fb3bac9b049e5c9854bc080514258979096fce778ac3",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/ccbbf1f300702fe5794ab1db5dd6cc97/outer-completion.json",
+          "sha256": "05885847fb8e0991927ca4c19f871acf61ecf088ba548329fe1cbad9306900ba",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "cccb0e6e722894c2cebc04a51e73d4ee",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2228.8997270006803,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/cccb0e6e722894c2cebc04a51e73d4ee/raw.json",
+          "sha256": "a788fc283b4b8bea90a8802d73a6467418393e1c12e0b25ddca6823c26a55615",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/cccb0e6e722894c2cebc04a51e73d4ee/outer-completion.json",
+          "sha256": "baa6f947e178cc2727395f5fdfb27c551fd8b74dc7fc27fb060585abc390baa3",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "d2e4d9f26e2527010c86a52386a1b3fb",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2434.503049000341,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/d2e4d9f26e2527010c86a52386a1b3fb/raw.json",
+          "sha256": "9ba03be1d61664f075e6b42592bdbbbc68d150c60d659e2a20101d6fbc9c339a",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/d2e4d9f26e2527010c86a52386a1b3fb/outer-completion.json",
+          "sha256": "7805d00621f76e1d1a7dd730382cfde64effea10faaf6ca9caecf6e184c2ac3d",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "e87e5d0f67c4fcdc4736885f8ba68e39",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2292.851227000938,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/e87e5d0f67c4fcdc4736885f8ba68e39/raw.json",
+          "sha256": "d6c381d80d37d1bc323b4afa56bb3fc5ca7fd398bba141b3a26ad072480f8aa3",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/e87e5d0f67c4fcdc4736885f8ba68e39/outer-completion.json",
+          "sha256": "6dbf9195dcbf5fa6f7a0c6d5c891100b86499a0513dec742d069f4223f8903e1",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "e909b776f5ce019389070a1b1489e5b3",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2289.032988999679,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/e909b776f5ce019389070a1b1489e5b3/raw.json",
+          "sha256": "ad4347a9366c6d6a9ce812ebf37cbdc3bc342b8f684d1fbc226444aa68171d5b",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/e909b776f5ce019389070a1b1489e5b3/outer-completion.json",
+          "sha256": "6b534eaa0a2764522fe20898a5c9864e2704c0fdfee03e177e8a79d795b557ce",
+          "size_bytes": 553
+        }
+      },
+      {
+        "request_id": "f41e48377c359ced358f83f9bce14137",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2289.7463389999757,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/f41e48377c359ced358f83f9bce14137/raw.json",
+          "sha256": "c2ac638c9eefa138aaa680f74ef142ec9d5766397d7277822d994e8b1f4b7dd2",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/f41e48377c359ced358f83f9bce14137/outer-completion.json",
+          "sha256": "ee5ab5acaa514df01fc9b6baf746a692cf5fb7255b837cdb4802f5ea64346e46",
+          "size_bytes": 554
+        }
+      },
+      {
+        "request_id": "f667de8a703b8ad15289f4ae9a7ae9a0",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2278.239114002645,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/f667de8a703b8ad15289f4ae9a7ae9a0/raw.json",
+          "sha256": "9d88997496900c5044b3d8466d38b8833eefe95a572d8bb0e1d8a8a652042deb",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/f667de8a703b8ad15289f4ae9a7ae9a0/outer-completion.json",
+          "sha256": "d2f231c8cde3f82c7b9b55b87f8438136e596c678fb04ef979a92360ef4ffb47",
+          "size_bytes": 552
+        }
+      },
+      {
+        "request_id": "fb0c9d74222a33c786d4defc2ee40985",
+        "kind": "schema_authentication",
+        "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "selected_status": 422,
+        "outer_elapsed_ms": 2264.565789999324,
+        "raw": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/fb0c9d74222a33c786d4defc2ee40985/raw.json",
+          "sha256": "1843ed29551fa03966d444915fc996d50072a7c4be6168d30be7f6645ff5a71d",
+          "size_bytes": 832
+        },
+        "outer_completion": {
+          "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/requests/fb0c9d74222a33c786d4defc2ee40985/outer-completion.json",
+          "sha256": "db804ed1e4f3c899dfa029505c2b9ed99eedab984b8acd98d6648d8e14a58679",
+          "size_bytes": 552
+        }
+      }
+    ],
+    "schema_authentication_zero_forward_count": 27,
+    "actual_field_text_generation_count": 1,
+    "group_indexes_present": false,
+    "client_model_calls_file_present": false,
+    "per_client_text_request_join_proven": false,
+    "scope": "Raw/final Q95 session population hashes only. Known4 was interrupted before either per-group external index or model_calls.json was written. One outcome reports1 text call, but client receipt/body join and delivered/typed text are unproven."
+  },
+  "native_output_inventory": {
+    "index": {
+      "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/output-index.json",
+      "sha256": "f5c193253115fb6a410c9d4ce47632ff1cceb2e58786a9e1099ecc6104faa09f",
+      "size_bytes": 27654
+    },
+    "files": 202,
+    "bytes": 4876306,
+    "exact_population_and_hashes_verified": true
+  },
+  "sources": {
+    "selected_plan": {
+      "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/selected-plan.json",
+      "sha256": "f3f03d139e8441022b9558ce4dabe55a585e17e49807ad6a50ac5c3067e64756",
+      "size_bytes": 254161
+    },
+    "ordinary_selected_count": 893,
+    "root_recorded_full_closure_unchanged": true,
+    "independently_hashed_small_count": 892,
+    "large_payload_refs": [
+      {
+        "path": "artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+        "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
+        "size_bytes": 23919549408
+      }
+    ],
+    "large_payload_full_rehash_independently_credited": false,
+    "current_alias_target_chain_stat_count": 11
+  },
+  "late_closure": {
+    "native_actor": {
+      "pid": 117747,
+      "pgid": 117747,
+      "sid": 117747,
+      "start_ticks": 1780470
+    },
+    "native_invocation": "cc486149cbf142fbb8766e1150874bc1",
+    "native_unit": "jev-current-nf4-v2-q95-20261022-01.service",
+    "native_two_scans_empty": true,
+    "helper_actor": {
+      "pid": 114751,
+      "start_ticks": 1748399,
+      "pgid": 114751,
+      "sid": 114751,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-03.service"
+    },
+    "helper_child": {
+      "pid": 114830,
+      "start_ticks": 1749262,
+      "pgid": 114830,
+      "sid": 114830
+    },
+    "helper_invocation": "2228388f53334ce1b505fa0d2c8456d9",
+    "helper_two_scans_empty": true,
+    "both_selected_cgroups_currently_absent": true,
+    "all_three_selected_processes_currently_absent": true,
+    "no_universal_whole_tree_escape_claim": true
+  },
+  "native_receipt": {
+    "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/receipt.json",
+    "sha256": "673c51c18bc1f9979c73bfad6452691db7e27cd2f7c857218a2fce10950c93c0",
+    "size_bytes": 6388
+  },
+  "control_receipt": {
+    "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/q95-control/receipt.json",
+    "sha256": "7a92afbd0702673c1342f9275d205137307cb7c4e59f3fe6b1fcd067e34e5aa3",
+    "size_bytes": 16390
+  },
+  "refs": {
+    "server_index": {
+      "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/v2-q95-01/browser/server-index.json",
+      "sha256": "61ab013149f9d17b0989607eb4bcc1f23acb5fabdf625266851d9644e8a1c095",
+      "size_bytes": 4718
+    },
+    "public_judge_source": {
+      "path": "scripts/jev_public_web_cases.py",
+      "sha256": "0ec9826d334cb2fbed24ade8780fa785291017d904b18233419ced760750bca3",
+      "size_bytes": 23665
+    },
+    "heldout_judge_source": {
+      "path": "scripts/jev_heldout_public_cases.py",
+      "sha256": "339cddf596a25ab433ca66e23924631b6261e62efc06f351878d4ef5c3f6f8f9",
+      "size_bytes": 16622
+    }
+  },
+  "claim_limits": [
+    "No completed10-task score or quality0 assigned",
+    "No durable complete attempt bundle or successful DOM replay credited",
+    "Server/native ASGI admission does not prove client response delivery",
+    "One actual Q95 generation is not a proven client text/DOM effect join",
+    "Source hashes and original qualifier receipts do not prove numerical argmax replay",
+    "Native40 memcg does not claim process-native CUDA cap or universal no-escape"
+  ],
+  "audit_execution": {
+    "source": {
+      "path": "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/independent-audit-q95-partial-01.py",
+      "sha256": "0423ffa7141d61be2eccae31a4451177153b8eb69f89796b325f16a75506fc5a",
+      "size_bytes": 20074
+    },
+    "elapsed_seconds": 0.4226454529998591,
+    "models_frameworks_HTTP_units_or_Comfy_calls": false,
+    "raw_DOM_questions_answers_or_private_config_published": false
+  }
+}
