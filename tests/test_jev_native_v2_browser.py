@@ -2,6 +2,7 @@
 
 import importlib
 import json
+import os
 import sys
 from contextlib import contextmanager
 from pathlib import Path
@@ -610,7 +611,13 @@ def test_client_cleanup_and_publication_cannot_replace_browser_timeout(
     monkeypatch.setattr(
         driver,
         "matrix_common",
-        lambda: SimpleNamespace(extend_owned=lambda *_a: None, stop_owned=stop),
+        lambda: SimpleNamespace(
+            process_table=lambda: {
+                123: {"pid": 123, "ppid": os.getpid(), "pgid": 123, "sid": 123, "start_ticks": 1}
+            },
+            extend_owned=lambda *_a: None,
+            stop_owned=stop,
+        ),
     )
     monkeypatch.setattr(driver.subprocess, "Popen", lambda *_a, **_k: child)
     if failure in {"publication", "both"}:
@@ -630,6 +637,38 @@ def test_client_cleanup_and_publication_cannot_replace_browser_timeout(
     if failure == "stop":
         closure = json.loads((tmp_path / "owned-client-closure.json").read_text())
         assert closure["confirmed"] is False
+
+
+@pytest.mark.parametrize("code", ["pass", "import time; time.sleep(0.15)"])
+def test_actual_owned_client_is_seeded_before_poll_and_closes(tmp_path, code):
+    driver.run_client([sys.executable, "-I", "-B", "-c", code], dict(os.environ), tmp_path)
+    closure = json.loads((tmp_path / "owned-client-closure.json").read_bytes())
+    assert closure["confirmed"] is True and closure["remaining"] == []
+    assert len(closure["tracked_PID_start_ticks"]) == 1
+    pid, start = next(iter(closure["tracked_PID_start_ticks"].items()))
+    assert int(pid) > 0 and start > 0 and closure["tracked_groups"] == [int(pid)]
+
+
+@pytest.mark.parametrize("field", ["ppid", "pgid", "sid", "start_ticks"])
+def test_wrong_initial_client_identity_never_becomes_owned(tmp_path, monkeypatch, field):
+    row = {"pid": 123, "ppid": os.getpid(), "pgid": 123, "sid": 123, "start_ticks": 1}
+    row[field] = 0
+    child = SimpleNamespace(pid=123, returncode=None)
+    observed = []
+
+    def stop(_child, known, groups):
+        observed.append((dict(known), set(groups)))
+        return {"confirmed": False}
+
+    monkeypatch.setattr(driver.subprocess, "Popen", lambda *_a, **_k: child)
+    monkeypatch.setattr(
+        driver,
+        "matrix_common",
+        lambda: SimpleNamespace(process_table=lambda: {123: row}, stop_owned=stop),
+    )
+    with pytest.raises(ValueError, match="Actual owned browser child"):
+        driver.run_client(["fake-only"], {}, tmp_path)
+    assert observed == [({}, set())]
 
 
 @pytest.mark.parametrize(

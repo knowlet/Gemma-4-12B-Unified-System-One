@@ -718,6 +718,19 @@ def run_client(argv, env, output):
             stderr=streams[1],
             start_new_session=True,
         )
+        identity = common.process_table().get(child.pid)
+        require(
+            identity is not None
+            and identity["ppid"] == os.getpid()
+            and identity["pid"] == identity["pgid"] == identity["sid"] == child.pid
+            and type(identity["start_ticks"]) is int
+            and identity["start_ticks"] > 0,
+            "Actual owned browser child PID/start/PGID/SID required",
+        )
+        # extend_owned expands authenticated seeds; an empty mapping never
+        # discovers even the main child. Seed before poll can reap a fast exit.
+        known[child.pid] = identity["start_ticks"]
+        groups.add(identity["pgid"])
         deadline = time.monotonic() + 7200
         while True:
             common.extend_owned(child.pid, known, groups)
