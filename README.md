@@ -45,6 +45,17 @@ The [typed stale-action feedback experiment](docs/validation/2026-10-22/jev-nati
 completed 3/10 and is not promoted; the V2 control remains at 4/10.
 No official leaderboard rank or cross-model superiority is claimed for this run.
 
+The [shared-Q95 Gemma control](docs/validation/2026-10-22/jev-native-v2-q95-control-retry-partial-results.md)
+exited when ComfyUI became busy; its incomplete evaluation has no quality score.
+Experimental [FIND_TEXT navigation](docs/validation/2026-10-22/jev-find-text-cpu-browser-results.md)
+passed 26 CPU checks and seven real Chromium fixture scenarios. Its
+[explicit source integration](artifacts/jev-runtime/browser-find-text-integration-20261022-01/README.md)
+passed 19 checks, including a simulated native backend through the private API,
+wire and actual browser. The separate
+[completion-review client](artifacts/jev-runtime/browser-completion-review-profile-20261022-01/README.md)
+passed 20 CPU checks for bounded review of proposed DONE decisions.
+Complete model evaluations for these experimental agent profiles remain pending.
+
 ## Public JevBench screening — October 8, 2026
 
 The [October 10 research prerelease](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/tag/research-2026-10-10-jevbench)
