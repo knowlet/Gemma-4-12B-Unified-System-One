@@ -1,0 +1,145 @@
+{
+  "schema_id": "composed-observation-integration-work-state-v1",
+  "sequence": 114,
+  "created_at_utc": "2026-10-22T12:06:36.158343+00:00",
+  "previous_state": {
+    "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-113.json",
+    "sha256": "8ce7fe1314c615a845c1ce87fcc5a8367da16c97b36ca2dda11956fffb09bc17",
+    "size_bytes": 3467
+  },
+  "goal_status": "active",
+  "status": "Authenticated_OS_observer_and_pin_fix_complete_Q95helper04_and_Gemma_retry02_running_allfive_D3_native_plans_fresh",
+  "completed_results": {
+    "Benchmark_Heaven": "195/231 =84.42%",
+    "coherence_mini": "41.2630718954/100",
+    "Gemma_NF4_raw": "2/10",
+    "Gemma_NF4_V2": "4/10",
+    "Gemma_NF4_V2_feedback": "3/10 not promoted",
+    "D3_Edge_prior": "observed0/10; post-task finalization interrupted, unqualified"
+  },
+  "observer": {
+    "source": {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+      "size_bytes": 38483
+    },
+    "authority": {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    },
+    "CPU_tests": 151,
+    "Ruff": "PASS safe noAS singlethread",
+    "peer_review": "CLEAR",
+    "historical_UID0_PID_mapping": "correlation to two maintenance units only, not exact identification",
+    "scope": "Only exact two source-pinned OS service invocations with live PID/start/unit/Invocation/cgroup/AppArmor and file authority; unknown/live/Comfy remains blocking. Same0.5s/2s budgets."
+  },
+  "Q95_helper04": {
+    "session": 47319,
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-04/launch-plan-01.json",
+      "sha256": "658d37196deac7261f3c9e5dd120aa0bb05af3a4281b245acbe6c05a974255a1",
+      "size_bytes": 3491
+    },
+    "seed": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-04/owner-04/helper-selection-seed.json",
+      "sha256": "1597ca61d5a7b6ec8faacba666be3e9e583237a982e300eca00e4b713c4f11fb",
+      "size_bytes": 2808
+    },
+    "unit": "jev-d3-q95-helper-20261022-04.service",
+    "actor_pid": 127726,
+    "helper_pid": 127861,
+    "helper_start_ticks": 1934582,
+    "invocation": "2d8586683c8d459ca484144cac0a6fcf",
+    "snapshot_active": true,
+    "source_population": 478,
+    "live_status_must_be_requeried": true
+  },
+  "Gemma_Q95_retry02": {
+    "session": 84825,
+    "plan": {
+      "path": "artifacts/jev-runtime/native-v2-q95-pin-successor-20261022-01/launch-plan-01.json",
+      "sha256": "6d1e894b1326883c8f277dc41aef4439ce6b78d1fbf1595e4d287666386c5bb9",
+      "size_bytes": 255674
+    },
+    "unit": "jev-current-nf4-v2-q95-20261022-02.service",
+    "actor_pid": 133201,
+    "actor_start_ticks": 1969493,
+    "invocation": "f153b310bfd54ec58ca23da395d47dea",
+    "snapshot_active": true,
+    "sources": 900,
+    "actual_final_score": null,
+    "CPU_tests": 17,
+    "peer_review": "CLEAR including actualnative.pin2field and prepare/run_paths output02 regressions",
+    "monitor_owner": "nf4_browser_owner read-only; root alone lifecycle",
+    "live_status_must_be_requeried": true
+  },
+  "D3_fresh_plans": {
+    "execution": {
+      "path": "artifacts/jev-runtime/decision3-local-execution-system-services-20261022-01/execution.py",
+      "sha256": "b0028af23a6c496ceab5bebf24cc948a6c1e1fc05a5a68b37c6c553220d251a9",
+      "size_bytes": 57821
+    },
+    "factory": {
+      "path": "artifacts/jev-runtime/decision3-local-execution-system-services-20261022-01/prepare_plans.py",
+      "sha256": "0d926e45de742ba71ad3e56e1231cb08e552c67d157a52c459502405ed039004",
+      "size_bytes": 7761
+    },
+    "actual_policy_model_started": false,
+    "source_union_count": 40,
+    "peer_review": "CLEAR whole source inverse, actualLite40refs/helper04/descriptors/registry",
+    "plans": [
+      {
+        "path": "artifacts/jev-runtime/decision3-local-execution-system-services-20261022-01/d3-lite-01/plan-01.json",
+        "sha256": "79f2ddd02252a921727dab3911aea297e554f029659dbc978ffa4a5c5fad4e38",
+        "size_bytes": 11642
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-execution-system-services-20261022-01/d3-nano-01/plan-01.json",
+        "sha256": "91391f422f4ee0aa09b88fe5fc08cde71ce4dbea5b0f811cd4d11f42efd96182",
+        "size_bytes": 11642
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-execution-system-services-20261022-01/d3-mini-01/plan-01.json",
+        "sha256": "5f25bacbc757aae23cfe5fdb8c95d5abe4243aff66259a519a866be93351c23a",
+        "size_bytes": 11642
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-execution-system-services-20261022-01/d3-flash-01/plan-01.json",
+        "sha256": "6180920f5f6024502235995827670ea24171aa85bf0a218b50fea1f5af456f4a",
+        "size_bytes": 11652
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-execution-system-services-20261022-01/d3-edge-01/plan-01.json",
+        "sha256": "589d1f879850903acb97ce6194b60f3dc4bbd6897d6c047d1b1a08120f5cff32",
+        "size_bytes": 11642
+      }
+    ],
+    "old03_plans": "dead helper bindings; neverlaunch",
+    "execution_order": "After Gemma02 selected closure, Lite then Nano/Mini/Flash/Edge serial fresh workers; no overlapping policy model loads"
+  },
+  "find_text_component": {
+    "directory": "artifacts/jev-runtime/browser-find-text-profile-20261022-01",
+    "profile": "new private ninth operation, originaleightop/server/bootstrap unchanged",
+    "status": "source-reviewed latestpost-dispatch unknownphysical outcome fix; final26case tests pending quietwindow, older25PASS not attributedto latestsource",
+    "qualification_or_quality_claim": false,
+    "question_arity_correction": "No fixed15 browserhead count; Edge15 refers sum over4requests. Preserve every submitted question count/order and native255 readout."
+  },
+  "fullD3_streaming": {
+    "proposal": {
+      "path": "artifacts/jev-runtime/decision3-measured-serial-profile-20261022-01/profile-proposal.json",
+      "sha256": "3a72ba74900b28e8e505c9acba2ed9c23eb6d7107afa6a8c1f4e394e553c9235",
+      "size_bytes": 10865
+    },
+    "status": "prospective separate58GiBCUDA/6GiBmemcg/2GiBbuffer+R, firstconstructor+exact48warmup scoreNULL; no implementation/admission yet",
+    "original_profile": "132618706804>T130595864576 conservative capacity refusal/scoreNULL unchanged"
+  },
+  "all_six_Decision3_complete": false,
+  "other_models_beaten": false,
+  "next": [
+    "Monitor/audit Gemma same-Q95 full10 and commit result",
+    "SequentialfreshLite/Nano/Mini/Flash/Edge after each selected externalclosure",
+    "Quietwindow finalfindcomponent26tests and explicitnewserver/wire/bootstrap integration",
+    "Measuredserial fullD3 phase1constructor+warmup with own explicitresourceprofile before anyquality score"
+  ]
+}
