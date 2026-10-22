@@ -20,6 +20,7 @@ are not measurements of this Unified model. See [upstream notes](docs/upstream.m
 | Real Chromium V7 tasks | Current NF4 + raw96 action adapter | **20%** (2/10) |
 | Same ten Chromium V7 tasks and NF4 helper | Current NF4 + native V2 adapter | **40%** (4/10) |
 | Same ten Chromium V7 tasks, Q95 helper | Decision3 Edge BF16, observed tasks | **0%** (0/10); finalization interrupted |
+| Same ten tasks, NF4 V2 plus stale-action feedback | Experimental agent protocol | **30%** (3/10); not promoted |
 
 Both JevBench suites completed with independently reproduced scores; the coherence
 95% case-bootstrap interval is 38.43–43.80. The browser run retained all ten tasks:
@@ -40,6 +41,8 @@ Decision3 Edge has an [observed 0/10 result](docs/validation/2026-10-22/decision
 with finalization interrupted after the tasks and missing final worker receipts.
 Its Q95 helper differs from the Gemma NF4 helper; matched controls and the other
 Decision3 checkpoints remain pending.
+The [typed stale-action feedback experiment](docs/validation/2026-10-22/jev-native-v2-feedback-complete-results.md)
+completed 3/10 and is not promoted; the V2 control remains at 4/10.
 No official leaderboard rank or cross-model superiority is claimed for this run.
 
 ## Public JevBench screening — October 8, 2026
