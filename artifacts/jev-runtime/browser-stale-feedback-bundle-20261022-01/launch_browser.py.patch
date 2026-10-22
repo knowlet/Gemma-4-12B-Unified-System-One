@@ -1,0 +1,43 @@
+--- artifacts/jev-runtime/native-v2-browser-execution-20261022-04/launch_browser.py
++++ artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/launch_browser.py
+@@ -15,10 +15,10 @@
+ HERE = Path(__file__).absolute().parent
+ ROOT = HERE.parents[2]
+ CGROUP_ROOT = Path("/sys/fs/cgroup")
+-DRIVER = "scripts/jev_native_v2_browser.py"
+-PROFILE = "jev-current-nf4-v7-browser-owned-v1"
++DRIVER = "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/feedback_native_driver.py"
++PROFILE = "jev-current-nf4-v7-feedback-browser-owned-v1"
+ CAP, GIB, BASE_BYTES = 40 * 1024**3, 1024**3, 23_919_549_408
+-FORMATS = {"raw": "raw-json-v1", "v2": "shared-elements-v2"}
++FORMATS = {"v2-feedback": "shared-elements-v2"}
+ GUARD_DIRECTORY = "artifacts/jev-runtime/v2-action-training-prepare-20261021-01"
+ GUARD_INDEX = GUARD_DIRECTORY + "/selected-evidence-index-01.json"
+ GUARD_SOURCE = GUARD_DIRECTORY + "/run_compiler_tests.py"
+@@ -290,6 +290,7 @@
+ 
+ def validate_plan(plan):
+     require(plan["schema_id"] == PROFILE and plan["root"] == str(ROOT), "Exact local profile/root")
++    require(plan.get("agent_protocol") == "typed-stale-action-feedback-v1" and plan.get("matched_control_plan_sha256") == "73bff770e242b93d5b7b53d24ef933926bd63897a4707d6d2e2a0f06f4438b6d", "Explicit selected feedback protocol/control")
+     require(
+         plan["arm"] in FORMATS and re.fullmatch(r"[0-9]{2}", plan["attempt"]),
+         "Explicit arm/attempt",
+@@ -314,6 +315,8 @@
+     require(len(set(labels)) == len(labels), "Unique source pins")
+     required = {
+         DRIVER,
++        "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/feedback_bundle.py",
++        "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/action_feedback.py",
+         GUARD_INDEX,
+         GUARD_SOURCE,
+         OBSERVER_SOURCE,
+@@ -544,7 +547,8 @@
+     require(
+         receipt["stage"] == "complete_pending_external_closure"
+         and receipt["attempts"] == receipt["planned_denominator"] == 10
+-        and receipt["prompt_format"] == plan["prompt_format"],
++        and receipt["prompt_format"] == plan["prompt_format"]
++        and receipt.get("agent_protocol") == plan["agent_protocol"],
+         "Complete unchanged browser arm",
+     )
+     groups = receipt["groups"]
