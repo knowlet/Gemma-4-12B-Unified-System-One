@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-22",
+  "source_head": "93c40da37bb91394fb2dc27ce832ce3d47553ad7",
+  "scope": "New stdlib external unit owner adapter and one authorized 64MiB/30s service probe; no model, GPU, Comfy, other-unit mutation or existing-source edits.",
+  "decision": "Reuse the project MIT browser owner's nonce/InvocationID-scoped stop, exact unit/cgroup readback and two final PID/start/group/session scans. Add actual cgroup membership readback to retain a double-forked, setsid, empty-environment process that the marker transport cannot observe.",
+  "references": [
+    {"path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/launch_browser.py", "source_sha256": "e8e2deeb1bb260771dfe92cf97b5f1192fb5430d2c8205e730c9dc307d3a3f01", "symbols": ["readback", "scan", "execute"], "license": "project MIT", "use": "Reuse design and small stdlib ownership primitives; existing file remains unchanged."},
+    {"url": "https://github.com/systemd/systemd/blob/v255/src/core/kill.c", "version": "v255; installed 255.4", "license": "LGPL-2.1-or-later file header", "symbols": ["kill_context_init", "kill_mode_table"], "use": "Design reference only; defaults and control-group mode, no copied upstream implementation."},
+    {"url": "https://www.freedesktop.org/software/systemd/man/latest/systemd.kill.html", "use": "control-group stop and independent stop-timeout/final SIGKILL semantics; actual installed unit properties will be read back."},
+    {"url": "https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html", "use": "Fork inherits cgroup membership; cgroup.procs/populated observation; migration permissions require destination and common ancestor access."}
+  ],
+  "alternatives": [
+    {"mechanism": "PID/PGID/SID and inherited marker only", "decision": "Insufficient: the prior actual empty-env detached-grandchild test demonstrates escape from observation."},
+    {"mechanism": "Existing systemd user unit with kernel cgroup membership", "decision": "Selected for the audited fork/setsid/exec case and externally derived unit/cohort closure."},
+    {"mechanism": "New adversarial sandbox or privilege hierarchy", "decision": "Outside this authorized scope. Same-UID delegated subtree migration remains possible; record it rather than claim enforced no-escape."}
+  ],
+  "capabilities_seen_before_implementation": {"systemd": "255.4-1ubuntu8.17", "kernel": "6.17.0-1029-nvidia", "cgroup": "v2 unified", "effective_capabilities": "0", "user_controllers": ["cpu", "memory", "pids"], "same_uid_parent_cgroup_procs_writable": true},
+  "verification": "Pure ownership/unknown/error tests under AS256MiB CPU30 wall45 BLAS1. After independent review, one exact nonce-owned jev-d3-boundary-probe-20261022-01.service may demonstrate real inheritance and authenticated close with MemoryMax64MiB, Swap0, RuntimeMax30s and stop2s. No cgroup migration is attempted. Whole-unit facts must not become a generic no-escape or model-continuation claim."
+}

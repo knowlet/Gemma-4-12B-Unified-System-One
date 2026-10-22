@@ -1,0 +1,30 @@
+{
+  "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+  "uid": 1001,
+  "kernel": "6.17.0-1029-nvidia",
+  "cgroup_filesystem": "cpuset cpu io memory hugetlb pids rdma misc dmem",
+  "effective_capabilities": "0000000000000000",
+  "migration_permission_observations": [
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/cgroup.procs",
+      "uid": 1001,
+      "mode": "0o644",
+      "effective_writable": true
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/cgroup.procs",
+      "uid": 1001,
+      "mode": "0o644",
+      "effective_writable": true
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1001.slice/cgroup.procs",
+      "uid": 0,
+      "mode": "0o644",
+      "effective_writable": false
+    }
+  ],
+  "migration_attempted": false,
+  "no_escape_enforced": false,
+  "scope": "No other unit queried; kernel and current-UID delegated hierarchy only."
+}
