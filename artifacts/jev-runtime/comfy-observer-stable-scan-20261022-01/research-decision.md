@@ -1,0 +1,9 @@
+# Stable per-process ComfyUI absence observations
+
+2026-10-22, before implementation. The original `afbc0ad9248543c7b4ec48a773a799dde779138971636f49ff89acd0b2c47ca9` observer completed a real, read-only 150-call soak in 16.106 seconds: 149 confirmed absences and one refusal because PID 26084 changed process identity during its scan. That evidence contains no listener or known Comfy runtime. It independently reproduces a transient observation failure; the interrupted training owner's original exception did not retain evidence, so its exact cause cannot be reconstructed from this new soak.
+
+Reuse the existing project `/proc` before/after PID-start/comm checks and structured invocation classifier, without changing the old source or relaxing the final two complete absence scans. Linux process identity and argv may transition during exec, while the process retains its PID. A single mixed observation is not authoritative evidence of a lasting unknown process.
+
+The successor will re-read the same PID at most twice, only when fresh before/after process identity or bounded argv observations demonstrably disagree. Record bounded identity/classification/hash evidence for those retries. A stable second observation may replace an excluded non-Comfy transient; observed Comfy, permission failures, missing cwd, unresolved inconsistencies and listener evidence still refuse. A known Comfy signature must never be erased by retrying until it disappears. Global process/time/byte bounds and both final fresh complete scans remain unchanged.
+
+Verification will retain the original pure cases, add transient-versus-persistent identity/argv changes, known-Comfy and nonretryable error regressions, and run a bounded read-only successor soak with explicitly owned harmless shell-to-Python exec churn. No GPU, model, browser, service, systemd unit or ComfyUI operation is involved. The old observer, old owners and old interrupted training outputs remain immutable.
