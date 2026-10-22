@@ -1,0 +1,414 @@
+{
+  "schema_id": "jev-current-nf4-raw-partial-diagnosis-v1",
+  "created_at_utc": "2026-10-22T09:17:04.396657+00:00",
+  "scope": "Read-only aggregate diagnosis of raw01 and the subsequently closed raw02. Local traces remain local; no raw DOM, prompts, question bodies, field values or answer destinations are reproduced.",
+  "score_accounting": {
+    "raw01": {
+      "recorded_attempts": 4,
+      "recorded_successes": 1,
+      "recorded_ratio": 0.25,
+      "uninterrupted_completed_attempts": 3,
+      "uninterrupted_completed_successes": 1,
+      "completed_subset_ratio": 0.3333333333333333,
+      "infrastructure_interrupted_attempts": 1,
+      "scope": "The first three completed; the fourth lost its browser during the external owner stop. The recorded1/4 is not an uninterrupted quality rate."
+    },
+    "raw02": {
+      "uninterrupted_known4_attempts": 4,
+      "known4_successes": 1,
+      "known4_success_rate": 0.25,
+      "genuine_completed_failures": 3,
+      "premature_done_count": 2,
+      "policy_calls": 35,
+      "text_calls": 4,
+      "public6_attempts": 0,
+      "scope": "The known group completed with no per-attempt errors; an inner ownership bookkeeping refusal stopped the driver before the public group."
+    },
+    "complete_ten_task_score": null,
+    "complete_ten_task_comparison_qualified": false,
+    "other_model_beaten": false,
+    "comparison_limit": "These known-task results are diagnostic pilot observations. Neither run completes the declared ten tasks; no ten-task or cross-model win is inferred."
+  },
+  "cases": [
+    {
+      "category": "arxiv_title_search",
+      "raw01": {
+        "completed_without_infrastructure_interruption": true,
+        "status": "done",
+        "success": false,
+        "premature_done": true,
+        "policy_calls": 9,
+        "text_calls": 1
+      },
+      "raw02": {
+        "completed_without_infrastructure_interruption": true,
+        "status": "done",
+        "success": false,
+        "premature_done": true,
+        "policy_calls": 9,
+        "text_calls": 1
+      },
+      "same_action_and_filled_text_sequence_on_completed_first_three": true,
+      "evidence": [
+        "arxiv_title_search_raw01_outcome",
+        "arxiv_title_search_raw02_outcome",
+        "arxiv_title_search_raw01_states",
+        "arxiv_title_search_raw01_calls",
+        "arxiv_title_search_raw02_states",
+        "arxiv_title_search_raw02_calls"
+      ]
+    },
+    {
+      "category": "arxiv_original_entity",
+      "raw01": {
+        "completed_without_infrastructure_interruption": true,
+        "status": "blocked",
+        "success": false,
+        "premature_done": false,
+        "policy_calls": 7,
+        "text_calls": 1
+      },
+      "raw02": {
+        "completed_without_infrastructure_interruption": true,
+        "status": "blocked",
+        "success": false,
+        "premature_done": false,
+        "policy_calls": 7,
+        "text_calls": 1
+      },
+      "same_action_and_filled_text_sequence_on_completed_first_three": true,
+      "evidence": [
+        "arxiv_original_entity_raw01_outcome",
+        "arxiv_original_entity_raw02_outcome",
+        "arxiv_original_entity_raw01_states",
+        "arxiv_original_entity_raw01_calls",
+        "arxiv_original_entity_raw02_states",
+        "arxiv_original_entity_raw02_calls"
+      ]
+    },
+    {
+      "category": "python_documentation",
+      "raw01": {
+        "completed_without_infrastructure_interruption": true,
+        "status": "done",
+        "success": true,
+        "premature_done": false,
+        "policy_calls": 5,
+        "text_calls": 1
+      },
+      "raw02": {
+        "completed_without_infrastructure_interruption": true,
+        "status": "done",
+        "success": true,
+        "premature_done": false,
+        "policy_calls": 5,
+        "text_calls": 1
+      },
+      "same_action_and_filled_text_sequence_on_completed_first_three": true,
+      "evidence": [
+        "python_documentation_raw01_outcome",
+        "python_documentation_raw02_outcome"
+      ]
+    },
+    {
+      "category": "nasa_nested_section",
+      "raw01": {
+        "completed_without_infrastructure_interruption": false,
+        "status": "ready",
+        "success": false,
+        "premature_done": false,
+        "policy_calls": 14,
+        "text_calls": 1
+      },
+      "raw02": {
+        "completed_without_infrastructure_interruption": true,
+        "status": "done",
+        "success": false,
+        "premature_done": true,
+        "policy_calls": 14,
+        "text_calls": 1
+      },
+      "same_action_and_filled_text_sequence_on_completed_first_three": null,
+      "evidence": [
+        "nasa_nested_section_raw01_outcome",
+        "nasa_nested_section_raw02_outcome"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "field_literal_semantics",
+      "category": "helper_semantics",
+      "confidence": "observed defect; no clean-query counterfactual executed",
+      "observed": "The title-search helper added outer parentheses around the required quoted phrase. The field received exactly the decoded JSON text; JSON escapes did not create literal backslashes. Requested field and abstract-display controls were selected correctly.",
+      "construction_result": "Valid JSON and correct decode/fill roundtrip; semantic literal selection is the problem, not malformed JSON or transport escaping.",
+      "page_outcome": "The initial submitted search and the later advanced search visibly reported zero results. Final independent DOM verification found zero result entries.",
+      "causal_limit": "The trace establishes added syntax and zero results together. It does not isolate the parentheses as the sole cause without a separate controlled query.",
+      "evidence": [
+        "arxiv_title_search_raw01_calls",
+        "arxiv_title_search_raw01_states",
+        "arxiv_title_search_raw01_outcome",
+        "arxiv_title_search_raw02_calls",
+        "arxiv_title_search_raw02_outcome",
+        "captured_field_helper"
+      ]
+    },
+    {
+      "id": "repeat_without_repair_and_premature_done",
+      "category": "policy_progress_and_completion",
+      "observed": "After the zero-results response, two more Search clicks left the page unchanged. The policy then moved to an advanced form while retaining the same literal, submitted it, and returned DONE despite another visible zero-results outcome.",
+      "counts": {
+        "unchanged_resubmissions": 2,
+        "policy_calls": 9,
+        "text_helper_calls": 1,
+        "executed_actions": 8
+      },
+      "verification_result": "Route/query/form mismatches are additional failures; the visibly empty result set and premature completion already demonstrate unsuccessful task execution independently of strict route matching.",
+      "evidence": [
+        "arxiv_title_search_raw01_states",
+        "arxiv_title_search_raw01_outcome",
+        "arxiv_title_search_raw02_states",
+        "arxiv_title_search_raw02_outcome"
+      ]
+    },
+    {
+      "id": "entity_mismatch_and_bad_navigation",
+      "category": "policy_target_selection_and_recovery",
+      "observed": "The other arXiv task used a correctly decoded plain title query and received 134 broad results. The policy paginated forward then back, opened a different publication sharing part of the title, and continued through an adjacent-publication control even after visible title/year/authors contradicted the requested entity.",
+      "helper_result": "No malformed field text or JSON-construction defect was observed for this task; broad retrieval and subsequent entity selection were insufficient.",
+      "page_outcome": "The adjacent-publication endpoint displayed an explicit disabled-feature message and offered zero actions. BLOCKED at that final state is consistent with the supported action set. The avoidable failures occurred before reaching it.",
+      "verification_result": "The final DOM lacked the requested paper and abstract; this is a real navigation/selection failure. The remote feature outage is retained as a contributing circumstance, separate from the local owner interruption.",
+      "evidence": [
+        "arxiv_original_entity_raw01_calls",
+        "arxiv_original_entity_raw01_states",
+        "arxiv_original_entity_raw01_outcome",
+        "arxiv_original_entity_raw02_states",
+        "arxiv_original_entity_raw02_outcome"
+      ]
+    },
+    {
+      "id": "nested_entity_section_confusion",
+      "category": "policy_entity_scope_and_completion",
+      "observed": "The uninterrupted second run finished on a general topic Facts page rather than the requested parent entity and its nested section. It returned DONE; independent verification found the requested page heading and section absent.",
+      "qualification": "This is a genuine completed failure in raw02. Raw01 remains infrastructure-interrupted and is not retrospectively assigned a quality failure.",
+      "evidence": [
+        "nasa_nested_section_raw01_outcome",
+        "nasa_nested_section_raw02_outcome"
+      ]
+    },
+    {
+      "id": "positive_real_navigation",
+      "category": "observed_success",
+      "observed": "Both runs completed the documentation task using field text, search submission and a method-result click. Independent verification passed the method signature and description visibility checks.",
+      "evidence": [
+        "python_documentation_raw01_outcome",
+        "python_documentation_raw02_outcome"
+      ]
+    },
+    {
+      "id": "unseeded_inner_client_ownership",
+      "category": "harness_integration",
+      "observed": "raw02 completed all four known tasks, then aborted before the public-six group because the inner client closure was unconfirmed. Its tracked PID map and groups were empty. The executed run_client initialized an empty ownership map and called extend_owned, whose implementation expands authenticated seeds only; it never discovers an unseeded leader.",
+      "evidence_interpretation": "Empty remaining/signals lists with empty tracking do not establish inner closure. This was a fail-closed harness bookkeeping defect, not proof of surviving processes. The external owner independently confirmed selected cgroup and process absence afterwards.",
+      "repair_status": "Parent has prepared immediate post-Popen leader PID/start/parent/PGID/SID seeding. Independent read-only diff review is CLEAR; parent validation and a fresh complete comparison are separate from this diagnosis.",
+      "evidence": [
+        "raw02_executed_driver",
+        "matrix_common",
+        "raw02_inner_client_closure",
+        "raw02_driver_receipt",
+        "raw02_owner_closure"
+      ]
+    }
+  ],
+  "generic_proposed_fixes": [
+    {
+      "priority": 1,
+      "target": "field helper literal semantics",
+      "proposal": "Train and evaluate minimal faithful field literals: preserve operators, quotation and grouping when required by the user or observed field; do not invent extra grouping. Include paired exact-phrase, prose-delimited, literal-code, email and explicitly grouped-expression counterexamples.",
+      "validation": "Use new development-only examples with different values and controls; require exact decode/fill roundtrip and preserved intended punctuation. Compare the same checkpoint/quantization/helper limits. Do not apply a global punctuation stripper."
+    },
+    {
+      "priority": 1,
+      "target": "policy progress and completion",
+      "proposal": "Represent the requested conditions and their observed evidence separately. After a submitted search yields no results, choose a supported evidence-based repair rather than repeating the unchanged submission. Require positive current-page evidence for every requested completion condition before DONE.",
+      "validation": "Use held-out form/search scenarios with no-result and partial-success negatives; measure unchanged-action loops and premature completion separately from task success under unchanged judges."
+    },
+    {
+      "priority": 1,
+      "target": "policy entity and section grounding",
+      "proposal": "Compare full observed entity attributes with the user request before selecting or accepting a result. Track parent-entity identity separately from a common section/topic name. Reject partial-name matches when visible dates, authors or headings contradict the requested entity; use offered search/filter/navigation controls to narrow retrieval.",
+      "validation": "Use new similar-title/author/date and parent-page/section decoys. Keep all target IDs and routes dynamic from observations; never map benchmark identifiers, answers or destinations to actions."
+    },
+    {
+      "priority": 2,
+      "target": "recovery and action history",
+      "proposal": "Use recent observed state transitions to detect navigation cycles and failed features. Prefer a supported recovery operation from current evidence; record a genuine unsupported-operation limit when no recovery action is offered.",
+      "validation": "Test forward/back pagination cycles, unchanged form submissions and unavailable-feature pages without adding benchmark-specific navigation shortcuts or changing client semantics."
+    },
+    {
+      "priority": 1,
+      "target": "harness ownership admission",
+      "proposal": "Seed a fresh child identity before any poll/reap, then expand descendants from that authenticated seed. Preserve primary errors, require known cleanup and retain independent external unit/cgroup closure before proceeding to the next group.",
+      "validation": "Immediate and delayed real stdlib child tests, invalid parent/PGID/SID/start fixtures, primary-failure cleanup tests, then a fresh complete two-group run. Existing client/judges remain unchanged."
+    }
+  ],
+  "uncertainties": [
+    "No controlled query comparison isolates whether the extra parentheses alone caused the zero-results response.",
+    "Two repeated traces do not establish BF16-vs-NF4 causation or quantify quantization loss.",
+    "Decoded action point-mass confidence1.0 is explicitly labelled deterministic policy output, not a calibrated model posterior.",
+    "Proposed helper/policy fixes have not been implemented or evaluated here."
+  ],
+  "closure_and_infrastructure": {
+    "raw01": {
+      "reason": "owner_error",
+      "owner_error_type": "ObservationError",
+      "quality_censoring": "Fourth attempt interrupted; its TargetClosed verification cannot be used as a normal quality verdict."
+    },
+    "raw02": {
+      "reason": "terminal",
+      "owner_primary_error": null,
+      "worker_exit_status": "1",
+      "final_comfy_state": "absent_confirmed",
+      "cgroup_absent": true,
+      "two_clean_final_process_scans": true,
+      "source_changes": [],
+      "model_cache_aliases_unchanged": true,
+      "scope": "New observer admitted the complete known-group execution. The driver exited1 on its inner closure bookkeeping failure; the external unit is closed."
+    }
+  },
+  "evidence": {
+    "raw01_summary": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/known4/results/summary.json",
+      "sha256": "997d0148fb3552595e8e20e48417e6d0e8d0fc5ad41e00776abfaa3cd18e4d9a",
+      "size_bytes": 147758
+    },
+    "raw02_summary": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/known4/results/summary.json",
+      "sha256": "c24f5ea385861b01ec5d991012a35a81dd391b5c0d6628cf5880fc12e1ef5147",
+      "size_bytes": 204405
+    },
+    "raw01_owner_closure": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/root-external-closure.json",
+      "sha256": "290573f81b7323613b880ea7b82b1218fab8751e61a69547a359b6630c504004",
+      "size_bytes": 436190
+    },
+    "raw02_owner_closure": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/root-external-closure.json",
+      "sha256": "8f03cb46f16768a09ca81a59465723754373f726879c7cb7d452f212963bc386",
+      "size_bytes": 439628
+    },
+    "raw02_driver_receipt": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/receipt.json",
+      "sha256": "7802f1ac2829222524bcbf0d4d00655063f330877762c54d31c02a0a7f839616",
+      "size_bytes": 3978
+    },
+    "raw02_inner_client_closure": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/known4/owned-client-closure.json",
+      "sha256": "cb00bb0a7c150c4bab80e3f745a0a73122fb33ddd1816cc0e105c8d38c971b4f",
+      "size_bytes": 97
+    },
+    "raw02_executed_driver": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/composition-sources/scripts/jev_native_v2_browser.py",
+      "sha256": "1ba446a8718b98081f600298fb099c903ce855e1a7ac1a7aaa7f701444930fc1",
+      "size_bytes": 45164
+    },
+    "matrix_common": {
+      "path": "artifacts/jev-runtime/public-affordance-matrix-harness-20261019-01/matrix_common.py",
+      "sha256": "71251036c63e8df852ae22814d7234db0daaee90436c265e8a5549de468c6291",
+      "size_bytes": 7229
+    },
+    "captured_field_helper": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/composition-sources/scripts/jev_field_syntax_helper.py",
+      "sha256": "b1b5d206843dbea9fe840d5ecf74fcf5697b5f6dd579fccebb172de059cd9800",
+      "size_bytes": 28699
+    },
+    "prior_partial_report": {
+      "path": "docs/validation/2026-10-22/jev-current-nf4-raw-partial-01.json",
+      "sha256": "b66ebf012fd63a2218d7cd0e78714c71ca0ebf450cab4bb5f2cb9e59035fc297",
+      "size_bytes": 2661
+    },
+    "arxiv_title_search_raw01_outcome": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/known4/results/attempts/public-arxiv-title-filter-results-v1-000/outcome.json",
+      "sha256": "9f3ee18977d7ad13d0c935af1a486ba428f1362e4e7889b17152909c896765f2",
+      "size_bytes": 15033
+    },
+    "arxiv_title_search_raw02_outcome": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/known4/results/attempts/public-arxiv-title-filter-results-v1-000/outcome.json",
+      "sha256": "11aa5c2c6a0fded14468543f65c3e72aea38ef6cb632e6cab7686e50d332491d",
+      "size_bytes": 15032
+    },
+    "arxiv_title_search_raw01_states": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/known4/results/attempts/public-arxiv-title-filter-results-v1-000/states.json",
+      "sha256": "9091796d552271d21dc0b8462a3f42261e60667ff0949ea33f775b8fd2d1c507",
+      "size_bytes": 1441774
+    },
+    "arxiv_title_search_raw01_calls": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/known4/results/attempts/public-arxiv-title-filter-results-v1-000/model_calls.json",
+      "sha256": "893111a49a330ad60b1a00beb91cf2dedcd19f945995831c1b9b9193d68a51ca",
+      "size_bytes": 2011048
+    },
+    "arxiv_title_search_raw02_states": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/known4/results/attempts/public-arxiv-title-filter-results-v1-000/states.json",
+      "sha256": "94ee69e76432fe832cc0efd7d47aea7b8717d2118262894f55be69ffdc20d7c7",
+      "size_bytes": 1464808
+    },
+    "arxiv_title_search_raw02_calls": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/known4/results/attempts/public-arxiv-title-filter-results-v1-000/model_calls.json",
+      "sha256": "ceab18ed4ecee078c15823466f15d6e551d3420ae191af6e2f7d249a37dd071a",
+      "size_bytes": 2011048
+    },
+    "arxiv_original_entity_raw01_outcome": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/known4/results/attempts/public-arxiv-original-paper-open-v1-000/outcome.json",
+      "sha256": "2152f6490de7f0072942fa7a8acac819c5bf34fb1c373fb404b74f3d53428cf5",
+      "size_bytes": 10984
+    },
+    "arxiv_original_entity_raw02_outcome": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/known4/results/attempts/public-arxiv-original-paper-open-v1-000/outcome.json",
+      "sha256": "c8f7c333b3de81b5f8675a9dd09818604f31eac91bf5df1f054615bd6df5417e",
+      "size_bytes": 10984
+    },
+    "arxiv_original_entity_raw01_states": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/known4/results/attempts/public-arxiv-original-paper-open-v1-000/states.json",
+      "sha256": "126a06a2cb0133793086eb1555cdb0d77c8d9976ca5d0a68be1df76aeb2df839",
+      "size_bytes": 1062906
+    },
+    "arxiv_original_entity_raw01_calls": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/known4/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+      "sha256": "defdfa8609eb8385970b54eda70be458484f83b83109e0f839670a964711366b",
+      "size_bytes": 1667873
+    },
+    "arxiv_original_entity_raw02_states": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/known4/results/attempts/public-arxiv-original-paper-open-v1-000/states.json",
+      "sha256": "633760c976334d4c33be4d79790d2d543f33aae8fb359af0011c17f0329fa92d",
+      "size_bytes": 1130179
+    },
+    "arxiv_original_entity_raw02_calls": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/known4/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+      "sha256": "38a694da4a067376841fe0822c43a72636d05eb029a027a533ab3b878463268d",
+      "size_bytes": 1667870
+    },
+    "python_documentation_raw01_outcome": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/known4/results/attempts/public-python-counter-most-common-v1-000/outcome.json",
+      "sha256": "59f2814273468b4d8b024fc2eeee4759a6a40df82ddf70ba5c411768a7499b1c",
+      "size_bytes": 67840
+    },
+    "python_documentation_raw02_outcome": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/known4/results/attempts/public-python-counter-most-common-v1-000/outcome.json",
+      "sha256": "ba058943b20e4db41fb26219f41a63345e4980c00d4632589d5005bbabac8f2f",
+      "size_bytes": 67840
+    },
+    "nasa_nested_section_raw01_outcome": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/known4/results/attempts/public-nasa-mars-facts-moons-v1-000/outcome.json",
+      "sha256": "84b1a2610aa77bae0fab11f656bd61b6fa91a83e967fa93807af83c8556cbbcb",
+      "size_bytes": 40403
+    },
+    "nasa_nested_section_raw02_outcome": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-02/raw-02/browser/known4/results/attempts/public-nasa-mars-facts-moons-v1-000/outcome.json",
+      "sha256": "a31673799e0ea6bb5b91548b9ad07b3833a0e1a66079274306205ed5f86c7ca6",
+      "size_bytes": 93791
+    }
+  },
+  "raw_trace_published": false,
+  "active_sources_modified": false,
+  "models_or_units_started": false
+}
