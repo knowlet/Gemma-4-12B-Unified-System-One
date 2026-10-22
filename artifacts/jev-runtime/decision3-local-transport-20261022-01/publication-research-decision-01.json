@@ -1,0 +1,17 @@
+{
+  "schema_id": "decision3-local-transport-publication-research-decision-v1",
+  "UTC": "2026-10-22T08:16:29.380938+00:00",
+  "review_finding": "The prior before_delivery check precedes HTTP header preparation; header construction/scheduling can cross the deadline, or another queue failure can block the arm, before end_headers publishes a200 status.",
+  "source_before_publication_fix": {
+    "sha256": "70dc9a8f30af815da2846f97d0adc8de420e19ad1abe5f9843b68959c9a91800",
+    "size_bytes": 35523
+  },
+  "references": [
+    "apps/modal/decision3_browser_service.py:Gateway.request deadline and delivery binding design",
+    "https://docs.python.org/3.13/library/http.server.html#http.server.BaseHTTPRequestHandler.end_headers",
+    "https://github.com/python/cpython/blob/v3.13.0/Lib/http/server.py"
+  ],
+  "decision": "Retain the request serialization lock through a concrete HTTP publication callback. Prepare buffered headers before a final durable-row/deadline/state check. Serialize that final state check and end_headers against gateway blocking; if200 becomes late/blocked, discard its buffered headers and durably rebind/rebuild504 before publishing. Request-body/native-response semantics stay unchanged.",
+  "verification": "Real loopback regression delays200 header construction beyond a small test deadline; separate real loopback regression triggers a concurrent queued-request refusal during header construction and verifies no200 header/action is published.",
+  "boundaries": "New directory only; CPU fake children and local sockets only. No models, CUDA, Q95, Comfy, units or cloud. Whole-tree continuation remains unconditionally false pending kernel-owner integration."
+}
