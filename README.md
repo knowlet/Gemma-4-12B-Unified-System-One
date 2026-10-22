@@ -11,6 +11,27 @@ This project extends [system-one-open](https://github.com/mithalouni/system-one-
 The original E2B experiments and demos remain available; their historical results
 are not measurements of this Unified model. See [upstream notes](docs/upstream.md).
 
+## Fresh GX10 evaluation — October 22, 2026
+
+| Evaluation | Profile | Result |
+| --- | --- | ---: |
+| Benchmark Heaven public231 accuracy | Released BF16 causal multislot | **84.42%** (195/231) |
+| JevBench coherence mini | Same BF16 profile | **41.26/100** |
+| Real Chromium V7 tasks | Current NF4 + raw96 action adapter | **20%** (2/10) |
+
+Both JevBench suites completed with independently reproduced scores; the coherence
+95% case-bootstrap interval is 38.43–43.80. The browser run retained all ten tasks:
+three premature completion claims, four decision-budget failures and one blocked
+task account for the eight failures. Independent replay of the final DOM judges
+confirmed 2/10, and both browser groups and the model process closed successfully.
+These separate execution paths do not establish a precision or adapter ablation.
+
+See [both JevBench results](docs/validation/2026-10-22/jevbench-both-fresh-gx10-results.md),
+[complete browser baseline](docs/validation/2026-10-22/jev-current-nf4-raw-complete-results.md)
+and [observed browser failures](docs/validation/2026-10-22/jev-current-nf4-raw-partial-diagnosis-01.md).
+A matched native V2 browser comparison and actual Decision3 baselines remain pending.
+No official leaderboard rank or cross-model superiority is claimed for this run.
+
 ## Public JevBench screening — October 8, 2026
 
 The [October 10 research prerelease](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/tag/research-2026-10-10-jevbench)

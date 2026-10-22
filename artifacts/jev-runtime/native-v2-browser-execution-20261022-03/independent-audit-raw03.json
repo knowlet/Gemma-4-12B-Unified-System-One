@@ -1,0 +1,191 @@
+{
+  "schema_id": "jev-native-raw03-independent-readonly-evidence-audit-v1",
+  "UTC": "2026-10-22T09:32:38.711127+00:00",
+  "status": "complete_evaluation_external_closure_verified",
+  "evaluation_complete": true,
+  "fixed_denominator": 10,
+  "aggregate": {
+    "attempts": 10,
+    "successes": 2,
+    "goals_satisfied": 2,
+    "done": 5,
+    "premature_done": 3,
+    "execution_errors": 4,
+    "policy_calls": 106,
+    "text_calls": 5
+  },
+  "success_rate": 0.2,
+  "groups": [
+    {
+      "group": "known4",
+      "fixed_denominator": 4,
+      "completed": 4,
+      "aggregate": {
+        "attempts": 4,
+        "successes": 1,
+        "goals_satisfied": 1,
+        "done": 3,
+        "premature_done": 2,
+        "execution_errors": 0,
+        "policy_calls": 35,
+        "text_calls": 4
+      },
+      "summary": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/browser/known4/results/summary.json",
+        "sha256": "4e7eba30eb5e8afa736ae15b8cbf4268f1ffd9ebba154c0a1953f47d70e43750",
+        "size_bytes": 204729
+      },
+      "client_closure": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/browser/known4/owned-client-closure.json",
+        "sha256": "e252ed586e9756957c448a7610e523f11bccbb56052967d761b1591de9f4e5bc",
+        "size_bytes": 301
+      },
+      "client_closure_confirmed": true,
+      "client_tracked_processes": 13
+    },
+    {
+      "group": "public6",
+      "fixed_denominator": 6,
+      "completed": 6,
+      "aggregate": {
+        "attempts": 6,
+        "successes": 1,
+        "goals_satisfied": 1,
+        "done": 2,
+        "premature_done": 1,
+        "execution_errors": 4,
+        "policy_calls": 71,
+        "text_calls": 1
+      },
+      "summary": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/browser/public6/results/summary.json",
+        "sha256": "4c4c35af1021b67939a119c7e8429db1cbc204f9842890ece0692a63d0c50dd7",
+        "size_bytes": 475921
+      },
+      "client_closure": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/browser/public6/owned-client-closure.json",
+        "sha256": "17a4ef04cce7c27667051389a6dcc285744a9d6a820a67510a4f5e3fcdca0184",
+        "size_bytes": 351
+      },
+      "client_closure_confirmed": true,
+      "client_tracked_processes": 16
+    }
+  ],
+  "expected_attempt_id_count": 10,
+  "ordered_expected_attempt_ids_sha256": "7520029bec284ae19900affdb6dee65425afda7bec757e17063e7dfdfe68f61b",
+  "checks": {
+    "fixed10_IDS_and_recorded_DOM_replay": true,
+    "worker_complete_and_group_receipts": true,
+    "all_output_index_hashes_and_exact_population": true,
+    "sealed_server_journal_hashes_sequences_and_population": true,
+    "HTTP_body_hashes_and_server_journal_join": true,
+    "external_terminal_identity_unit_actor_cgroup_two_scans_and_host": true,
+    "small_selected_source_artifact_full_hashes": true,
+    "root_recorded_all621_source_closure_no_changes": true,
+    "cache_alias_before_after_current_targets_stats_and_small_payloads": true
+  },
+  "output_inventory": {
+    "files": 808,
+    "bytes": 69258283
+  },
+  "server_journals": {
+    "count": 111,
+    "all_sealed": true,
+    "all_hashes_sequences_verified": true
+  },
+  "HTTP_exchanges": {
+    "count": 111,
+    "statuses": {
+      "200": 111
+    },
+    "kinds": {
+      "/v1/systemone": 106,
+      "/chat/completions": 5
+    },
+    "scope": "Stored server publication/body hashes and sealed journal join only; server evidence alone does not prove client response delivery."
+  },
+  "selected_source_artifacts": {
+    "count": 621,
+    "logical_bytes": 24067754103,
+    "independent_small_file_full_sha256_count": 620,
+    "large_payload_full_sha256_independently_verified": false,
+    "large_payload_refs": [
+      {
+        "path": "artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+        "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
+        "size_bytes": 23919549408
+      }
+    ],
+    "large_payload_scope": "Root external closure records full621 unchanged source/artifact refs and before/after payload alias equality. Independent audit rechecks current exact alias chains, resolved targets, sizes and stat identities; full weight rehash deferred while nativeN3 runs. An earlier bounded full-stream attempt exited137 with unproven cause and is not credited."
+  },
+  "external_closure": {
+    "unit": "jev-current-nf4-raw-20261022-03.service",
+    "invocation_id": "b0cf4e01e9744738925799f8c4f84a76",
+    "actor": {
+      "pid": 62705,
+      "pgid": 62705,
+      "sid": 62705,
+      "start_ticks": 967366
+    },
+    "terminal_success": true,
+    "two_clean_proc_scans": true,
+    "independent_actor_and_cgroup_currently_absent": true,
+    "cache_alias_count": 11,
+    "final_host_same_boot_total_known": true
+  },
+  "refs": {
+    "plan": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/selected-plan.json",
+      "sha256": "e6aab745961255af77258d3cf6bcbbb516d3c8d9bc3507ab327fd99774d187d0",
+      "size_bytes": 175011
+    },
+    "jev_public_web_cases": {
+      "path": "scripts/jev_public_web_cases.py",
+      "sha256": "0ec9826d334cb2fbed24ade8780fa785291017d904b18233419ced760750bca3",
+      "size_bytes": 23665
+    },
+    "jev_heldout_public_cases": {
+      "path": "scripts/jev_heldout_public_cases.py",
+      "sha256": "339cddf596a25ab433ca66e23924631b6261e62efc06f351878d4ef5c3f6f8f9",
+      "size_bytes": 16622
+    },
+    "worker_receipt": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/browser/receipt.json",
+      "sha256": "57f71f1e61b4052099c0ea5dcf1cc4459ee768839276641befaad7d55f7c9e36",
+      "size_bytes": 715519
+    },
+    "external_closure": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/root-external-closure.json",
+      "sha256": "ea4ee555f782cdbb28f7cd64b31d6f9d183001556377a89919477c4bc88099c9",
+      "size_bytes": 1014890
+    },
+    "output_index": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/browser/output-index.json",
+      "sha256": "2274e810d05b9273cf9858ec94a12a8180ea382b3e9bf0f1e930194e93f7755a",
+      "size_bytes": 109302
+    },
+    "server_index": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/browser/server-index.json",
+      "sha256": "5a94e468eb579d420d1fc75d5949e84c432bdbc02b408867365a7f1e43b91811",
+      "size_bytes": 40661
+    }
+  },
+  "comparison_scope": "Current raw NF4/V7 control with existing raw parent. This is not a precision/helper matched BF16/Q95 comparison and does not establish Decision3 performance.",
+  "audit_execution": {
+    "read_only": true,
+    "pinned_judges_compiled_from_verified_source": true,
+    "models_GPU_browser_units_or_Comfy_mutation": false,
+    "raw_DOM_requests_answers_or_questions_published": false,
+    "elapsed_seconds": 0.7739787210011855,
+    "auditor": {
+      "path": "/tmp/audit_native_raw03.py",
+      "sha256": "fef0032b9237ac5da00794580317ebd4242bf5497673baee36913bc57a3c483e",
+      "size_bytes": 16266
+    }
+  },
+  "interrupted_fullhash_attempt": {
+    "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/independent-audit-fullhash-attempt-01.json",
+    "sha256": "f79cebcecd72a0abff50924229a5eabaaebdc5253fb1e979e73efe300b3967c5",
+    "size_bytes": 948
+  }
+}

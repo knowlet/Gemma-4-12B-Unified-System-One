@@ -1,9 +1,10 @@
 # 驗證與發布證據索引
 
-更新日期：2026-10-10（Asia/Taipei）。各日期目錄保存當時的人口、執行來源與收據；後續結果另立紀錄，保留既有封存檔與報告。
+更新日期：2026-10-22（Asia/Taipei）。各日期目錄保存當時的人口、執行來源與收據；後續結果另立紀錄，保留既有封存檔與報告。
 
 | 日期 | 入口 | 範圍 |
 | --- | --- | --- |
+| 2026-10-22 | [兩套 JevBench](2026-10-22/jevbench-both-fresh-gx10-results.md)、[完整瀏覽器基準](2026-10-22/jev-current-nf4-raw-complete-results.md)、[失敗診斷](2026-10-22/jev-current-nf4-raw-partial-diagnosis-01.md) | GX10 新推論：public231 為 195/231、一致性 41.26/100；另一條 NF4 瀏覽器執行路徑為 2/10。皆保存獨立重算與程序回收證據；尚未證明跨模型優勢。 |
 | 2026-10-10 | [本輪後續](2026-10-10/README.md)、[公開發布與整理](2026-10-10/publication.md)、[PR 後續修正](2026-10-10/review-followup.md) | CPU03／CPU04 重播、五份公開證據下載核對、批次上限與預設下載修正、乾淨環境測試及 111.24 MiB 重複 ZIP 清理；實際狀態以該日收據為準。 |
 | 2026-10-08 | [八組優化實驗](2026-10-08/breakthrough/README.md)、[完整結果](2026-10-08/breakthrough/results.md) | Jev-Omni 差距、提示與 Head／LoRA 固定對照、完整人口與校驗限制；此封存保存當時六組完整稽核、兩組機率連結未完成的狀態。 |
 | 2026-10-08 | [JevBench campaign](2026-10-08/jevbench/README.md)、[campaign audit](2026-10-08/jevbench/campaign-audit.md) | 市面模型的公開 231 題 screening、獨立 coherence 評測及推論實驗；公開分數不代表正式榜單名次。 |
