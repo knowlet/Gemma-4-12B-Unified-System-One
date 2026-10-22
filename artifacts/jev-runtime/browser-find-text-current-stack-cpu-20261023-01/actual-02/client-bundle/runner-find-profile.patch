@@ -1,0 +1,28 @@
+--- v7-parent-runner.py
++++ runner.py
+@@ -1865,7 +1865,7 @@
+                         document_request_start = len(transport.public_document_requests)
+                         document_commit_start = len(transport.public_document_commits)
+                         try:
+-                            agent = agent_module.Agent(url, goal, screenshots=False)
++                            agent = _selected_find_agent_class(agent_module, model_module)(url, goal, screenshots=False)
+                             snapshots.append(_redact(agent.snapshot(), secrets))
+                             for _ in range(max_steps):
+                                 if agent.state["status"] in {"done", "blocked"}:
+@@ -2225,5 +2225,16 @@
+     print(json.dumps(run_benchmark(**values), ensure_ascii=False))
+ 
+ 
++import find_client_selector as _find_client_selector
++def _selected_find_agent_class(agent_module, model_module):
++    return _find_client_selector.agent_class(agent_module, model_module,
++        selection_path=Path(__file__).with_name('find-client-selection.json'),
++        selection_sha='3e946d3bad675c9b265a2ed3c794bc4056036917c7ea05c85afd5d62e9be7aa3')
++model_adapter = _find_client_selector.require_http_model_adapter(model_adapter)
++_original_v7_main = main
++def main():
++    _find_client_selector.validate_arguments(sys.argv[1:], 'original')
++    return _original_v7_main()
++
+ if __name__ == "__main__":
+     main()
