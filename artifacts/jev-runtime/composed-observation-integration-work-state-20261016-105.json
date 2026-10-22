@@ -1,0 +1,67 @@
+{
+  "schema_id": "composed-observation-integration-work-state-v1",
+  "sequence": 105,
+  "created_at_utc": "2026-10-22T08:22:08.432314+00:00",
+  "previous_state": {
+    "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-104.json",
+    "sha256": "4bcaf5ec2a8215080015b35f9ce7efe19795df39936d26684abe0b1b2cddf693",
+    "size_bytes": 1139
+  },
+  "goal_status": "active",
+  "status": "fresh_both_jevbench_attempt02_inference_running_snapshot",
+  "active": {
+    "unit": "jevbench-gx10-20261022-02.service",
+    "pid": 44378,
+    "invocation_id": "c2e9dfa2813147fb94fd3b7c0f2c1114",
+    "owner_session": 5327,
+    "plan": {
+      "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-07.json",
+      "sha256": "821600d11c09ff56601669592950450622d36a31d2c3d7068019f3414261ea80",
+      "size_bytes": 59299
+    },
+    "progress_at_capture": {
+      "active_prediction": 924,
+      "completed_predictions": 924,
+      "monotonic": 6405.439910823,
+      "stage": "jevbench-mini",
+      "started_predictions": 925
+    },
+    "sources_frozen": 203,
+    "no_parallel_GPU_job": true,
+    "scope": "Historical as-of snapshot, recheck systemd and InvocationID before assuming running."
+  },
+  "fresh_public231": {
+    "correct": 195,
+    "total": 231,
+    "accuracy": 0.8441558441558441,
+    "repeat_of_first_attempt": true
+  },
+  "coherence_complete": false,
+  "next_raw_browser_plan": {
+    "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/launch-plan-raw-01.json",
+    "sha256": "2eb18f4f5483c2de324ec97e5d8ffab0b772a3b81dbbdaecafdd0443e576e758",
+    "size_bytes": 172828
+  },
+  "next_native142_plan": {
+    "path": "artifacts/jev-runtime/native-v2-training-20261022-03/launch-plan-01.json",
+    "sha256": "8d173854fb86809d1c18193847d1f0e7ed54ac806a3cabe6512361ff004153ef",
+    "size_bytes": 24058
+  },
+  "execution_order": "Close currentJevBench with complete receipts/knownfinalhost/externalprocess proof; runraw10browser baseline; freshnative142/37; matchedV2browser. SerialGPUonly.",
+  "attempt02_preentry_abort": {
+    "closure": {
+      "path": "artifacts/jevbench/20261022-local-score-01/root-external-closure-02.json",
+      "sha256": "f499938a20a3cd7c73b82f41c9533a66e42beb389f8794fe93b7d4b0188b5a85",
+      "size_bytes": 4441
+    },
+    "actor_intent_exists": false,
+    "output_created": false,
+    "reason": "Controller readback filename collision, fixed in02b before any model entrypoint."
+  },
+  "claims": {
+    "fresh_complete_coherence": false,
+    "native142_complete": false,
+    "fresh_browser_score": false,
+    "other_models_beaten": false
+  }
+}

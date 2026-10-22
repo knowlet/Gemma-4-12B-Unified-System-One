@@ -1,0 +1,267 @@
+{
+  "schema_id": "jevbench-both-fresh-gx10-completed-v1",
+  "created_at_utc": "2026-10-22T08:35:44.142863+00:00",
+  "status": "COMPLETE_BOTH_FRESH_SUITES_AND_EXTERNAL_OWNED_CLOSURE",
+  "goal_status": "active",
+  "scope": "Two namesake suites are separate. Original releasedBF16 causal-multislot model, noLoRA/cache/compile. Actual1479modelcalls; no composite/sealed/rank/superiority claim.",
+  "profile": {
+    "profile": "released-gx10-bf16-causal-multislot-20261022-v1",
+    "model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+    "revision": "a66f836b56605039fe040f330180e336d19b3362",
+    "precision": "bfloat16",
+    "quantization": "none",
+    "temperature": 2.7830344470383452,
+    "context": 16384,
+    "question_mode": "causal_multislot",
+    "gpu": "NVIDIA GB10",
+    "versions": {
+      "httpx": "0.28.1",
+      "numpy": "2.5.2",
+      "safetensors": "0.8.0",
+      "torch": "2.13.0+cu130",
+      "transformers": "5.17.0"
+    },
+    "training_executed": false
+  },
+  "public231": {
+    "accuracy": 0.8441558441558441,
+    "macro_accuracy": 0.8507143403170235,
+    "n_correct": 195,
+    "n_attempted": 231,
+    "n_valid": 231,
+    "n_scorable": 231,
+    "coverage": 1.0,
+    "brier_mean": 0.22862292231064194,
+    "operational_success": 1.0,
+    "latency": {
+      "n": 231,
+      "p50_s": 0.18407084899990878,
+      "p95_s": 1.7977478799998607
+    },
+    "official_composite": null,
+    "official_rank": null,
+    "leaderboard_status": "not_submitted",
+    "accuracy_percent": 84.4155844155844,
+    "ece": 0.055990034980433284,
+    "cost_usd": null
+  },
+  "coherence_mini": {
+    "suite": "jevbench-mini",
+    "overall_fraction": 0.41263071895424835,
+    "score_0_to_100": 41.26307189542484,
+    "reported_95pct_case_bootstrap_interval_fraction": [
+      0.38425464489041505,
+      0.43795052110231086
+    ],
+    "reported_95pct_case_bootstrap_interval_0_to_100": [
+      38.4254644890415,
+      43.79505211023108
+    ],
+    "bootstrap_draws": 1000,
+    "requests": 1248,
+    "cases": 240,
+    "relations": 50,
+    "planned_tests": 1200,
+    "graded_outcomes": 1468,
+    "errors": [],
+    "incomplete": [],
+    "skipped_outcomes": 0,
+    "dimensions_fraction": {
+      "BAT": 0.4083333333333333,
+      "CHO": 0.2222222222222222,
+      "LOG": 0.6791666666666667,
+      "MEA": 0.16176470588235292,
+      "REP": 0.5916666666666667
+    },
+    "dimensions_0_to_100": {
+      "BAT": 40.833333333333336,
+      "CHO": 22.22222222222222,
+      "LOG": 67.91666666666667,
+      "MEA": 16.176470588235293,
+      "REP": 59.166666666666664
+    },
+    "groups_fraction": {
+      "BAT.isolation": 0.4083333333333333,
+      "CHO.conditioning": 0.2222222222222222,
+      "LOG.bounds": 0.7559523809523809,
+      "LOG.monotonicity": 0.5,
+      "MEA.complement": 0.15,
+      "MEA.marginalisation": 0.04166666666666666,
+      "MEA.partition": 0.22916666666666666,
+      "REP.binding": 0.6666666666666666,
+      "REP.equivariance": 0.3194444444444445,
+      "REP.invariance": 0.7857142857142857,
+      "REP.type": 0.20833333333333331
+    },
+    "relation_pass_rates": {
+      "batch_content": 0.45833333333333337,
+      "batch_order": 0.0,
+      "batch_size_sweep": 1.0,
+      "batch_solo": 0.20833333333333337,
+      "choice_complement": 0.0,
+      "choice_indicator": 0.0,
+      "clone_symmetry": 0.5416666666666667,
+      "compound_negation": 0.375,
+      "count_lower": 0.9166666666666666,
+      "count_upper": 1.0,
+      "cross_lingual": 0.5833333333333333,
+      "de_morgan": 0.75,
+      "description_paraphrase": 0.7083333333333333,
+      "description_swap": 0.16666666666666663,
+      "duplicate_question": 0.375,
+      "entailment_strength": 0.375,
+      "extreme_level": 0.0,
+      "frechet_and_upper": 0.7083333333333333,
+      "inclusion_exclusion": 0.125,
+      "instruction_paraphrase": 0.9583333333333334,
+      "irrelevant_option": 0.125,
+      "key_instruction_conflict": 1.0,
+      "key_rename": 1.0,
+      "name_description_conflict": 0.8333333333333334,
+      "nary_and_lower": 1.0,
+      "nary_and_upper": 0.375,
+      "nary_or_lower": 0.29166666666666663,
+      "nary_or_upper": 1.0,
+      "natural_negation": 0.16666666666666663,
+      "negation_wrapper": 0.20833333333333337,
+      "noul_as_choice": 0.16666666666666663,
+      "noul_as_score": 0.25,
+      "option_clone": 0.04166666666666663,
+      "option_closure": 0.5833333333333333,
+      "option_merge": 0.375,
+      "option_permutation": 0.04166666666666663,
+      "option_rename": 0.375,
+      "option_split": 0.08333333333333337,
+      "pair_choice_marginals": 0.04166666666666663,
+      "pairwise_iia": 0.41666666666666663,
+      "partition_hierarchy": 0.33333333333333337,
+      "quantifier_monotonicity": 0.9583333333333334,
+      "remove_option_iia": 0.125,
+      "score_complement": 0.0,
+      "score_cumulative": 0.0,
+      "score_granularity": 0.41666666666666663,
+      "similarity_effect": 0.0,
+      "threshold_sweep": 0.16666666666666663,
+      "typo_noise": 0.8333333333333334,
+      "verbosity": 0.6666666666666667
+    },
+    "tolerance": "fixed 0.05",
+    "cost_usd": null,
+    "official_rank": null
+  },
+  "identity": {
+    "checkpoint": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+      "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
+      "size_bytes": 23919549408
+    },
+    "checkpoint_unchanged": true,
+    "metadata_unchanged": true,
+    "runtime_sources_unchanged": {
+      "added": [],
+      "changed": [],
+      "current_identity_sha256": "450ef9566f15b372703bab6ae4c2e25de54104c8a0404a11fec22e6d384d73ff",
+      "identity_sha256": "450ef9566f15b372703bab6ae4c2e25de54104c8a0404a11fec22e6d384d73ff",
+      "missing": [],
+      "success": true
+    },
+    "score_sources_unchanged": true,
+    "outer_execution_pins": 203,
+    "outer_changed_sources": [],
+    "model_constructor_calls": 1,
+    "model_calls": 1479
+  },
+  "closure": {
+    "invocation_id": "c2e9dfa2813147fb94fd3b7c0f2c1114",
+    "reason": "terminal",
+    "primary_error": null,
+    "exit_code": 0,
+    "whole_process_and_cgroup_absent": true,
+    "two_empty_proc_scans": true,
+    "final_host": {
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "mem_total_bytes": 130595864576,
+      "mem_available_bytes": 123768537088,
+      "comfy_state": "absent_confirmed",
+      "comfy_running": 0,
+      "comfy_pending": 0
+    },
+    "terminal_memory_peak_bytes": 1721438208,
+    "terminal_memory_swap_peak_bytes": 0,
+    "separate_allocator_and_memcg_caps_bytes": 42949672960,
+    "combined_host_cuda_hard_bound_claim": false,
+    "worker_self_exit_claim": false,
+    "external_exit_confirmation": true,
+    "final_zero_oom_claim": false
+  },
+  "evidence": [
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-07.json",
+      "sha256": "821600d11c09ff56601669592950450622d36a31d2c3d7068019f3414261ea80",
+      "size_bytes": 59299
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-02/receipt.json",
+      "sha256": "d1f401cdc6ff3bb53371db9ebf532892d2a847f6713dab960f1e34149ad26ad0",
+      "size_bytes": 49240
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-02/stage-results.json",
+      "sha256": "1a3e742c7c8893c3b51fac82f11efb08062897b903721e9a68577a250e002c90",
+      "size_bytes": 43507
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-02/coherence-mini.json",
+      "sha256": "3de15e3a481d0afdd13050868571eab52152353ede16e1432b7c6f4ad10a8426",
+      "size_bytes": 1079698
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-02/public231/manifest.json",
+      "sha256": "f15875d1a9bec5229e5f53b5d6943dc3df8998cd6e09a237cef27ac9426c4bd8",
+      "size_bytes": 45758
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/root-external-closure-02b.json",
+      "sha256": "87a3fef31e202a263ed3a9a552e81255cc956fc5cec705e63de236137ed42caf",
+      "size_bytes": 1173135
+    }
+  ],
+  "historical_context": {
+    "answer_date": "2026-10-08",
+    "rescore_date": "2026-10-22",
+    "causal_public_correct": 197,
+    "causal_public_total": 231,
+    "causal_coherence_0_to_100": 40.50490196078431,
+    "independent_development_coherence_0_to_100": 71.95915032679738,
+    "fresh_independent_profile_rerun": false,
+    "public_difference_summary": {
+      "path": "artifacts/jevbench/20261022-local-score-01/public-difference-summary-01.json",
+      "sha256": "5da767a8c0c039528bb2d7115db1fe6af292253dc2ec039d8626b9ab5d242ff4",
+      "size_bytes": 12171
+    },
+    "causal_attribution_of_hardware_software_difference": null
+  },
+  "interpretation": {
+    "measured": "Strong answer accuracy coexists with weaker probability and option/batch invariance on separate tests.",
+    "weak_relations": {
+      "batch_order": 0.0,
+      "option_permutation": 0.04166666666666663,
+      "choice_complement": 0.0,
+      "score_complement": 0.0,
+      "pair_choice_marginals": 0.04166666666666663
+    },
+    "browser_failure_cause_established": false,
+    "next_evidence": "Full matched raw/V2 currentNF4 ten-task real-browser comparison.",
+    "fresh_browser_score": null,
+    "historical_browser_score": "5/10 unchanged"
+  },
+  "cost_basis": "Local compute cost not measured; not zero or free.",
+  "raw_requests_answers_and_coherence_cache_published": false,
+  "independent_official_recompute_audit": {
+    "path": "artifacts/jevbench/20261022-local-score-01/independent-audit-actual-02.json",
+    "sha256": "179eea1071d9d5d6d8f002652f615900d88e5c6e5c7dd606d4144335846c3491",
+    "size_bytes": 4702,
+    "status": "CLEAR_EXACT_PUBLIC_AND_COHERENCE_AND_BOOTSTRAP",
+    "no_model_inference": true
+  }
+}

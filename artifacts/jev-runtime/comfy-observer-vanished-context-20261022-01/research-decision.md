@@ -1,0 +1,7 @@
+# Proven disappearance during process context observation
+
+2026-10-22, before successor implementation. The completed 4084 observer is immutable. The actual scorer stopped after 471 completed rows with retained evidence of uncertain_python_cwd for PID 39692, start_ticks 505206, at monotonic 5052.193. No listener or known Comfy process was observed. A process may disappear between its command and cwd reads; treating that ENOENT as permanent cwd uncertainty prevents the existing fresh-stat disappearance proof from running.
+
+Create a separate successor. First classify definite Comfy argv without cwd and return that blocking classification before any cwd read. Keep the live-Comfy comm latches. Let cwd FileNotFoundError/ProcessLookupError reach the existing process-attempt fallback: a fresh stat must prove the PID absent before recording vanished. A still-live PID, permission failure, deleted/nonabsolute cwd, prior uncertain context or any known Comfy signature stays blocking. No retry of uncertainty, no change to listener/HTTP, two fresh complete scans, byte/process/deadline bounds, or maximum two identity-race attempts.
+
+Reproduce the old behavior in controlled fake proc files, retain all prior tests, add first/second-context disappearance and still-live/permission/Comfy regressions, then run a bounded read-only soak with owned harmless short Python exits. No model/GPU/browser/service/systemd or ComfyUI operation is authorized here.
