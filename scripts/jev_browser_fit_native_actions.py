@@ -244,10 +244,15 @@ def fit_native_actions(
     seed=42,
     prompt_format=FORMAT,
     initial_action_adapter=None,
+    resource_profile=None,
 ):
     require(
         type(prompt_format) is str and prompt_format == FORMAT,
         "This distinct native profile requires explicit shared-elements-v2",
+    )
+    require(
+        resource_profile in (None, "gx10-uma-native-40gib-v1"),
+        "Explicit supported native resource profile required",
     )
     require(
         (steps is None or type(steps) is int and 1 <= steps <= MAX_STEPS)
@@ -280,11 +285,23 @@ def fit_native_actions(
     snapshots, source_files, manifest = {}, _sources(), None
     primary, started = None, time.monotonic()
     try:
-        gate = _gate(
-            output / "resource-gates.jsonl",
-            Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
-        )
+        boot_id = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
+        if resource_profile is None:
+            gate = _gate(output / "resource-gates.jsonl", boot_id)
+        else:
+            from s1 import browser_native_resources as resources
+
+            gate = resources.Gate(output / "resource-gates.jsonl", boot_id)
+            receipt["resource_profile"] = {
+                "name": resources.PROFILE,
+                "expected_unit": resources.EXPECTED_UNIT,
+                "expected_boot_id": boot_id,
+            }
         gate.check("before-any-project-framework-or-parent-payload", "cpu")
+        if resource_profile is not None:
+            receipt["resource_components"] = resources.capture_components(
+                output / "inputs/resource-components"
+            )
         import importlib.metadata
 
         import jev_browser_fit_actions as kernel
@@ -365,7 +382,10 @@ def fit_native_actions(
         receipt["model_load_started"] = True
         model = _construct_model(seed)
         receipt["model_loads"] = 1
-        _check_model(model, kernel)
+        if resource_profile is None:
+            _check_model(model, kernel)
+        else:
+            gate.mark_model_loaded(model, lambda: _check_model(model, kernel))
         for configuration in model.lm.peft_config.values():
             configuration.base_model_name_or_path, configuration.revision = (
                 kernel.MODEL_ID,
@@ -463,6 +483,8 @@ def fit_native_actions(
         hook.remove()
         hook = None
         _check_model(model, kernel)
+        if resource_profile is not None:
+            gate.check("after-native-training", "train")
         receipt["training_updates"] = receipt["training"]["completed_updates"]
         files = kernel._save_adapter(model, output / "adapter")
         receipt.update(
@@ -516,6 +538,10 @@ def fit_native_actions(
             if hook is not None:
                 hook.remove()
             _final_checks(output, receipt, data, sources, source_files, snapshots, captured)
+            if resource_profile is not None and receipt["stage"] == "complete":
+                receipt["resource_evidence"] = gate.evidence(
+                    steps=receipt["steps"], parent_present=captured is not None
+                )
         except BaseException as secondary:
             receipt.update(
                 stage="failed",
@@ -565,6 +591,7 @@ def main(argv=None):
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--prompt-format", choices=[FORMAT], default=FORMAT)
     parser.add_argument("--initial-action-adapter", type=Path)
+    parser.add_argument("--resource-profile", choices=["gx10-uma-native-40gib-v1"])
     parser.add_argument("--run", action="store_true")
     arguments = vars(parser.parse_args(argv))
     if not arguments.pop("run"):

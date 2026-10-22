@@ -686,3 +686,186 @@ def test_verified_raw_parent_can_initialize_distinct_native_child(artifact, tmp_
     child = action.verify_action_adapter(artifact / "adapter", expected_prompt_format=NATIVE_FORMAT)
     assert child.tensor_metadata["lineage_depth"] == 1
     assert child.telemetry()["prompt_format"] == NATIVE_FORMAT
+
+
+@pytest.fixture
+def resident_resource(tmp_path, monkeypatch):
+    """Stub only the separately tested pure gate replay, never a model check."""
+    from s1 import browser_native_resources as resources
+
+    blob = (
+        encode({"schema_id": "jev-native-resource-gate-gx10-uma-v1", "profile": resources.PROFILE})
+        + b"\n"
+    )
+    (tmp_path / "resource-gates.jsonl").write_bytes(blob)
+    profile = {
+        "name": resources.PROFILE,
+        "expected_unit": "/system.slice/owned-native-training.service",
+        "expected_boot_id": "fixture-boot",
+    }
+    receipt = {
+        "steps": 142,
+        "resource_profile": profile,
+        "resource_evidence": {"path": "resource-gates.jsonl", **pin(blob)},
+        "resource_components": resources.capture_components(
+            tmp_path / "inputs/resource-components"
+        ),
+        "source_manifest": {"files": {"s1/browser_native_resources.py": {}}},
+    }
+    calls = []
+    monkeypatch.setattr(
+        resources, "validate_evidence", lambda raw, **kwargs: calls.append((raw, kwargs))
+    )
+    return tmp_path, receipt, calls
+
+
+def test_resident_resource_replays_sealed_bytes_and_actual_run_parameters(resident_resource):
+    root, receipt, calls = resident_resource
+    receipt["initial_action_adapter"] = {}
+    result = action._native_resources(root, receipt)
+    assert result == receipt["resource_profile"] and result is not receipt["resource_profile"]
+    assert calls == [
+        (
+            (root / "resource-gates.jsonl").read_bytes(),
+            {
+                "expected_unit": receipt["resource_profile"]["expected_unit"],
+                "expected_boot_id": receipt["resource_profile"]["expected_boot_id"],
+                "steps": 142,
+                "parent_present": True,
+            },
+        )
+    ]
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "profile",
+        "extra-key",
+        "missing-pin",
+        "wrong-path",
+        "bytes",
+        "source",
+        "missing-components",
+        "component-bytes",
+        "component-extra",
+        "component-missing",
+        "component-symlink",
+        "component-descriptor",
+    ],
+)
+def test_resident_resource_descriptor_or_raw_evidence_corruption_refuses(
+    resident_resource, mutation
+):
+    root, receipt, calls = resident_resource
+    if mutation == "profile":
+        receipt["resource_profile"]["name"] = "other-profile"
+    elif mutation == "extra-key":
+        receipt["resource_profile"]["qualified"] = True
+    elif mutation == "missing-pin":
+        receipt.pop("resource_evidence")
+    elif mutation == "wrong-path":
+        receipt["resource_evidence"]["path"] = "other.jsonl"
+    elif mutation == "bytes":
+        with (root / "resource-gates.jsonl").open("ab") as handle:
+            handle.write(b" ")
+    elif mutation == "source":
+        receipt["source_manifest"]["files"].clear()
+    elif mutation == "missing-components":
+        receipt.pop("resource_components")
+    else:
+        descriptor = receipt["resource_components"]
+        label = next(iter(descriptor["files"]))
+        directory = root / "inputs/resource-components"
+        target = directory / label
+        if mutation == "component-bytes":
+            target.write_bytes(target.read_bytes() + b" ")
+        elif mutation == "component-extra":
+            (directory / "extra.json").write_bytes(b"{}")
+        elif mutation == "component-missing":
+            target.unlink()
+        elif mutation == "component-symlink":
+            other = root / "outside-component"
+            other.write_bytes(target.read_bytes())
+            target.unlink()
+            target.symlink_to(other)
+        else:
+            descriptor["files"][label]["sha256"] = "0" * 64
+    with pytest.raises(ValueError):
+        action._native_resources(root, receipt)
+    assert not calls
+
+
+def test_resident_resource_cannot_be_resealed_as_default(resident_resource):
+    root, receipt, calls = resident_resource
+    receipt.pop("resource_profile")
+    with pytest.raises(ValueError, match="requires its profile"):
+        action._native_resources(root, receipt)
+    receipt.pop("resource_evidence")
+    receipt.pop("resource_components")
+    with pytest.raises(ValueError, match="require an explicit profile"):
+        action._native_resources(root, receipt)
+    assert not calls
+
+
+def test_default_native_resource_path_does_not_invoke_resident_validator(resident_resource):
+    root, _, calls = resident_resource
+    (root / "resource-gates.jsonl").unlink()
+    assert action._native_resources(root, {}) is None
+    write(root / "resource-gates.jsonl", {"phase": "historical-default", "admitted": True})
+    assert action._native_resources(root, {}) is None
+    assert not calls
+
+
+@pytest.mark.parametrize("replay_succeeds", [False, True])
+def test_resident_resource_replay_precedes_tensor_decode_and_discloses_profile(
+    artifact, monkeypatch, replay_succeeds
+):
+    from s1 import browser_native_resources as resources
+
+    def mutate(receipt, _manifest):
+        blob = (
+            encode(
+                {"schema_id": "jev-native-resource-gate-gx10-uma-v1", "profile": resources.PROFILE}
+            )
+            + b"\n"
+        )
+        (artifact / "resource-gates.jsonl").write_bytes(blob)
+        receipt["resource_profile"] = {
+            "name": resources.PROFILE,
+            "expected_unit": "/system.slice/owned-native-training.service",
+            "expected_boot_id": "fixture-boot",
+        }
+        receipt["resource_evidence"] = {"path": "resource-gates.jsonl", **pin(blob)}
+        receipt["resource_components"] = resources.capture_components(
+            artifact / "inputs/resource-components"
+        )
+        label = "s1/browser_native_resources.py"
+        source = (ROOT / "src" / label).read_bytes()
+        (artifact / "sources" / label).write_bytes(source)
+        sources = receipt["source_manifest"]
+        sources["files"][label] = {**pin(source), "artifact_path": "sources/" + label}
+        identity = pin(
+            json.dumps(sources["files"], sort_keys=True, separators=(",", ":")).encode()
+        )["sha256"]
+        sources["identity_sha256"] = identity
+        write(artifact / "sources/manifest.json", sources)
+        receipt["source_verification"] = check(identity)
+
+    reseal(artifact, mutate)
+    if replay_succeeds:
+        # This isolates artifact wiring; genuine gate replay is tested in its own module.
+        monkeypatch.setattr(resources, "validate_evidence", lambda *args, **kwargs: None)
+        verified = action.verify_action_adapter(artifact / "adapter")
+        assert verified.telemetry()["training_resource_profile"]["name"] == resources.PROFILE
+        assert verified.telemetry()["qualified"] is False
+        assert verified.telemetry()["train_cases"] == 142
+        assert verified.telemetry()["development_cases"] == 37
+    else:
+        monkeypatch.setattr(
+            action,
+            "_tensor_bytes",
+            lambda _: pytest.fail("Invalid resident evidence reached tensors"),
+        )
+        with pytest.raises(ValueError):
+            action.verify_action_adapter(artifact / "adapter")

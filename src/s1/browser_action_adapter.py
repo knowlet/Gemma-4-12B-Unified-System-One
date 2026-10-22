@@ -746,6 +746,55 @@ def _native_training(root, receipt, records):
     )
 
 
+def _native_resources(root, receipt):
+    """Replay only the explicitly selected resident profile, never historical gates."""
+    label = "resource-gates.jsonl"
+    if "resource_profile" not in receipt:
+        _native_require(
+            not {"resource_evidence", "resource_components"} & set(receipt),
+            "resource evidence requires its profile",
+        )
+        if (root / label).exists() or (root / label).is_symlink():
+            for line in _read(root, label).splitlines():
+                row = _json(line) if line.strip() else None
+                _native_require(
+                    not isinstance(row, dict)
+                    or not (
+                        row.get("schema_id") == "jev-native-resource-gate-gx10-uma-v1"
+                        or row.get("profile") == "gx10-uma-native-40gib-v1"
+                    ),
+                    "resident resource rows require an explicit profile",
+                )
+        return None
+
+    from . import browser_native_resources as resources
+
+    profile, evidence = receipt["resource_profile"], receipt.get("resource_evidence")
+    _native_require(
+        type(profile) is dict
+        and set(profile) == {"name", "expected_unit", "expected_boot_id"}
+        and profile["name"] == resources.PROFILE
+        and type(evidence) is dict
+        and set(evidence) == {"path", "sha256", "size_bytes"}
+        and evidence["path"] == label
+        and type(receipt.get("resource_components")) is dict,
+        "explicit resident resource profile and sealed evidence record",
+    )
+    _native_require(
+        "s1/browser_native_resources.py" in receipt["source_manifest"]["files"],
+        "captured resident resource validator source",
+    )
+    resources.verify_components(root / "inputs/resource-components", receipt["resource_components"])
+    resources.validate_evidence(
+        _record(root, label, evidence),
+        expected_unit=profile["expected_unit"],
+        expected_boot_id=profile["expected_boot_id"],
+        steps=receipt["steps"],
+        parent_present="initial_action_adapter" in receipt,
+    )
+    return copy.deepcopy(profile)
+
+
 def _native_evidence(root, receipt, manifest):
     from . import browser_native_action_data as data_api
     from .browser_action_prompt import NATIVE_FORMAT, NATIVE_KIND, expected_format
@@ -843,6 +892,7 @@ def _native_evidence(root, receipt, manifest):
             "compiled token totals",
         )
     _native_training(root, receipt, records)
+    return _native_resources(root, receipt)
 
 
 def _config(config):
@@ -1214,8 +1264,9 @@ def _verify_action_adapter(
         )
     ):
         raise ValueError("adapter training receipt checkpoint/policy pins differ from manifest")
+    resource_profile = None
     if native:
-        _native_evidence(directory.parent, receipt, m)
+        resource_profile = _native_evidence(directory.parent, receipt, m)
     else:
         _training_evidence(directory.parent, receipt, m["provenance"])
     parent = _verify_initial_parent(
@@ -1231,6 +1282,8 @@ def _verify_action_adapter(
             == set(tensor_metadata["tensor_shapes"]),
             "exact finite FP32 q/v trainable tensor inventory",
         )
+        if resource_profile is not None:
+            tensor_metadata["training_resource_profile"] = resource_profile
     tensor_metadata.update(parent)
     return VerifiedActionAdapter(
         copy.deepcopy(m), _sha(manifest_blob), _sha(receipt_blob), files, tensor_metadata
