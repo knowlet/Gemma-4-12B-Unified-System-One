@@ -1,0 +1,395 @@
+{
+  "profile": "decision3-q95-guarded-owner-retry-v1",
+  "plan_sha256": "88a59cd473e0a69123d3f314f6269bda6e7ddf5d11a006d91959d9db1ac7b43e",
+  "primary_error": {
+    "type": "ObservationError",
+    "message": "Selected Q95 owner stage refused",
+    "observation_evidence": {
+      "samples": [
+        {
+          "started_monotonic": 16341.072022033,
+          "finished_monotonic": 16341.166442758,
+          "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+          "mem_total_bytes": 130595864576,
+          "mem_available_bytes": 89716715520,
+          "tcp": {
+            "listeners": [],
+            "inventories": [
+              {
+                "family": "tcp",
+                "rows": 121,
+                "sha256": "fa4698b868525d96dde83dfc070bca96de4f0bfbe3cdc5083fba470fd03a48af"
+              },
+              {
+                "family": "tcp6",
+                "rows": 4,
+                "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+              }
+            ]
+          },
+          "processes": {
+            "scanned": 570,
+            "inventory_sha256": "677a4b54862a629c8106ce62fd016dc889c08ee90679f02eb59cead310ac8b8d",
+            "known_comfy": [],
+            "uncertain": [
+              {
+                "pid": 108351,
+                "start_ticks": 1634070,
+                "classification": "uncertain_python_cwd",
+                "context_diagnostics": [
+                  {
+                    "cwd_failure_type": "PermissionError",
+                    "cwd_sha256": null
+                  },
+                  {
+                    "cwd_failure_type": "PermissionError",
+                    "cwd_sha256": null
+                  }
+                ],
+                "proc_owner_uid": 1001,
+                "disappearance_resolution_eligible": true
+              }
+            ],
+            "vanished_sample": [],
+            "identity_retries": 0,
+            "retry_samples": []
+          }
+        }
+      ],
+      "resolution": {
+        "started_monotonic": 16341.166449782,
+        "offenders": [
+          {
+            "pid": 108351,
+            "start_ticks": 1634070,
+            "classification": "uncertain_python_cwd",
+            "context_diagnostics": [
+              {
+                "cwd_failure_type": "PermissionError",
+                "cwd_sha256": null
+              },
+              {
+                "cwd_failure_type": "PermissionError",
+                "cwd_sha256": null
+              }
+            ],
+            "proc_owner_uid": 1001,
+            "disappearance_resolution_eligible": true
+          }
+        ],
+        "disappeared": [],
+        "exited_zombies": [],
+        "finished_monotonic": 16341.667425706,
+        "failure_reason": "Unknown process remains after natural-exit budget"
+      }
+    }
+  },
+  "closure": {
+    "profile": "decision3-external-unit-terminal-boundary-v1",
+    "selection": {
+      "unit": "jev-d3-q95-helper-20261022-02.service",
+      "nonce": "jev-d3-boundary-8015e896a770d7ecdd1402c7efe17d14",
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "memory_max_bytes": 42949672960,
+      "runtime_seconds": 10800,
+      "stop_seconds": 20
+    },
+    "invocation_id": "97130a697d5c40c3aac4f4413e029c9e",
+    "actor": {
+      "pid": 95101,
+      "start_ticks": 1502194,
+      "pgid": 95101,
+      "sid": 95101,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-02.service"
+    },
+    "tracked_cohort": [
+      {
+        "pid": 95101,
+        "start_ticks": 1502194,
+        "pgid": 95101,
+        "sid": 95101,
+        "uid": 1001,
+        "state": "S",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-02.service"
+      },
+      {
+        "pid": 95111,
+        "start_ticks": 1502301,
+        "pgid": 95101,
+        "sid": 95101,
+        "uid": 1001,
+        "state": "S",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-02.service"
+      },
+      {
+        "pid": 95179,
+        "start_ticks": 1503066,
+        "pgid": 95179,
+        "sid": 95179,
+        "uid": 1001,
+        "state": "S",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-02.service"
+      },
+      {
+        "pid": 108375,
+        "start_ticks": 1634167,
+        "pgid": 95101,
+        "sid": 95101,
+        "uid": 1001,
+        "state": "R",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-02.service"
+      }
+    ],
+    "before_stop": {
+      "Type": "exec",
+      "Restart": "no",
+      "TimeoutStopUSec": "20s",
+      "RuntimeMaxUSec": "3h",
+      "RemainAfterExit": "yes",
+      "MainPID": "95101",
+      "Result": "success",
+      "OOMPolicy": "kill",
+      "ExecMainPID": "95101",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-02.service",
+      "Delegate": "no",
+      "MemoryAccounting": "yes",
+      "MemoryHigh": "infinity",
+      "MemoryMax": "42949672960",
+      "MemorySwapMax": "0",
+      "KillMode": "control-group",
+      "KillSignal": "15",
+      "FinalKillSignal": "9",
+      "SendSIGKILL": "yes",
+      "Description": "jev-d3-boundary-8015e896a770d7ecdd1402c7efe17d14",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "InvocationID": "97130a697d5c40c3aac4f4413e029c9e"
+    },
+    "closure_mode": "authenticated_stop",
+    "stop_required": true,
+    "already_terminal_identity_samples": [],
+    "already_terminal_identity_sandwich_verified": false,
+    "stop_result": "",
+    "after_stop": {
+      "Type": "",
+      "Restart": "no",
+      "TimeoutStopUSec": "1min 30s",
+      "RuntimeMaxUSec": "infinity",
+      "RemainAfterExit": "no",
+      "MainPID": "0",
+      "Result": "success",
+      "OOMPolicy": "",
+      "ExecMainPID": "0",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "ControlGroup": "",
+      "Delegate": "no",
+      "MemoryAccounting": "yes",
+      "MemoryHigh": "infinity",
+      "MemoryMax": "infinity",
+      "MemorySwapMax": "infinity",
+      "KillMode": "control-group",
+      "KillSignal": "15",
+      "FinalKillSignal": "9",
+      "SendSIGKILL": "yes",
+      "Description": "jev-d3-q95-helper-20261022-02.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "InvocationID": ""
+    },
+    "primary_error": {
+      "type": "ObservationError",
+      "message": "Selected Q95 owner stage refused",
+      "observation_evidence": {
+        "samples": [
+          {
+            "started_monotonic": 16341.072022033,
+            "finished_monotonic": 16341.166442758,
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 89716715520,
+            "tcp": {
+              "listeners": [],
+              "inventories": [
+                {
+                  "family": "tcp",
+                  "rows": 121,
+                  "sha256": "fa4698b868525d96dde83dfc070bca96de4f0bfbe3cdc5083fba470fd03a48af"
+                },
+                {
+                  "family": "tcp6",
+                  "rows": 4,
+                  "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+                }
+              ]
+            },
+            "processes": {
+              "scanned": 570,
+              "inventory_sha256": "677a4b54862a629c8106ce62fd016dc889c08ee90679f02eb59cead310ac8b8d",
+              "known_comfy": [],
+              "uncertain": [
+                {
+                  "pid": 108351,
+                  "start_ticks": 1634070,
+                  "classification": "uncertain_python_cwd",
+                  "context_diagnostics": [
+                    {
+                      "cwd_failure_type": "PermissionError",
+                      "cwd_sha256": null
+                    },
+                    {
+                      "cwd_failure_type": "PermissionError",
+                      "cwd_sha256": null
+                    }
+                  ],
+                  "proc_owner_uid": 1001,
+                  "disappearance_resolution_eligible": true
+                }
+              ],
+              "vanished_sample": [],
+              "identity_retries": 0,
+              "retry_samples": []
+            }
+          }
+        ],
+        "resolution": {
+          "started_monotonic": 16341.166449782,
+          "offenders": [
+            {
+              "pid": 108351,
+              "start_ticks": 1634070,
+              "classification": "uncertain_python_cwd",
+              "context_diagnostics": [
+                {
+                  "cwd_failure_type": "PermissionError",
+                  "cwd_sha256": null
+                },
+                {
+                  "cwd_failure_type": "PermissionError",
+                  "cwd_sha256": null
+                }
+              ],
+              "proc_owner_uid": 1001,
+              "disappearance_resolution_eligible": true
+            }
+          ],
+          "disappeared": [],
+          "exited_zombies": [],
+          "finished_monotonic": 16341.667425706,
+          "failure_reason": "Unknown process remains after natural-exit budget"
+        }
+      }
+    },
+    "closure_errors": [],
+    "post_stop_terminal_verified": true,
+    "cgroup_absent": true,
+    "two_process_scans": [
+      {
+        "matches": [],
+        "unknown": []
+      },
+      {
+        "matches": [],
+        "unknown": []
+      }
+    ],
+    "sources_unchanged": true,
+    "whole_unit_exit_confirmed": true,
+    "observed_cgroup_cohort_exit_confirmed": true,
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "model_qualified": false,
+    "scope": "Authenticated selected unit and observed cgroup cohort only. The audited fork/setsid/empty-env case is covered; explicit delegated cgroup migration or user-manager requests are not prevented."
+  },
+  "full_population_unchanged": true,
+  "final_host": {
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "mem_total_bytes": 130595864576,
+    "mem_available_bytes": 123463315456,
+    "comfy_running": 0,
+    "comfy_pending": 0,
+    "comfy_state": "absent_confirmed",
+    "comfy_evidence": {
+      "transport": "connection_refused",
+      "errno": 111,
+      "samples": [
+        {
+          "started_monotonic": 16342.817042728,
+          "finished_monotonic": 16342.908159658,
+          "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+          "mem_total_bytes": 130595864576,
+          "mem_available_bytes": 123463573504,
+          "tcp": {
+            "listeners": [],
+            "inventories": [
+              {
+                "family": "tcp",
+                "rows": 123,
+                "sha256": "4b3d97e3ad526981c0bcc61b9b0bdc263ff0ade1794894fc07f28423f27152fe"
+              },
+              {
+                "family": "tcp6",
+                "rows": 4,
+                "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+              }
+            ]
+          },
+          "processes": {
+            "scanned": 560,
+            "inventory_sha256": "d46bf1f682fbc5f14066300ff2afda71611037ee36754f8f1c9669e8b9c1b8f6",
+            "known_comfy": [],
+            "uncertain": [],
+            "vanished_sample": [],
+            "identity_retries": 0,
+            "retry_samples": []
+          }
+        },
+        {
+          "started_monotonic": 16342.908165306,
+          "finished_monotonic": 16342.998847916,
+          "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+          "mem_total_bytes": 130595864576,
+          "mem_available_bytes": 123463315456,
+          "tcp": {
+            "listeners": [],
+            "inventories": [
+              {
+                "family": "tcp",
+                "rows": 123,
+                "sha256": "538b74d90d2035d404b18dc507c5df3098a196cdc8f64bfa0efc3825d34b2017"
+              },
+              {
+                "family": "tcp6",
+                "rows": 4,
+                "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+              }
+            ]
+          },
+          "processes": {
+            "scanned": 560,
+            "inventory_sha256": "d46bf1f682fbc5f14066300ff2afda71611037ee36754f8f1c9669e8b9c1b8f6",
+            "known_comfy": [],
+            "uncertain": [],
+            "vanished_sample": [],
+            "identity_retries": 0,
+            "retry_samples": []
+          }
+        }
+      ],
+      "natural_exit_resolution": null,
+      "scope": "Two fresh no-listener/no-runtime process scans; not an HTTP queue response or guarantee of future absence."
+    }
+  },
+  "ready_identity_was_published": true,
+  "completed": false,
+  "model_qualified": false,
+  "whole_tree_exit_confirmed": false,
+  "continuation_authorized": false
+}

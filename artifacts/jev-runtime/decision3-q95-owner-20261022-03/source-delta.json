@@ -1,0 +1,44 @@
+{
+  "schema_id": "q95-output-only-successor-v1",
+  "parent": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-02/q95_owner.py",
+    "sha256": "d8406090c012191ee99ec6d40b17790198fda2e1e3acb42cf6cefc449dd4fef8",
+    "size_bytes": 28933
+  },
+  "owner": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-03/q95_owner.py",
+    "sha256": "ce2dd64b9487f6b008341363827c76454f55181b54dcc7c838e49f3c4876548d",
+    "size_bytes": 28933
+  },
+  "entry": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-03/launch_q95.py",
+    "sha256": "db259d080227dca3c666d999fd9cf62bd40849c4974735285ecc38fb8b4e998d",
+    "size_bytes": 3539
+  },
+  "plan": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-03/launch-plan-01.json",
+    "sha256": "73b18a7de1f966795ed86d9bd1b4ca7a9faf5a5dd3d1554deda2678d8fd571b0",
+    "size_bytes": 3193
+  },
+  "edits": [
+    {
+      "before": "SERVICE = FROZEN / \"serve-02\"",
+      "after": "SERVICE = FROZEN / \"serve-03\""
+    },
+    {
+      "before": "UNIT = \"jev-d3-q95-helper-20261022-02.service\"",
+      "after": "UNIT = \"jev-d3-q95-helper-20261022-03.service\""
+    },
+    {
+      "before": "Path(plan[\"output\"]).name == \"owner-02\"",
+      "after": "Path(plan[\"output\"]).name == \"owner-03\""
+    }
+  ],
+  "complete_inverse_bytes_and_AST": true,
+  "entry_byte_identical": true,
+  "qualification_source95_runtime348_unchanged": true,
+  "resource_guards_lifecycle_unchanged": true,
+  "previous_helper02_terminal": true,
+  "actual_launch": false,
+  "tests": "Inherits parent42 CPU regressions; exact inverse proof confirms only three unit/output literals differ. No fixture/Ruff/ML/HTTP/unit operations performed."
+}

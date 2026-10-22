@@ -19,6 +19,7 @@ are not measurements of this Unified model. See [upstream notes](docs/upstream.m
 | JevBench coherence mini | Same BF16 profile | **41.26/100** |
 | Real Chromium V7 tasks | Current NF4 + raw96 action adapter | **20%** (2/10) |
 | Same ten Chromium V7 tasks and NF4 helper | Current NF4 + native V2 adapter | **40%** (4/10) |
+| Same ten Chromium V7 tasks, Q95 helper | Decision3 Edge BF16, observed tasks | **0%** (0/10); finalization interrupted |
 
 Both JevBench suites completed with independently reproduced scores; the coherence
 95% case-bootstrap interval is 38.43–43.80. The browser run retained all ten tasks:
@@ -35,7 +36,10 @@ See [both JevBench results](docs/validation/2026-10-22/jevbench-both-fresh-gx10-
 and [matched V2 browser results](docs/validation/2026-10-22/jev-current-nf4-v2-complete-results.md).
 The [native V2 fit](docs/validation/2026-10-22/jev-native-v2-complete-training-results.md)
 completed 142 updates and 37 development examples without development updates.
-Actual Decision3 baselines remain pending.
+Decision3 Edge has an [observed 0/10 result](docs/validation/2026-10-22/decision3-edge-observed-browser-results.md),
+with finalization interrupted after the tasks and missing final worker receipts.
+Its Q95 helper differs from the Gemma NF4 helper; matched controls and the other
+Decision3 checkpoints remain pending.
 No official leaderboard rank or cross-model superiority is claimed for this run.
 
 ## Public JevBench screening — October 8, 2026

@@ -1,0 +1,35 @@
+{
+  "schema_id": "decision3-edge-saved-semantic-audit-validation-v1",
+  "source": {
+    "path": "artifacts/jev-runtime/decision3-edge-known4-semantic-audit-20261022-01/audit.py",
+    "sha256": "d1710c38d56036df8026bceda967443c3a4b17fff1b8918fd1f31fb2ad980eb9",
+    "size_bytes": 10795
+  },
+  "summary": {
+    "path": "artifacts/jev-runtime/decision3-edge-known4-semantic-audit-20261022-01/summary.json",
+    "sha256": "9532513004ad77a48114ba8b239ec957940e9a251e65e68a97473903fd7886f0",
+    "size_bytes": 17274
+  },
+  "loader_observation": {
+    "path": "artifacts/jev-runtime/decision3-edge-known4-semantic-audit-20261022-01/loader-source-observation.json",
+    "sha256": "42e8495d483ea2a80de3e0290189b6b66a87f76b454d3426e29618c1f2106450",
+    "size_bytes": 5599
+  },
+  "bounded_cpu_replay": {
+    "exit_code": 0,
+    "elapsed_seconds": 0.309328393,
+    "address_space_limit_bytes": 268435456,
+    "cpu_limit_seconds": 30,
+    "wall_timeout_seconds": 45,
+    "requests": 4,
+    "heads": 15,
+    "framework_model_tokenizer_network_calls": 0
+  },
+  "lint": {
+    "passed": false,
+    "attempts": 2,
+    "exit_code": 134,
+    "observed_error": "Ruff failed to spawn a thread (EAGAIN/Resource temporarily unavailable) under256MiB address-space bound; retry with1MiB stack failed identically. No code lint result returned.",
+    "not_claimed": "No OOM cause inferred."
+  }
+}
