@@ -1,0 +1,53 @@
+{
+  "schema_id": "jevbench-gx10-score-preflight-v1",
+  "status": "SOURCE_AND_PURE_TESTS_READY_ACTUAL_SCORES_NOT_RUN",
+  "profile": "released-gx10-bf16-causal-multislot-20261022-v1",
+  "plan": {
+    "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-01.json",
+    "sha256": "6b5dc9bc8fdf377e4eeb802aaef542b7c28daa53745e754affd84ba3cc47faa1",
+    "size_bytes": 45344
+  },
+  "test_source": {
+    "path": "artifacts/jevbench/20261022-local-score-01/test_score_worker.py",
+    "sha256": "de625d9ef1103f2ca970bb3f18a0e08b09688ffa4569149630da80784a58cfdf",
+    "size_bytes": 6543
+  },
+  "final_worker": {
+    "path": "artifacts/jevbench/20261022-local-score-01/score_worker.py",
+    "sha256": "c2ff8a5353099ede3d465098b4f77b512aa801dd8bda80857625d8cb1b709edc",
+    "size_bytes": 21511
+  },
+  "final_owner": {
+    "path": "artifacts/jevbench/20261022-local-score-01/launch_score.py",
+    "sha256": "cc00f7737c329c4e5696d79e3c1b6a5d0033ce6fbcd4f22088bd64cf7fb07825",
+    "size_bytes": 14077
+  },
+  "research": {
+    "path": "docs/research/jevbench-gx10-local-score.md",
+    "sha256": "fb23dff7290b9ce94b885e6610ffe5059a1e374de526c1acbba3646b62079b18",
+    "size_bytes": 2798
+  },
+  "current_heaven_public_equivalence": {
+    "path": "artifacts/jevbench/20261022-local-score-01/current-heaven-public-equivalence-01.json",
+    "sha256": "e13d90f9edcc20110b0d8d58906f7b64b24bfbf3cf97436f7ee904f241cfbea0",
+    "size_bytes": 7709
+  },
+  "pure_tests": {
+    "passed": 9,
+    "seconds": 0.22,
+    "exit_code": 0,
+    "JUnit": {
+      "path": "artifacts/jevbench/20261022-local-score-01/worker-pure-tests-02.xml",
+      "sha256": "218ce1af32534f06357761b607327c94109673e3f8d0a65a18b503b02eed1864",
+      "size_bytes": 1733
+    },
+    "scope": "Pure fake GPU/OS fixtures. No Torch/model/unit actor. Tests after all final worker changes."
+  },
+  "independent_source_review": "CLEAR after fixed checkpoint-identity and specific OOM-abort fixes; no model by reviewer.",
+  "Ruff_check_and_format": "PASS",
+  "model_loads": 0,
+  "public_cases_attempted": 0,
+  "coherence_model_calls": 0,
+  "official_rank": null,
+  "exports": "Selected source, aggregate and hash-reference metadata only. No raw benchmark cases, answers, tokens, runtime copies or model weights."
+}
