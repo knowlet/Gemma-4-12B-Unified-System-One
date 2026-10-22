@@ -1,0 +1,43 @@
+{
+  "schema_id": "jev-typed-stale-feedback-CPU-validation-v1",
+  "created_at_utc": "2026-10-22T10:22:09.653028+00:00",
+  "source": {
+    "path": "artifacts/jev-runtime/browser-stale-feedback-runtime-20261022-01/action_feedback.py",
+    "sha256": "79ccf2ccc2d88f9613c1320ee883ce9742b0a88c0535dbfae4de7c97ee428246",
+    "size_bytes": 3875
+  },
+  "tests": {
+    "path": "artifacts/jev-runtime/browser-stale-feedback-runtime-20261022-01/test_action_feedback.py",
+    "sha256": "7c3fc558d6251dc18f0ccf8ef938f428c988289e6129b5d64a775d5d6c28570f",
+    "size_bytes": 6616
+  },
+  "research_decision": {
+    "path": "artifacts/jev-runtime/browser-stale-feedback-runtime-20261022-01/research-decision.json",
+    "sha256": "9b172884fd9944a79aa75034de82d36975e8736ce66018abb0cef0abece272be",
+    "size_bytes": 1422
+  },
+  "README": {
+    "path": "artifacts/jev-runtime/browser-stale-feedback-runtime-20261022-01/README.md",
+    "sha256": "16df3010582a03c1418561e93058da08666f98b13057797b436f487c1b0973dc",
+    "size_bytes": 2117
+  },
+  "original_source_mechanism_proof": {
+    "path": "artifacts/jev-runtime/browser-stale-feedback-20261022-01/proof-receipt.json",
+    "sha256": "8e4eea254261f4671ba52a1987ecb4abedef079e861860db0d10504d1fc244ee",
+    "size_bytes": 7862
+  },
+  "test_command": "timeout 45s bash -c 'ulimit -v 262144; ulimit -t 30; ulimit -c 0; exec .venv/bin/python -B -m unittest discover -s artifacts/jev-runtime/browser-stale-feedback-runtime-20261022-01 -p test_action_feedback.py -v'",
+  "tests_passed": 6,
+  "test_exit_code": 0,
+  "test_elapsed_reported_seconds": 0.084,
+  "ruff_check_and_format": "PASS",
+  "independent_review": {
+    "result": "CLEAR",
+    "source_sha256": "79ccf2ccc2d88f9613c1320ee883ce9742b0a88c0535dbfae4de7c97ee428246",
+    "scope": "Current source including real benchmark model_adapter composition regression"
+  },
+  "corrected_before_real_execution": "Earlier loader-level installation was bypassed by the benchmark route rewrite; replaced by inner model_adapter installation and added exact original-adapter regression. No actual model/browser run used the earlier preparation.",
+  "actual_browser_or_model_or_GPU_or_service_executed": false,
+  "measured_browser_improvement": null,
+  "existing_V7_or_Decision3_protocol_modified": false
+}

@@ -1,0 +1,37 @@
+{
+  "schema_id": "jev-browser-stale-feedback-research-decision-v1",
+  "UTC": "2026-10-22T10:09:53.828976+00:00",
+  "scope": "Read recorded raw03 metadata and verified upstream source; reproduce actual Agent tick/request semantics using isolated pure fake browser and HTTP client. No live/frozen source edits or actors.",
+  "upstream_commit": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "selected_raw_plan_sha256": "e6aab745961255af77258d3cf6bcbbb516d3c8d9bc3507ab327fd99774d187d0",
+  "finding_to_verify": {
+    "case_id": "heldout-public-003-000",
+    "call_range_inclusive": [
+      5,
+      15
+    ],
+    "state_range_inclusive": [
+      5,
+      16
+    ],
+    "identical_raw_HTTP_request_body_sha256": "8dc4610f10a04c852f51a4539a9d195fccb141efcdae53fbb3210a23b4407b39",
+    "repeat_decoded_operation": "CLICK",
+    "repeat_decoded_target": "39",
+    "physical_guard_branch": "not recorded; unproven",
+    "full_response_body_equality": "not claimed; telemetry differs"
+  },
+  "implementation_decision": "Compile verified original Agent/model/questions/browser bytes in a private fixture package. Use fake Browser and HTTP dependencies that raise on actual CDP/network calls. Show missing failure context in model body under unchanged page/history. Propose separate generic stale-attempt context without changing action history, candidate inventory, judge, or action safety guards.",
+  "planned_tests": [
+    "Repeated pre-input StalePage leaves three next model requests equal and action history unchanged.",
+    "Changed page changes next request even without rejection feedback.",
+    "Stale post-action observation preserves the executed action entry.",
+    "Proposed context only adds one separate state field, changing request bytes without modifying actions/candidates/questions."
+  ],
+  "execution_constraints": {
+    "AS_bytes": 268435456,
+    "CPU_seconds": 30,
+    "wall_seconds": 45,
+    "models_GPU_browser_units_Comfy_or_cloud": false
+  },
+  "performance_claim": "Mechanism/provenance proof only; no model improvement or scenario-success claim."
+}
