@@ -1,0 +1,23 @@
+$ python3 -B -s /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/test_campaign.py
+....................
+----------------------------------------------------------------------
+Ran 20 tests in 0.309s
+
+OK
+exit_code=0
+
+$ ruff check /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03
+All checks passed!
+exit_code=0
+
+$ ruff format --check /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03
+2 files already formatted
+exit_code=0
+
+$ python3 -B -s /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/campaign.py
+{"status": "dry_default_no_model_or_benchmark_execution", "models": ["edge"], "batch_size": 4, "constructor_count": 1, "suites": {"legacy-public231": 231, "jevbench-mini": 1248}, "fresh_calls": 1479, "whole_campaign_seconds": 10000, "per_call_seconds": 180, "owner_runtime_seconds": 10800, "requires_exact_successful_smoke_and_closed_independent_audit": true, "browser20_qualification_or_batch1_scores_inherited": false}
+exit_code=0
+
+$ ruff --version
+ruff 0.16.6
+exit_code=0

@@ -1,0 +1,411 @@
+{
+  "schema": "independent-Edge2GiB-fullcampaign03-resource-source-review-v1",
+  "created_at_utc": "2026-10-23T13:28:32.540196+00:00",
+  "reviewer": "/root/cpu4_owner_smoke",
+  "reviewed_successor_author": "/root/cpu_text_helper_route/helper_boundary_review",
+  "result": "CLEAR_SOURCE_ONLY_PENDING_GENUINE_NEW2GiB_CLOSED_SMOKE_FINALAUDIT_EXACT_ROOT_SELECTION_AND_FRESH_ORIGINAL_ADMISSION",
+  "findings": [],
+  "campaign": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/campaign.py",
+    "size_bytes": 34545,
+    "sha256": "2c0f587f139176cc43342be49d1cc96d2c9d1e5540783853caafb928e7eecf6b"
+  },
+  "plan": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/edge-plan.json",
+    "size_bytes": 6420,
+    "sha256": "dc18c0e122a174dd88c68a0840ce06d0c3283fe85d32dd0cd6d7af596a2ef620"
+  },
+  "freeze": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/freeze.json",
+    "size_bytes": 4627,
+    "sha256": "e8b1813cee43bccf3363d3b040009bb90a85176d7bf7e99623134fe8263652f6"
+  },
+  "baseline_independent_review": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/independent-source-selection-review.json",
+    "size_bytes": 57620,
+    "sha256": "2621c004e549b27e24ff8494c945e9176b63e8881993fb5d18de84cc62ae75f2"
+  },
+  "scope": "Read/hash bounded frozen small control source, fake test source, plan/docs/validation and prior review metadata. Independently inspect fullcampaign03 and verify exact resource-only AST delta from reviewed frozen02. No candidate execution/import, tests rerun, actual/terminal/host/observer/unit/runtime/model/native/tasks/gold/responses/cache/network/Git reads or actions. Referenced benchmark sources/data manifests and runtime/model records were never opened or restatted.",
+  "checks": [
+    {
+      "check": "Frozen03 exact identities",
+      "result": "PASS",
+      "evidence": "8 manifest entries independently byte-hashed with exact sizes totaling89376B; freeze4627B exact suppliede8b1813c. Owncampaign34545B/2c0f587f and Edgeplan6420B/dc18c0e1 exact. Base02campaign/freeze, finalnative02actor/plan/freeze and owner06source/freeze/review exact small pins also checked."
+    },
+    {
+      "check": "Minimal resource-only semantic delta",
+      "result": "PASS",
+      "changed_function_AST": [
+        "profile",
+        "load_plan"
+      ],
+      "unchanged_function_AST": [
+        "CampaignAbort",
+        "DeadlineScope",
+        "require",
+        "sha",
+        "unique",
+        "read_json",
+        "selected_small_json",
+        "finite_seconds",
+        "check_smoke",
+        "check_audit",
+        "latency_distribution",
+        "TimedPredictor",
+        "run_unchanged_suites",
+        "check_counts",
+        "durable_success",
+        "execute",
+        "main"
+      ],
+      "changed_global_AST": [
+        "BATCH",
+        "BATCH_ACTOR_SHA",
+        "BATCH_FREEZE_SHA",
+        "NATIVE_PLAN_SHA"
+      ],
+      "evidence": "Onlyprofile and load_plan functionAST differ. All17otherdefinitions including DeadlineScope,TimedPredictor,run_unchanged_suites,check_counts,durable_success,execute,check_smoke/check_audit and main are independently AST-identical to frozen02SHA945334a6. Fourglobals only select finalnative02/Edge-onlyplan rather than oldnative01/oldLiteentry. Pre-existing02timing behavior was independently reviewed under2621c004; this review concerns another authors03 resource successor and also reads full current control flow."
+    },
+    {
+      "check": "Full2GiB resource identity and no budget change",
+      "result": "PASS",
+      "line_refs": [
+        112,
+        128,
+        134,
+        149,
+        158,
+        587,
+        590
+      ],
+      "evidence": "Planjoins currentnative02model/owner_sources exactly. Explicitowner06unit/profile,R26119172916,2GiB2147483648,initialR+fullcap28266656564,swap0,CPU16-19/400percent/threads4. Sameowner10800,whole10000,call180. Native02fixedowner/cap/fullstartup gate actually runs before libraries/model; owneroriginal fresh idle/R and runtime livegate/closure remain external. No7200owner substitution/noLite2GiBplan or3GiBfitinheritance."
+    },
+    {
+      "check": "Unknown new smoke and finalaudit refuse before runtime",
+      "result": "PASS",
+      "line_refs": [
+        164,
+        168,
+        170,
+        203,
+        217,
+        225,
+        232,
+        237,
+        246,
+        253,
+        270,
+        579,
+        580,
+        627
+      ],
+      "evidence": "check_smoke requires exact newnative02profile/planSHA,CPU batch4,oneconstructor/twocalls/twoBF16CPU[4,width,1024] events,call20/whole120 and finalfullauth. check_audit requires closed_real_smoke_result independently reviewedPASS/PASS_WITH_LIMITS,all7qualifications,newownerunit/2GiB/modelmanifest/revision/batch and allnamed smallartifact identities includingexactstate/plan/root/owner/spec/closure. Pendingfrozenrefs remainnull and are rejected. Bothchecks happen before load_runtime; actualreceipt/audit arguments are future root selection, never pending metadata qualification."
+    },
+    {
+      "check": "Complete original suites and scoring interfaces",
+      "result": "PASS",
+      "line_refs": [
+        26,
+        29,
+        468,
+        471,
+        473,
+        475,
+        478,
+        479,
+        489,
+        515,
+        517,
+        521,
+        628,
+        630,
+        672,
+        681
+      ],
+      "evidence": "Fixedpublic231first then officialjevbench-mini1248requests/240cases/50relations/1200tests,concurrency1,freshcoherencecache. Counts demandstarted==completed==raw_returned==1479 and exact231/1248latencypopulations. Originalrun_public and jb.evaluate API/math/ordering unchanged; 78scorersources+2datasetmetadata plan identity unchanged. Batch4 uses one actualpublisherconstructor,BF16backbone/FP32readout,fulloriginalcontexts/options/questions,16384reject-no-truncation. No shortenedpopulation,budgettruncation,rank/browser/batch1scoretransfer."
+    },
+    {
+      "check": "Raw response and complete callback180",
+      "result": "PASS",
+      "line_refs": [
+        321,
+        330,
+        362,
+        367,
+        374,
+        380,
+        386,
+        390,
+        394,
+        413,
+        432,
+        442,
+        460,
+        461
+      ],
+      "evidence": "Clockstarts before preparation/counters/rawretention/nativevalidation/durableprogress. Raw native envelope retained beforevalidation; invalidnonfinite response only getsdiagnosticnotreplacementanswer. Final180check is afterfinally and DeadlineScopecleanup; lateorcleanupfailure rollsbackcompleted/latency and durableprogress then raisesCampaignAbort(BaseException) so upstream per-caseExceptionhandler cannotturnit into qualifiedcomplete return. Acceptedlatency includescleanup; no successfulIO betweenpostcleanupcheck andreturn."
+    },
+    {
+      "check": "Whole10000 includes final fullauth/durable/cleanup",
+      "result": "PASS",
+      "line_refs": [
+        548,
+        549,
+        617,
+        618,
+        621,
+        680,
+        684,
+        685,
+        687,
+        703,
+        723,
+        729,
+        742,
+        745,
+        749,
+        758
+      ],
+      "evidence": "Wholeclockfirstexecuteentry, remaining10000timer afterpreflight. Beforeclaim authenticatesall20modelfiles+manifest/runtime/owner,same78scorersources+2datametadata,campaign/plan/nativeactor/freeze/plan/helper/audit,smokestate/auditandeveryartifactref. Strictfinite results,durablewrites and postwholeDeadlineScopecheck precedesuccessreturn; finalcheckhasnointerveningsuccessIO. Cleanuporpostcleanupfailure demotesstatus andclearsbenchmark_scoreswhenfailureoccursafterotherwise-successfulbody. Earlierfailure mayretainunqualifiedraw/pendingresults withfailedstatus."
+    },
+    {
+      "check": "Primary exceptions retained through cleanup/evidence",
+      "result": "PASS",
+      "line_refs": [
+        46,
+        55,
+        58,
+        61,
+        400,
+        413,
+        420,
+        428,
+        435,
+        724,
+        729,
+        741,
+        745,
+        752,
+        757
+      ],
+      "evidence": "DeadlineScope retains alreadypropagatingBaseException withsecondarynotes. Callbackfailureevidence cannotreplaceprimary; overrunCampaignAbort preservescause. Wholefailurefinalize_state usesoriginalhelper primaryretention and cleanup exception cannotmaskit. Failure evidence/writes may takeadditional time butcannotreturnqualifiedsuccess."
+    },
+    {
+      "check": "Meaningful saved20stdlibfakes only",
+      "result": "PASS_SAVED_SOURCE_ONLY",
+      "test_line_refs": [
+        96,
+        151,
+        214,
+        227,
+        243,
+        260,
+        276,
+        306,
+        337,
+        353,
+        367,
+        466,
+        493,
+        505,
+        562,
+        608,
+        620,
+        644
+      ],
+      "evidence": "Read injectedfakeclock/deadline/write behavior plus assertions forlatecallbackrollback,wholecleanup failure/no scoreclaim,primaryidentity,rawretention,fixedharness counts,pendingnullref refusal,adjacent2Gcaps/floor/reserve/mixedowner/7200/9999/179/context16383 refusals andprior3Gsmokeprofile/plan refusal. Sourceforwholefake replacesactualruntime/scorers/auth withstdlibfakes. Saved20tests/Ruff/format/AST/dryPASS; reviewerdoesnotrerun/importtestorcampaign."
+    },
+    {
+      "check": "Source-only qualification and successor boundary",
+      "result": "PASS_WITH_LIMITS",
+      "evidence": "03 is sourcebaselineonly: no exactfullcampaignROOTspec/currentadmission/actualsmoke/audit/scorequalified. Rootcanreuse this03 review for04 narrowdeltaonlyafter04independentfreeze and review. 04stage-auth/completion change is outside this frozen03review and not read here."
+    }
+  ],
+  "frozen_entries_verified": [
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/README.md",
+      "size_bytes": 4308,
+      "sha256": "5158c07e3e000e5e25d56aa6dd35ff4d2ee4b0e68b6461e3d69d041ec53a0a78"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/campaign.py",
+      "size_bytes": 34545,
+      "sha256": "2c0f587f139176cc43342be49d1cc96d2c9d1e5540783853caafb928e7eecf6b"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/edge-plan.json",
+      "size_bytes": 6420,
+      "sha256": "dc18c0e122a174dd88c68a0840ce06d0c3283fe85d32dd0cd6d7af596a2ef620"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/pending-prerequisites.json",
+      "size_bytes": 1068,
+      "sha256": "481fb0b8c8d445672137d31f569affcdb7b64bec3b3db3e926c6036d0cbcdce6"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/research.json",
+      "size_bytes": 4306,
+      "sha256": "f41f00d2c60a801153e0e1fe88e9ed8e6f70d7e5a25b63ec984c648ed74d2643"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/test_campaign.py",
+      "size_bytes": 28021,
+      "sha256": "da4c5a82967fe12c616878099669cbdf4e566997a6e165e2626084282e77fbe0"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/tests.log",
+      "size_bytes": 1254,
+      "sha256": "745c89853daa72b77e2d08970aa33a0ba9d9e59b46c36edff4133d7837189c6a"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/validation.json",
+      "size_bytes": 9454,
+      "sha256": "c45f02598f1f542555d20deee91ac73ed9e56eabd0f0bf66a42fb396282cca77"
+    }
+  ],
+  "protected_plan_metadata_identical_to02": {
+    "model": true,
+    "benchmark_source_plan_sha256": true,
+    "whole_campaign_seconds": true,
+    "per_call_seconds": true,
+    "owner_runtime_seconds": true,
+    "reserve_bytes": true,
+    "swap_max_bytes": true,
+    "threads": true,
+    "cpu_affinity": true,
+    "cpu_quota_percent": true,
+    "batch_size": true,
+    "constructor_count": true,
+    "concurrency": true,
+    "fresh_calls": true,
+    "context_limit": true,
+    "context_policy": true,
+    "suites": true,
+    "fresh_output_and_coherence_cache_required": true,
+    "external_authenticated_current_campaign_closure_required_before_final_claim": true
+  },
+  "benchmark_source_plan_identity_only": {
+    "path": "artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01/benchmark-source-plan.json",
+    "size_bytes": 35610,
+    "sha256": "b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021"
+  },
+  "benchmark_plan_counts_only": {
+    "source_files": 78,
+    "existing_dataset_metadata": 2
+  },
+  "small_control_refs_verified": [
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/freeze.json",
+      "size_bytes": 4627,
+      "sha256": "e8b1813cee43bccf3363d3b040009bb90a85176d7bf7e99623134fe8263652f6"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/README.md",
+      "size_bytes": 4308,
+      "sha256": "5158c07e3e000e5e25d56aa6dd35ff4d2ee4b0e68b6461e3d69d041ec53a0a78"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/campaign.py",
+      "size_bytes": 34545,
+      "sha256": "2c0f587f139176cc43342be49d1cc96d2c9d1e5540783853caafb928e7eecf6b"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/edge-plan.json",
+      "size_bytes": 6420,
+      "sha256": "dc18c0e122a174dd88c68a0840ce06d0c3283fe85d32dd0cd6d7af596a2ef620"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/pending-prerequisites.json",
+      "size_bytes": 1068,
+      "sha256": "481fb0b8c8d445672137d31f569affcdb7b64bec3b3db3e926c6036d0cbcdce6"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/research.json",
+      "size_bytes": 4306,
+      "sha256": "f41f00d2c60a801153e0e1fe88e9ed8e6f70d7e5a25b63ec984c648ed74d2643"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/test_campaign.py",
+      "size_bytes": 28021,
+      "sha256": "da4c5a82967fe12c616878099669cbdf4e566997a6e165e2626084282e77fbe0"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/tests.log",
+      "size_bytes": 1254,
+      "sha256": "745c89853daa72b77e2d08970aa33a0ba9d9e59b46c36edff4133d7837189c6a"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/validation.json",
+      "size_bytes": 9454,
+      "sha256": "c45f02598f1f542555d20deee91ac73ed9e56eabd0f0bf66a42fb396282cca77"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/campaign.py",
+      "size_bytes": 34629,
+      "sha256": "945334a69824d10f45cbcf9dfa59e3df9449a8a597c27bb32a49987e7df2f695"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size_bytes": 30552,
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+      "size_bytes": 30406,
+      "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/freeze.json",
+      "size_bytes": 3646,
+      "sha256": "9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+      "size_bytes": 40319,
+      "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/source-freeze.json",
+      "size_bytes": 2573,
+      "sha256": "7a83281f3ce088e29c0c1fa833b617a0eecd9d26214cbda4ebf97314c3f8bdbb"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/independent-resource-source-review-01.json",
+      "size_bytes": 4487,
+      "sha256": "e22017ac53c0364e009f67d61e65cc799baef6909f3fd18d1e491774a273e891"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/edge-plan.json",
+      "size_bytes": 5074,
+      "sha256": "639293c2ace54b943653de2b3f71caf58249b399a246bceb25870bec40a4dd09"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01/benchmark-source-plan.json",
+      "size_bytes": 35610,
+      "sha256": "b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/independent-source-selection-review.json",
+      "size_bytes": 57620,
+      "sha256": "2621c004e549b27e24ff8494c945e9176b63e8881993fb5d18de84cc62ae75f2"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/independent-source-review.json",
+      "size_bytes": 13427,
+      "sha256": "5bbed9b963b16ad9f0c4c9981a9b27f9e45dd49f971616d6261c8996f378e5d6"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/independent-root-selection-review.json",
+      "size_bytes": 17168,
+      "sha256": "f62ba6708a931d7381a276b532ea74fb7d373ef0f75bcccfbea3ea3ff887d28f"
+    }
+  ],
+  "review_limits": [
+    "This is a source-only03 resource baseline review, not exact ROOTexecution selection or live admission. Root must acquire genuine new2GiB same-Edge shortsmoke and independentfinalaudit,authenticateclosure,constructexactROOTspec and pass fresh originalidle/R+full2GiB before serial actual.",
+    "No active actual or historical terminal was opened. Nullpendingrefs are deliberately notfilled; prior3GiB fit/latency/modelauth/quality/scores cannot substitute.",
+    "Whole10000 successful-return gate includespreflight/finalauth/durableevidence/Deadlinecleanup; Python timing is not universal hardrealtime. State/results/raw artifacts mayremain unqualified evidence after failure. Require genuine commandexit0/no timeout/finalauth and originalauthenticatedclosure before any finalscoreclaim.",
+    "Current03 has end-of-wholecampaign final authentication and overallcompletion, not independently authenticated per-stage completion. A public prefix or interrupted laterstage is not qualified by thissource review. Future04stage receipts require separate delta review.",
+    "The unchangedbenchmarksourceplanSHA and78+2records are authenticated as smallmetadata only in thisreview. Noneofthereferencedbenchmarktasks/gold/cache/responses/model/native/runtimepayloads orhost state were readorstat. No fulltransitive/DSOclosure isasserted."
+  ],
+  "actual_or_test_execution_by_reviewer": false
+}

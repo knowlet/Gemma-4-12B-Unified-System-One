@@ -1,0 +1,101 @@
+{
+  "profile": "cpu4-2GiB-original10800-owner-source-resource-successor-v1",
+  "base_controller": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+    "size_bytes": 40319,
+    "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e"
+  },
+  "base_source_freeze": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/source-freeze-02.json",
+    "size_bytes": 2351,
+    "sha256": "b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe"
+  },
+  "declared_byte_substitutions": [
+    [
+      "jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+      "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service"
+    ],
+    [
+      "llama-cpp-cpu4-3g-long-command-owned-v1",
+      "llama-cpp-cpu4-2g-long-command-owned-v1"
+    ],
+    [
+      "MEMORY_MAX_BYTES = 3 * GIB",
+      "MEMORY_MAX_BYTES = 2 * GIB"
+    ],
+    [
+      "INITIAL_HOST_EXTRA_BYTES = 3 * GIB",
+      "INITIAL_HOST_EXTRA_BYTES = 2 * GIB"
+    ],
+    [
+      "MEMORY_MAX_BYTES == INITIAL_HOST_EXTRA_BYTES == 3 * GIB",
+      "MEMORY_MAX_BYTES == INITIAL_HOST_EXTRA_BYTES == 2 * GIB"
+    ],
+    [
+      "3GiB",
+      "2GiB"
+    ]
+  ],
+  "all_other_controller_bytes_equal": true,
+  "changed_function_AST_names": [
+    "fixed_memory",
+    "host"
+  ],
+  "unchanged_function_AST_names": [
+    "need",
+    "ordinary",
+    "read",
+    "sha",
+    "ref",
+    "encoded",
+    "load_fixed",
+    "sources_match",
+    "reserve",
+    "failure",
+    "keep",
+    "stable_process",
+    "same_identity",
+    "process_identity",
+    "memory_events",
+    "properties",
+    "main_affinity",
+    "ensure_absent",
+    "finalize",
+    "record_runtime_host",
+    "command_selection",
+    "environment",
+    "selection",
+    "bootstrap_argv",
+    "BoundedOutput",
+    "selected_executable",
+    "execute_command",
+    "bootstrap",
+    "retain_and_validate_result",
+    "run",
+    "main"
+  ],
+  "resource_policy": {
+    "unit": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+    "profile": "llama-cpp-cpu4-2g-long-command-owned-v1",
+    "cap_bytes": 2147483648,
+    "startup_extra_bytes": 2147483648,
+    "reserve_bytes": 26119172916,
+    "initial_R_plus_actual_cap_bytes": 28266656564,
+    "runtime_choices_seconds": [
+      30,
+      7200,
+      10800
+    ],
+    "CPU_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "CPU_quota_percent": 400,
+    "swap_bytes": 0,
+    "file_bytes": 268435456
+  },
+  "no_prior3GiB_runtime_quality_scores_or_authentication_inherited": true,
+  "actual_operations_performed": false
+}

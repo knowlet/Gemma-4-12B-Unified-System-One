@@ -1,0 +1,176 @@
+{
+  "status": "ALL_SOURCE_ONLY_20_STDLIB_BOUNDARY_FAKES_RUFF_AST_DRY_PASS",
+  "recorded_utc": "2026-10-23T13:08:32.459308+00:00",
+  "python_for_fakes": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "checks": [
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/test_campaign.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.44301059599092696,
+      "output": "....................\n----------------------------------------------------------------------\nRan 20 tests in 0.309s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0115714220009977,
+      "output": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        "ruff",
+        "format",
+        "--check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.011197710002306849,
+      "output": "2 files already formatted\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/campaign.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.09642354300012812,
+      "output": "{\"status\": \"dry_default_no_model_or_benchmark_execution\", \"models\": [\"edge\"], \"batch_size\": 4, \"constructor_count\": 1, \"suites\": {\"legacy-public231\": 231, \"jevbench-mini\": 1248}, \"fresh_calls\": 1479, \"whole_campaign_seconds\": 10000, \"per_call_seconds\": 180, \"owner_runtime_seconds\": 10800, \"requires_exact_successful_smoke_and_closed_independent_audit\": true, \"browser20_qualification_or_batch1_scores_inherited\": false}\n"
+    },
+    {
+      "argv": [
+        "ruff",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0035453000018605962,
+      "output": "ruff 0.16.6\n"
+    }
+  ],
+  "fake_test_count": 20,
+  "fake_cases_include": "Pendingunknown/prior3Grefs refused; cap\u00b11/3GiB/mixedowner/reserve/floor-1/shortenedcontext10000/180/10800 refused; inheritedcallback/wholelatecleanup countrollback+primaryerror preservation and original1479 interfaces",
+  "AST_import_placement": {
+    "campaign.py": {
+      "dry_module_level_stdlib": [
+        "__future__",
+        "argparse",
+        "hashlib",
+        "json",
+        "math",
+        "pathlib",
+        "sys",
+        "time"
+      ],
+      "declared_deferred_runtime_roots": [
+        "jevbench"
+      ],
+      "deferred_scorer_source_covered_by_unchanged_benchmark_source_plan": true
+    },
+    "test_campaign.py": {
+      "dry_module_level_stdlib": [
+        "copy",
+        "importlib",
+        "json",
+        "pathlib",
+        "subprocess",
+        "sys",
+        "tempfile",
+        "types",
+        "unittest"
+      ],
+      "declared_deferred_runtime_roots": [],
+      "deferred_scorer_source_covered_by_unchanged_benchmark_source_plan": false
+    }
+  },
+  "changed_function_AST_names": [
+    "profile",
+    "load_plan"
+  ],
+  "unchanged_function_AST_names": [
+    "CampaignAbort",
+    "DeadlineScope",
+    "require",
+    "sha",
+    "unique",
+    "read_json",
+    "selected_small_json",
+    "finite_seconds",
+    "check_smoke",
+    "check_audit",
+    "latency_distribution",
+    "TimedPredictor",
+    "run_unchanged_suites",
+    "check_counts",
+    "durable_success",
+    "execute",
+    "main"
+  ],
+  "campaign_source_diff": "--- frozen02/campaign.py\n+++ candidate03/campaign.py\n@@ -13,13 +13,11 @@\n \n ROOT = Path(__file__).resolve().parents[3]\n HERE = Path(__file__).resolve().parent\n-BATCH = ROOT / \"artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01\"\n-BATCH_ACTOR_SHA = \"ec38584ccfc08d26d74081161a206a9fd4ee544e8bf35351e91f18c0b6256344\"\n-BATCH_FREEZE_SHA = \"19e1224dcdce91a3b89893d1ebc6a1df423f1d31f765562838ea1dfb6a9b1d5c\"\n-NATIVE_PLAN_SHA = {\n-    \"edge\": \"be0ce6e6c7fb3588218d51f884e182ec10b54b8547fd3840533b60b6ebb01ae7\",\n-    \"lite\": \"72b4a083d10fafa494fb83fe3a7c6b690439597cdaeb180e1c8b2e3a93862e14\",\n-}\n+BATCH = ROOT / \"artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02\"\n+BATCH_ACTOR_SHA = \"977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b\"\n+BATCH_FREEZE_SHA = \"9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a\"\n+NATIVE_PLAN_SHA = {\"edge\": \"115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8\"}\n+\n BENCHMARK_PLAN = (\n     ROOT\n     / \"artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01/benchmark-source-plan.json\"\n@@ -108,7 +106,7 @@\n \n \n def profile(key):\n-    return f\"decision3-{key}-gx10-publisher-cpu-batch4-both-20261023-v1\"\n+    return f\"decision3-{key}-gx10-publisher-cpu2g-batch4-both-20261023-v1\"\n \n \n def load_plan(path, expected):\n@@ -149,16 +147,16 @@\n         \"native full-request batch4 policy differs\",\n     )\n     require(\n-        plan.get(\"owner_unit\") == \"jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service\"\n-        and plan.get(\"owner_profile\") == \"llama-cpp-cpu4-3g-long-command-owned-v1\"\n+        plan.get(\"owner_unit\") == \"jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service\"\n+        and plan.get(\"owner_profile\") == \"llama-cpp-cpu4-2g-long-command-owned-v1\"\n         and plan.get(\"reserve_bytes\") == 26119172916\n-        and plan.get(\"memory_max_bytes\") == 3221225472\n-        and plan.get(\"startup_available_bytes\") == 29340398388\n+        and plan.get(\"memory_max_bytes\") == 2147483648\n+        and plan.get(\"startup_available_bytes\") == 28266656564\n         and plan.get(\"swap_max_bytes\") == 0\n         and plan.get(\"threads\") == 4\n         and plan.get(\"cpu_quota_percent\") == 400\n         and plan.get(\"cpu_affinity\") == [16, 17, 18, 19],\n-        \"owner05 CPU/memory policy differs\",\n+        \"owner06 CPU/memory policy differs\",\n     )\n     return plan\n \n",
+  "model_and_suite_metadata_equal_original": true,
+  "all_original_budget_context_constructor_batch_order_sourceauth_score_and_finalcleanup_functions_preserved": true,
+  "final_native_source_refs_verified": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/campaign.py",
+      "size_bytes": 34629,
+      "sha256": "945334a69824d10f45cbcf9dfa59e3df9449a8a597c27bb32a49987e7df2f695"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/freeze.json",
+      "size_bytes": 2427,
+      "sha256": "3bfe305ec128c412b0a3192b85a54c5e01ace3375e90d1182f6c3449d763bf8a"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size_bytes": 30552,
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+      "size_bytes": 7734,
+      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source_audit.py",
+      "size_bytes": 5079,
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+      "size_bytes": 30406,
+      "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/freeze.json",
+      "size_bytes": 3646,
+      "sha256": "9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+      "size_bytes": 40319,
+      "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/source-freeze.json",
+      "size_bytes": 2573,
+      "sha256": "7a83281f3ce088e29c0c1fa833b617a0eecd9d26214cbda4ebf97314c3f8bdbb"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/independent-resource-source-review-01.json",
+      "size_bytes": 4487,
+      "sha256": "e22017ac53c0364e009f67d61e65cc799baef6909f3fd18d1e491774a273e891"
+    }
+  ],
+  "pending_unknown_actual_refs_not_fabricated": true,
+  "prior3GiB_qualification_not_inherited": true,
+  "actual_model_native_generation_benchmark_HTTP_browser_admission_fit_latency_peak_scores_or_closure_qualified": false,
+  "no_actual_host_unit_observer_native_model_dataresponses_network_or_Git_operations": true
+}

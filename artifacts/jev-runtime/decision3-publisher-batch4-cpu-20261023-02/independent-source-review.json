@@ -1,0 +1,295 @@
+{
+  "schema": "independent-native02-resource-and-material-deadline-source-review-v1",
+  "created_at_utc": "2026-10-23T13:18:03.691663+00:00",
+  "reviewer": "/root/cpu4_owner_smoke",
+  "author": "/root/cpu_followup_review",
+  "result": "CLEAR_SOURCE_ONLY_PENDING_EXACT_SELECTION_FRESH_ORIGINAL_ADMISSION_AND_ACTUAL_AUDIT",
+  "findings": [],
+  "actor": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+    "size_bytes": 30552,
+    "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+  },
+  "resource_helper": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+    "size_bytes": 7734,
+    "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
+  },
+  "plan": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+    "size_bytes": 30406,
+    "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+  },
+  "freeze": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/freeze.json",
+    "size_bytes": 3646,
+    "sha256": "9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a"
+  },
+  "owner_controller": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+    "size_bytes": 40319,
+    "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+  },
+  "owner_freeze": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/source-freeze.json",
+    "size_bytes": 2573,
+    "sha256": "7a83281f3ce088e29c0c1fa833b617a0eecd9d26214cbda4ebf97314c3f8bdbb"
+  },
+  "owner_prior_independent_review": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/independent-resource-source-review-01.json",
+    "size_bytes": 4487,
+    "sha256": "e22017ac53c0364e009f67d61e65cc799baef6909f3fd18d1e491774a273e891"
+  },
+  "checks": [
+    {
+      "check": "15 frozen entries",
+      "result": "PASS",
+      "evidence": "All 15 freeze entries independently byte-hashed with exact sizes; actor/helper/plan/freeze exact supplied identities verified."
+    },
+    {
+      "check": "Native NN and observation math unchanged",
+      "result": "PASS",
+      "functions": {
+        "load_runtime": true,
+        "validate_runtime": true,
+        "NativeBatch4Backend": true,
+        "ShapeWitness": true,
+        "validate_smoke_answers": true,
+        "validate_native": true,
+        "authenticate": true
+      },
+      "evidence": "All seven named definitions are independently AST-identical to frozen native01. ShapeWitness only checks shape/dtype/device, records metadata, and returns None (466-493)."
+    },
+    {
+      "check": "14 stdlib helper definitions extracted",
+      "result": "PASS",
+      "functions": {
+        "require": true,
+        "unique": true,
+        "read_json": true,
+        "sha": true,
+        "write_json": true,
+        "diagnostic": true,
+        "ensure_elapsed": true,
+        "finalize_state": true,
+        "process_identity": true,
+        "owned_limits": true,
+        "check_record": true,
+        "binding_identity": true,
+        "Deadline": true
+      },
+      "evidence": "13 definitions exactly retain old Lite actor AST; host_gate differs only 3GiB to2GiB diagnostic text after normalizing that string. No Lite loader/plan/entrypoint extracted. Same CPU/offline/Torch-reference settings."
+    },
+    {
+      "check": "Full-cap resource identity",
+      "result": "PASS",
+      "evidence": "actor20-30/102-118/121-202 and resource_helper host_gate require selected owner06 CPU16-19/400percent,2GiB,swap0,R26119172916 and full initialR+2GiB28266656564. Owner06 exact source/freeze and independent root review joined; 10800 outer runtime covers120 short actor scope. No3GiB fit inheritance orLite2GiB plan."
+    },
+    {
+      "check": "Publisher metadata/source authentication retained",
+      "result": "PASS",
+      "evidence": "model/manifest/20model-file/28runtime-file/request/environment/snapshot/source_AST_contract metadata exactly equal frozen native01Edge plan. authenticate/load_runtime/validate_runtime unchanged AST. Both source_audit.py and publisher-source-audit.json byte-identical historical controls. No referenced tensor/tokenizer/runtime bytes or stats read for this review."
+    },
+    {
+      "check": "Complete call20 success after cleanup",
+      "result": "PASS",
+      "line_refs": [
+        591,
+        593,
+        622,
+        627,
+        630,
+        633,
+        634
+      ],
+      "evidence": "Original call start is before system_one; raw JSON, validation, actual4-row hook, counters, first durable state write included. Explicit ensure_elapsed after call DeadlineScope exit precedes completed=True. Late or cleanup exception demotes row and aborts overall. Recorded durable_validation_seconds includes cleanup. No successful I/O occurs between final call check and marking row complete."
+    },
+    {
+      "check": "Whole120 from execute entry through final evidence/context cleanup",
+      "result": "PASS",
+      "line_refs": [
+        517,
+        530,
+        555,
+        556,
+        559,
+        670,
+        671,
+        678,
+        695,
+        698,
+        713
+      ],
+      "evidence": "First execute statement starts clock; preflight consumes120; timer receives remaining budget. Final explicit elapsed gate follows finally.finalize_state and whole DeadlineScope cleanup; successful return has no intervening successful I/O. Failure path demotes completed/status and preserves evidence."
+    },
+    {
+      "check": "BaseException primary retention",
+      "result": "PASS",
+      "line_refs": [
+        496,
+        505,
+        508,
+        511,
+        672,
+        678,
+        695,
+        701,
+        709,
+        712
+      ],
+      "evidence": "DeadlineScope never suppresses an existing BaseException and annotates secondary cancellation failures. Hook cleanup/final evidence and outer deadline failures preserve primary identity, notes and failed completion state. Success cleanup exception cannot return qualification."
+    },
+    {
+      "check": "Meaningful saved regression evidence, not execution by reviewer",
+      "result": "PASS_SAVED_SOURCE_ONLY",
+      "test_lines": [
+        541,
+        552,
+        562,
+        572,
+        580,
+        599,
+        610
+      ],
+      "evidence": "Read fake_execute injection and all seven timing tests. Three direct frozen01 comparisons assert old success versus new late refusal (call cleanup, whole cleanup, final finally write). Tests additionally assert cleanup raise refusal, KeyboardInterrupt identity/notes with secondary errors,120preflight consumption, and cleanup-inclusive call latency. Saved20stdlib fakes/Ruff/AST/format/dry pass; not rerun or imported."
+    },
+    {
+      "check": "Dry/default and qualification limits",
+      "result": "PASS",
+      "evidence": "main defaults dry; execute only explicit plan/output. Only one fresh publisher load and two native4-row calls with four ordered synthetic questions; no benchmark, accuracy, fullsuite, browser or score claim."
+    }
+  ],
+  "frozen_byte_refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size_bytes": 30552,
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+      "size_bytes": 7734,
+      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source_audit.py",
+      "size_bytes": 5079,
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/test_actor.py",
+      "size_bytes": 26270,
+      "sha256": "86ccd2c86ec4263ce6afbae9144b81da1975e14245bc8d4b4acf6ce3790c0cc3"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+      "size_bytes": 30406,
+      "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/publisher-source-audit.json",
+      "size_bytes": 3924,
+      "sha256": "d99ae49e7a2a5e9701497c67fe3ae179ee89a4a68446f68ea039e11ba112bc90"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/qualification.pending.json",
+      "size_bytes": 545,
+      "sha256": "223388e76445b60b67432165c36437ac00591bfcc90d8468ffa7abe6fafec63a"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source-provenance.json",
+      "size_bytes": 5650,
+      "sha256": "c91d414c869376e4f2a16d79525745a0db8222cb85eb330026bc80846da6e7e0"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/baseline-regression.json",
+      "size_bytes": 1966,
+      "sha256": "fed7d58b3527458f78911ae7ac2302b7b394a4e9f57a602e33816e5f0675bda8"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/validation.json",
+      "size_bytes": 4013,
+      "sha256": "2507c4c8ce408f56ad77e13f68b636935fa26f0f8aec1bd401edbcec32cdba8e"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/static-tests.log",
+      "size_bytes": 681,
+      "sha256": "e090a3ee9aded4f7b8538928c71d29bed4015905b5067c197bb6dcd1f276731c"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource-successor.patch",
+      "size_bytes": 54088,
+      "sha256": "35574206a692f4736b9f7e9ff617489a0ee33e14d494cf5734b38d0b7eda5c9a"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/.gitattributes",
+      "size_bytes": 64,
+      "sha256": "c65a20941e9a358b7966b26589276716185f2ed67530ff786fafbfcdf0482239"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/README.md",
+      "size_bytes": 4232,
+      "sha256": "5a9bfcfa7c586eedc67d286eb23429fc8d27c12281af6470cd19d22fda053dff"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/research.md",
+      "size_bytes": 3398,
+      "sha256": "64c16c989204a6b6f6cda0a15c8899bb5fa83d0d6f3f275b04f3cfaa00b82e06"
+    }
+  ],
+  "provenance_refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size_bytes": 30552,
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/actor.py",
+      "size_bytes": 27032,
+      "sha256": "ec38584ccfc08d26d74081161a206a9fd4ee544e8bf35351e91f18c0b6256344"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01/actor.py",
+      "size_bytes": 24848,
+      "sha256": "33859d8b57bc906e477dce6ebf9d76ba4175ce775abb55cd9c42510f6de0bc9e"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/independent-resource-source-review-01.json",
+      "size_bytes": 4487,
+      "sha256": "e22017ac53c0364e009f67d61e65cc799baef6909f3fd18d1e491774a273e891"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/source-freeze.json",
+      "size_bytes": 2573,
+      "sha256": "7a83281f3ce088e29c0c1fa833b617a0eecd9d26214cbda4ebf97314c3f8bdbb"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+      "size_bytes": 40319,
+      "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+    }
+  ],
+  "copied_metadata_agreement": {
+    "model": true,
+    "manifest": true,
+    "model_files": true,
+    "runtime_files": true,
+    "request": true,
+    "environment": true,
+    "snapshot": true,
+    "source_AST_contract": true
+  },
+  "limits": [
+    "Source candidate only: no actual2GiB memory fit, native latency/rows, quality or fullsuite qualification. Prior3GiB or batch1 outcomes do not transfer.",
+    "20 uses original per-call start after pre-call bookkeeping; whole120 successful execute return gate includes cleanup. Python timers, fsync and scheduling are not a universal absolute hard realtime guarantee. Failure evidence may take additional time without producing qualification.",
+    "Final successful state file is necessarily written before watchdog cancellation and final elapsed gate. Consume it only with genuine command exit0, no timeout, final owner/source authentication and original authenticated closure; state.completed alone is insufficient. Stored elapsed captured in finally does not replace full terminal command timing.",
+    "No new fullDSO/runtime/transitive source closure claim. 20model/28runtime rows were compared as exact metadata against frozen baseline, not reopened or restatted. Fresh owned actor authenticates them before/finally as existing code requires."
+  ],
+  "review_actions": {
+    "candidate_import_or_execution": false,
+    "tests_rerun": false,
+    "model_tokenizer_native_runtime_payload_reads_or_stats": false,
+    "benchmark_input_or_actual_reads": false,
+    "host_observer_unit_network_Git_actions": false,
+    "small_control_source_AST_hash_metadata_only": true
+  }
+}

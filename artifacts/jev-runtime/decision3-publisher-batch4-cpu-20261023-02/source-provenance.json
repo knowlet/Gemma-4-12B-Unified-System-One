@@ -1,0 +1,171 @@
+{
+  "status": "PASS_STATIC_PROVENANCE_AND_SEMANTIC_SCOPE_NOT_ACTUAL_QUALIFICATION",
+  "artifacts": {
+    "native01_actor": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/actor.py",
+      "sha256": "ec38584ccfc08d26d74081161a206a9fd4ee544e8bf35351e91f18c0b6256344",
+      "size_bytes": 27032
+    },
+    "native02_actor": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b",
+      "size_bytes": 30552
+    },
+    "extraction_origin": {
+      "path": "artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01/actor.py",
+      "sha256": "33859d8b57bc906e477dce6ebf9d76ba4175ce775abb55cd9c42510f6de0bc9e",
+      "size_bytes": 24848
+    },
+    "resource_helper": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df",
+      "size_bytes": 7734
+    },
+    "source_audit": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source_audit.py",
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3",
+      "size_bytes": 5079
+    },
+    "edge_plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+      "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8",
+      "size_bytes": 30406
+    },
+    "owner06": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+      "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d",
+      "size_bytes": 40319
+    },
+    "owner06_freeze": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/source-freeze.json",
+      "sha256": "7a83281f3ce088e29c0c1fa833b617a0eecd9d26214cbda4ebf97314c3f8bdbb",
+      "size_bytes": 2573
+    },
+    "owner06_independent_review": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/independent-resource-source-review-01.json",
+      "sha256": "e22017ac53c0364e009f67d61e65cc799baef6909f3fd18d1e491774a273e891",
+      "size_bytes": 4487
+    }
+  },
+  "publisher_NN_AST_identical": {
+    "load_runtime": true,
+    "validate_runtime": true,
+    "NativeBatch4Backend": true,
+    "ShapeWitness": true,
+    "validate_smoke_answers": true,
+    "validate_native": true,
+    "authenticate": true
+  },
+  "original_actor_changed_functions": [
+    "validate_owner",
+    "load_plan",
+    "execute",
+    "main"
+  ],
+  "added_native_control_class": [
+    "DeadlineScope"
+  ],
+  "helper_API_count": 14,
+  "helper_exact_function_AST": {
+    "require": true,
+    "unique": true,
+    "read_json": true,
+    "sha": true,
+    "write_json": true,
+    "diagnostic": true,
+    "ensure_elapsed": true,
+    "finalize_state": true,
+    "process_identity": true,
+    "owned_limits": true,
+    "check_record": true,
+    "binding_identity": true,
+    "Deadline": true
+  },
+  "helper_host_gate_AST_identical_after_only_diagnostic_3GiB_to_2GiB": true,
+  "helper_global_AST_identical": {
+    "ROOT": true,
+    "RESERVE": true,
+    "RUNTIME_PYTHON": true,
+    "OVERLAY": true,
+    "START_ENV": true,
+    "CPU_ENV": true,
+    "KERNEL_NAMES": true,
+    "VERSIONS": true
+  },
+  "only_helper_numeric_change": {
+    "MEMORY_MAX": {
+      "from": 3221225472,
+      "to": 2147483648
+    }
+  },
+  "not_extracted": [
+    "load_publisher_cpu",
+    "load_plan",
+    "main",
+    "execute",
+    "all Lite model construction and entrypoints"
+  ],
+  "helper_diagnostics_retained_verbatim": [
+    "Final Lite state write failed",
+    "Fallback Lite evidence write failed"
+  ],
+  "authentication_closure": {
+    "native_authenticate_AST_unchanged": true,
+    "owner_source_records": 5,
+    "new_helper_SHA_selected_and_final_rehashed": true,
+    "owner06_controller_and_freeze_rehashed": true
+  },
+  "copied_metadata_unchanged_without_reading_referenced_files": {
+    "model": true,
+    "manifest": true,
+    "model_files": 20,
+    "runtime_files": 28,
+    "request": true,
+    "environment": true,
+    "snapshot": true
+  },
+  "small_source_audit_copied_byte_identical": true,
+  "historical_publisher_audit_copied_byte_identical": true,
+  "no_referenced_model_tensor_tokenizer_runtime_binary_reads_or_restats": true,
+  "timing_change": {
+    "call_seconds": 20,
+    "whole_seconds": 120,
+    "whole_start": "first executable statement in execute, before preflight",
+    "hard_watchdog": "remaining 120s after preflight, no reset",
+    "call_success_gate": "after call Deadline.__exit__, includes raw/evidence/validation/owned counters and cleanup",
+    "whole_success_gate": "after finally state write and whole Deadline.__exit__, before successful return",
+    "primary_retained_with_cleanup_and_evidence_secondary": true,
+    "late_or_cleanup_failure_completed_false": true,
+    "success_ABI_retained": true,
+    "scores_produced": false
+  },
+  "line_refs": {
+    "load_plan": {
+      "start": 121,
+      "end": 202
+    },
+    "authenticate": {
+      "start": 205,
+      "end": 212
+    },
+    "load_runtime": {
+      "start": 264,
+      "end": 340
+    },
+    "NativeBatch4Backend": {
+      "start": 367,
+      "end": 418
+    },
+    "DeadlineScope": {
+      "start": 496,
+      "end": 513
+    },
+    "execute": {
+      "start": 516,
+      "end": 713
+    }
+  },
+  "authority_flags_changed": false,
+  "no_Lite_2GiB_plan_or_qualification": true,
+  "execution_scope": "Only bounded stdlib fake tests and static/dry source checks. No actual NN/runtime imports, payload, host, observer, unit, network, Git or historical closure reads."
+}
