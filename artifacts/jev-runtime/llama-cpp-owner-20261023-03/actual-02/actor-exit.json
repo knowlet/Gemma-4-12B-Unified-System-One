@@ -1,0 +1,73 @@
+{
+  "config_sha256": "fe6bf75540d666004a82b51f2cd3ee494fa273308343a32f13baa10d598aa34d",
+  "actor": {
+    "pid": 453704,
+    "start_ticks": 9990316,
+    "pgid": 453704,
+    "sid": 453704,
+    "uid": 1001,
+    "state": "R",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+  },
+  "entry_exit_code": 0,
+  "error": null,
+  "command_results": [
+    {
+      "argv": [
+        "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-cpu-20261023-01/actor.py",
+        "--execute",
+        "--plan",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-cpu-20261023-01/plan.json",
+        "--plan-sha256",
+        "50f1d8f41b96e756baaa94ace3e338cd0a64d492f4f4d4a72b830be0fce15db9",
+        "--output",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-02/edge-smoke"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+      "resolved_executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+      "pid": 453709,
+      "observed_identity": {
+        "process": {
+          "pid": 453709,
+          "start_ticks": 9990334,
+          "pgid": 453704,
+          "sid": 453704,
+          "uid": 1001,
+          "state": "R",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+        },
+        "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+        "argv": [
+          "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+          "-B",
+          "-s",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-cpu-20261023-01/actor.py",
+          "--execute",
+          "--plan",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-cpu-20261023-01/plan.json",
+          "--plan-sha256",
+          "50f1d8f41b96e756baaa94ace3e338cd0a64d492f4f4d4a72b830be0fce15db9",
+          "--output",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-02/edge-smoke"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      },
+      "executable_stat_at_start": {
+        "st_dev": 66306,
+        "st_ino": 17956884,
+        "st_size": 22257464,
+        "st_mtime_ns": 1784109750677901111
+      },
+      "returncode": 0,
+      "elapsed_seconds": 12.731043424995732
+    }
+  ],
+  "planned_command_count": 1,
+  "postreceipt_hold_seconds": 5,
+  "hold_started_monotonic": 99916.106082945,
+  "hold_deadline_monotonic": 99921.106082945,
+  "reason": "Keep admitted wrapper live for original authenticated unit close"
+}

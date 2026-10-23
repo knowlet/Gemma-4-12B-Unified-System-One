@@ -1,0 +1,294 @@
+--- artifacts/jev-runtime/llama-cpp-owner-20261023-01/controller.py
++++ artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py
+@@ -17,8 +17,10 @@
+ 
+ HERE = Path(__file__).absolute().parent
+ ROOT = HERE.parents[2]
+-UNIT = "jev-d3-llama-cpp-20261023-01.service"
+-PROFILE = "llama-cpp-command-owned-v1"
++UNIT = "jev-d3-llama-cpp-cpu4-20261023-03.service"
++PROFILE = "llama-cpp-cpu4-command-owned-v1"
++CPU_CORES = frozenset({16, 17, 18, 19})
++CPU_ALLOWED_LIST = "16-19"
+ SPEC_PROFILE = "llama-cpp-command-spec-v1"
+ FILE_SIZE_MAX = 256 * 1024**2
+ LOG_LIMIT = 4 * 1024**2
+@@ -193,6 +195,26 @@
+     return value
+ 
+ 
++def memory_events(group):
++    with (group / "memory.events").open("rb") as stream:
++        blob = stream.read(8193)
++    need(len(blob) <= 8192, "Bounded own cgroup memory.events observation")
++    pairs = [line.split() for line in blob.decode().splitlines()]
++    need(
++        1 <= len(pairs) <= 32
++        and all(len(row) == 2 and row[1].isdigit() for row in pairs)
++        and len({row[0] for row in pairs}) == len(pairs),
++        "Distinct numeric own cgroup memory event counters",
++    )
++    counters = {key: int(value) for key, value in pairs}
++    need({"oom", "oom_kill"} <= counters.keys(), "Own cgroup OOM event counters present")
++    return {
++        "counters": counters,
++        "observed_monotonic": time.monotonic(),
++        "scope": "Selected own live cgroup cumulative memory.events snapshot; OOM attribution requires the actual counter evidence and no conclusion is inherited from earlier runs",
++    }
++
++
+ def properties(owner, selected, pid):
+     keys = (
+         "CPUQuotaPerSecUSec",
+@@ -211,7 +233,7 @@
+         all(
+             row.get(k) == v
+             for k, v in {
+-                "CPUQuotaPerSecUSec": "1s",
++                "CPUQuotaPerSecUSec": "4s",
+                 "LimitCORE": "0",
+                 "LimitNOFILE": "512",
+                 "LimitFSIZE": str(FILE_SIZE_MAX),
+@@ -226,8 +248,9 @@
+         len(quota) == 2
+         and quota[0].isdigit()
+         and quota[1].isdigit()
+-        and int(quota[0]) == int(quota[1]) > 0,
+-        "Actual CPU100% quota kernel readback",
++        and int(quota[1]) > 0
++        and int(quota[0]) == 4 * int(quota[1]),
++        "Actual CPU400% quota kernel readback",
+     )
+     limits = (Path("/proc") / str(pid) / "limits").read_text()
+     for name, number, unit in (
+@@ -257,6 +280,7 @@
+     return {
+         "unit": row,
+         "kernel_memory_peak_bytes": int(peak),
++        "kernel_memory_events": memory_events(group),
+         "kernel_cpu_max": quota,
+         "cpuset_cpus_effective_raw": cpuset.read_text().strip() if cpuset.exists() else None,
+         "main_thread_affinity": affinity,
+@@ -270,15 +294,15 @@
+     status = (Path("/proc") / str(pid) / "status").read_text()
+     second = os.sched_getaffinity(pid)
+     need(
+-        first == second == {0}
+-        and re.search(r"(?m)^Cpus_allowed_list:\s*0$", status)
++        first == second == CPU_CORES
++        and re.search(r"(?m)^Cpus_allowed_list:\s*16-19$", status)
+         and stable_process(owner.process(pid)) == before,
+-        "Stable actual main-thread affinity sched/proc dual read is CPU0",
++        "Stable actual main-thread affinity sched/proc dual read is CPU16-19",
+     )
+     return {
+         "sched_before": sorted(first),
+         "sched_after": sorted(second),
+-        "proc_Cpus_allowed_list": "0",
++        "proc_Cpus_allowed_list": CPU_ALLOWED_LIST,
+         "process": before,
+     }
+ 
+@@ -722,6 +746,7 @@
+         and me["cwd"] == str(ROOT),
+         "Actual selected bootstrap session/cgroup",
+     )
++    affinity = main_affinity(owner, os.getpid())
+     out = ordinary(cfg["output"])
+     owner.save(
+         out,
+@@ -731,7 +756,8 @@
+             "nonce": cfg["nonce"],
+             "identity": me,
+             "torch_not_imported": "torch" not in sys.modules,
+-            "observed_main_thread_affinity": sorted(os.sched_getaffinity(0)),
++            "observed_main_thread_affinity": affinity["sched_after"],
++            "bootstrap_main_thread_affinity": affinity,
+             "sys_executable": sys.executable,
+             "python_flags": {
+                 "no_user_site": sys.flags.no_user_site,
+@@ -863,8 +889,8 @@
+             "RuntimeMaxSec": str(cfg["runtime_seconds"]),
+             "TimeoutStopSec": "3",
+             "WorkingDirectory": str(ROOT),
+-            "CPUQuota": "100%",
+-            "CPUAffinity": "0",
++            "CPUQuota": "400%",
++            "CPUAffinity": CPU_ALLOWED_LIST,
+             "LimitCORE": "0",
+             "LimitNOFILE": "512",
+             "LimitFSIZE": str(FILE_SIZE_MAX),
+@@ -912,7 +938,14 @@
+             and identity["nonce"] == cfg["nonce"]
+             and stable_process(identity["identity"]["process"]) == stable_process(actor)
+             and identity["torch_not_imported"] is True
+-            and identity["observed_main_thread_affinity"] == [0]
++            and identity["observed_main_thread_affinity"] == sorted(CPU_CORES)
++            and identity["bootstrap_main_thread_affinity"]
++            == {
++                "sched_before": sorted(CPU_CORES),
++                "sched_after": sorted(CPU_CORES),
++                "proc_Cpus_allowed_list": CPU_ALLOWED_LIST,
++                "process": stable_process(actor),
++            }
+             and identity["identity"]["exe"] == str(REPO_PYTHON.resolve(strict=True))
+             and identity["identity"]["argv"] == bootstrap_argv(cfg, digest)
+             and identity["sys_executable"] == str(REPO_PYTHON)
+@@ -1019,6 +1052,8 @@
+                     "unit": UNIT,
+                     "memory_max_bytes": 2 * GIB,
+                     "runtime_choices_seconds": [30, 7200],
++                    "cpu_quota_percent": 400,
++                    "main_thread_cpu_affinity": sorted(CPU_CORES),
+                     "model_or_quality_qualified": False,
+                 }
+             )
+--- artifacts/jev-runtime/llama-cpp-owner-20261023-01/test_controller.py
++++ artifacts/jev-runtime/llama-cpp-owner-20261023-03/test_controller.py
+@@ -518,5 +518,146 @@
+         self.assertNotIn("HOME", env)
+ 
+ 
++class CPU4Tests(unittest.TestCase):
++    def test_exact_main_sched_proc_affinity_accepts_selected_four(self):
++        owner = types.SimpleNamespace(process=Mock(side_effect=[process(), process("S")]))
++        with (
++            patch.object(c.os, "sched_getaffinity", side_effect=[set(c.CPU_CORES)] * 2),
++            patch.object(Path, "read_text", return_value="Cpus_allowed_list:\t16-19\n"),
++        ):
++            row = c.main_affinity(owner, 123)
++        self.assertEqual(row["sched_before"], [16, 17, 18, 19])
++        self.assertEqual(row["sched_after"], row["sched_before"])
++        self.assertEqual(row["proc_Cpus_allowed_list"], "16-19")
++        self.assertEqual(row["process"], c.stable_process(process()))
++
++    def test_main_affinity_refuses_widening_clipping_proc_disagreement_and_race(self):
++        for first, second, proc, end in (
++            (set(c.CPU_CORES), set(range(20)), "16-19", process()),
++            ({16, 17, 18}, {16, 17, 18}, "16-18", process()),
++            (set(c.CPU_CORES), set(c.CPU_CORES), "0-19", process()),
++            (set(c.CPU_CORES), set(c.CPU_CORES), "16-19", process(start=21)),
++        ):
++            owner = types.SimpleNamespace(process=Mock(side_effect=[process(), end]))
++            with (
++                self.subTest(first=first, second=second, proc=proc, end=end),
++                patch.object(c.os, "sched_getaffinity", side_effect=[first, second]),
++                patch.object(Path, "read_text", return_value="Cpus_allowed_list:\t" + proc + "\n"),
++                self.assertRaisesRegex(ValueError, "sched/proc dual read is CPU16-19"),
++            ):
++                c.main_affinity(owner, 123)
++
++    def resource_readback(self, quota="400000 100000", manager="4s"):
++        with tempfile.TemporaryDirectory() as directory:
++            group = Path(directory) / "fake"
++            group.mkdir()
++            (group / "cpu.max").write_text(quota + "\n")
++            (group / "memory.peak").write_text("1234\n")
++            (group / "memory.events").write_text("low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\n")
++            owner = types.SimpleNamespace(
++                CGROUP_ROOT=Path(directory),
++                command=Mock(
++                    return_value="\n".join(
++                        key + "=" + value
++                        for key, value in {
++                            "CPUQuotaPerSecUSec": manager,
++                            "CPUAffinity": "16-19",
++                            "LimitCORE": "0",
++                            "LimitNOFILE": "512",
++                            "LimitFSIZE": str(c.FILE_SIZE_MAX),
++                            "WorkingDirectory": str(c.ROOT),
++                            "MemoryPeak": "1234",
++                        }.items()
++                    )
++                ),
++            )
++            original = Path.read_text
++            limits = "\n".join(
++                (
++                    "Max core file size 0 0 bytes",
++                    "Max file size " + str(c.FILE_SIZE_MAX) + " " + str(c.FILE_SIZE_MAX) + " bytes",
++                    "Max open files 512 512 files",
++                )
++            )
++
++            def read(path, *args, **kwargs):
++                if path == Path("/proc/123/limits"):
++                    return limits
++                return original(path, *args, **kwargs)
++
++            with (
++                patch.object(Path, "read_text", new=read),
++                patch.object(c, "main_affinity", return_value={"FAKE": "affinity already tested"}),
++            ):
++                return c.properties(owner, types.SimpleNamespace(cgroup="/fake"), 123)
++
++    def test_kernel_quota_accepts_four_times_any_positive_period(self):
++        for quota in ("400000 100000", "800000 200000"):
++            with self.subTest(quota=quota):
++                row = self.resource_readback(quota)
++                self.assertEqual(row["kernel_cpu_max"], quota.split())
++                self.assertEqual(row["unit"]["CPUQuotaPerSecUSec"], "4s")
++                self.assertEqual(row["kernel_memory_peak_bytes"], 1234)
++                self.assertEqual(row["kernel_memory_events"]["counters"]["oom_kill"], 0)
++
++    def test_quota_refuses_one_core_unlimited_ratio_mismatch_and_zero_period(self):
++        for quota in ("100000 100000", "max 100000", "400000 100001", "0 0"):
++            with self.subTest(quota=quota), self.assertRaisesRegex(ValueError, "CPU400%"):
++                self.resource_readback(quota)
++        with self.assertRaisesRegex(ValueError, "extra unit resource properties"):
++            self.resource_readback(manager="1s")
++
++    def test_bootstrap_dual_affinity_failure_precedes_identity_publish_or_commands(self):
++        owner = types.SimpleNamespace(
++            Selection=Mock(return_value=types.SimpleNamespace(cgroup="/FAKE-NOT-LIVE")),
++            boot=Mock(return_value="FAKE"),
++            save=Mock(),
++        )
++        cfg = {
++            "nonce": "FAKE",
++            "boot_id": "FAKE",
++            "runtime_seconds": 30,
++            "sources": [],
++            "selection": "FAKE",
++            "selection_sha256": "FAKE",
++            "base_sources": [],
++        }
++        identity = {"process": process(), "exe": "/fake", "argv": [], "cwd": str(c.ROOT)}
++        with (
++            patch.dict(c.os.environ, {"JEV_COMMAND_NONCE": "FAKE"}),
++            patch.object(c.os, "getpid", return_value=123),
++            patch.object(c.os, "getuid", return_value=1000),
++            patch.object(c, "sources_match", return_value=True),
++            patch.object(c, "command_selection", return_value=spec()),
++            patch.object(c, "process_identity", return_value=identity),
++            patch.object(
++                c, "main_affinity", side_effect=ValueError("dual affinity refused")
++            ) as affinity,
++            patch.object(c, "execute_command", side_effect=AssertionError("command")) as command,
++            self.assertRaisesRegex(ValueError, "dual affinity refused"),
++        ):
++            c.bootstrap(cfg, "FAKE", owner)
++        affinity.assert_called_once_with(owner, 123)
++        owner.save.assert_not_called()
++        command.assert_not_called()
++
++    def test_memory_event_evidence_requires_bounded_numeric_own_oom_counters(self):
++        with tempfile.TemporaryDirectory() as directory:
++            group = Path(directory)
++            path = group / "memory.events"
++            path.write_text("oom 2\noom_kill 1\n")
++            self.assertEqual(c.memory_events(group)["counters"], {"oom": 2, "oom_kill": 1})
++            for content in ("oom 0\n", "oom 0\noom 1\n", "oom -1\noom_kill 0\n", "x" * 8193):
++                path.write_text(content)
++                with self.subTest(content=content[:30]), self.assertRaises(ValueError):
++                    c.memory_events(group)
++
++    def test_cpu4_successor_keeps_original_reserve_and_unique_unit(self):
++        self.assertEqual(c.reserve(130595864576), 26119172916)
++        self.assertEqual(c.UNIT, "jev-d3-llama-cpp-cpu4-20261023-03.service")
++        self.assertEqual(c.PROFILE, "llama-cpp-cpu4-command-owned-v1")
++        self.assertEqual(c.SPEC_PROFILE, "llama-cpp-command-spec-v1")
++
++
+ if __name__ == "__main__":
+     unittest.main(verbosity=2)

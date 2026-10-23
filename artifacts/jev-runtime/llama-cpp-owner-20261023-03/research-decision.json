@@ -1,0 +1,55 @@
+{
+  "branch": "codex/jev-public07-modal-training",
+  "decision": "Use X925 core mask16\u201319, exactly400% aggregate quota; preserve original admission, memory, runtime and authenticated close. Use new profiles/units only. Capture bounded memory event counters for this new own cgroup.",
+  "local_native_thread_wiring": {
+    "evidence": "--threads parsed at line66; cp.n_threads and cp.n_threads_batch set together at line206; projector thread setting line217; source inspected without executing binary.",
+    "source": {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-03/s1_gguf.cpp",
+      "sha256": "d9ff808d54cee375a09120b49e0c0e0840198d916a0185ecbd7d9e389493f36b",
+      "size_bytes": 17830
+    }
+  },
+  "no_runtime": true,
+  "official_sources": [
+    {
+      "url": "https://docs.kernel.org/admin-guide/cgroup-v2.html",
+      "used_for": "cpu.max quota/period, cpu.stat usage/throttle and memory.events semantics; read before edits."
+    },
+    {
+      "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html",
+      "used_for": "CPUQuota percentage expresses aggregate CPU bandwidth, including values above100%; read before edits."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/sched_setaffinity.2.html",
+      "used_for": "Affinity is per-thread, so readback must not imply a delegated cpuset or all-thread lifetime restriction; read before edits."
+    }
+  ],
+  "original_test_source": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/test_controller.py",
+    "sha256": "8cf839936db10c474288c9f1c78e2da3bdd0521dd61707feaeb0e7c858338387",
+    "size_bytes": 22438
+  },
+  "pre_edit_head": "fac0d7a2e59d1ccbf3bf981968ceebfde6d243c3",
+  "profile": "cpu4-owner-research-before-edit-v1",
+  "recorded_utc": "2026-10-23T09:57:33.912678+00:00",
+  "selected_cpus": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "shared_worktree_file_ownership": [
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-03",
+    "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04"
+  ],
+  "source_baseline": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/controller.py",
+    "sha256": "5672bc297869cee138726301f8c7d607adda138169b204747b9e8a2766546326",
+    "size_bytes": 38075
+  },
+  "topology": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/topology-observation.json",
+    "sha256": "de2e0fe1a395709e8dffa897062e87816913ff796621488dc21bdf4030dbc283",
+    "size_bytes": 1017
+  }
+}

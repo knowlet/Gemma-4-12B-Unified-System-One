@@ -1,0 +1,36 @@
+{
+  "profile": "owned-controller-adaptive-cancellation-intent-v1",
+  "created_at_utc": "2026-10-23T10:16:23.852344+00:00",
+  "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+  "controller": {
+    "pid": 447644,
+    "start_ticks": 9892715,
+    "pgid": 447638,
+    "sid": 447638,
+    "uid": 1001,
+    "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+    "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+    "argv": [
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+      "-B",
+      "-s",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py",
+      "--run",
+      "--expected-entry-sha256",
+      "882ba1579b17b31dca0ee01fe2e89f46b1bc8c17b7635a0c4aa05042fc847ac0",
+      "--selection",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/root-smoke-command-spec.json",
+      "--selection-sha256",
+      "032061cc8781d8751803b5c0b5cbaad23336015e6ff0b9ab7dafeda4f439f5c2",
+      "--output",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-01"
+    ]
+  },
+  "controller_sha256": "882ba1579b17b31dca0ee01fe2e89f46b1bc8c17b7635a0c4aa05042fc847ac0",
+  "selection_sha256": "032061cc8781d8751803b5c0b5cbaad23336015e6ff0b9ab7dafeda4f439f5c2",
+  "completed_full2048_warm_seconds": 33.239147833999596,
+  "completed_full2048_long_seconds": 464.66341866699804,
+  "reason": "Full2048 actual1667-token response already takes464.66s, far beyond unchanged20s browser budget. Cancel remaining synthetic compact-cache research to prioritize authorized smaller Decision3 real scoring. Keep completed result; compact/cache equality remains incomplete.",
+  "method": "SIGINT to exact PID/start/argv/exe-verified external controller using pidfd; controller BaseException/finally invokes original authenticated boundary close; no direct signal to unit actors or unrelated services",
+  "signal_sent": false
+}

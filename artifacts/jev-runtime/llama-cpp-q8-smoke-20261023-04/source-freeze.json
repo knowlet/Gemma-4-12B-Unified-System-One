@@ -1,0 +1,116 @@
+{
+  "contract": {
+    "authenticated_live_close_required": true,
+    "browser20_seconds_unchanged": true,
+    "cpu_manager_per_sec": "4s",
+    "cpu_mask": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_quota_percent": 400,
+    "hold_seconds": 5,
+    "host_reserve_bytes": 26119172916,
+    "initial_host_extra_bytes": 2147483648,
+    "kernel_quota_must_equal_period_times": 4,
+    "long_submission_to_validated_response_seconds": 600,
+    "math_max_abs": 0.001,
+    "memory_max_bytes": 2147483648,
+    "native_batch_and_microbatch": 512,
+    "native_threads": 4,
+    "preparer_torch_threads": 1,
+    "quality_or_browser20_qualified": false,
+    "runtime_choices_seconds": [
+      30,
+      7200
+    ],
+    "runtime_host_extra_bytes": 0,
+    "same_argmax_required": true,
+    "same_payloads_and_contexts": true,
+    "stop_seconds": 3,
+    "swap_max_bytes": 0,
+    "warm_launch_to_validated_response_seconds": 60
+  },
+  "entries": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/prepare_smoke.py",
+      "sha256": "cf7dc23b2f22bf69cda0fa98da965c055c027becf79c632db1c7501071bdd88f",
+      "size_bytes": 10776
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/run_smoke.py",
+      "sha256": "d0aa3c4c509d83f7d36b30669a248fe88f9e037cd86b436a496c92dce3ca92ec",
+      "size_bytes": 28042
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/smoke_common.py",
+      "sha256": "e423db2402184b2adafbcda78b98ef43fa8d6e32b0f90ee2faf51561b2a93eb7",
+      "size_bytes": 11929
+    }
+  ],
+  "limits": [
+    "No original frozen files modified; only fresh owned folders written.",
+    "Own main/task affinity and usage snapshots do not establish a delegated cpuset, universal no-escape restriction, or continuous four-thread utilization.",
+    "Earlier owner01/actual04 startup timeout has no model-quality or OOM attribution.",
+    "No actual native, Torch, model/tokenizer/large payload, observer HTTP, GPU, ComfyUI/cache/queue or systemd workload action was executed during preparation."
+  ],
+  "metadata": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/README.md",
+      "sha256": "5b58738b54b30b6e9eeb501512700623ba8deee122dbbb7ee5c3ed60707dc7c6",
+      "size_bytes": 2564
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/cpu4-observation.patch",
+      "sha256": "e030de6b6bcd232146f87b829558987fd7dd0655e914dbd068d0265100dd2edd",
+      "size_bytes": 16603
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/narrow-diff.json",
+      "sha256": "8d6eed417acff52b5231a75ecc9118b823178e192540c80bab0b238cb9a9b5b7",
+      "size_bytes": 1646
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/research-decision.json",
+      "sha256": "a1dc4dd034b83106f7abeaf1df88dab0812ede835d3fa31c154ad3ecac23639d",
+      "size_bytes": 1372
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/static-tests.log",
+      "sha256": "31af7745095463d8112769075b134ac993c779dfd6a222f10c5acc1cae04cfe0",
+      "size_bytes": 4213
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/static-validation.json",
+      "sha256": "adc32ceefbdca232b0e3f921542363338401600e553ad935a7fb595ae454e031",
+      "size_bytes": 9126
+    }
+  ],
+  "original_authorities_unchanged": [
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+      "size_bytes": 38483
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    }
+  ],
+  "profile": "llama-cpp-cpu4-smoke04-source-freeze-v1",
+  "recorded_utc": "2026-10-23T09:59:47.268007+00:00",
+  "selection": "Root supplies separately frozen real v3 binary/library/package identities and generic command specs before execution; no production runtime selection authored here.",
+  "status": "ALL_STOPPED_SOURCE_TEST_AND_METADATA_NO_ACTUAL_RUN",
+  "test_source": {
+    "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/test_smoke.py",
+    "sha256": "e9cfa6c15ff716c2e09545c00202ea3c013e7dad205d9d77deb0684539154fe8",
+    "size_bytes": 27708
+  }
+}
