@@ -1,0 +1,208 @@
+{
+  "profile": "decision3-external-unit-terminal-boundary-v1",
+  "selection": {
+    "unit": "jev-d3-llama-cpp-cpu4-20261023-03.service",
+    "nonce": "jev-d3-boundary-ecc8290d53a7df5a86f94e936874d268",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "memory_max_bytes": 2147483648,
+    "runtime_seconds": 7200,
+    "stop_seconds": 3
+  },
+  "invocation_id": "406fa7e46e034b60aaeaaa695f3ec02c",
+  "actor": {
+    "pid": 532426,
+    "start_ticks": 10976850,
+    "pgid": 532426,
+    "sid": 532426,
+    "uid": 1001,
+    "state": "S",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+  },
+  "tracked_cohort": [
+    {
+      "pid": 532426,
+      "start_ticks": 10976850,
+      "pgid": 532426,
+      "sid": 532426,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+    }
+  ],
+  "before_stop": {
+    "Type": "exec",
+    "Restart": "no",
+    "TimeoutStopUSec": "3s",
+    "RuntimeMaxUSec": "2h",
+    "RemainAfterExit": "yes",
+    "MainPID": "532426",
+    "Result": "success",
+    "OOMPolicy": "kill",
+    "ExecMainPID": "532426",
+    "ExecMainCode": "0",
+    "ExecMainStatus": "0",
+    "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "2147483648",
+    "MemorySwapMax": "0",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-boundary-ecc8290d53a7df5a86f94e936874d268",
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "SubState": "running",
+    "InvocationID": "406fa7e46e034b60aaeaaa695f3ec02c"
+  },
+  "closure_mode": "authenticated_stop",
+  "stop_required": true,
+  "already_terminal_identity_samples": [],
+  "already_terminal_identity_sandwich_verified": false,
+  "stop_result": "",
+  "after_stop": {
+    "Type": "",
+    "Restart": "no",
+    "TimeoutStopUSec": "1min 30s",
+    "RuntimeMaxUSec": "infinity",
+    "RemainAfterExit": "no",
+    "MainPID": "0",
+    "Result": "success",
+    "OOMPolicy": "",
+    "ExecMainPID": "0",
+    "ExecMainCode": "0",
+    "ExecMainStatus": "0",
+    "ControlGroup": "",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "infinity",
+    "MemorySwapMax": "infinity",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-llama-cpp-cpu4-20261023-03.service",
+    "LoadState": "not-found",
+    "ActiveState": "inactive",
+    "SubState": "dead",
+    "InvocationID": ""
+  },
+  "primary_error": {
+    "phase": "controller",
+    "type": "ValueError",
+    "message": "Selected child command failed; original error retained",
+    "evidence": {
+      "config_sha256": "706ead7d86846e6727268ff462eff5beb27befab48d958bf7c6be985ff6bd0de",
+      "actor": {
+        "pid": 532426,
+        "start_ticks": 10976850,
+        "pgid": 532426,
+        "sid": 532426,
+        "uid": 1001,
+        "state": "R",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+      },
+      "entry_exit_code": 1,
+      "error": {
+        "type": "CalledProcessError",
+        "message": "Command '['/home/albert_hsieh/ComfyUI/.venv/bin/python', '-B', '-s', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py', '--execute', '--expected-entry-sha256', '350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a', '--plan', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json', '--plan-sha256', 'c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef', '--output', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-04/runtime-catalog']' returned non-zero exit status 1.",
+        "evidence": null,
+        "returncode": 1,
+        "stdout": null,
+        "stderr": null,
+        "command_cleanup_errors": null
+      },
+      "command_results": [
+        {
+          "argv": [
+            "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+            "-B",
+            "-s",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py",
+            "--execute",
+            "--expected-entry-sha256",
+            "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a",
+            "--plan",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json",
+            "--plan-sha256",
+            "c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef",
+            "--output",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-04/runtime-catalog"
+          ],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "resolved_executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+          "pid": 532433,
+          "observed_identity": {
+            "process": {
+              "pid": 532433,
+              "start_ticks": 10976868,
+              "pgid": 532426,
+              "sid": 532426,
+              "uid": 1001,
+              "state": "R",
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+            },
+            "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+            "argv": [
+              "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+              "-B",
+              "-s",
+              "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py",
+              "--execute",
+              "--expected-entry-sha256",
+              "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a",
+              "--plan",
+              "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json",
+              "--plan-sha256",
+              "c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef",
+              "--output",
+              "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-04/runtime-catalog"
+            ],
+            "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+          },
+          "executable_stat_at_start": {
+            "st_dev": 66306,
+            "st_ino": 17956884,
+            "st_size": 22257464,
+            "st_mtime_ns": 1784109750677901111
+          },
+          "returncode": 1,
+          "elapsed_seconds": 0.13873888899979647
+        }
+      ],
+      "planned_command_count": 1,
+      "postreceipt_hold_seconds": 5,
+      "hold_started_monotonic": 109768.820035546,
+      "hold_deadline_monotonic": 109773.820035546,
+      "reason": "Keep admitted wrapper live for original authenticated unit close"
+    },
+    "returncode": null,
+    "stdout": null,
+    "stderr": null,
+    "command_cleanup_errors": null
+  },
+  "closure_errors": [],
+  "post_stop_terminal_verified": true,
+  "cgroup_absent": true,
+  "two_process_scans": [
+    {
+      "matches": [],
+      "unknown": []
+    },
+    {
+      "matches": [],
+      "unknown": []
+    }
+  ],
+  "sources_unchanged": true,
+  "whole_unit_exit_confirmed": true,
+  "observed_cgroup_cohort_exit_confirmed": true,
+  "no_escape_enforced": false,
+  "whole_tree_exit_confirmed": false,
+  "continuation_authorized": false,
+  "model_qualified": false,
+  "scope": "Authenticated selected unit and observed cgroup cohort only. The audited fork/setsid/empty-env case is covered; explicit delegated cgroup migration or user-manager requests are not prevented."
+}
