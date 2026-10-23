@@ -1,0 +1,75 @@
+{
+  "schema_id": "cached-decision3-head-array-validation-v1",
+  "status": "PORTABLE_MATH_CHECKS_PASS_UNSELECTED_NO_MODEL_CLAIM",
+  "parent_head": "03d65691099d5ffad3b7b38ba847c5a58448c6aa",
+  "sources": [
+    {
+      "path": "artifacts/jev-runtime/decision3-cached-head-core-20261023-01/head_core.py",
+      "sha256": "6761dd654481424f4d6c908a7c9fd2d43e4762eeb5420af9f22612ffe77657ed",
+      "size_bytes": 6957
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-cached-head-core-20261023-01/test_head_core.py",
+      "sha256": "365b7d281ba2f0a94efcb632084e526ba857fc2ce68762c2bd2777d0d1116bea",
+      "size_bytes": 8177
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-cached-head-core-20261023-01/research.md",
+      "sha256": "9a5d01bdebd9b4712e66a21eddcbb41fe0c67909024a55d6b52ea3aa56f45a51",
+      "size_bytes": 2981
+    }
+  ],
+  "test_result": {
+    "observed_by": "root tool output before full07 admission wait",
+    "runner": "unittest;14 tests",
+    "passed": 14,
+    "elapsed_seconds": 0.107,
+    "exit_code": 0,
+    "ruff_check": "PASS",
+    "ruff_format": "one file reformatted, one unchanged before fixed-byte test run",
+    "scope": "Small independently synthetic NumPy arrays only; no Torch/model/dataset imports or payload reads",
+    "limits": {
+      "affinity": [
+        0
+      ],
+      "address_space_bytes": 536870912,
+      "cpu_seconds": 30,
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "python": "repository .venv CPython3.12.13",
+    "numpy": "2.5.3",
+    "raw_stdout_archived": false
+  },
+  "regressions": [
+    "independent two-class probability/loss/gradient closed form",
+    "finite-difference gradient with L2 and soft targets",
+    "accepted nonunit target mass exact CE derivative [0.25,-0.25]",
+    "singleton legal option and zero illegal probabilities",
+    "confidently wrong stable CE",
+    "synthetic separable optimization without input mutation",
+    "repeatable seeded SGD",
+    "final mandatory deadline callback refusal",
+    "finite FP32 shape/count/target/hyperparameter bounds"
+  ],
+  "independent_source_review": {
+    "path": "artifacts/jev-runtime/decision3-cached-head-core-20261023-01/independent-source-review.json",
+    "sha256": "2c07f3b87c9a8fda3f8cbac74fb68c5af43c3a30b6f99e6eb0488a18b935812a",
+    "size_bytes": 9287
+  },
+  "review_temporal_scope": "Peer read fixed source and regression before root14-test result arrived; its pending execution note remains historically intact. This root receipt supplies the fixed-byte test observation, not a reviewer rerun.",
+  "source_tests_all_terminal_before_full07_wait": true,
+  "numerical_profile": "numpy-fp32-masked-delta-sgd-v1",
+  "data_qualification_supplied": false,
+  "actual_native_features_qualified": false,
+  "trained_model_or_delta_created": false,
+  "actual_training_executed": false,
+  "benchmark_scores": null,
+  "browser_quality_claim": false,
+  "next_requirements": [
+    "Closed original owned feature-replay proof with full source/model authentication",
+    "Qualified independently authored train-only features; dev/sealed excluded from optimizer",
+    "Owned end-to-end training/inference selection and resource/timing qualification",
+    "Both unchanged full official baseline suites and independent browser evaluation before promotion"
+  ]
+}

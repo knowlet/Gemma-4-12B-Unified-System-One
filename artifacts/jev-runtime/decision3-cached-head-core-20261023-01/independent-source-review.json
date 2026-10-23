@@ -1,0 +1,153 @@
+{
+  "schema_id": "independent-cached-decision3-head-math-source-review-v1",
+  "status": "CLEAR_CURRENT_SOURCE_WITH_LIMITS_PENDING_FIXED_BYTES_PORTABLE_REGRESSION",
+  "review_kind": "independent_source_only_unselected_array_primitive",
+  "reviewed_sources": [
+    {
+      "path": "artifacts/jev-runtime/decision3-cached-head-core-20261023-01/head_core.py",
+      "size_bytes": 6957,
+      "sha256": "6761dd654481424f4d6c908a7c9fd2d43e4762eeb5420af9f22612ffe77657ed"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-cached-head-core-20261023-01/test_head_core.py",
+      "size_bytes": 8177,
+      "sha256": "365b7d281ba2f0a94efcb632084e526ba857fc2ce68762c2bd2777d0d1116bea"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-cached-head-core-20261023-01/research.md",
+      "size_bytes": 2981,
+      "sha256": "9a5d01bdebd9b4712e66a21eddcbb41fe0c67909024a55d6b52ea3aa56f45a51"
+    }
+  ],
+  "blocking_findings_current_source": [],
+  "resolved_finding": {
+    "id": "gradient_for_accepted_nonunit_target_mass",
+    "status": "FIXED_BY_ROOT_DURING_REVIEW_BEFORE_SOURCE_CLEAR",
+    "initial_observation": "Targets whose float64 row sum differs from1 by up to1e-6 are accepted, but the initially inspected gradient used p-y, which assumes exact unit mass.",
+    "source_validation_lines": [
+      67,
+      68,
+      69,
+      70
+    ],
+    "counterexample": {
+      "n": 1,
+      "width": 1,
+      "codes": 2,
+      "features": "[[2**20]] FP32",
+      "baseline_and_delta": "zeros((2,1)) FP32",
+      "counts": "[2] integer",
+      "targets": "[[0.5,0.5+2**-21]] FP32",
+      "l2": 0,
+      "target_mass": "1+2**-21; passes atol1e-6",
+      "softmax": "[0.5,0.5]",
+      "initial_implemented_gradient": "[[0],[-0.5]]",
+      "declared_CE_derivative": "[[(sum(y)*p0-y0)*2**20],[(sum(y)*p1-y1)*2**20]] = [[0.25],[-0.25]]"
+    },
+    "fixed_current_lines": [
+      103,
+      104,
+      105,
+      106
+    ],
+    "fixed_expression": "target_mass=targets.sum(axis=1,keepdims=True,dtype=np.float32); gradient=((probabilities*target_mass-targets).T@features)/n + l2*delta",
+    "reasoning": "Mean -sum(y*logsoftmax(z)) differentiates to (sum(y)*p-y)/n. The fixed expression respects the actual accepted row mass without mutating or silently renormalizing target arrays.",
+    "regression_source": "test_head_core.py:69-74 supplies the exact representable accepted fixture and expects [[0.25],[-0.25]].",
+    "reviewer_execution": "None; fixed fixture derived symbolically and test source read only.",
+    "historical_hash_scope": "The initial pre-fix source was read before the first source-hash capture; no immutable old hash or executed failing result is claimed. This review binds only the fixed current source and test hashes above."
+  },
+  "checks": [
+    {
+      "id": "input_shapes_dtypes_and_allocation_bounds",
+      "result": "PASS_SOURCE",
+      "lines": "33-70,145-153",
+      "evidence": "Features, baseline and delta require exact ndarray finite FP32 rank2. n1..16384,width1..1024,codes1..255 and matching shapes enforced. fit validates bounded FP32 baseline before zeros allocation; existing feature/target payload eligibility remains caller-owned."
+    },
+    {
+      "id": "boolean_and_illegal_labels_refused",
+      "result": "PASS_SOURCE",
+      "lines": "48-70,136-144",
+      "evidence": "Counts accept only integer/unsigned dtype kind, shape(n), range1..codes; bool/float counts refused. Python bool steps/seed/batch/rate rejected by exact type checks. Targets finite FP32,0..1,zero mass in all codes>=count and near-unit row mass."
+    },
+    {
+      "id": "immutable_inputs_and_delta_only_update",
+      "result": "PASS_SOURCE",
+      "lines": "74-83,152-167",
+      "evidence": "Masking writes only fresh logits. Delta begins zeros_like baseline; SGD produces a fresh candidate and rebinds local delta. No assignment into baseline/features/counts/targets. Read-only input flags tested in source. No bias, calibration, encoder parameter or baseline update API."
+    },
+    {
+      "id": "FP32_projection_and_legal_count_T1",
+      "result": "PASS_SOURCE",
+      "lines": "74-89",
+      "evidence": "Computes h@W0.T+h@delta.T, masks illegal codes to-inf, subtracts legal row maximum and computes FP32 exp/sum/division. At least one legal code guaranteed. No temperature, normalization repair or label reorder parameter."
+    },
+    {
+      "id": "stable_soft_target_CE",
+      "result": "PASS_SOURCE",
+      "lines": "75-82,97-109",
+      "evidence": "Log probabilities computed from shifted logits/log denominator, preserving finite log loss when softmax probability underflows. Positive-target indexing avoids0*(-inf) on illegal/zero-target codes. Arithmetic overflow/invalid/divide errors fail; nonfinite final loss/gradient rejected."
+    },
+    {
+      "id": "loss_regularizer_and_gradient",
+      "result": "PASS_FIXED_SOURCE",
+      "lines": "92-109",
+      "evidence": "Mean soft-target CE plus0.5*lambda*sum(delta²); gradient accounts for accepted target mass and adds lambda*delta. Only delta gradient returned. Normal FP32 rounding is part of the separate numerical profile, not native-publisher bit identity."
+    },
+    {
+      "id": "hyperparameter_validation",
+      "result": "PASS_SOURCE",
+      "lines": "15-30,131-151",
+      "evidence": "Finite positive representable FP32 learning rate; nonnegative representable L2. Integer steps1..10000,seed0..2**32-1,minibatch1..256. Positive parameters that underflow tozero or overflow FP32 reject."
+    },
+    {
+      "id": "deterministic_bounded_SGD",
+      "result": "PASS_SOURCE_WITH_LIMIT",
+      "lines": "154-168",
+      "evidence": "Fresh local default_rng(seed), zero delta and without-replacement chosen minibatches; no global NumPy seed mutation or randomized model initialization. Same-input/seed fixture exists. This is not cross-version/BLAS/hardware bitwise determinism or runtime resource qualification."
+    },
+    {
+      "id": "mandatory_final_deadline_gate",
+      "result": "PASS_SOURCE",
+      "lines": "125-133,155-176",
+      "evidence": "Callable required, checked at entry, after setup, before/after each step, and after loop immediately before returning small result object. Callback exception propagates and returns no result/checkpoint. Five-call one-step final-expiry regression source raises on the final callback. Caller must enforce the entire owned transaction; no hard cancellation or blocked-BLAS interruption claim."
+    },
+    {
+      "id": "tests_are_synthetic_math_checks",
+      "result": "PASS_SOURCE_ONLY",
+      "source": "test_head_core.py",
+      "evidence": "Read14 test methods including independent two-class closed form, finite differences with L2/soft targets, singleton/illegal mask, confidently wrong CE/gradient, fixed accepted row-mass fixture, separable fake learning/input immutability, seed repeatability, final deadline rejection and dtype/range bounds. Reviewer did not execute/import them."
+    },
+    {
+      "id": "no_loader_or_artifact_publication",
+      "result": "PASS_SOURCE",
+      "source": "head_core.py:1-12,170-177",
+      "evidence": "NumPy array numerical API only; no file/network/CLI/checkpoint function or feature-eligibility loader. Returned flag data_qualification_suppliedFalse; no trained payload publication or promotion path."
+    },
+    {
+      "id": "research_claim_scope",
+      "result": "PASS_WITH_LIMITS",
+      "source": "research.md",
+      "evidence": "Records differing existing readout semantics, fixed T1/count mask, separate NumPy profile and future COMMITTED SELF_AUTHORED_TRAIN requirements. Explicitly claims no feature eligibility, memory fit, actual training or browser improvement. External/version/license assertions are authored research provenance, not independently browsed or revalidated in this source-only review."
+    }
+  ],
+  "test_evidence_scope": {
+    "author_report_before_fix": "Root reported13 tiny NumPy tests and Ruff PASS before this review's row-mass correction.",
+    "current_test_source_methods": 14,
+    "reviewer_ran_tests": false,
+    "required_followup": "Root must run the fixed current14-test source and desired static checks only during an authorized source-test window, then bind results to current hashes. Old13-pass result alone does not validate fixed bytes."
+  },
+  "limitations": [
+    "Unselected internal array primitive only; no authenticated actual model/readout/features/delta, trained artifact or policy eligibility is established.",
+    "Inputs are borrowed arrays; future caller must authenticate/freeze data and enforce split/family exclusion and deadline/closure. This function does not protect against external concurrent mutation or a callback that mutates caller arrays.",
+    "Finite FP32 inputs may still cause arithmetic overflow and refusal; no universal completion, speed, peak-memory fit or hard-time guarantee.",
+    "No publisher-native numerical equivalence, cached-feature correctness, classifier quality or real browser success claimed."
+  ],
+  "actions": {
+    "small_source_metadata_reads_only": true,
+    "source_or_tests_imported_or_executed": false,
+    "source_edited": false,
+    "new_review_JSON_only": true,
+    "Torch_model_native_payload_or_actual_arrays_read": false,
+    "host_unit_observer_network_or_Git": false
+  }
+}
