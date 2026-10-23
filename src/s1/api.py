@@ -30,10 +30,29 @@ def create_app(
     jev_generated_prompt_format="raw-json-v1",
     model_identity=None,
     request_evidence_sink=None,
+    jev_action_profile="standard",
 ):
     from fastapi import Depends, FastAPI, Header, HTTPException
 
+    from .jev_action_profiles import ACTION_PROFILES, DEFAULT_ACTION_PROFILE, resolve_protocol
     from .jev_prompt import PROMPT_FORMATS
+
+    if type(jev_action_profile) is not str or jev_action_profile not in ACTION_PROFILES:
+        raise ValueError("Unknown explicit browser action profile")
+    experimental_actions = jev_action_profile != DEFAULT_ACTION_PROFILE
+    if experimental_actions and (
+        not jev_compatible
+        or type(jev_decision3_native) is not bool
+        or type(jev_generated_actions) is not bool
+        or jev_decision3_native == jev_generated_actions
+        or jev_hierarchical
+        or jev_hierarchical_batch
+        or jev_browser_operation_first
+    ):
+        raise ValueError(
+            "Experimental action profile requires one explicit compatible native/generated adapter"
+        )
+    action_protocol = resolve_protocol(jev_action_profile) if experimental_actions else None
 
     if (
         type(jev_generated_prompt_format) is not str
@@ -59,9 +78,12 @@ def create_app(
             raise ValueError(
                 "Decision3 native requires compatibility and server evidence without other decision profiles"
             )
-        from .jev_decision3_native import JevDecision3NativeAdapter
+        if action_protocol is None:
+            from .jev_decision3_native import JevDecision3NativeAdapter
 
-        decision3_class = JevDecision3NativeAdapter
+            decision3_class = JevDecision3NativeAdapter
+        else:
+            decision3_class = action_protocol.native_adapter_class
         decision3_class(backend, model_identity=model_identity)
     if jev_hierarchical and not jev_compatible:
         raise ValueError("Jev hierarchical choices require the explicit compatible endpoint")
@@ -97,9 +119,14 @@ def create_app(
             raise ValueError(
                 "Jev generated actions require compatibility without hierarchy/batching"
             )
-        from .jev_generated import JevGeneratedActionAdapter
+        if action_protocol is None:
+            from .jev_generated import JevGeneratedActionAdapter
 
-        generated_adapter = JevGeneratedActionAdapter(
+            generated_class = JevGeneratedActionAdapter
+        else:
+            generated_class = action_protocol.generated_adapter_class
+
+        generated_adapter = generated_class(
             backend,
             model_identity=model_identity,
             constrain_actions=jev_generated_action_grammar,
@@ -116,7 +143,15 @@ def create_app(
 
     @app.get("/healthz")
     def health():
-        return {"status": "ok", "model": backend.name}
+        result = {"status": "ok", "model": backend.name}
+        if action_protocol is not None:
+            import copy
+
+            result.update(
+                action_profile=jev_action_profile,
+                action_profile_provenance=copy.deepcopy(action_protocol.provenance),
+            )
+        return result
 
     def invoke(request, *, compatible=False):
         from .backends import normalize_response
@@ -176,6 +211,14 @@ def create_app(
                     "payload": request,
                     "original_request_sha256": request_sha,
                     "model_identity": model_identity,
+                    **(
+                        {
+                            "action_profile": jev_action_profile,
+                            "action_profile_provenance": action_protocol.provenance,
+                        }
+                        if action_protocol is not None
+                        else {}
+                    ),
                 },
             )
 
