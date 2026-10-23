@@ -1,0 +1,107 @@
+{
+  "contract": {
+    "authenticated_live_close_required": true,
+    "cpu_manager_per_sec": "4s",
+    "cpu_mask": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_quota_percent": 400,
+    "generic_command_spec_profile": "llama-cpp-command-spec-v1",
+    "hold_seconds": 5,
+    "host_reserve_bytes": 26119172916,
+    "initial_host_extra_bytes": 3221225472,
+    "initial_host_floor_bytes": 29340398388,
+    "kernel_quota_must_equal_period_times": 4,
+    "memory_max_bytes": 3221225472,
+    "owner_profile": "llama-cpp-cpu4-3g-command-owned-v1",
+    "quality_or_browser20_qualified": false,
+    "runtime_choices_seconds": [
+      30,
+      7200
+    ],
+    "runtime_host_extra_bytes": 0,
+    "runtime_host_floor_bytes": 26119172916,
+    "stop_seconds": 3,
+    "swap_max_bytes": 0,
+    "unit": "jev-d3-llama-cpp-cpu4-3g-20261023-04.service"
+  },
+  "entries": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/controller.py",
+      "sha256": "fa5d41a64d32da7294c79fed5e62139095775ac7fd0f25bf32a3b93f8f642998",
+      "size_bytes": 40295
+    }
+  ],
+  "limits": [
+    "Only fresh owner04 files written; predecessor owner03 and current selected running inputs remain immutable.",
+    "Current CUDA-backend gates unchanged; no model or backend qualification inherited.",
+    "Own affinity/usage/memory-event evidence remains bounded sampled observation, not a delegated cpuset or continuous resource claim.",
+    "No actual unit/native/Torch/model/tokenizer/large-payload/observer/HTTP/GPU/ComfyUI/cache/queue action performed."
+  ],
+  "metadata": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/README.md",
+      "sha256": "b401cd229e4591e6f53b60c12ddea70f79a40a6b4247bf598351958ade68e8c1",
+      "size_bytes": 2596
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/cpu4-3GiB-policy.patch",
+      "sha256": "5e843d62be6141eb26ce3a26b84a6b552d303b38a3786e14ddc4823120a3d5a6",
+      "size_bytes": 8922
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/narrow-diff.json",
+      "sha256": "3a8fa00b189809d4d77c3d3af85ff1c3359eb7c7c92199d86d7f98ec48dc31ca",
+      "size_bytes": 1474
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/research-decision.json",
+      "sha256": "880794ba089b921b015cb0a169ee8e9ed21583044d07267a88bff899e77da226",
+      "size_bytes": 2623
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/static-tests.log",
+      "sha256": "d5349414d3331fe0fe79b7bfa505b43c9c0b9b5e45d54f4b1bca4c857360830f",
+      "size_bytes": 5087
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/static-validation.json",
+      "sha256": "ccb8396dd2d7bcc8588f45745c39baa1fa5fab7be44df53d58b2284cee3db63b",
+      "size_bytes": 9796
+    }
+  ],
+  "original_authorities_unchanged": [
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+      "size_bytes": 38483
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    }
+  ],
+  "predecessor_freeze": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/source-freeze.json",
+    "sha256": "835d640dea20a2ddb6a98eb802c54e911ead93822d90a7bbff5cab49e9199326",
+    "size_bytes": 4405
+  },
+  "profile": "llama-cpp-cpu4-fixed3GiB-owner04-source-freeze-v1",
+  "recorded_utc": "2026-10-23T10:33:12.408164+00:00",
+  "selection": "Root supplies separately reviewed actors and generic command specs; this source-only candidate requires fresh R+entire3GiB admission before any actual execution.",
+  "status": "ALL_STOPPED_SOURCE_TEST_AND_METADATA_NO_ACTUAL_RUN",
+  "test_source": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/test_controller.py",
+    "sha256": "d5676720e4a38eb7fdef4136e961c73c3aebbafb872b26786aca457aa5226d49",
+    "size_bytes": 32804
+  }
+}

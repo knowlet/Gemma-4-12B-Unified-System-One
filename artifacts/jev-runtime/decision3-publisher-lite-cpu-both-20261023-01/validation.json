@@ -1,0 +1,71 @@
+{
+  "status": "PASS_BOUNDED_STDLIB_DRY_RUFF_NO_RUNTIME",
+  "observed_utc": "2026-10-23T10:42:13.231302+00:00",
+  "test_count": 6,
+  "test_commands": [
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-lite-cpu-both-20261023-01/test_campaign.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "result": "all boundary tests passed in observed tool execution"
+    }
+  ],
+  "ruff_check": {
+    "returncode": 0,
+    "stdout": "All checks passed!",
+    "scope": "all six fresh Lite Python files"
+  },
+  "ruff_format_check": {
+    "returncode": 0,
+    "stdout": "6 files already formatted"
+  },
+  "ast_parse": "all six fresh Lite source files parsed without imports or bytecode writes",
+  "dry_defaults": [
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01/actor.py"
+      ],
+      "returncode": 0,
+      "stdout": "{\"profile\": \"decision3-publisher-lite-cpu-batch1-smoke-v1\", \"status\": \"dry_default_no_model_import_or_payload_read\", \"plan_path\": \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01/plan.json\", \"requires_existing_owner\": \"jev-d3-llama-cpp-cpu4-3g-20261023-04.service\", \"owner_profile\": \"llama-cpp-cpu4-3g-command-owned-v1\", \"request_count\": 1, \"batch_size\": 1, \"threads\": 4, \"memory_max_bytes\": 3221225472, \"reserve_bytes\": 26119172916, \"wall_seconds\": 120, \"forward_seconds\": 20, \"model_execution\": false}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-lite-cpu-both-20261023-01/campaign.py"
+      ],
+      "returncode": 0,
+      "stdout": "{\"profile\": \"decision3-lite-gx10-publisher-cpu-batch1-20261023-v1\", \"status\": \"dry_default_no_model_or_benchmark_execution\", \"whole_campaign_seconds\": 6500, \"per_call_seconds\": 180, \"constructor_count\": 1, \"suites\": [\"legacy-public231\", \"jevbench-mini\"], \"requires_successful_frozen_smoke_receipt\": true, \"browser_20_second_qualification\": false}\n",
+      "stderr": ""
+    }
+  ],
+  "original_Edge_frozen_source_pools_unchanged": {
+    "decision3-publisher-cpu-20261023-01": {
+      "freeze_sha256": "cf4f9acaadb319648a928ed107e7fbec369ad14a2f5907a5f2a352ae35c82a70",
+      "checked_selected_files": 8
+    },
+    "decision3-publisher-cpu-both-20261023-01": {
+      "freeze_sha256": "7d4c2633d7deb0fb7baf538af655ff17dc77f48f39f10382a25aef00b2756a84",
+      "checked_selected_files": 5
+    }
+  },
+  "small_model_source_config_sha_checks": 15,
+  "large_or_tensor_model_files_stat_only": 5,
+  "tensor_headers_or_payload_bytes_read": 0,
+  "readout_safetensors_stat_only_even_below_1MiB": true,
+  "large_tokenizer_bytes_read": 0,
+  "Torch_model_publisher_harness_or_eval_execution": false,
+  "current_job_proc_cgroup_manager_or_observer_probes": 0,
+  "downloads_or_Comfy_actions": 0,
+  "git_writes_commits_or_pushes": 0
+}

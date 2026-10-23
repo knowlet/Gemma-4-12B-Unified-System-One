@@ -1,0 +1,36 @@
+{
+  "profile": "cpu4-3GiB-original10800second-owner-source-decision-v1",
+  "created_at_utc": "2026-10-23T10:59:37.201360+00:00",
+  "baseline": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/controller.py",
+      "sha256": "fa5d41a64d32da7294c79fed5e62139095775ac7fd0f25bf32a3b93f8f642998",
+      "size_bytes": 40295
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/test_controller.py",
+      "sha256": "d5676720e4a38eb7fdef4136e961c73c3aebbafb872b26786aca457aa5226d49",
+      "size_bytes": 32804
+    }
+  ],
+  "changes": [
+    "Distinct unit/profile only; same fixed3GiB and full-cap R+3GiB startup floor",
+    "Add10800 to exact allowed30/7200 offline unit budgets, already accepted by unchanged original Selection",
+    "No change to smoke120/20, benchmark percall180, or browser whole20; whole10000 campaign remains only a future candidate"
+  ],
+  "memory_max_bytes": 3221225472,
+  "startup_available_floor_bytes": 29340398388,
+  "runtime_reserve_bytes": 26119172916,
+  "swap_max_bytes": 0,
+  "cpu_affinity": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "cpu_quota_percent": 400,
+  "file_size_max_bytes": 268435456,
+  "status": "SOURCE_ONLY_NO_UNIT_OR_MODEL_EXECUTION",
+  "actual_admission": false,
+  "goal_complete": false
+}

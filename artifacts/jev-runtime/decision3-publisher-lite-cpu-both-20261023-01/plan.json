@@ -1,0 +1,75 @@
+{
+  "schema": "decision3-publisher-lite-cpu-both-plan-v1",
+  "profile": "decision3-lite-gx10-publisher-cpu-batch1-20261023-v1",
+  "campaign_sha256": "31b655fe00fa62145e9d863f596f4807d1c77f4ff641db94cdd7f9c9510fddfb",
+  "local_head_at_creation": "3b89b4c4c18b058c30b7d2a15d99f76455249214",
+  "head_field_is_provenance_only": true,
+  "smoke_actor_sha256": "33859d8b57bc906e477dce6ebf9d76ba4175ce775abb55cd9c42510f6de0bc9e",
+  "smoke_plan_sha256": "947359fa5d1d71a15b9d7294fc945cedf16447cd5128b378a6630f0200713349",
+  "adapter_sha256": "ed5b75eed21b25b2916d51540d0a572c556be98ed057be3864d241f7c54869a8",
+  "benchmark_source_plan_sha256": "b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021",
+  "model_id": "vllm-sr/d3-lite",
+  "model_revision": "9c10703193afc7c7d28c88201c0364bfbbf58320",
+  "model_manifest_sha256": "31f0ff94ff26619c0a063ccac803edcfe34c56c92e5c9c50b703b62893f125dd",
+  "model_identity_sha256": "fda5cfc7bc9063fbb7cd40b50fa9a0963d83a4790a3d6a11a356833fd1171992",
+  "whole_campaign_seconds": 6500,
+  "per_call_seconds": 180,
+  "per_call_policy": "official benchmark HTTP default per complete state/questions callable; not browser20 qualification",
+  "constructor_count": 1,
+  "concurrency": 1,
+  "context_limit": 16384,
+  "context_policy": "reject_no_truncation",
+  "owner_unit": "jev-d3-llama-cpp-cpu4-3g-20261023-04.service",
+  "owner_profile": "llama-cpp-cpu4-3g-command-owned-v1",
+  "reserve_bytes": 26119172916,
+  "memory_max_bytes": 3221225472,
+  "startup_available_bytes": 29340398388,
+  "runtime_available_floor_bytes": 26119172916,
+  "swap_max_bytes": 0,
+  "threads": 4,
+  "cpu_affinity": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "owner_runtime_seconds": 7200,
+  "requires_successful_smoke_receipt": {
+    "profile": "decision3-publisher-lite-cpu-batch1-smoke-v1",
+    "plan_sha256": "947359fa5d1d71a15b9d7294fc945cedf16447cd5128b378a6630f0200713349",
+    "selection": "root exact frozen command argv supplies successful real Lite state path/SHA after actual smoke and external owner closure; source readiness or Edge receipt is insufficient"
+  },
+  "suites": [
+    {
+      "name": "legacy-public231",
+      "tasks": 231,
+      "revision": "bb05a335bc809e61b20c0f745d25499a82b326fc"
+    },
+    {
+      "name": "jevbench-mini",
+      "requests": 1248,
+      "cases": 240,
+      "relations": 50,
+      "planned_tests": 1200,
+      "revision": "e18733694623aa93058e279c3534f8b8e2edefa3"
+    }
+  ],
+  "fresh_coherence_cache_required": true,
+  "fresh_successful_callable_returns_required": 1479,
+  "per_suite_latency": {
+    "startup_included": false,
+    "statistics": [
+      "count",
+      "median",
+      "nearest_rank_p95",
+      "maximum"
+    ],
+    "browser20_qualification": false
+  },
+  "source_and_model_authentication": "initial and final full20 model hashes+manifest/runtime identities+78 official sources+Lite shared source pins inside future original owner04",
+  "external_closure_and_peak_required": true,
+  "benchmark_inputs_gold_or_answers_copied_into_source": false,
+  "model_or_torch_executed_during_preparation": false,
+  "Edge_identity_output_score_or_admission_inherited": false,
+  "publication": "none; root must select later exact aggregate/receipt allowlist and exclude task inputs/gold/answers/caches"
+}
