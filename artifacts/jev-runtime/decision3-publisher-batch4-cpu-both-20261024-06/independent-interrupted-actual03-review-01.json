@@ -1,0 +1,196 @@
+{
+  "schema": "independent-full06-interrupted-actual03-aggregate-review-v1",
+  "result": "FAILED_PARTIAL_NO_SCORE_OR_STAGE_QUALIFICATION_LATER_ABSENCE_SEPARATELY_VERIFIED",
+  "reviewer": "/root/cpu_text_helper_route/helper_boundary_review",
+  "root_exit_code": 1,
+  "overall_complete": false,
+  "qualified_scores": {
+    "legacy_public231": null,
+    "coherence_mini": null,
+    "browser": null
+  },
+  "artifact_refs": {
+    "root_terminal": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/root-execution-full06-edge-both-03.json",
+      "sha256": "7bdf28b86ebd90869fa9dc59502b2e01747662eeac122e78368be16fdda55150",
+      "size_bytes": 1738
+    },
+    "root_intent": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/root-launch-full06-edge-both-03.json",
+      "sha256": "66afdc84eb57466087dfde86e0323167e408c175b4011eb7be0daf47035aa5be",
+      "size_bytes": 1933
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-03/receipt.json",
+      "sha256": "c29712554cdd3fe96483cc000b6e78492476de4fbdb90a1c83b1c7f2b5351e69",
+      "size_bytes": 184499
+    },
+    "original_historical_closure": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-03/external-boundary-closure.json",
+      "sha256": "aa6c830f41546453b54f35177e621a8da7739e158fa7d8ef58b21579e287df8c",
+      "size_bytes": 5457
+    },
+    "later_root_absence_observation": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/root-supplemental-actual03-later-absence-01.json",
+      "sha256": "8253eeba3ae4261762c62a0255bc373151948f8acf88eba0ce5bb657a70389f4",
+      "size_bytes": 4965
+    },
+    "campaign_state": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-03/edge-both/state.json",
+      "sha256": "1589b616c56c1351b2ed6c50c341d1a6a5c6ca3eaf2d2f2d3e1c4d00202ff3aa",
+      "size_bytes": 13331
+    },
+    "aggregate_progress": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-03/edge-both/native-evidence/progress.json",
+      "sha256": "21bf0cd1765bf9bad5c8efeb600e5d8507bc16463106ee07487c28ab6d95a6fa",
+      "size_bytes": 1666
+    },
+    "selected_spec": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/root-edge-both-command-spec-01.json",
+      "sha256": "fbaa2fbe1fb2bcd95236a4ccf6f71e69b8b6a4feae78f98429ff04d6c22ecfee",
+      "size_bytes": 14131
+    },
+    "independent_selection_review": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/independent-root-selection-review-01.json",
+      "sha256": "5d090a58eaea8145aec9f76fd63203a0258d217110b7e0c063d5a5edd1ab3cb3",
+      "size_bytes": 10297
+    },
+    "campaign": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/campaign.py",
+      "sha256": "81113f1e2e1f1342c547b156e307ef78844c5947a9fa47f85fb054579eb4d966",
+      "size_bytes": 53752
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/edge-plan.json",
+      "sha256": "351500bcdfdd0b1c3c6096b21bd767321e761a0af79a64ed080dad518d9d575c",
+      "size_bytes": 7845
+    }
+  },
+  "failure": {
+    "primary": {
+      "phase": "controller",
+      "type": "ValueError",
+      "message": "Original whole-host reserve",
+      "observed_MemAvailable_bytes": 25212829696,
+      "required_R_bytes": 26119172916,
+      "shortfall_bytes": 906343220,
+      "initial": false,
+      "Comfy_HTTP_state": "http_busy",
+      "running_pending": [
+        1,
+        0
+      ]
+    },
+    "secondary": {
+      "phase": "final_host",
+      "type": "ValueError",
+      "message": "Original whole-host reserve",
+      "observed_MemAvailable_bytes": 26038272000,
+      "required_R_bytes": 26119172916,
+      "shortfall_bytes": 80900916
+    },
+    "primary_preserved_in_original_closure": true,
+    "scope": "Original runtime whole-host reserve gate refused the observation. Strict known HTTPbusy is allowed by selected policy and is not the rejecting predicate here. No attribution of external memory consumption or harmless coexistence is inferred."
+  },
+  "partial_progress": {
+    "state_status": "running_original_public231_then_coherence_mini",
+    "model_loads": 1,
+    "stage": "legacy-public231",
+    "started_calls": 122,
+    "completed_calls": 121,
+    "raw_native_returns": 121,
+    "active_call_index": 121,
+    "coherence_started": false,
+    "required_full_population": 1479,
+    "public_required": 231,
+    "initial_full_model_manifest_runtime_source_authentication": true,
+    "final_model_runtime_full_authentication": false,
+    "completed_stage_receipts": {},
+    "successful_public_stage_qualification": false,
+    "fixed_ECE_projection_reached": false,
+    "reason": "Interruption occurred before complete public231, so public stage projection/authentication/publication and all coherence work were not reached. Running actor state is stale incomplete evidence, not continued execution or success."
+  },
+  "timing": {
+    "root_wall_seconds": 60.73306518800382,
+    "completed_callback_latency_summary": {
+      "count": 121,
+      "median_seconds": 0.29444060400419403,
+      "p95_seconds": 0.3591789130005054,
+      "max_seconds": 8.464222309994511,
+      "quantile_method": "nearest_rank_p95; ordinary_median",
+      "startup_included": false,
+      "browser_20_second_qualification": false,
+      "unit": "one unchanged complete state/questions callback; native question chunks of up to4"
+    },
+    "scope": "Partial callback metadata only; neither whole/stage completion nor browser20 performance is qualified."
+  },
+  "identity": {
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "unit": "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
+    "nonce": "jev-d3-boundary-fcdf1b00d75c4438a01cb03426feefd0",
+    "invocation_id": "d8cb2c56c2a142b0b3ffc99a379dc7df",
+    "root_controller_pid_start": [
+      678161,
+      12538396
+    ],
+    "owner_actor_pid_start": [
+      678165,
+      12538413
+    ],
+    "native_child_pid_start": [
+      678174,
+      12538438
+    ],
+    "pgid_sid": [
+      678165,
+      678165
+    ],
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
+    "59_selected_sources_match_exact_spec": true,
+    "owner_sources_unchanged": true,
+    "original_CPU4_2GiB_swap0_R_and_deadlines_unchanged": true
+  },
+  "original_historical_closure": {
+    "closure_mode": "authenticated_stop",
+    "post_stop_terminal_verified": true,
+    "closure_errors": [],
+    "cgroup_absent": false,
+    "whole_unit_exit_confirmed": false,
+    "observed_cgroup_cohort_exit_confirmed": false,
+    "two_original_scans_each_matched_same_zombie": {
+      "pid": 678174,
+      "start_ticks": 12538438,
+      "pgid": 678165,
+      "sid": 678165,
+      "state": "Z",
+      "unknown": []
+    },
+    "all_original_false_noescape_whole_tree_continuation_model_flags_preserved": true,
+    "scope": "The original closure is not accepted as exact-two-empty closure and is never rewritten or relabeled as successful."
+  },
+  "later_separate_absence": {
+    "root_observation_ref": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/root-supplemental-actual03-later-absence-01.json",
+      "sha256": "8253eeba3ae4261762c62a0255bc373151948f8acf88eba0ce5bb657a70389f4",
+      "size_bytes": 4965
+    },
+    "exact_original_closure_and_boundary_source_bound": true,
+    "two_later_original_method_scans_empty_unknown_empty": true,
+    "status_sandwiches_unit_not_found_MainPID0": true,
+    "later_cgroup_absent": true,
+    "process_unit_stop_or_Comfy_actions": false,
+    "accepted_scope": "Later read-only unit/cohort namespace absence only. Historical original false closure flags and failed/partial campaign remain unchanged; no stage/global/model/training/continuation qualification follows."
+  },
+  "limits": [
+    "121completed callbacks do not qualify a public231 or full1479 score, and later process absence cannot supply missing model/runtime poststage authentication.",
+    "Original closure false flags remain historical facts; later separate absence observations may support a future fresh gate but do not retroactively promote original cleanup or results.",
+    "No model/math/scorer/ECE bug is inferred from this memory-gate interruption; the ECE projector was not reached.",
+    "Partial own counters or sampled host observations do not establish continuous reserve, complete-suite fit, harmless coexistence, browser performance or training eligibility."
+  ],
+  "actions": {
+    "small_closed_aggregate_metadata_and_new_review_only": true,
+    "raw_official_tasks_gold_DOM_answers_responses_model_native_tokenizer_bytes": false,
+    "candidate_import_tests_formatter_live_host_unit_observer_network_Git": false
+  },
+  "status": "ALL_REVIEW_ACTIONS_STOPPED"
+}
