@@ -1,0 +1,68 @@
+{
+  "schema_id": "root-full07-original-admission-wait-terminal-v1",
+  "created_at_utc": "2026-10-23T15:51:28.146248+00:00",
+  "status": "NO_ADMISSION_NO_MODEL_LAUNCHED",
+  "root_tool_session": 53636,
+  "exit_code": 2,
+  "checks": 120,
+  "wait_seconds": 600,
+  "consecutive_sample_span_required_seconds": 60,
+  "window_resets": 2,
+  "reported_failed_sample_reset_counts": [
+    5,
+    2
+  ],
+  "scope": "Consecutive original passing samples are sampled observations only. The optional additional window never weakened the original gate. No launcher/unit/model was started.",
+  "wait_source": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-full07-reviewed-admission-wait.py",
+    "size_bytes": 7752,
+    "sha256": "541c6f7e89abfad972fd1fbf8f889154e4a3b864a4dd57e5f8571dee46f2237e"
+  },
+  "launcher_source_not_executed": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-full07-reviewed-launcher.py",
+    "size_bytes": 8928,
+    "sha256": "73b8427db411ad3b43cec44bbcbeacb634d47551c57d6d2bfb66127752f222b3"
+  },
+  "root_source_review": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-full07-independent-launcher-review.json",
+    "size_bytes": 2828,
+    "sha256": "b7a3a479c9f13dc41b1f92fabbf8e1a32b81a201291d83db2f5178617c54e193"
+  },
+  "last_original_gate_error": {
+    "type": "ValueError",
+    "message": "Original read-only Comfy idle gate",
+    "observation": {
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "mem_total_bytes": 130595864576,
+      "mem_available_bytes": 26602545152,
+      "comfy_running": 1,
+      "comfy_pending": 0,
+      "comfy_state": "http_busy",
+      "comfy_evidence": {
+        "transport": "HTTP",
+        "http_status": 200,
+        "response_sha256": "67a401f0c375a2994fe094cb0480bd3b1254c061a37691aedded8608a983e816"
+      }
+    },
+    "required_available_bytes": null,
+    "initial": true
+  },
+  "full_R_plus_entire_cap_startup_requirement_bytes": 28266656564,
+  "failure_interpretation": "Original Comfy gate refused before testing memory at that sample; sampled available memory was also below the unchanged startup requirement. No memory-admission success is claimed.",
+  "fresh_paths_still_absent": [
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-07",
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-launch-full04-edge-both-07.json",
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-full04-edge-both-07.json",
+    "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-full04-initial-gate-07.json"
+  ],
+  "actual07_closure": null,
+  "callbacks": 0,
+  "public_score": null,
+  "coherence_score": null,
+  "whole_tree_audited": false,
+  "no_escape_audited": false,
+  "continuation_qualified": false,
+  "training_eligible": false,
+  "service_cache_queue_or_model_changes": false,
+  "terminal_evidence_scope": "Root directly observed unified execution tool terminal and source-pin/fresh-output checks. Intermediate wait JSON lines were visible through tool outputs; no invented full per-sample log or continuous-idle proof."
+}
