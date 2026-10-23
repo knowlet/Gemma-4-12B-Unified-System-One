@@ -1,0 +1,112 @@
+{
+  "schema_id": "independent-replay08-launcher-admission-source-review-v1",
+  "status": "CLEAR_SOURCE_ONLY_PENDING_FRESH_ORIGINAL_ADMISSION_AND_ACTUAL_AUDIT",
+  "reviewer": "/root/cpu4_owner_smoke",
+  "author_of_reviewed_scripts": "root",
+  "scope": "Independent read-only inspection of complete root-authored replay08 launcher/wait sources and narrow textual comparison with exact full07 predecessors. This is not an independent review of the reviewer's own replay02 proposal/spec, nor an execution, original-selector rerun or live admission/closure audit.",
+  "reviewed_sources": [
+    {
+      "path": "/tmp/jev_replay_actual08_launch.py",
+      "archive_path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/root-reviewed-replay08-launcher.py",
+      "size_bytes": 9518,
+      "sha256": "9cc8359030a94b821f6e728f4bd5904044c815f6b21f9bc946ae255af7938ba6",
+      "archive_bytes_match": true
+    },
+    {
+      "path": "/tmp/jev_wait_replay08_admission.py",
+      "archive_path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/root-reviewed-replay08-admission-wait.py",
+      "size_bytes": 7742,
+      "sha256": "97297cf129b7fa1a34cd8a5a6cd106e8ba9b5faf331660c1bc65f2897e50df70",
+      "archive_bytes_match": true
+    }
+  ],
+  "exact_predecessor_sources": [
+    {
+      "path": "/tmp/jev_native_full04_next07_launch.py",
+      "size_bytes": 8928,
+      "sha256": "73b8427db411ad3b43cec44bbcbeacb634d47551c57d6d2bfb66127752f222b3"
+    },
+    {
+      "path": "/tmp/jev_wait_full07_admission.py",
+      "size_bytes": 7752,
+      "sha256": "541c6f7e89abfad972fd1fbf8f889154e4a3b864a4dd57e5f8571dee46f2237e"
+    }
+  ],
+  "source_and_typed_metadata_pins": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+      "size_bytes": 40319,
+      "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/root-replay-command-spec-02.json",
+      "size_bytes": 14044,
+      "sha256": "138c836f7416c5437a6f9abe6fbba519d4e2da4ddfcd2a1d110c51bc6d86a3cb",
+      "scope": "Existing root-selected spec identity verified; not self-reviewed here. Independent selection review is root-authored below."
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/independent-root-selection-review-02.json",
+      "size_bytes": 3117,
+      "sha256": "dddcb62f977222c2ce2c36e78f54ed4beafff929a92f0107e38f2a24656adf1a"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-full07-admission-wait-terminal.json",
+      "size_bytes": 3169,
+      "sha256": "b6f238a435edee677564ebdaefd6e0c2be6c52f9ba32f5a5d0d13e8cdeeed463"
+    }
+  ],
+  "checks": [
+    {
+      "id": "exact_source_selection_and_fresh08",
+      "result": "PASS_SOURCE",
+      "evidence": "Launcher requires exact owner06 controller, replay02 spec and root independent-review hashes, rehashes every explicit small source, then calls unchanged original command_selection. Output, intent, terminal and gate target actual08/replay08 rather than existing actuals. Wait rejects existing paths and symlinks; launcher also requires its own output paths absent before any process starts."
+    },
+    {
+      "id": "no_phantom_actual07",
+      "result": "PASS_SOURCE_AND_TYPED_RECORD",
+      "evidence": "Launcher pins b6f238a4 full07 wait terminal, requires NO_ADMISSION_NO_MODEL_LAUNCHED/exit2/callbacks0/null actual07_closure, and rechecks all four record-listed fresh paths absent and not symlinks. The inspected pinned typed record lists exactly actual07, its launch/terminal and full07 gate. No actual07 closure is invented or used."
+    },
+    {
+      "id": "catalog05_and_native06_absence_authority",
+      "result": "PASS_SOURCE_DELTA",
+      "evidence": "Unchanged from full07: pinned catalog05 original closure2458fc5e and native06 original closuree7a01835/supplemental02ade10418; same boot; each selected original unit receives two fresh original scan_absence checks with before/after original status, LoadState not-found/MainPID0, no matches/unknown and absent cgroup. Native06 original whole_unit_exit_confirmed remains explicitly false; later supplemental absence is separate. This review did not reopen prior actual closure files or independently observe current absence."
+    },
+    {
+      "id": "full_reserve_and_original_owner",
+      "result": "PASS_SOURCE_DELTA",
+      "evidence": "Launcher still invokes original host(observer,sameboot,130595864576,initial=True) only after absence checks, writes failure and exits2 without launch on refusal. Source host requires original idle/absence state, running=pending0, and full reserve plus entire2GiB:28266656564 bytes. Successful launch uses unchanged owner06 --run --expected-entry-sha256 and exact selection SHA; original owner performs its own admission/resource readbacks. CPU16-19/400%,2GiB/swap0 and runtime10800 remain selected owner policy."
+    },
+    {
+      "id": "wait180_quiet0",
+      "result": "PASS_SOURCE",
+      "evidence": "Explicit --wait-seconds180 --quiet-seconds0 is an allowed preliminary sampled condition. Zero optional quiet time accepts only after an actual original passing gate with exact fullR+2GiB requirement; it does not bypass the launcher/owner repeated original gates. Wait dry-defaults without --launch. Launch requires syntactically valid independently supplied launcher SHA and rehash immediately before launch; correct replay08 environment pins are forwarded. The optional60s window remains available but is not a reserved resource or continuous-idle guarantee."
+    },
+    {
+      "id": "replay_claims",
+      "result": "PASS_SOURCE",
+      "evidence": "Retargeted intent requires one actual native3-row call with legal counts2/3/4 and completecall20/whole120. Terminal requires accepted original owner, full final source/model authentication, original current closure and independent same-call replay audit. Fullcampaign1479/official-score claims are removed from this launcher; semantic quality, training eligibility, benchmark and browser qualification are explicitly absent."
+    }
+  ],
+  "nonblocking_notes": [
+    "Wait fresh-output error still says gate07 and launcher mismatch error still says full07. These inherited diagnostic labels do not select paths or affect authentication/control flow; reviewed functional paths and environment select08.",
+    "Root-reported original selector PASS is consumed through pinned independent-root-selection-review-02.json. Reviewer did not rerun it or stat/read the canonical interpreter binary.",
+    "The launcher and wait contain real future runtime operations, including original observer calls and controller invocation; none were imported or executed by this review. Passing this source review is not permission to skip fresh original admission or closure."
+  ],
+  "blockers": [],
+  "actions_performed": [
+    "Read complete small launcher/wait sources and textual predecessor diffs",
+    "Read pinned root selection review and full07 typed no-launch terminal metadata",
+    "Read bounded owner06 host/resource source and verify small-source hashes",
+    "Write this independent source review only"
+  ],
+  "candidate_or_selector_imported_or_executed": false,
+  "tests_or_dry_or_formatter_run": false,
+  "host_unit_observer_or_network_probe_performed": false,
+  "model_native_binary_tasks_gold_or_response_payload_read": false,
+  "git_read_or_mutation_performed": false,
+  "actual08_result": null,
+  "features_training_eligible": false,
+  "quality_browser_or_benchmark_qualified": false,
+  "whole_tree_or_no_escape_qualified": false,
+  "all_review_actions_stopped_after_metadata_write": true
+}

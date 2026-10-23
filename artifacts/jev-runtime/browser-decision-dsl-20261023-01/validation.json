@@ -1,0 +1,155 @@
+{
+  "schema": "workflow-dsl-source-validation-v1",
+  "created_at_utc": "2026-10-23T15:54:09.906962+00:00",
+  "status": "SOURCE_AND_AUTHORED_CORPUS_VERIFIED_NO_RUNTIME_OR_QUALITY_CLAIM",
+  "test_observation": {
+    "path": "artifacts/jev-runtime/browser-decision-dsl-20261023-01/test-observation.json",
+    "size_bytes": 436,
+    "sha256": "f7aa02fd0b0a025c15ca23c075e7ff88b29d3d15ee8696788b5bf69772ffff8e"
+  },
+  "tests_log": {
+    "path": "artifacts/jev-runtime/browser-decision-dsl-20261023-01/tests.log",
+    "size_bytes": 3518,
+    "sha256": "ad97e91e26de51936728bab690c983140a82b85825c21a1c7c468ece500aa4a6"
+  },
+  "tests": {
+    "schema": "workflow-dsl-bounded-stdlib-test-observation-v1",
+    "python": "3.12.13 (main, Jun 23 2026, 15:19:07) [Clang 22.1.3 ]",
+    "affinity_policy": "taskset CPU0",
+    "AS_limit_bytes": 536870912,
+    "CPU_limit_seconds": 30,
+    "wall_timeout_seconds": 35,
+    "tests_run": 28,
+    "failures": 0,
+    "errors": 0,
+    "success": true,
+    "elapsed_seconds": 6.4445149789971765,
+    "AST_files": 5,
+    "model_or_native_framework_imported": false
+  },
+  "exact_peer_counterexample_regressions": [
+    {
+      "test": "test_complete_denied_state_and_label_swap_refused",
+      "result": "PASS",
+      "meaning": "Semantic state+label swap cannot retain opposite unchanged visible page/goal/branch."
+    },
+    {
+      "test": "test_caller_cannot_relabel_sealed_family_as_train",
+      "result": "PASS",
+      "meaning": "Caller cannot redefine the sealed family map as train."
+    }
+  ],
+  "additional_boundaries": [
+    "actual request SHA and native projection binding",
+    "original question head order after recomputed hashes",
+    "actual permuted criterion positions",
+    "wrong target label despite normalized distribution",
+    "full valid sets and uniform soft distributions for parallel requirements",
+    "WAIT vs permanent BLOCKED and saved-receipt DONE",
+    "family/ancestor disjointness, unknown ancestry and cross-split taint",
+    "no optimizer access to source/dev/sealed/full manifest"
+  ],
+  "Ruff": {
+    "check": "PASS exit0",
+    "format": "PASS 5files reformatted",
+    "final_format_check": "PASS 5files already formatted",
+    "CPU_policy": "CPU0,30s wall timeout, no address-space limit"
+  },
+  "AST": {
+    "files": 5,
+    "result": "PASS before stdlib test collection"
+  },
+  "generation_observation": {
+    "path": "artifacts/jev-runtime/browser-decision-dsl-20261023-01/generation-observation.json",
+    "size_bytes": 371,
+    "sha256": "e633e6988d6299d0feb639412b1e8bd130ca91372d70d55e78b2ed8ee076351a"
+  },
+  "generation_log": {
+    "path": "artifacts/jev-runtime/browser-decision-dsl-20261023-01/generation.log",
+    "size_bytes": 310,
+    "sha256": "527f18d355f8831d3e86b17165ce4a657e983b01f54b43db5cbbe45292ef90cb"
+  },
+  "source_corpus_generation": {
+    "schema": "workflow-dsl-bounded-source-generation-observation-v1",
+    "completed": true,
+    "elapsed_seconds": 2.9781533689965727,
+    "CPU_affinity_policy": "CPU0",
+    "AS_limit_bytes": 536870912,
+    "CPU_limit_seconds": 30,
+    "wall_timeout_seconds": 35,
+    "source_only_authored_corpus": true,
+    "dry_default_passed": true,
+    "model_or_native_framework_imported": false
+  },
+  "population": {
+    "states": 168,
+    "ancestors": 21,
+    "family_counts": {
+      "train": 4,
+      "dev": 1,
+      "sealed": 2
+    },
+    "ancestor_counts": {
+      "train": 12,
+      "dev": 3,
+      "sealed": 6
+    },
+    "state_counts": {
+      "train": 96,
+      "dev": 24,
+      "sealed": 48
+    },
+    "operation_position_totals": {
+      "train": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "dev": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "sealed": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ]
+    },
+    "raw_corpus_artifact_hashes_verified": 11,
+    "raw_source_case_or_request_label_data_in_review_freeze": false,
+    "local_raw_storage_ignored": "corpus/",
+    "actual_retention_policy": "Generated raw requests, labels and full authored cases remain local ignored outputs. Only aggregate identities/counts/position tables and source/provenance may be selected for source milestone."
+  },
+  "source_manifest": {
+    "path": "artifacts/jev-runtime/browser-decision-dsl-20261023-01/corpus-manifest.json",
+    "size_bytes": 5646,
+    "sha256": "858ead813ec95d9737e5820d1fee198e498ae881e3ec050afd4bfdd8b93368df"
+  },
+  "static_audit": {
+    "path": "artifacts/jev-runtime/browser-decision-dsl-20261023-01/corpus-static-audit.json",
+    "size_bytes": 4578,
+    "sha256": "202ad0f67e30bf0bf5f1fb8d05c323943de9ada3b64c265459d1f6ed05d577b2"
+  },
+  "upstream_license_byte_copy_verified": true,
+  "model_native_tensor_tokenizer_official_data_or_browser_executed_or_read": false,
+  "real_browser_or_synthetic_heldout_improvement_claim": false,
+  "optimizer_loader_feature_collector_or_training_implemented": false,
+  "independent_review_pending": true,
+  "all_candidate_test_generator_formatter_processes_terminal": true
+}

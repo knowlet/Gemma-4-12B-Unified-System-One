@@ -1,0 +1,30 @@
+{
+  "schema": "independent-workflow-dsl-role-policy-v1",
+  "dsl_version": "independent-browser-workflow-dsl/1",
+  "roles": {
+    "optimizer": {
+      "split": "train",
+      "allow": ["data/train/requests.jsonl", "data/train/labels.jsonl", "data/train/summary.json"]
+    },
+    "dev_evaluator": {
+      "split": "dev",
+      "allow": ["data/dev/requests.jsonl", "data/dev/labels.jsonl", "data/dev/summary.json"]
+    },
+    "sealed_evaluator": {
+      "split": "sealed",
+      "allow": ["data/sealed/requests.jsonl", "data/sealed/labels.jsonl", "data/sealed/summary.json"]
+    }
+  },
+  "optimizer_explicitly_excluded": [
+    "all authoring source and tests",
+    "authored-cases.jsonl",
+    "manifest.json",
+    "static-audit.json",
+    "all dev artifacts",
+    "all sealed artifacts and labels",
+    "any derived artifact with non-train family, ancestor or split taint"
+  ],
+  "enforcement": "Pure metadata capability-plan checker only. No future optimizer exists here. A separate reviewed root-owned loader must authenticate exact hashes and enforce these selections at execution; role names do not create authority or operating-system isolation.",
+  "holdout_reveal": "Only a separately selected sealed evaluator after the future candidate is frozen. Developer and optimizer must receive neither holdout labels nor authoring code capable of reconstructing them. No automatic reveal command is provided.",
+  "native_features_outputs": "Never part of this source corpus or Git inventory. A later owned collector must provide authenticated provenance and inherit exact family/ancestor/split taint."
+}

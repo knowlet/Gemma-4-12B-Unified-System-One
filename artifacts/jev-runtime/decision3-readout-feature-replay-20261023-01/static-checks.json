@@ -1,0 +1,65 @@
+{
+  "source_only": true,
+  "test_cpu": 0,
+  "test_address_space_bytes": 536870912,
+  "test_cpu_seconds": 30,
+  "ruff_address_space_limit": null,
+  "results": [
+    {
+      "command": [
+        ".venv/bin/ruff",
+        "format",
+        "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01"
+      ],
+      "returncode": 0,
+      "stdout": "3 files reformatted, 1 file left unchanged\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01"
+      ],
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/python3.12",
+        "-B",
+        "-s",
+        "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/test_replay.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ".........................\n----------------------------------------------------------------------\nRan 25 tests in 0.669s\n\nOK\n"
+    },
+    {
+      "command": [
+        "/usr/bin/python3.12",
+        "-B",
+        "-s",
+        "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/actor.py"
+      ],
+      "returncode": 0,
+      "stdout": "{\"status\": \"dry_default_no_runtime_or_payload_execution\", \"profile\": \"decision3-edge-original-readout-feature-replay-cpu-2g-20261023-v1\", \"requests\": 1, \"partial_rows\": 3, \"legal_counts\": [2, 3, 4], \"whole_seconds_from_execute_entry\": 120, \"complete_prediction_seconds\": 20, \"feature_commit_status\": \"PENDING\", \"training_eligible\": false}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/python3.12",
+        "-B",
+        "-s",
+        "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/build_plan.py",
+        "--output",
+        "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/plan.json"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "ast_compile": "PASS"
+}

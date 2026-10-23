@@ -1,0 +1,141 @@
+{
+  "schema": "independent-workflow-dsl-corpus-manifest-v1",
+  "dsl_version": "independent-browser-workflow-dsl/1",
+  "seed": 271828,
+  "counts": {
+    "train": 96,
+    "dev": 24,
+    "sealed": 48
+  },
+  "families": {
+    "appointment_edit": "train",
+    "document_upload": "train",
+    "booking_inventory": "train",
+    "admin_filters": "train",
+    "expense_claim": "dev",
+    "training_enrollment": "sealed",
+    "equipment_checkout": "sealed"
+  },
+  "split_unit": "Independently authored domain workflow family, before all entity/phrasing/branch/permutation variants",
+  "ancestor_count": 21,
+  "states_per_ancestor": 8,
+  "trajectory_scope": "Eight counterfactual branch snapshots per workflow ancestor, not eight executed sequential browser steps",
+  "operation_contract": [
+    "CLICK",
+    "TYPE_TEXT",
+    "SELECT",
+    "SCROLL_DOWN",
+    "SCROLL_UP",
+    "WAIT",
+    "DONE",
+    "BLOCKED"
+  ],
+  "selected_operation_profile": "standard",
+  "operation_permutation_schedule": "Eight fixed cyclic rotations; shift=ancestor_ordinal mod8; every ancestor has one label at each operation position",
+  "target_position_schedule": "ancestor_ordinal mod4, balanced per selected target head; all four offered target candidates retained",
+  "all_labels_authored_before_NN": true,
+  "model_failure_outputs_or_existing_canary_used": false,
+  "official_tasks_gold_or_browser_DOM_used": false,
+  "FIND_TEXT_used": false,
+  "supervision": "Complete valid next-action sets; uniform mass on all valid actual criteria positions, zero on remaining positions; unused target heads not supervised",
+  "model_routing_tag": "Original upstream default jev-latest retained as source construction metadata, not a runtime model binding; exact native state/questions projection has a separate hash on both requests and labels",
+  "question_order": "Operation first; actual target-head insertion order from exact upstream action_space varies with observed-control order. Future collector must join features/labels by actual ordered IDs and native projection hash, never a constant list.",
+  "role_checker_placement": "Root-only metadata process; audit.py imports full authoring DSL and must never be imported into a train-only optimizer process",
+  "sealed_scope": "Source fixtures may be committed, but future optimizer process must not select authoring source/full manifest or dev/sealed artifacts. Metadata role check is not an OS sandbox.",
+  "upstream_source_pins": {
+    "artifacts/jev-runtime/upstream/jev_ultrafast/model.py": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3",
+    "artifacts/jev-runtime/upstream/jev_ultrafast/questions.py": "66a7054b85040b949e1757311257ea0c5a843c635f9a40c99f6d15ad660fb422"
+  },
+  "authoring_source_pins": [
+    {
+      "path": "dsl.py",
+      "size_bytes": 18820,
+      "sha256": "584515218fd90ca56b4736e488458407d517cfa20d27c5d1ee951e45372788da"
+    },
+    {
+      "path": "request_builder.py",
+      "size_bytes": 3138,
+      "sha256": "cb750540b7fc1b422a2082c3f3338ed22eb6ec83fa1ecb8b24f472c144d7fff7"
+    },
+    {
+      "path": "audit.py",
+      "size_bytes": 10655,
+      "sha256": "8deec829329b6f1398e943396a302414ebfe8a5a2b6c3a0b844ed755a75748f4"
+    },
+    {
+      "path": "generate.py",
+      "size_bytes": 6615,
+      "sha256": "9ce3e0ce80af723142f3f07f0c8409360ef3e7f92d3cbfa43f0000bcf59e4aff"
+    },
+    {
+      "path": "role-policy.json",
+      "size_bytes": 1600,
+      "sha256": "6cb5884c575479c05b4fa03d74787eb9cf6329bb261e44861780f1685ae05e52"
+    },
+    {
+      "path": "UPSTREAM-LICENSE",
+      "size_bytes": 1068,
+      "sha256": "5afa3d97bf1e6f998d587fa101e3fe0d0c416840b7fe77bcd6ae97690a334631"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "authored-cases.jsonl",
+      "size_bytes": 2872932,
+      "sha256": "98138735c9326920a52c31061a83107442b210b749d29c422925a1a7e4f1a78f"
+    },
+    {
+      "path": "data/dev/labels.jsonl",
+      "size_bytes": 14292,
+      "sha256": "e9f3c0bb0999b75cebad3d63db09effbbc245bec0feb6174849ef9097ee8e978"
+    },
+    {
+      "path": "data/dev/requests.jsonl",
+      "size_bytes": 280512,
+      "sha256": "4937fbc27a2cabf2aeca5a85efbc31cf01cb66f2a419f26e48ccbfb4b5a8c93f"
+    },
+    {
+      "path": "data/dev/summary.json",
+      "size_bytes": 299,
+      "sha256": "5393c426040fb3582b6237b8ee64029a16323225a824253d0f6e43583a36c4fe"
+    },
+    {
+      "path": "data/sealed/labels.jsonl",
+      "size_bytes": 29112,
+      "sha256": "e922777de15abccd942115f5a7dcbcf92c38e7f512a3b43aa62a6c157b69e11f"
+    },
+    {
+      "path": "data/sealed/requests.jsonl",
+      "size_bytes": 566829,
+      "sha256": "4e423df02392677045e70f7e02d509b2ac9d8efe29d621afd7f80c39887130b5"
+    },
+    {
+      "path": "data/sealed/summary.json",
+      "size_bytes": 463,
+      "sha256": "9ff0273069ea25b18b903653bf787c030d01192751d323fd19913f21c245053d"
+    },
+    {
+      "path": "data/train/labels.jsonl",
+      "size_bytes": 57600,
+      "sha256": "9ebfc67e1482ff178a157a8cbdf4bc7a18d3bcc8ff77abf13f2bb40c50b9819b"
+    },
+    {
+      "path": "data/train/requests.jsonl",
+      "size_bytes": 1129144,
+      "sha256": "9ca13562700032b5a0f613195cdd4767687e908c1a3a3f3bc9ea14338c3e5f60"
+    },
+    {
+      "path": "data/train/summary.json",
+      "size_bytes": 688,
+      "sha256": "bbb3ab5f31d856f09f0eb3e67440679198701bb2bae5f223e4dbebb2e8649660"
+    },
+    {
+      "path": "static-audit.json",
+      "size_bytes": 4578,
+      "sha256": "202ad0f67e30bf0bf5f1fb8d05c323943de9ada3b64c265459d1f6ed05d577b2"
+    }
+  ],
+  "derived_native_features_or_model_outputs_in_Git": false,
+  "optimizer_or_owned_loader_implemented": false,
+  "runtime_or_real_browser_quality_claim": false
+}

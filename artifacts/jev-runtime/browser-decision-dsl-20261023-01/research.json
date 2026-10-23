@@ -1,0 +1,75 @@
+{
+  "schema": "independent-workflow-dsl-source-design-evidence-v1",
+  "scope": "Independently authored source corpus and pure source/data-boundary checks only",
+  "upstream_reuse": [
+    {
+      "path": "artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+      "sha256": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3",
+      "symbols": [
+        "action_space",
+        "choose"
+      ],
+      "seam": "Exact function AST reaches original post_json; capture then raise before transport or answer validation"
+    },
+    {
+      "path": "artifacts/jev-runtime/upstream/jev_ultrafast/questions.py",
+      "sha256": "66a7054b85040b949e1757311257ea0c5a843c635f9a40c99f6d15ad660fb422",
+      "symbols": [
+        "NEXT_ACTION",
+        "TARGET"
+      ],
+      "seam": "Exact instruction assignment AST only; original module/client/browser never imported"
+    }
+  ],
+  "standard_action_evidence": {
+    "source": "src/s1/jev_action_grammar.py:21-22",
+    "targeted": [
+      "CLICK",
+      "TYPE_TEXT",
+      "SELECT"
+    ],
+    "untargeted": [
+      "SCROLL_DOWN",
+      "SCROLL_UP",
+      "WAIT",
+      "DONE",
+      "BLOCKED"
+    ],
+    "check_control": "Original upstream action_space maps checkbox click to CLICK; no new CHECK opcode",
+    "fill_control": "Original upstream action_space maps fill to TYPE_TEXT; no new FILL opcode"
+  },
+  "license": {
+    "existing_notice": "artifacts/jev-runtime/upstream/LICENSE",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Browser Use",
+    "retained_notice": "UPSTREAM-LICENSE"
+  },
+  "authored_semantics": {
+    "families": 7,
+    "all_six_three_requirement_orders_represented": true,
+    "split_before_descendants": true,
+    "explicit_order_or_full_valid_set_instead_of_arbitrary_single_gold": true,
+    "initial_peer_findings_corrected_before_freeze": [
+      "Canonical family/ancestor/branch now binds full semantic state, visible page, goal and semantic control IDs before labels are audited",
+      "Root-side role checker now rejects caller family maps that differ from frozen predeclared family/split assignments"
+    ]
+  },
+  "excluded_sources": [
+    "earlier diagnostic fixtures",
+    "official browser or Jev tasks",
+    "gold answers",
+    "browser DOM",
+    "model response or failure corpus",
+    "answer caches"
+  ],
+  "future_pending": [
+    "separate independently reviewed owned feature collector",
+    "independent actual replay qualification",
+    "root-authenticated train-only data loader and access enforcement",
+    "readout adaptation",
+    "sealed evaluator after candidate freeze",
+    "real browser evaluation with original task/judge/budgets and shared genuine helper"
+  ],
+  "no_quality_claim": true,
+  "validation_status": "28_STDLIB_TESTS_RUFF_AST_DRY_AND_SOURCE_CORPUS_STATIC_AUDIT_PASS_NO_NN"
+}
