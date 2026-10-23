@@ -1,0 +1,248 @@
+--- /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/actor.py
++++ /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/actor.py
+@@ -1,7 +1,7 @@
+ """Dry-default future owned Qwen smoke. Stdlib only until the verified worker loader.
+ 
+ The parent is the real external request watchdog, in the original owner03 cgroup.
+-The actual NN worker uses frozen02; ASGI transport is in-process, never real HTTP.
++The future NN worker uses frozen02 with one real loopback HTTP transport request.
+ """
+ 
+ from __future__ import annotations
+@@ -41,7 +41,7 @@
+     ROOT / "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json"
+ )
+ CATALOG_PLAN_SHA = "c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef"
+-PROFILE = "qwen25-05b-cpu4-2g-owned-native-smoke-v1"
++PROFILE = "qwen25-05b-cpu4-2g-owned-http-smoke-v1"
+ MODEL_PROFILE = "qwen25-05b-bf16-cpu4-field-text-v1"
+ OWNER_PROFILE = "llama-cpp-cpu4-command-owned-v1"
+ UNIT = "jev-d3-llama-cpp-cpu4-20261023-03.service"
+@@ -74,6 +74,14 @@
+     "PYTHONNOUSERSITE": "1",
+     "USE_HUB_KERNELS": "0",
+     "HF_ENABLE_PARALLEL_LOADING": "false",
++    "HTTP_PROXY": "",
++    "HTTPS_PROXY": "",
++    "ALL_PROXY": "",
++    "http_proxy": "",
++    "https_proxy": "",
++    "all_proxy": "",
++    "NO_PROXY": "127.0.0.1,localhost",
++    "no_proxy": "127.0.0.1,localhost",
+ }
+ 
+ 
+@@ -546,7 +554,7 @@
+     state = {
+         "profile": PROFILE,
+         "status": "preparing_worker",
+-        "transport": "in_process_ASGI_not_HTTP",
++        "transport": "one_shot_loopback_HTTP",
+         "actual_generation_qualified": False,
+         "browser_score": None,
+         "full_native_DSO_closure": False,
+@@ -608,7 +616,15 @@
+         selection_ref = write_new(output / "runtime-selection.json", descriptor)
+         channel = protocol.Channel(parent_socket)
+         channel.send(
+-            {"selection": selection_ref, "output": str(output), "helper_sha256": HELPER_SHA}
++            {
++                "selection": selection_ref,
++                "output": str(output),
++                "helper_sha256": HELPER_SHA,
++                "http_stack": plan["http_stack"],
++                "transport_source": next(
++                    row for row in plan["sources"] if row["path"] == str(HERE / "transport.py")
++                ),
++            }
+         )
+         watchdog = RequestWatchdog(secret, ticket_ref["sha256"], began + WHOLE_SECONDS)
+         while child.poll() is None:
+@@ -661,9 +677,11 @@
+         need(code == 0 and watchdog.armed, "One successful externally supervised worker request")
+         worker_receipt = read_json(output / "worker-receipt.json")
+         need(
+-            worker_receipt.get("status") == "one_actual_native_ASGI_request_complete"
++            worker_receipt.get("status") == "one_actual_native_HTTP_request_complete"
+             and worker_receipt.get("runtime_selection_sha256") == selection_ref["sha256"]
+-            and worker_receipt.get("actual_generation_count") == 1,
++            and worker_receipt.get("actual_generation_count") == 1
++            and worker_receipt.get("http_stack_sha256") == plan["http_stack"]["sha256"]
++            and worker_receipt.get("transport") == "one_shot_loopback_HTTP",
+             "Bound actual native worker receipt",
+         )
+         state.update(
+@@ -673,7 +691,7 @@
+             worker_exit_code=code,
+             elapsed_seconds=time.monotonic() - began,
+             actual_generation_qualified=True,
+-            transport="in_process_ASGI_not_HTTP",
++            transport="one_shot_loopback_HTTP",
+             external_request_deadline=watchdog.deadline,
+             external_watchdog_armed=True,
+         )
+@@ -757,9 +775,29 @@
+         descriptor["owner"]["verifier"]["sha256"] == os.environ["HELPER_AUTHORITY_SHA256"],
+         "Worker verifier source binding",
+     )
++    worker_began = time.monotonic()
++    transport = load_source(
++        HERE / "transport.py", bootstrap["transport_source"]["sha256"], "_owned_http_transport"
++    )
++    stack_ref = bootstrap["http_stack"]
++    manifest = checked_ref(stack_ref)
++
++    def source_bytes(row):
++        blob = small(row["path"], row["sha256"])
++        need(len(blob) == row["size_bytes"], "Exact HTTP/upstream source size")
++        return blob
++
++    # Authenticate the nested critical HTTP projection before any runtime import
++    # can transitively import those packages. This remains stdlib source I/O.
++    for row in [*manifest["sources"], *manifest["upstream"].values()]:
++        source_bytes(row)
+     helper = load_source(HELPER, HELPER_SHA, "_helper_smoke_exact02")
+     runtime = helper.load_runtime(selection["path"], selection["sha256"])
++    runtime_ready = time.monotonic()
+     output = Path(bootstrap["output"])
++    uvicorn, http_modules = transport.load_stack(manifest, source_bytes)
++    model = transport.load_upstream(manifest, source_bytes)
++    need(model.TEXT_VALUE == helper.TEXT_VALUE, "Original unchanged TEXT_VALUE prompt")
+     opaque = "probe-" + secrets.token_hex(6)
+     context = {
+         "goal": "Enter the reference code " + opaque + " exactly as written.",
+@@ -767,62 +805,61 @@
+         "page": {"title": "", "text": ""},
+         "recent_actions": [],
+     }
+-    payload = {
+-        "model": helper.MODEL_ID,
+-        "max_tokens": 1024,
+-        "response_format": {"type": "json_object"},
+-        "reasoning": {"enabled": False},
+-        "messages": [
+-            {"role": "system", "content": helper.TEXT_VALUE},
+-            {"role": "user", "content": json.dumps(context)},
+-        ],
+-    }
+     key = secrets.token_hex(24)
+     app = helper.make_application(runtime, helper.DirectoryJournal(output / "http-journal"), key)
+-    sent = []
+-
+-    async def receive():
+-        return {"type": "http.request", "body": json.dumps(payload).encode(), "more_body": False}
+-
+-    async def send(message):
+-        sent.append(message)
+-
+-    scope = {
+-        "type": "http",
+-        "method": "POST",
+-        "path": "/chat/completions",
+-        "server": ("127.0.0.1", 0),
+-        "client": ("127.0.0.1", 0),
+-        "headers": [(b"authorization", ("Bearer " + key).encode())],
+-    }
+-    asyncio.run(app(scope, receive, send))
+-    need(
+-        len(sent) == 2
+-        and sent[0]["type"] == "http.response.start"
+-        and sent[0]["status"] == 200
+-        and sent[1]["type"] == "http.response.body"
+-        and not sent[1].get("more_body"),
+-        "Complete actual ASGI response",
+-    )
+-    response = json.loads(sent[1]["body"])
+-    raw = response["choices"][0]["message"]["content"]
+-    parsed = json.loads(raw)
+-    need(
+-        set(parsed) == {"text"} and parsed["text"] == opaque,
+-        "NN must emit the fresh opaque value exactly; no fallback",
+-    )
++    private = output / "private-http"
++    private.mkdir(mode=0o700)
++
++    def retain_attempt(record):
++        return write_new(private / ("attempt-%02d.json" % record["index"]), record)
++
++    observed = asyncio.run(
++        transport.run_one(
++            app,
++            model,
++            uvicorn,
++            manifest["server_settings"],
++            context,
++            key,
++            retain_attempt,
++            runtime.authority.check,
++        )
++    )
++    need(
++        observed.pop("value") == opaque, "NN must return fresh opaque value; no extraction/fallback"
++    )
++    for row in manifest["sources"]:
++        source_bytes(row)
++    for row in manifest["upstream"].values():
++        source_bytes(row)
++    _, final_http_modules = transport.load_stack(manifest, source_bytes)
++    need(final_http_modules == http_modules, "Final HTTP package origins/versions unchanged")
++    catalog_source = load_source(
++        CATALOG_PLAN.with_name("catalog.py"),
++        "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a",
++        "_owned_http_catalog_maps_only",
++    )
++    observed_native_maps = catalog_source.mapped_native()
++    runtime.authority.check("HTTP-final-source-and-own-mapping-observation")
+     write_new(
+         output / "worker-receipt.json",
+         {
+             "profile": PROFILE,
+-            "status": "one_actual_native_ASGI_request_complete",
++            "status": "one_actual_native_HTTP_request_complete",
+             "runtime_selection_sha256": selection["sha256"],
++            "http_stack_sha256": stack_ref["sha256"],
+             "actual_generation_count": 1,
+-            "transport": "in_process_ASGI_not_HTTP",
+-            "response": response,
+-            "expected_opaque_value": opaque,
++            "transport": "one_shot_loopback_HTTP",
++            "observed_http_modules": http_modules,
++            "observed_native_maps_stat_only": observed_native_maps,
++            "full_native_DSO_closure": False,
++            "worker_cold_runtime_load_seconds": runtime_ready - worker_began,
++            "runtime_ready_monotonic": runtime_ready,
++            "observed_http": observed,
+             "semantic_smoke_match": True,
+             "helper_general_quality_qualified": False,
++            "client_lt20_is_observation_not_scoregate": True,
++            "multi_request_or_retry_success_qualified": False,
+             "browser_score": None,
+         },
+     )
+@@ -850,7 +887,7 @@
+                     "status": "source_only_not_ready",
+                     "model_started": False,
+                     "owner_started": False,
+-                    "transport": "in_process_ASGI_not_HTTP",
++                    "transport": "one_shot_loopback_HTTP",
+                     "requires_closed_catalog_acceptance_and_root_command_spec": True,
+                 }
+             )
+--- /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/test_smoke.py
++++ /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/test_smoke.py
+@@ -265,12 +265,12 @@
+         fake = SimpleNamespace(
+             identity=lambda _pid: {**expected, "start_ticks": 8}, same_identity=p.same_identity
+         )
+-        with patch.object(a.signal, "pidfd_send_signal") as signal_call:
++        with patch.object(a.signal, "pidfd_send_signal", create=True) as signal_call:
+             with self.assertRaises(ValueError):
+                 a.stop_exact_worker(fake, expected, 99)
+             signal_call.assert_not_called()
+         fake.identity = lambda _pid: expected
+-        with patch.object(a.signal, "pidfd_send_signal") as signal_call:
++        with patch.object(a.signal, "pidfd_send_signal", create=True) as signal_call:
+             a.stop_exact_worker(fake, expected, 99)
+             signal_call.assert_called_once_with(99, a.signal.SIGKILL)
+ 
