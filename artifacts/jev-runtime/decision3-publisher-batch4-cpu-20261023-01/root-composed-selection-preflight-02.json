@@ -1,0 +1,50 @@
+{
+  "profile": "exact_generic-plus-native-batch4-selection-preflight-v2",
+  "created_at_utc": "2026-10-23T11:24:03.953915+00:00",
+  "controller_sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e",
+  "status": "PASS_PURE_COMPOSITION_NO_UNIT_OR_FRAMEWORK",
+  "previous_failed_launch": "owner05/root-execution-batch4-edge-01.json failed before output/unit creation due duplicate automatic controller source",
+  "changes": "Only remove duplicate own-controller row; generic controller reintroduces it in its exact mandatory base refs. All actor/model/plan/math/resource/argv settings unchanged.",
+  "models": [
+    {
+      "model": "edge",
+      "previous_spec": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/root-edge-smoke-command-spec.json",
+      "previous_sha256": "a9338f782685b8960ef055d047848dffea53e2da1554016b5819628baaacf3d2",
+      "new_spec": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/root-edge-smoke-command-spec-02.json",
+      "sha256": "886e239da01dfb5d373be0d172058250553f7143f9638a89f2942b255143c362",
+      "size_bytes": 9949,
+      "removed_duplicated_automatic_sources": [
+        {
+          "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+          "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e",
+          "size_bytes": 40319
+        }
+      ],
+      "remaining_source_count": 38,
+      "total_generic_fixed_and_explicit_source_count": 43,
+      "exact_composed_command_selection": "PASS",
+      "unit_or_model_execution": false
+    },
+    {
+      "model": "lite",
+      "previous_spec": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/root-lite-smoke-command-spec.json",
+      "previous_sha256": "43ddbf2fdf56df88706f83adf9047953d26216d2bfa78403c9bc5f6d583fbc1b",
+      "new_spec": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/root-lite-smoke-command-spec-02.json",
+      "sha256": "74fa5b6cd7a4f2cf52511724d53398cf8a91929ccdd5423e0bdf2437e5c05c8c",
+      "size_bytes": 9949,
+      "removed_duplicated_automatic_sources": [
+        {
+          "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+          "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e",
+          "size_bytes": 40319
+        }
+      ],
+      "remaining_source_count": 38,
+      "total_generic_fixed_and_explicit_source_count": 43,
+      "exact_composed_command_selection": "PASS",
+      "unit_or_model_execution": false
+    }
+  ],
+  "observer_or_unit_commands": false,
+  "Torch_or_payload_reads": false
+}

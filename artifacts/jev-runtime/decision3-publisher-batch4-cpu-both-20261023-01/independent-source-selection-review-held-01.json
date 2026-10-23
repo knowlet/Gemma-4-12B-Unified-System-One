@@ -1,0 +1,88 @@
+{
+  "schema": "independent-native-batch4-campaign-source-selection-review-held-v1",
+  "created_at_utc": "2026-10-23T11:45:50.822443+00:00",
+  "reviewer": "/root/cpu_followup_review",
+  "result": "HELD_PENDING_LITERAL_POSTFINALLY_SUCCESS_DEADLINE_CRITERION",
+  "launch_clearance": false,
+  "selected_refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/freeze.json",
+      "sha256": "2428f92b18b06a93fde850cd7c44918a9ae950cec5e71f5960e73b75befac035",
+      "size_bytes": 1633
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/campaign.py",
+      "sha256": "b9a09b13bf18c08ac1b1f1facb8c095f710c151225c3279afa86e82a5245e62f",
+      "size_bytes": 30843
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/edge-plan.json",
+      "sha256": "3f314b5bd292e1861b4a365ff9aae093153024e6a0d16fb9ffc4c28e86a5b2a9",
+      "size_bytes": 5074
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/lite-plan.json",
+      "sha256": "927c401bc009a49279877b2fe97db1a5f3fe16e6b81370935a1d0d20232f110e",
+      "size_bytes": 5386
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/root-edge-campaign-command-spec.json",
+      "sha256": "8f9b2db81895c29eb9b15efbeb9287b9a5caf6117f06743b44182b832db3c8be",
+      "size_bytes": 13455
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/root-edge-campaign-preflight.json",
+      "sha256": "617f6aa186a502b98e57b05d266700409d6604edd2c89bdc19fa368d404dc1b5",
+      "size_bytes": 1193
+    }
+  ],
+  "checks_already_passed": {
+    "exact51explicit_plus5mandatory56unique_source_size_SHA_composition": true,
+    "canonical_ML_interpreter_stat_only_matches": true,
+    "both_model_plans_identity_owner3GiB_CPU4_16384context_oneconstructor_1479callbacks": true,
+    "same_model_closed_Edge_smoke_state_b652_and_audit8c95_all7qualifications_and_all10artifactrefs": true,
+    "official78source_and2small_datasetmetadata_size_SHA_unchanged": true,
+    "unchanged_official_run_public_then_jb_evaluate_original_populations_freshcache_order": true,
+    "one_frozen_native_batch4_constructor_backend_no_new_scoring_math": true,
+    "raw_native_retained_before_validation_no_answer_repair": true,
+    "initial_final_full20model_manifest_runtime_owner_official_sources_and_prereqs_authentication_inside_future_owner": true,
+    "13_saved_meaningful_fake_tests_reviewed_without_rerun": true,
+    "primary_BaseException_preserved_through_secondary_evidence_failures": true,
+    "144_unique_small_refs_verified_unchanged": true
+  },
+  "held_finding": {
+    "title": "Successful return crosses finally/context cleanup after final explicit deadline check",
+    "source": "campaign.py",
+    "callback_lines": [
+      367,
+      373,
+      376,
+      390,
+      406
+    ],
+    "whole_lines": [
+      489,
+      661,
+      667,
+      679
+    ],
+    "evidence": "Callback success returns at376 after durable checks367/373, then finally390-406 clears active state and exits Deadline context; line403 latecheck requires primary error. Whole success returns661 after durable_success489, then finally667-679 and Deadline context cleanup run; finally writes only on failure. Therefore explicit successful-return checks are after durable writes but not after finally/context cleanup as requested/described.",
+    "impact": "Watchdog remains active during cleanup and no success-path I/O occurs in this gap; no math/raw/population/authentication blocker was found. This version nevertheless cannot be described as satisfying literal postfinally successful-return checks, so launch clearance is held for correction or an explicitly changed criterion.",
+    "requested_minimum_resolution": "Keep original methods/input/scoring intact; move successful return handling behind required finally/context cleanup, explicitly check complete elapsed budgets there, preserve counts/primary failures on late return, update meaningful tests, freeze new exact source/plan/spec identities and review before execution.",
+    "peer_review": "Independent /root/cpu4_owner_smoke verified same sourceSHA and confirmed same timing gap without execution or payload reads."
+  },
+  "scope": {
+    "source_metadata_hash_AST_and_static_reasoning_only": true,
+    "model_framework_native_harness_or_tests_executed": false,
+    "benchmark_tasks_gold_predictions_or_cache_read": false,
+    "tensor_tokenizer_headers_or_payloads_read": false,
+    "observer_unit_process_network_or_git_calls": false,
+    "source_edits": false
+  },
+  "limits": [
+    "Short real Edge smoke is a prerequisite only and does not establish fullsuite cost or memory fit; current3GiB10000seconds remains an empirical campaign bound.",
+    "No complete benchmark score or actual new campaign admission is established.",
+    "A corrected frozen source requires new exact source/plan/spec hashes; this held receipt is historical and never a launch PASS."
+  ],
+  "review_writing_status": "ALL STOPPED for this initial held version; existing source/plan/spec bytes unchanged."
+}

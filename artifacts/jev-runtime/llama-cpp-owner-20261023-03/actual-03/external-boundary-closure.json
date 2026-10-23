@@ -1,0 +1,153 @@
+{
+  "profile": "decision3-external-unit-terminal-boundary-v1",
+  "selection": {
+    "unit": "jev-d3-llama-cpp-cpu4-20261023-03.service",
+    "nonce": "jev-d3-boundary-6cf01aed9149d3a77afa23119ca14107",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "memory_max_bytes": 2147483648,
+    "runtime_seconds": 7200,
+    "stop_seconds": 3
+  },
+  "invocation_id": "c16541f36a4b4d8593f8865481f023e1",
+  "actor": {
+    "pid": 455228,
+    "start_ticks": 10029355,
+    "pgid": 455228,
+    "sid": 455228,
+    "uid": 1001,
+    "state": "S",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+  },
+  "tracked_cohort": [
+    {
+      "pid": 455228,
+      "start_ticks": 10029355,
+      "pgid": 455228,
+      "sid": 455228,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+    },
+    {
+      "pid": 455235,
+      "start_ticks": 10029373,
+      "pgid": 455228,
+      "sid": 455228,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+    }
+  ],
+  "before_stop": {
+    "Type": "exec",
+    "Restart": "no",
+    "TimeoutStopUSec": "3s",
+    "RuntimeMaxUSec": "2h",
+    "RemainAfterExit": "yes",
+    "MainPID": "455228",
+    "Result": "success",
+    "OOMPolicy": "kill",
+    "ExecMainPID": "455228",
+    "ExecMainCode": "0",
+    "ExecMainStatus": "0",
+    "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "2147483648",
+    "MemorySwapMax": "0",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-boundary-6cf01aed9149d3a77afa23119ca14107",
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "SubState": "running",
+    "InvocationID": "c16541f36a4b4d8593f8865481f023e1"
+  },
+  "closure_mode": "authenticated_stop",
+  "stop_required": true,
+  "already_terminal_identity_samples": [],
+  "already_terminal_identity_sandwich_verified": false,
+  "stop_result": "",
+  "after_stop": {
+    "Type": "exec",
+    "Restart": "no",
+    "TimeoutStopUSec": "3s",
+    "RuntimeMaxUSec": "2h",
+    "RemainAfterExit": "yes",
+    "MainPID": "0",
+    "Result": "success",
+    "OOMPolicy": "kill",
+    "ExecMainPID": "455228",
+    "ExecMainCode": "2",
+    "ExecMainStatus": "15",
+    "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "2147483648",
+    "MemorySwapMax": "0",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-boundary-6cf01aed9149d3a77afa23119ca14107",
+    "LoadState": "loaded",
+    "ActiveState": "inactive",
+    "SubState": "dead",
+    "InvocationID": "c16541f36a4b4d8593f8865481f023e1"
+  },
+  "primary_error": {
+    "phase": "controller",
+    "type": "KeyboardInterrupt",
+    "message": "",
+    "evidence": null,
+    "returncode": null,
+    "stdout": null,
+    "stderr": null,
+    "command_cleanup_errors": null
+  },
+  "closure_errors": [],
+  "post_stop_terminal_verified": true,
+  "cgroup_absent": true,
+  "two_process_scans": [
+    {
+      "matches": [
+        {
+          "pid": 455235,
+          "start_ticks": 10029373,
+          "pgid": 455228,
+          "sid": 455228,
+          "uid": 1001,
+          "state": "Z",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+        }
+      ],
+      "unknown": []
+    },
+    {
+      "matches": [
+        {
+          "pid": 455235,
+          "start_ticks": 10029373,
+          "pgid": 455228,
+          "sid": 455228,
+          "uid": 1001,
+          "state": "Z",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+        }
+      ],
+      "unknown": []
+    }
+  ],
+  "sources_unchanged": true,
+  "whole_unit_exit_confirmed": false,
+  "observed_cgroup_cohort_exit_confirmed": false,
+  "no_escape_enforced": false,
+  "whole_tree_exit_confirmed": false,
+  "continuation_authorized": false,
+  "model_qualified": false,
+  "scope": "Authenticated selected unit and observed cgroup cohort only. The audited fork/setsid/empty-env case is covered; explicit delegated cgroup migration or user-manager requests are not prevented."
+}

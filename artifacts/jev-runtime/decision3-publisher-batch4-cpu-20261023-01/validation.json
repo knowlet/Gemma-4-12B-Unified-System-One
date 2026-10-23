@@ -1,0 +1,90 @@
+{
+  "status": "SOURCE_ONLY_VALIDATION_PASS_NO_RUNTIME_QUALIFICATION",
+  "created_at_utc": "2026-10-23T11:13:23.663414+00:00",
+  "tests": {
+    "framework": "unittest stdlib fake boundaries and static AST only",
+    "count": 10,
+    "exit_code": 0,
+    "run_seconds_reported": 0.249,
+    "claims_actual_CPU_model_execution": false
+  },
+  "ruff_check": {
+    "exit_code": 0,
+    "result": "All checks passed!"
+  },
+  "ruff_format_check": {
+    "exit_code": 0,
+    "result": "3 files already formatted"
+  },
+  "AST_parse": {
+    "source_files": 3,
+    "pass": true
+  },
+  "dry_default": {
+    "exit_code": 0,
+    "no_model_or_plan_or_job_execution": true,
+    "models": [
+      "edge",
+      "lite"
+    ],
+    "native_calls": 2,
+    "questions_per_call": 4,
+    "batch_size": 4,
+    "ctor_count": 1,
+    "whole_seconds": 120,
+    "durable_call_seconds": 20
+  },
+  "models": {
+    "edge": {
+      "small_source_config_full_SHA256_count": 15,
+      "typed_payload_and_large_tokenizer_STAT_ONLY_count": 5,
+      "runtime_small_SHA_count": 21,
+      "runtime_STAT_ONLY_including_large_metadata_count": 7,
+      "plan_sha256": "be0ce6e6c7fb3588218d51f884e182ec10b54b8547fd3840533b60b6ebb01ae7"
+    },
+    "lite": {
+      "small_source_config_full_SHA256_count": 15,
+      "typed_payload_and_large_tokenizer_STAT_ONLY_count": 5,
+      "runtime_small_SHA_count": 21,
+      "runtime_STAT_ONLY_including_large_metadata_count": 7,
+      "plan_sha256": "72b4a083d10fafa494fb83fe3a7c6b690439597cdaeb180e1c8b2e3a93862e14"
+    }
+  },
+  "unchanged_previous_frozen_sources": [
+    {
+      "folder": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-cpu-20261023-01",
+      "verified_frozen_source_entries": 8
+    },
+    {
+      "folder": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-cpu-both-20261023-01",
+      "verified_frozen_source_entries": 5
+    },
+    {
+      "folder": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01",
+      "verified_frozen_source_entries": 8
+    },
+    {
+      "folder": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-lite-cpu-both-20261023-01",
+      "verified_frozen_source_entries": 5
+    }
+  ],
+  "owner05_current_source_freeze_sha256": "b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe",
+  "owner05_current_source_freeze_entries_verified": 8,
+  "owner05_controller_sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e",
+  "owner_unit": "jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+  "scope_limits": {
+    "tensor_header_or_payload_reads": false,
+    "Torch_model_eval_import_or_execution": false,
+    "benchmark_inputs_gold_or_outputs_read_or_copied": false,
+    "active_job_process_cgroup_manager_probes": false,
+    "ComfyUI_actions": false,
+    "downloads": false,
+    "git_actions": false
+  },
+  "actual_native_batch_rows": "UNMEASURED",
+  "actual_CPU_latency": "UNMEASURED",
+  "actual_peak_memory": "UNMEASURED",
+  "browser20_qualification": false,
+  "benchmark_scores_or_batch1_parity_inherited": false,
+  "next_gate": "Freeze all selected source/test/metadata, independent source selection review, root exact plan/spec, active owner authenticated closure, fresh owner admission before any actual probe."
+}

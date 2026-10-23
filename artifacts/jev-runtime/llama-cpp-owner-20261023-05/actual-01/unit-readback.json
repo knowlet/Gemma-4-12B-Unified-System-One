@@ -1,0 +1,84 @@
+{
+  "unit": {
+    "Type": "exec",
+    "Restart": "no",
+    "TimeoutStopUSec": "3s",
+    "RuntimeMaxUSec": "3h",
+    "RemainAfterExit": "yes",
+    "MainPID": "480518",
+    "Result": "success",
+    "OOMPolicy": "kill",
+    "ExecMainPID": "480518",
+    "ExecMainCode": "0",
+    "ExecMainStatus": "0",
+    "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "3221225472",
+    "MemorySwapMax": "0",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-boundary-f1c7e84f1d351382dfe5800b010fa188",
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "SubState": "running",
+    "InvocationID": "d661f632dd874587a1290394da75310b"
+  },
+  "kernel": {
+    "memory.max": "3221225472",
+    "memory.swap.max": "0",
+    "cgroup.type": "domain"
+  },
+  "actor": {
+    "pid": 480518,
+    "start_ticks": 10384262,
+    "pgid": 480518,
+    "sid": 480518,
+    "uid": 1001,
+    "state": "S",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service"
+  },
+  "cohort": {
+    "members": [
+      {
+        "pid": 480518,
+        "start_ticks": 10384262,
+        "pgid": 480518,
+        "sid": 480518,
+        "uid": 1001,
+        "state": "S",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service"
+      }
+    ],
+    "vanished": []
+  },
+  "migration": {
+    "paths": [
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service/cgroup.procs",
+        "uid": 1001,
+        "mode": "0o644",
+        "effective_writable": true
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/cgroup.procs",
+        "uid": 1001,
+        "mode": "0o644",
+        "effective_writable": true
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/cgroup.procs",
+        "uid": 1001,
+        "mode": "0o644",
+        "effective_writable": true
+      }
+    ],
+    "migration_attempted": false,
+    "same_uid_migration_may_be_possible": true,
+    "no_escape_enforced": false,
+    "scope": "Permission observations only; delegated same-UID subtree and user manager remain accessible. No adversarial containment claim."
+  }
+}

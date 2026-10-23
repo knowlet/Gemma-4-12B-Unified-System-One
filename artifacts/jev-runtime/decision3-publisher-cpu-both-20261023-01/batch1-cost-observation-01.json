@@ -1,0 +1,66 @@
+{
+  "profile": "same-live-batch1-CPU-cost-conditional-observation-v1",
+  "observed_at_utc": "2026-10-23T11:17:04.539815+00:00",
+  "exec_session_id": 78352,
+  "unit": "jev-d3-llama-cpp-cpu4-20261023-03.service",
+  "invocation_id": "c16541f36a4b4d8593f8865481f023e1",
+  "source": "actual03 nativejournal; bounded stdlib scalar aggregation only, no requests/answers retained or published",
+  "journal_bytes_consumed": 2158146,
+  "complete_native_returns": 532,
+  "per_suite": {
+    "legacy-public231": {
+      "calls": 231,
+      "sum_seconds": 290.8357358580688,
+      "mean_seconds": 1.2590291595587395,
+      "median_seconds": 0.3165615589969093,
+      "p95_seconds": 5.010206595005002,
+      "question_count_range": [
+        1,
+        1
+      ]
+    },
+    "jevbench-mini": {
+      "calls": 301,
+      "sum_seconds": 2702.2227050231013,
+      "mean_seconds": 8.97748406984419,
+      "median_seconds": 8.403666489000898,
+      "p95_seconds": 14.18036710099841,
+      "question_count_range": [
+        1,
+        20
+      ]
+    }
+  },
+  "coherence_base_first240": {
+    "calls": 240,
+    "sum_seconds": 2099.709510356057,
+    "mean_seconds": 8.74878962648357,
+    "median_seconds": 8.278241671003343,
+    "p95_seconds": 13.542729209002573,
+    "question_count_range": [
+      8,
+      12
+    ]
+  },
+  "coherence_trials_after240": {
+    "calls": 61,
+    "sum_seconds": 602.5131946670444,
+    "mean_seconds": 9.87726548634499,
+    "median_seconds": 8.666729663003935,
+    "p95_seconds": 15.966401106008561,
+    "question_count_range": [
+      1,
+      20
+    ]
+  },
+  "whole_campaign_cap_seconds": 6500,
+  "conservative_remaining_time_upper_bound_seconds": 3506.94155911883,
+  "bound_basis": "Sequential complete native call times alone; all startup/progress/officialscoring/journaling outside these intervals omitted, so actual available time can only be smaller",
+  "remaining_nominal_native_returns": 947,
+  "required_remaining_mean_upper_bound_seconds": 3.7032117836524074,
+  "conditional_projection_only_not_proof_of_future_timeout": true,
+  "actual_campaign_complete": false,
+  "score_claim": null,
+  "payloads_copied": false,
+  "goal_complete": false
+}
