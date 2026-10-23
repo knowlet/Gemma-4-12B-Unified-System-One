@@ -1,0 +1,185 @@
+{
+  "schema": "source-only-browser-readout-delta-feasibility-v1",
+  "status": "CONDITIONAL_RESEARCH_CANDIDATE_NOT_IMPLEMENTED_OR_PROVEN",
+  "scope": "Only three pinned readable Python source files inspected; no model/native/tokenizer tensor bytes, actual diagnostics, official tasks/gold/DOM/responses, feature data, ML imports, NN, tests, host/unit/network or Git accessed/executed. Only this /tmp proposal is written.",
+  "source_refs": {
+    "publisher_runtime": {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_runtime.py",
+      "size_bytes": 95505,
+      "sha256": "adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917"
+    },
+    "publisher_model": {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/modeling_d3.py",
+      "size_bytes": 12079,
+      "sha256": "f8f8db23ff58f1a990ffa24977d744a50e1b4446d02a64c22070967705b6dbef"
+    },
+    "native02_actor": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size_bytes": 30552,
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    }
+  },
+  "motivation_is_not_training_data": {
+    "root_reported_observations_only": "Self-authored actual05/06 actionable state was DONE in both orders; actual06 actor finished six requests and post-auth in19.948s but original owner later refused Comfybusy. This turn did not read those outputs.",
+    "what_it_does_not_prove": "Premature DONE in a tiny invented domain does not prove a code bug, a linearly separable encoder error, complete model inability, or a qualified browser score.",
+    "forbidden_reuse": "Do not train, fit thresholds, select hyperparameters, or author matching examples from the six diagnostic cells. No official benchmark/browser tasks, gold, judge signals or saved evaluation features may enter training."
+  },
+  "source_findings": [
+    {
+      "path_key": "publisher_runtime",
+      "lines": [
+        1013,
+        1072
+      ],
+      "finding": "Plain noncausal PromptEncoder directly invokes decoder layers then language_model.norm. It is a Python wrapper, not the regular backbone.forward path."
+    },
+    {
+      "path_key": "publisher_runtime",
+      "lines": [
+        1178,
+        1186
+      ],
+      "finding": "Tokenizer-derived255 answer codes/token IDs must match checkpoint config. Keep exact codebook/order; semantic choice labels are not permanent readout row IDs."
+    },
+    {
+      "path_key": "publisher_runtime",
+      "lines": [
+        1214,
+        1233
+      ],
+      "finding": "Backbone loads BF16/SDPA on the selected device, readout loads separately, then backbone.eval().requires_grad_(False); noncausal mode uses PromptEncoder."
+    },
+    {
+      "path_key": "publisher_runtime",
+      "lines": [
+        1673,
+        1711
+      ],
+      "finding": "Original last normalized prompt hidden is cast FP32, multiplied by W0.T, unused rows>=optioncount masked to -infinity, temperature-scaled and softmaxed; probabilities cut to actual option count."
+    },
+    {
+      "path_key": "publisher_runtime",
+      "lines": [
+        1996,
+        2020
+      ],
+      "finding": "Prepared runnable question order is chunked by native maxbatch. Rows/counts follow the original question order; permutation_average is a separate optional behavior that remains disabled."
+    },
+    {
+      "path_key": "native02_actor",
+      "lines": [
+        205,
+        212
+      ],
+      "finding": "Selected runtime metadata/source records, manifest, all20 model files and owner sources are authenticated by the reusable helper."
+    },
+    {
+      "path_key": "native02_actor",
+      "lines": [
+        215,
+        260
+      ],
+      "finding": "CPU/BF16/frozen eval backbone, FP32 readout255x1024, batch4, temperature1, no fast/CUDA/permutation and reference kernels are checked."
+    },
+    {
+      "path_key": "native02_actor",
+      "lines": [
+        264,
+        340
+      ],
+      "finding": "One genuine original publisher constructor is loaded only after owner/resource check and full authentication."
+    },
+    {
+      "path_key": "native02_actor",
+      "lines": [
+        649,
+        712
+      ],
+      "finding": "Post-run full auth, hook removal, final evidence, watchdog cleanup and literal elapsed gate precede successful return. A new collector needs its own stricter chunk budget; this native smoke itself has120s whole."
+    }
+  ],
+  "honest_feature_observer": {
+    "candidate_target": "runtime.encoder.language_model.norm, which must be the identical object as runtime.backbone.language_model.norm; require plain text path, CPU, runtime.fast is None and existing frozen-native numerical guards.",
+    "non_mutating_shape": "An observation-only forward hook on that final norm receives output[B,L,1024], copies only output[:, -1, :] after detach to bounded owned CPU FP32 feature memory, and returnsNone. Never retain full[B,L,D] or mutate/replace output, parameters, masks, inputs or logits.",
+    "why_other_taps_wrong": "Hooking backbone.forward may never execute in PromptEncoder path. Last decoder-layer output before final norm is not the actual readout embedding. Input embedding or arbitrary layer pooling is a different model.",
+    "bounded_payload": "For maxbatch4, last pooled FP32 copy is at most4*1024*4=16384B per observed text forward. Actual partial batches1..4 and prompt width must be recorded, never padded with dummy questions.",
+    "mapping": "Join each observed row to prepared.runnable/chunk order, actual head ID, exact ordered candidate labels/count, original request/rendered-prompt/token-sequence hashes and codebook/model/source identities. A feature without this join is not a valid supervised example.",
+    "mandatory_future_NN_proof": "On a separately admitted self-authored chunk, reconstruct masked W0-only probabilities from captured h and original W0, compare all legal probabilities, argmax and labels to the same unmodified native return, with declared tolerances. Prove expected event count, no extra encoder pass, and unchanged W0/backbone identities before/after. Do not infer this proof from source or shape alone.",
+    "inference_mode_caveat": "Feature capture happens inside torch.inference_mode. A detached inference tensor may not be usable as a saved autograd operand. Later head training must materialize normal CPU tensors outside inference_mode from qualified serialized features; this API/detail still requires a tiny owned check.",
+    "source_only_limit": "Availability/behavior of the exact norm Module hook and floating-point replay are unexecuted. No Torch API or model runtime was imported in this investigation."
+  },
+  "readout_equation_and_loss": {
+    "dimensions": {
+      "hidden_D": 1024,
+      "code_rows_K": 255,
+      "legal_options_each_example": "N_i in1..255, mask j>=N_i"
+    },
+    "baseline": "h_i = FP32(final_norm(frozen_encoder(prompt_i))[-1]); z0_ij = dot(h_i,W0_j); p0_i = softmax(mask_legal(z0_i)/T), T=1.",
+    "delta_variant": "zDelta_ij = dot(h_i,W0_j) + dot(h_i,DeltaW_j); pDelta_i = softmax(mask_legal(zDelta_i)/1). y_i is the correct CURRENT option position after that example permutation, not a fixed semantic operation row.",
+    "objective": "L = sum_i w_head(i)*CE(pDelta_i,y_i) + lambda*||DeltaW||_F^2. Optional predeclared KL(p0||pDelta) on independently authored generic anchors only; no benchmark/gold calibration.",
+    "fixed_contract": "Original255-code FP32 readout space, temperature1, original legal-count mask and original label/probability mapping. No constant DONE penalty, hard-coded preferred operation, target lookup, text repair or judge-dependent rule.",
+    "singleton_limit": "N_i=1 yields probability1 and zero discriminative CE signal. The old diagnostic singleton target does not establish target selection skill; new training/heldout data need independent multi-target choices.",
+    "why_not_yet_feasible": "A linear delta can only exploit information already present in h. If needed completion conditions are not represented or not linearly separable, this head cannot repair them. This must be measured on disjoint heldout examples, not assumed."
+  },
+  "CPU_memory_and_time_assessment": {
+    "arithmetic_only_not_measured_fit": true,
+    "FP32_matrix_elements": 261120,
+    "one_matrix_bytes": 1044480,
+    "W0_plus_delta_plus_delta_gradient_plus_Adam_m_v_bytes": 5222400,
+    "optional_effective_W_temp_bytes": 1044480,
+    "normal_feature_minibatch64_bytes": 262144,
+    "feature_storage4096rows_bytes": 16777216,
+    "conclusion": "Head tensors are about5.22MB plus an optional1.04MB effective-weight buffer and small minibatches; cached-feature training can omit the encoder entirely. This does not prove process/cgroup memory fit or elapsed time: Torch imports, optimizer buffers, allocator/file-page cache and artifact authentication are additional.",
+    "encoder_collection_cost": "Encoder loading/forward/auth dominates; full2GiB campaigns already hit cap/reclaim. No source basis for claiming that feature capture or end-to-end chunks fit20s, or that a higher cap is available. Existing3GiB proposal remains unselected.",
+    "no_encoder_backprop": "Never enable backbone training/gradients, build optimizer over backbone, or keep long prompt autograd activations. Train only DeltaW over qualified cached h in a distinct CPU-only trainer.",
+    "no_numerical_identity_assumption": "Separate FP32 matmuls/addition or effective-W construction may change rounding. Even zero-delta identity requires an actual replay check; the trained delta is always a separately named numerical profile."
+  },
+  "immutable_profiles_and_artifacts": {
+    "baseline": "Keep original checkpoint files, runtime code, W0 tensor and frozen backbone unchanged. Do not assign/in-place add delta to runtime.readout or monkeypatch logits/probabilities/PromptEncoder to masquerade as publisher-native.",
+    "derived_profile": "A distinct experimental backend may observe h while the genuine baseline still executes, then compute its separate delta-head prediction. It must return its own model/profile identity and retain baseline-vs-delta evidence; no inheritance of native model/HTTP/browser quality qualification.",
+    "delta_artifact_manifest": [
+      "baseline Edge revision/model identity/manifest/readout file hash",
+      "publisher+collector/trainer/inference source SHA",
+      "DeltaW shape255x1024/dtypeFP32/hash and zero-init rule",
+      "train/dev/holdout DSL manifest hashes and split policy",
+      "committed feature-chunk IDs and full receipt/audit references",
+      "seed/optimizer/hyperparameters/fixed temperature/legal-mask policy",
+      "training checkpoint ancestry and which committed data it consumed"
+    ],
+    "baseline_scores_gate": "Both complete original official baseline suites (public231 and coherence1248, all1479 with required stage/final auth/current original closure) are required before promoting a trained variant or claiming improvement. Incomplete228/231 and old profile scores cannot substitute.",
+    "qualification_separate": "A trained variant needs fresh evaluation on both unchanged suites, then separately realHTTP and original10-task/16-decision browser evaluation with the same common helper/control. CPU feature/train completion alone qualifies none of these."
+  },
+  "independently_authored_DSL_and_holdout": {
+    "authoring_boundary": "Freeze new synthetic workflow/DOM/action-space/goal grammar and unambiguous expected transition/completion predicates before feature collection. Prefer a separate author for heldout cases. Do not reuse lantern/color/switch diagnostic content, its exact prompts, its six outputs or official tasks/judges.",
+    "minimum_content": "Several unrelated multi-step workflow families with all goal requirements, partial completion, genuine completion, stable inability, transient loading/WAIT and multiple operation/target distractors. Keep true DONE and BLOCKED positives; do not teach that DONE is always wrong.",
+    "standard_profile_first": "Start with one declared original standard action contract; introducing FIND_TEXT/new operation grammar concurrently would confound this premature-DONE study and requires its own profile/data/evaluation.",
+    "split": "Split by underlying workflow/template ancestor and page/goal families, not random rows. Keep all states, paraphrases and option permutations of one underlying workflow within the same split. Separate development from a one-shot sealed holdout; no tuning from heldout failures.",
+    "permutations": "Train with predeclared balanced permutations so semantic operations/targets occur at different answer-code positions. For each permutation use its actual re-rendered prompt and y position. Hold out permutation/layout/lexicon combinations and test canonical original order too. Record per-label and per-position confusion, completion false positives and target accuracy, not only aggregate accuracy.",
+    "feature_provenance_role_filter": "Collector/trainer accepts only manifest-listed SELF_AUTHORED_TRAIN or DEV chunks. Official evaluation or diagnostic/holdout feature records must never be ingested into the optimizer. Ambiguous DSL labels are resolved before NN outputs, not dropped after model failure.",
+    "remaining_generalization_blocker": "Synthetic heldout success may still fail live DOM noise, long context, action history and multi-step browser interactions; only unchanged real evaluation can address that."
+  },
+  "tiny_owned_chunk_protocol": {
+    "budget_interpretation": "Treat <20s idle gap as a complete newly selected collection transaction, not20s forward plus uncounted cold load/auth/evidence. Include setup, genuine constructor if needed, pre/post full model+manifest+runtime/source auth, hook cleanup, serialization/fsync and timer cleanup; root must also inspect actual command wall and authenticated external closure. Existing native120s smoke cannot be relabeled a20s collector.",
+    "initial_size": "Begin with one tiny independently authored request of1..4 real heads per owned chunk; no promised chunk count/throughput before measurement. No daemon or resident-model credit across gaps.",
+    "original_guards": "All jobs serial; original owner unit/cap/CPU4/swap0/R and R+fullcap admission plus unchanged Comfy-idle monitor remain. No queue/cache/service action, observer exception, deadline reset or ignored busy check.3GiB is not selected by this proposal.",
+    "pending_then_commit": [
+      "Write PENDING chunk identity and selected source/data manifest before any model access.",
+      "Authenticate all20 model files+manifest+selected runtime/owner/collector sources before capture.",
+      "Observe h and baseline outputs without altering NN; persist bounded feature bytes+ordered head/code/label/input fingerprints and hashes locally.",
+      "Repeat full authentication and runtime/parameter identity checks; remove hook; durable final evidence; literal post-cleanup elapsed check.",
+      "Root independently joins exit0, command wall<20s, original owner completed/sourceunchanged/final-idle/authenticated selected-unit closure and exact chunk hashes. Only then a separate immutable COMMITTED manifest makes features optimizer-eligible."
+    ],
+    "interrupt_semantics": "SIGTERM/timeout/Comfybusy/OOM/unknown/missing final auth/late cleanup/write failure or incomplete original closure leaves the whole chunk uncommitted even when feature bytes exist. Do not rescue a prefix, patch false flags or promote via later absence alone. Resume only from earlier independently committed data/checkpoints.",
+    "training_chunks": "Cached-head optimizer steps can likewise be bounded with atomic pending checkpoints and commit only after declared timer/identity/data-auth/closure checks. Interrupted new checkpoints are diagnostic only; use the last committed ancestor.",
+    "universal_flags": "Selected-unit feature eligibility is not a new no-escape/whole-tree/continuation guarantee; original false universal authority flags stay false.",
+    "hard_blocker": "Cold load+two full hash passes+NN+durable finalization+external closure under20s has not been demonstrated. If it cannot fit, do not omit auth or lengthen the hidden gap; collection must wait for an explicitly larger approved idle window/profile."
+  },
+  "minimum_go_no_go_proofs": [
+    "Owned hook capture reproduces same-call baseline legal probabilities/argmax and confirms exact normalized last hidden without mutating baseline.",
+    "At least one complete <20s chunk is independently committed with genuine final auth and original selected-unit closure; actor-only19.948s or interrupted six-cell output is insufficient.",
+    "Standalone cached-feature CPU head-train sanity check demonstrates finite gradients only on DeltaW, baseline unchanged, small memory and checkpoint provenance within original resource budget.",
+    "Sealed disjoint self-authored heldout shows fewer premature DONE errors without collapsing true DONE/BLOCKED/other operations or targets, across option permutations; no diagnostic/official-data tuning.",
+    "Complete qualified original baseline scores on both official suites precede promotion; derived variant is then evaluated freshly on same suites and separately HTTP/browser."
+  ],
+  "overall_assessment": "Scientifically valid candidate for supervised domain adaptation if these data/provenance/measurement gates hold. Source establishes a plausible observation point and small parameter arithmetic, not that features are trainable/useful, transactions fit, or browser usability improves. No implementation or training is authorized/executed by this artifact."
+}

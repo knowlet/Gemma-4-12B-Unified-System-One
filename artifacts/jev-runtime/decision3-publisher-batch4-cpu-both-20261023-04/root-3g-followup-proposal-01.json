@@ -1,0 +1,246 @@
+{
+  "schema": "source-only-fresh-3GiB-Edge-resource-variant-design-v1",
+  "status": "PROPOSAL_ONLY_NO_NEW_RUNTIME_SOURCES_CREATED_OR_EXECUTED",
+  "artifact_refs": {
+    "owner05_controller": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+      "size_bytes": 40319,
+      "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e"
+    },
+    "owner05_current_freeze": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/source-freeze-02.json",
+      "size_bytes": 2351,
+      "sha256": "b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe"
+    },
+    "native02_actor": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size_bytes": 30552,
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    },
+    "native02_helper": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+      "size_bytes": 7734,
+      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
+    },
+    "native02_plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+      "size_bytes": 30406,
+      "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+    },
+    "native02_smoke_spec": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/root-edge-smoke-command-spec.json",
+      "size_bytes": 10418,
+      "sha256": "168af260c93c9904640045f01c6c295d3eb9a50ccf4792f97de56db2d704856f"
+    },
+    "full04_campaign": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/campaign.py",
+      "size_bytes": 51139,
+      "sha256": "a96dd36184db3c54fab7a7bfa397dbce89ea1737119f33e5cfc53572ffe52747"
+    },
+    "full04_plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/edge-plan.json",
+      "size_bytes": 6963,
+      "sha256": "363f59055ad7c830e3728fed1f6e262534161fbc0273c721060de64d4cd5df96"
+    },
+    "full04_spec": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-edge-both-command-spec-01.json",
+      "size_bytes": 14126,
+      "sha256": "59396734477f90fa1a3f24bec60633796de06f84215597a4e59a5b5d9a274d49"
+    },
+    "old3G_incomplete_aggregate": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-incomplete-actual03-summary.json",
+      "size_bytes": 5687,
+      "sha256": "fc37fa38acfcc81a5b2a4fec111d04f05545fa73dde5cc7e9e87b354035d5b11"
+    },
+    "actual04_2G_projection": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-incomplete-actual04-projection-01.json",
+      "size_bytes": 2918,
+      "sha256": "82ebc470dcbfc56880c1e9ba353a597e0c1d4eca6d8d8df2053bc9983d65ec07"
+    },
+    "actual04_2G_independent_review": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/independent-interrupted-actual04-review-01.json",
+      "size_bytes": 8812,
+      "sha256": "40d6df0bfad7ab1fdedcd5c893d966112260978e5513837ec23ba2248cb10b18"
+    }
+  },
+  "decision": "Prepare a fresh Edge-only3GiB resource variant from durable native02/full04 using unchanged already-reviewed owner05. Test memory-pressure/performance hypothesis; do not revive old native01 or resume any incomplete campaign.",
+  "evidence_and_uncertainty": {
+    "2GiB_actual04": {
+      "root_wall_seconds": 299.0210348940018,
+      "started": 229,
+      "completed": 228,
+      "median_seconds": 0.3321713729892508,
+      "p95_seconds": 5.158544429999893,
+      "max_seconds": 8.35533644699899,
+      "peak_bytes": 2147483648,
+      "max_boundary_events_highest_saved": 528,
+      "OOM_observed_in_retained_samples": false,
+      "runtime_observations_reported": 291,
+      "runtime_observations_retained": 64,
+      "complete_scores": null
+    },
+    "older3GiB_actual03": {
+      "root_wall_seconds": 183.35575167600473,
+      "started": 166,
+      "completed": 165,
+      "latency": {
+        "legacy-public231": {
+          "count": 165,
+          "median_seconds": 0.30484097100270446,
+          "p95_seconds": 5.033867489997647,
+          "max_seconds": 7.981351795009687,
+          "quantile_method": "nearest_rank_p95; ordinary_median",
+          "startup_included": false,
+          "browser_20_second_qualification": false,
+          "unit": "one unchanged complete state/questions callback; native question chunks of up to4"
+        }
+      },
+      "original_whole_unit_exit_confirmed": false,
+      "first_zombie_preserved": true,
+      "later_absence_separate": true,
+      "complete_scores": null
+    },
+    "correction": "Saved old3GiB aggregate says183.355751676s root wall for165completed, not~73s. A separate progress timestamp might cover a shorter interval but is not established here.",
+    "not_causal": "Different prefixes/call shapes, startup/verification phases, cache histories and stage-source versions confound timing. Both sampled p95 tails are already about5s; neither attempt completed the full suites.2GiB max events show boundary pressure, not OOMs or proof that3GiB will speed up."
+  },
+  "proposed_fresh_directories": {
+    "native": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-03",
+    "full": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-05",
+    "availability": "Proposed names only; no directory or runtime source created. Root must ensure unused names before authorized authoring."
+  },
+  "exact_resource_delta": {
+    "owner_controller": "Reuse owner05/controller.py byte-for-byte, SHA81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e; no owner edits.",
+    "current_owner_freeze": "Use source-freeze-02.json b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe; older freeze remains historical.",
+    "unit": {
+      "from": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+      "to": "jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service"
+    },
+    "owner_profile": {
+      "from": "llama-cpp-cpu4-2g-long-command-owned-v1",
+      "to": "llama-cpp-cpu4-3g-long-command-owned-v1"
+    },
+    "memory_max_bytes": {
+      "from": 2147483648,
+      "to": 3221225472
+    },
+    "initial_R_plus_full_cap_bytes": {
+      "from": 28266656564,
+      "to": 29340398388
+    },
+    "reserve_bytes_unchanged": 26119172916,
+    "runtime_host_floor_unchanged": 26119172916,
+    "cpu_affinity_unchanged": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_quota_percent_unchanged": 400,
+    "threads_unchanged": 4,
+    "swap_max_bytes_unchanged": 0,
+    "owner_runtime_seconds_unchanged": 10800,
+    "file_size_max_bytes_unchanged": 268435456,
+    "no_resident_cache_swap_credit": true,
+    "original_boundary_observer_authority_and_Comfy_idle_guards_unchanged": true
+  },
+  "minimal_source_delta": [
+    {
+      "target": "fresh native03/resource_helper.py",
+      "base": "native02/resource_helper.py",
+      "change": "MEMORY_MAX2GiB->3GiB and only matching host-floor diagnostic wording. Keep RESERVE and all helper implementations/Deadline/finalize_state behavior exact."
+    },
+    {
+      "target": "fresh native03/actor.py",
+      "base": "native02/actor.py",
+      "change": "Unique3GiB native profile, unit/owner profile/controller path+SHA, MEMORY_MAX, HELPER_SHA and matching owner/cap diagnostics. load_plan resource/path joins only; selected actor/plan hashes regenerated. Keep model identity and Edge-only selection."
+    },
+    {
+      "target": "fresh native03/source_audit.py",
+      "base": "native02/source_audit.py",
+      "change": "Byte-identical copy; same publisher AST contract and SOURCE_AUDIT_SHA."
+    },
+    {
+      "target": "fresh native03/edge-plan.json",
+      "base": "native02/edge-plan.json",
+      "change": "Retarget only new actor/helper/profile/source freeze and owner05 controller/current freeze records, cap/startup fields and matching resource metadata. Copy all20 model records, manifest and selected runtime metadata without payload reads or byte/stat refresh."
+    },
+    {
+      "target": "fresh full05/campaign.py",
+      "base": "full04/campaign.py",
+      "change": "BATCH directory+actor/freeze/nativeplan SHA; profile()2g->fresh3g; load_plan exact unit/profile/cap/startup checks and diagnostic label only. No scorer, stage, timing or NN implementation edits."
+    },
+    {
+      "target": "fresh full05/edge-plan.json",
+      "base": "full04/edge-plan.json",
+      "change": "New candidate profile/SHA/resource joins and explicit pending fresh3GiB smoke/audit. Preserve all suite identities/counts/stage policy. No old3GiB/2GiB score or qualification inheritance."
+    }
+  ],
+  "functions_or_semantics_must_remain_exact": {
+    "native_NN": [
+      "load_runtime",
+      "validate_runtime",
+      "NativeBatch4Backend",
+      "validate_native",
+      "validate_smoke_answers",
+      "ShapeWitness"
+    ],
+    "native_timing": [
+      "DeadlineScope",
+      "execute20/120 post-cleanup success gates and primary-preserving finalization"
+    ],
+    "campaign_AST": [
+      "DeadlineScope",
+      "check_smoke",
+      "check_audit",
+      "TimedPredictor",
+      "StageCompletions",
+      "run_unchanged_suites",
+      "check_counts",
+      "durable_success",
+      "execute"
+    ],
+    "fixed_math": "Same Edge revisioncab71e6ad3461b8086d51ddb572c656babd63b0b, original BF16 frozen backbone/FP32 255x1024 readout, CPU reference DeltaNet/SDPA, temperature1, maximum native batch4, original question order/padding/context rejection, no CUDA/fast/permutation change.",
+    "fixed_full_scope": "One constructor per fresh campaign; all1479 calls =public231 then coherence1248; same240cases/50relations/1200tests and78officialsource+2datasetmetadata full authentication; context16384/no truncation; fresh output/cache, no partial resume.",
+    "fixed_budgets": "Native shortsmoke call20/whole120 from execute entry including final writes/cleanup. Full callback180/whole10000 including full-auth stage receipts/finalization/cleanup; owner10800. No deadline reset or extension.",
+    "stage_policy": "Full authenticated durable completion receipts for each original suite; same nonce/PID/start/invocation/source binding and original current external closure plus independent root stage audit; an incomplete stage earns no score."
+  },
+  "prerequisites_before_any_new_full_NN": [
+    "Freeze new native03 resource-only sources with normalized-AST proof and bounded source fakes only in a root-opened test window; separate independent source review.",
+    "New exact root smoke selection on unchanged owner05 and source/stat pool; all other jobs terminal, previousowner05/06 original-method current absence, fresh original Comfyidle plus fullR+3GiB gate. No host/unit operations by source author.",
+    "One genuinely fresh3GiB native03 shortsmoke: one constructor,two actual4-row developer requests, durable20s each, root command120s, actual CPU BF16/readout identity and pre/post full20+manifest+runtime auth; original authenticated external closure.",
+    "Fresh independent-native-batch4-synthetic-result-audit-v1 with all7qualification fields true and new exact state/plan/ownerreceipt/rootexecution/spec/closure refs, memory_max3221225472/owner05. Neither old native01 cleanup-gap smoke nor2GiB native02 state/audit/canary is accepted as this prerequisite.",
+    "Fresh full05 source+plan independent review and new exact root selection with actual new smoke state+audit SHA. Generic source preflight and original admission remain separate from source approval."
+  ],
+  "source_pool_budget_blueprint": {
+    "existing_native02_smoke_explicit": 40,
+    "existing_full04_explicit": 54,
+    "automatic_base": 5,
+    "explicit_limit": 58,
+    "unique_total_limit": 64,
+    "minimum_resource_only_one_for_one_retarget_template": {
+      "fresh_native_smoke_explicit": 40,
+      "fresh_native_smoke_unique_total": 45,
+      "fresh_full_explicit": 54,
+      "fresh_full_unique_total": 59
+    },
+    "optional_independent_resource_delta_metadata_headroom": {
+      "smoke_rows_available_to58": 18,
+      "full_rows_available_to58": 4
+    },
+    "rules": "Retarget existing source/profile/prerequisite rows one-for-one rather than union old+new worlds. Replace automatic owner controller at base only, never duplicate it as an explicit row. Keep fresh actor/helper/plan/freeze/independent reviews and all required new smoke refs. Frozen test/docs may remain indirectly pinned by source freeze. If final population changes, count+hash every row and refuse >58 rather than widen owner limits.",
+    "binary_stats": "Same canonical ML interpreter stat-only. No tensor/readout/tokenizer/native binary byte hashing outside owned runtime. No new binary dependency needed.",
+    "actual_specs_or_preflight_created": false
+  },
+  "performance_validation_after_genuine_completion": {
+    "existing_evidence_reused": "Existing per-call own cpu.stat/memory.current/memory.peak/memory.events and startup-excluded callback latencies; no added broad observer.",
+    "comparison": "First report full3GiB scores, counts, source/auth/closure, CPU usage and memory events. Only a matched fixed request prefix/order under same source/runtime and fresh process can support a cap-related timing comparison; report cache/allocator/page-cache ambiguity and request-token shapes as available without altering inputs.",
+    "risks": [
+      "3GiB may retain more framework/file-page/hash cache and reduce reclaim, but this is unproven.",
+      "Memory peak includes file-backed/page-cache/framework activity, not only weights or native forward; max events are not OOMs.",
+      "Extra1GiB does not establish fullcoherence long-context fit; activations and authentication passes may still pressure cap.",
+      "HigherinitialR+3GiB threshold makes admission harder; never lowerR or interfere with Comfy to create a window.",
+      "Full1479 completion and authenticated stage receipts remain mandatory; no quality or numerical parity is inherited from an earlier cap."
+    ]
+  },
+  "authoring_operations_this_turn": "Only bounded small source/aggregate reads and this /tmp JSON write. No existing/frozen edits, new runtime dirs, tests/formatter/source execution, model/native payload access, launch/admission/host/unit/network/Git."
+}

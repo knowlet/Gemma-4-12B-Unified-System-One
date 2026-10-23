@@ -1,0 +1,105 @@
+{
+  "schema": "root-interrupted-invented-canary-aggregate-v1",
+  "created_at_utc": "2026-10-23T15:11:35.194729+00:00",
+  "root_terminal": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-browser-canary-01.json",
+    "sha256": "560f459917afb6e2e0386b057539959c64de67e73aaa44f1e5423d1712f76a8b",
+    "size_bytes": 1721
+  },
+  "owner_receipt": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-05/receipt.json",
+    "sha256": "d0eb55ab352333ab4ed19e30bd087bfbde82757e4a8d851a635be2a15d7bd284",
+    "size_bytes": 80583
+  },
+  "original_closure": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-05/external-boundary-closure.json",
+    "sha256": "008de9d6f756028644671626bf1e1827c2938658fecae52d790acae34d432c98",
+    "size_bytes": 5366
+  },
+  "later_original_absence": {
+    "path": "artifacts/jev-runtime/decision3-browser-domain-canary-20261023-01/root-supplemental-actual05-closure-01.json",
+    "sha256": "534feaa1eff068c9b60fb89594acaa32eb5eedc76dc13c03215d79f1e7afd21a",
+    "size_bytes": 4433
+  },
+  "state_reference_only_not_committed": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-05/browser-canary/state.json",
+    "sha256": "472f05774f6429aa895593f95bd0d70338c082270a72baa1cdc351638f787fad",
+    "size_bytes": 29938
+  },
+  "model_loads": 1,
+  "native_backend_requests_started": 6,
+  "returned_and_validated_native_requests": 6,
+  "fully_completed_request_count": 5,
+  "final_call_status": "native_response_valid_pending_cleanup",
+  "self_authored_case_aggregate_observations": {
+    "actionable": {
+      "native_decision_count": 2,
+      "fully_completed_requests": 2,
+      "observed_operations": {
+        "DONE": 2
+      },
+      "orders_observed": [
+        "original",
+        "reversed"
+      ]
+    },
+    "achieved": {
+      "native_decision_count": 2,
+      "fully_completed_requests": 2,
+      "observed_operations": {
+        "DONE": 2
+      },
+      "orders_observed": [
+        "original",
+        "reversed"
+      ]
+    },
+    "unavailable": {
+      "native_decision_count": 2,
+      "fully_completed_requests": 1,
+      "observed_operations": {
+        "BLOCKED": 2
+      },
+      "orders_observed": [
+        "original",
+        "reversed"
+      ]
+    }
+  },
+  "primary_error": {
+    "phase": "controller",
+    "type": "ValueError",
+    "message": "Original read-only Comfy idle gate",
+    "evidence": {
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "mem_total_bytes": 130595864576,
+        "mem_available_bytes": 30624886784,
+        "comfy_running": 1,
+        "comfy_pending": 0,
+        "comfy_state": "http_busy",
+        "comfy_evidence": {
+          "transport": "HTTP",
+          "comfy_running": 1,
+          "comfy_pending": 0,
+          "http_status": 200,
+          "response_sha256": "99db5a5bcf2c01437c72545ea78a9ec6d48f7d1517d1fa3445854a52bd59d757"
+        }
+      },
+      "required_available_bytes": null,
+      "initial": false
+    },
+    "returncode": null,
+    "stdout": null,
+    "stderr": null,
+    "command_cleanup_errors": null
+  },
+  "completed": false,
+  "final_full_model_source_authentication_completed": false,
+  "qualified_semantic_score": null,
+  "official_browser_score": null,
+  "public231_score": null,
+  "coherenceMINI_score": null,
+  "HTTP_or_Chromium_executed": false,
+  "scope": "Interrupted synthetic observations only; not a qualified semantic result, completion/deadline pass, or any official score. No real tasks/DOM/answers in this projection."
+}
