@@ -1,0 +1,320 @@
+{
+  "schema": "independent-full05-coexist-resource-port-source-review-v1",
+  "result": "CLEAR_SOURCE_RESOURCE_PORT_WITH_LIMITS_PENDING_NEW_NATIVE03_SMOKE_AUDIT_EXACT_SELECTION_AND_FRESH_OWNER07_ADMISSION",
+  "reviewer": "/root/cpu_followup_review",
+  "full05_author": "/root/cpu4_owner_smoke",
+  "scope_and_conflict_disclosure": "This reviewer authored dependency native03 and its root smoke spec. This receipt independently reviews only cpu4-authored full05 campaign/plan/resource-policy port. Dependency native03 is already independently reviewed by helper_boundary_review under a9e1253c...; no self-independent qualification is claimed for native03, its spec or any actual result.",
+  "blocking_findings": [],
+  "artifact_refs": {
+    "freeze": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/freeze.json",
+      "size_bytes": 4095,
+      "sha256": "ed9953b105e645c5e6440c4620e07684b158ffa68249ef62ee8bac9f9e8f7cc1"
+    },
+    "campaign": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/campaign.py",
+      "size_bytes": 51653,
+      "sha256": "11d81a7e5e1010e23870667f936a29bb978e82ee0f5c5a264752ce3ae1cfd017"
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/edge-plan.json",
+      "size_bytes": 6981,
+      "sha256": "4bacfb19400f48425f334ab5f4f930a4063adfdab0ef4fe0276a1db2aa908b3e"
+    },
+    "equivalence": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/equivalence.json",
+      "size_bytes": 4109,
+      "sha256": "76684b65ac7f9781f2c2e7a59595eca4783bfcb8d6af81f9e719ff99301d955d"
+    },
+    "patch": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/campaign.patch",
+      "size_bytes": 3776,
+      "sha256": "2a8023f876468098eb0cdd905fc758fa66cd7be019c6863e143b01d4b08137b7"
+    },
+    "validation": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/validation.json",
+      "size_bytes": 4134,
+      "sha256": "5255b64310538c80e098924a370d69032f0994966561f9a2e9b19b21c2f363a2"
+    },
+    "base_campaign": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/campaign.py",
+      "size_bytes": 51139,
+      "sha256": "a96dd36184db3c54fab7a7bfa397dbce89ea1737119f33e5cfc53572ffe52747"
+    },
+    "base_plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/edge-plan.json",
+      "size_bytes": 6963,
+      "sha256": "363f59055ad7c830e3728fed1f6e262534161fbc0273c721060de64d4cd5df96"
+    },
+    "base_freeze": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/freeze.json",
+      "size_bytes": 4352,
+      "sha256": "6ad7726a720990b3ccdf322510aace93137a14782eb95b656e6a06a80ebced31"
+    },
+    "independent_native_dependency_review": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/independent-source-review-01.json",
+      "size_bytes": 13257,
+      "sha256": "a9e1253cb6b85f9216ec5f9f769c2f8a72a68a112e7f391cfad87215b44f3faf"
+    },
+    "native_plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/edge-plan.json",
+      "size_bytes": 31180,
+      "sha256": "5efcef370b0ae09a78d334d6e00c4a4e39ebbaae9ad18fd822581e8979e1b6e4"
+    },
+    "native_freeze": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/freeze.json",
+      "size_bytes": 4164,
+      "sha256": "a3c5a2adeea6e1b18650d63fd2f1cb09ec5d8cbd0b204f2e1196de4fe234ea1f"
+    }
+  },
+  "freeze_verification": {
+    "rows_excluding_manifest": 12,
+    "bytes_excluding_manifest": 130729,
+    "files_including_manifest": 13,
+    "bytes_including_manifest": 134824,
+    "all_rows_SHA_size_UTF8_mode444_verified": true,
+    "raw_task_gold_response_model_native_payload_files_in_inventory": false,
+    "new_review_outside_frozen_inventory": true
+  },
+  "independent_AST_verification": {
+    "unchanged18_definitions": [
+      "CampaignAbort",
+      "DeadlineScope",
+      "StageCompletions",
+      "TimedPredictor",
+      "check_counts",
+      "durable_stage_json",
+      "durable_success",
+      "execute",
+      "finite_seconds",
+      "latency_distribution",
+      "main",
+      "read_json",
+      "require",
+      "run_unchanged_suites",
+      "selected_small_json",
+      "sha",
+      "stage_metrics",
+      "unique"
+    ],
+    "only_changed4_definitions": [
+      "check_audit",
+      "check_smoke",
+      "load_plan",
+      "profile"
+    ],
+    "only_changed_or_added_dependency_bindings": [
+      "BATCH",
+      "BATCH_ACTOR_SHA",
+      "BATCH_FREEZE_SHA",
+      "HOST_OBSERVATION_POLICY",
+      "NATIVE_PLAN_SHA"
+    ],
+    "all_other_top_level_AST_exact": true,
+    "execute_TimedPredictor_StageCompletions_scorer_calls_timing_finalization_authentication_AST_exact": true,
+    "changed_plan_keys_only": [
+      "batch_actor_sha256",
+      "batch_freeze_sha256",
+      "campaign_sha256",
+      "execution_selection",
+      "host_observation_policy",
+      "native_plan_sha256",
+      "owner_profile",
+      "owner_sources",
+      "owner_unit",
+      "prerequisite",
+      "profile",
+      "score_scope"
+    ],
+    "all_other_plan_fields_exact": true
+  },
+  "verified_source_locations": {
+    "CampaignAbort": [
+      46,
+      47
+    ],
+    "DeadlineScope": [
+      50,
+      66
+    ],
+    "require": [
+      69,
+      71
+    ],
+    "sha": [
+      74,
+      79
+    ],
+    "unique": [
+      82,
+      87
+    ],
+    "read_json": [
+      90,
+      95
+    ],
+    "selected_small_json": [
+      98,
+      105
+    ],
+    "finite_seconds": [
+      108,
+      109
+    ],
+    "profile": [
+      112,
+      113
+    ],
+    "load_plan": [
+      116,
+      173
+    ],
+    "check_smoke": [
+      176,
+      229
+    ],
+    "check_audit": [
+      232,
+      302
+    ],
+    "latency_distribution": [
+      305,
+      321
+    ],
+    "TimedPredictor": [
+      324,
+      483
+    ],
+    "stage_metrics": [
+      486,
+      556
+    ],
+    "durable_stage_json": [
+      559,
+      567
+    ],
+    "StageCompletions": [
+      570,
+      795
+    ],
+    "run_unchanged_suites": [
+      798,
+      849
+    ],
+    "check_counts": [
+      852,
+      861
+    ],
+    "durable_success": [
+      864,
+      882
+    ],
+    "execute": [
+      885,
+      1138
+    ],
+    "main": [
+      1141,
+      1186
+    ]
+  },
+  "checks": [
+    {
+      "id": "resource_native_policy_join",
+      "result": "PASS_SOURCE",
+      "evidence": "Campaign selects exact independently reviewed native03 actor4a08,freezea3c5,plan5efc and exact new owner07 owner_sources. Model and all5selected owner/source stat records copied exactly via Python JSON; unit/profile/policy must match new metadata. ReserveR26119172916, fullR+entire2GiB28266656564,CPU16-19/400percent/swap0 and10800owner unchanged. Old06/source profiles or missing/incorrect host policy reject."
+    },
+    {
+      "id": "new_genuine_smoke_and_audit_HOP",
+      "result": "PASS_SOURCE_ONLY_PENDING_ACTUAL",
+      "evidence": "Before any model load, check_smoke requires native03 profile/plan/model, selected_owner_host_observation_policy exact, one constructor,two native calls/two genuine4-row BF16CPUevents,20durablecall/120whole and final full authentication. check_audit retains closed_real_smoke_result schema, seven exact true qualifications, model/manifest/unit/cap/batch binding and all small artifact SHA refs, adding exact top-level host_observation_policy. State+plan refs must match selected native03 artifacts. Frozen pending record remains null, cannot qualify itself. Owner06 replay parity/old fit/scores cannot satisfy this contract."
+    },
+    {
+      "id": "1479_fresh_unchanged_suites",
+      "result": "PASS_EXACT_AST",
+      "evidence": "run_unchanged_suites calls unchanged public.run_public then official jb.evaluate with fresh output/cache. Exact231public then1248coherence callbacks;240cases,50relations,1200plannedtests. check_counts requires1479started/completed/rawreturns and per-suite231/1248latency counts. Full original contexts/options/order retained through native backend; context16384 rejects without truncation; one constructor and serial concurrency remain."
+    },
+    {
+      "id": "scoring_and_stage_projection",
+      "result": "PASS_EXACT_AST",
+      "evidence": "stage_metrics,StageCompletions,durable_stage_json,durable_success and all suite population/scorer integration code are byte-equivalent AST to frozen full04. Per-stage fully authenticated durable completion proof may be independently root-joined only to this invocation/nonce/process/time and accepted current owner closure. A later-stage failure never makes both suites complete or imports historical scores."
+    },
+    {
+      "id": "timing_and_primary_retention",
+      "result": "PASS_EXACT_AST",
+      "evidence": "TimedPredictor and DeadlineScope/execute unchanged. Complete callback180 includes prepare/native/raw retention/validation/durable progress and postcleanup elapsed refusal; execute-entry10000 includes preflight, final full auth/evidence and watchdog cleanup; owner10800 unchanged. Late/cleanup errors retain primary and demote successful claims under original logic. No browser20latency claim or shortened deadline."
+    },
+    {
+      "id": "prepost_and_stage_source_model_auth",
+      "result": "PASS_EXACT_AST",
+      "evidence": "Unchanged loader and every stage/final authentication cover full20model files+manifest/runtime/owner pins,78official source files+2existing dataset metadata, campaign/plan/native actor/helper/audit/freeze, selected smoke/audit and every small audit artifact ref. External current owner closure still independently required; actor is not its own closure authority."
+    },
+    {
+      "id": "claim_and_payload_boundary",
+      "result": "PASS_SOURCE_LIMITS",
+      "evidence": "README/research/plan/freeze mark source candidate only, no actual model/benchmark/training/HTTP/browser/newfit result. Full05 changes explicit CPU observation compatibility, not math or task population; source checks do not establish harmless coexistence or fit. No current native03 actual values invented into source; root must supply real accepted CLI identities later."
+    }
+  ],
+  "required_actual_audit_ABI": {
+    "schema": "independent-native-batch4-synthetic-result-audit-v1",
+    "review_kind": "closed_real_smoke_result",
+    "required_top_level_host_observation_policy": "comfy-observed-cpu-coexist-v1",
+    "qualification_fields": [
+      "smoke_complete",
+      "external_authenticated_closure",
+      "one_actual_constructor",
+      "two_actual_four_row_events",
+      "durable_call_20s",
+      "whole_command_120s",
+      "final_full_model_and_sources_authenticated"
+    ],
+    "artifact_refs_required": [
+      "state",
+      "plan",
+      "owner_receipt",
+      "root_execution",
+      "spec",
+      "closure_observation"
+    ],
+    "scope": "Only future independently accepted closed owner07/native03 actual may populate exact CLI refs. This source review does not qualify any actual."
+  },
+  "test_evidence": {
+    "attribution": "Author saved bounded fixed-byte source-test/formatter/builder/dry observation; independent reviewer inspected source/hash joins only and ran no tests, imports or target execution",
+    "passed": 30,
+    "elapsed_seconds": 0.537,
+    "Ruff_AST_metadata_builder_dry": "Author PASS",
+    "limits": {
+      "cpu_affinity": [
+        0
+      ],
+      "address_space_bytes": 536870912,
+      "cpu_seconds": 30,
+      "per_command_wall_timeout_seconds": 10,
+      "Ruff_address_space_limit": null
+    },
+    "inherited_timing_stage_control_tests_and_new_HOP_refusals_preserved": true,
+    "all_author_check_processes_terminal": "Author report/saved validation, no reviewer live process probe"
+  },
+  "limits": [
+    "This is independent full05 resource-port source clearance, not root spec/admission or a genuine native/campaign result.",
+    "Native03 dependency authored by this reviewer; its independent source review a9e1 is relied on, not replaced.",
+    "A distinct policy can accept strictly evidenced known HTTPbusy but this proves neither harmless coexistence, continuous host reserve, memory fit nor speed.",
+    "No source, fake, dry or prior owner06/native02/replay result grants new model/HTTP/browser/full benchmark qualification.",
+    "Both complete official baseline suites remain mandatory; fresh1479calls/context and original scorers cannot be reduced.",
+    "Root exact selection must bind real new native03 smoke/state/audit/closure identities before any full05 launch; all original false universal noescape/whole-tree/continuation/model flags remain unchanged."
+  ],
+  "actions": {
+    "only_small_source_aggregate_metadata_reads_and_new_review_write": true,
+    "target_import_or_execution_tests_formatter_dry_planner": false,
+    "actual_smoke_or_campaign_state_raw_tasks_gold_DOM_cache_read": false,
+    "model_tensor_tokenizer_native_binary_bytes_read_or_hashed": false,
+    "host_unit_observer_network_Git_or_source_edits": false
+  },
+  "qualification": {
+    "actual_native03_smoke": false,
+    "actual_full05_campaign": false,
+    "benchmark_scores": null,
+    "model_browser_HTTP_or_training": false
+  },
+  "status": "ALL_REVIEW_ACTIONS_STOPPED"
+}
