@@ -1,0 +1,152 @@
+{
+  "profile": "new-native-batch4-Edge-actual03-incomplete-terminal-summary-v1",
+  "created_at_utc": "2026-10-23T12:03:54.553866+00:00",
+  "terminal_exec_session_id": 6292,
+  "no_live_session_repoll_or_restart": true,
+  "root_exit": 1,
+  "root_wall_seconds": 183.35575167600473,
+  "observed_stop_reason": {
+    "phase": "controller",
+    "type": "ValueError",
+    "message": "Original read-only Comfy idle gate",
+    "evidence": {
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "mem_total_bytes": 130595864576,
+        "mem_available_bytes": 29817741312,
+        "comfy_running": 1,
+        "comfy_pending": 0,
+        "comfy_state": "http_busy",
+        "comfy_evidence": {
+          "transport": "HTTP",
+          "comfy_running": 1,
+          "comfy_pending": 0,
+          "http_status": 200,
+          "response_sha256": "f2232867a921e41aabd89c7f2ff2fedee844886ee397b644f2a51d512d3f947f"
+        }
+      },
+      "required_available_bytes": null,
+      "initial": false
+    },
+    "returncode": null,
+    "stdout": null,
+    "stderr": null,
+    "command_cleanup_errors": null
+  },
+  "final_host_secondary_error": [
+    {
+      "phase": "final_host",
+      "type": "ValueError",
+      "message": "Original read-only Comfy idle gate",
+      "evidence": {
+        "observation": {
+          "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+          "mem_total_bytes": 130595864576,
+          "mem_available_bytes": 29973921792,
+          "comfy_running": 1,
+          "comfy_pending": 0,
+          "comfy_state": "http_busy",
+          "comfy_evidence": {
+            "transport": "HTTP",
+            "comfy_running": 1,
+            "comfy_pending": 0,
+            "http_status": 200,
+            "response_sha256": "f2232867a921e41aabd89c7f2ff2fedee844886ee397b644f2a51d512d3f947f"
+          }
+        },
+        "required_available_bytes": null,
+        "initial": false
+      },
+      "returncode": null,
+      "stdout": null,
+      "stderr": null,
+      "command_cleanup_errors": null
+    }
+  ],
+  "owner_sources_unchanged": true,
+  "Comfy_service_modified": false,
+  "progress": {
+    "stage": "legacy-public231",
+    "started_calls": 166,
+    "completed_calls": 165,
+    "raw_native_returns": 165,
+    "per_call_deadline_seconds": 180,
+    "latencies": {
+      "legacy-public231": {
+        "count": 165,
+        "median_seconds": 0.30484097100270446,
+        "p95_seconds": 5.033867489997647,
+        "max_seconds": 7.981351795009687,
+        "quantile_method": "nearest_rank_p95; ordinary_median",
+        "startup_included": false,
+        "browser_20_second_qualification": false,
+        "unit": "one unchanged complete state/questions callback; native question chunks of up to4"
+      }
+    }
+  },
+  "active_callback_at_stop": {
+    "index": 165,
+    "stage": "legacy-public231",
+    "status": "running"
+  },
+  "progress_source": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-03/both-benchmarks/native-evidence/progress.json",
+    "sha256": "2cc11548b82dbfdcb0bffca0c3ba37bab3947c5d3a84cac15c7cc9435db396fe",
+    "size_bytes": 1666
+  },
+  "actor_state_file_status_is_stale_after_external_SIGTERM": "running is not liveness; terminal controller/original closure and later absence take precedence",
+  "scores_separate": {
+    "Benchmark_Heaven_public231": null,
+    "JevBench_coherence_MINI": null
+  },
+  "final_full_model_and_suite_source_authentication_completed": false,
+  "model_failure_or_full_suite_fit_conclusion": null,
+  "original_closure": {
+    "authenticated_stop": true,
+    "post_stop_terminal_verified": true,
+    "cgroup_absent": true,
+    "whole_unit_exit_confirmed": false,
+    "first_scan_zombie_preserved": [
+      {
+        "pid": 492327,
+        "start_ticks": 10575909,
+        "pgid": 492322,
+        "sid": 492322,
+        "uid": 1001,
+        "state": "Z",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service"
+      }
+    ],
+    "second_scan_empty": true
+  },
+  "later_supplement": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-supplemental-actual03-closure.json",
+    "sha256": "1154763371f5c57e64d33f6076be3b0d72ce3701bd6fc0fea72fe4e2e7520ddd",
+    "size_bytes": 5340
+  },
+  "later_original_host_gate": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-idle-recheck-01.json",
+    "sha256": "58996ffeeff30a941b2b7b7e84a83fd42b4b8c20964b649dda3f695ca7ae8aa5",
+    "size_bytes": 1039
+  },
+  "latest_host_gate_at_that_snapshot_passed": false,
+  "refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/root-execution-batch4-edge-both-03.json",
+      "sha256": "b819be0f478c60bf02d04832f20cf0012fd75a311030a78e3c8686d1d902decb",
+      "size_bytes": 1753
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-03/receipt.json",
+      "sha256": "c14baf4f1b5dac608f50b8a85b79ccdfc3b409940cad6bc056f215caf7a0d336",
+      "size_bytes": 194493
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-03/external-boundary-closure.json",
+      "sha256": "4dbcfb570abbf68007d81b25894bcba1b55c17ae47bd4da454855b4b123de9f4",
+      "size_bytes": 5053
+    }
+  ],
+  "next_model_execution": "Only after original Comfy idle/fullR+3GiB admission and a new fresh owner05 actual04; no cache/resume of incomplete actual03.",
+  "claim_scope": "Incomplete genuine attempt and authenticated selected-unit/observed-cohort closure metadata only; no new complete benchmark score, helper/browser runtime qualification or mutation of original false authority flags."
+}

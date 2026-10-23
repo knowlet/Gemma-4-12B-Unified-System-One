@@ -1,0 +1,513 @@
+{
+  "schema": "independent-qwen-helper-acquisition-actual-metadata-review-v1",
+  "reviewed_at_utc": "2026-10-23T11:48:40.863935+00:00",
+  "reviewer": "/root/cpu_text_helper_route/helper_boundary_review",
+  "verdict": "PASS_COMPLETED_PUBLIC_PACKAGE_STREAM_IDENTITY_AND_AUTHENTICATED_OBSERVED_COHORT_CLOSURE_WITH_LIMITS",
+  "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+  "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "scope": "Completed owner02 actual02 metadata-only audit. Read small receipts/journals/source pins and stat all9downloaded payloads; did not open/read/rehash any downloaded payload, including model/tokenizer/vocab/merges. No network/framework/model/test/observer/service/cgroup/Git/activeactual03 operation.",
+  "package_receipt": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/package-receipt.json",
+    "size_bytes": 7663,
+    "sha256": "fce23ca9ae2e3aa00dc5e412c9c9a06eed3ee53083447cadbeb7a0d7e471638e"
+  },
+  "official_identity_evidence": {
+    "publisher_metadata": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/publisher-model-metadata.json",
+      "size_bytes": 8219,
+      "sha256": "524ffed976ac1ba768ca111598ddd9f5c1a744d4bb615e8c78c7a1f3167c46ed"
+    },
+    "official_resolve_template": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct/resolve/7ae557604adf67be50417f59c2c2f167def9a775/{name}?download=true",
+    "publisher_metadata_model_and_revision_match": true,
+    "license_declared": "apache-2.0",
+    "license_payload_content_not_reopened": true,
+    "hash_semantics": "1LFSmodelSHA256+exactsize;8nonLFSnativeGitblobSHA1(header+exactsize);actualSHA256collectedduringtheverifyingdownloadstream"
+  },
+  "downloads": [
+    {
+      "name": "LICENSE",
+      "size_bytes": 11343,
+      "stream_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+      "publisher_hash_kind": "git_blob_sha1",
+      "publisher_hash": "6634c8cc3133b3848ec74b9f275acaaa1ea618ab",
+      "download_metadata_sha256": "97fab489a4333ac16e58ab7dbd2353ad2362e26e8a5b1d51f21978a3ccad5226"
+    },
+    {
+      "name": "README.md",
+      "size_bytes": 4917,
+      "stream_sha256": "b19c806a904db6dc878a0462e70b551f6b7ac78dfbb88c2eb966ca2b9109ae15",
+      "publisher_hash_kind": "git_blob_sha1",
+      "publisher_hash": "4b8373851d093eb9f3017443f27781c6971eff24",
+      "download_metadata_sha256": "2aa38f9d48495e3df210eba8d0011709a2f0c7dd850da5943cf3a65b5d4b15e5"
+    },
+    {
+      "name": "config.json",
+      "size_bytes": 659,
+      "stream_sha256": "18e18afcaccafade98daf13a54092927904649e1dd4eba8299ab717d5d94ff45",
+      "publisher_hash_kind": "git_blob_sha1",
+      "publisher_hash": "0dbb161213629a23f0fc00ef286e6b1e366d180f",
+      "download_metadata_sha256": "74ec2d129482960cb46e445e6c58c1d7e3d03346cd956d7edd0b159df2946c78"
+    },
+    {
+      "name": "generation_config.json",
+      "size_bytes": 242,
+      "stream_sha256": "e558847a8b4402616f1273797b015104dc266fe4b520056fca88823ba8f8ebe6",
+      "publisher_hash_kind": "git_blob_sha1",
+      "publisher_hash": "dfc11073787daf1b0f9c0f1499487ab5f4c93738",
+      "download_metadata_sha256": "50b94f66ad5031968205bda8586d841b2ff028c7a98860daae40249f745378ae"
+    },
+    {
+      "name": "tokenizer_config.json",
+      "size_bytes": 7305,
+      "stream_sha256": "5b5d4f65d0acd3b2d56a35b56d374a36cbc1c8fa5cf3b3febbbfabf22f359583",
+      "publisher_hash_kind": "git_blob_sha1",
+      "publisher_hash": "07bfe0640cb5a0037f9322287fbfc682806cf672",
+      "download_metadata_sha256": "662e921240785876bf2d3adb4fa9206579978813dbed9c2d3ac5d19707edffe9"
+    },
+    {
+      "name": "merges.txt",
+      "size_bytes": 1671839,
+      "stream_sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+      "publisher_hash_kind": "git_blob_sha1",
+      "publisher_hash": "20024bfe7c83998e9aeaf98a0cd6a2ce6306c2f0",
+      "download_metadata_sha256": "338165f54433ac3ce3b3e4c88e57dba73b08c81f36d850f47573c9dd6956e33a"
+    },
+    {
+      "name": "vocab.json",
+      "size_bytes": 2776833,
+      "stream_sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+      "publisher_hash_kind": "git_blob_sha1",
+      "publisher_hash": "4783fe10ac3adce15ac8f358ef5462739852c569",
+      "download_metadata_sha256": "a526197ed47c808ad28c12e8916803926540f5c9258b21955ec36e4616a85a3d"
+    },
+    {
+      "name": "tokenizer.json",
+      "size_bytes": 7031645,
+      "stream_sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+      "publisher_hash_kind": "git_blob_sha1",
+      "publisher_hash": "443909a61d429dff23010e5bddd28ff530edda00",
+      "download_metadata_sha256": "2c187bb9835b9658b5ae5e45d5efd88633121b1675841eff04de59f65e0a05f0"
+    },
+    {
+      "name": "model.safetensors",
+      "size_bytes": 988097824,
+      "stream_sha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe",
+      "publisher_hash_kind": "lfs_sha256",
+      "publisher_hash": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe",
+      "download_metadata_sha256": "f71750b9f39bd8ba749214fd9c1dac40fee969bf830bbb666ea007bfe2f25ac3"
+    }
+  ],
+  "selected_payload_count": 9,
+  "selected_payload_total_bytes": 999602607,
+  "all9_download_journals_match_package_rows": true,
+  "all9_HTTP200_verified": true,
+  "package_has_only9payloads9journals_and_receipt": true,
+  "payload_stat_only": [
+    {
+      "name": "LICENSE",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/LICENSE",
+      "size_bytes": 11343,
+      "st_dev": 66306,
+      "st_ino": 12983947,
+      "st_mtime_ns": 1792755327625282803,
+      "mode": "0o664",
+      "nlink": 1,
+      "payload_bytes_opened_or_rehashed": false
+    },
+    {
+      "name": "README.md",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/README.md",
+      "size_bytes": 4917,
+      "st_dev": 66306,
+      "st_ino": 12983949,
+      "st_mtime_ns": 1792755327860053085,
+      "mode": "0o664",
+      "nlink": 1,
+      "payload_bytes_opened_or_rehashed": false
+    },
+    {
+      "name": "config.json",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/config.json",
+      "size_bytes": 659,
+      "st_dev": 66306,
+      "st_ino": 12983951,
+      "st_mtime_ns": 1792755328092500926,
+      "mode": "0o664",
+      "nlink": 1,
+      "payload_bytes_opened_or_rehashed": false
+    },
+    {
+      "name": "generation_config.json",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/generation_config.json",
+      "size_bytes": 242,
+      "st_dev": 66306,
+      "st_ino": 12983953,
+      "st_mtime_ns": 1792755328335483472,
+      "mode": "0o664",
+      "nlink": 1,
+      "payload_bytes_opened_or_rehashed": false
+    },
+    {
+      "name": "tokenizer_config.json",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/tokenizer_config.json",
+      "size_bytes": 7305,
+      "st_dev": 66306,
+      "st_ino": 12983955,
+      "st_mtime_ns": 1792755328571924454,
+      "mode": "0o664",
+      "nlink": 1,
+      "payload_bytes_opened_or_rehashed": false
+    },
+    {
+      "name": "merges.txt",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/merges.txt",
+      "size_bytes": 1671839,
+      "st_dev": 66306,
+      "st_ino": 12983957,
+      "st_mtime_ns": 1792755329023049571,
+      "mode": "0o664",
+      "nlink": 1,
+      "payload_bytes_opened_or_rehashed": false
+    },
+    {
+      "name": "vocab.json",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/vocab.json",
+      "size_bytes": 2776833,
+      "st_dev": 66306,
+      "st_ino": 12983959,
+      "st_mtime_ns": 1792755329634047725,
+      "mode": "0o664",
+      "nlink": 1,
+      "payload_bytes_opened_or_rehashed": false
+    },
+    {
+      "name": "tokenizer.json",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/tokenizer.json",
+      "size_bytes": 7031645,
+      "st_dev": 66306,
+      "st_ino": 12983961,
+      "st_mtime_ns": 1792755330809044176,
+      "mode": "0o664",
+      "nlink": 1,
+      "payload_bytes_opened_or_rehashed": false
+    },
+    {
+      "name": "model.safetensors",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/model.safetensors",
+      "size_bytes": 988097824,
+      "st_dev": 66306,
+      "st_ino": 12983963,
+      "st_mtime_ns": 1792755470739627762,
+      "mode": "0o664",
+      "nlink": 1,
+      "payload_bytes_opened_or_rehashed": false
+    }
+  ],
+  "completion": {
+    "root_terminal_record": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/root-execution-qwen-acquisition-01.json",
+      "size_bytes": 963,
+      "sha256": "5e339bf21c74b90dd3e489b7756550b05a1c2e16e8016b9e0083250903a2fa57"
+    },
+    "parent_reported_terminal_session_id": 92555,
+    "root_exit_code": 0,
+    "root_wall_seconds": 145.21882869199908,
+    "actor_entry_exit_code": 0,
+    "command_returncode": 0,
+    "command_elapsed_seconds": 143.6649537350022,
+    "package_elapsed_seconds": 143.44084964200738,
+    "package_deadline_seconds": 600,
+    "owner_outer_runtime_seconds": 7200,
+    "no_primary_or_secondary_errors": true,
+    "package_has_no_partial_failure_or_late_artifacts": true
+  },
+  "owner_authentication_and_closure": {
+    "unit": "jev-d3-llama-cpp-20261023-02.service",
+    "nonce": "jev-d3-boundary-6a43a41125f8943d641b2dee1f9432cc",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "invocation_id": "6785e47b6d30472ead9f3e8aed21a08c",
+    "sealed_config_sha256": "c76486ac52471e15e497558e28999e3bb33c18a2b298af10e2970a39c4fc85f7",
+    "actor_PID_start_ticks": {
+      "pid": 483885,
+      "start_ticks": 10440417
+    },
+    "command_PID_start_ticks": {
+      "pid": 483890,
+      "start_ticks": 10440438
+    },
+    "tracked_cohort_count": 2,
+    "closure_mode": "authenticated_stop",
+    "two_scans_each_matches_empty_unknown_empty": true,
+    "cgroup_absent_recorded": true,
+    "post_stop_not_found_inactive_dead": true,
+    "whole_unit_exit_confirmed": true,
+    "observed_cgroup_cohort_exit_confirmed": true,
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "model_qualified": false,
+    "live_reprobe_performed_by_reviewer": false,
+    "scope": "Authenticated selected unit and observed cgroup cohort only. The audited fork/setsid/empty-env case is covered; explicit delegated cgroup migration or user-manager requests are not prevented."
+  },
+  "resource_evidence": {
+    "reserve_bytes": 26119172916,
+    "full_owner_cap_bytes": 2147483648,
+    "initial_required_available_bytes": 28266656564,
+    "initial_MemAvailable_bytes": 29800345600,
+    "all_successful_postlaunch_host_gate_count": 145,
+    "postlaunch_phase_counts": {
+      "readiness": 3,
+      "preexec": 1,
+      "loop": 141
+    },
+    "postlaunch_sampled_min_MemAvailable_bytes": 29655633920,
+    "postlaunch_sampled_min_margin_vsR_bytes": 3536461004,
+    "runtime_observation_count": 141,
+    "retained_runtime_observations": 64,
+    "recorded_authenticated_peak_memory_bytes": 1046757376,
+    "cgroup_memory_max_bytes": 2147483648,
+    "cgroup_swap_max_bytes": 0,
+    "cpu_max": "100000 100000",
+    "main_thread_affinity_recorded": [
+      0
+    ],
+    "file_limit_bytes": 34359738368,
+    "package_host_final_MemAvailable_bytes": 29775716352,
+    "owner_final_MemAvailable_bytes": 29807550464,
+    "recorded_ComfyUI_gate": "idle0running0pending in initial/final/retained runtime records; no observer call by reviewer",
+    "limits": "Sampled gates/affinity observations, not continuous-time minima or adversarial no-escape/all-thread guarantees; no whole-host swap claim."
+  },
+  "source_pins": {
+    "12sealed_source_refs_match_selected_spec_prior_review": true,
+    "12small_source_SHA256_and_sizes_rechecked": true,
+    "sources_unchanged_in_owner_and_closure": true,
+    "checks": [
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/controller.py",
+        "size_bytes": 38074,
+        "sha256": "2d250d1cbe79bdd179381b766c5b4c9499801f79a61c94d5a15adc16fefffb25",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/root-acquisition-command-spec.json",
+        "size_bytes": 2467,
+        "sha256": "fea2d686bc227ad85d0c3bcaf2147886e695e67b3d187a317462618fe32d67d1",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+        "size_bytes": 21002,
+        "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+        "size_bytes": 38483,
+        "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+        "size_bytes": 2196,
+        "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/acquire.py",
+        "size_bytes": 12455,
+        "sha256": "e5840bf13411098214545cdbeed0e183d5afbf26f5512aa550ad1d3d00fb1f52",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/test_acquire.py",
+        "size_bytes": 5259,
+        "sha256": "833eb816612e504d01331b3d2ef9424723f2664a98bd32b9815cd156a5b31c66",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/README.md",
+        "size_bytes": 3701,
+        "sha256": "36cb0bc9de189c2ea08889628c393dbadb7c6600fb4d7c754d917cab2b4f1cef",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/publisher-model-metadata.json",
+        "size_bytes": 8219,
+        "sha256": "524ffed976ac1ba768ca111598ddd9f5c1a744d4bb615e8c78c7a1f3167c46ed",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/validation.json",
+        "size_bytes": 3275,
+        "sha256": "60615657771f4d4d3b2ac71e06ad615b62bd10b1b2e3e5f867ea7615c89a4a2f",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/source-freeze.json",
+        "size_bytes": 1749,
+        "sha256": "29b9b9ef963b984ba3fd3cfae15ebb31610d4ae5fcb63d61b60a350da0fc4a6b",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      },
+      {
+        "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/independent-source-review.json",
+        "size_bytes": 12659,
+        "sha256": "19937cd250d8584b2a9a20cb32bdda4c677f6fe64a0f9c9f8a076b45b67dbdaf",
+        "scope": "small_source_or_metadata_bytes_only_no_import_execution"
+      }
+    ]
+  },
+  "no_load_or_inference_evidence": {
+    "package_model_loaded": false,
+    "package_helper_qualified": false,
+    "package_browser_score": null,
+    "bootstrap_torch_not_imported": true,
+    "selected_acquirer_top_level_imports": [
+      "argparse",
+      "hashlib",
+      "importlib.util",
+      "json",
+      "os",
+      "resource",
+      "signal",
+      "sys",
+      "time",
+      "urllib.request"
+    ],
+    "selected_acquirer_only_streams_public_files": true,
+    "model_quality_CPUkernel_memoryfit_generation20s_or_browser_qualification": false
+  },
+  "ignored_payload_policy": {
+    "all_payload_paths_under": "artifacts/",
+    "repository_ignore_rule_present": "artifacts/",
+    "Git_commands_or_index_inspection_performed": false,
+    "qualification": "The rule covers these artifact paths; this audit does not claim to have inspected Git index/tracked state. Keep payloads ignored and never force-add or embed them in source/docs/commits."
+  },
+  "limits_and_future_authorization": [
+    "Stream receipts authenticate the exact bytes hashed during acquisition before publication. Current stat-only size/inode metadata does not independently re-establish current payload contents or permanent immutability.",
+    "Future helper load must use a fresh completed immutable root-owned descriptor and its own admitted owner, authenticate actual selected local payload/source/native dependency identities, and establish the external verifier/watchdog/runtime limits before loading.",
+    "The acquisition package has9payloads plus9journals+receipt; frozen helper expects an exact8file ordinary offline snapshot. Select/materialize/authenticate that future snapshot separately rather than passing this19entry package directory directly to its loader or modifying frozen pending metadata.",
+    "Native DSO/import closure, real CPU SDPA/numerics, genuine field generation, actualEOS/strictJSON/whole20s timing and combined-memory qualification remain unperformed.",
+    "Authenticated selected unit and observed cohort closure is supported; no_escape_enforced, whole_tree_exit_confirmed, continuation_authorized and model_qualified remain false.",
+    "A completed download supplies no runtime admission, helper/browser score, hard20s guarantee, cross-model comparison or JevBench result."
+  ],
+  "metadata_refs": {
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/package-receipt.json": {
+      "size_bytes": 7663,
+      "sha256": "fce23ca9ae2e3aa00dc5e412c9c9a06eed3ee53083447cadbeb7a0d7e471638e"
+    },
+    "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/publisher-model-metadata.json": {
+      "size_bytes": 8219,
+      "sha256": "524ffed976ac1ba768ca111598ddd9f5c1a744d4bb615e8c78c7a1f3167c46ed"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/LICENSE.download.json": {
+      "size_bytes": 484,
+      "sha256": "97fab489a4333ac16e58ab7dbd2353ad2362e26e8a5b1d51f21978a3ccad5226"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/README.md.download.json": {
+      "size_bytes": 485,
+      "sha256": "2aa38f9d48495e3df210eba8d0011709a2f0c7dd850da5943cf3a65b5d4b15e5"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/config.json.download.json": {
+      "size_bytes": 486,
+      "sha256": "74ec2d129482960cb46e445e6c58c1d7e3d03346cd956d7edd0b159df2946c78"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/generation_config.json.download.json": {
+      "size_bytes": 498,
+      "sha256": "50b94f66ad5031968205bda8586d841b2ff028c7a98860daae40249f745378ae"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/tokenizer_config.json.download.json": {
+      "size_bytes": 498,
+      "sha256": "662e921240785876bf2d3adb4fa9206579978813dbed9c2d3ac5d19707edffe9"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/merges.txt.download.json": {
+      "size_bytes": 489,
+      "sha256": "338165f54433ac3ce3b3e4c88e57dba73b08c81f36d850f47573c9dd6956e33a"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/vocab.json.download.json": {
+      "size_bytes": 489,
+      "sha256": "a526197ed47c808ad28c12e8916803926540f5c9258b21955ec36e4616a85a3d"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/tokenizer.json.download.json": {
+      "size_bytes": 493,
+      "sha256": "2c187bb9835b9658b5ae5e45d5efd88633121b1675841eff04de59f65e0a05f0"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/model.safetensors.download.json": {
+      "size_bytes": 543,
+      "sha256": "f71750b9f39bd8ba749214fd9c1dac40fee969bf830bbb666ea007bfe2f25ac3"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/root-execution-qwen-acquisition-01.json": {
+      "size_bytes": 963,
+      "sha256": "5e339bf21c74b90dd3e489b7756550b05a1c2e16e8016b9e0083250903a2fa57"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/external-boundary-closure.json": {
+      "size_bytes": 3711,
+      "sha256": "6ac778e5510f3f58142767e2bfd7b491ad03c584b28cde977647f7748f78c236"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/receipt.json": {
+      "size_bytes": 143958,
+      "sha256": "2a262465b04f15c668a92e7e3627eb5995c00a3b7858227c5affa80485f79846"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/sealed-config.json": {
+      "size_bytes": 4883,
+      "sha256": "c76486ac52471e15e497558e28999e3bb33c18a2b298af10e2970a39c4fc85f7"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/admission.json": {
+      "size_bytes": 457,
+      "sha256": "42da7195aede2809d2e7a9dc73e0fbfbe0ee4d785e3e1cd7a4bc4bf98c445547"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/bootstrap-identity.json": {
+      "size_bytes": 1398,
+      "sha256": "ef65ffd2d960a8ab8d363c080f5e9bbfda8d9dabea11e538026212557ed76ebc"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/unit-readback.json": {
+      "size_bytes": 2500,
+      "sha256": "0dad0f72677e1766de927b55a775885c985185b4b92abd56393241c7f70abe32"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/actor-exit.json": {
+      "size_bytes": 2090,
+      "sha256": "afb0b7b0b67ecb27eed111ddcadbf7fe8c38ebdd43ba9cf85f682338b33e3c85"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/command-01-output.json": {
+      "size_bytes": 2400,
+      "sha256": "eca0cf903643cb1d80e5071a5d25bf9ec717f00a86af3ecddc0e863f6067db1b"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/command-01-intent.json": {
+      "size_bytes": 1026,
+      "sha256": "f4a56cc21d6997090e837ef6f1bddf3e56c6106b120a4f92e4c288b3b5d27c78"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/command-01-started.json": {
+      "size_bytes": 625,
+      "sha256": "fcd628bfe43d09845a92057df769a0ea622adc4afb5e3485a76bde9566c1b22b"
+    },
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/launch-intent.json": {
+      "size_bytes": 2846,
+      "sha256": "c9ad03f37f7c33fd2c35185d777c6ebd62c02cf918095b0ad8a4115f85d4f3fe"
+    },
+    "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/root-acquisition-command-spec.json": {
+      "size_bytes": 2467,
+      "sha256": "fea2d686bc227ad85d0c3bcaf2147886e695e67b3d187a317462618fe32d67d1"
+    },
+    "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/root-acquisition-preflight.json": {
+      "size_bytes": 1210,
+      "sha256": "dc5fb1651907bad3a46a46fd693bc5babc27caf715a4a7daa4dad590dadb95f8"
+    },
+    "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/independent-command-selection-review.json": {
+      "size_bytes": 8798,
+      "sha256": "10e2a6744b5602752fe881cee35e71bbaf28a3b223a4d906a17762d142fcda3b"
+    }
+  },
+  "reviewer_actions": {
+    "metadata_and_small_source_reads": true,
+    "payload_stat_only": true,
+    "payload_open_or_rehash": false,
+    "network_or_download": false,
+    "model_Torch_native_import_or_inference": false,
+    "unit_tests": false,
+    "observer_service_cgroup_process_probe": false,
+    "Git": false,
+    "activeactual03": false,
+    "source_or_owner_or_payload_edits": false
+  },
+  "only_new_file": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/independent-actual-review.json",
+  "status": "ALLREVIEWSTOPPED"
+}

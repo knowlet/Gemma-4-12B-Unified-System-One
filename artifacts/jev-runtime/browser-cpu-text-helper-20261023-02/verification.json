@@ -1,0 +1,86 @@
+{
+  "schema": "cpu-text-helper-successor02-verification-v1",
+  "status": "source_only_not_runtime_qualified",
+  "checks": [
+    {
+      "label": "successor_root_binding_fakes",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s artifacts/jev-runtime/browser-cpu-text-helper-20261023-02 -p 'test_root_binding.py' -v",
+      "chunk_id": "65cdd2",
+      "wall_time_seconds": 0.000013552,
+      "exit_code": 0,
+      "original_token_count": 349,
+      "output": "test_ancestor_symlink_cannot_escape_selected_tree (test_root_binding.RootBindingTests.test_ancestor_symlink_cannot_escape_selected_tree) ... ok\ntest_bad_selection_is_refused_before_delegate_or_heavy_import (test_root_binding.RootBindingTests.test_bad_selection_is_refused_before_delegate_or_heavy_import) ... ok\ntest_one_wrong_tree_pin_cannot_be_hidden_by_other_correct_pins (test_root_binding.RootBindingTests.test_one_wrong_tree_pin_cannot_be_hidden_by_other_correct_pins) ... ok\ntest_only_successor_loader_registers_public_factory_runtime (test_root_binding.RootBindingTests.test_only_successor_loader_registers_public_factory_runtime) ... ok\ntest_other_tree_same_suffix_does_not_satisfy_selected_root (test_root_binding.RootBindingTests.test_other_tree_same_suffix_does_not_satisfy_selected_root) ... ok\ntest_pending_payload_dso_owner_and_watchdog_still_refuse (test_root_binding.RootBindingTests.test_pending_payload_dso_owner_and_watchdog_still_refuse) ... ok\ntest_reused_native_and_request_source_are_exactly_hash_bound (test_root_binding.RootBindingTests.test_reused_native_and_request_source_are_exactly_hash_bound) ... ok\ntest_same_selected_tree_complete_critical_pins_pass_metadata (test_root_binding.RootBindingTests.test_same_selected_tree_complete_critical_pins_pass_metadata) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.016s\n\nOK\n"
+    },
+    {
+      "label": "unchanged_frozen01_boundary_fakes",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s artifacts/jev-runtime/browser-cpu-text-helper-20261023-01 -p 'test_helper.py' -v",
+      "chunk_id": "dc1417",
+      "wall_time_seconds": 0.049591709,
+      "exit_code": 0,
+      "original_token_count": 833,
+      "output": "test_cancellation_cannot_publish_candidate (test_helper.ApplicationTests.test_cancellation_cannot_publish_candidate) ... ok\ntest_evidence_failure_is_latched_across_requests (test_helper.ApplicationTests.test_evidence_failure_is_latched_across_requests) ... ok\ntest_late_body_send_is_unknown_and_cannot_be_retracted_or_replaced (test_helper.ApplicationTests.test_late_body_send_is_unknown_and_cannot_be_retracted_or_replaced) ... ok\ntest_late_response_start_never_sends_candidate_body (test_helper.ApplicationTests.test_late_response_start_never_sends_candidate_body) ... ok\ntest_queue_time_is_inside_original_deadline (test_helper.ApplicationTests.test_queue_time_is_inside_original_deadline) ... ok\ntest_retention_time_is_inside_original_deadline (test_helper.ApplicationTests.test_retention_time_is_inside_original_deadline) ... ok\ntest_success_uses_original_message_and_retains_before_publish (test_helper.ApplicationTests.test_success_uses_original_message_and_retains_before_publish) ... ok\ntest_wrong_auth_disconnected_and_invalid_output_refuse (test_helper.ApplicationTests.test_wrong_auth_disconnected_and_invalid_output_refuse) ... ok\ntest_forward_deadline_refuses_and_removes_hook (test_helper.NativeGenerationTests.test_forward_deadline_refuses_and_removes_hook) ... ok\ntest_missing_early_or_overlength_eos_refuses (test_helper.NativeGenerationTests.test_missing_early_or_overlength_eos_refuses) ... ok\ntest_native_contract_and_actual_eos_capture (test_helper.NativeGenerationTests.test_native_contract_and_actual_eos_capture) ... ok\ntest_over_context_refuses_without_generation_or_truncation (test_helper.NativeGenerationTests.test_over_context_refuses_without_generation_or_truncation) ... ok\ntest_all_runtime_origins_and_critical_sources_must_be_pinned (test_helper.ProtocolTests.test_all_runtime_origins_and_critical_sources_must_be_pinned) ... ok\ntest_duplicate_context_key_is_refused (test_helper.ProtocolTests.test_duplicate_context_key_is_refused) ... ok\ntest_journal_is_exclusive_and_hash_checks_drift (test_helper.ProtocolTests.test_journal_is_exclusive_and_hash_checks_drift) ... ok\ntest_json_rejects_duplicates_nonfinite_and_overflow (test_helper.ProtocolTests.test_json_rejects_duplicates_nonfinite_and_overflow) ... ok\ntest_original_messages_are_preserved (test_helper.ProtocolTests.test_original_messages_are_preserved) ... ok\ntest_output_requires_whole_exact_json_and_preserves_string (test_helper.ProtocolTests.test_output_requires_whole_exact_json_and_preserves_string) ... ok\ntest_pending_selection_refuses_before_payload_or_heavy_import (test_helper.ProtocolTests.test_pending_selection_refuses_before_payload_or_heavy_import) ... ok\ntest_production_factory_refuses_arbitrary_fake_runtime (test_helper.ProtocolTests.test_production_factory_refuses_arbitrary_fake_runtime) ... ok\ntest_publisher_native_file_identity_cannot_be_reselected (test_helper.ProtocolTests.test_publisher_native_file_identity_cannot_be_reselected) ... ok\ntest_request_rejects_prompt_or_reasoning_changes (test_helper.ProtocolTests.test_request_rejects_prompt_or_reasoning_changes) ... ok\ntest_wrong_import_origin_refuses_before_heavy_import (test_helper.ProtocolTests.test_wrong_import_origin_refuses_before_heavy_import) ... ok\n\n----------------------------------------------------------------------\nRan 23 tests in 0.046s\n\nOK\n"
+    },
+    {
+      "label": "ruff_check_successor",
+      "command": "ruff check --no-cache artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/test_root_binding.py",
+      "chunk_id": "d4e601",
+      "wall_time_seconds": 0.000029664,
+      "exit_code": 0,
+      "original_token_count": 5,
+      "output": "All checks passed!\n"
+    },
+    {
+      "label": "ruff_format_successor",
+      "command": "ruff format --check --no-cache artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/test_root_binding.py",
+      "chunk_id": "0d7e27",
+      "wall_time_seconds": 0.000056543,
+      "exit_code": 0,
+      "original_token_count": 7,
+      "output": "2 files already formatted\n"
+    },
+    {
+      "label": "successor_dry_default",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py",
+      "chunk_id": "0faa0f",
+      "wall_time_seconds": 0.000028832,
+      "exit_code": 0,
+      "original_token_count": 63,
+      "output": "{\"profile\": \"qwen25-05b-bf16-cpu4-field-text-v1\", \"source_revision\": \"02\", \"status\": \"source_only_not_ready\", \"exact_critical_root_gate\": true, \"model_started\": false, \"server_started\": false, \"external_owner_and_completed_selection_required\": true}\n"
+    }
+  ],
+  "new_regressions": {
+    "count": 8,
+    "elapsed_seconds": 0.016,
+    "scope": "successor exact-root metadata/delegation/public factory and pending-gate fakes"
+  },
+  "reused_boundaries": {
+    "count": 23,
+    "elapsed_seconds": 0.046,
+    "scope": "unchanged frozen01 source fake tests; separate test population"
+  },
+  "finding": "CPUHELPER-FINAL-01",
+  "distinguishing_regression": "The predecessor validate_selection accepts unrelated critical files with the same suffix; successor refuses that exact fake before owner/payload/import delegate. Same selected tree complete pins pass metadata only.",
+  "source_reuse": "Exact frozen01 helper bytes executed after SHA/size verification; no base globals replaced or source edits. Public factory requires successor loader registration.",
+  "independent_final_review": {
+    "status": "pending",
+    "attempt": "Original reviewer followup tool returned agent thread limit reached; root informed.",
+    "author_claims_independent_approval": false
+  },
+  "limits": [
+    "No model/generation/browser/runtime qualification or score",
+    "No hard20s guarantee: blocking forwards require external watchdog; queued ASGI bytes cannot be retracted",
+    "Native DSO/import closure, actual payload files/hashes, completed descriptor and live authenticated owner/controller/watchdog remain pending",
+    "Positive synthetic metadata tests do not verify or open their placeholder paths"
+  ],
+  "not_performed": [
+    "downloads",
+    "model/tokenizer/native-DSO payload reads",
+    "Torch/native dependency/model import",
+    "model load/inference",
+    "browser/network/server/socket",
+    "current owner/active Edge/Lite/ComfyUI source or state action",
+    "closed benchmark case/gold access",
+    "Git mutation"
+  ],
+  "frozen01_changed": false
+}
