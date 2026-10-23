@@ -1,0 +1,83 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03"
+      ],
+      "returncode": 0,
+      "stdout": "3 files reformatted, 2 files left unchanged\n",
+      "stderr": "",
+      "bounded_AS": false
+    },
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03"
+      ],
+      "returncode": 0,
+      "stdout": "5 files left unchanged\n",
+      "stderr": "",
+      "bounded_AS": false
+    },
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03"
+      ],
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "bounded_AS": false
+    },
+    {
+      "argv": [
+        "/usr/bin/python3.12",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/build_plan.py",
+        "--output",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/edge-plan.json"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "bounded_AS": true
+    },
+    {
+      "argv": [
+        "/usr/bin/python3.12",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/test_actor.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "........................\n----------------------------------------------------------------------\nRan 24 tests in 0.635s\n\nOK\n",
+      "bounded_AS": true
+    },
+    {
+      "argv": [
+        "/usr/bin/python3.12",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/actor.py"
+      ],
+      "returncode": 0,
+      "stdout": "{\"status\": \"dry_default_no_model_or_job_execution\", \"models\": [\"edge\"], \"batch_size\": 4, \"ordered_independent_questions\": 4, \"native_calls\": 2, \"constructor_count\": 1, \"owner_unit\": \"jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service\", \"owner_profile\": \"llama-cpp-cpu4-2g-coexist-command-owned-v1\", \"host_observation_policy\": \"comfy-observed-cpu-coexist-v1\", \"memory_max_bytes\": 2147483648, \"startup_available_bytes\": 28266656564, \"whole_seconds\": 120, \"durable_call_seconds\": 20, \"benchmark_or_batch1_score_inherited\": false}\n",
+      "stderr": "",
+      "bounded_AS": true
+    }
+  ],
+  "source_only": true,
+  "test_cpu": 0,
+  "AS_bytes": 536870912,
+  "CPU_seconds": 30,
+  "Ruff_AS_limit": null,
+  "initial_author_preflight_correction": "First metadata-only read refused absent owner07/source-freeze.json before candidate/test execution; corrected builder to actual owner07/freeze.json, originals unchanged",
+  "Torch_model_native_payload_host_unit_network_Git": false
+}
