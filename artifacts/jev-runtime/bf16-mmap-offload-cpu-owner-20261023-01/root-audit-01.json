@@ -1,0 +1,30 @@
+{
+  "scope": "Saved-only audit of pre-Torch refusal; no new unit/model/Comfy operation",
+  "checks": {
+    "controller_original_restored": true,
+    "all6_original_selected_sources_match": true,
+    "no_first_parent_admission_created": true,
+    "no_true_interpreter_identity_created": true,
+    "no_fixture_output_created": true,
+    "bootstrap_not_Torch": true,
+    "authenticated_stop": true,
+    "unit_and_cohort_closed": true,
+    "two_final_scans_empty": true,
+    "initial_2GiB_host_floor_passed": true,
+    "final_host_idle_and_above_reserve": true
+  },
+  "completed": false,
+  "reason": {
+    "phase": "controller",
+    "type": "FileNotFoundError",
+    "message": "[Errno 2] No such file or directory: '/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-mmap-cpu-20261023-01.service/cpuset.cpus.effective'",
+    "evidence": null,
+    "returncode": null,
+    "stdout": null,
+    "stderr": null
+  },
+  "receipt_sha256": "69a5cb12d205e1f44b53673339b325813d739a47932c11a05e3e8535b26f0750",
+  "real_Torch_mechanism_measurement": false,
+  "quality_score": null,
+  "post_run_source_note": "Author temporarily added an unexecuted live-PID patch after actual01 completed, then restored exact original controller/test SHA; all6 original actor input refs match. Actual01 files were not modified."
+}

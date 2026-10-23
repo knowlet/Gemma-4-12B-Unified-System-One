@@ -1,0 +1,85 @@
+{
+  "conclusion": "CLEAR for a single tiny CPU mechanism attempt using the exact frozen owner02, actor and selection. This receipt is source-review evidence only.",
+  "findings": [
+    "Fresh unit02 and exact reviewed actor/selection are required. Default dry has no authority or actor invocation.",
+    "Original immutable boundary7a50, observerfd97 and authoritya244 remain exact. Memory2GiB, swap0, runtime30s, stop3s, CPUQuota100%, core0, FD512 and file8MiB remain selected, with original readbacks.",
+    "Initial host gate remains original R plus2GiB; subsequent gates retain original R and Comfy-idle semantics. This tiny owner does not alter Q95 readiness.",
+    "Both interpreter stages remain live through pre-Torch admission, preserving original PID/start/session/cgroup/uid and exact executable, argv, cwd, flags and source pins.",
+    "CPUQuota kernel cpu.max remains independently verified. CPUAffinity0 replaces the unavailable delegated cpuset requirement, using stable-identity sched_getaffinity/proc/sched_getaffinity reads of main CPU0 plus bootstrap self-observation. Missing cpuset is recorded honestly; no all-thread lifetime or prevention of later affinity widening is claimed.",
+    "Actor entry exit evidence is distinct from wrapper termination. Success requires preclose live originalMainPID, original close mode authenticated_stop with originalMainPID in before_stop, and closure completion before the shared monotonic five-second fallback125 deadline. Already-terminal reconciliation or late closure cannot report completed.",
+    "Cleanup remains inside finally, before final source/host checks, preserving primary and secondary errors. TimeoutExpired byte output is replacement-decoded and bounded for JSON evidence.",
+    "Final completed requires actor mechanism success, final exact source/stat and host gates, and authenticated whole-unit plus observed-cgroup-cohort closure. Full-tree claim stays false."
+  ],
+  "limits": [
+    "Source review and saved stub tests do not establish actual operational success; kernel/observer/runtime evidence must come from the separate attempt.",
+    "Only tiny CPU storage/hook/LoRA mechanisms are in scope. No large-model, GPU transfer, 12B capacity,20s,Q95, numerical quality or benchmark qualification.",
+    "Main-thread CPU affinity is observed rather than enforced through a delegated cpuset; later widening and all-thread lifetime are explicitly unsupported.",
+    "The fixed boundary qualifies only the authenticated selected unit and observed cohort; no full process-tree or escape-prevention claim.",
+    "Original Q95 floor remains73958271732 bytes."
+  ],
+  "must_fix": [],
+  "review_evidence": {
+    "author_confirmed_source_and_metadata_frozen": true,
+    "binary_payloads_read": false,
+    "binary_stat_only_checked": 5,
+    "distinct_small_source_bytes_rehashed": 28,
+    "new_tests_source_read": true,
+    "owner01_to_owner02_complete_source_diff_read": true,
+    "saved_ruff": "check and format PASS",
+    "saved_stdlib_tests": "15 PASS in 0.014 s; saved validation reviewed, not rerun"
+  },
+  "reviewed_at_utc": "2026-10-22T23:50:12.844830+00:00",
+  "reviewer": "independent peer /root/q95_owner05_review",
+  "schema": "bf16-mmap-cpu-owner-independent-review-v2",
+  "scope": "Source-only review of exact owner02 and saved pure stdlib evidence. Reviewer starts no unit, observer, HTTP, Torch, mmap, model or Comfy operation.",
+  "sources": {
+    "actor": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/fixture.py",
+      "sha256": "d86ff0144a22e68f2399b1c0ed8c416ceab14ae892b7c27a9acba1f059844185",
+      "size_bytes": 26546
+    },
+    "actor_selection": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/selection.json",
+      "sha256": "b03b26563fbf4da2847b475481aa9fd9258d885644ad492ff8c36633b278c09d",
+      "size_bytes": 7518
+    },
+    "authorities": {
+      "authority": {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+        "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+        "size_bytes": 2196
+      },
+      "boundary": {
+        "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+        "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+        "size_bytes": 21002
+      },
+      "observer": {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+        "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+        "size_bytes": 38483
+      }
+    },
+    "entry": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/controller.py",
+      "sha256": "0f12798ddd700848db6699cc57a3f21c53e5e3459610768a373aa0634a99c687",
+      "size_bytes": 29935
+    },
+    "source_freeze": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/source-freeze.json",
+      "sha256": "a2c1edbd16fe42fcb45528da3bd34112476f18e346a34e7a5f7ecaf163770385",
+      "size_bytes": 3881
+    },
+    "static_validation": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/static-validation.json",
+      "sha256": "e854f487dbd58754d21a8c694d90c4ef9d9a26334e9bfa94c13e1bac63efba4a",
+      "size_bytes": 4760
+    },
+    "test": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/test_controller.py",
+      "sha256": "0941fb2bf83aa94a22897d56f7987be34faf1fad717a5b74819567ae0e95d566",
+      "size_bytes": 14321
+    }
+  },
+  "status": "CLEAR"
+}

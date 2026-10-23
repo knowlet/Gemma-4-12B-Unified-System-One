@@ -1,0 +1,17 @@
+{
+  "exact_production_changes": [
+    "Unit suffix02\u219203",
+    "Limit line regex final $\u2192\\s*$; soft/hard values and unit remain exact"
+  ],
+  "input_lifetime": "After this source freeze, preparation agent stops all writes until root returns runtime status.",
+  "other_controls": "All affinity/quota/host/2GiB/30s/stop/source/closure/hold-deadline gates unchanged.",
+  "parent_entry": {
+    "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/controller.py",
+    "sha256": "0f12798ddd700848db6699cc57a3f21c53e5e3459610768a373aa0634a99c687",
+    "size_bytes": 29935
+  },
+  "regression": "Full properties path accepts aligned Linux lines with trailing spaces; rejects changed hard core limit unlimited.",
+  "root_reported_failure": "Owner02 actual01 refused preTorch because exact process-limit regex rejected Linux trailing whitespace after units;own closure PASS.",
+  "schema": "bf16-mmap-cpu-owner03-narrow-diff-v1",
+  "scope": "No runtime operations by preparation agent;16 purestdlib tests only."
+}

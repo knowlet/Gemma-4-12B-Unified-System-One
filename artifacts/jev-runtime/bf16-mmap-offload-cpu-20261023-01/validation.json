@@ -1,0 +1,69 @@
+{
+  "actor_run": false,
+  "entry": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/fixture.py",
+    "sha256": "d86ff0144a22e68f2399b1c0ed8c416ceab14ae892b7c27a9acba1f059844185",
+    "size_bytes": 26546
+  },
+  "final_query_guard": "Any recorded real CUDA availability query error refuses final success, even if a dependency swallowed its exception.",
+  "historical_static_output": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/static-tests-01.txt",
+    "sha256": "39ac190120a891c10cabf138a07d6e08ecf39cbafa721afc42ffc4dc76b47fc3",
+    "size_bytes": 1245
+  },
+  "large_model_runtime_or_quality_qualified": false,
+  "limitations": [
+    "CPU same-device hooks only; no GPU transfer or UMA measurement",
+    "No 12B,8192 context,20s,N3,Q95,browser or benchmark qualification",
+    "CUDA guard begins after Torch import and does not monitor all native calls",
+    "Native binary identity is stat-only, not full-runtime integrity",
+    "Controlled body failure records unsafe automatic post-forward behavior; explicit detach is separate",
+    "PEFT phase uses the previously offloaded and detached model; no silent retie"
+  ],
+  "lint": {
+    "exit_code": 0,
+    "limits": "CPU0,1 thread,CPU30s,timeout45s,core0",
+    "result": "All checks passed",
+    "tool": "repo Ruff"
+  },
+  "parent_owned_intended_limits": {
+    "admission_and_closure": "separate reviewed owner controller; not performed by source preparer",
+    "cpu_count": 1,
+    "memory_max_bytes": 2147483648,
+    "runtime_seconds": 30
+  },
+  "profile": "bf16-mmap-offload-cpu-fixture-v1",
+  "selection": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/selection.json",
+    "sha256": "b03b26563fbf4da2847b475481aa9fd9258d885644ad492ff8c36633b278c09d",
+    "size_bytes": 7518
+  },
+  "selection_check": {
+    "binary_payloads_hashed": false,
+    "binary_stat_only_refs": 5,
+    "passed": true,
+    "small_source_refs": 23
+  },
+  "static_tests": {
+    "exit_code": 0,
+    "failed": 0,
+    "limits": "taskset CPU0, RLIMIT_CPU30s, RLIMIT_AS1GiB, timeout45s, core0",
+    "output": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/static-tests-02.txt",
+      "sha256": "258a2774d1b42df8f2e418b1c7c5878856e9dba08286f2190436ddd2010bd06e",
+      "size_bytes": 1245
+    },
+    "passed": 9,
+    "runtime": "repo .venv Python -S -B; stdlib AST and stub boundary tests only",
+    "subprocess_wall_seconds": 0.2777624399968772,
+    "unittest_seconds": 0.084
+  },
+  "status": "SOURCE_PREPARED_ACTOR_NOT_RUN",
+  "tensor_mmap_during_preparation": false,
+  "test_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/test_static.py",
+    "sha256": "f1c131490b262381e2dda7f318a887d9801981cefe1fbf14bc62e6ca58622be2",
+    "size_bytes": 8540
+  },
+  "torch_imported_during_preparation": false
+}

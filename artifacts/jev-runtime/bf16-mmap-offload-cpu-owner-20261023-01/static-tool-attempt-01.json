@@ -1,0 +1,19 @@
+{
+  "argv": [
+    ".venv/bin/ruff",
+    "check",
+    "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/controller.py",
+    "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/test_controller.py"
+  ],
+  "classification": "Static-tool virtual-address limit failure; apply1GiB only to pure stdlib tests, run Ruff with default inherited address-space limits; preserve this attempt.",
+  "limits": {
+    "CPU_seconds": 30,
+    "core_bytes": 0,
+    "inherited_AS_bytes": 1073741824,
+    "wall_seconds": 45
+  },
+  "returncode": -6,
+  "schema": "bf16-mmap-cpu-owner-static-tool-attempt-v1",
+  "scope": "No actor/unit/Torch/observer was run",
+  "stderr": "memory allocation of 1520 bytes failed\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+}

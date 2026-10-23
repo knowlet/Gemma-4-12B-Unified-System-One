@@ -1,0 +1,140 @@
+{
+  "additional_document_and_semantic_source_sha256": {
+    "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/README.md": "6685ad44de183094ea5dae4d229365109e721484ee260636983b3b96f8d609cf",
+    "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/fixture.py": "d86ff0144a22e68f2399b1c0ed8c416ceab14ae892b7c27a9acba1f059844185",
+    "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/independent-review-02.json": "eb3f4e8f92ddb41af9806e97d607ff4193c9088263637ad99e2d8d4aa8e46fdb",
+    "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/selection.json": "b03b26563fbf4da2847b475481aa9fd9258d885644ad492ff8c36633b278c09d",
+    "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/validation.json": "01a78d613cf3cd6dd786042e2b058dddb6ea0df6ef7d7c50b0df48d679a49b09",
+    "artifacts/jev-runtime/overlay/peft/tuners/tuners_utils.py": "ca8127d9108557c965d0870b3b0452daddc3e88ec9eaba2014b02296cfc3671f",
+    "docs/validation/2026-10-23/bf16-mmap-offload-cpu-results.md": "8b471f241218d56f5adb34a58891a32f5ef8162cd17faac6aa07921509bfb988"
+  },
+  "audited_at_utc": "2026-10-22T23:59:21.781600+00:00",
+  "exception": {
+    "automatic_post_forward_safe": false,
+    "explicit_cleanup_secondary_error": false,
+    "explicit_detach_restores_all_5_CPU": true,
+    "original_BodyError_preserved": true,
+    "residual_before_explicit_detach": {
+      "CPU": [
+        "proj.base_layer.weight"
+      ],
+      "meta": [
+        "embed.weight",
+        "head.weight",
+        "proj.lora_A.default.weight",
+        "proj.lora_B.default.weight"
+      ]
+    }
+  },
+  "execution": {
+    "CUDA_initialized_final": false,
+    "CUDA_queries_actual_False_or_0": true,
+    "CUDA_readonly_query_counts": {
+      "torch.cuda.device_count": 14,
+      "torch.cuda.is_available": 16
+    },
+    "CUDA_scope_limit": "Installed after torch import; that import interval and unwrapped native calls are not monitored. Real availability queries require False/0. Own operations use explicit CPU devices.",
+    "actor_elapsed_seconds": 13.738226560002659,
+    "actor_peak_RSS_bytes": 915947520,
+    "authenticated_preclose_memcg_peak_bytes": 733605888,
+    "blocked_CUDA_work_attempts": 0,
+    "controller_exit_code": 0,
+    "controller_wall_seconds": 14.927579590999812,
+    "memory_accounting_limit": "RSS and memcg charge are different measurements; their difference does not establish large-model memory cost.",
+    "retained_including_initial_final_samples": 66,
+    "retained_only_MemAvailable_min_bytes": 28244250624,
+    "retained_runtime_host_samples": 64,
+    "retention_limit": "First63 plus one latest runtime sample,64 retained total; minimum is over retained samples only, not all192.",
+    "runtime_host_observations_recorded": 192,
+    "saved_closure": "authenticated selected unit stopped, cgroup absent, observed cohort exit confirmed; no full-tree/no-escape claim"
+  },
+  "limitations": [
+    "CPU same-device tiny module.forward mechanics only; no GPU transfer or UMA result.",
+    "No 12B loading,8192 context,20s workload,N3/Q95,browser usefulness or quality/benchmark score qualification.",
+    "Positive numerical parity does not preserve parameter object tie, requires_grad flags or version-counter availability."
+  ],
+  "mmap_external_state": {
+    "LoRA_external_map_refs": 5,
+    "all_external_map_refs_true_and_pointer_alias_retained": true,
+    "auditor_tensor_payload_opened_or_hashed": false,
+    "base_external_map_refs": 3,
+    "file_integrity": "Actor recorded matching generated/mmap hash and ownfile_integrity_final=true; auditor checked stat identity, not payload hash.",
+    "independent_inode_device_size_and_pointer_offset_checks_passed": true,
+    "mapping_permissions": "rw-p",
+    "own_generated_bytes": 232,
+    "read_only_limit": "rw-p private writable/COW mapping; chmod0444 and saved unchanged file hash do not make tensors immutable.",
+    "recorded_file_sha256": "57b36a4888b4a6430d87c062b5082b800a6971134867fa2cfada5207fd4c6404",
+    "same_object_and_pointer_after_context_close": true,
+    "storage_sizes_bytes": {
+      "embed_head": 64,
+      "proj": 32
+    },
+    "tensor_file_offsets": {
+      "embed": 136,
+      "head": 136,
+      "proj": 200
+    }
+  },
+  "numerical": {
+    "actual_offload_assertions": "Pinned actor source and successful completed path require two exact torch.equal base forwards, two LoRA forwards, disabled baseline equality and re-enabled equality. Saved two_forwards_equal=true for both. Per-call raw offload outputs are not persisted, so those comparisons are source-and-success-backed assertion evidence rather than an independent replay.",
+    "all_recorded_original_base_bodies_cpu_mapped_pointer_and_frozen": true,
+    "baseline_values_exact": 24,
+    "enabled_values_exact": 24,
+    "independent_stdlib_recomputation": "BF16 round-to-nearest-even on exact dyadic small float32 sums, from checked fixture constants; ids0,2,5, embed[j]=j/32, projection=I/2, LoRA A=.125 B=.25 scale1. No tensor file read.",
+    "lora_AB_not_in_original_body_trace": "Their hook refs/parameter snapshots and numerical assertions are evidence; no direct A/B body trace is claimed.",
+    "maximum_absolute_change": 0.6171875,
+    "trace_count": 29,
+    "trace_partition": "0-2 initial baseline;3-8 two base offload;9-14 initial LoRA on/off;15-20 two LoRA offload;21-26 offloaded off/on;27-28 controlled embed/proj failure prefix.",
+    "values_changed": 24
+  },
+  "parameter_semantics": {
+    "LoRA_uses_nonfresh_detached_model_without_retie": true,
+    "adapter_dtype": "Both actual LoRA A/B float32; base mapped weights BF16.",
+    "full_state_preserving_or_original_Q95_compatible": false,
+    "id_reuse_limit": "id() addresses can be reused across non-overlapping lifetimes; equal IDs across different trace times do not prove tied objects.",
+    "object_tie_after_base_detach": false,
+    "object_tie_before": true,
+    "requires_grad": "Saved LoRA_before_offload already has both A/B requires_grad=true (and remains true through final snapshots); base weights stay false. False-to-true is source-backed inference from model.requires_grad_(False) then disable_adapter exit -> enable_adapters -> set_adapter default inference_mode=False. No paired pre-context snapshot exists. No gradient computation or training is inferred from these flags.",
+    "storage_alias_after_detach": true,
+    "version_counters": "CPU base counters0 and LoRA counters3; after inference forwards all offloaded meta parameters report no version counter; explicit detach restores CPU0/3. This is replacement/lifetime behavior, not unchanged parameter identity or version qualification."
+  },
+  "reviewer": "/root/s1_find_v2_source_review",
+  "saved_file_sha256": {
+    "actual-01/actor-exit.json": "79f468b8b8804f541613c2d899c65853df07b66dd2701e35f15432ae9877712c",
+    "actual-01/actor.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual-01/actor.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual-01/admission.json": "f7ae7469881f2f4e09a7ebe6ee1abdbef8b465fa02d31420b95381721bb29189",
+    "actual-01/bootstrap-identity.json": "a86b16fc3a9569ec3be1cac889a754316a571e7c4441160b539d25961ce2d513",
+    "actual-01/exec-admission.json": "f7ae7469881f2f4e09a7ebe6ee1abdbef8b465fa02d31420b95381721bb29189",
+    "actual-01/exec-identity.json": "c80d75fe812d3b858bc9a0905b245ebbb5404d5ba07cb917ba97b911501fcdbd",
+    "actual-01/external-boundary-closure.json": "9bed6b98324ad4a7d7027a8fac595a60c7b606168af2cbd67535156e47b0bd85",
+    "actual-01/fixture/intent.json": "d7c873d7dec8351f54774c03130feb6e32694274b44c3e1fc6fc45414c22b59d",
+    "actual-01/fixture/receipt.json": "5cc515f84eece980631f4c06b2ddf0d7ddbac08c852f9b958ec3631f7da44240",
+    "actual-01/launch-intent.json": "5364c5c11404af61dc80f975e8a73b75205e0b1539276a3f63064ca5cd9db0c8",
+    "actual-01/receipt.json": "dd012a37e66fa109e7ad901e11527d8744dc5c73903aa4cdab10b36f991dad1f",
+    "actual-01/sealed-config.json": "1e0d17674b3589bd3fd2aa050c6110560f181036d8fce6b11afe43cf2277e96d",
+    "actual-01/unit-readback.json": "29bed855d0c09d483a11d18873cb4e9f61c813879883a5a2fd7b4c27f0e884bb",
+    "controller.py": "5513239b655cfe7adf9b8f73181e853bf6e13c78eb0201622c08e841bfe7349b",
+    "independent-owner-result-audit.json": "71372c46cb01e38edabd7b78d427a2d636f1a2f9a588b1fb6f858d2bd326e8dc",
+    "independent-review.json": "c7064c9ff115c49132b28c082fd17938f16fd6036529248c46a297a274dedc44",
+    "narrow-diff.json": "152165dfb96518779f9d3d04013af51c033e5ba765083a8dde8173161b7b5ee0",
+    "root-execution-01.json": "24da1218c6734280c91ac5a1ac1c7cc1c33b14292d747e33d33e672c1f9f9259",
+    "source-freeze.json": "aa64a9e21e546accde21f01939400aa4eb217f06da67b8be044c4e0f3719e560",
+    "static-validation.json": "0a71d02658b95623f193661e3975d7416651355023368b73a4f1235e611f8417",
+    "test_controller.py": "306e64e5ee63cc781e701290c3ad48084eb7e12ff49e26161d118c40b575a844"
+  },
+  "schema": "bf16-mmap-cpu-independent-saved-result-audit-v1",
+  "scope": "Saved-only stdlib audit; no framework import, actor/service/HTTP operation or tensor payload read. New metadata only; actual inputs unchanged.",
+  "source_integrity": {
+    "actor_refs": 23,
+    "binary_stat_only_refs_verified": 5,
+    "complete_native_runtime_qualified": false,
+    "controller_refs": 6,
+    "entry_sha256": "d86ff0144a22e68f2399b1c0ed8c416ceab14ae892b7c27a9acba1f059844185",
+    "sealed_config_and_embedded_receipt_and_closure_joins_verified": true,
+    "selected_distinct_small_refs_verified": 28,
+    "selected_ref_union_sha256": "4f976e4236db79749f7fc5751b38ae86ff51807e2b68fa3334ef7e31d360dce4",
+    "selection_sha256": "b03b26563fbf4da2847b475481aa9fd9258d885644ad492ff8c36633b278c09d"
+  },
+  "status": "PASS_WITH_OBSERVED_PARAMETER_STATE_CHANGES"
+}

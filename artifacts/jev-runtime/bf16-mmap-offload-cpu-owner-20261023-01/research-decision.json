@@ -1,0 +1,46 @@
+{
+  "authorities": [
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5"
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45"
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727"
+    }
+  ],
+  "base_head": "6ce3b3c154fbb301a17328057a7e01714eeb96f3",
+  "decision": "Reuse immutable terminal owner and original read-only observer in a small stdlib controller; no boundary or observer changes, no general scheduling framework.",
+  "limits": [
+    "No actual unit,observerHTTP,Torch,model,mmap orComfy action during preparation.",
+    "Tiny trueCPU mechanism only; no12B/GPU/20second or fullruntime qualification.",
+    "Only selected exactnonce/Invocation unit is closable; ambiguous/foreign units are refused."
+  ],
+  "protocol": "Stdlib bootstrap saves PID/start and blocks. Parent checks original boundary/kernel/properties/idlehost, permits exec of fixed ComfyUI Python. SamePID postexec stage saves actual interpreter identity and blocks for parent verification, then runpy actor and bounded postreceipt hold while parent closes exactunit.",
+  "resource_contract": {
+    "AllowedCPUs": "0",
+    "CPUQuota": "100%",
+    "LimitCORE": "0",
+    "LimitFSIZE": "8388608",
+    "LimitNOFILE": "512",
+    "R": "max(24GiB,ceil(MemTotal/5))",
+    "RemainAfterExit": "yes",
+    "host_initial": "R+2GiB",
+    "host_runtime": "R",
+    "memory_bytes": 2147483648,
+    "runtime_seconds": 30,
+    "stop_seconds": 3,
+    "swap_bytes": 0,
+    "unit": "jev-d3-mmap-cpu-20261023-01.service"
+  },
+  "schema_id": "bf16-mmap-cpu-owner-research-v1",
+  "source_findings": [
+    "Original Selection already permits runtime30s; no numeric gate override needed.",
+    "Original boundary close requires live main or its exact previously verified failed/inactive reconciliation, not active/exited.",
+    "Original observer classifies repo script with cwdrepo as externalPython even when interpreter alias is underComfy; no observer carve-out needed."
+  ]
+}
