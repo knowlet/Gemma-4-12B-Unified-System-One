@@ -1,0 +1,71 @@
+{
+  "schema": "independent-unlaunched-catalog02-initial-gate-metadata-review-v1",
+  "created_at_utc": "2026-10-23T12:47:16.934890+00:00",
+  "reviewer": "/root/cpu_followup_review",
+  "result": "SAVED_INITIAL_GATE_FAILED_NO_ACTUAL_ADMISSION_OR_RUNTIME_RESULT",
+  "gate_ref": {
+    "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/root-initial-gate-01.json",
+    "sha256": "c9ad6cad2a9f82a5da07d12d86a52cc216f1cd2b0c68390999fe96e04a55ae13",
+    "size_bytes": 5265
+  },
+  "source_review_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py",
+      "sha256": "882ba1579b17b31dca0ee01fe2e89f46b1bc8c17b7635a0c4aa05042fc847ac0",
+      "size_bytes": 39721
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/independent-source-review.json",
+      "sha256": "e4cb7da54e8318a71ad1c7b35fab2279f708ce56af30a2c1364307932f5aadf7",
+      "size_bytes": 14690
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/independent-command-selection-review.json",
+      "sha256": "2ab5e152bd589025bb8d7765d6708a2fd9ef321d96af72dff95f83f4e641d83a",
+      "size_bytes": 13883
+    }
+  ],
+  "captured_at_utc": "2026-10-23T12:44:58.660351+00:00",
+  "observed_original_gate": {
+    "passed": false,
+    "first_failure": "Original read-only Comfy idle gate",
+    "Comfy_running": 1,
+    "Comfy_pending": 0,
+    "Comfy_state": "http_busy",
+    "MemTotal_bytes": 130595864576,
+    "MemAvailable_bytes": 25015144448,
+    "unchanged_computed_R_bytes": 26119172916,
+    "full2GiB_initial_required_bytes": 28266656564,
+    "available_below_R_bytes": 1104028468,
+    "available_below_initial_floor_bytes": 3251512116,
+    "required_available_bytes_in_primary_error": null,
+    "source_order_explanation": "Original immutable host() checks Comfy idle before computing the required floor. Null required_available_bytes in this busy failure is expected; recorded MemAvailable is separately below both unchanged computed thresholds, but a separate memory exception was not executed/claimed."
+  },
+  "later_absence_metadata": {
+    "two_original_method_process_scans_empty_no_unknown": true,
+    "both_status_sandwiches_not_found_PID0_empty_cgroup_invocation": true,
+    "both_cgroup_absent": true,
+    "old_original_closure_ref_not_opened": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-03/external-boundary-closure.json",
+      "sha256": "7b475f1164c48b7bdaba3abb3d6111fb79f097a9541ba11911676d209b8f04e6",
+      "size_bytes": 4685
+    },
+    "original_false_preserved_recorded": true,
+    "scope": "Saved later selected-unit/observed-cohort absence only. Original closure bytes/actual directories not reread; original false authority flags not promoted or rewritten."
+  },
+  "no_new_actual": {
+    "root_reported_no_actual04_unit_intent_or_terminal_created": true,
+    "reviewer_independently_probed_filesystem_or_unit": false,
+    "actual_catalog_execution_or_import_qualified": false,
+    "model_load_generation_quality_qualified": false,
+    "HTTP_or_browser_qualified": false,
+    "fresh_admission_granted": false
+  },
+  "limits": [
+    "This is a saved snapshot, not current host observation or permission to retry automatically. Future serial job needs another fresh original idle/fullR+cap admission.",
+    "Source/exactselection clear remains separate from host admission. No change to R, cap, context, native math or original observer/owner is authorized by this failed gate.",
+    "No actual/terminal file, runtime/model/native/interpreter payload or stat was read. Reviewer made no observer/host/unit/process/network/HTTP/Git call; only saved rootgate and designated source-review bytes were inspected."
+  ],
+  "findings": [],
+  "all_review_writes_stopped": true
+}
