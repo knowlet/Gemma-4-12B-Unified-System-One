@@ -1,0 +1,30 @@
+{
+  "entry": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/controller.py",
+    "sha256": "2d250d1cbe79bdd179381b766c5b4c9499801f79a61c94d5a15adc16fefffb25",
+    "size_bytes": 38074
+  },
+  "exact_inverse_restores_parent_bytes": true,
+  "file_size_scope": "32GiB per file, independent of 2GiB memory and4MiB per-stream retained prefixes; not full conversion feasibility",
+  "limits_unchanged": "2GiB/swap0/30or7200s/CPU100/initial affinity0/core0/FD512/R+2GiB initial/runtimeR/original observer and boundary/5s hold",
+  "parent": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/controller.py",
+    "sha256": "5672bc297869cee138726301f8c7d607adda138169b204747b9e8a2766546326",
+    "size_bytes": 38075
+  },
+  "replacements": [
+    {
+      "new": "jev-d3-llama-cpp-20261023-02.service",
+      "old": "jev-d3-llama-cpp-20261023-01.service"
+    },
+    {
+      "new": "llama-cpp-command-owned-v2",
+      "old": "llama-cpp-command-owned-v1"
+    },
+    {
+      "new": "FILE_SIZE_MAX = 32 * 1024**3",
+      "old": "FILE_SIZE_MAX = 256 * 1024**2"
+    }
+  ],
+  "test_byte_identical_to_parent": true
+}

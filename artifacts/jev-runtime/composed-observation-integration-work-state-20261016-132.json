@@ -1,0 +1,131 @@
+{
+  "schema_id": "composed-observation-integration-work-state-v1",
+  "sequence": 132,
+  "created_at_utc": "2026-10-23T02:01:46.988811+00:00",
+  "previous_state": {
+    "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-131.json",
+    "sha256": "9f2775608be945f815ffc11bdf5d6227adc553c200b94224182aa34504dc48e3",
+    "size_bytes": 14528
+  },
+  "goal_status": "active",
+  "precommit_head": "99a9a93daa3e210398cb5c6c5b62cffbe5dfd2fe",
+  "previous_goal_turn_classification": "progress: previous turn actual CUDA startup/tiny BF16 committed99a9a93; this continuation actually passed finite BF16 export regressions, accounted for all checkpoint names, verified published Q8 source identities and started bounded native S1 build",
+  "status": "Actual_BF16_byte_export_regression_passed_existing_public_Q8_identified_native_S1_build_verified_live_full_model_quality_incomplete",
+  "scores_unchanged": {
+    "Benchmark_Heaven": "195/231=84.4155844155844%",
+    "coherence_MINI": "41.26307189542484/100",
+    "best_genuine_browser": "4/10",
+    "all_six_Decision3_matched_comparison_complete": false,
+    "other_models_beaten": false
+  },
+  "report": {
+    "path": "docs/validation/2026-10-23/gx10-gguf-conversion-and-reuse.md",
+    "sha256": "6aebf40c7b6068c2feccdd76adbc51452dbc3c04daf1158cf27072f4f5a763e6",
+    "size_bytes": 8872
+  },
+  "checkpoint_metadata": {
+    "header": {
+      "path": "artifacts/jev-runtime/llama-cpp-checkpoint-metadata-20261023-01/checkpoint-header-metadata.json",
+      "sha256": "a70a68255ea1648c31403ed829acca95e1a8cf64e6e6caf32c31894b51aff1b5",
+      "size_bytes": 185662
+    },
+    "mapping": {
+      "path": "artifacts/jev-runtime/llama-cpp-checkpoint-metadata-20261023-01/converter-coverage.json",
+      "sha256": "b5d4c88c1e7a187e2a19119a8ed5439260e4812b578b9ec06972070b19bd1e2f",
+      "size_bytes": 666068
+    },
+    "tensor_counts": {
+      "source": 677,
+      "text": 666,
+      "multimodal_skip": 11,
+      "expected_unfused_text_with_rope": 667
+    },
+    "payload_access_for_inventory": false,
+    "whole_BF16_blob_hash_recomputed": false
+  },
+  "actual_synthetic_converter": {
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/receipt.json",
+      "sha256": "a0bbdc495a1c79d24866ae89cca1af5d0a4313378c3036371182e097e0217913",
+      "size_bytes": 44429
+    },
+    "root_execution": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/root-execution-tiny-01.json",
+      "sha256": "25957e2cadde49bbda804e034cb26a4edb23628f4b475f9b42d92d9ac4807dfc",
+      "size_bytes": 933
+    },
+    "independent_audit": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/independent-tiny-result-audit.json",
+      "sha256": "fdcd31f370964d689bee621c7a679d3a417f451901bdbbc48003439ef5bf350a",
+      "size_bytes": 17080
+    },
+    "tests_passed": 5,
+    "finite_BF16_bit_patterns": 65280,
+    "test_seconds": 5.031,
+    "command_seconds": 12.370692594,
+    "root_seconds": 14.030674426,
+    "cgroup_peak_bytes": 524214272,
+    "cgroup_peak_is_not_RSS": true,
+    "actual_full_checkpoint_conversion_or_load": false
+  },
+  "existing_published_Q8_reuse": {
+    "revision": "c418d37a17689fae554f7fc7d78db05ff7d52cfb",
+    "artifact_manifest": {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/metadata-01/artifact-manifest.json",
+      "sha256": "1646a81f062fa3fe5727c835de569b669f288bd646749b2c3b96426bff4bf8f0",
+      "size_bytes": 3723
+    },
+    "conversion_manifest": {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/metadata-01/conversion-manifest.json",
+      "sha256": "464874bc51e8ee21ab56f34a4bf7d22b1fb83299a277cbcf966b42c5fc7802b7",
+      "size_bytes": 4090
+    },
+    "same_trained_source_file_SHA": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
+    "large_payload_downloaded_at_this_state": false,
+    "plan": "Use existing published Q8/S1 scoring runtime before considering complete BF16 reconversion; no plain GGUF inheritance of native-v2 LoRA/calibration/action helper"
+  },
+  "live_native_build": {
+    "snapshot": {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/build-progress-01.json",
+      "sha256": "8f2cb0a9b32ce9042ac3666b3056108b5600b7959762cf1a3cba4c68524d5a10",
+      "size_bytes": 935
+    },
+    "controller": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/controller.py",
+      "sha256": "5672bc297869cee138726301f8c7d607adda138169b204747b9e8a2766546326",
+      "size_bytes": 38075
+    },
+    "spec": {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/root-native-build-spec.json",
+      "sha256": "f584335a9f005b20db6a9b0cefecceebec3f15cbddb824cb77b0705a1691a5ba",
+      "size_bytes": 6281
+    },
+    "source_review": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/independent-source-review.json",
+      "sha256": "58cd5c6f0ff1a9253328704338b5b01e49cf3b5734f83783cf2c8eb38c8751bd",
+      "size_bytes": 30327
+    },
+    "unit": "jev-d3-llama-cpp-20261023-01.service",
+    "exec_session_id": 11987,
+    "output": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02",
+    "completed": false,
+    "instruction": "Poll the same live handle or revalidate exact manager/PID/start/invocation; do not infer termination from this saved state. Build source selected here must remain unchanged."
+  },
+  "original_reserve_and_scope": {
+    "R_bytes": 26119172916,
+    "build_memory_max_bytes": 2147483648,
+    "swap_bytes": 0,
+    "original_Comfy_observer_unchanged": true,
+    "Comfy_mutations": false,
+    "serial_build_then_large_download": true,
+    "universal_tree_or_GPU_release_proof": false
+  },
+  "next_steps": [
+    "Finish original live native S1 library/helper build and independently audit output",
+    "Run source-qualified own-unit public Q8/projector download and stream size/SHA verification",
+    "Budget/cache source-selected full model startup and actual scoring with full48 layers and8192 context; cache payload is not whole model peak",
+    "Integrate real text helper/deadline/selected LoRA for new backend profile, retaining original task/judge/order/context/time contracts",
+    "Rerun unchanged real-browser campaign and both JevBench suites separately; complete matched all-six Decision3 comparison"
+  ],
+  "completion_claim": false
+}

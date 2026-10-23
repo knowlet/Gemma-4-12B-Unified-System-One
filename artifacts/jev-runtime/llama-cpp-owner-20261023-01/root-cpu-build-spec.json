@@ -1,0 +1,163 @@
+{
+  "profile": "llama-cpp-command-spec-v1",
+  "runtime_seconds": 7200,
+  "file_size_max_bytes": 268435456,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-source-184f653",
+        "diff",
+        "--exit-code",
+        "HEAD"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+    },
+    {
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-source-184f653",
+        "-B",
+        "{OUTPUT}/build",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DGGML_CUDA=OFF",
+        "-DGGML_CPU_KLEIDIAI=OFF",
+        "-DGGML_BLAS=OFF",
+        "-DGGML_NATIVE=ON",
+        "-DFETCHCONTENT_FULLY_DISCONNECTED=ON",
+        "-DLLAMA_OPENSSL=OFF",
+        "-DLLAMA_BUILD_TESTS=OFF",
+        "-DLLAMA_BUILD_EXAMPLES=OFF",
+        "-DLLAMA_BUILD_TOOLS=ON",
+        "-DLLAMA_BUILD_SERVER=ON",
+        "-DLLAMA_BUILD_APP=OFF",
+        "-DLLAMA_BUILD_UI=OFF",
+        "-DLLAMA_USE_PREBUILT_UI=OFF",
+        "-DLLAMA_CONNECT=OFF",
+        "-DLLAMA_LLGUIDANCE=OFF"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+    },
+    {
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "{OUTPUT}/build",
+        "--config",
+        "Release",
+        "--target",
+        "llama-server",
+        "llama-completion",
+        "llama-quantize",
+        "-j",
+        "1"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-source-184f653",
+        "diff",
+        "--exit-code",
+        "HEAD"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+    },
+    {
+      "argv": [
+        "{OUTPUT}/build/bin/llama-server",
+        "--version"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+    }
+  ],
+  "sources": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/CMakeLists.txt",
+      "sha256": "22d9a3e112e2b01d43a3ed514a249f38244f931a3c1c53dc2738794249714f91",
+      "size_bytes": 11036
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/ggml/CMakeLists.txt",
+      "sha256": "aedecbcad995197e5d912aa9f789520df6463c737c095e5c12b5d5dfbf02980e",
+      "size_bytes": 21801
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/ggml/src/ggml-cpu/CMakeLists.txt",
+      "sha256": "b69ed1a14063642c47c70b7b4c67177388e02ee3c27d2e7adfde9ed5ba5859bf",
+      "size_bytes": 33159
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/common/CMakeLists.txt",
+      "sha256": "67cedba04a44face1177e3aa9fc192712873dda0b30bde1ab356007dcde0d9f1",
+      "size_bytes": 5020
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/tools/server/CMakeLists.txt",
+      "sha256": "c786719a24176b0ea90a4c7813c3d87bf4a41cfd83bac351caa1fae766181a46",
+      "size_bytes": 1870
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/tools/ui/CMakeLists.txt",
+      "sha256": "51b6c585fab1dcb59a44aad2bf81b927fa3e62a6ac33308a82f93b604ff6bf72",
+      "size_bytes": 3010
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/scripts/ui-assets.cmake",
+      "sha256": "d3abf3ced6aa329a000b6c0df9c19fabfa83581d95f90b1cdd686007edb5fa8e",
+      "size_bytes": 20614
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/src/models/gemma4.cpp",
+      "sha256": "247d458f93ddace3091141d7d7e4da0c0b589bc843e5737d3b39f804eb889339",
+      "size_bytes": 24538
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/LICENSE",
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "size_bytes": 1078
+    }
+  ],
+  "binary_stats": [
+    {
+      "path": "/usr/bin/cmake",
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 48002409,
+        "st_size": 10489912,
+        "st_mtime_ns": 1713179337000000000
+      }
+    },
+    {
+      "path": "/usr/bin/git",
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 47973055,
+        "st_size": 4003072,
+        "st_mtime_ns": 1754494562000000000
+      }
+    },
+    {
+      "path": "/usr/bin/aarch64-linux-gnu-g++-13",
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 48006951,
+        "st_size": 990040,
+        "st_mtime_ns": 1766091591000000000
+      }
+    },
+    {
+      "path": "/usr/bin/make",
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 48012593,
+        "st_size": 267672,
+        "st_mtime_ns": 1712592721000000000
+      }
+    }
+  ]
+}

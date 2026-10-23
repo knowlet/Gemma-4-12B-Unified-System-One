@@ -1,0 +1,102 @@
+{
+  "admission_conclusion": "No source must-fix blocks a separately admitted bounded CPU synthetic regression on these frozen bytes. This receipt does not qualify full conversion by itself; whole-checkpoint key/tokenizer/LoRA accounting, fresh conversion budget/disk/host admission, all-matrix bounded byte/finite checks and complete artifact verification remain required. Preserve partial outputs on failure and keep unqualified artifacts separate.",
+  "frozen_root_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/prepare_converter.py",
+      "sha256": "c784df8f80c847f3d6c9d2404d26b51204a91289c07ca89ac4cfa385619d5daf",
+      "size_bytes": 5166
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/jev_bf16.py",
+      "sha256": "eef362708dd54cb7aa64fdc19e34afa1ae63654ad5eaa7b144df6f40482a281b",
+      "size_bytes": 1443
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/converter.patch",
+      "sha256": "9adefa7c2599da3e1ba996da45cb06fddb945b77b07da396d3bf4ff2d27424ef",
+      "size_bytes": 4053
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/source-manifest.json",
+      "sha256": "39ac6af9ced3875a5e2c52f4b8acfdcf438f385cc9d439c2865929e5f9743202",
+      "size_bytes": 22258
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/test_converter.py",
+      "sha256": "b86c7571b70c2d083843c6b462ffafea627df337f3be1e8c700295ab9c5d1071",
+      "size_bytes": 5367
+    }
+  ],
+  "memory_effect_source_inference": {
+    "approximate_mask_temporaries_bytes": 1572864,
+    "bounded_finite_scan_words": 524288,
+    "qualification": "Inference from pinned source only, not a measured peak. Lazy preparation still becomes actual source reads at write. Source page cache, dirty output pages, framework allocations and writeback remain charged or host-visible in different scopes; no 2GiB full conversion fit, wall-time or hard host bound is established.",
+    "removed_operation": "For eligible BF16 matrices, no full F32 cast or BF16 requantization output/list allocations; original mapped storage is exposed as a byte view."
+  },
+  "must_fix": [],
+  "prior_memory_research": {
+    "path": "artifacts/jev-runtime/llama-cpp-conversion-review-20261023-01.md",
+    "sha256": "09cd1a847bc2720a3bbdb8b470d24e51a95122eb09ce449377c675ddf955a56c",
+    "size_bytes": 10688
+  },
+  "reviewed_at_utc": "2026-10-23T01:35:35.104711+00:00",
+  "reviewed_guards": [
+    "Explicit --jev-preserve-bf16 selection only; default branch retains original conversion. Exact Gemma4UnifiedModel name and conversion.gemma module are checked.",
+    "Explicit MOSTLY_BF16 output; local model; lazy enabled; no temp/eager/bigendian, QKV/expert fusion, FP8 route, root/text quantization_config.",
+    "Eligibility requires original BF16 multidimensional .weight, no _norm suffix, norm_shift==0. Original pinned modify_tensors still runs. Gemma4 inherited embedding handling truncates rows using tokenizer; other eligible actual dense matrices rename unchanged.",
+    "Eager helper refuses non-little-endian host, non-CPU, non-BF16, noncontiguous or fewer-than-two-dimensional tensors. No contiguous copy or float cast is introduced.",
+    "Each accepted matrix is checked for BF16 Inf/NaN using at most 2^19 words per mask iteration; nonfinite values refuse before that tensor writes. This is a narrower acceptance domain than upstream, avoiding its NaN quieting difference.",
+    "Raw uint8 byte shape doubles the final logical dimension. Original GGUF writer raw_dtypeBF16 restores logical shape and enforces expected tensor byte count; no alternate writer or C++ graph is used.",
+    "One-dimensional norms/scalars and generated F32 RoPE tensors stay on original conversion; a non-BF16 qtype selected for a raw candidate rejects rather than silently changing representation."
+  ],
+  "reviewer": "/root/q95_owner05_review",
+  "schema": "llama-cpp-bf16-converter-independent-source-review-v1",
+  "scope": "Source-only review of frozen converter preparation, helper, exact patch, manifest and synthetic real-Torch test source. Reviewer executed only standard-library hash/diff/AST/arithmetic checks. No Torch/NumPy import, test/converter execution, build, checkpoint/header/payload/native-library byte reads, HTTP or GPU probe.",
+  "source_integrity": {
+    "Cplusplus_graph_or_engine_changes": false,
+    "manifest_equals_actual_runtime_file_set": true,
+    "manifest_rows_rehashed": 136,
+    "note": "Current prepared bytes were independently verified. The standalone preparer embeds a commit label but does not itself authenticate every upstream source before copying; re-preparation requires the same manifest and pinned-input verification.",
+    "only_differences_from_pinned_upstream_subset": [
+      "conversion/base.py",
+      "conversion/jev_bf16.py",
+      "convert_hf_to_gguf.py"
+    ],
+    "patch_byte_exact_reconstruction_from_two_upstream_sources": true,
+    "prepared_helper_equals_reviewed_root_helper": true,
+    "selected_Python_sources_AST_parse": true
+  },
+  "test_metadata_dependency": {
+    "path": "artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/header-selection.json",
+    "sha256": "31201ff6d076838459d3abe1efd1d20df4d3f3a8d3a589495736949368385efa",
+    "size_bytes": 28508
+  },
+  "test_source_review": {
+    "finite_pattern_count_independently_recomputed_with_stdlib": 65280,
+    "intended_checks": [
+      "All 65280 finite BF16 bit patterns compare raw path to original F32-to-BF16 quantization.",
+      "Actual LazyTorchTensor input materializes through the helper; Inf/NaN, wrong dtype and noncontiguous input reject.",
+      "Actual Gemma4Unified constructor on synthetic safetensors/config calls modified prepare_tensors and original writer; default and selected output type/shape/bytes compare, embedding truncates, norm/scalar remain F32.",
+      "Tensor.to trace expects F32 matrix casts for default and none for selected.",
+      "CUDA initialized state must remain false and CUDA_VISIBLE_DEVICES must be empty."
+    ],
+    "limits": [
+      "No actual checkpoint values, complete key/tokenizer/LoRA acceptance, full conversion, model load or mathematical/runtime quality is proved by synthetic inputs.",
+      "Constructor/prepare/writer regression bypasses CLI main; CLI refusal semantics are source-reviewed here, not runtime-tested.",
+      "The final CUDA assertion does not independently monitor every dependency driver query; owned CPU environment and guard scope require separate controller review."
+    ],
+    "runtime_executed": false,
+    "unittest_test_methods": 5
+  },
+  "unchanged_qualification_boundaries": [
+    "Original Q95 memory/context/identity/finalization gates are unchanged.",
+    "No full12B/8192/20-second model, browser task, JevBench score or cross-model superiority is established.",
+    "Default upstream converter and C++ inference source remain independently identifiable; selected output is a new local converter profile."
+  ],
+  "upstream": {
+    "commit": "184f6536024668e8908ab8c86033d56708e62b40",
+    "license": "MIT",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/184f6536024668e8908ab8c86033d56708e62b40"
+  },
+  "verdict": "CLEAR_WITH_LIMITS"
+}

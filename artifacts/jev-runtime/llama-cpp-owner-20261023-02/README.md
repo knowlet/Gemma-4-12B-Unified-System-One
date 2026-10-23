@@ -1,0 +1,9 @@
+# Owned CPU command successor: large output files
+
+This preparation changes exactly three controller constants from the frozen owner01: the new unit suffix `02`, owner profile `llama-cpp-command-owned-v2`, and per-file `LimitFSIZE` of 32 GiB. The test source is byte-identical. Command specs must explicitly select this same 32 GiB cap. The owner remains dry by default and requires exact entry/spec SHAs, a fresh output, and an absent unit.
+
+Memory remains 2 GiB with zero swap, runtime is explicitly 30 or 7,200 seconds, CPU quota is one CPU, observed initial main-thread affinity is CPU 0, core limit is zero, and descriptor limit is 512. The unchanged original observer applies `R + 2 GiB` admission and sampled runtime/final `R` gates while Comfy is idle or confirmed absent. The original boundary authenticates the exact invocation before stopping it and performs two absence scans. The five-second live hold and source/host finalization are unchanged.
+
+A 32 GiB per-file cap permits a separately reviewed streaming download/output. It does not allocate that memory or show a full conversion fits the 2 GiB cgroup. Largest-tensor conversion, GPU/12B/context8192/20-second performance, N3, Q95, and quality remain unqualified. Files larger than the cap still fail. Source/tool stat scope, generated-own-output executable exception, inherited-affinity limits, no universal process-tree proof, partial bounded stream retention, and noncontinuous sampled host minima remain as documented in owner01.
+
+No command spec or actual run is produced by this preparation. Root selects and freezes each concrete command spec. No unit, compiler, observer HTTP, Torch, GPU, model header or payload was run/read by the preparing agent. All generated build/download/model payloads remain local unless separately selected for publication.
