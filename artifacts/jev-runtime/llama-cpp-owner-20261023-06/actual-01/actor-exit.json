@@ -1,0 +1,73 @@
+{
+  "config_sha256": "582daae0d1cc4cd5a9cfae4bf265d31f0f520430febbcbc7638b2dfde7cf4610",
+  "actor": {
+    "pid": 554683,
+    "start_ticks": 11225766,
+    "pgid": 554683,
+    "sid": 554683,
+    "uid": 1001,
+    "state": "R",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service"
+  },
+  "entry_exit_code": 0,
+  "error": null,
+  "command_results": [
+    {
+      "argv": [
+        "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+        "--execute",
+        "--plan",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+        "--plan-sha256",
+        "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8",
+        "--output",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/edge-probe"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+      "resolved_executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+      "pid": 554688,
+      "observed_identity": {
+        "process": {
+          "pid": 554688,
+          "start_ticks": 11225784,
+          "pgid": 554683,
+          "sid": 554683,
+          "uid": 1001,
+          "state": "R",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service"
+        },
+        "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+        "argv": [
+          "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+          "-B",
+          "-s",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+          "--execute",
+          "--plan",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+          "--plan-sha256",
+          "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8",
+          "--output",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/edge-probe"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      },
+      "executable_stat_at_start": {
+        "st_dev": 66306,
+        "st_ino": 17956884,
+        "st_size": 22257464,
+        "st_mtime_ns": 1784109750677901111
+      },
+      "returncode": 0,
+      "elapsed_seconds": 15.917003159003798
+    }
+  ],
+  "planned_command_count": 1,
+  "postreceipt_hold_seconds": 5,
+  "hold_started_monotonic": 112273.788060826,
+  "hold_deadline_monotonic": 112278.788060826,
+  "reason": "Keep admitted wrapper live for original authenticated unit close"
+}

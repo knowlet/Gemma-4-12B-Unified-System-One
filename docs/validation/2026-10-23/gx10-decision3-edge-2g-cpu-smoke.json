@@ -1,0 +1,350 @@
+{
+  "schema": "closed-real-Decision3-Edge-2GiB-CPU4-synthetic-smoke-milestone-v1",
+  "created_at_utc": "2026-10-23T13:59:58.196437+00:00",
+  "report": {
+    "path": "docs/validation/2026-10-23/gx10-decision3-edge-2g-cpu-smoke.md",
+    "size_bytes": 3025,
+    "sha256": "3c59c64ba12297f01c085332e192dd773c9285a03bd086341cb2f9c324cb7557"
+  },
+  "status": "independently_verified_native_synthetic_smoke_and_runtime_identity_catalog_only",
+  "native_qualification": {
+    "smoke_complete": true,
+    "external_authenticated_closure": true,
+    "one_actual_constructor": true,
+    "two_actual_four_row_events": true,
+    "durable_call_20s": true,
+    "whole_command_120s": true,
+    "final_full_model_and_sources_authenticated": true
+  },
+  "native_observations": {
+    "model_loads": 1,
+    "native_calls": 2,
+    "actual_first_layer_shapes": [
+      [
+        4,
+        135,
+        1024
+      ],
+      [
+        4,
+        135,
+        1024
+      ]
+    ],
+    "input_question_count": 4,
+    "input_tokens_total_per_call": 505,
+    "developer_answers_contract_validated_without_semantic_scoring": 8,
+    "dtype": {
+      "backbone": "bfloat16",
+      "readout": "float32",
+      "first_layer": "torch.bfloat16"
+    },
+    "actual_kernel_bindings": {
+      "torch_chunk_gated_delta_rule": "torch-reference",
+      "torch_recurrent_gated_delta_rule": "torch-reference",
+      "causal_conv1d_fn": "torch-reference",
+      "causal_conv1d_update": "torch-reference"
+    },
+    "package_versions": {
+      "torch": "2.13.0+cu130",
+      "transformers": "5.17.0",
+      "safetensors": "0.8.0",
+      "huggingface_hub": "1.33.0",
+      "accelerate": "1.15.0"
+    },
+    "model_load_seconds": 3.1224697309953626,
+    "actor_recorded_elapsed_seconds_before_final_cleanup_gate": 14.667037221995997,
+    "genuine_complete_command_elapsed_seconds": 15.917003159003798,
+    "root_complete_controller_wall_seconds": 17.268791861002683,
+    "per_call": [
+      {
+        "index": 0,
+        "actual_shape": [
+          4,
+          135,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "cpu",
+        "contract_valid": true,
+        "completed": true,
+        "validation_seconds": 1.0758743259939365,
+        "durable_validation_seconds_including_deadline_cleanup": 1.0770371519902255,
+        "owned_counter_wall_seconds": 1.0772422070003813,
+        "owned_CPU_usage_delta_seconds": 3.946928,
+        "observed_average_cores_in_counter_window": 3.6639188237809206,
+        "throttled_usec_delta": 0
+      },
+      {
+        "index": 1,
+        "actual_shape": [
+          4,
+          135,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "cpu",
+        "contract_valid": true,
+        "completed": true,
+        "validation_seconds": 0.9454550640075468,
+        "durable_validation_seconds_including_deadline_cleanup": 0.9480278350092703,
+        "owned_counter_wall_seconds": 0.9463580510055181,
+        "owned_CPU_usage_delta_seconds": 3.545041,
+        "observed_average_cores_in_counter_window": 3.745982819328632,
+        "throttled_usec_delta": 0
+      }
+    ],
+    "memory_peak_bytes": 1386991616,
+    "memory_cap_bytes": 2147483648,
+    "memory_headroom_bytes_at_peak": 760492032,
+    "memory_peak_scope": "Entire selected owned cgroup, including actor/framework/file cache/wrapper; not native-only tensor memory.",
+    "memory_events_all_observed_zero": true,
+    "owner_runtime_observation_count": 16,
+    "parent_successful_host_samples": 19,
+    "sampled_min_available_bytes": 28082364416,
+    "sampled_min_margin_vs_runtime_R_bytes": 1963191500,
+    "cuda_initialized_final": false,
+    "source_count": 45,
+    "model_files_authenticated_by_owned_actor": 20,
+    "selected_runtime_records_authenticated_by_owned_actor": 28
+  },
+  "native_identity": {
+    "model_revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "model_identity_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "owner_unit": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+    "memory_max_bytes": 2147483648,
+    "batch_size": 4
+  },
+  "raw_developer_request_or_answer_or_probability_copied": false,
+  "real_benchmark_task_gold_response_or_DOM_copied": false,
+  "raw_synthetic_state_reference_only": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/edge-probe/state.json",
+    "size_bytes": 18988,
+    "sha256": "9d4a288d0587b108b219113b7a9db58959e0e8e16d22f1dc1f23127070deaf30"
+  },
+  "complete_new_scores_separate": {
+    "Decision3_Edge_CPU4_2GiB": {
+      "Benchmark_Heaven_public231": null,
+      "JevBench_coherence_MINI": null
+    },
+    "Decision3_Lite_CPU4": {
+      "Benchmark_Heaven_public231": null,
+      "JevBench_coherence_MINI": null
+    }
+  },
+  "new_native_helper_NN_HTTP_browser_result": null,
+  "goal_complete_or_competitor_victory": false,
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/actor-exit.json",
+      "size_bytes": 3024,
+      "sha256": "218281b4b0de70cdb3b45861cfc2ae1d936a81b770d8fdf7afd55739b5b246f7"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/admission.json",
+      "size_bytes": 470,
+      "sha256": "084debae26f33ff638dd3fd9478a1553b78ac7cc8b1be1f30918ecc9aa974194"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/bootstrap-identity.json",
+      "size_bytes": 1914,
+      "sha256": "71141cc99ec9a055cb69d00232a1b877afc3c99270053f7ec68398128ffb79ae"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/command-01-intent.json",
+      "size_bytes": 1213,
+      "sha256": "cec2e7d79eb8a24069d996c80c479d0ba2aaa4ed2447b8e13406bc30c2d004e5"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/command-01-output.json",
+      "size_bytes": 3293,
+      "sha256": "7db0ced8895a810b98103fdead24453ace099e3d71a90664c180de89a0447503"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/command-01-started.json",
+      "size_bytes": 1271,
+      "sha256": "1df29f10914cba074735dd0e68dfb712e21e51ef9beefd8702316c2f8284c349"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/external-boundary-closure.json",
+      "size_bytes": 3790,
+      "sha256": "ec1f9608f9621b09dc601e2e40cbb7d6867075436f6f6cbf9b01e8f07796caa1"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/launch-intent.json",
+      "size_bytes": 2903,
+      "sha256": "6b5b441c28009dcb28a672dab9acafe911ade405b67790f55a30c8af48b7174c"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/receipt.json",
+      "size_bytes": 70570,
+      "sha256": "59fb5662917e1dbedcfcdf9e07417d0f94b4ea7a303957cdbf8a2130625dab92"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/sealed-config.json",
+      "size_bytes": 12620,
+      "sha256": "582daae0d1cc4cd5a9cfae4bf265d31f0f520430febbcbc7638b2dfde7cf4610"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/unit-readback.json",
+      "size_bytes": 2552,
+      "sha256": "8cec5c540213dce9de5dfbbd8ec57976dc9ef988727a3fd3be34b0e6191e70db"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-launch-native02-edge-01.json",
+      "size_bytes": 1835,
+      "sha256": "c37c5076b72b67fbd690f43c3bd24145f3f62579fc44480abecbdc8120d6243d"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-native02-edge-01.json",
+      "size_bytes": 1698,
+      "sha256": "73f6ea0d32ecd4163edb2a3fe77d1897dbe4de2d8671a5e315ed002e88ca33ec"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/actor-exit.json",
+      "size_bytes": 4095,
+      "sha256": "30213d3e0da01cc2b96af76376d25bbeae9cdf8e7db6d18834e83405ac5aa138"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/admission.json",
+      "size_bytes": 462,
+      "sha256": "52819e8aef31a732a6d6f2e6c0b1db28253d5163e4bb3e8dde38dcaeae09b0b2"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/bootstrap-identity.json",
+      "size_bytes": 1898,
+      "sha256": "b64db04924693dc513a6eb4f7d4d48d8d35b2991f07f2cf266a4e56d675dc6a8"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/command-01-intent.json",
+      "size_bytes": 1707,
+      "sha256": "6e39aa801809b13b9384a3937fb13e74651e3737cd59e46f3b8890580ba88243"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/command-01-output.json",
+      "size_bytes": 4324,
+      "sha256": "c1359418e22f5e1d5458a2670cbd0f937791c5cdf5a426cd8ba68fb1e9567268"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/command-01-started.json",
+      "size_bytes": 1777,
+      "sha256": "c2b50c0d283c6d0dad9c8b21820f0bb2608c4598a0dc04b58d7edc3fb80ee54c"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/external-boundary-closure.json",
+      "size_bytes": 3741,
+      "sha256": "2458fc5ea1b5a41617a7c2fd9c6266440c15e727cc8469d9004d620fe2b13790"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/launch-intent.json",
+      "size_bytes": 2851,
+      "sha256": "9b8159356eaef676a524f3f8fff9a34b4411ca083c075153aa7f53180aa13f44"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/receipt.json",
+      "size_bytes": 45122,
+      "sha256": "f3d354d9b61dced1d5fb3e403176e98d40015be86e630b0f9aa3086369a2a68a"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/sealed-config.json",
+      "size_bytes": 14380,
+      "sha256": "f3be1431d6cdefcf1578a12a6a28c843e806dfeff90e24313ef8d2fed4613ea0"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/unit-readback.json",
+      "size_bytes": 2520,
+      "sha256": "b78fa045703eafbd75873a2f1ac7051548c67ee9744deae969a59c9284efa92e"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/root-launch-catalog02-wrapped-05.json",
+      "size_bytes": 1855,
+      "sha256": "08abd1e6b248b20873ed648cfad31cafbce8f141aa58ccde30e4d3c91def690a"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/root-execution-catalog02-wrapped-05.json",
+      "size_bytes": 1690,
+      "sha256": "edbfa1eb2d68d8a3ae6b46072b5ae02ea45908c902f322c1a0e42737467a2e46"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/independent-actual-edge-2g-review-01.json",
+      "size_bytes": 17560,
+      "sha256": "7a3bf73a6d75036c96ed4705e9e6358624757cf2d8f330084b6fdfc828789be8"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/root-initial-gate-03.json",
+      "size_bytes": 5282,
+      "sha256": "9d07e11cd25365f8da0e5afb734e1053ded17bf537508377f180455a7963de09"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/root-initial-gate-04.json",
+      "size_bytes": 5084,
+      "sha256": "d56b20f54a635edaeb0c7b3eb5ca47cb53d682f1a76ad323a65fba1a15919749"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/independent-wrapped-actual05-review-01.json",
+      "size_bytes": 10986,
+      "sha256": "f090e09a1b5745a250ecba045c8e99b1f0138942ed31e04db9bd7b5711b698db"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/root-wrapped-initial-gate-02.json",
+      "size_bytes": 9163,
+      "sha256": "1a4337859141ef9d3f90a38f2125702830781c705d90fffa6b6ff7648c557042"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-05/runtime-catalog/receipt.json",
+      "size_bytes": 52970,
+      "sha256": "24c0de50ac3beb5693538d8f237cd33e4caa74abe9f3fe9eb52bc121e8e16bcc"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/catalog-acceptance.completed-actual05-01.json",
+      "size_bytes": 1721,
+      "sha256": "c0a13f28fc257fa6bc1f1e8bc08b386e16479ed15d94e58443ef09bd1f5d16f7"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/root-helper-wrapper-command-spec-01.json",
+      "size_bytes": 17573,
+      "sha256": "e8006dc3fce699a3e2feab015fba92cbceaab4edada31f544ee20a21b8301e53"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/root-helper-wrapper-preflight-01.json",
+      "size_bytes": 1741,
+      "sha256": "0288fdf86cfaca5f6365f6008abc2f12b3fef8323f0e5585c2879bc47bdde8bd"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/independent-wrapped-command-selection-review-01.json",
+      "size_bytes": 9526,
+      "sha256": "ef1493435bead1dbe4f5dd756761c3863f7f4bdc37430988b95ce427218ffaa9"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/root-helper-wrapped-initial-gate-01.json",
+      "size_bytes": 9364,
+      "sha256": "3f3408ffdaf09d4a34b636b9c3659c9f26564ded2c4694c6e4b0746738c3e488"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/completed-native02-prerequisites-01.json",
+      "size_bytes": 4381,
+      "sha256": "de76ae5d0ee227fa1c4a09fff3f64bea431e1a15a86feb98ccc8db3630843880"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-edge-both-command-spec-01.json",
+      "size_bytes": 14126,
+      "sha256": "59396734477f90fa1a3f24bec60633796de06f84215597a4e59a5b5d9a274d49"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-edge-both-preflight-01.json",
+      "size_bytes": 2753,
+      "sha256": "c2df99ae2ee688c0759bed4534f3063a69a4ec0d041c5ced242fd8d2e9a2d977"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/independent-root-selection-review-01.json",
+      "size_bytes": 22951,
+      "sha256": "1730df03a1e79b2f0a8acb09b01f24e61be3036ed5df688e693eca72214ba6bb"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-full04-initial-gate-01.json",
+      "size_bytes": 9359,
+      "sha256": "e0246a2b2f5c7faf33b6b80a6fe7f7f48f1f607e74d0092951d8d562814429fa"
+    }
+  ]
+}
