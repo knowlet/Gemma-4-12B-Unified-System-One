@@ -1,0 +1,9 @@
+# Pinned source findings
+
+The public source plan remains `decision3-publisher-lite-cpu-20261023-01/benchmark-source-plan.json` SHA b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021. It pins the unchanged official sources at heaven revision bb05a335bc809e61b20c0f745d25499a82b326fc.
+
+`heaven/jevbench/summarize.py:14` puts the result of `ece_top_label(pairs)` into the global `ece` field, or None when no calibration pairs exist. The exact source SHA is aa5f24da407d004cd80bad1cd957b6987aba152591084c096d1de51dd9775cbe. `heaven/jevbench/metrics.py:55-92`, SHA 4038c8423ad1cf28601afb6babe777b71f08e379b9ca125b09b52c0ac7d60515, returns the object keys `ece`, `n`, `bins`; each of ten bin summaries has `lo`, `hi`, `n`, `mean_confidence`, `accuracy`. Empty bins use null means. These are global aggregates, not item labels or responses.
+
+Frozen full05 `stage_metrics` included `ece` in its numeric metric tuple and rejected all non-null objects with `official metric must be finite numeric or absent`. Its inherited fake fixture used absent ECE while calibration count was nonzero, so it never exercised the real populated-object ABI. The new fixture is schema-realistic and seven focused regressions cover the actual pure official function on invented pairs, old-source rejection, lossless unaliased copying, absent and empty cases, malformed or nonfinite fields, bad counts or edges, extra fields, and continuing rejection for every other scalar metric.
+
+The repair is exclusively an output schema correction. It preserves the official ECE object, does not rerun or replace official scoring, does not use saved predictions to continue an old run, and does not reduce model, context, population, resource, authentication or timing requirements. Existing full05 bytes and actual evidence are left unchanged. All original full05 frozen source entries were rehashed as small UTF-8 files after preparation and still matched their manifest.

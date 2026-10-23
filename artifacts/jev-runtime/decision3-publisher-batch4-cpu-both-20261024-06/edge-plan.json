@@ -1,0 +1,172 @@
+{
+  "schema": "decision3-native-batch4-cpu-both-candidate-plan-v1",
+  "profile": "decision3-edge-gx10-publisher-cpu2g-coexist-batch4-both-stage-completions-ece-schema-20261024-v1",
+  "model_key": "edge",
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "campaign_sha256": "81113f1e2e1f1342c547b156e307ef78844c5947a9fa47f85fb054579eb4d966",
+  "local_head_at_creation": "1a6a2c6c50673238c79bb4d4cc2f440ed10a9de3",
+  "head_field_is_provenance_only": true,
+  "batch_actor_sha256": "4a08be7703d8559f5dc86593f0e3138e9c9546ea1cc4613a951ed796a13d9d3f",
+  "batch_freeze_sha256": "a3c5a2adeea6e1b18650d63fd2f1cb09ec5d8cbd0b204f2e1196de4fe234ea1f",
+  "native_plan_sha256": "5efcef370b0ae09a78d334d6e00c4a4e39ebbaae9ad18fd822581e8979e1b6e4",
+  "benchmark_source_plan_sha256": "b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021",
+  "whole_campaign_seconds": 10000,
+  "per_call_seconds": 180,
+  "per_call_policy": "Official offline benchmark complete callback default180s includes prepare, full native input/order, raw retention, validation and durable progress; never browser20 compliance.",
+  "owner_runtime_seconds": 10800,
+  "owner_unit": "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
+  "owner_profile": "llama-cpp-cpu4-2g-coexist-command-owned-v1",
+  "owner_sources": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-07/controller.py",
+      "size": 41866,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12064328,
+        "st_size": 41866,
+        "st_mtime_ns": 1792773555002255245
+      },
+      "sha256": "685a9f809f429f4e9658083dc8530b563740625f9ba7816908fdc58002de256d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-07/freeze.json",
+      "size": 3011,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12064345,
+        "st_size": 3011,
+        "st_mtime_ns": 1792773929104073312
+      },
+      "sha256": "c3f79bf2397f839931068846022b984a62d54b06175ec3fd679fa9aa7478189c"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/actor.py",
+      "size": 31007,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12064331,
+        "st_size": 31007,
+        "st_mtime_ns": 1792774002835075677
+      },
+      "sha256": "4a08be7703d8559f5dc86593f0e3138e9c9546ea1cc4613a951ed796a13d9d3f"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/resource_helper.py",
+      "size": 7954,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12064332,
+        "st_size": 7954,
+        "st_mtime_ns": 1792773564944215583
+      },
+      "sha256": "7d90f15adee339ed292510d3f5c10c0b33b505279de32643fe1c3da425554552"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/source_audit.py",
+      "size": 5079,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12064333,
+        "st_size": 5079,
+        "st_mtime_ns": 1792773562794453052
+      },
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+    }
+  ],
+  "reserve_bytes": 26119172916,
+  "memory_max_bytes": 2147483648,
+  "startup_available_bytes": 28266656564,
+  "swap_max_bytes": 0,
+  "threads": 4,
+  "cpu_affinity": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "cpu_quota_percent": 400,
+  "batch_size": 4,
+  "constructor_count": 1,
+  "concurrency": 1,
+  "fresh_calls": 1479,
+  "context_limit": 16384,
+  "context_policy": "reject_no_truncation",
+  "suites": [
+    {
+      "name": "legacy-public231",
+      "tasks": 231,
+      "revision": "bb05a335bc809e61b20c0f745d25499a82b326fc"
+    },
+    {
+      "name": "jevbench-mini",
+      "requests": 1248,
+      "cases": 240,
+      "relations": 50,
+      "planned_tests": 1200,
+      "revision": "e18733694623aa93058e279c3534f8b8e2edefa3"
+    }
+  ],
+  "prerequisite": {
+    "selection": "Future root selection must provide genuinely new owner07/native03 smoke state and independent accepted closed audit. No owner06/idle-only or other profile fit, authentication, timing or quality transfers.",
+    "audit_schema": "independent-native-batch4-synthetic-result-audit-v1",
+    "review_kind": "closed_real_smoke_result",
+    "required_qualification_fields": [
+      "smoke_complete",
+      "external_authenticated_closure",
+      "one_actual_constructor",
+      "two_actual_four_row_events",
+      "durable_call_20s",
+      "whole_command_120s",
+      "final_full_model_and_sources_authenticated"
+    ],
+    "native_plan_sha256": "5efcef370b0ae09a78d334d6e00c4a4e39ebbaae9ad18fd822581e8979e1b6e4",
+    "required_host_observation_policy": "comfy-observed-cpu-coexist-v1"
+  },
+  "fresh_output_and_coherence_cache_required": true,
+  "final_authentication": "Full all20 model files+manifest+selected runtime/owner sources; all78 original scorer source files+2 existing dataset metadata manifests; campaign source+plan+native plan/freeze/helper+smoke state/audit+every small audit artifact ref. All inside future owned campaign.",
+  "score_scope": "Fresh Edge native03 batch4 CPU2GiB coexist candidate only. No prior owner06/idle-only or3GiB results, fit, performance, authentication, scores, batch1 or browser inheritance.",
+  "execution_selection": "CANDIDATE_ONLY_PENDING_GENUINE_OWNER07_NATIVE03_SMOKE_AND_CLOSED_AUDIT; fresh root absence/fullR+entire2GiB admission required under explicit CPU-coexist policy.",
+  "benchmark_inputs_gold_answers_or_caches_copied_into_source": false,
+  "Torch_model_or_eval_executed_during_preparation": false,
+  "external_authenticated_current_campaign_closure_required_before_final_claim": true,
+  "stage_completion_schema": "authenticated-native-batch4-stage-completion-v1",
+  "stage_completion_policy": "full-auth-durable-stage-evidence-within-original-whole10000-root-audit-required",
+  "separate_stage_score_policy": "Both full suites remain mandatory. Only a complete, fully authenticated, durable stage receipt may be independently joined by root to this exact invocation/time/nonce/process and original current owner closure. Later-stage failure leaves overall incomplete and never imports prior profile scores.",
+  "host_observation_policy": "comfy-observed-cpu-coexist-v1",
+  "global_metric_projection": {
+    "public_ece": "Original official structured ECE object retained unchanged after exact typed global schema validation; no scalar assumption, recomputation, rounding or clamping.",
+    "official_source_pins": [
+      {
+        "path": "artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/metrics.py",
+        "size_bytes": 5604,
+        "sha256": "4038c8423ad1cf28601afb6babe777b71f08e379b9ca125b09b52c0ac7d60515"
+      },
+      {
+        "path": "artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/summarize.py",
+        "size_bytes": 3940,
+        "sha256": "aa5f24da407d004cd80bad1cd957b6987aba152591084c096d1de51dd9775cbe"
+      }
+    ],
+    "scope": "Output projection schema only; every original model/scorer/input/count/context/authentication/deadline invariant unchanged."
+  }
+}
