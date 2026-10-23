@@ -1,0 +1,75 @@
+{
+  "logs": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-02.stdout",
+      "observed_bytes": 2917,
+      "observed_sha256": "fb3b71b57da5c5fa2d22675e8c148f6baa6e8c86547ba5ba36c66c74a80c95dc",
+      "retained_bytes": 2917,
+      "truncated": false,
+      "retention": "First4MiB per stream; all observed bytes drained/hashed; interrupted actor may lack final counts/hash"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-02.stderr",
+      "observed_bytes": 366,
+      "observed_sha256": "000ffce194cfe49690ba1d70791d739856b41d7b84d871d1515206f6deb53984",
+      "retained_bytes": 366,
+      "truncated": false,
+      "retention": "First4MiB per stream; all observed bytes drained/hashed; interrupted actor may lack final counts/hash"
+    }
+  ],
+  "result": {
+    "argv": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-source-184f653",
+      "-B",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DGGML_CUDA=OFF",
+      "-DGGML_CPU_KLEIDIAI=OFF",
+      "-DGGML_BLAS=OFF",
+      "-DGGML_NATIVE=ON",
+      "-DFETCHCONTENT_FULLY_DISCONNECTED=ON",
+      "-DLLAMA_OPENSSL=OFF",
+      "-DLLAMA_BUILD_TESTS=OFF",
+      "-DLLAMA_BUILD_COMMON=OFF",
+      "-DLLAMA_BUILD_EXAMPLES=OFF",
+      "-DLLAMA_BUILD_TOOLS=OFF",
+      "-DLLAMA_BUILD_SERVER=OFF",
+      "-DLLAMA_BUILD_APP=OFF",
+      "-DLLAMA_BUILD_MTMD=ON",
+      "-DLLAMA_BUILD_UI=OFF",
+      "-DLLAMA_USE_PREBUILT_UI=OFF",
+      "-DLLAMA_CONNECT=OFF",
+      "-DLLAMA_LLGUIDANCE=OFF"
+    ],
+    "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+    "resolved_executable": "/usr/bin/cmake",
+    "pid": 341453,
+    "observed_identity": {
+      "process": {
+        "pid": 341453,
+        "start_ticks": 6936595,
+        "pgid": 341440,
+        "sid": 341440,
+        "uid": 1001,
+        "state": "R",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service"
+      },
+      "exe": "/usr/bin/cmake",
+      "argv": [],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+    },
+    "executable_stat_at_start": {
+      "st_dev": 66306,
+      "st_ino": 48002409,
+      "st_size": 10489912,
+      "st_mtime_ns": 1713179337000000000
+    },
+    "returncode": 0,
+    "elapsed_seconds": 3.316580578990397
+  },
+  "primary_error": null,
+  "cleanup_errors": [],
+  "child_poll_at_finalization": 0
+}

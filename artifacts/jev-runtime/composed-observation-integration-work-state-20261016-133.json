@@ -1,0 +1,120 @@
+{
+  "schema_id": "composed-observation-integration-work-state-v1",
+  "sequence": 133,
+  "created_at_utc": "2026-10-23T02:21:51.473417+00:00",
+  "previous_state": {
+    "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-132.json",
+    "sha256": "35429a4c53c31c53c1e399c697d330c090296d15fb9d1ef268084ec8e71a822c",
+    "size_bytes": 6420
+  },
+  "goal_status": "active",
+  "precommit_head": "63f64e2c2d6e11d511436700dd4951379364c973",
+  "previous_goal_turn_classification": "progress: actual BF16 regression and public artifact provenance committed63f64e2; actual native S1 build now passed, public Q8 download remains an authenticated live handle and is making byte progress",
+  "status": "Native_S1_CPU_build_passed_full_Q8_download_verified_live_model_scoring_and_browser_goal_incomplete",
+  "scores_unchanged": {
+    "Benchmark_Heaven": "195/231=84.4155844155844%",
+    "coherence_MINI": "41.26307189542484/100",
+    "best_genuine_browser": "4/10",
+    "all_six_Decision3_complete": false,
+    "other_models_beaten": false
+  },
+  "actual_build": {
+    "report": {
+      "path": "docs/validation/2026-10-23/gx10-native-s1-build.md",
+      "sha256": "b0e0670d33ca379d6bfcc670a8831625f309d545a2cdc0e241052fe9331f757b",
+      "size_bytes": 4119
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/receipt.json",
+      "sha256": "e3467d83247d8e96c7544d8f2a40521b4525ffcd28c13643971772de7ac1562e",
+      "size_bytes": 270046
+    },
+    "root_execution": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/root-execution-build-01.json",
+      "sha256": "456c0ec667a13ca28e9f974ced4b98a1a79d033e03e7f74db075f2851d5daaa6",
+      "size_bytes": 939
+    },
+    "independent_audit": {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/independent-build-result-audit.json",
+      "sha256": "e26fb02de003277fdd20dd8bd01372c6300b36b14673148dece39ed3b7292fc9",
+      "size_bytes": 39125
+    },
+    "commands_exit_zero": 7,
+    "root_seconds": 759.3790832899977,
+    "cgroup_peak_bytes": 669175808,
+    "peak_is_not_RSS": true,
+    "model_loaded_or_scored": false,
+    "actual_GPU_operations": false,
+    "whole_tree_or_GPU_restoration_claim": false
+  },
+  "public_Q8_download": {
+    "current_snapshot": {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/download-progress-01.json",
+      "sha256": "181b297bc6ebda7dc74203c7328c1a302b2441d379564e773600f9cf14475de7",
+      "size_bytes": 1267
+    },
+    "controller": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/controller.py",
+      "sha256": "2d250d1cbe79bdd179381b766c5b4c9499801f79a61c94d5a15adc16fefffb25",
+      "size_bytes": 38074
+    },
+    "spec": {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/root-download-spec.json",
+      "sha256": "6a375f195e88d2bdc24e4bd8a0319644899d5d313c31474078559b0ccb0dcd7c",
+      "size_bytes": 1707
+    },
+    "source_review": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/independent-source-review.json",
+      "sha256": "c7714695eb912b6fdc112920423b4d2eca62c327f3c74a370f06be7cdafbecc5",
+      "size_bytes": 7399
+    },
+    "download_source_review": {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/download-source-review.json",
+      "sha256": "7179e4d6f94636be84d39a5c24f80ebfe233b4ba4c2d102d259a0e9cd75772a0",
+      "size_bytes": 9704
+    },
+    "output": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-01",
+    "unit": "jev-d3-llama-cpp-20261023-02.service",
+    "exec_session_id": 67515,
+    "actor": {
+      "pid": 348003,
+      "start_ticks": 7034876,
+      "pgid": 348003,
+      "sid": 348003,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-02.service"
+    },
+    "invocation_id": "330624dd7d98474d93fff87294ca2828",
+    "expected_model_bytes": 12669647264,
+    "partial_bytes_at_snapshot": 5966397440,
+    "download_complete": false,
+    "model_SHA_verified_from_download": false,
+    "poll_same_handle_do_not_restart": true
+  },
+  "next_candidate_source_work": {
+    "native_v2_source_only": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02",
+    "native_v2_build_spec_unused": true,
+    "native_v3_in_preparation": "Agent /root/s1_find_v2_source_review preparing fresh explicitCPU mmap/no-repack successor; keep v1/v2 source immutable",
+    "smoke_actor_in_preparation": "Agent /root/q95_control03_prepare preparing synthetic HF payload and bounded native RPC/cache comparison; no model execution yet",
+    "required_policy": "Explicit GPU0, mmap, lazy-off, no CPU extra/repack buffers; compact/full cache semantics must be measured with same inputs, 48 original layers and fresh profile",
+    "scope": "Any research600-second cache-equivalence deadline is separate from the unchanged20-second real-browser budget;8192 context construction is not full8192-token measurement"
+  },
+  "original_constraints": {
+    "reserve_bytes": 26119172916,
+    "Comfy_original_observer_unchanged": true,
+    "Comfy_mutations": false,
+    "memory_max_bytes": 2147483648,
+    "swap_bytes": 0,
+    "serial_build_then_download": true,
+    "model_tensor_payloads_in_Git": false
+  },
+  "next_actions": [
+    "Poll exec session67515 or reauthenticate its exact unit/PID/start/invocation; do not restart because a saved receipt/state is old",
+    "When download terminates, inspect stream-size/SHA receipts and original owner final closure, including failed partials if any",
+    "Finish/review fresh mmap/no-repack candidate and genuine RPC/cache smoke actors; compiled-parser tests first, full-model test after download and source qualification",
+    "Retain full original browser tasks/judge/order/context/time limits and add genuine helper/LoRA integration before claiming browser qualification",
+    "Run and separately report both fresh JevBench suites plus fair matched comparison of all six Decision3 models"
+  ],
+  "completion_claim": false
+}
