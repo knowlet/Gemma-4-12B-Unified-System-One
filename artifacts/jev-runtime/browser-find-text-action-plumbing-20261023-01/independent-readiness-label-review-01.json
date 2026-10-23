@@ -1,0 +1,80 @@
+{
+  "schema_id": "independent-nativev2-readiness-label-source-review-v1",
+  "status": "CLEAR_SOURCE_ONLY",
+  "scope": "Two-line readiness JSON label change relative to committed eae8113; source comparison only.",
+  "current_source": {
+    "path": "scripts/jev_native_v2_browser.py",
+    "size_bytes": 52802,
+    "sha256": "f4cfdbb1fc33fa03fa07c1a871b43107a241de5da9a865414bc30e5163a57dee"
+  },
+  "baseline": {
+    "commit": "eae8113",
+    "path": "scripts/jev_native_v2_browser.py",
+    "size_bytes": 52685,
+    "sha256": "ec7954f3fff33c9ad2a32f1afe35f803292f2359f6294fbe4e688011f8cc23fb",
+    "source": "Read-only git show; source pin also matches prior independent applied-driver review."
+  },
+  "comparison": {
+    "baseline_commit": "eae8113",
+    "single_current_anchor": 1,
+    "exact_entire_file_inverse": true,
+    "baseline_size_bytes": 52685,
+    "current_size_bytes": 52802,
+    "baseline_complete": true,
+    "current_complete": true,
+    "method": "Read baseline and current source as text, require exactly one changed block, replace only that block with original profile line, then compare the complete recovered bytes/text to committed baseline.",
+    "before": "                \"profile\": PROFILE,",
+    "after": [
+      "                \"profile\": plan.get(\"profile\", PROFILE),",
+      "                **({\"action_profile\": action_profile} if action_profile != \"standard\" else {}),"
+    ]
+  },
+  "checks": [
+    {
+      "id": "correct_selected_label",
+      "result": "PASS",
+      "evidence": "Experimental readiness now uses selected plan profile, consistent with plan/receipt identity."
+    },
+    {
+      "id": "default_record_unchanged",
+      "result": "PASS",
+      "evidence": "Standard metadata plan profile remains global PROFILE and optional action_profile expansion is empty for standard. A missing plan profile falls back to same global PROFILE."
+    },
+    {
+      "id": "metadata_only_no_secret",
+      "result": "PASS",
+      "evidence": "New value is only the already validated action-profile enum; no token/environment value, request or response content added."
+    },
+    {
+      "id": "no_other_source_delta",
+      "result": "PASS",
+      "evidence": "Full current-source inverse after the unique readiness block replacement is byte-for-byte/text-identical to complete eae8113 driver source, including EOF. No other driver change present."
+    },
+    {
+      "id": "no_runtime_qualification",
+      "result": "PASS",
+      "evidence": "Adjacent server.started prerequisite and qualifiedFalse readiness flag remain unchanged. No model, native math, selection, timing, case/judge, source-auth or closure operation changes."
+    }
+  ],
+  "blocking_findings": [],
+  "prior_review": {
+    "path": "artifacts/jev-runtime/browser-find-text-action-plumbing-20261023-01/independent-api-selector-driver-source-review-01.json",
+    "sha256": "fba1be407d8c6adfe5b03e0965dece392d17c26168b6dc988580dcb42c708ed3",
+    "size_bytes": 11375
+  },
+  "pending": "Root will run existing portable checks after active wait99792 is terminal and bind updated source in successor freeze02 before conventional fix commit.",
+  "actions": {
+    "source_or_tests_executed": false,
+    "NN_or_browser_or_network": false,
+    "host_unit_observer_or_model_native_payload_read": false,
+    "source_edited": false,
+    "read_only_git_show": true,
+    "Git_mutation": false,
+    "new_review_metadata_only": true
+  },
+  "limitations": [
+    "Source-only clearance does not qualify NN/helper/browser/task success or runtime readiness.",
+    "Canary55 selected source pool was not reopened; parent reports this NF4 driver is outside that unchanged selection.",
+    "No test or formatter was rerun during active wait."
+  ]
+}

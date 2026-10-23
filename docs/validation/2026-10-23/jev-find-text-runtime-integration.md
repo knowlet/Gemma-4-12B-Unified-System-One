@@ -40,3 +40,7 @@ tests; the successful run used the repository's Python3.12 environment.
 Actual NN-selected FIND_TEXT through the real HTTP helper and browser, followed
 by all ten matched tasks, remains required. No new real-browser score or
 competitor win is claimed.
+
+Readiness evidence records the selected experimental profile; its default record
+remains unchanged. The two-line label correction passed 99 driver tests and a
+separate independent source review.

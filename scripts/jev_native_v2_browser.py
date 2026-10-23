@@ -1149,7 +1149,8 @@ def run(plan, *, expected_boot_id, chromium):
         write(
             output / "loopback-ready.json",
             {
-                "profile": PROFILE,
+                "profile": plan.get("profile", PROFILE),
+                **({"action_profile": action_profile} if action_profile != "standard" else {}),
                 "endpoint": endpoint,
                 "model": IDENTITY,
                 "prompt_format": plan["prompt_format"],
