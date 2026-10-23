@@ -1,0 +1,171 @@
+{
+  "schema_id": "goal-runtime-blocked-audit-v146",
+  "created_at_utc": "2026-10-23T16:17:58.371843+00:00",
+  "parent_head": "894b7a4b345ad9758a2055c10df8c8379bba8fcf",
+  "previous_goal_turn_classification": "PROGRESS: tested source and independent reviews;3conventional commits pushed",
+  "current_turn_classification": "VERIFIED_LIVE_WAITS_THEN_NO_PROGRESS_ON_MODEL_OBJECTIVE; COMMON_EXTERNAL_BLOCKER",
+  "objective_complete": false,
+  "goal_status_request_after_persisting_audit": "blocked",
+  "goal_status_tool_return": null,
+  "goal_status_authority": "get_goal/update_goal tool, not this intended-status audit",
+  "current_attempts": [
+    {
+      "root_tool_session": 11374,
+      "exit_code": 2,
+      "stdout_summary": {
+        "status": "NO_ADMISSION_NO_MODEL_LAUNCHED",
+        "checks": 36,
+        "wait_seconds": 180,
+        "window_resets": 0,
+        "model_launched": false,
+        "last_error": {
+          "type": "ValueError",
+          "message": "Original read-only Comfy idle gate",
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 37050388480,
+            "comfy_running": 1,
+            "comfy_pending": 0,
+            "comfy_state": "http_busy",
+            "http_status": 200,
+            "response_sha256": "28b893bc397701046562410c76ebcaf96abb17c84e5926831fedbd47e33998c7"
+          },
+          "initial": true,
+          "required_available_bytes": null
+        }
+      },
+      "terminal_capture": "Root-observed unified tool terminal copied into typed aggregate; no invented full per-sample log",
+      "wait_source": {
+        "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-full07-reviewed-admission-wait.py",
+        "size_bytes": 7752,
+        "sha256": "541c6f7e89abfad972fd1fbf8f889154e4a3b864a4dd57e5f8571dee46f2237e"
+      },
+      "launcher_not_executed": {
+        "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-full07-reviewed-launcher.py",
+        "size_bytes": 8928,
+        "sha256": "73b8427db411ad3b43cec44bbcbeacb634d47551c57d6d2bfb66127752f222b3"
+      }
+    },
+    {
+      "root_tool_session": 56507,
+      "exit_code": 2,
+      "stdout_terminal_JSON": {
+        "status": "NO_ADMISSION_NO_MODEL_LAUNCHED",
+        "checks": 36,
+        "wait_seconds": 180,
+        "window_resets": 0,
+        "last_error": {
+          "type": "ValueError",
+          "message": "Original read-only Comfy idle gate",
+          "evidence": {
+            "observation": {
+              "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+              "mem_total_bytes": 130595864576,
+              "mem_available_bytes": 29999222784,
+              "comfy_running": 1,
+              "comfy_pending": 0,
+              "comfy_state": "http_busy",
+              "comfy_evidence": {
+                "transport": "HTTP",
+                "comfy_running": 1,
+                "comfy_pending": 0,
+                "http_status": 200,
+                "response_sha256": "28b893bc397701046562410c76ebcaf96abb17c84e5926831fedbd47e33998c7"
+              }
+            },
+            "required_available_bytes": null,
+            "initial": true
+          },
+          "returncode": null,
+          "stdout": null,
+          "stderr": null,
+          "command_cleanup_errors": null
+        },
+        "model_launched": false,
+        "scope": "Outer wait elapsed; no launcher/unit/model was started"
+      },
+      "terminal_capture": "Exact JSON stdout from final unified tool poll retained by root",
+      "wait_source": {
+        "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/root-reviewed-replay08-admission-wait.py",
+        "size_bytes": 7742,
+        "sha256": "97297cf129b7fa1a34cd8a5a6cd106e8ba9b5faf331660c1bc65f2897e50df70"
+      },
+      "launcher_not_executed": {
+        "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/root-reviewed-replay08-launcher.py",
+        "size_bytes": 9518,
+        "sha256": "9cc8359030a94b821f6e728f4bd5904044c815f6b21f9bc946ae255af7938ba6"
+      }
+    }
+  ],
+  "fresh_model_output_intent_terminal_and_gate_paths_absent": [
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-07",
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-08",
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-launch-full04-edge-both-07.json",
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-full04-edge-both-07.json",
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-launch-readout-replay-08.json",
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-readout-replay-08.json",
+    "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-full04-initial-gate-07.json",
+    "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/root-replay-initial-gate-08.json"
+  ],
+  "blocked_audit": {
+    "passed": true,
+    "same_condition": "Original Comfy idle gate refuses HTTP200/running1/pending0. Mid-run interruptions and prelaunch refusals are the same external availability condition.",
+    "consecutive_goal_turns": 3,
+    "goal_turn_mapping_evidence": "Root conversation context explicitly identifies144 as the completed goal turn preceding145;145 is the immediately previous visible completed turn;146 is this automatic continuation. Counts are goal turns, not numbers of samples, attempts or checkpoint names alone.",
+    "turns": [
+      {
+        "turn": 144,
+        "scope": "Earlier completed goal turn; full actual03/04 and canary05/06 interrupted by original Comfy idle gate, despite source and diagnostic progress.",
+        "record": {
+          "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-144.json",
+          "size_bytes": 11062,
+          "sha256": "3419f4df4a24f9f354ec29fcf9639f08c81737e335f1d4d8b9d135e6728eca02"
+        }
+      },
+      {
+        "turn": 145,
+        "scope": "Immediately previous completed goal turn; source work finished, full600s/120checks and replay180s/36checks terminal with no admission.",
+        "record": {
+          "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-145.json",
+          "size_bytes": 8813,
+          "sha256": "f77dbf8be1bdfbc2e59edd79f635e0de4f8ba052af4cdc997f97cfca2fe7d833"
+        }
+      },
+      {
+        "turn": 146,
+        "scope": "Current continuation; fresh gate and both reviewed waits retried after memory recovery; both terminal with same Comfy refusal and no model launch."
+      }
+    ],
+    "memory_diagnosis": "Fresh observation reached107174928384 available bytes; final full/replay observations37050388480 and29999222784 also exceeded unchanged28266656564 initial threshold. Comfy check refused first; no successful full admission is claimed.",
+    "immediate_source_preparation": "Independent follow-up review found no necessary implementation defect before the already reviewed genuine replay. Later trainer/loader/NumPy/W0 work depends on accepted actual evidence; no substitute fake tests or unexecuted plans counted as progress.",
+    "all_owned_model_or_wait_handles_terminal": true,
+    "new_profile_or_guard_weakening": false,
+    "Comfy_service_queue_cache_or_model_changes": false,
+    "why_external_change_is_required": "All remaining immediate accepted model executions require the original Comfy idle condition. No independent goal work identified can supply missing native outputs, full benchmark scores or real browser improvement.",
+    "resume_condition": "User resumes after Comfy work ends and original fresh admission can pass; revalidate current prior-closure evidence before any model launch."
+  },
+  "scores_and_results": {
+    "Benchmark_Heaven_public231": null,
+    "JevBench_coherence_MINI1248": null,
+    "native_feature_replay_parity": null,
+    "new_trained_delta": null,
+    "new_browser_score": null,
+    "competitor_win_proven": false,
+    "callbacks_or_native_calls_this_turn": 0,
+    "actual07_or08_closure": null
+  },
+  "remaining_objective_requirements": [
+    "Accepted genuine same-call feature parity with original full authentication and closed owner",
+    "Actual qualified training and independent held-out/browser evaluation",
+    "Complete unchanged public231 and coherenceMINI1248 baselines, reported separately",
+    "Verified real-scene improvement and matched comparison showing the requested competitor win"
+  ],
+  "qualification_flags": {
+    "training_eligible": false,
+    "new_model_or_browser_qualified": false,
+    "whole_tree_audited": false,
+    "no_escape_audited": false,
+    "continuation_qualified": false
+  }
+}
