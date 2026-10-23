@@ -1,0 +1,64 @@
+{
+  "completed_cases": [],
+  "details": {
+    "attention_implementation": "sdpa",
+    "cache_used": false,
+    "cloned_weight_baseline": false,
+    "num_hidden_layers": 48,
+    "num_kv_shared_layers": 0,
+    "synthetic_inputs": true
+  },
+  "elapsed_seconds": 10.481837823004753,
+  "memory": {
+    "monotonic_after": 64156.064821184,
+    "monotonic_before": 64156.063227154,
+    "own_cgroup": {
+      "memory_current_bytes": 516464640,
+      "memory_peak_bytes": 516464640,
+      "memory_stat": {
+        "anon": 511873024,
+        "file": 630784,
+        "kernel": 3739648,
+        "pgfault": 136965,
+        "pgmajfault": 0,
+        "shmem": 0
+      },
+      "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+    },
+    "process": {
+      "RssAnon_bytes": 511868928,
+      "RssFile_bytes": 342233088,
+      "RssShmem_bytes": 0,
+      "VmRSS_bytes": 854102016,
+      "VmSwap_bytes": 0
+    },
+    "scope": "Sequential non-atomic own-process/own-cgroup snapshot; page cache release and disk IO bytes are not inferred."
+  },
+  "monotonic": 64156.063223234,
+  "peak_RSS_bytes": 854048768,
+  "planned_cases": [
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 32
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 32
+    }
+  ],
+  "ru_majflt": 0,
+  "ru_minflt": 136877,
+  "stage": "imports-native-config-rotary-ready"
+}

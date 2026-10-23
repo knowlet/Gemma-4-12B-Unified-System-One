@@ -1,0 +1,98 @@
+{
+  "completed_cases": [
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 1
+    }
+  ],
+  "details": {
+    "RoPE_shapes": [
+      [
+        1,
+        32,
+        256
+      ],
+      [
+        1,
+        32,
+        256
+      ]
+    ],
+    "input_object_id": 255992495479280,
+    "input_sha256": "88e6a7d75eda545aa44b79e678c46caef37b9f1fd345ba50c77cfb8239cc4bb0",
+    "layer_index": 0,
+    "mask": null,
+    "mask_builder": "create_sliding_window_causal_mask",
+    "prefetched_warm_pages": true,
+    "repeats": [
+      {
+        "absolute_max": 26.125,
+        "finite": true,
+        "forward_seconds": 0.3633051290016738,
+        "output_dtype": "torch.bfloat16",
+        "output_sha256": "4b07e9ce95c3d71a5764dcc83d1ff25da02f8487276ce926741780083d2ac763",
+        "output_shape": [
+          1,
+          32,
+          3840
+        ],
+        "repeat": 0
+      }
+    ],
+    "tokens": 32
+  },
+  "elapsed_seconds": 12.583594465002534,
+  "memory": {
+    "monotonic_after": 64158.166583297,
+    "monotonic_before": 64158.164982836,
+    "own_cgroup": {
+      "memory_current_bytes": 981254144,
+      "memory_peak_bytes": 1109749760,
+      "memory_stat": {
+        "anon": 518991872,
+        "file": 453152768,
+        "kernel": 4792320,
+        "pgfault": 146618,
+        "pgmajfault": 37,
+        "shmem": 0
+      },
+      "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+    },
+    "process": {
+      "RssAnon_bytes": 518991872,
+      "RssFile_bytes": 808574976,
+      "RssShmem_bytes": 0,
+      "VmRSS_bytes": 1327566848,
+      "VmSwap_bytes": 0
+    },
+    "scope": "Sequential non-atomic own-process/own-cgroup snapshot; page cache release and disk IO bytes are not inferred."
+  },
+  "monotonic": 64158.164980212,
+  "peak_RSS_bytes": 1458184192,
+  "planned_cases": [
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 32
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 32
+    }
+  ],
+  "ru_majflt": 37,
+  "ru_minflt": 146495,
+  "stage": "layer-0-tokens-32-repeat-0"
+}

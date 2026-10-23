@@ -1,0 +1,111 @@
+{
+  "README": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/README.md",
+    "sha256": "e5be4d3f3957241c6c0af0382c631357c6227ad9314b51a6d0dce1c683bf26e6",
+    "size_bytes": 4120
+  },
+  "entry": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/fixture.py",
+    "sha256": "056e55bedd82bd9704f1c96df4ea63e9185e62533a7929a30647f7762e17f419",
+    "size_bytes": 34460
+  },
+  "header_selection": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/header-selection.json",
+    "sha256": "31201ff6d076838459d3abe1efd1d20df4d3f3a8d3a589495736949368385efa",
+    "size_bytes": 28508
+  },
+  "planned_cases": [
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 32
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 32
+    }
+  ],
+  "profile": "bf16-real-layer-cpu-fixture-v1",
+  "qualification": {
+    "12B": false,
+    "20s_budget": false,
+    "8192_context": false,
+    "GPU_transfer": false,
+    "N3_Q95_equivalence": false,
+    "quality_or_benchmark_score": false
+  },
+  "research": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/research-decision.md",
+    "sha256": "7b538a1141c997a724f30ef0adb9735beb2e20f29cb2967ee0977514d05aefc3",
+    "size_bytes": 5313
+  },
+  "ruff": {
+    "exit_code": 0,
+    "observed_output": "All checks passed!",
+    "scope": "CPU0,one thread,CPU30s,timeout45s,core0; source check only"
+  },
+  "schema": "bf16-real-layer-cpu-source-validation-v1",
+  "selection": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/selection.json",
+    "sha256": "a552b73a839483a521eedb8bcd5efefaaed3873fd8a77d6b971ee60197509bfe",
+    "size_bytes": 7832
+  },
+  "selection_check": {
+    "checkpoint_stat_only_refs": 1,
+    "complete_runtime_or_payload_qualified": false,
+    "native_binary_stat_only_refs": 5,
+    "passed": true,
+    "small_source_refs": 22,
+    "stat_only_refs": 6
+  },
+  "stage_evidence_prepared": [
+    "RSS/Anon/File and own memory.current/peak/stat",
+    "before/after meta,after assign,each forward,after del weights/layer/handle+GC",
+    "separate selected range hash and forward timing,explicit prefetched/warm status",
+    "cooperative sealed deadline partial exit2 with all omitted cells unqualified"
+  ],
+  "status": "SOURCE_FROZEN_STOPPED_ACTOR_NOT_EXECUTED",
+  "stdlib_tests": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--cpu=30",
+      "--as=1073741824",
+      "--core=0",
+      "timeout",
+      "45",
+      ".venv/bin/python",
+      "-S",
+      "-B",
+      "artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/test_static.py"
+    ],
+    "exit_code": 0,
+    "failed": 0,
+    "passed": 17,
+    "scope": "Observed tool execution; stdlib AST/boundary/partial/source/header-only reads/exact selected synthetic ranges and fake proc/cgroup tests. No Torch or real payload.",
+    "unittest_seconds": 0.081
+  },
+  "test": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/test_static.py",
+    "sha256": "6c43f8d562b54fe3c179e068881aef0a32e0e92602bb59d0f7b69c0e24e86ba2",
+    "size_bytes": 13204
+  },
+  "unperformed": [
+    "Torch/framework import",
+    "real tensor payload read/hash/mmap",
+    "model/actor/GPU/service/Comfy execution"
+  ]
+}
