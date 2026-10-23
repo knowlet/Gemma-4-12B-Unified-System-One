@@ -1,0 +1,86 @@
+{
+  "runs": [
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/controller.py",
+        "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/test_controller.py"
+      ],
+      "elapsed_seconds": 0.015150738006923348,
+      "limits": {
+        "AS": "inherited default",
+        "wall_seconds": 45
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/controller.py",
+        "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/test_controller.py"
+      ],
+      "elapsed_seconds": 0.00948324499768205,
+      "limits": {
+        "AS": "inherited default",
+        "wall_seconds": 45
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "2 files already formatted\n"
+    },
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/test_controller.py",
+        "-v"
+      ],
+      "elapsed_seconds": 0.1659301489999052,
+      "limits": {
+        "AS_bytes": 1073741824,
+        "CPU_seconds": 30,
+        "core_bytes": 0,
+        "wall_seconds": 45
+      },
+      "returncode": 0,
+      "stderr": "test_affinity_dual_read_accepts_cpu0_and_rejects_widening (__main__.ControllerTests.test_affinity_dual_read_accepts_cpu0_and_rejects_widening) ... ok\ntest_all_accepted_gate_aggregate_keeps_lowpoint_outside_retained64 (__main__.ControllerTests.test_all_accepted_gate_aggregate_keeps_lowpoint_outside_retained64) ... ok\ntest_default_dry_imports_no_framework_and_calls_no_authority (__main__.ControllerTests.test_default_dry_imports_no_framework_and_calls_no_authority) ... ok\ntest_environment_selects_only_pinned_gpu_with_controlled_overlay (__main__.ControllerTests.test_environment_selects_only_pinned_gpu_with_controlled_overlay) ... ok\ntest_existing_cgroup_is_refused_even_if_unit_absent (__main__.ControllerTests.test_existing_cgroup_is_refused_even_if_unit_absent) ... ok\ntest_existing_unit_is_refused_without_command_or_stop (__main__.ControllerTests.test_existing_unit_is_refused_without_command_or_stop) ... ok\ntest_expired_postreceipt_hold_never_qualifies_as_completed (__main__.ControllerTests.test_expired_postreceipt_hold_never_qualifies_as_completed) ... ok\ntest_finalization_closes_before_final_source_or_host_failure (__main__.ControllerTests.test_finalization_closes_before_final_source_or_host_failure) ... ok\ntest_finalization_preserves_primary_and_receipt_when_final_checks_fail (__main__.ControllerTests.test_finalization_preserves_primary_and_receipt_when_final_checks_fail) ... ok\ntest_gpu_context_success_requires_uuid_init_tiny_operator_and_no_model (__main__.ControllerTests.test_gpu_context_success_requires_uuid_init_tiny_operator_and_no_model) ... ok\ntest_hold_success_requires_authenticated_live_close_before_deadline (__main__.ControllerTests.test_hold_success_requires_authenticated_live_close_before_deadline) ... ok\ntest_host_initial_and_runtime_floor_and_busy_evidence (__main__.ControllerTests.test_host_initial_and_runtime_floor_and_busy_evidence) ... ok\ntest_linux_limit_lines_allow_trailing_space_but_reject_wrong_hard_limit (__main__.ControllerTests.test_linux_limit_lines_allow_trailing_space_but_reject_wrong_hard_limit) ... ok\ntest_missing_cpuset_is_recorded_with_real_affinity_gate (__main__.ControllerTests.test_missing_cpuset_is_recorded_with_real_affinity_gate) ... ok\ntest_missing_receipt_preserves_original_child_error_and_refuses_false_success (__main__.ControllerTests.test_missing_receipt_preserves_original_child_error_and_refuses_false_success) ... ok\ntest_native_library_and_pyi_are_metadata_only_and_model_blob_is_refused (__main__.ControllerTests.test_native_library_and_pyi_are_metadata_only_and_model_blob_is_refused) ... ok\ntest_original_selection_has_exact_tiny_cap_without_modification (__main__.ControllerTests.test_original_selection_has_exact_tiny_cap_without_modification) ... ok\ntest_partial_actor_receipt_is_retained_before_exit2_refusal (__main__.ControllerTests.test_partial_actor_receipt_is_retained_before_exit2_refusal) ... ok\ntest_saved_gpu_identity_same_boot_and_uuid_only_is_not_live_probe (__main__.ControllerTests.test_saved_gpu_identity_same_boot_and_uuid_only_is_not_live_probe) ... ok\ntest_stable_identity_allows_R_S_but_rejects_changed_start (__main__.ControllerTests.test_stable_identity_allows_R_S_but_rejects_changed_start) ... ok\ntest_timeout_byte_output_remains_bounded_json_evidence (__main__.ControllerTests.test_timeout_byte_output_remains_bounded_json_evidence) ... ok\ntest_wrong_entry_sha_refuses_before_authorities_or_actor (__main__.ControllerTests.test_wrong_entry_sha_refuses_before_authorities_or_actor) ... ok\n\n----------------------------------------------------------------------\nRan 22 tests in 0.020s\n\nOK\n",
+      "stdout": ""
+    }
+  ],
+  "schema": "gpu-context-owner-static-validation-v2",
+  "selected_source_check": {
+    "distinct_small_union": 16,
+    "native_binary_stat_only_refs": 6,
+    "result": "PASS;all code/stub/JSON source bounded1MiB/exactSHA;native.so stat-only,no binary/model payload reads",
+    "small_actor_refs": 11
+  },
+  "sources": {
+    "entry": {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/controller.py",
+      "sha256": "63ad33776b9257bf8ccefff65458c64e49f28973a33f5b0740f107577ed25c9f",
+      "size_bytes": 36146
+    },
+    "test": {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/test_controller.py",
+      "sha256": "7547f5e12ee681a43ed05eaada631c119328d937fad44e4f103ff1bdf28eb99f",
+      "size_bytes": 28381
+    }
+  },
+  "torch_loaded": false,
+  "unexecuted": [
+    "unit",
+    "observer HTTP",
+    "Torch/framework import",
+    "CUDA",
+    "NVML/live GPU probe",
+    "mmap",
+    "model/blob",
+    "Comfy operation"
+  ]
+}

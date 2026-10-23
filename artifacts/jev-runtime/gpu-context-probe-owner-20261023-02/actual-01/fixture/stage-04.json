@@ -1,0 +1,55 @@
+{
+  "CUDA": {
+    "allocated_bytes": 0,
+    "free_bytes": 955060224,
+    "initialized": true,
+    "max_allocated_bytes": 0,
+    "max_reserved_bytes": 0,
+    "metrics_seconds": 0.0011419970105635002,
+    "reserved_bytes": 0,
+    "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+    "total_bytes": 130595864576
+  },
+  "details": {
+    "actual_fraction": 0.0005138666849664763,
+    "requested_bytes": 67108864,
+    "requested_fraction": 0.0005138666849664763,
+    "scope": "Own PyTorch caching allocator only. Not a context/driver/cuBLAS/physical UMA or cgroup hard cap. Never enlarged on failure."
+  },
+  "elapsed_seconds": 2.7525966169923777,
+  "host": {
+    "MemAvailable_bytes": 28925091840,
+    "MemTotal_bytes": 130595864576
+  },
+  "memory": {
+    "monotonic_after": 66811.348396362,
+    "monotonic_before": 66811.346966909,
+    "own_cgroup": {
+      "memory_current_bytes": 358555648,
+      "memory_peak_bytes": 361091072,
+      "memory_stat": {
+        "anon": 310136832,
+        "file": 44261376,
+        "kernel": 2707456,
+        "pgfault": 97208,
+        "pgmajfault": 0,
+        "shmem": 44236800
+      },
+      "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+    },
+    "process": {
+      "RssAnon_bytes": 311353344,
+      "RssFile_bytes": 264617984,
+      "RssShmem_bytes": 44236800,
+      "VmRSS_bytes": 620208128,
+      "VmSwap_bytes": 0
+    },
+    "scope": "Sequential non-atomic own-process/own-cgroup snapshot; page cache release and disk IO bytes are not inferred."
+  },
+  "monotonic": 66811.349730871,
+  "peak_RSS_bytes": 620064768,
+  "ru_majflt": 0,
+  "ru_minflt": 97431,
+  "snapshot_scope": "Sequential non-atomic own process/cgroup, host and global CUDA samples; owner admission remains external.",
+  "stage": "own-allocator-cap-set"
+}

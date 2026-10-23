@@ -1,0 +1,3657 @@
+{
+  "profile": "gpu-context-probe-owned-v2",
+  "selected_config": {
+    "profile": "gpu-context-probe-owned-v2",
+    "unit": "jev-d3-gpu-context-probe-20261023-02.service",
+    "nonce": "jev-d3-boundary-48ca7993f053d96559db351c035ee410",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "output": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01",
+    "sources": [
+      {
+        "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/controller.py",
+        "sha256": "63ad33776b9257bf8ccefff65458c64e49f28973a33f5b0740f107577ed25c9f",
+        "size_bytes": 36146
+      },
+      {
+        "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/fixture.py",
+        "sha256": "01ed4cb4feb7c7221bd6a604fa98e1aac8f1b22f29659b688417b6eb128c5c2d",
+        "size_bytes": 23793
+      },
+      {
+        "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/selection.json",
+        "sha256": "f7d7fe39df15666d53c05ba05c2d63e3ba6bb1a726f96dd979668e19edb74e1f",
+        "size_bytes": 4440
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+        "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+        "size_bytes": 21002
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+        "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+        "size_bytes": 38483
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+        "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+        "size_bytes": 2196
+      },
+      {
+        "path": "artifacts/jev-runtime/gpu-context-root-hardware-20261023-01.json",
+        "sha256": "6dbd1e1b15195c9909c40fbd5144a1c6bb355cf7d9f1b65b13828537a66584f4",
+        "size_bytes": 752
+      }
+    ],
+    "selection": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-20261023-02/selection.json",
+    "selection_sha256": "f7d7fe39df15666d53c05ba05c2d63e3ba6bb1a726f96dd979668e19edb74e1f",
+    "actor_entry_sha256": "01ed4cb4feb7c7221bd6a604fa98e1aac8f1b22f29659b688417b6eb128c5c2d",
+    "mem_total_bytes": 130595864576,
+    "actor_deadline_monotonic": 66833.112976425
+  },
+  "completed": true,
+  "primary_error": null,
+  "secondary_errors": [],
+  "closure": {
+    "profile": "decision3-external-unit-terminal-boundary-v1",
+    "selection": {
+      "unit": "jev-d3-gpu-context-probe-20261023-02.service",
+      "nonce": "jev-d3-boundary-48ca7993f053d96559db351c035ee410",
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "memory_max_bytes": 2147483648,
+      "runtime_seconds": 30,
+      "stop_seconds": 3
+    },
+    "invocation_id": "7d2ac46c112f42a98ca372dbc80b516b",
+    "actor": {
+      "pid": 328609,
+      "start_ticks": 6680815,
+      "pgid": 328609,
+      "sid": 328609,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+    },
+    "tracked_cohort": [
+      {
+        "pid": 328609,
+        "start_ticks": 6680815,
+        "pgid": 328609,
+        "sid": 328609,
+        "uid": 1001,
+        "state": "S",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      }
+    ],
+    "before_stop": {
+      "Type": "exec",
+      "Restart": "no",
+      "TimeoutStopUSec": "3s",
+      "RuntimeMaxUSec": "30s",
+      "RemainAfterExit": "yes",
+      "MainPID": "328609",
+      "Result": "success",
+      "OOMPolicy": "kill",
+      "ExecMainPID": "328609",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service",
+      "Delegate": "no",
+      "MemoryAccounting": "yes",
+      "MemoryHigh": "infinity",
+      "MemoryMax": "2147483648",
+      "MemorySwapMax": "0",
+      "KillMode": "control-group",
+      "KillSignal": "15",
+      "FinalKillSignal": "9",
+      "SendSIGKILL": "yes",
+      "Description": "jev-d3-boundary-48ca7993f053d96559db351c035ee410",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "InvocationID": "7d2ac46c112f42a98ca372dbc80b516b"
+    },
+    "closure_mode": "authenticated_stop",
+    "stop_required": true,
+    "already_terminal_identity_samples": [],
+    "already_terminal_identity_sandwich_verified": false,
+    "stop_result": "",
+    "after_stop": {
+      "Type": "",
+      "Restart": "no",
+      "TimeoutStopUSec": "1min 30s",
+      "RuntimeMaxUSec": "infinity",
+      "RemainAfterExit": "no",
+      "MainPID": "0",
+      "Result": "success",
+      "OOMPolicy": "",
+      "ExecMainPID": "0",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "ControlGroup": "",
+      "Delegate": "no",
+      "MemoryAccounting": "yes",
+      "MemoryHigh": "infinity",
+      "MemoryMax": "infinity",
+      "MemorySwapMax": "infinity",
+      "KillMode": "control-group",
+      "KillSignal": "15",
+      "FinalKillSignal": "9",
+      "SendSIGKILL": "yes",
+      "Description": "jev-d3-gpu-context-probe-20261023-02.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "InvocationID": ""
+    },
+    "primary_error": null,
+    "closure_errors": [],
+    "post_stop_terminal_verified": true,
+    "cgroup_absent": true,
+    "two_process_scans": [
+      {
+        "matches": [],
+        "unknown": []
+      },
+      {
+        "matches": [],
+        "unknown": []
+      }
+    ],
+    "sources_unchanged": true,
+    "whole_unit_exit_confirmed": true,
+    "observed_cgroup_cohort_exit_confirmed": true,
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "model_qualified": false,
+    "scope": "Authenticated selected unit and observed cgroup cohort only. The audited fork/setsid/empty-env case is covered; explicit delegated cgroup migration or user-manager requests are not prevented."
+  },
+  "final_host": {
+    "observation": {
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "mem_total_bytes": 130595864576,
+      "mem_available_bytes": 29499117568,
+      "comfy_running": 0,
+      "comfy_pending": 0,
+      "comfy_state": "http_idle",
+      "comfy_evidence": {
+        "transport": "HTTP",
+        "comfy_running": 0,
+        "comfy_pending": 0,
+        "http_status": 200,
+        "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+      }
+    },
+    "reserve_bytes": 26119172916,
+    "required_available_bytes": 26119172916,
+    "initial": false
+  },
+  "sources_unchanged": true,
+  "state": {
+    "gpu_identity_baseline": {
+      "schema": "gpu-context-read-only-hardware-identity-v1",
+      "observed_at_utc": "2026-10-23T00:36:18.156150+00:00",
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "elapsed_seconds": 0.022914362001756672,
+      "argv": [
+        "nvidia-smi",
+        "--query-gpu=uuid,name,driver_version,memory.total,memory.free",
+        "--format=csv,noheader,nounits"
+      ],
+      "exit_code": 0,
+      "stdout": "GPU-e3429caa-b057-cbe0-917d-d3b85b313be7, NVIDIA GB10, 580.178.04, [N/A], [N/A]\n",
+      "stderr": "",
+      "host_memory_bytes": {
+        "MemTotal": 130595864576,
+        "MemAvailable": 29337903104
+      },
+      "scope": "NVML-backed read-only identity and Linux memory read; no CUDA/Torch import, model access, allocator/context, process/service mutation or host reserve admission."
+    },
+    "initial_host": {
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "mem_total_bytes": 130595864576,
+        "mem_available_bytes": 29485846528,
+        "comfy_running": 0,
+        "comfy_pending": 0,
+        "comfy_state": "http_idle",
+        "comfy_evidence": {
+          "transport": "HTTP",
+          "comfy_running": 0,
+          "comfy_pending": 0,
+          "http_status": 200,
+          "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+        }
+      },
+      "reserve_bytes": 26119172916,
+      "required_available_bytes": 28266656564,
+      "initial": true
+    },
+    "systemd_run_stdout": "",
+    "successful_parent_postlaunch_host_gate_summary": {
+      "runtime_host_gate_count": 70,
+      "phase_counts": {
+        "readiness": 15,
+        "preexec": 2,
+        "loop": 53
+      },
+      "min_MemAvailable_bytes": 28649074688,
+      "min_margin_vsR_bytes": 2529901772,
+      "scope": "All successful executed post-launch readiness/preexec/loop host-gate samples, including discarded raw samples; failing gates stay in primary evidence; initial/final separate; not a continuous-time minimum"
+    },
+    "bootstrap-identity.json": {
+      "identity": {
+        "config_sha256": "5ea3de4f2a6165670ec05c07f6b580e4ab9f55029727b03593dffd160e306d8f",
+        "nonce": "jev-d3-boundary-48ca7993f053d96559db351c035ee410",
+        "identity": {
+          "process": {
+            "pid": 328609,
+            "start_ticks": 6680815,
+            "pgid": 328609,
+            "sid": 328609,
+            "uid": 1001,
+            "state": "R",
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+          },
+          "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+          "argv": [
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+            "-B",
+            "-s",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/controller.py",
+            "--internal-stage",
+            "wait",
+            "--config",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/sealed-config.json",
+            "--config-sha256",
+            "5ea3de4f2a6165670ec05c07f6b580e4ab9f55029727b03593dffd160e306d8f"
+          ],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+        },
+        "torch_not_imported": true,
+        "observed_main_thread_affinity": [
+          0
+        ],
+        "sys_executable": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "python_flags": {
+          "no_user_site": 1,
+          "dont_write_bytecode": true
+        }
+      },
+      "properties": {
+        "unit": {
+          "MemoryPeak": "12369920",
+          "CPUQuotaPerSecUSec": "1s",
+          "LimitFSIZE": "8388608",
+          "LimitCORE": "0",
+          "LimitNOFILE": "512",
+          "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "CPUAffinity": "0"
+        },
+        "kernel_memory_peak_bytes": 12369920,
+        "kernel_cpu_max": [
+          "100000",
+          "100000"
+        ],
+        "cpuset_cpus_effective_raw": null,
+        "main_thread_affinity": {
+          "sched_before": [
+            0
+          ],
+          "sched_after": [
+            0
+          ],
+          "proc_Cpus_allowed_list": "0",
+          "process": {
+            "pid": 328609,
+            "start_ticks": 6680815,
+            "pgid": 328609,
+            "sid": 328609,
+            "uid": 1001,
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+          }
+        },
+        "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+      }
+    },
+    "exec-identity.json": {
+      "identity": {
+        "config_sha256": "5ea3de4f2a6165670ec05c07f6b580e4ab9f55029727b03593dffd160e306d8f",
+        "nonce": "jev-d3-boundary-48ca7993f053d96559db351c035ee410",
+        "identity": {
+          "process": {
+            "pid": 328609,
+            "start_ticks": 6680815,
+            "pgid": 328609,
+            "sid": 328609,
+            "uid": 1001,
+            "state": "R",
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+          },
+          "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+          "argv": [
+            "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+            "-B",
+            "-s",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/controller.py",
+            "--internal-stage",
+            "actor",
+            "--config",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/sealed-config.json",
+            "--config-sha256",
+            "5ea3de4f2a6165670ec05c07f6b580e4ab9f55029727b03593dffd160e306d8f"
+          ],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+        },
+        "torch_not_imported": true,
+        "observed_main_thread_affinity": [
+          0
+        ],
+        "sys_executable": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+        "python_flags": {
+          "no_user_site": 1,
+          "dont_write_bytecode": true
+        }
+      },
+      "properties": {
+        "unit": {
+          "MemoryPeak": "12918784",
+          "CPUQuotaPerSecUSec": "1s",
+          "LimitFSIZE": "8388608",
+          "LimitCORE": "0",
+          "LimitNOFILE": "512",
+          "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "CPUAffinity": "0"
+        },
+        "kernel_memory_peak_bytes": 12918784,
+        "kernel_cpu_max": [
+          "100000",
+          "100000"
+        ],
+        "cpuset_cpus_effective_raw": null,
+        "main_thread_affinity": {
+          "sched_before": [
+            0
+          ],
+          "sched_after": [
+            0
+          ],
+          "proc_Cpus_allowed_list": "0",
+          "process": {
+            "pid": 328609,
+            "start_ticks": 6680815,
+            "pgid": 328609,
+            "sid": 328609,
+            "uid": 1001,
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+          }
+        },
+        "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+      }
+    },
+    "runtime_observations": [
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29472489472,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "13615104",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 14139392,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29456515072,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "18407424",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 21815296,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29366755328,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "114352128",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 115662848,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29345091584,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "139517952",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 139517952,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29328465920,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "148692992",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 151314432,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29303459840,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "168091648",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 169140224,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29295276032,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "177266688",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 177790976,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29287411712,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "183033856",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 183558144,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29279244288,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "191684608",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 191946752,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29262876672,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "212131840",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 212131840,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29259694080,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "217636864",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 217636864,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29253783552,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "224034816",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 224821248,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29239234560,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "231616512",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 231735296,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29239234560,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "236974080",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 237236224,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29235597312,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "240906240",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 240906240,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29224251392,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "243265536",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 243265536,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29223821312,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "248856576",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 248856576,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29217157120,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "252788736",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 252788736,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29208985600,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "257507328",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 257769472,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29209071616,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "261701632",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 261963776,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29200887808,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "265371648",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 265371648,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29200629760,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "268255232",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 268255232,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29192261632,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "271400960",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 271663104,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29192261632,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "273235968",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 273760256,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29192261632,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "275070976",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 275070976,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29192015872,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "276643840",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 277430272,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29183832064,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "279789568",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 279789568,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29183832064,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "281624576",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 281624576,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29183832064,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "283459584",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 283459584,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29180772352,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "284770304",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 284770304,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29181005824,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "286867456",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 287391744,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29174001664,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "288964608",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 288964608,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29174001664,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "290799616",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 290799616,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29173510144,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "292634624",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 292634624,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29173510144,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "293945344",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 293945344,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29173510144,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "295518208",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 295518208,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29165326336,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "296771584",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 296771584,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 29118328832,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "338657280",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 338657280,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28925390848,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "361091072",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 361091072,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28835041280,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "383197184",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 383197184,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28805095424,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "397615104",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 401465344,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28797550592,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "419549184",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 419549184,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28769128448,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "437637120",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 439734272,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28757868544,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "463323136",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 463323136,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28738691072,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "492376064",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 492376064,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28729520128,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "507056128",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 507056128,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28727492608,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "515706880",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 515706880,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28698992640,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "535814144",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 535814144,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28685881344,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "553111552",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 553111552,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28665421824,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "569364480",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 569364480,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28657324032,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "585285632",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 585285632,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28649144320,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "585285632",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 585285632,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      },
+      {
+        "host": {
+          "observation": {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "mem_total_bytes": 130595864576,
+            "mem_available_bytes": 28649074688,
+            "comfy_running": 0,
+            "comfy_pending": 0,
+            "comfy_state": "http_idle",
+            "comfy_evidence": {
+              "transport": "HTTP",
+              "comfy_running": 0,
+              "comfy_pending": 0,
+              "http_status": 200,
+              "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+            }
+          },
+          "reserve_bytes": 26119172916,
+          "required_available_bytes": 26119172916,
+          "initial": false
+        },
+        "properties": {
+          "unit": {
+            "MemoryPeak": "585285632",
+            "CPUQuotaPerSecUSec": "1s",
+            "LimitFSIZE": "8388608",
+            "LimitCORE": "0",
+            "LimitNOFILE": "512",
+            "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+            "CPUAffinity": "0"
+          },
+          "kernel_memory_peak_bytes": 585285632,
+          "kernel_cpu_max": [
+            "100000",
+            "100000"
+          ],
+          "cpuset_cpus_effective_raw": null,
+          "main_thread_affinity": {
+            "sched_before": [
+              0
+            ],
+            "sched_after": [
+              0
+            ],
+            "proc_Cpus_allowed_list": "0",
+            "process": {
+              "pid": 328609,
+              "start_ticks": 6680815,
+              "pgid": 328609,
+              "sid": 328609,
+              "uid": 1001,
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+            }
+          },
+          "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+        }
+      }
+    ],
+    "runtime_observation_count": 53,
+    "runtime_observation_retention": "First63 plus latest when more than64; every observation still gates execution",
+    "actor_exit": {
+      "config_sha256": "5ea3de4f2a6165670ec05c07f6b580e4ab9f55029727b03593dffd160e306d8f",
+      "actor": {
+        "pid": 328609,
+        "start_ticks": 6680815,
+        "pgid": 328609,
+        "sid": 328609,
+        "uid": 1001,
+        "state": "R",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "entry_exit_code": 0,
+      "error": null,
+      "postreceipt_hold_seconds": 5,
+      "hold_started_monotonic": 66812.386162287,
+      "hold_deadline_monotonic": 66817.386162287,
+      "reason": "Keep verified main live for original authenticated boundary.close; not an actor success exit claim"
+    },
+    "last_live_properties": {
+      "unit": {
+        "MemoryPeak": "586072064",
+        "CPUQuotaPerSecUSec": "1s",
+        "LimitFSIZE": "8388608",
+        "LimitCORE": "0",
+        "LimitNOFILE": "512",
+        "WorkingDirectory": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+        "CPUAffinity": "0"
+      },
+      "kernel_memory_peak_bytes": 586072064,
+      "kernel_cpu_max": [
+        "100000",
+        "100000"
+      ],
+      "cpuset_cpus_effective_raw": null,
+      "main_thread_affinity": {
+        "sched_before": [
+          0
+        ],
+        "sched_after": [
+          0
+        ],
+        "proc_Cpus_allowed_list": "0",
+        "process": {
+          "pid": 328609,
+          "start_ticks": 6680815,
+          "pgid": 328609,
+          "sid": 328609,
+          "uid": 1001,
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        }
+      },
+      "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim"
+    },
+    "actor_receipt_missing": false,
+    "actor_receipt": {
+      "CPU_ONLY": false,
+      "CUDA": {
+        "allocator_backend": "native",
+        "device_name": "NVIDIA GB10",
+        "device_total_memory_bytes": 130595864576,
+        "device_uuid_normalized": "e3429caa-b057-cbe0-917d-d3b85b313be7",
+        "device_uuid_raw": "e3429caa-b057-cbe0-917d-d3b85b313be7",
+        "identity_query_seconds": 0.0004312310047680512,
+        "initialized_after_init_call": true,
+        "initialized_final": true,
+        "is_integrated": 1,
+        "logical_device_index": 0,
+        "native_uuid_type": "_CUuuid",
+        "selected_uuid": "GPU-e3429caa-b057-cbe0-917d-d3b85b313be7"
+      },
+      "GPU_context_measured": true,
+      "GPU_model_transfer_measured": false,
+      "cleanup_errors": [],
+      "completed": true,
+      "completed_stages": [
+        "stdlib-before-torch",
+        "torch-imported-preinit",
+        "cuda-init-returned",
+        "cuda-init-synchronized",
+        "own-allocator-cap-set",
+        "tiny-allocation-fill-enqueued",
+        "tiny-fill-synchronized",
+        "tiny-matmul-synchronized",
+        "tiny-readback-oracle",
+        "own-tensors-released-empty-cache"
+      ],
+      "context_and_tiny_operator_completed": true,
+      "elapsed_seconds": 3.78706781299843,
+      "entry_sha256": "01ed4cb4feb7c7221bd6a604fa98e1aac8f1b22f29659b688417b6eb128c5c2d",
+      "error": null,
+      "identity": {
+        "pgid": 328609,
+        "pid": 328609,
+        "sid": 328609,
+        "start_ticks": 6680815
+      },
+      "identity_after": {
+        "pgid": 328609,
+        "pid": 328609,
+        "sid": 328609,
+        "start_ticks": 6680815
+      },
+      "large_model_runtime_or_quality_qualified": false,
+      "limits": "Context and tiny BF16 fill/matmul only; no model/header/payload/mmap,UMA physical cap,12B,8192,20s,N3/Q95 or benchmark qualification.",
+      "mechanism_checks_completed": true,
+      "model_header_read": false,
+      "model_loaded": false,
+      "model_mmap": false,
+      "model_payload_read": false,
+      "no_model_loaded": true,
+      "own_allocator_cap": {
+        "actual_fraction": 0.0005138666849664763,
+        "requested_bytes": 67108864,
+        "requested_fraction": 0.0005138666849664763,
+        "scope": "Own PyTorch caching allocator only. Not a context/driver/cuBLAS/physical UMA or cgroup hard cap. Never enlarged on failure."
+      },
+      "parent_deadline_monotonic": 66833.112976425,
+      "passed": true,
+      "peak_RSS_bytes": 850948096,
+      "planned_stages": [
+        "stdlib-before-torch",
+        "torch-imported-preinit",
+        "cuda-init-returned",
+        "cuda-init-synchronized",
+        "own-allocator-cap-set",
+        "tiny-allocation-fill-enqueued",
+        "tiny-fill-synchronized",
+        "tiny-matmul-synchronized",
+        "tiny-readback-oracle",
+        "own-tensors-released-empty-cache"
+      ],
+      "profile": "gpu-context-probe-fixture-v2",
+      "source_integrity_final": true,
+      "source_selection_sha256": "f7d7fe39df15666d53c05ba05c2d63e3ba6bb1a726f96dd979668e19edb74e1f",
+      "stages": [
+        {
+          "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-00.json",
+          "sha256": "d2c0c12ff6418380f28c60ee237b4cc0719814c3677ca560e2ac411587b811a5",
+          "size_bytes": 1565
+        },
+        {
+          "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-01.json",
+          "sha256": "d9a368d3c737e99436f45549ae4dbab6ff907028d2620bf135482f9f61697d1d",
+          "size_bytes": 1576
+        },
+        {
+          "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-02.json",
+          "sha256": "629cdb643932375e5b3f659b2f33a094140504fe15e4746fd9c10d673d54d32a",
+          "size_bytes": 1677
+        },
+        {
+          "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-03.json",
+          "sha256": "cd0fd1c16ce205b05ca0429086c157b5287d33ae331c2e06490138dc8f6c6aa9",
+          "size_bytes": 2285
+        },
+        {
+          "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-04.json",
+          "sha256": "3aaf8f1598fba0fe80f9c5a34e385f8f37d84c20fe172b6eb3a8caa99ea9af3f",
+          "size_bytes": 1978
+        },
+        {
+          "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-05.json",
+          "sha256": "8ffd8455ab86395977eadb5bdc1e139b436872d939a404bb8cc55c4b7d5d96b3",
+          "size_bytes": 1886
+        },
+        {
+          "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-06.json",
+          "sha256": "b6d8cdbdb4a9e92478d23717ad1f9a9ea5b27c49ccb14a99fbf49db8b2ee3398",
+          "size_bytes": 1730
+        },
+        {
+          "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-07.json",
+          "sha256": "1f3cd0296c24de910992134356b4faf62d9ce7b0f0fc1b40c81fe8f2bc1bf867",
+          "size_bytes": 1742
+        },
+        {
+          "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-08.json",
+          "sha256": "413cadd80ac743b604bb2a9d609eb1673d5ccc02def246f44f90c31071eb31d0",
+          "size_bytes": 2194
+        },
+        {
+          "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-09.json",
+          "sha256": "2c8129dfe8a9e8dbd1c1c09af55d9270599e390a74067001eb1528fddca20c19",
+          "size_bytes": 1895
+        }
+      ],
+      "started_monotonic": 66808.597133678,
+      "status": "completed_mechanism_observations",
+      "timings": {
+        "allocation_fill_enqueue_seconds": 0.029670945994439535,
+        "allocation_fill_sync_seconds": 5.2319999667815864e-05,
+        "allocator_cap_set_seconds": 2.3519998649135232e-05,
+        "cleanup_sync_seconds": 5.4607997299171984e-05,
+        "init_call_seconds": 0.01319582799624186,
+        "init_sync_seconds": 0.13289695199637208,
+        "matmul_enqueue_plus_sync_seconds": 0.8176939570112154,
+        "matmul_enqueue_seconds": 0.8176383730024099,
+        "matmul_sync_seconds": 4.5567998313345015e-05,
+        "own_empty_cache_seconds": 0.0005841270030941814,
+        "tiny_CPU_readback_seconds": 0.000577038008486852,
+        "torch_import_seconds": 2.5735603229986737
+      },
+      "tiny_operator": {
+        "all_exact_16": true,
+        "closed_form_expected_sha256": "1cb8e75fc462d0af48a69d1c2ecc3b67abdb9358db5a4d38a1c5b1dbbe6fa003",
+        "completed": true,
+        "dtype": "bfloat16",
+        "output_sha256": "1cb8e75fc462d0af48a69d1c2ecc3b67abdb9358db5a4d38a1c5b1dbbe6fa003",
+        "readback_bytes": 512,
+        "scope": "Tiny fill/matmul and512B CPU readback only; no model transfer, layer, accuracy or throughput qualification.",
+        "shape": [
+          16,
+          16
+        ]
+      },
+      "versions": {
+        "torch": "2.13.0+cu130"
+      }
+    },
+    "actor_success": true,
+    "preclose_exit_memory_raw": {
+      "MainPID": "328609",
+      "Result": "success",
+      "ExecMainPID": "328609",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "MemoryPeak": "586072064",
+      "Description": "jev-d3-boundary-48ca7993f053d96559db351c035ee410",
+      "InvocationID": "7d2ac46c112f42a98ca372dbc80b516b"
+    },
+    "preclose_exit_memory_authenticated": true,
+    "preclose_main_live": true,
+    "closure_finished_monotonic": 66812.990711669
+  },
+  "unit_attempted": true,
+  "gpu_context_probe_scope": "Own pinned-GPU CUDA context and16x16 BF16 kernel only;no model/blob/full12B/8192context/20s/N3/Q95/browser-quality claim;2GiB unit memcg is not a shared-GPU-pages hard cap",
+  "large_model_GPU_20s_or_quality_qualified": false,
+  "whole_tree_exit_confirmed": false,
+  "comfy_service_modified": false
+}

@@ -1,0 +1,65 @@
+{
+  "CUDA": {
+    "allocated_bytes": 0,
+    "free_bytes": 955371520,
+    "initialized": true,
+    "max_allocated_bytes": 0,
+    "max_reserved_bytes": 0,
+    "metrics_seconds": 0.00651420999201946,
+    "reserved_bytes": 0,
+    "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+    "total_bytes": 130595864576
+  },
+  "details": {
+    "identity": {
+      "allocator_backend": "native",
+      "device_name": "NVIDIA GB10",
+      "device_total_memory_bytes": 130595864576,
+      "device_uuid_normalized": "e3429caa-b057-cbe0-917d-d3b85b313be7",
+      "device_uuid_raw": "e3429caa-b057-cbe0-917d-d3b85b313be7",
+      "identity_query_seconds": 0.0004312310047680512,
+      "initialized_after_init_call": true,
+      "initialized_final": null,
+      "is_integrated": 1,
+      "logical_device_index": 0,
+      "native_uuid_type": "_CUuuid",
+      "selected_uuid": "GPU-e3429caa-b057-cbe0-917d-d3b85b313be7"
+    }
+  },
+  "elapsed_seconds": 2.745220120996237,
+  "host": {
+    "MemAvailable_bytes": 28925390848,
+    "MemTotal_bytes": 130595864576
+  },
+  "memory": {
+    "monotonic_after": 66811.335651925,
+    "monotonic_before": 66811.334221656,
+    "own_cgroup": {
+      "memory_current_bytes": 358293504,
+      "memory_peak_bytes": 361091072,
+      "memory_stat": {
+        "anon": 310136832,
+        "file": 44261376,
+        "kernel": 2707456,
+        "pgfault": 97208,
+        "pgmajfault": 0,
+        "shmem": 44236800
+      },
+      "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+    },
+    "process": {
+      "RssAnon_bytes": 311287808,
+      "RssFile_bytes": 264486912,
+      "RssShmem_bytes": 44236800,
+      "VmRSS_bytes": 620011520,
+      "VmSwap_bytes": 0
+    },
+    "scope": "Sequential non-atomic own-process/own-cgroup snapshot; page cache release and disk IO bytes are not inferred."
+  },
+  "monotonic": 66811.342354999,
+  "peak_RSS_bytes": 619900928,
+  "ru_majflt": 0,
+  "ru_minflt": 97412,
+  "snapshot_scope": "Sequential non-atomic own process/cgroup, host and global CUDA samples; owner admission remains external.",
+  "stage": "cuda-init-synchronized"
+}
