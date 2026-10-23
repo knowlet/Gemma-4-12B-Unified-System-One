@@ -1,0 +1,136 @@
+--- frozen-smoke02/run_smoke.py
++++ smoke03/run_smoke.py
+@@ -35,7 +35,43 @@
+ STDERR_LIMIT = 4 * 1024**2
+ 
+ 
+-def process_identity(pid):
++def map_metadata(maps, selected_model):
++    libraries, vmas, count, virtual_bytes = set(), [], 0, 0
++    for line in maps.decode().splitlines():
++        parts = line.split(maxsplit=5)
++        if len(parts) != 6:
++            continue
++        if re.search(r"\.so(?:\.[0-9]+)*$", parts[5]):
++            libraries.add(parts[5])
++        if selected_model is not None and parts[5] == selected_model:
++            start, end = (int(value, 16) for value in parts[0].split("-"))
++            need(end >= start, "Valid owned-child VMA addresses")
++            count += 1
++            virtual_bytes += end - start
++            if len(vmas) < 64:
++                vmas.append(
++                    {
++                        "start_hex": hex(start),
++                        "end_hex": hex(end),
++                        "virtual_bytes": end - start,
++                        "permissions": parts[1],
++                        "offset_bytes": int(parts[2], 16),
++                        "device": parts[3],
++                        "inode": int(parts[4]),
++                        "path": parts[5],
++                    }
++                )
++    return libraries, {
++        "selected_path": selected_model,
++        "observed_VMA_count": count,
++        "observed_virtual_bytes": virtual_bytes,
++        "retained_VMAs": vmas,
++        "truncated": count > len(vmas),
++        "scope": "Selected model path VMAs in this bounded maps observation only; virtual mappings are not resident memory, all-weight backing, absence of anonymous buffers, or a universal mmap proof",
++    }
++
++
++def process_identity(pid, selected_model=None):
+     base = Path("/proc") / str(pid)
+ 
+     def process():
+@@ -60,11 +96,7 @@
+     with (base / "maps").open("rb") as stream:
+         maps = stream.read(MAX_RESPONSE + 1)
+     need(len(maps) <= MAX_RESPONSE, "Bounded owned-child maps observation")
+-    paths = set()
+-    for line in maps.decode().splitlines():
+-        parts = line.split(maxsplit=5)
+-        if len(parts) == 6 and re.search(r"\.so(?:\.[0-9]+)*$", parts[5]):
+-            paths.add(parts[5])
++    paths, result["selected_model_file_mappings"] = map_metadata(maps, selected_model)
+     need(len(paths) <= 128, "Bounded actual library population")
+     for path in sorted(paths):
+         result["loaded_library_stats"].append({"path": path, "stat": file_stat(path)})
+@@ -137,6 +169,7 @@
+         deadline = timing_started + timeout
+         sent, response, primary, response_wire = 0, None, None, None
+         response_valid = False
++        validated_at = None
+         notes = []
+         try:
+             self.selector.register(self.process.stdin, selectors.EVENT_WRITE, "stdin")
+@@ -162,6 +195,11 @@
+                     response_wire = line + b"\n"
+                     response = json.loads(line)
+                     response_check(response, payload, self.context, self.full)
++                    validated_at = time.monotonic()
++                    if validated_at >= deadline:
++                        raise TimeoutError(
++                            "Native validated response exceeded research RPC deadline"
++                        )
+                     response_valid = True
+                     self.stdout.clear()
+                     break
+@@ -186,7 +224,8 @@
+                 except BaseException as error:
+                     notes.append({"phase": "failure_diagnostic_drain", **error_row(error)})
+             finished = time.monotonic()
+-            elapsed = finished - timing_started
++            rpc_finished = validated_at if response_valid else finished
++            elapsed = rpc_finished - timing_started
+             row = {
+                 "name": name,
+                 "request_sha256": sha(wire),
+@@ -194,7 +233,11 @@
+                 "launch_monotonic": self.launch_monotonic,
+                 "submitted_monotonic": submitted,
+                 "timing_started_monotonic": timing_started,
+-                "submission_elapsed_seconds": finished - submitted,
++                "validated_response_monotonic": validated_at,
++                "rpc_finished_monotonic": rpc_finished,
++                "finalization_monotonic": finished,
++                "local_finalization_seconds": finished - rpc_finished,
++                "submission_elapsed_seconds": rpc_finished - submitted,
+                 "pre_submission_elapsed_seconds": submitted - timing_started,
+                 "deadline_monotonic": deadline,
+                 "deadline_seconds": timeout,
+@@ -365,7 +408,9 @@
+             save(directory / "intent.json", row)
+             active = NativeRPC(argv, directory, context, full)
+             try:
+-                row["initial_identity"] = process_identity(active.process.pid)
++                row["initial_identity"] = process_identity(
++                    active.process.pid, cfg["package"]["model"]["path"]
++                )
+                 need(
+                     row["initial_identity"]["exe"] == native["path"],
+                     "Actual native child executable",
+@@ -375,7 +420,9 @@
+             # A fast startup failure is diagnosed through the bounded RPC/stderr path.
+             warm = active.score(payloads["warm"], 60, "warm")
+             response_check(warm, payloads["warm"], context, full)
+-            row["postwarm_identity"] = process_identity(active.process.pid)
++            row["postwarm_identity"] = process_identity(
++                active.process.pid, cfg["package"]["model"]["path"]
++            )
+             need(
+                 row["postwarm_identity"]["exe"] == native["path"],
+                 "Actual postwarm native executable",
+@@ -391,7 +438,9 @@
+             )
+             long = active.score(payloads["long"], SCORING_SECONDS, "long")
+             logits = response_check(long, payloads["long"], context, full)
+-            row["postscore_identity"] = process_identity(active.process.pid)
++            row["postscore_identity"] = process_identity(
++                active.process.pid, cfg["package"]["model"]["path"]
++            )
+             need(
+                 row["postscore_identity"]["process"] == row["initial_identity"]["process"],
+                 "Same native PID/start/session/cgroup through scores",

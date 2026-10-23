@@ -1,0 +1,126 @@
+{
+  "contract": {
+    "browser20_seconds_unchanged": true,
+    "cpu_mmap_only": true,
+    "early_slot_lt": 512,
+    "gpu_layers": 0,
+    "input_token_limit": 2048,
+    "late_slot_gt": 1536,
+    "math_max_abs": 0.001,
+    "native_batch_and_microbatch": 512,
+    "profiles": [
+      "full2048",
+      "compact2048",
+      "compact8192"
+    ],
+    "quality_or_browser20_qualified": false,
+    "research_long_submission_to_response_seconds": 600,
+    "same_argmax_required": true,
+    "threads": 1,
+    "warm_launch_to_response_seconds": 60
+  },
+  "entries": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/prepare_smoke.py",
+      "sha256": "cf7dc23b2f22bf69cda0fa98da965c055c027becf79c632db1c7501071bdd88f",
+      "size_bytes": 10776
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/run_smoke.py",
+      "sha256": "ebf92cbc662118c310d4ef75defac21b9d60e7c054e047187315e0ec9142c46a",
+      "size_bytes": 19601
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/smoke_common.py",
+      "sha256": "e423db2402184b2adafbcda78b98ef43fa8d6e32b0f90ee2faf51561b2a93eb7",
+      "size_bytes": 11929
+    }
+  ],
+  "limits": [
+    "Only launch timestamp/warm timing and evidence changed; prepare/common are byte-identical to frozen01.",
+    "No real processor, Torch, native, unit, network or large payload/tokenizer read during preparation.",
+    "All prior source/stat, resource, synthetic-input, partial-evidence, and outer authenticated cleanup limits remain unchanged."
+  ],
+  "metadata": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/research-decision.md",
+      "sha256": "e0031aa6b1d4392f3b3d890cbc7a864cc79bfeaffc76e4d742641f38b41a12a3",
+      "size_bytes": 4455
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/README.md",
+      "sha256": "08711ac5552308059ffab11150fc032d951425f5fb8093199cf90a4109a925bb",
+      "size_bytes": 4082
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/startup-timing.patch",
+      "sha256": "7aa87d9f663e724d57297fb4a256052bb83832047814fedc203210e6a6101c89",
+      "size_bytes": 2504
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/narrow-diff.json",
+      "sha256": "b5b367b41c85d16ee44962a0243ae3d81dfcd503f320fd1360751a5bb42d5ae5",
+      "size_bytes": 2897
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/static-validation.json",
+      "sha256": "e1c933f3b006f3a1119a6fe682a3ccdd179a9096bd2dedf1433b203ca6bb259c",
+      "size_bytes": 5964
+    }
+  ],
+  "original_small_refs": [
+    {
+      "path": "scripts/gguf_adapter.py",
+      "sha256": "95e9343ead0656f13197c4371ab48b445826d48bd37f8cc9f03b94ae926351c1",
+      "size_bytes": 18519
+    },
+    {
+      "path": "src/s1/__init__.py",
+      "sha256": "c9c7ba0ea4cc81609fcf1f0ff2a853243a173a994257e0b9dd19be1a2e6dd52e",
+      "size_bytes": 117
+    },
+    {
+      "path": "src/s1/unified.py",
+      "sha256": "42ba5f076af164e0e54690a735e25a272bdd678279901946c2e5accefa385a6c",
+      "size_bytes": 18796
+    },
+    {
+      "path": "src/s1/contracts.py",
+      "sha256": "24c24c3ded9c35bfd263a4488bf88916a8960fa0b79283ccedbac232983f8a0a",
+      "size_bytes": 6048
+    },
+    {
+      "path": "src/s1/schema.py",
+      "sha256": "995cac528f3b5579dd7d9a12146fc69c335853e62e5063b1a5471645c12242d2",
+      "size_bytes": 7365
+    },
+    {
+      "path": "src/s1/checkpoint.py",
+      "sha256": "d26007c4e1cf691d041549fac4440dbdc2d77ee6b2376a62fc06bde632fa3ef6",
+      "size_bytes": 2274
+    },
+    {
+      "path": "src/s1/runtime.py",
+      "sha256": "8f6103c600f73b64adc8186cf0c081475e69e891eb1d3d7e89c36c2e5417abda",
+      "size_bytes": 1357
+    },
+    {
+      "path": "src/s1/errors.py",
+      "sha256": "e5ad1d9b7e700f07a704d74d3e4ade7156c7a9eaad304d3fe4296bad0dc8c997",
+      "size_bytes": 709
+    }
+  ],
+  "parent_freeze": {
+    "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/source-freeze.json",
+    "sha256": "992b6ee9db1563c68cc2e07f6c53a92f55d0d40c754b52b769948259146d073f",
+    "size_bytes": 4229
+  },
+  "profile": "llama-cpp-q8-smoke02-source-freeze-v1",
+  "selection": "Root-authored separately, not fabricated or executed here",
+  "status": "ALL_STOPPED_SOURCE_TEST_AND_METADATA_NO_ACTUAL_RUN",
+  "test_source": {
+    "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/test_smoke.py",
+    "sha256": "8dd0c0252132d4196286bb9c6461d3ea2a0c6af9b7f79dbea0461b9d86219f46",
+    "size_bytes": 18185
+  }
+}

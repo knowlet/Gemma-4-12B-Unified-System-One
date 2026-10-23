@@ -1,0 +1,145 @@
+{
+  "status": "PASS",
+  "compiled_cases": 20,
+  "scope": "Actual C++ option parsing/help only; no backend init/model payload/context/math/quality qualification",
+  "rows": [
+    {
+      "kind": "valid-explicit-option-before-help",
+      "value": "0",
+      "returncode": 0,
+      "stdout": "s1-gguf --model FILE --mmproj FILE [--ctx-size 16384 --batch-size 8192 --gpu-layers 99 --threads 8 --image-max-tokens 280 --swa-full 0|1]\n  --swa-full: 1 = full-size SWA cache (default); 0 = compact SWA cache.\n  --cpu-mmap-only 0|1: default 0; 1 requires --gpu-layers 0, requests mmap,\n    disables lazy loading, CPU weight repacking and context operation offload.\n",
+      "stderr": ""
+    },
+    {
+      "kind": "valid-explicit-option-before-help",
+      "value": "1",
+      "returncode": 0,
+      "stdout": "s1-gguf --model FILE --mmproj FILE [--ctx-size 16384 --batch-size 8192 --gpu-layers 99 --threads 8 --image-max-tokens 280 --swa-full 0|1]\n  --swa-full: 1 = full-size SWA cache (default); 0 = compact SWA cache.\n  --cpu-mmap-only 0|1: default 0; 1 requires --gpu-layers 0, requests mmap,\n    disables lazy loading, CPU weight repacking and context operation offload.\n",
+      "stderr": ""
+    },
+    {
+      "kind": "invalid-value-before-backend",
+      "value": "2",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --swa-full must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "invalid-value-before-backend",
+      "value": "-1",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --swa-full must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "invalid-value-before-backend",
+      "value": "true",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --swa-full must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "invalid-value-before-backend",
+      "value": "01",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --swa-full must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "invalid-value-before-backend",
+      "value": "1x",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --swa-full must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "invalid-value-before-backend",
+      "value": "",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --swa-full must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "missing-value-before-backend",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: missing value for --swa-full\n"
+    },
+    {
+      "kind": "valid-cpu-mmap-before-help",
+      "value": "0",
+      "returncode": 0,
+      "stdout": "s1-gguf --model FILE --mmproj FILE [--ctx-size 16384 --batch-size 8192 --gpu-layers 99 --threads 8 --image-max-tokens 280 --swa-full 0|1]\n  --swa-full: 1 = full-size SWA cache (default); 0 = compact SWA cache.\n  --cpu-mmap-only 0|1: default 0; 1 requires --gpu-layers 0, requests mmap,\n    disables lazy loading, CPU weight repacking and context operation offload.\n",
+      "stderr": ""
+    },
+    {
+      "kind": "valid-cpu-mmap-before-help",
+      "value": "1",
+      "returncode": 0,
+      "stdout": "s1-gguf --model FILE --mmproj FILE [--ctx-size 16384 --batch-size 8192 --gpu-layers 99 --threads 8 --image-max-tokens 280 --swa-full 0|1]\n  --swa-full: 1 = full-size SWA cache (default); 0 = compact SWA cache.\n  --cpu-mmap-only 0|1: default 0; 1 requires --gpu-layers 0, requests mmap,\n    disables lazy loading, CPU weight repacking and context operation offload.\n",
+      "stderr": ""
+    },
+    {
+      "kind": "invalid-cpu-mmap-value-before-backend",
+      "value": "2",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --cpu-mmap-only must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "invalid-cpu-mmap-value-before-backend",
+      "value": "-1",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --cpu-mmap-only must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "invalid-cpu-mmap-value-before-backend",
+      "value": "true",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --cpu-mmap-only must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "invalid-cpu-mmap-value-before-backend",
+      "value": "01",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --cpu-mmap-only must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "invalid-cpu-mmap-value-before-backend",
+      "value": "1x",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --cpu-mmap-only must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "invalid-cpu-mmap-value-before-backend",
+      "value": "",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --cpu-mmap-only must be exactly 0 or 1\n"
+    },
+    {
+      "kind": "missing-cpu-mmap-value-before-backend",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: missing value for --cpu-mmap-only\n"
+    },
+    {
+      "kind": "incompatible-gpu-before-backend",
+      "gpu_layers": "1",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --cpu-mmap-only 1 requires --gpu-layers 0\n"
+    },
+    {
+      "kind": "incompatible-gpu-before-backend",
+      "gpu_layers": "99",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "s1-gguf: --cpu-mmap-only 1 requires --gpu-layers 0\n"
+    }
+  ]
+}

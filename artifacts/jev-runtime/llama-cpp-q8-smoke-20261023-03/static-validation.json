@@ -1,0 +1,106 @@
+{
+  "VMA_regression": "65 selected-file mappings retainfirst64,totalcount65,virtualbytes only; excludes other model and anonrows",
+  "entries": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/prepare_smoke.py",
+      "sha256": "cf7dc23b2f22bf69cda0fa98da965c055c027becf79c632db1c7501071bdd88f",
+      "size_bytes": 10776
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/run_smoke.py",
+      "sha256": "588899bfb330fc46f433543581850ec683d85b3ef5b61ba4224447a948793a7b",
+      "size_bytes": 21847
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/smoke_common.py",
+      "sha256": "e423db2402184b2adafbcda78b98ef43fa8d6e32b0f90ee2faf51561b2a93eb7",
+      "size_bytes": 11929
+    }
+  ],
+  "history": "One unfrozen timestamp assignment edit initially caused fake tests to fail; corrected before this final passing run. No real actor ran.",
+  "original_small_refs": [
+    {
+      "path": "scripts/gguf_adapter.py",
+      "sha256": "95e9343ead0656f13197c4371ab48b445826d48bd37f8cc9f03b94ae926351c1",
+      "size_bytes": 18519
+    },
+    {
+      "path": "src/s1/__init__.py",
+      "sha256": "c9c7ba0ea4cc81609fcf1f0ff2a853243a173a994257e0b9dd19be1a2e6dd52e",
+      "size_bytes": 117
+    },
+    {
+      "path": "src/s1/unified.py",
+      "sha256": "42ba5f076af164e0e54690a735e25a272bdd678279901946c2e5accefa385a6c",
+      "size_bytes": 18796
+    },
+    {
+      "path": "src/s1/contracts.py",
+      "sha256": "24c24c3ded9c35bfd263a4488bf88916a8960fa0b79283ccedbac232983f8a0a",
+      "size_bytes": 6048
+    },
+    {
+      "path": "src/s1/schema.py",
+      "sha256": "995cac528f3b5579dd7d9a12146fc69c335853e62e5063b1a5471645c12242d2",
+      "size_bytes": 7365
+    },
+    {
+      "path": "src/s1/checkpoint.py",
+      "sha256": "d26007c4e1cf691d041549fac4440dbdc2d77ee6b2376a62fc06bde632fa3ef6",
+      "size_bytes": 2274
+    },
+    {
+      "path": "src/s1/runtime.py",
+      "sha256": "8f6103c600f73b64adc8186cf0c081475e69e891eb1d3d7e89c36c2e5417abda",
+      "size_bytes": 1357
+    },
+    {
+      "path": "src/s1/errors.py",
+      "sha256": "e5ad1d9b7e700f07a704d74d3e4ade7156c7a9eaad304d3fe4296bad0dc8c997",
+      "size_bytes": 709
+    }
+  ],
+  "profile": "llama-cpp-q8-smoke03-source-validation-v1",
+  "root_selection": "Root-authored real v3/runtime/public-package selection remains separate; no fake runnable selection generated",
+  "ruff": {
+    "address_space_cap": null,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "All checks passed!\n"
+  },
+  "scope": {
+    "Torch_or_processor_import": false,
+    "native_execution": false,
+    "network": false,
+    "real_RPC": false,
+    "stdlib_mocks_only": true,
+    "unit": false,
+    "weight_or_tokenizer_content_read": false
+  },
+  "test_source": {
+    "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/test_smoke.py",
+    "sha256": "c1c3d62b0ad3105bafa54c5d8d11b332c003a95754ab5e51ddb3a420a8a329d1",
+    "size_bytes": 21613
+  },
+  "tests": {
+    "limits": {
+      "CPU_seconds": 30,
+      "address_space_bytes": 1073741824,
+      "core_bytes": 0,
+      "outer_timeout_seconds": 45
+    },
+    "passed": 21,
+    "returncode": 0,
+    "stderr": "test_accepted_reply_uses_validation_completion_not_later_receipt_housekeeping (__main__.Tests.test_accepted_reply_uses_validation_completion_not_later_receipt_housekeeping) ... ok\ntest_default_dry_never_prepares_or_starts_native (__main__.Tests.test_default_dry_never_prepares_or_starts_native) ... ok\ntest_exchange_save_failure_does_not_replace_timeout (__main__.Tests.test_exchange_save_failure_does_not_replace_timeout) ... ok\ntest_fast_invalid_native_reply_is_not_twenty_second_success (__main__.Tests.test_fast_invalid_native_reply_is_not_twenty_second_success) ... ok\ntest_fragmented_response_and_partial_writes_preserve_exact_wire_hash (__main__.Tests.test_fragmented_response_and_partial_writes_preserve_exact_wire_hash) ... ok\ntest_long_rpc_deadline_remains_from_submission_after_startup (__main__.Tests.test_long_rpc_deadline_remains_from_submission_after_startup) ... ok\ntest_malformed_response_retains_raw_and_original_parse_error (__main__.Tests.test_malformed_response_retains_raw_and_original_parse_error) ... ok\ntest_math_threshold_does_not_mask_argmax_changes (__main__.Tests.test_math_threshold_does_not_mask_argmax_changes) ... ok\ntest_model_VMA_metadata_only_selected_path_and_bounded_retention (__main__.Tests.test_model_VMA_metadata_only_selected_path_and_bounded_retention) ... ok\ntest_native_start_refusal_closes_owned_setup_and_preserves_primary (__main__.Tests.test_native_start_refusal_closes_owned_setup_and_preserves_primary) ... ok\ntest_payload_requires_early_late_geometry_and_exact_counts (__main__.Tests.test_payload_requires_early_late_geometry_and_exact_counts) ... ok\ntest_response_exact_join_and_actual_context (__main__.Tests.test_response_exact_join_and_actual_context) ... ok\ntest_response_rejects_missing_rows_nonfinite_boolean_and_narrow_rows (__main__.Tests.test_response_rejects_missing_rows_nonfinite_boolean_and_narrow_rows) ... ok\ntest_source_has_no_LM_loader_generate_or_manual_child_kill (__main__.Tests.test_source_has_no_LM_loader_generate_or_manual_child_kill) ... ok\ntest_stderr_prefix_cap_keeps_draining_and_hashes_all_observed (__main__.Tests.test_stderr_prefix_cap_keeps_draining_and_hashes_all_observed) ... ok\ntest_synthetic_request_padding_only_in_late_question_and_no_gold (__main__.Tests.test_synthetic_request_padding_only_in_late_question_and_no_gold) ... ok\ntest_timeout_keeps_partial_response_and_does_not_kill_child (__main__.Tests.test_timeout_keeps_partial_response_and_does_not_kill_child) ... ok\ntest_valid_reply_crossing_deadline_during_validation_is_refused (__main__.Tests.test_valid_reply_crossing_deadline_during_validation_is_refused) ... ok\ntest_warm_already_expired_at_submission_cannot_reset_sixty_seconds (__main__.Tests.test_warm_already_expired_at_submission_cannot_reset_sixty_seconds) ... ok\ntest_warm_launch_and_proc_delay_counts_against_twenty_seconds (__main__.Tests.test_warm_launch_and_proc_delay_counts_against_twenty_seconds) ... ok\ntest_wrong_entry_sha_refuses_before_selection_or_framework (__main__.Tests.test_wrong_entry_sha_refuses_before_selection_or_framework) ... ok\n\n----------------------------------------------------------------------\nRan 21 tests in 0.080s\n\nOK\n",
+    "stdout": "",
+    "wall_seconds": 0.21392200799891725
+  },
+  "timing_regressions": [
+    "25s startup/proc delay prevents20pass",
+    "warm61s before submission refuses original60",
+    "valid read59.9 and validation60.1 refuses completion",
+    "validated59.9 uses samecompletiontimestamp despite localfinalization61",
+    "long600 remains submission-based",
+    "fast malformed/identity-invalid response nevermeets20"
+  ]
+}

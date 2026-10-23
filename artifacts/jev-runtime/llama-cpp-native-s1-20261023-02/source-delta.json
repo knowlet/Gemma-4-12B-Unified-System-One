@@ -1,0 +1,85 @@
+{
+  "changes": [
+    {
+      "after": "    int ctx = 16384, batch = 8192, gpu_layers = 99, threads = 8, image_max_tokens = 280;\n    bool swa_full = true;\n",
+      "before": "    int ctx = 16384, batch = 8192, gpu_layers = 99, threads = 8, image_max_tokens = 280;\n"
+    },
+    {
+      "after": "                         \"--gpu-layers 99 --threads 8 --image-max-tokens 280 --swa-full 0|1]\\n\"\n                         \"  --swa-full: 1 = full-size SWA cache (default); 0 = compact SWA cache.\\n\";\n",
+      "before": "                         \"--gpu-layers 99 --threads 8 --image-max-tokens 280]\\n\";\n"
+    },
+    {
+      "after": "        else if (key == \"--image-max-tokens\") out.image_max_tokens = std::stoi(value);\n        else if (key == \"--swa-full\") {\n            require(value == \"0\" || value == \"1\", \"--swa-full must be exactly 0 or 1\");\n            out.swa_full = value == \"1\";\n        }\n",
+      "before": "        else if (key == \"--image-max-tokens\") out.image_max_tokens = std::stoi(value);\n"
+    },
+    {
+      "after": "        cp.swa_full = opts.swa_full;\n",
+      "before": "        cp.swa_full = true;\n"
+    },
+    {
+      "after": "                    {\"max_output_slots\", MAX_ANSWER_SLOTS}, {\"swa_full\", opts.swa_full},\n",
+      "before": "                    {\"max_output_slots\", MAX_ANSWER_SLOTS},\n"
+    }
+  ],
+  "cli_contract": {
+    "accepted_exact_values": [
+      "0",
+      "1"
+    ],
+    "actual_compiled_CLI_test": "NOT_RUN; source preparation only",
+    "context_setting": "cp.swa_full = opts.swa_full",
+    "default": true,
+    "flag": "--swa-full",
+    "optional": true,
+    "rejected_examples": [
+      "2",
+      "-1",
+      "true",
+      "false",
+      "01",
+      "1junk",
+      ""
+    ],
+    "runtime_json_key": "runtime.swa_full",
+    "runtime_json_type": "boolean"
+  },
+  "cmake": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/CMakeLists.txt",
+    "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+    "size_bytes": 2004
+  },
+  "future_required_measurements": [
+    "Full vs compact context2048, actual requests crossing position1024",
+    "Separate actual context8192 compact run",
+    "Actual output bool, numerical/logit/answer differences and own memory, no inherited quality"
+  ],
+  "parent_cmake": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/CMakeLists.txt",
+    "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+    "size_bytes": 2004
+  },
+  "parent_source": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/s1_gguf.cpp",
+    "sha256": "8dd7f74a3ba38fda24d305c2bcbb7793d23eb38011ccb58f4f0230f677caa70e",
+    "size_bytes": 16564
+  },
+  "patch": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/source.patch",
+    "sha256": "98a5a4afb8b82f266125c6f9616de17f4accc554fd64f3a3fd8c15c855d3e0a0",
+    "size_bytes": 2565
+  },
+  "schema_id": "llama-cpp-native-s1-swa-source-delta-v2",
+  "scope": "Five exact C++ source changes only; CMake byte-identical copy. No compilation/native or model execution.",
+  "source": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/s1_gguf.cpp",
+    "sha256": "b9205973d97145adff2ba5368d935597ab904245b701551d3148f94999cff19a",
+    "size_bytes": 16923
+  },
+  "unmodified_invariants": [
+    "full48-layer model and ordinary S1 slot scoring",
+    "ctx/batch/thread/GPU defaults",
+    "N3/Q95 identities and resource gates",
+    "native attention/decode/tokenizer/math",
+    "LoRA/calibration/helper/RPC behavior"
+  ]
+}

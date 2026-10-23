@@ -1,0 +1,68 @@
+{
+  "limits": [
+    "15 saved stdlib tests simulate RPC/resources; no real processor/model/runtime performed by reviewer.",
+    "Concrete selection/spec and actual downloaded/native identities require later independent review and explicit root execution.",
+    "No model/cache numerical equivalence, full48-layer/8192-token/20s/browser/N3/Q95/benchmark qualification. Original gates remain unchanged."
+  ],
+  "must_fix": [
+    {
+      "file": "run_smoke.py",
+      "finding": "Warm submitted/deadline starts after Popen and initial process/maps observation. Launch-to-submission startup time is omitted even though saved scope claims60s includes startup and valid-call20s elapsed.",
+      "function": "NativeRPC.__init__/score",
+      "id": "startup_clock",
+      "required_change": "Capture monotonic before Popen and use launch origin for first warm total deadline/elapsed/meets20; long remains submission-based. Add fake-clock launch/proc-delay regression."
+    },
+    {
+      "file": "run_smoke.py",
+      "finding": "Deadline is checked before selector wait, but a line received before deadline can take consume/JSON/contract-validation past it and still be accepted as completed. Saved scope includesJSON overhead.",
+      "function": "NativeRPC.score",
+      "id": "completion_deadline",
+      "required_change": "Check same effective deadline after response validation before accepting completion; late valid response must fail the research deadline. Add fake-clock late-valid regression without changing60/600/20 values."
+    }
+  ],
+  "other_reviewed_points": [
+    "Original UnifiedDecisionModel.prepare uses only provided processor/tok/device/max_context for this media-free input; original make_native_payload validates the same input IDs/ordered slots/candidate IDs. No LM constructor is called by prepare source.",
+    "Goldless synthetic early/late payloads are bounded2048, with late slot beyond1536 and early below512; no answer labels injected.8192 arm only changes allocated context for the same short payload.",
+    "Native stdlibRPC uses bounded1MiB stdout and partial writes, drained/hash-counted stderr with4MiB prefix; successful arms require EOF exit before next fresh child.",
+    "Root explicitly requires failed child lifetime be left to outer authenticated unit closure. Script closes own descriptors and saves already completed cases/partial exchanges; direct child kill/terminate is not required or requested by this review.",
+    "All slot/case/count/context/cache/cpu-policy/finite-logit joins and preselected1e-3+sameargmax compare are fail-closed. Fast invalid replies cannot count as20s success.",
+    "Actual maps snapshot currently persists library stats only; CPU mmap flag is selected policy metadata, not proof that all weight backing/allocations are file-backed. Native logs/further actual maps evidence are required for that claim."
+  ],
+  "refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/prepare_smoke.py",
+      "sha256": "cf7dc23b2f22bf69cda0fa98da965c055c027becf79c632db1c7501071bdd88f",
+      "size_bytes": 10776
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/run_smoke.py",
+      "sha256": "390697fed01af3d702a10029e3c529d3bb1841190e459a101695fd9a99d82fad",
+      "size_bytes": 19106
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/smoke_common.py",
+      "sha256": "e423db2402184b2adafbcda78b98ef43fa8d6e32b0f90ee2faf51561b2a93eb7",
+      "size_bytes": 11929
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/test_smoke.py",
+      "sha256": "99d6f7287a75c43d6df101553752b19fd3714213092ef75a85725b118a25ec23",
+      "size_bytes": 14962
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/source-freeze.json",
+      "sha256": "992b6ee9db1563c68cc2e07f6c53a92f55d0d40c754b52b769948259146d073f",
+      "size_bytes": 4229
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/static-validation.json",
+      "sha256": "10e6a776e1da59de9569fc1293fd0354f454d06af0d70ddad9738f35cd4974f1",
+      "size_bytes": 5386
+    }
+  ],
+  "reviewed_at_utc": "2026-10-23T02:35:08.910690+00:00",
+  "reviewer": "/root/q95_owner05_review",
+  "schema": "llama-cpp-q8-smoke01-independent-source-review-v1",
+  "scope": "Frozen01 scripts/test/metadata plus actual original prepare/adapter source read only. No Torch/processor/native/script/tests/model/HTTP/observer/unit/payload execution. Only this review written;01 sources preserved. Root authorized a separate timing successor; this receipt does not clear any successor.",
+  "verdict": "MUST_FIX"
+}
