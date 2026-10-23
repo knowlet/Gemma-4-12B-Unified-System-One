@@ -1,0 +1,76 @@
+{
+  "schema": "root-incomplete-full04-actual04-aggregate-v1",
+  "created_at_utc": "2026-10-23T14:50:50.468545+00:00",
+  "root_terminal": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-full04-edge-both-04.json",
+    "sha256": "deeb3f7519f3975a7f61a623ad0a4e1725b312bb9ddcbec422b7060ae3ae2407",
+    "size_bytes": 1749
+  },
+  "owner_receipt": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-04/receipt.json",
+    "sha256": "2ee971035cebcb63abba81c5394e6853fc7a148394f60cf0e36d676aaf200116",
+    "size_bytes": 195238
+  },
+  "original_closure": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-04/external-boundary-closure.json",
+    "sha256": "69253bc93f7556c9f0255e07c0da5ee38ad52f78b15d8fb8f14e9d585e754852",
+    "size_bytes": 5053
+  },
+  "later_original_absence": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-supplemental-actual04-closure-01.json",
+    "sha256": "575696d431378f679a0bdb39ec247583e087d7fcf0a33ffe259039f906b3cfd6",
+    "size_bytes": 4513
+  },
+  "progress_reference_only": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-04/edge-both/native-evidence/progress.json",
+    "sha256": "02c949c0aed9c191c2f051cdff77160532492c1223ea2df10beb6d2dfcad599f",
+    "size_bytes": 1667
+  },
+  "started_calls": 229,
+  "completed_calls": 228,
+  "raw_native_returns": 228,
+  "latencies": {
+    "legacy-public231": {
+      "count": 228,
+      "median_seconds": 0.3321713729892508,
+      "p95_seconds": 5.158544429999893,
+      "max_seconds": 8.35533644699899,
+      "quantile_method": "nearest_rank_p95; ordinary_median",
+      "startup_included": false,
+      "browser_20_second_qualification": false,
+      "unit": "one unchanged complete state/questions callback; native question chunks of up to4"
+    }
+  },
+  "primary_error": {
+    "phase": "controller",
+    "type": "ValueError",
+    "message": "Original read-only Comfy idle gate",
+    "evidence": {
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "mem_total_bytes": 130595864576,
+        "mem_available_bytes": 29837770752,
+        "comfy_running": 1,
+        "comfy_pending": 0,
+        "comfy_state": "http_busy",
+        "comfy_evidence": {
+          "transport": "HTTP",
+          "comfy_running": 1,
+          "comfy_pending": 0,
+          "http_status": 200,
+          "response_sha256": "1d48a78972de703371fa6c5211425ebcd03467df9e7bcec1b3447a15ca1a7453"
+        }
+      },
+      "required_available_bytes": null,
+      "initial": false
+    },
+    "returncode": null,
+    "stdout": null,
+    "stderr": null,
+    "command_cleanup_errors": null
+  },
+  "completed_public_score": null,
+  "completed_coherence_score": null,
+  "completed": false,
+  "scope": "Interrupted callback counts and observed timing only; no partial scores, browser qualification or winner claim."
+}

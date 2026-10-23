@@ -1,0 +1,262 @@
+{
+  "schema": "decision3-invented-browser-domain-canary-v1",
+  "profile": "decision3-edge-invented-browser-domain-canary-cpu4-2g-v1",
+  "actor_sha256": "48381bc7eb73720467a307a5d36c2a72ed840663da9da9e48c8afbb359878276",
+  "builder_sha256": "2dcfe668b4964b86ad7b0e7ebd5b0c9df12d5d32b3df9cd7bcda55f49b231f10",
+  "fixtures_sha256": "c28e5e493d446334c4bae6bd9da1bcfcdfbe670423199b4605aa2dbf95970f33",
+  "native_actor_sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b",
+  "native_plan_sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8",
+  "native_model_identity": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "sources": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/__init__.py",
+      "size_bytes": 117,
+      "sha256": "c9c7ba0ea4cc81609fcf1f0ff2a853243a173a994257e0b9dd19be1a2e6dd52e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/backends.py",
+      "size_bytes": 12855,
+      "sha256": "90c084fa5523dea71b49cf140ecfda1fd2165a9468368624bde6161e2dbf67bf"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/browser_text.py",
+      "size_bytes": 5455,
+      "sha256": "381299d3961afba4ba2a296b1ce9ee5e4b137f5494b14cb4291b70340462b577"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/contracts.py",
+      "size_bytes": 6048,
+      "sha256": "24c24c3ded9c35bfd263a4488bf88916a8960fa0b79283ccedbac232983f8a0a"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/errors.py",
+      "size_bytes": 709,
+      "sha256": "e5ad1d9b7e700f07a704d74d3e4ade7156c7a9eaad304d3fe4296bad0dc8c997"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/jev.py",
+      "size_bytes": 7903,
+      "sha256": "9a2ab7f907c0ed51942d7d5c8a0c872399d5a6766c4afba8117129e6f90aeaa0"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/jev_decision3_native.py",
+      "size_bytes": 8958,
+      "sha256": "67616bb70a8acdbf96b1d2e4c1407cf8cc2a24db51b5ca383e33b4d9a0488de9"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/jev_generated.py",
+      "size_bytes": 23569,
+      "sha256": "c356e0eb3c046cb0787d7be0c5960803006231e8bdb414de644ae2167e72d849"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/jev_hierarchy.py",
+      "size_bytes": 42598,
+      "sha256": "c85f8730eaba732c332b268a38e5556304622f3ba8e8f7be3b3a11892e583124"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/jev_prompt.py",
+      "size_bytes": 17207,
+      "sha256": "2891ecbe94e5cbb01b7a2de6d7be9ed35ee55d26f904cfeb6b401416254b5f3c"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/evaluation/__init__.py",
+      "size_bytes": 70,
+      "sha256": "127cf68d534aa63995896f51d47ff5015c1d8fcb3563914752aa130f5ff25f51"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/evaluation/contracts.py",
+      "size_bytes": 8054,
+      "sha256": "ead69fb44ba1a0221b9c73fc0c811774ed15b530cdf1ec56f99e7b98bff254d3"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/evaluation/decision3.py",
+      "size_bytes": 24613,
+      "sha256": "aaa21ab6f2ecf5ae0e00694b43755541dc75fc0310ba10d945ade2a4511add52"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts/jev_decision3_browser_wire.py",
+      "size_bytes": 4132,
+      "sha256": "c048d7779e60fce5d1a56b38e26b9ddf5ed9e1ff9c6adc478786d0267cca3027"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+      "size_bytes": 8469,
+      "sha256": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream/jev_ultrafast/questions.py",
+      "size_bytes": 2048,
+      "sha256": "66a7054b85040b949e1757311257ea0c5a843c635f9a40c99f6d15ad660fb422"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream/jev_ultrafast/snapshot.js",
+      "size_bytes": 6490,
+      "sha256": "e50473501c8fb8e70f3b21866d987393e3f2315c639d638bd477d170e81ed78d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/pydantic/__init__.py",
+      "size_bytes": 15951,
+      "sha256": "e5248cb9bbe293b3536dbed7fea54326dcdf3c03370ae5f03d794c58496ec01b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/pydantic-2.14.1.dist-info/METADATA",
+      "size_bytes": 133006,
+      "sha256": "4d4c8e8d5e6a27d5208f0d7949f25628e6747133034969d4d1399b1ad5394036"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx/__init__.py",
+      "size_bytes": 2171,
+      "sha256": "0ac6997bac998f4ac783adf6d8058a587193315afdb718047c3e4fdff46bcfad"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx-0.28.1.dist-info/METADATA",
+      "size_bytes": 7052,
+      "sha256": "febb9b0f8f3e80d57c8199c304f35c4336e8581d1d18d7983c92766b82793b25"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size_bytes": 30552,
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+      "size_bytes": 7734,
+      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source_audit.py",
+      "size_bytes": 5079,
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+      "size_bytes": 30406,
+      "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/freeze.json",
+      "size_bytes": 3646,
+      "sha256": "9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+      "size_bytes": 40319,
+      "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/source-freeze.json",
+      "size_bytes": 2573,
+      "sha256": "7a83281f3ce088e29c0c1fa833b617a0eecd9d26214cbda4ebf97314c3f8bdbb"
+    }
+  ],
+  "browser_model_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+    "size_bytes": 8469,
+    "sha256": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3"
+  },
+  "browser_questions_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream/jev_ultrafast/questions.py",
+    "size_bytes": 2048,
+    "sha256": "66a7054b85040b949e1757311257ea0c5a843c635f9a40c99f6d15ad660fb422"
+  },
+  "native_dto_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/jev_decision3_native.py",
+    "size_bytes": 8958,
+    "sha256": "67616bb70a8acdbf96b1d2e4c1407cf8cc2a24db51b5ca383e33b4d9a0488de9"
+  },
+  "wire_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts/jev_decision3_browser_wire.py",
+    "size_bytes": 4132,
+    "sha256": "c048d7779e60fce5d1a56b38e26b9ddf5ed9e1ff9c6adc478786d0267cca3027"
+  },
+  "cells": [
+    [
+      "actionable",
+      "original"
+    ],
+    [
+      "actionable",
+      "reversed"
+    ],
+    [
+      "achieved",
+      "original"
+    ],
+    [
+      "achieved",
+      "reversed"
+    ],
+    [
+      "unavailable",
+      "original"
+    ],
+    [
+      "unavailable",
+      "reversed"
+    ]
+  ],
+  "calls": 6,
+  "constructor_count": 1,
+  "call_seconds": 20,
+  "wall_seconds": 120,
+  "browser_context_limit": 8192,
+  "controls": [],
+  "adaptive_controls": false,
+  "raw_actual_outputs_git_ignored": true,
+  "official_tasks_used": false,
+  "source_only_no_actual_nn_or_runtime_qualification": true,
+  "semantic_diagnostics_not_official_scores": true,
+  "synthetic_observation_not_Chromium_extraction": true,
+  "transport": "explicit-in-process-original-choose-callback; no HTTP qualification",
+  "CPU_join": "Fresh truthful CPU-only adapter constructor; original predict AST and DTO/mapping. Original GPU config untouched.",
+  "actual_original_heads_per_request": [
+    2,
+    2,
+    2,
+    2,
+    1,
+    1
+  ],
+  "additional_or_dummy_questions": false,
+  "adapter_package_versions": {
+    "pydantic": "2.14.1",
+    "httpx": "0.28.1"
+  },
+  "owner_unit": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+  "owner_profile": "llama-cpp-cpu4-2g-long-command-owned-v1",
+  "owner_runtime_seconds": 10800,
+  "reserve_bytes": 26119172916,
+  "memory_max_bytes": 2147483648,
+  "startup_available_bytes": 28266656564,
+  "swap_max_bytes": 0,
+  "cpu_affinity": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "cpu_quota_percent": 400,
+  "threads": 4,
+  "batch_size": 4,
+  "runtime_python": "/home/albert_hsieh/ComfyUI/.venv/bin/python"
+}

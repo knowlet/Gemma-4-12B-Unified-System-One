@@ -1,0 +1,205 @@
+{
+  "schema": "independent-closed-full04-interrupted-actual03-review-v1",
+  "status": "PASS_WITH_LIMITS_INTERRUPTED_NO_SCORES",
+  "read_scope": "Only six explicitly allowlisted bounded closed actual03 metadata files; no active actual04, actor state, benchmark tasks/gold/raw responses/cache/model/native bytes, tests, formatter, candidate execution, host/unit/network/Git operations.",
+  "artifact_refs": {
+    "root_execution": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-full04-edge-both-03.json",
+      "sha256": "8cef3ddde432e535d940907865f6fe413b08a44ee970b115177dafce23cfd2a0",
+      "size_bytes": 1749
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-03/receipt.json",
+      "sha256": "5de989e0b67bcc4ad433c4e68b1a89eb8fefa96efa4e753ec2ac6486fc390838",
+      "size_bytes": 86823
+    },
+    "original_closure": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-03/external-boundary-closure.json",
+      "sha256": "a20601e738a66a0a571f4bdaa094b85593ae570716df8a1b967255efe23eac9b",
+      "size_bytes": 5053
+    },
+    "progress": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-03/edge-both/native-evidence/progress.json",
+      "sha256": "7213891845389a5269e2b3481fdbc8169c9017045b0f7746a8d5198cd3127653",
+      "size_bytes": 1659
+    },
+    "later_absence": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-supplemental-actual03-closure-01.json",
+      "sha256": "d6987eccb412f139712e655824860da85f1370f5c4ffd36de170e04b843b5f66",
+      "size_bytes": 4513
+    },
+    "root_projection": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-incomplete-actual03-projection-01.json",
+      "sha256": "d788742282a10e036e861b6dcb1f5a40271a1054ee93617e7a7cdd8d40d329b7",
+      "size_bytes": 2917
+    }
+  },
+  "checks": {
+    "all_six_exact_refs_and_projection_join": true,
+    "root_exit1_completedfalse_sourceunchanged": true,
+    "same_original_boot_nonce_invocation_actor_PID_start": true,
+    "selected_original_authority_pins_preserved_in_saved_config": true,
+    "original_Comfy_busy_gate_primary_preserved": true,
+    "progress_33started32complete32raw_only": true,
+    "all_completed_suite_scores_null": true,
+    "sampled_memory_max_event_distinct_from_OOM": true,
+    "original_zombie_and_false_flags_preserved": true,
+    "later_two_empty_scans_are_separate_absence_evidence_only": true
+  },
+  "root_terminal": {
+    "exit_code": 1,
+    "wall_seconds": 23.55912355099281,
+    "controller_identity": {
+      "pid": 582713,
+      "starttime_ticks": 11517428,
+      "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+    },
+    "selection_sha256": "59396734477f90fa1a3f24bec60633796de06f84215597a4e59a5b5d9a274d49"
+  },
+  "identity": {
+    "profile": "llama-cpp-cpu4-2g-long-command-owned-v1",
+    "unit": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "nonce": "jev-d3-boundary-f1643a92c1b4e782ced7a22fcefbc5f7",
+    "invocation_id": "1eeda56a0da54034bf289144c48b94fd",
+    "actor_PID_start": {
+      "pid": 582719,
+      "start_ticks": 11517447
+    },
+    "observed_child_PID_start": {
+      "pid": 582726,
+      "start_ticks": 11517465
+    }
+  },
+  "failure": {
+    "phase": "controller",
+    "type": "ValueError",
+    "message": "Original read-only Comfy idle gate",
+    "comfy_running": 1,
+    "comfy_pending": 0,
+    "state": "http_busy",
+    "MemAvailable_bytes_observed_at_failure": 31878877184,
+    "required_available_bytes_at_idle_refusal": null,
+    "secondary_error_phases": [
+      "final_host"
+    ],
+    "interpretation": "Saved primary is original read-only Comfy idle refusal, followed by authenticated stop. Not evidence of model/math/deadline/OOM failure. Memory observation does not turn this failed idle check into admission."
+  },
+  "incomplete_progress": {
+    "stage": "legacy-public231",
+    "started_calls": 33,
+    "completed_calls": 32,
+    "raw_native_returns": 32,
+    "active_index": 32,
+    "latencies_of_completed_callbacks_only": {
+      "legacy-public231": {
+        "count": 32,
+        "median_seconds": 0.30115595149982255,
+        "p95_seconds": 0.3359097790089436,
+        "max_seconds": 0.3691692689899355,
+        "quantile_method": "nearest_rank_p95; ordinary_median",
+        "startup_included": false,
+        "browser_20_second_qualification": false,
+        "unit": "one unchanged complete state/questions callback; native question chunks of up to4"
+      }
+    },
+    "per_call_deadline_seconds": 180,
+    "public_score": null,
+    "coherence_score": null,
+    "browser_score": null,
+    "scope": "Only32 completed callbacks in legacy-public231, not231 public completion, not1248 coherence completion, not1479 total. Timing excludes startup and does not qualify browser20s or full-suite latency."
+  },
+  "resources": {
+    "memory_cap_bytes": 2147483648,
+    "observed_cgroup_peak_bytes": 2147483648,
+    "memory_event_snapshot_count_including_bootstrap_runtime_and_progress": 24,
+    "memory_max_counter_highest_saved": 660,
+    "oom_oom_kill_oom_group_kill_in_all_saved_samples": 0,
+    "no_OOM_observed_only": true,
+    "continuous_no_OOM_or_no_memory_pressure_claim": false,
+    "runtime_samples": 22,
+    "successful_parent_postlaunch_host_gate_summary": {
+      "runtime_host_gate_count": 25,
+      "phase_counts": {
+        "readiness": 2,
+        "preexec": 1,
+        "loop": 22
+      },
+      "min_MemAvailable_bytes": 29612167168,
+      "min_margin_vsR_bytes": 3492994252,
+      "scope": "All successful executed post-launch readiness/preexec/loop host-gate samples, including discarded raw samples; failing gates stay in primary evidence; initial/final separate; not a continuous-time minimum"
+    },
+    "initial_reserve_bytes": 26119172916,
+    "initial_R_plus_full_cap_bytes": 28266656564,
+    "runtime_reserve_bytes": 26119172916,
+    "swap_max_bytes": 0,
+    "runtime_seconds": 10800,
+    "observed_main_thread_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "observed_kernel_cpu_max": [
+      400000,
+      100000
+    ],
+    "memory_scope": "Whole selected cgroup includes actor/framework/cache/wrapper, not native-only memory. memory.events max660 records max-boundary events, not660 OOMs; no observed OOM counters is a sampled result only.",
+    "affinity_scope": "Observed selected main thread and quota, not all-thread lifetime/cpuset/no-escape prevention."
+  },
+  "original_closure": {
+    "mode": "authenticated_stop",
+    "closure_errors": [],
+    "post_stop_terminal_verified": true,
+    "cgroup_absent": true,
+    "first_scan": {
+      "matches": [
+        {
+          "pid": 582726,
+          "start_ticks": 11517465,
+          "pgid": 582719,
+          "sid": 582719,
+          "uid": 1001,
+          "state": "Z",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service"
+        }
+      ],
+      "unknown": []
+    },
+    "second_scan": {
+      "matches": [],
+      "unknown": []
+    },
+    "whole_unit_exit_confirmed": false,
+    "observed_cgroup_cohort_exit_confirmed": false,
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "model_qualified": false
+  },
+  "supplemental_later_absence": {
+    "saved_original_method_empty_scans": 2,
+    "manager_notfound_before_after_both": true,
+    "cgroup_absent_both": true,
+    "original_false_whole_unit_flag_not_rewritten": true,
+    "scope": "Exact original closure ref plus later saved original-method absence observations only; independent reviewer did not probe live boot/unit/process state."
+  },
+  "qualification": {
+    "campaign_completed": false,
+    "whole_unit_exit_confirmed_original": false,
+    "observed_cohort_exit_confirmed_original": false,
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "model_qualified": false,
+    "new_JevBench_scores": null,
+    "browser_or_HTTP_quality_qualified": false
+  },
+  "limitations": [
+    "No per-response, task, gold or cache content reviewed or recomputed.",
+    "This allowlist does not establish completed stage/final model authentication or any complete suite score.",
+    "Supplemental absence does not repair original zombie scan or false completion/qualification flags.",
+    "No inference about active actual04 or any later attempt is made."
+  ]
+}
