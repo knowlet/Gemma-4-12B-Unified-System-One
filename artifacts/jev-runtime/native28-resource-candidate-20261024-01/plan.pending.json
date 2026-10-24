@@ -1,0 +1,78 @@
+{
+  "schema_id": "native28-memory-resource-source-candidate-pending-v1",
+  "status": "SOURCE_ONLY_UNVALIDATED_UNFROZEN_UNSELECTED",
+  "execution_authorized": false,
+  "runnable_command_spec_created": false,
+  "profile": "gx10-uma-native-28gib-memory-diagnostic-v1",
+  "resource_schema": "jev-native-resource-gate-gx10-uma-28gib-diagnostic-v1",
+  "expected_unit": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-native28-memory-diagnostic-20261024-01.service",
+  "parent_source": "src/s1/browser_native_resources.py",
+  "parent_source_sha256": null,
+  "source_pins_pending": {
+    "resource_gate.py": null,
+    "test_resource_gate.py": null,
+    "memory_probe.py": null,
+    "test_memory_probe.py": null,
+    "actor-source-notes.md": null,
+    "README.md": null
+  },
+  "resources": {
+    "native_allocator_cap_bytes": 30064771072,
+    "separate_memcg_cap_bytes": 30064771072,
+    "cuda_reserved_live_stop_exclusive_bytes": 29527900160,
+    "memcg_current_live_stop_exclusive_bytes": 29527900160,
+    "swap_max_bytes": 0,
+    "reserve_formula_unchanged": "max(24GiB, ceil(MemTotal/5))",
+    "startup_formula": "R+2*28GiB+4GiB",
+    "verified_loaded_formula": "R+28GiB+8GiB",
+    "arithmetic_example_not_host_observation": {
+      "MemTotal": 130595864576,
+      "reserve_bytes": 26119172916,
+      "startup_required_available_bytes": 90543682356,
+      "loaded_required_available_bytes": 64773878580,
+      "old_train_diagnostic_bytes": 106438961908
+    },
+    "old_train_formula_diagnostic_only": "R+2*23919549408+30GiB+256MiB",
+    "old_cuda_free_diagnostic_only_bytes": 44023414784,
+    "combined_physical_cap_attested": false,
+    "sampling_prevents_all_transient_overshoot": false
+  },
+  "preserved_scope": {
+    "train_compile_rows": 142,
+    "development_compile_and_evaluation_rows": 37,
+    "batch_size": 1,
+    "context_limit": 8192,
+    "data_or_trainer_or_LoRA_changes": false,
+    "original_component_and_Driver_identity_sources": true,
+    "frozen_H15_allocator_or_floor_called": false,
+    "frozen_H15_or_old_source_monkeypatched": false,
+    "old_profiles_or_receipts_modified": false,
+    "normal_native_adapter_verifier_accepts_this_profile": false
+  },
+  "unreviewed_future_integration": {
+    "measurement_entry_source_and_sha256": null,
+    "owned_guardian_source_and_sha256": null,
+    "entry_guardian_source_union": null,
+    "normal_fitter_or_adapter_dispatch": null,
+    "fresh_boot_admission": null,
+    "exact_execution_selection": null
+  },
+  "authoring_execution": {
+    "imports": false,
+    "AST_or_builder": false,
+    "formatter": false,
+    "tests_or_dry_run": false,
+    "host_Driver_model_or_payload_observation": false,
+    "GPU_or_service": false,
+    "Git": false
+  },
+  "independent_review": {
+    "path": "root-source-review-01.json",
+    "scope": "text-only root and independent source review; no executed qualification"
+  },
+  "validation_or_freeze": null,
+  "actual_memory_measurement": null,
+  "full142_37_fit_capacity": null,
+  "training_or_browser_quality_qualification": null,
+  "required_next_step": "Root source review, then a separately authorized bounded check/reseal window and independently pinned diagnostic entry plus external guardian. Never infer fit from this source candidate."
+}
