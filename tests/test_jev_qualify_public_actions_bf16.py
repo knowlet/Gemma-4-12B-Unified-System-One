@@ -1302,6 +1302,28 @@ def test_guard_uses_real_snapshot_and_all176_values_with_detached_metadata(guard
     assert guard.metadata["qualification"]["qualified"] is False
 
 
+@pytest.mark.parametrize("fault", ["missing-kind", "v2-format", "v2-contract"])
+def test_synthetic_public_guard_retains_explicit_raw_prompt_contract(guarded_public, fault):
+    from s1.browser_action_prompt import expected_format
+
+    _model, guard, _api, _gates = guarded_public
+    metadata = guard.metadata
+    assert metadata["artifact"] == {"kind": ART.KIND, "qualified": False}
+    assert expected_format(metadata, "raw-json-v1") == "raw-json-v1"
+    with pytest.raises(ValueError, match="differs from trained adapter"):
+        expected_format(metadata, "shared-elements-v2")
+    if fault == "missing-kind":
+        metadata["artifact"].pop("kind")
+    elif fault == "v2-format":
+        metadata["artifact"]["prompt_format"] = "shared-elements-v2"
+    else:
+        metadata["artifact"]["prompt_contract"] = {}
+    with pytest.raises(ValueError, match="Unknown attached|requires its raw prompt"):
+        expected_format(metadata, "raw-json-v1")
+    assert expected_format(guard.metadata, "raw-json-v1") == "raw-json-v1"
+    assert guard.metadata["qualification"]["qualified"] is False
+
+
 @pytest.mark.parametrize(
     "mutation",
     [
