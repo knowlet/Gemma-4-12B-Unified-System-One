@@ -357,7 +357,7 @@ def compile_toy_cache(paths, output, **kwargs):
 
 @pytest.fixture(scope="module")
 def toy_cache(tmp_path_factory):
-    folder = tmp_path_factory.mktemp("field-json-compiler")
+    folder = tmp_path_factory.mktemp("field-json-compiler").resolve(strict=True)
     special = set(range(21)) | {50, 106, 107}
     by_id = {i: f"piece{i}" for i in range(384)}
     for i in special:
@@ -401,7 +401,10 @@ def toy_cache(tmp_path_factory):
         "expected_source_sha256": digest(SOURCE.read_bytes()),
     }
     output = folder / "cache"
-    result = compile_toy_cache(paths, output, expected_vocab_size=384, **kwargs)
+    try:
+        result = compile_toy_cache(paths, output, expected_vocab_size=384, **kwargs)
+    except subprocess.CalledProcessError as exc:
+        pytest.fail(f"Isolated toy compiler failed:\n{exc.stderr}", pytrace=False)
     load_kwargs = {**kwargs, "expected_manifest_sha256": result["manifest_sha256"]}
     return paths, output, kwargs, load_kwargs, result, vocab
 
@@ -453,6 +456,7 @@ def test_cached_masks_preserve_dynamic_salvage_and_ordinary_flush(toy_cache):
     "mutation", ["missing", "orphan", "piece", "next", "mask", "symlink", "manifest"]
 )
 def test_closed_cache_corruption_or_substitution_fails_closed(tmp_path, toy_cache, mutation):
+    tmp_path = tmp_path.resolve(strict=True)
     _, original, _, load_kwargs, _, _ = toy_cache
     output = tmp_path / "tampered"
     shutil.copytree(original, output)
@@ -493,6 +497,7 @@ def test_cache_external_identity_is_required(toy_cache, field):
 
 
 def test_compiler_resource_and_native_population_refusals_do_not_prune(tmp_path, toy_cache):
+    tmp_path = tmp_path.resolve(strict=True)
     paths, _, kwargs, _, _, _ = toy_cache
     with pytest.raises(subprocess.CalledProcessError) as exc:
         compile_toy_cache(

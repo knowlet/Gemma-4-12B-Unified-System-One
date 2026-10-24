@@ -73,6 +73,8 @@ jobs:
           enable-cache: true
       - run: uv sync --locked --extra inference --extra api --extra train --extra baselines --extra browser
       - run: uv run --no-sync python scripts/prepare_ci_jev.py
+      - name: Check portable grammar fixtures before model imports
+        run: uv run --no-sync pytest --strict-markers -m "not frozen_decoder" tests/test_jev_field_json_grammar.py
       - run: uv run --no-sync pytest -m "not frozen_decoder"
   frozen-decoder:
     # The frozen Rust oracle is Linux ARM64, not the x86/macOS inference library.
