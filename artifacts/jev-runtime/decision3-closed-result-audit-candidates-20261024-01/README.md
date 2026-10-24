@@ -29,7 +29,12 @@ coherence callback to prove the public completion's final handoff returned.
 It keeps the nonzero root exit, owner failure, original primary/secondary
 errors, overall incompleteness and absent coherence qualification. Later
 absence scans never repair false original closure flags. A marker alone is
-not sufficient.
+not sufficient. This actual04 audit deliberately requires a validated first
+coherence callback as a conservative sufficient witness; it can refuse a public
+stage whose first later callback entered and then timed out. It is not a general
+entry-only fallback. The original retry04 terminal profile and full controller
+arguments are bound, UTC timestamps require an explicit timezone, and public
+publication/continuation durations must fit the original root wall time.
 
 Both candidates preserve the original four-times-positive-period CPU quota
 rule, rather than adding a fixed kernel period. They keep the original

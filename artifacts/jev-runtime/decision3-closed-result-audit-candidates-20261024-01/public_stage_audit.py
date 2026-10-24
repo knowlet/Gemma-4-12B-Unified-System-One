@@ -347,6 +347,15 @@ def validate_latency(row):
             "Original complete callback latency policy differs")
 
 
+def aware_epoch(value):
+    require(type(value) is str, "Original UTC timestamp string required")
+    parsed = datetime.datetime.fromisoformat(value)
+    require(parsed.tzinfo is not None, "Explicit timezone on original terminal timestamp required")
+    result = parsed.timestamp()
+    require(finite(result, positive=True), "Finite original terminal epoch required")
+    return result
+
+
 def execute():
     observations = {}
     terminal_path = OWNER / "root-execution-full06-edge-both-04.json"
@@ -359,8 +368,8 @@ def execute():
     require(type(terminal.get("exit_code")) is int and terminal["exit_code"] != 0
             and finite(terminal.get("wall_seconds"), maximum=10800, positive=True),
             "This fallback requires a closed nonzero full-campaign terminal")
-    root_started = datetime.datetime.fromisoformat(terminal["started_at_utc"]).timestamp()
-    root_finished = datetime.datetime.fromisoformat(terminal["finished_at_utc"]).timestamp()
+    root_started = aware_epoch(terminal["started_at_utc"])
+    root_finished = aware_epoch(terminal["finished_at_utc"])
     require(root_started < root_finished, "Original root terminal clocks required")
     require(receipt.get("completed") is False and receipt.get("primary_error") is not None
             and type(receipt.get("secondary_errors")) is list
@@ -382,6 +391,12 @@ def execute():
             "Original sealed config changed")
     spec_path = CAMPAIGN / "root-edge-both-command-spec-01.json"
     require(config.get("selection") == str(spec_path), "Exact original spec path required")
+    controller_argv = [str(ROOT / ".venv/bin/python"), "-B", "-s", str(OWNER / "controller.py"),
+                       "--run", "--expected-entry-sha256", OWNER_SHA, "--selection", str(spec_path),
+                       "--selection-sha256", SPEC_SHA, "--output", str(OUTPUT)]
+    require(terminal.get("profile") == "root-selected-full06-retry04-Edge-coexist-terminal-v1"
+            and terminal.get("argv") == controller_argv,
+            "Original current root controller profile/argv differs")
     spec = read_json(spec_path, observations, maximum=1048576, expected=SPEC_SHA)
     require(spec.get("runtime_seconds") == 10800 and len(spec.get("commands", [])) == 1,
             "Original command/budget selection differs")
@@ -503,6 +518,7 @@ def execute():
             and finite(clock["elapsed_campaign_seconds"], maximum=10000, positive=True)
             and clock["elapsed_campaign_seconds"] <= clock["authenticated_monotonic"] - began
             and finite(publication_elapsed, maximum=10000, positive=True)
+            and publication_elapsed <= terminal["wall_seconds"]
             and cleanup - began <= publication_elapsed
             and clock.get("whole_campaign_seconds") == 10000
             and clock.get("per_call_seconds") == 180 and clock.get("owner_seconds") == 10800,
@@ -511,8 +527,9 @@ def execute():
     if PUBLIC in state.get("latencies", {}):
         require(state["latencies"][PUBLIC] == evidence["latency"], "Final retained public latency changed")
 
-    # Positive later callback entry proves complete() returned past its final
-    # handoff check; a completion marker alone is explicitly insufficient.
+    # A validated later callback is a deliberately conservative sufficient
+    # witness of complete() returning past its final handoff. This actual04
+    # audit refuses the wider entry-only/first-coherence-timeout case.
     continuation_path = ACTUAL / "native-evidence/00231-validated.json"
     continuation = read_json(continuation_path, observations, maximum=1048576)
     require(continuation.get("index") == 231 and continuation.get("stage") == COHERENCE
@@ -521,6 +538,7 @@ def execute():
     before = continuation["before_owned_counters"]
     require(before.get("cgroup") == proc["cgroup"]
             and finite(before.get("observed_monotonic"), minimum=began + publication_elapsed, positive=True)
+            and before["observed_monotonic"] - began <= terminal["wall_seconds"]
             and finite(continuation.get("validation_seconds"), maximum=180),
             "Later callback identity/time does not prove public final handoff returned")
     counters = before["counters"]
