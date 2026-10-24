@@ -34,10 +34,16 @@ from urllib.parse import urlsplit
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 STANDARD_OPERATIONS = {
-    "CLICK", "TYPE_TEXT", "SELECT", "SCROLL_DOWN", "SCROLL_UP", "WAIT", "DONE", "BLOCKED"
+    "CLICK",
+    "TYPE_TEXT",
+    "SELECT",
+    "SCROLL_DOWN",
+    "SCROLL_UP",
+    "WAIT",
+    "DONE",
+    "BLOCKED",
 }
 FIXTURE = """<!doctype html><html><head><meta charset="utf-8">
 <title>Two lamp controls</title><style>
@@ -84,8 +90,11 @@ def test_real_native_http_choose_agent_and_guarded_click():
         pytest.skip("Explicit external-native HTTP browser opt-in required")
 
     required = (
-        "JEV_NATIVE_HTTP_ENDPOINT", "JEV_NATIVE_HTTP_MODEL", "JEV_UPSTREAM_PATH",
-        "JEV_CHROMIUM_EXECUTABLE", "JEV_NATIVE_HTTP_BROWSER_OUTPUT",
+        "JEV_NATIVE_HTTP_ENDPOINT",
+        "JEV_NATIVE_HTTP_MODEL",
+        "JEV_UPSTREAM_PATH",
+        "JEV_CHROMIUM_EXECUTABLE",
+        "JEV_NATIVE_HTTP_BROWSER_OUTPUT",
     )
     missing = [name for name in required if not os.environ.get(name, "").strip()]
     assert not missing, "Missing explicit configuration: " + ", ".join(missing)
@@ -114,14 +123,23 @@ def test_real_native_http_choose_agent_and_guarded_click():
     sys.modules[module_name] = harness
     report = {
         "scope": "invented two-control real-native HTTP wiring diagnostic; not a model score",
-        "endpoint": endpoint, "requested_model": model, "max_ticks": 16,
-        "action_profile": "standard", "observation_profile": "native-1231850",
+        "endpoint": endpoint,
+        "requested_model": model,
+        "max_ticks": 16,
+        "action_profile": "standard",
+        "observation_profile": "native-1231850",
         "client_source_sha256": source_before,
         "test_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "fixture_sha256": hashlib.sha256(FIXTURE.encode()).hexdigest(),
         "native_authenticity": "external operator/server receipts required; no local model loaded",
-        "snapshots": [], "observations": [], "http": [], "records": [],
-        "secondary_errors": [], "error": None, "goal_satisfied": False, "success": False,
+        "snapshots": [],
+        "observations": [],
+        "http": [],
+        "records": [],
+        "secondary_errors": [],
+        "error": None,
+        "goal_satisfied": False,
+        "success": False,
     }
     agent = chromium = None
     primary = None
@@ -132,9 +150,11 @@ def test_real_native_http_choose_agent_and_guarded_click():
         assert report["upstream_before"]["revision"] == harness.UPSTREAM_REVISION
         (output / "fixture.html").write_text(FIXTURE, encoding="utf-8")
         case = harness.FixtureCase(
-            case_id="native-http-two-controls", task_id="native_http_wiring",
+            case_id="native-http-two-controls",
+            task_id="native_http_wiring",
             goal="Arm the copper lamp. Stop when Copper lamp armed is visibly confirmed.",
-            html=FIXTURE, expected={},
+            html=FIXTURE,
+            expected={},
         )
         report["goal"] = case.goal
         with playwright.sync_playwright() as runtime, harness.fixture_server([case]) as base:
@@ -188,7 +208,9 @@ def test_real_native_http_choose_agent_and_guarded_click():
                             report["records"] = records
                             secrets.extend(adapter_secrets)
                             try:
-                                agent = agent_module.Agent(base + case.path, case.goal, screenshots=False)
+                                agent = agent_module.Agent(
+                                    base + case.path, case.goal, screenshots=False
+                                )
                                 report["snapshots"].append(copy.deepcopy(agent.snapshot()))
                                 initial = agent.state["browser"].evaluate(JUDGE)
                                 report["initial_judge"] = initial
@@ -214,7 +236,8 @@ def test_real_native_http_choose_agent_and_guarded_click():
                                             and final["text"] == "Copper lamp armed"
                                             and final["visible"] is True
                                             and final["last_trusted"] is True
-                                            and final["clicks"] == [{"id": "copper", "trusted": True}]
+                                            and final["clicks"]
+                                            == [{"id": "copper", "trusted": True}]
                                         )
                                         report["final_html"] = agent.state["browser"].evaluate(
                                             "document.documentElement.outerHTML"
@@ -258,9 +281,10 @@ def test_real_native_http_choose_agent_and_guarded_click():
         try:
             if hasattr(harness, "upstream_manifest"):
                 report["upstream_after"] = harness.upstream_manifest(upstream)
-            report["source_unchanged"] = (
-                hashlib.sha256(source.read_bytes()).hexdigest() == source_before
-                and report.get("upstream_before") == report.get("upstream_after")
+            report["source_unchanged"] = hashlib.sha256(
+                source.read_bytes()
+            ).hexdigest() == source_before and report.get("upstream_before") == report.get(
+                "upstream_after"
             )
         except Exception as exc:
             report["secondary_errors"].append(f"Source verification: {type(exc).__name__}: {exc}")
@@ -268,8 +292,11 @@ def test_real_native_http_choose_agent_and_guarded_click():
         final_status = report.get("final_snapshot", {}).get("status")
         report["final_status"] = final_status
         report["success"] = (
-            report["goal_satisfied"] and final_status == "done" and report["error"] is None
-            and not report["secondary_errors"] and report["source_unchanged"]
+            report["goal_satisfied"]
+            and final_status == "done"
+            and report["error"] is None
+            and not report["secondary_errors"]
+            and report["source_unchanged"]
         )
         try:
             # Redact only evidence copies; the real HTTP body and choices were never changed.
@@ -284,4 +311,6 @@ def test_real_native_http_choose_agent_and_guarded_click():
         finally:
             sys.modules.pop(module_name, None)
 
-    assert report["success"], f"Native HTTP browser diagnostic failed; evidence: {output / 'report.json'}"
+    assert report["success"], (
+        f"Native HTTP browser diagnostic failed; evidence: {output / 'report.json'}"
+    )
