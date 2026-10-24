@@ -1,0 +1,59 @@
+{
+  "schema": "root-accepted-dsl01-train-delta-v1",
+  "status": "ROOT_ACCEPTED_TRAIN_ONLY_READOUT",
+  "split": "train",
+  "training_eligible": true,
+  "nontraining": false,
+  "profile": "decision3-dsl01-delta-readout-cpu5-4g-candidate-v1",
+  "alias": "d3-edge-dsl01-train-delta-cpu5-candidate",
+  "owner_profile": "llama-cpp-cpu5-fast-same-cluster-4g-coexist-command-owned-v1",
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "delta_ref": {
+    "dtype": "float32",
+    "format": "npy_no_pickle",
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-19/fit-head/delta-pending.npy",
+    "sha256": "812256139b35429dc55f4f178af8c177d2a31c023414e668e9b39cdc217d14be",
+    "shape": [
+      255,
+      1024
+    ],
+    "size_bytes": 1044608
+  },
+  "root_acceptance_ref": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-accepted-trained-readout-01.json",
+    "sha256": "cc629a1893ce53c232cc323253f39e86496b0e7a7347c5d11df8fa259ccb5baa",
+    "size_bytes": 10728
+  },
+  "baseline_fp32_bytes_sha256": "d408d94a0ab2915fa85c511dd9b8d62af49903c4e4ca28e2e2d5aff9ef565e0f",
+  "fit_capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-fit-capability-01.json",
+    "sha256": "51d87342a04e1121e669da018591d62778cbc52cb4599f8763df97317d25a45b",
+    "size_bytes": 14175
+  },
+  "frozen_before_dev_sealed_benchmark_or_browser": true,
+  "quality_or_win_claim": false,
+  "source_backend_still_held": true,
+  "W0_merge_allowed": false,
+  "projection": "original FP32 h@W0.T + separate FP32 h@delta.T, original legal mask and T1",
+  "scope": "Exactly this32-step train-only candidate, independent of publisher-native identity. Owner-backed live numerical/inference qualification and dev/sealed/browser evaluation remain required."
+}

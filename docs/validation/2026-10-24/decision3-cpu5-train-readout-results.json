@@ -1,0 +1,181 @@
+{
+  "schema": "decision3-cpu5-train-readout-milestone-v1",
+  "status": "real_train_features_and32step_candidate_accepted_no_quality_qualification",
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "data": {
+    "train_states": 96,
+    "ancestors": 12,
+    "families": 4,
+    "actual_native_calls": 96,
+    "model_loads": 12,
+    "same_forward_feature_rows": 384,
+    "supervised_heads": 132,
+    "unused_heads_skipped": 252,
+    "features_shape_per_case": [
+      4,
+      1024
+    ],
+    "baseline_and_delta_shape": [
+      255,
+      1024
+    ],
+    "all12_root_COMMITTED_after_actual_audit": true,
+    "diagnostic_arrays_promoted": false,
+    "dev_sealed_official_gold_or_Copper_used": false,
+    "OS_access_sealing_claim": false
+  },
+  "collection": {
+    "owner_source_union_per_run": 61,
+    "all12_original_root0_ownercompleted_current_scopedclosures": true,
+    "root_total_seconds": 943.4612157129741,
+    "root_per_chunk_min_max_seconds": [
+      77.6053992069792,
+      79.84462863701629
+    ],
+    "complete_call96_mean_seconds": 8.009827688363961,
+    "complete_call96_min_max_seconds": [
+      7.787016329006292,
+      8.26231095197727
+    ],
+    "timing_scope": "Full feature-collection transaction including native/context, hashes, replay/copies/evidence/fsync/cleanup; not serving response latency",
+    "owned_unit_peak_max_bytes": 1705549824,
+    "source_fakes": {
+      "collector": 14,
+      "held_loader_fit": 13,
+      "released_fit_v2": 14,
+      "closed_audit": 5
+    },
+    "root_actual_byte_reader": true,
+    "separate_reviewer_actual_bytes_read": false,
+    "root_audit_additional_float64_witness_all_legal_passed": true,
+    "producer_FP32_comparisons_and_original_mixed_tolerance_retained": true,
+    "producer_state_phase_label_stale": "Original loader left constructing_original_publisher_CPU_batch4; actual completion checked through completed flags, original command/owner/closure and8 per-call evidence. Original files untouched."
+  },
+  "fit": {
+    "root_exit": 0,
+    "owner_completed": true,
+    "current_original_scoped_closure_positive": true,
+    "source_union": 34,
+    "train": {
+      "OS_access_sealing_claim": false,
+      "ancestors": 12,
+      "dev_or_sealed_selected": false,
+      "families": 4,
+      "projection": {
+        "absolute_tolerance": 1e-06,
+        "codes": 255,
+        "feature_width": 1024,
+        "id": "publisher-final-norm-last-position-fp32-255x1024-t1-v1",
+        "legal_mask": "code_index_less_than_actual_criteria_count",
+        "relative_tolerance": 1e-05,
+        "temperature": 1.0
+      },
+      "supervised_heads": 132,
+      "train_states": 96,
+      "unused_heads_skipped": 252
+    },
+    "hyperparameters": {
+      "batch_size": 64,
+      "l2": 0.0001,
+      "learning_rate": 0.001,
+      "seed": 20261023,
+      "steps": 32
+    },
+    "minibatch_loss": {
+      "first": 0.9842857122421265,
+      "last": 1.237235426902771,
+      "maximum": 1.4318313598632812,
+      "minimum": 0.8010114431381226,
+      "steps": 32
+    },
+    "loss_scope": "Different seeded minibatches; first/last are not a full-train loss comparison or a quality improvement claim",
+    "root_seconds": 2.841495467990171,
+    "original_child_seconds": 1.1797313739953097,
+    "elapsed_before_final_write_seconds": 1.1096346009871922,
+    "owned_unit_peak_bytes": 47239168,
+    "memory_events_diagnostic": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "delta_statistics": {
+      "FP32_raw_bytes_sha256": "35bf5363485b4f30302329b64cf2beb6dc03d9968422d4eaa202f08127295e90",
+      "finite": true,
+      "nonzero_elements": 8192,
+      "minimum": -0.004004947375506163,
+      "maximum": 0.005807824898511171,
+      "L2_norm": 0.04366844166042907,
+      "rows8_to254_exact_zero": true
+    }
+  },
+  "fit18_failed_before_numeric_import": {
+    "root_exit": 1,
+    "original_positive_closure": true,
+    "failure": "Child systemctl --user query failed; sanitized child has no user-bus env; underlying query stderr not separately retained",
+    "revision": "Same original kernel/proc resource checks in child; unchanged parent systemd property checks; no math/data/hyperparameter/bound change"
+  },
+  "candidate_frozen_before_any_dev_or_sealed": true,
+  "candidate_alias": "d3-edge-dsl01-train-delta-cpu5-candidate",
+  "candidate_delta_sha256": "812256139b35429dc55f4f178af8c177d2a31c023414e668e9b39cdc217d14be",
+  "training_only_accepted": true,
+  "new_quality_or_browser_pass": false,
+  "score_changes": null,
+  "JevBench_public231_unadapted_prior": {
+    "Decision3_correct": 158,
+    "total": 231,
+    "accuracy": 0.683982683982684,
+    "Gemma_correct": 195,
+    "Gemma_accuracy": 0.8441558441558441
+  },
+  "JevBench_coherence_unadapted_prior": {
+    "Decision3_score": null,
+    "completed": 1234,
+    "required": 1248,
+    "Gemma_score": 41.26307189542484
+  },
+  "refs": {
+    "accepted_trained_readout": {
+      "path": "artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-accepted-trained-readout-01.json",
+      "sha256": "cc629a1893ce53c232cc323253f39e86496b0e7a7347c5d11df8fa259ccb5baa",
+      "size_bytes": 10728
+    },
+    "frozen_candidate": {
+      "path": "artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-frozen-delta-candidate-capability-01.json",
+      "sha256": "239165d486bad16963a6e5c94c1f9503fc145ea5b85b114e9fbf94d84eb1fd76",
+      "size_bytes": 2556
+    },
+    "all12_root_audits": {
+      "path": "artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-all-train-chunk-audit-results-02.json",
+      "sha256": "c2da51fc6536af836e349160b701c757989750dd9ccc023db0f272dad73dfe85",
+      "size_bytes": 8928
+    },
+    "fit_spec": {
+      "path": "artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-fit-command-spec-02.json",
+      "sha256": "7f491e149b7dc0ced53ba1615013a16097d530dba3f3cc56932627e7ff394934",
+      "size_bytes": 7781
+    }
+  }
+}
