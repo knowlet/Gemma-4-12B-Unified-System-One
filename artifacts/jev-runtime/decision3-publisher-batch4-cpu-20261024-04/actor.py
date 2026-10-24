@@ -21,7 +21,7 @@ HELPER_SHA = "e34f254a40dd2346cf94bbc140a92d999a1f696a719b19acfe038d2dc79115c1"
 SOURCE_AUDIT_SHA = "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
 UNIT = "jev-d3-llama-cpp-cpu16-4g-coexist-20261024-08.service"
 OWNER_PROFILE = "llama-cpp-cpu16-4g-coexist-command-owned-v1"
-OWNER_CONTROLLER_SHA = "PENDING_OWNER08_REVIEWED_SOURCE_SHA256"
+OWNER_CONTROLLER_SHA = "ba91e1cbf66f9d1a0f4e16e610a1fe8952c2efde81e2a28f39a111a98ca10c9b"
 HOST_OBSERVATION_POLICY = "comfy-observed-cpu-coexist-v1"
 RESERVE = 26_119_172_916
 MEMORY_MAX = 4_294_967_296
@@ -106,7 +106,10 @@ def validate_owner(identity, limits, start_env):
         len(lines) == 1 and lines[0].startswith("0::/") and lines[0].endswith("/" + UNIT),
         "selected owner08 cgroup required",
     )
-    require(identity["affinity"] == [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], "CPU affinity differs")
+    require(
+        identity["affinity"] == [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        "CPU affinity differs",
+    )
     require(
         limits["memory.max"] == str(MEMORY_MAX) and limits["memory.swap.max"] == "0",
         "4GiB/swap0 owner limits differ",

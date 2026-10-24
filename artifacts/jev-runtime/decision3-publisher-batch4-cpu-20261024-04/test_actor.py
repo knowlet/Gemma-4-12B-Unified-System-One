@@ -277,16 +277,25 @@ class Batch4BoundaryTests(unittest.TestCase):
 class ResourceClosureTests(unittest.TestCase):
     def assert_only_loader_thread_literals_changed(self, original, current):
         expected = copy.deepcopy(original)
-        setters = [node for node in ast.walk(expected)
-                   if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
-                   and isinstance(node.func.value, ast.Name) and node.func.value.id == "torch"
-                   and node.func.attr == "set_num_threads"]
-        comparisons = [node for node in ast.walk(expected)
-                       if isinstance(node, ast.Compare) and isinstance(node.left, ast.Call)
-                       and isinstance(node.left.func, ast.Attribute)
-                       and isinstance(node.left.func.value, ast.Name)
-                       and node.left.func.value.id == "torch"
-                       and node.left.func.attr == "get_num_threads"]
+        setters = [
+            node
+            for node in ast.walk(expected)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "torch"
+            and node.func.attr == "set_num_threads"
+        ]
+        comparisons = [
+            node
+            for node in ast.walk(expected)
+            if isinstance(node, ast.Compare)
+            and isinstance(node.left, ast.Call)
+            and isinstance(node.left.func, ast.Attribute)
+            and isinstance(node.left.func.value, ast.Name)
+            and node.left.func.value.id == "torch"
+            and node.left.func.attr == "get_num_threads"
+        ]
         self.assertEqual(len(setters), 1)
         self.assertEqual(len(comparisons), 1)
         setter, comparison = setters[0], comparisons[0]
@@ -299,8 +308,10 @@ class ResourceClosureTests(unittest.TestCase):
         self.assertEqual(ast.literal_eval(comparison.comparators[0]), 4)
         setter.args[0] = ast.Constant(value=16)
         comparison.comparators[0] = ast.Constant(value=16)
-        self.assertEqual(ast.dump(expected, include_attributes=False),
-                         ast.dump(current, include_attributes=False))
+        self.assertEqual(
+            ast.dump(expected, include_attributes=False),
+            ast.dump(current, include_attributes=False),
+        )
 
     def test_native02_NN_auth_and_postcleanup_timing_AST_unchanged(self):
         original = (
@@ -364,9 +375,12 @@ class ResourceClosureTests(unittest.TestCase):
         for name in old:
             expected = copy.deepcopy(old[name])
             if name == "host_gate":
-                diagnostics = [node for node in ast.walk(expected)
-                               if isinstance(node, ast.Constant)
-                               and node.value == "unchanged reserve plus 2GiB startup floor refused"]
+                diagnostics = [
+                    node
+                    for node in ast.walk(expected)
+                    if isinstance(node, ast.Constant)
+                    and node.value == "unchanged reserve plus 2GiB startup floor refused"
+                ]
                 self.assertEqual(len(diagnostics), 1)
                 diagnostics[0].value = "unchanged reserve plus 4GiB startup floor refused"
             self.assertEqual(

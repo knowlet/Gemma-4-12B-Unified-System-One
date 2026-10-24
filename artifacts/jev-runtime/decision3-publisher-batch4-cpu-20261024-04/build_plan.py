@@ -80,9 +80,18 @@ def build():
         cpu_affinity=list(range(4, 20)),
         cpu_quota_percent=1600,
         threads=16,
-        environment={**plan["environment"], **{name: "16" for name in (
-            "OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "NUMEXPR_NUM_THREADS"
-        )}},
+        environment={
+            **plan["environment"],
+            **{
+                name: "16"
+                for name in (
+                    "OMP_NUM_THREADS",
+                    "MKL_NUM_THREADS",
+                    "OPENBLAS_NUM_THREADS",
+                    "NUMEXPR_NUM_THREADS",
+                )
+            },
+        },
     )
     plan["resource_helper_provenance"] = {
         "path": helper["path"],

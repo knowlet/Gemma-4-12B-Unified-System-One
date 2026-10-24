@@ -619,8 +619,9 @@ class CPU16Tests(unittest.TestCase):
             with self.subTest(quota=quota), self.assertRaisesRegex(ValueError, "CPU1600%"):
                 self.resource_readback(quota)
         for manager in ("1s", "4s"):
-            with self.subTest(manager=manager), self.assertRaisesRegex(
-                ValueError, "extra unit resource properties"
+            with (
+                self.subTest(manager=manager),
+                self.assertRaisesRegex(ValueError, "extra unit resource properties"),
             ):
                 self.resource_readback(manager=manager)
 
@@ -988,7 +989,12 @@ class CoexistPolicyTests(unittest.TestCase):
         }
         self.assertEqual(set(current), set(original))
         for name in set(original) - {
-            "fixed_memory", "host", "properties", "main_affinity", "run", "main"
+            "fixed_memory",
+            "host",
+            "properties",
+            "main_affinity",
+            "run",
+            "main",
         }:
             with self.subTest(name=name):
                 self.assertEqual(current[name], original[name])

@@ -1,0 +1,40 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "format",
+        "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/root-closed-smoke-audit-01.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file reformatted\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "check",
+        "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/root-closed-smoke-audit-01.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "format",
+        "--check",
+        "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/root-closed-smoke-audit-01.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "format_preserved_entire_AST": true,
+  "source_sha256": "89e7f9a3fa3d7a98ac0b9cfcd405caea75ad158bf46b7aedef9081ac1417eae0",
+  "peer_source_findings_resolved": [
+    "actor versus command/root clock scopes",
+    "strict finite numeric confidence",
+    "current admitted cohort and child identity/exe/argv/cwd",
+    "four complete differing synthetic prompt lengths"
+  ]
+}
