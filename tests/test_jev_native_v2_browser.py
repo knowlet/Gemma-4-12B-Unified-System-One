@@ -10,6 +10,7 @@ from types import SimpleNamespace
 
 import jev_native_v2_browser as driver
 import pytest
+from local_evidence import require_local_evidence
 
 
 class FakeLM:
@@ -685,8 +686,10 @@ def test_client_cleanup_and_publication_cannot_replace_browser_timeout(
         assert closure["confirmed"] is False
 
 
+@pytest.mark.local_evidence
 @pytest.mark.parametrize("code", ["pass", "import time; time.sleep(0.15)"])
 def test_actual_owned_client_is_seeded_before_poll_and_closes(tmp_path, code):
+    require_local_evidence(driver.MATRIX)
     driver.run_client([sys.executable, "-I", "-B", "-c", code], dict(os.environ), tmp_path)
     closure = json.loads((tmp_path / "owned-client-closure.json").read_bytes())
     assert closure["confirmed"] is True and closure["remaining"] == []

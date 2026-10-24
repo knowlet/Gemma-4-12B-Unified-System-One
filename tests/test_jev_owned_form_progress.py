@@ -304,7 +304,7 @@ class FormProgressTests(unittest.TestCase):
 
     def test_snapshot_accepts_frozen_Path_order_and_refuses_population_or_hash_drift(self):
         with tempfile.TemporaryDirectory() as folder:
-            root = Path(folder)
+            root = Path(folder).resolve(strict=True)
             proof = root / F.BASE / "actual-01"
             proof.mkdir(parents=True)
             names = ["episodes/00/trace.json", "episodes/00.json"] + [

@@ -18,6 +18,7 @@ import jev_public_cfg_action_artifact as ART
 import jev_qualify_public_actions_bf16 as OLD
 import jev_qualify_public_cfg_actions_bf16 as CFG
 import pytest
+from local_evidence import require_local_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 OLD_PATH = ROOT / "scripts/jev_qualify_public_actions_bf16.py"
@@ -33,6 +34,7 @@ FORBIDDEN_S1_LOSS = "src/s1/jev_cfg_action_loss.py"
 
 
 def wrapper_fixture():
+    require_local_evidence(HISTORICAL)
     historical = HISTORICAL.read_bytes()
     assert CFG.digest(historical) == HISTORICAL_SHA
     delta = CFG.strict_json(historical)
@@ -55,6 +57,7 @@ def test_new_importer_selects_only_explicit_cfg_artifact(monkeypatch):
         CFG._artifact_module()
 
 
+@pytest.mark.local_evidence
 def test_cfg_design_composes_authenticated_original_plan_without_changing_inference():
     base, wrapper = wrapper_fixture()
     original_base, original_history = bytes(base), HISTORICAL.read_bytes()
@@ -91,6 +94,7 @@ def test_cfg_design_composes_authenticated_original_plan_without_changing_infere
         "base-bytes-drift",
     ],
 )
+@pytest.mark.local_evidence
 def test_cfg_wrapper_cannot_replace_or_skip_historical_authority(fault):
     base, wrapper = wrapper_fixture()
     if fault == "old-plan02-alone":
@@ -122,6 +126,7 @@ def test_cfg_wrapper_cannot_replace_or_skip_historical_authority(fault):
 
 
 @pytest.mark.parametrize("field", sorted(CFG.cfg_design_extension()))
+@pytest.mark.local_evidence
 def test_every_cfg_extension_field_is_exact_and_cannot_self_select_weaker_contract(field):
     base, wrapper = wrapper_fixture()
     value = wrapper["extension"][field]
@@ -154,6 +159,7 @@ def test_cfg_design_requires_distinct_schemas_complete94_plus95_and_original90_i
     assert "not whole-action NLL" in extension["comparison_scope"]
 
 
+@pytest.mark.local_evidence
 def test_config_design_rechecks_external_wrapper_sha_before_use(tmp_path):
     _, wrapper = wrapper_fixture()
     path = tmp_path / "plan.json"

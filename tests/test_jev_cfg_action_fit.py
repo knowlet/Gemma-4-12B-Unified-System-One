@@ -11,6 +11,7 @@ import jev_public_action_artifact as old_artifact
 import jev_public_cfg_action_artifact as artifact
 import pytest
 from jev_cfg_action_loss import compile_action_plan
+from local_evidence import require_local_evidence
 from test_jev_cfg_action_loss import compiled
 
 
@@ -198,11 +199,14 @@ def test_all_original_plans_required_before_optimizer(change, tmp_path):
         loop.train_actions(None, [row], [dev], tmp_path, plans=plans, mode="C")
 
 
+@pytest.mark.local_evidence
 def test_actual_original90_plus_four_source_handoff_and_tamper_refusal():
-    original = artifact.read(
+    handoff_path = (
         artifact.ROOT
         / "artifacts/jev-runtime/public-native-action-actual07-fit-20261016-01/source-handoff-03.json"
     )
+    require_local_evidence(handoff_path)
+    original = artifact.read(handoff_path)
     blob = artifact.build_source_handoff(original)
     handoff = artifact.verify_source_handoff(blob, expected_sha256=artifact.sha(blob))
     assert (
@@ -234,15 +238,15 @@ def test_actual_original90_plus_four_source_handoff_and_tamper_refusal():
         old_artifact.verify_source_handoff(blob, expected_sha256=artifact.sha(blob))
 
 
+@pytest.mark.local_evidence
 def test_original_nested_public_admission_sees_exact_unchanged84_not_outer94():
     from s1.browser_public_training_validation import _authenticate_complete_source_inventory
 
-    frozen = artifact.parse(
-        artifact.read(
-            artifact.ROOT
-            / "artifacts/jev-runtime/frozen-public-observation-36/freeze-manifest.json"
-        )
-    )["files"]
+    manifest_path = (
+        artifact.ROOT / "artifacts/jev-runtime/frozen-public-observation-36/freeze-manifest.json"
+    )
+    require_local_evidence(manifest_path)
+    frozen = artifact.parse(artifact.read(manifest_path))["files"]
     reviewed = {label.removeprefix("src/"): pin for label, pin in frozen.items()}
     _authenticate_complete_source_inventory(reviewed)
     assert len(reviewed) == 84 and not (artifact.ROOT / "src/s1/jev_cfg_action_loss.py").exists()

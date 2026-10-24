@@ -9,12 +9,31 @@ from types import SimpleNamespace
 import jev_owned_generic_collection as owned
 import jev_public_action_artifact as common
 import pytest
+from local_evidence import require_local_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 PROOF = ROOT / "artifacts/jev-runtime/generic-menu-semantics-prototype-20261018-01/proof-01"
 
 
 def saved_episode(name):
+    episode = PROOF / name
+    require_local_evidence(
+        *(
+            episode / label
+            for label in (
+                "proof.json",
+                "native-cdp.jsonl",
+                "observations.jsonl",
+                "native-requests.jsonl",
+                "transitions.jsonl",
+                "private-dom.jsonl",
+                "ownership.jsonl",
+                "local-request-ledger.json",
+            )
+        ),
+        PROOF / "profile/runtime/jev_ultrafast/snapshot.js",
+        *(owned.ROOT / label for label in owned.UPSTREAM),
+    )
     labels = [name + "/" + p.name for p in (PROOF / name).iterdir() if p.is_file()]
     labels.append("profile/runtime/jev_ultrafast/snapshot.js")
     items = {label: (PROOF / label).read_bytes() for label in labels}
@@ -33,6 +52,7 @@ def verifier():
     return owned._module(owned.PRODUCER), owned._module(owned.PARENT)
 
 
+@pytest.mark.local_evidence
 @pytest.mark.parametrize(
     "name",
     [
@@ -54,6 +74,7 @@ def test_saved_single_episode_rederives_original_native_wire_guard_history_and_h
     assert len(checked) == len(snapshot.rows(name + "/native-requests.jsonl"))
 
 
+@pytest.mark.local_evidence
 @pytest.mark.parametrize(
     "change", ["guard", "hit", "native-body", "history", "untrusted", "ownership"]
 )
@@ -101,7 +122,12 @@ def test_saved_real_episode_mutations_refused_before_population_gate(change):
     assert "Exact complete evidence population" not in str(caught.value)
 
 
+@pytest.mark.local_evidence
 def test_actual_native_constructor_retains_all_heads_candidates_and_only_observed_inputs():
+    require_local_evidence(
+        PROOF / "semantic-01-menu/proof.json",
+        *(owned.ROOT / label for label in owned.UPSTREAM),
+    )
     proof = json.loads((PROOF / "semantic-01-menu/proof.json").read_bytes())
     request = owned.native_constructor()
     payload = request(
@@ -121,7 +147,11 @@ def test_actual_native_constructor_retains_all_heads_candidates_and_only_observe
     )
 
 
+@pytest.mark.local_evidence
 def test_owned_case_new_namespace_and_detached_fields_refuse_forgery():
+    require_local_evidence(
+        PROOF / "semantic-01-menu/proof.json", PROOF / "compatibility-wire-requests.jsonl"
+    )
     proof = json.loads((PROOF / "semantic-01-menu/proof.json").read_bytes())
     wire = next(
         json.loads(line)

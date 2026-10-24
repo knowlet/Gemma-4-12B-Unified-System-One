@@ -320,6 +320,41 @@ def test_real128_token_boundary_does_not_append_or_spend_synthetic_eos(native):
     assert incomplete.emitted == 128 and not incomplete.complete
 
 
+def compile_toy_cache(paths, output, **kwargs):
+    """Keep the real compiler separate from inference workers' imports/threads."""
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            "import importlib.util, json, sys\n"
+            "request = json.load(sys.stdin)\n"
+            "spec = importlib.util.spec_from_file_location('toy_grammar_compiler', request['source'])\n"
+            "grammar = importlib.util.module_from_spec(spec)\n"
+            "sys.modules[spec.name] = grammar\n"
+            "spec.loader.exec_module(grammar)\n"
+            "result = grammar.compile_cache(request['tokenizer'], request['generation'], "
+            "request['output'], **request['kwargs'])\n"
+            "print(json.dumps(result))\n",
+        ],
+        input=json.dumps(
+            {
+                "source": str(SOURCE),
+                "tokenizer": str(paths[0]),
+                "generation": str(paths[1]),
+                "output": str(output),
+                "kwargs": kwargs,
+            }
+        ),
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    return json.loads(completed.stdout)
+
+
 @pytest.fixture(scope="module")
 def toy_cache(tmp_path_factory):
     folder = tmp_path_factory.mktemp("field-json-compiler")
@@ -366,7 +401,7 @@ def toy_cache(tmp_path_factory):
         "expected_source_sha256": digest(SOURCE.read_bytes()),
     }
     output = folder / "cache"
-    result = G.compile_cache(*paths, output, expected_vocab_size=384, **kwargs)
+    result = compile_toy_cache(paths, output, expected_vocab_size=384, **kwargs)
     load_kwargs = {**kwargs, "expected_manifest_sha256": result["manifest_sha256"]}
     return paths, output, kwargs, load_kwargs, result, vocab
 
@@ -459,18 +494,24 @@ def test_cache_external_identity_is_required(toy_cache, field):
 
 def test_compiler_resource_and_native_population_refusals_do_not_prune(tmp_path, toy_cache):
     paths, _, kwargs, _, _, _ = toy_cache
-    with pytest.raises(ValueError, match="no pruning"):
-        G.compile_cache(
-            *paths, tmp_path / "too-small", expected_vocab_size=384, max_cache_bytes=1024, **kwargs
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        compile_toy_cache(
+            paths, tmp_path / "too-small", expected_vocab_size=384, max_cache_bytes=1024, **kwargs
         )
+    assert (
+        "ValueError: Full native cache exceeds unchanged cache cap; no pruning" in exc.value.stderr
+    )
     assert not (tmp_path / "too-small").exists()
-    with pytest.raises(ValueError, match="Complete contiguous"):
-        G.compile_cache(*paths, tmp_path / "wrong-width", **kwargs)
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        compile_toy_cache(paths, tmp_path / "wrong-width", **kwargs)
+    assert "ValueError: Complete contiguous" in exc.value.stderr
     assert not (tmp_path / "wrong-width").exists()
-    with pytest.raises(ValueError, match="cannot increase"):
-        G.compile_cache(
-            *paths, tmp_path / "increased-cap", max_cache_bytes=G.MAX_CACHE_BYTES + 1, **kwargs
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        compile_toy_cache(
+            paths, tmp_path / "increased-cap", max_cache_bytes=G.MAX_CACHE_BYTES + 1, **kwargs
         )
+    assert "ValueError: Cache cap cannot increase" in exc.value.stderr
+    assert not (tmp_path / "increased-cap").exists()
 
 
 def test_tokenizer_decoder_and_eos_changes_are_not_silently_reinterpreted(toy_cache):
