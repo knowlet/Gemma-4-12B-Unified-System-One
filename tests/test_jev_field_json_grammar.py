@@ -1,6 +1,8 @@
 """Pure grammar/cache tests, including the installed Rust decoder as oracle.
 
 No helper integration, model/framework, HTTP, GPU, browser or fitting occurs.
+Real compilation requires the native address-space cap. A Darwin refusal is
+checked before entry; all three Linux contracts jobs must compile the cache.
 """
 
 from __future__ import annotations
@@ -356,7 +358,64 @@ def compile_toy_cache(paths, output, **kwargs):
 
 
 @pytest.fixture(scope="module")
-def toy_cache(tmp_path_factory):
+def compiler_address_limit():
+    """Exercise the unchanged native limit before allocating a compiler cache."""
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            "import importlib.util, json, resource, sys\n"
+            "spec = importlib.util.spec_from_file_location('compiler_limit_probe', sys.argv[1])\n"
+            "grammar = importlib.util.module_from_spec(spec)\n"
+            "sys.modules[spec.name] = grammar\n"
+            "spec.loader.exec_module(grammar)\n"
+            "original = resource.getrlimit(resource.RLIMIT_AS)\n"
+            "entered = False\n"
+            "try:\n"
+            "    with grammar._compiler_limit() as limit:\n"
+            "        entered = True\n"
+            "        assert resource.getrlimit(resource.RLIMIT_AS) == (limit, original[1])\n"
+            "except ValueError as exc:\n"
+            "    if entered or sys.platform != 'darwin' or "
+            "str(exc) != 'current limit exceeds maximum limit':\n"
+            "        raise\n"
+            "    assert resource.getrlimit(resource.RLIMIT_AS) == original\n"
+            "    result = {'applied': False, 'platform': sys.platform, "
+            "'phase': 'before_entry', 'error': str(exc)}\n"
+            "else:\n"
+            "    assert resource.getrlimit(resource.RLIMIT_AS) == original\n"
+            "    result = {'applied': True, 'platform': sys.platform, 'limit': limit}\n"
+            "print(json.dumps(result))\n",
+            str(SOURCE),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert completed.returncode == 0, completed.stderr
+    return json.loads(completed.stdout)
+
+
+def test_real_compiler_address_limit_is_enforced_or_refused_before_entry(compiler_address_limit):
+    result = compiler_address_limit
+    if result["applied"] is True:
+        assert set(result) == {"applied", "platform", "limit"}
+        assert result["platform"] == sys.platform
+        assert type(result["limit"]) is int and 0 < result["limit"] <= G.MAX_COMPILER_BYTES
+    else:
+        assert result == {
+            "applied": False,
+            "platform": "darwin",
+            "phase": "before_entry",
+            "error": "current limit exceeds maximum limit",
+        }
+        assert sys.platform == "darwin"
+
+
+@pytest.fixture(scope="module")
+def toy_inputs(tmp_path_factory):
     folder = tmp_path_factory.mktemp("field-json-compiler").resolve(strict=True)
     special = set(range(21)) | {50, 106, 107}
     by_id = {i: f"piece{i}" for i in range(384)}
@@ -400,7 +459,18 @@ def toy_cache(tmp_path_factory):
         "expected_generation_sha256": digest(paths[1].read_bytes()),
         "expected_source_sha256": digest(SOURCE.read_bytes()),
     }
-    output = folder / "cache"
+    return paths, kwargs, vocab
+
+
+@pytest.fixture(scope="module")
+def toy_cache(toy_inputs, compiler_address_limit):
+    if compiler_address_limit["applied"] is False:
+        pytest.skip(
+            "Darwin refused the unchanged native 3 GiB compiler address-space cap; "
+            "real compilation and cache cases run in all three Linux contracts jobs"
+        )
+    paths, kwargs, vocab = toy_inputs
+    output = paths[0].parent / "cache"
     try:
         result = compile_toy_cache(paths, output, expected_vocab_size=384, **kwargs)
     except subprocess.CalledProcessError as exc:
@@ -511,6 +581,11 @@ def test_compiler_resource_and_native_population_refusals_do_not_prune(tmp_path,
         compile_toy_cache(paths, tmp_path / "wrong-width", **kwargs)
     assert "ValueError: Complete contiguous" in exc.value.stderr
     assert not (tmp_path / "wrong-width").exists()
+
+
+def test_compiler_cache_cap_cannot_increase_before_limit_entry(tmp_path, toy_inputs):
+    tmp_path = tmp_path.resolve(strict=True)
+    paths, kwargs, _ = toy_inputs
     with pytest.raises(subprocess.CalledProcessError) as exc:
         compile_toy_cache(
             paths, tmp_path / "increased-cap", max_cache_bytes=G.MAX_CACHE_BYTES + 1, **kwargs
@@ -519,8 +594,8 @@ def test_compiler_resource_and_native_population_refusals_do_not_prune(tmp_path,
     assert not (tmp_path / "increased-cap").exists()
 
 
-def test_tokenizer_decoder_and_eos_changes_are_not_silently_reinterpreted(toy_cache):
-    paths = toy_cache[0]
+def test_tokenizer_decoder_and_eos_changes_are_not_silently_reinterpreted(toy_inputs):
+    paths = toy_inputs[0]
     tokenizer, generation = json.loads(paths[0].read_bytes()), json.loads(paths[1].read_bytes())
     tokenizer["decoder"]["decoders"].reverse()
     with pytest.raises(ValueError, match="Exact Replace"):
