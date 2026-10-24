@@ -15,6 +15,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from decision3_test_support import frozen_source_root
 
 from s1.evaluation.decision3 import decision3_spec
 from s1.jev_decision3_native import JevDecision3NativeAdapter
@@ -38,6 +39,11 @@ def load_source(name, path, *, before_modal=False):
             compile(ast.Module(body=tree.body[:boundary], type_ignores=[]), str(path), "exec"),
             module.__dict__,
         )
+        deployed_root = module.ROOT
+        checkout = path.parents[2]
+        for key, value in list(vars(module).items()):
+            if isinstance(value, Path) and value.is_relative_to(deployed_root):
+                setattr(module, key, checkout / value.relative_to(deployed_root))
         return module
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
@@ -495,9 +501,13 @@ def test_worker_malformed_envelope_refuses_before_native_prediction(tmp_path, fa
     assert backend.calls == []
 
 
-def test_no_modals_or_framework_imports_for_source_only_preparation_and_exact17_inventory():
+def test_no_modals_or_framework_imports_for_source_only_preparation_and_exact17_inventory(tmp_path):
+    root = frozen_source_root(tmp_path / "historical-checkout")
+    service = load_source(
+        "historical_service", root / SERVICE_PATH.relative_to(ROOT), before_modal=True
+    )
     before = set(sys.modules)
-    manifest = SERVICE.source_inventory()
+    manifest = service.source_inventory()
     assert manifest["files"] == len(manifest["rows"]) == 17
     assert len({row["path"] for row in manifest["rows"]}) == 17
     assert not manifest["collection_or_parent_uploaded"] and not manifest["weights_uploaded"]
@@ -1799,3 +1809,13 @@ def test_all_six_warm_arms_bind_config_ready_rpc_and_closed_receipt_to_external_
     assert len({process.pid for process, _ in launched}) == 6
     assert all(process.config["startup"] == startup for process, _ in launched)
     assert published[-1][2] is True
+
+
+def test_checkout_relocation_preserves_source_pins_and_rejects_current_source_drift():
+    assert SERVICE.ROOT == ROOT and SERVICE.SCRIPT == SERVICE_PATH
+    for label in ("CORE", "WRAPPER", "WIRE"):
+        assert hashlib.sha256(getattr(SERVICE, label).read_bytes()).hexdigest() == getattr(
+            SERVICE, label + "_SHA"
+        )
+    with pytest.raises(ValueError, match="Frozen source12 differs"):
+        SERVICE.source_inventory()

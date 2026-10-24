@@ -11,6 +11,7 @@ import json
 import random
 import shutil
 import struct
+import subprocess
 import sys
 from pathlib import Path
 
@@ -479,8 +480,23 @@ def test_qualified_helper_remains_unchanged_and_module_has_no_model_import():
         digest((ROOT / "src/s1/browser_text.py").read_bytes())
         == "381299d3961afba4ba2a296b1ce9ee5e4b137f5494b14cb4291b70340462b577"
     )
-    assert not any(
-        name.split(".")[0] in {"torch", "transformers", "modal", "peft"} for name in sys.modules
+    # Other inference tests may already have imported frameworks in this worker.
+    # Import this test module and its production dependencies in a fresh process.
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import runpy, sys; "
+            f"sys.path.insert(0, {str(ROOT / 'scripts')!r}); "
+            f"runpy.run_path({str(Path(__file__).resolve())!r}); "
+            "assert not any(name.split('.')[0] in "
+            "{'torch', 'transformers', 'modal', 'peft'} for name in sys.modules)",
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     assert not (ROOT / "scripts/jev_field_json_grammar.py").samefile(
         ROOT / "src/s1/browser_text.py"
