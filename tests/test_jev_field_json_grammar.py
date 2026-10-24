@@ -11,6 +11,7 @@ import json
 import random
 import shutil
 import struct
+import subprocess
 import sys
 from pathlib import Path
 
@@ -164,6 +165,7 @@ PREFIX = ["{", '"', "text", '"', ":", '"']
 SUFFIX = ['"', "}"]
 
 
+@pytest.mark.frozen_decoder
 def test_all262144_native_ids_retained_and_all_ordinary_pieces_match_rust(native):
     _, grammar, decoder, vocab, mapping_sha = native
     assert grammar.vocab_size == len(vocab) == 262144
@@ -176,6 +178,7 @@ def test_all262144_native_ids_retained_and_all_ordinary_pieces_match_rust(native
             assert grammar.pieces[token_id].decode() == decoder.decode([piece])
 
 
+@pytest.mark.frozen_decoder
 def test_valid_projection_can_die_then_invalid_byte_salvages_whole_run(native):
     tokenizer, grammar, _, _, _ = native
     state = grammar.consume(ids(native, PREFIX))
@@ -209,6 +212,7 @@ def test_valid_projection_can_die_then_invalid_byte_salvages_whole_run(native):
         (["\u2581"], " "),
     ],
 )
+@pytest.mark.frozen_decoder
 def test_fallback_flush_matches_actual_rust_and_replace_order(native, run, expected):
     sequence = ids(native, PREFIX + run + SUFFIX)
     raw = native[0].decode(sequence, skip_special_tokens=True)
@@ -216,6 +220,7 @@ def test_fallback_flush_matches_actual_rust_and_replace_order(native, run, expec
     assert native[1].consume(sequence).complete
 
 
+@pytest.mark.frozen_decoder
 def test_late_invalid_byte_revokes_tentative_close_and_eos(native):
     grammar = native[1]
     base = ids(native, PREFIX)
@@ -238,6 +243,7 @@ def test_late_invalid_byte_revokes_tentative_close_and_eos(native):
         '{"text":"你\u2581\\n\\u0000"}',
     ],
 )
+@pytest.mark.frozen_decoder
 def test_entire_object_can_span_byte_tokens_including_key_and_surrogate_escapes(native, document):
     sequence = ids(native, [f"<0x{byte:02X}>" for byte in document.encode()])
     assert len(sequence) + 1 <= 128
@@ -245,6 +251,7 @@ def test_entire_object_can_span_byte_tokens_including_key_and_surrogate_escapes(
     assert native[1].consume(sequence + [106]).complete
 
 
+@pytest.mark.frozen_decoder
 def test_ordinary_piece_flushes_partial_utf8_run_instead_of_joining_later_bytes(native):
     pieces = PREFIX + ["<0xE4>", "x", "<0xBD>", "<0xA0>"] + SUFFIX
     sequence = ids(native, pieces)
@@ -254,6 +261,7 @@ def test_ordinary_piece_flushes_partial_utf8_run_instead_of_joining_later_bytes(
     assert native[1].consume(sequence).complete
 
 
+@pytest.mark.frozen_decoder
 def test_random_cross_token_runs_match_rust_full_decode_and_independent_json(native):
     rng = random.Random(70618)
     choices = [
@@ -280,6 +288,7 @@ def test_random_cross_token_runs_match_rust_full_decode_and_independent_json(nat
 
 
 @pytest.mark.parametrize("eos", G.EOS_IDS)
+@pytest.mark.frozen_decoder
 def test_each_actual_eos_is_only_allowed_after_complete_and_counts_as_emitted(native, eos):
     grammar = native[1]
     sequence = ids(native, ["{", '"', "text", '"', ":", "null", "}"])
@@ -293,6 +302,7 @@ def test_each_actual_eos_is_only_allowed_after_complete_and_counts_as_emitted(na
             assert grammar.step(grammar.consume(sequence), token_id) is None
 
 
+@pytest.mark.frozen_decoder
 def test_real128_token_boundary_does_not_append_or_spend_synthetic_eos(native):
     grammar = native[1]
     sequence = ids(native, ["{", '"', "text", '"', ":", "null", "}"])
@@ -479,8 +489,23 @@ def test_qualified_helper_remains_unchanged_and_module_has_no_model_import():
         digest((ROOT / "src/s1/browser_text.py").read_bytes())
         == "381299d3961afba4ba2a296b1ce9ee5e4b137f5494b14cb4291b70340462b577"
     )
-    assert not any(
-        name.split(".")[0] in {"torch", "transformers", "modal", "peft"} for name in sys.modules
+    # Other inference tests may already have imported frameworks in this worker.
+    # Import this test module and its production dependencies in a fresh process.
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import runpy, sys; "
+            f"sys.path.insert(0, {str(ROOT / 'scripts')!r}); "
+            f"runpy.run_path({str(Path(__file__).resolve())!r}); "
+            "assert not any(name.split('.')[0] in "
+            "{'torch', 'transformers', 'modal', 'peft'} for name in sys.modules)",
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     assert not (ROOT / "scripts/jev_field_json_grammar.py").samefile(
         ROOT / "src/s1/browser_text.py"

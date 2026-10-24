@@ -9,6 +9,7 @@ import asyncio
 import copy
 import importlib.util
 import json
+import subprocess
 import sys
 import threading
 from dataclasses import FrozenInstanceError
@@ -345,6 +346,7 @@ def actual_helper_transcript():
         monkeypatch.undo()
 
 
+@pytest.mark.frozen_decoder
 def test_actual_helper_fake_LM_transcript_validates_full_native_masks_EOS_and_preauthorization_events(
     actual_helper_transcript,
 ):
@@ -373,6 +375,7 @@ def test_actual_helper_fake_LM_transcript_validates_full_native_masks_EOS_and_pr
         "deadline",
     ],
 )
+@pytest.mark.frozen_decoder
 def test_native_generation_evidence_cannot_be_repaired_or_forge_prefix_masks_or_terminal(
     actual_helper_transcript, fault
 ):
@@ -415,6 +418,7 @@ def test_native_generation_evidence_cannot_be_repaired_or_forge_prefix_masks_or_
         ([0xE4, "x", 0xBD, 0xA0], "\ufffdx\ufffd\ufffd"),
     ],
 )
+@pytest.mark.frozen_decoder
 def test_native_decoder_projection_preserves_whole_fallback_run_and_flush_boundaries(
     actual_helper_transcript, pieces, expected
 ):
@@ -432,6 +436,7 @@ def test_native_decoder_projection_preserves_whole_fallback_run_and_flush_bounda
     assert cache.consume(ids).terminated
 
 
+@pytest.mark.frozen_decoder
 def test_native_decoder_projection_cannot_skip_nonEOS_specials(actual_helper_transcript):
     _, _, cache, _ = actual_helper_transcript
     with pytest.raises(ValueError, match="nonEOS special"):
@@ -441,6 +446,7 @@ def test_native_decoder_projection_cannot_skip_nonEOS_specials(actual_helper_tra
 @pytest.mark.parametrize(
     "fault", ["request", "order", "sequence", "raw", "callback", "authorized", "restore"]
 )
+@pytest.mark.frozen_decoder
 def test_durable_event_sequence_and_transition_cannot_be_fabricated(
     actual_helper_transcript, fault
 ):
@@ -799,6 +805,21 @@ def test_installed_live_dispatch_halts_both_policy_and_helper_after_decoder_iden
 
 
 def test_pure_suite_never_imports_model_frameworks():
-    assert not any(
-        n.split(".")[0] in {"torch", "transformers", "peft", "modal"} for n in sys.modules
+    # Whole-suite inference collection legitimately imports model frameworks.
+    # Check this module's import closure without cleaning or weakening that state.
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import runpy, sys; "
+            f"sys.path.insert(0, {str(ROOT / 'scripts')!r}); "
+            f"runpy.run_path({str(Path(__file__).resolve())!r}); "
+            "assert not any(name.split('.')[0] in "
+            "{'torch', 'transformers', 'peft', 'modal'} for name in sys.modules)",
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
