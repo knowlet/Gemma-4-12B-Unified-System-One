@@ -1,0 +1,130 @@
+{
+  "schema": "decision3-cpu5-real-http-browser-diagnostic-public-report-v1",
+  "created_at_utc": "2026-10-24T03:18:50.827895+00:00",
+  "status": "EXECUTION_PATH_VERIFIED_DIAGNOSTIC_FAILED",
+  "model_id": "vllm-sr/d3-edge",
+  "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+  "CPU_affinity": [
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "intraop": 5,
+  "interop": 1,
+  "cap_bytes": 4294967296,
+  "swap_bytes": 0,
+  "BF16_backbone_original_FP32_head": true,
+  "native_batch_size": 4,
+  "actual_tail_rows_per_call": 2,
+  "one_actual_constructor": true,
+  "http_calls": [
+    {
+      "index": 0,
+      "http_status": 200,
+      "client_seconds": 1.7283497769967653,
+      "actual_shape": [
+        2,
+        578,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_hashes_and_native_distributions_joined": true
+    },
+    {
+      "index": 1,
+      "http_status": 200,
+      "client_seconds": 1.5283587859885301,
+      "actual_shape": [
+        2,
+        545,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_hashes_and_native_distributions_joined": true
+    },
+    {
+      "index": 2,
+      "http_status": 200,
+      "client_seconds": 1.6839434249850456,
+      "actual_shape": [
+        2,
+        569,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_hashes_and_native_distributions_joined": true
+    },
+    {
+      "index": 3,
+      "http_status": 200,
+      "client_seconds": 1.8865419040084817,
+      "actual_shape": [
+        2,
+        595,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_hashes_and_native_distributions_joined": true
+    }
+  ],
+  "trusted_click_count": 3,
+  "wrong_click_count": 1,
+  "operation_sequence": [
+    "CLICK",
+    "CLICK",
+    "CLICK",
+    "BLOCKED"
+  ],
+  "final_status": "blocked",
+  "strict_diagnostic_pass": false,
+  "observed_native_HTTP_latency_not_the_failure": true,
+  "completion_observation_reached_model_before_repeat_click_and_BLOCKED": true,
+  "DONE_and_BLOCKED_offered_intact": true,
+  "client_server_IDs_bytes_and_original_native_distributions_all_joined": true,
+  "root_closed_audit": {
+    "path": "artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/root-closed-browser-actual03-review-01.json",
+    "size_bytes": 4494,
+    "sha256": "3081055113440aeaebc60120d44747482b7b7d59a6af1a50e59c9b6b06357e8b"
+  },
+  "combined_owned_model_browser_memory_peak_bytes": 1912430592,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "original_authenticated_scoped_closure": true,
+  "owner_completed": false,
+  "root_exit_code": 1,
+  "separate_reviewer_actual_bytes_read": false,
+  "initial_integration_failure": {
+    "actual": "02",
+    "before_model_load": true,
+    "cause": "Mutable progress was mistakenly sent to the exclusive boundary writer",
+    "fix": "New worker_v2 retains immutable numbered snapshots and atomically updates latest with the original helper",
+    "regression_tests_pass": 10,
+    "failed_source_and_receipts_preserved": true,
+    "no_power_loss_durability_claim": true
+  },
+  "qualification_limits": [
+    "One exposed invented two-control diagnostic; not an official browser benchmark score or unseen-site result",
+    "No model training or answer/choice repair; diagnostic fixture excluded from future training",
+    "Worker did not automatically join HTTP after caller failure; root post-closure audit performed all four joins",
+    "Selected source/stat scope only; no full Python/native DSO or universal no-escape/whole-tree claim",
+    "No competitor win"
+  ],
+  "two_jevbench_suites_unchanged": {
+    "benchmark_heaven_public231_accuracy": 0.683982683982684,
+    "decision3_coherence_mini_score": null,
+    "coherence_status": "Incomplete prior1248-call run, not scored; separate metric uniform control89.41176470588236 is not a model result"
+  },
+  "raw_states_responses_probabilities_features_or_model_bytes_included": false
+}
