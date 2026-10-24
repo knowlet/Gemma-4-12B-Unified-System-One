@@ -1,0 +1,37 @@
+{
+  "schema": "frozen-dsl01-delta-promotion-decision-v1",
+  "status": "REJECT_PROMOTION_KEEP_DIAGNOSTIC_ONLY",
+  "candidate_capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-frozen-delta-candidate-capability-01.json",
+    "sha256": "239165d486bad16963a6e5c94c1f9503fc145ea5b85b114e9fbf94d84eb1fd76",
+    "size_bytes": 2556
+  },
+  "accepted_dev_metrics": {
+    "path": "artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/root-accepted-dev24-metrics-01.json",
+    "sha256": "c16e6cfb57263238a6293313f170ed5092c14ea11c1b03d7b2dcdbe31b7e75ab",
+    "size_bytes": 8174
+  },
+  "browser_failure": {
+    "path": "artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/root-closed-browser-actual22-review-01.json",
+    "sha256": "192e9515fc9fd6f4e993a1a5ae0ba605ac54ca3a2162996709d2ee9cdf3926f0",
+    "size_bytes": 6132
+  },
+  "reason": "Complete dev valid-target hits18/33 to17/33, operation10/24 unchanged, select3/3 to2/3; genuine exposed browser still fails. Lower dev CE and better train accuracy do not justify promotion.",
+  "default_model_or_service_changed": false,
+  "frozen_candidate_or_producer_bytes_changed": false,
+  "next_experiment": {
+    "strategy": "Train only operation rows; apply separate delta only to actual operation heads, keep original target readouts",
+    "train_cases": 96,
+    "steps": 512,
+    "learning_rate": 0.003,
+    "l2": 0.0001,
+    "seed": 20261023,
+    "batch_size": 64,
+    "status": "SOURCE_INTERFACE_PLAN_ONLY_NOT_IMPLEMENTED_OR_RUN",
+    "optimizer_dev_or_sealed_inputs_allowed": false,
+    "dev_used_for_model_selection": true,
+    "future_candidate_frozen_before_any_dev_claim_allowed": false,
+    "sealed_must_remain_unrevealed": true
+  },
+  "quality_or_win_claim": false
+}
