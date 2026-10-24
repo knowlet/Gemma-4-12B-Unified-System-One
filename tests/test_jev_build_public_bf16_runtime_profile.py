@@ -1,5 +1,7 @@
 """Pure temporary source/metadata fixtures; no historical helper or ML execution."""
 
+# Resolve only allocated roots, before fixtures exist; preserve child symlink checks.
+
 import hashlib
 import importlib.util
 import json
@@ -137,7 +139,8 @@ def fixture(root):
 class RuntimeBuilderTests(unittest.TestCase):
     def test_profile_uses_actual_native_bytes_exact_thirteen_and_provenance(self):
         with tempfile.TemporaryDirectory() as temporary:
-            config, native, _ = fixture(Path(temporary))
+            root = Path(temporary).resolve(strict=True)
+            config, native, _ = fixture(root)
             # Different real file sizes must never inherit the historical ARM size.
             for padding in (1, 257):
                 native.write_bytes(elf(padding=padding))
@@ -172,7 +175,8 @@ class RuntimeBuilderTests(unittest.TestCase):
             "empty",
         ):
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temporary:
-                config, native, _ = fixture(Path(temporary))
+                root = Path(temporary).resolve(strict=True)
+                config, native, _ = fixture(root)
                 if mode == "missing":
                     native.unlink()
                 elif mode == "ambiguous":
@@ -189,7 +193,7 @@ class RuntimeBuilderTests(unittest.TestCase):
                     native.write_bytes(elf(machine=183))
                 else:
                     native.write_bytes(b"")
-                output = Path(temporary) / "must-not-exist"
+                output = root / "must-not-exist"
                 with patch.multiple(BUILDER, **config), self.assertRaises(ValueError):
                     BUILDER.main(["--run", "--output", str(output)])
                 self.assertFalse(output.exists())
@@ -197,9 +201,10 @@ class RuntimeBuilderTests(unittest.TestCase):
     def test_each_missing_extra_package_metadata_refuses_before_output(self):
         for name in BUILDER.EXTRA_DISTRIBUTIONS:
             with self.subTest(name=name), tempfile.TemporaryDirectory() as temporary:
-                config, _, metadata = fixture(Path(temporary))
+                root = Path(temporary).resolve(strict=True)
+                config, _, metadata = fixture(root)
                 metadata[name].unlink()
-                output = Path(temporary) / "missing-package"
+                output = root / "missing-package"
                 with patch.multiple(BUILDER, **config), self.assertRaises(FileNotFoundError):
                     BUILDER.main(["--run", "--output", str(output)])
                 self.assertFalse(output.exists())
@@ -207,7 +212,8 @@ class RuntimeBuilderTests(unittest.TestCase):
     def test_package_metadata_name_version_and_symlink_are_not_substituted(self):
         for mode in ("name", "version", "link"):
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temporary:
-                config, _, metadata = fixture(Path(temporary))
+                root = Path(temporary).resolve(strict=True)
+                config, _, metadata = fixture(root)
                 path = metadata["fastapi"]
                 if mode == "link":
                     target = write(path.with_name("actual"), path.read_bytes())
@@ -224,7 +230,8 @@ class RuntimeBuilderTests(unittest.TestCase):
 
     def test_explicit_run_and_fresh_output_precede_any_package_reads(self):
         with tempfile.TemporaryDirectory() as temporary:
-            output = Path(temporary) / "new"
+            root = Path(temporary).resolve(strict=True)
+            output = root / "new"
             with patch.object(
                 BUILDER, "build_profile", side_effect=AssertionError("unexpected package read")
             ):
@@ -237,8 +244,9 @@ class RuntimeBuilderTests(unittest.TestCase):
 
     def test_successful_publication_is_canonical_and_preserves_external_review_status(self):
         with tempfile.TemporaryDirectory() as temporary:
-            config, _, _ = fixture(Path(temporary))
-            output = Path(temporary) / "built"
+            root = Path(temporary).resolve(strict=True)
+            config, _, _ = fixture(root)
+            output = root / "built"
             with patch.multiple(BUILDER, **config):
                 self.assertEqual(BUILDER.main(["--run", "--output", str(output)]), 0)
             self.assertEqual(

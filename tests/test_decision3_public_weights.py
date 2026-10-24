@@ -5,6 +5,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import shutil
 import struct
 import sys
 import types
@@ -17,19 +18,39 @@ ROOT = Path(__file__).resolve().parents[1]
 PATH = ROOT / "apps/modal/decision3_public_weights.py"
 
 
-def prefix():
+def checkout_paths(module, root):
+    # Modal copies each named source to its declared absolute destination. Pure
+    # tests use the same source bytes in a checkout, without creating that layout.
+    deployed_root = module.ROOT
+    for constant_name, value in list(vars(module).items()):
+        if isinstance(value, Path) and value.is_relative_to(deployed_root):
+            setattr(module, constant_name, root / value.relative_to(deployed_root))
+    return module
+
+
+def prefix(path=PATH):
     module = types.ModuleType("pure_decision3_public_weights")
-    module.__file__ = str(PATH)
-    tree = ast.parse(PATH.read_bytes())
+    module.__file__ = str(path)
+    tree = ast.parse(path.read_bytes())
     stop = next(
         index
         for index, node in enumerate(tree.body)
         if isinstance(node, ast.Import) and any(alias.name == "modal" for alias in node.names)
     )
     exec(
-        compile(ast.Module(body=tree.body[:stop], type_ignores=[]), str(PATH), "exec"),
+        compile(ast.Module(body=tree.body[:stop], type_ignores=[]), str(path), "exec"),
         module.__dict__,
     )
+    root = path.parents[2]
+    checkout_paths(module, root)
+    original_load_service = module.load_service
+
+    def load_service():
+        # Every call still reads and SHA-verifies the real service before only
+        # its test-module paths are relocated; never cache or bypass this load.
+        return checkout_paths(original_load_service(), root)
+
+    module.load_service = load_service
     return module
 
 
@@ -38,6 +59,50 @@ SERVICE = WEIGHTS.load_service()
 spec = importlib.util.spec_from_file_location("pure_public_weights_core", SERVICE.CORE)
 CORE = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(CORE)
+
+
+@pytest.mark.parametrize("tampered", [None, "service", "core", "wrapper", "wire", "source12"])
+def test_relocated_checkout_retains_real_source_hash_guards(tmp_path, monkeypatch, tampered):
+    root = tmp_path / "arbitrary-checkout"
+    original = WEIGHTS.inventory()
+    for row in original["rows"]:
+        source = Path(row["path"])
+        target = root / source.relative_to(ROOT)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+    monkeypatch.chdir(tmp_path)
+    before = set(sys.modules)
+    relocated = prefix(root / "apps/modal/decision3_public_weights.py")
+    service = relocated.load_service()
+    assert service.ROOT == root and service.CORE == root / SERVICE.CORE.relative_to(ROOT)
+    assert relocated.SERVICE_SHA == WEIGHTS.SERVICE_SHA
+    assert hashlib.sha256(relocated.SERVICE.read_bytes()).hexdigest() == WEIGHTS.SERVICE_SHA
+    for name in ("CORE", "WRAPPER", "WIRE"):
+        assert getattr(service, name + "_SHA") == getattr(SERVICE, name + "_SHA")
+        assert hashlib.sha256(getattr(service, name).read_bytes()).hexdigest() == getattr(
+            service, name + "_SHA"
+        )
+    if tampered:
+        target = {
+            "service": relocated.SERVICE,
+            "core": service.CORE,
+            "wrapper": service.WRAPPER,
+            "wire": service.WIRE,
+            "source12": root / "src/s1/contracts.py",
+        }[tampered]
+        with target.open("ab") as stream:
+            stream.write(b"\n# tampered test source\n")
+        with pytest.raises(ValueError, match="source differs|source12 differs"):
+            relocated.inventory()
+    else:
+        actual = relocated.inventory()
+        assert actual["files"] == 18
+        assert {str(Path(row["path"]).relative_to(root)): row["pin"] for row in actual["rows"]} == {
+            str(Path(row["path"]).relative_to(ROOT)): row["pin"] for row in original["rows"]
+        }
+        relocated.prepare(root / "prepared")
+        assert not json.loads((root / "prepared/plan.json").read_bytes())["GPU_requested"]
+    assert not ({"torch", "modal"} & (set(sys.modules) - before))
 
 
 def tiny_tensor(path, header, data):
