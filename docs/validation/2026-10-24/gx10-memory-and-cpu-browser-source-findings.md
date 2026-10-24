@@ -44,8 +44,22 @@ request can contain fewer; a CPU diagnostic must observe the real1–4 row
 batches rather than insert fake questions.
 
 This CPU integration limitation does not explain or invalidate the earlier
-GPU browser failures. A source-only HTTP diagnostic is being prepared to
-separate wiring from model decisions using an invented two-button page and
-the unmodified native selections. No new CPU HTTP, browser or GPU qualification
-has been established. The two JevBench suites remain separate; no browser
-success or competitor win follows from their scores.
+GPU browser failures. The isolated HTTP candidate is at
+`artifacts/jev-runtime/decision3-cpu-http-wiring-candidate-20261024-01`.
+It retains the original predictor, ordered questions and native selections for
+the invented two-button page. Its public factory and constructors refuse before
+plan/dependency access; removing the source-only flag still refuses because the
+live guardian/selection handoff is unimplemented. No model loader or server
+entry is provided. Root and an independent reviewer inspected the source, and
+all candidate imports, tests and runtime work remain held.
+
+The candidate's request timer includes directory publication, native evidence,
+response writes/fsync and the final200 authorization. Its source separately
+records a constructed candidate and a successfully written/fsynced candidate.
+Observer interrupts retain the original exception for the next gateway boundary;
+they are not a guarantee of immediate native cancellation. Hook question IDs
+are bound from the prepared order rather than observed from tensor contents.
+Actual order, native1–4-row tails, HTTP behavior and browser success still need
+genuine source/resource-bound execution. No new CPU HTTP, browser or GPU
+qualification has been established. The two JevBench suites remain separate;
+no browser success or competitor win follows from their scores.
