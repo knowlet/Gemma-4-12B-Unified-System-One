@@ -291,6 +291,7 @@ def failed(case, **kwargs):
     return evidence
 
 
+@pytest.mark.frozen_decoder
 def test_actual_decoder_full_inventory_and_closed_cache_prepared_before_any_forward(factory):
     case = factory()
     receipt = case.prepared.receipt()
@@ -306,6 +307,7 @@ def test_actual_decoder_full_inventory_and_closed_cache_prepared_before_any_forw
     assert ("check", True, True) in case.model.action_adapter.events
 
 
+@pytest.mark.frozen_decoder
 def test_same_original_prompt_template_tokenization_generate_and_restored_base_contract(factory):
     case = factory(text='{"text":"  文字 field x 😀  "}')
     value, meta = run(case)
@@ -394,6 +396,7 @@ def test_prompt_instruction_literal_matches_original_without_modifying_old_helpe
 
 
 @pytest.mark.parametrize("eos", G.EOS_IDS)
+@pytest.mark.frozen_decoder
 def test_all_three_actual_eos_count_and_terminate_without_synthetic_tokens(factory, eos):
     case = factory(eos=eos)
     _, meta = run(case)
@@ -403,6 +406,7 @@ def test_all_three_actual_eos_count_and_terminate_without_synthetic_tokens(facto
 
 
 @pytest.mark.parametrize("at_cap", [False, True])
+@pytest.mark.frozen_decoder
 def test_complete_json_without_real_eos_is_refused_even_at128(factory, at_cap):
     case = factory(eos=None)
     if at_cap:
@@ -417,6 +421,7 @@ def test_complete_json_without_real_eos_is_refused_even_at128(factory, at_cap):
     assert meta["finish_reason"] == ("length_without_EOS" if at_cap else "returned_without_EOS")
 
 
+@pytest.mark.frozen_decoder
 def test_actual_eos_can_be_exact128th_emitted_token(factory):
     case = factory(eos=None)
     space = case.model.tok.backend_tokenizer.token_to_id("\u2581")
@@ -427,6 +432,7 @@ def test_actual_eos_can_be_exact128th_emitted_token(factory):
 
 
 @pytest.mark.parametrize("raw", ['{"text":null}', '{"text":""}', '{"text":"   "}'])
+@pytest.mark.frozen_decoder
 def test_nullable_grammar_is_not_permission_to_return_invalid_field_values(factory, raw):
     case = factory(text=raw)
     meta = failed(case)
@@ -450,6 +456,7 @@ def test_strict_consumer_does_not_strip_repair_or_accept_oversized_text(raw):
         H._consume_value(raw)
 
 
+@pytest.mark.frozen_decoder
 def test_over2000_actual_native_value_reaches_consumer_then_is_refused(factory):
     case = factory()
     backend = case.model.tok.backend_tokenizer
@@ -469,6 +476,7 @@ def test_over2000_actual_native_value_reaches_consumer_then_is_refused(factory):
 
 
 @pytest.mark.parametrize("fault", ["no_callback", "no_streamer", "changed_prompt", "extra_return"])
+@pytest.mark.frozen_decoder
 def test_returned_native_tokens_are_bound_to_each_actual_constraint_and_capture(factory, fault):
     case = factory()
     if fault == "no_callback":
@@ -485,6 +493,7 @@ def test_returned_native_tokens_are_bound_to_each_actual_constraint_and_capture(
     assert any(row["event"] == "raw_original_decoder_output" for row in case.sink)
 
 
+@pytest.mark.frozen_decoder
 def test_fake_native_provider_cannot_ignore_grammar_to_return_thought_or_fences(factory):
     case = factory(text='thought {"text":"x"}')
     case.model.lm.ignore_callback = True
@@ -494,6 +503,7 @@ def test_fake_native_provider_cannot_ignore_grammar_to_return_thought_or_fences(
     assert meta["response_authorized"] is False
 
 
+@pytest.mark.frozen_decoder
 def test_partial_native_failure_retains_actual_raw_ids_and_original_decode_then_restores(factory):
     case = factory()
     case.model.lm.fail_at = 3
@@ -511,6 +521,7 @@ def test_partial_native_failure_retains_actual_raw_ids_and_original_decode_then_
     ]
 
 
+@pytest.mark.frozen_decoder
 def test_keyboard_interrupt_is_preserved_with_partial_generation_and_restore(factory):
     case = factory()
     interrupt = KeyboardInterrupt("owned cancellation")
@@ -536,6 +547,7 @@ def test_keyboard_interrupt_is_preserved_with_partial_generation_and_restore(fac
         "evidence",
     ],
 )
+@pytest.mark.frozen_decoder
 def test_entire20seconds_includes_all_work_and_never_returns_late_text(factory, monkeypatch, stage):
     case = factory()
     if stage == "guard_entry":
@@ -574,6 +586,7 @@ def test_entire20seconds_includes_all_work_and_never_returns_late_text(factory, 
         assert not case.model.lm.calls
 
 
+@pytest.mark.frozen_decoder
 def test_outer_start_includes_prior_validation_queue_time_without_generation(factory):
     case = factory()
     meta = failed(case, started=case.clock.value - 20)
@@ -585,6 +598,7 @@ def test_outer_start_includes_prior_validation_queue_time_without_generation(fac
     "event_name",
     ["raw_tokens_returned", "raw_original_decoder_output", "request_closed_before_response_gate"],
 )
+@pytest.mark.frozen_decoder
 def test_synchronous_evidence_write_failure_never_authorizes_text(factory, event_name):
     case = factory()
 
@@ -601,6 +615,7 @@ def test_synchronous_evidence_write_failure_never_authorizes_text(factory, event
     )
 
 
+@pytest.mark.frozen_decoder
 def test_guard_restore_failure_is_integrity_failure_with_raw_evidence_retained(factory):
     case = factory()
     case.model.action_adapter.fail_restore = True
@@ -610,6 +625,7 @@ def test_guard_restore_failure_is_integrity_failure_with_raw_evidence_retained(f
     assert meta["raw_token_ids"] == case.model.lm.tokens and meta["raw_output"] is not None
 
 
+@pytest.mark.frozen_decoder
 def test_disabled_state_must_be_verified_before_native_generate(factory):
     case = factory()
     case.model.action_adapter.fail_disable = True
@@ -618,6 +634,7 @@ def test_disabled_state_must_be_verified_before_native_generate(factory):
 
 
 @pytest.mark.parametrize("count,allowed", [(8064, True), (8065, False)])
+@pytest.mark.frozen_decoder
 def test_original8192_context_includes_full128_output_allowance(factory, count, allowed):
     case = factory()
     case.model.tok.prompt = [1005] * count
@@ -641,6 +658,7 @@ def test_original8192_context_includes_full128_output_allowance(factory, count, 
         "expected_guard_source_sha256",
     ],
 )
+@pytest.mark.frozen_decoder
 def test_prepare_requires_all_externally_selected_source_cache_metadata_pins(factory, field):
     case = factory(prepare=False)
     with pytest.raises(ValueError):
@@ -648,6 +666,7 @@ def test_prepare_requires_all_externally_selected_source_cache_metadata_pins(fac
     assert not case.model.lm.calls
 
 
+@pytest.mark.frozen_decoder
 def test_prepare_reads_actual_decoder_version_instead_of_trusting_constant(factory, monkeypatch):
     import tokenizers
 
@@ -658,6 +677,7 @@ def test_prepare_reads_actual_decoder_version_instead_of_trusting_constant(facto
     assert not case.model.lm.calls
 
 
+@pytest.mark.frozen_decoder
 def test_prepare_hashes_actual_native_binary_instead_of_trusting_constant(
     factory, tmp_path, monkeypatch
 ):
@@ -682,6 +702,7 @@ def test_prepare_hashes_actual_native_binary_instead_of_trusting_constant(
 @pytest.mark.parametrize(
     "fault", ["missing_vocab", "float_id", "backend", "eos", "head", "context"]
 )
+@pytest.mark.frozen_decoder
 def test_ready_rejects_native_inventory_decoder_and_generation_drift(factory, assets, fault):
     case = factory(prepare=False)
     if fault in {"missing_vocab", "float_id"}:
@@ -706,6 +727,7 @@ def test_ready_rejects_native_inventory_decoder_and_generation_drift(factory, as
     assert not case.model.lm.calls
 
 
+@pytest.mark.frozen_decoder
 def test_model_identity_change_after_prepare_is_refused_before_generate(factory):
     case = factory()
     case.model.revision = "other-revision"
@@ -716,6 +738,7 @@ def test_model_identity_change_after_prepare_is_refused_before_generate(factory)
 @pytest.mark.parametrize(
     "field", ["pieces", "classes", "vocab_size", "mask_size", "byte_ids", "next_rows", "mask_rows"]
 )
+@pytest.mark.frozen_decoder
 def test_prepared_cache_replacement_is_refused_before_any_native_forward(factory, field):
     case = factory()
     cache = case.prepared.cache
@@ -736,6 +759,7 @@ def test_prepared_cache_replacement_is_refused_before_any_native_forward(factory
 
 
 @pytest.mark.parametrize("method", ["step", "consume", "allowed_mask"])
+@pytest.mark.frozen_decoder
 def test_instance_cache_method_override_cannot_change_the_allowed_language(factory, method):
     case = factory()
     cache = case.prepared.cache
@@ -748,6 +772,7 @@ def test_instance_cache_method_override_cannot_change_the_allowed_language(facto
     assert not case.model.lm.calls and not meta["base_context_entered"]
 
 
+@pytest.mark.frozen_decoder
 def test_cache_subclass_with_changed_semantics_is_not_the_prepared_class(factory):
     case = factory()
 
@@ -760,6 +785,7 @@ def test_cache_subclass_with_changed_semantics_is_not_the_prepared_class(factory
     assert not case.model.lm.calls and not meta["base_context_entered"]
 
 
+@pytest.mark.frozen_decoder
 def test_same_Rust_backend_decoder_mutation_is_refused_before_native_forward(factory):
     from tokenizers import decoders
 
@@ -779,6 +805,7 @@ def test_same_Rust_backend_decoder_mutation_is_refused_before_native_forward(fac
 
 
 @pytest.mark.parametrize("fault", ["cache", "decoder"])
+@pytest.mark.frozen_decoder
 def test_late_authority_mutation_refuses_text_and_retains_original_raw_evidence(factory, fault):
     from tokenizers import decoders
 
@@ -807,6 +834,7 @@ def test_late_authority_mutation_refuses_text_and_retains_original_raw_evidence(
 
 
 @pytest.mark.parametrize("check_number", [1, 2])
+@pytest.mark.frozen_decoder
 def test_backend_serialization_validation_cost_is_inside_the20s_request(
     factory, monkeypatch, check_number
 ):
@@ -832,6 +860,7 @@ def test_backend_serialization_validation_cost_is_inside_the20s_request(
         assert meta["failure_stage"] == "deadline_after_restore"
 
 
+@pytest.mark.frozen_decoder
 def test_sink_receives_detached_raw_evidence_and_no_real_framework_is_loaded(factory):
     case = factory()
 

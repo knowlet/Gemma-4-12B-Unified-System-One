@@ -452,10 +452,50 @@ def test_prepare_helper_binds_current_wrapper_source_without_claiming_old_qualif
     assert seen["expected_helper_source_sha256"] == driver.pin(helper.__file__)["sha256"]
 
 
+@pytest.fixture
+def cleanup_composition_sources(tmp_path, monkeypatch):
+    """Explicit synthetic source inputs, not historical browser execution evidence.
+
+    Cleanup tests already replace the model, server and browser clients. Keep
+    their source inputs local too, while exercising real capture, hashing and
+    final source verification over the complete declared composition population.
+    """
+    sources = {}
+    for label in driver.composition_paths():
+        path = tmp_path / "composition-inputs" / label
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("# Synthetic cleanup unit-test source only.\n# " + label + "\n")
+        sources[label] = path
+
+    def paths(action_profile="standard"):
+        assert action_profile == "standard"
+        return dict(sources)
+
+    monkeypatch.setattr(driver, "composition_paths", paths)
+    return sources
+
+
+@pytest.mark.parametrize("change", ["source", "capture", "population"])
+def test_cleanup_composition_fixture_keeps_real_source_verification(
+    tmp_path, cleanup_composition_sources, change
+):
+    output = tmp_path / "captured"
+    expected = driver.capture_composition(output)
+    driver.verify_composition(output, expected)
+    label, source = next(iter(cleanup_composition_sources.items()))
+    if change == "population":
+        expected.pop(label)
+    else:
+        target = source if change == "source" else output / "composition-sources" / label
+        target.write_bytes(target.read_bytes() + b"# changed after capture\n")
+    with pytest.raises(ValueError, match="Composition source (population|bytes) changed"):
+        driver.verify_composition(output, expected)
+
+
 @pytest.mark.parametrize("interrupted", [False, True])
 @pytest.mark.parametrize("cleanup_failure", [None, "join", "receipt", "index"])
 def test_campaign_cleanup_preserves_primary_and_failure_receipt(
-    tmp_path, monkeypatch, interrupted, cleanup_failure
+    tmp_path, monkeypatch, cleanup_composition_sources, interrupted, cleanup_failure
 ):
     from s1 import browser_action_adapter
 
@@ -571,6 +611,12 @@ def test_campaign_cleanup_preserves_primary_and_failure_receipt(
             assert any(str(cleanup_error) in note for note in caught.value.__notes__)
     else:
         driver.run(plan, expected_boot_id="boot", chromium="unused")
+    captured_sources = json.loads((output / "composition-sources.json").read_bytes())
+    assert captured_sources == {
+        label: driver.pin(path) for label, path in cleanup_composition_sources.items()
+    }
+    for label, source in cleanup_composition_sources.items():
+        assert (output / "composition-sources" / label).read_bytes() == source.read_bytes()
     receipt = json.loads((output / "receipt.json").read_text())
     assert len(constructors) == 1 and removed == ([] if cleanup_failure == "join" else [True])
     assert receipt["completed_group_attempts"] == (4 if interrupted else 10)
