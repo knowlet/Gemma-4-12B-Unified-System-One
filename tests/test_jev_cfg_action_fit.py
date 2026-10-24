@@ -249,11 +249,15 @@ def test_original_nested_public_admission_sees_exact_unchanged84_not_outer94():
     frozen = artifact.parse(artifact.read(manifest_path))["files"]
     reviewed = {label.removeprefix("src/"): pin for label, pin in frozen.items()}
     _authenticate_complete_source_inventory(reviewed)
-    assert len(reviewed) == 84 and not (artifact.ROOT / "src/s1/jev_cfg_action_loss.py").exists()
-    assert (artifact.ROOT / "scripts/jev_cfg_action_loss.py").is_file()
+    assert len(reviewed) == 84
     polluted = {**reviewed, "s1/jev_cfg_action_loss.py": {"sha256": "0" * 64, "size_bytes": 1}}
     with pytest.raises(ValueError, match="Entire installed runtime source population"):
         _authenticate_complete_source_inventory(polluted)
+
+
+def test_cfg_training_kernel_stays_outside_the_inference_source_namespace():
+    assert not (artifact.ROOT / "src/s1/jev_cfg_action_loss.py").exists()
+    assert (artifact.ROOT / "scripts/jev_cfg_action_loss.py").is_file()
 
 
 def manifest(mode):

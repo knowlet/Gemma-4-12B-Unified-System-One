@@ -45,12 +45,15 @@ def wrapper():
 
 
 @pytest.mark.local_evidence
-def test_historical_design_and_all41_native_physical_contracts_are_preserved():
+def test_historical_design_preserves_original_inference_design():
     base, selected = wrapper()
     effective = Q.apply_design_delta(base, Q.canonical(selected))
     assert effective["historical_inference_design"] == OLD.apply_design_delta(
         base, HISTORY.read_bytes()
     )
+
+
+def test_all41_native_physical_contracts_are_preserved():
     assert Q.expected_case_ids() == OLD.expected_case_ids()
     assert len(Q.expected_case_ids()) == 41
     profile = Q.runtime_profile()

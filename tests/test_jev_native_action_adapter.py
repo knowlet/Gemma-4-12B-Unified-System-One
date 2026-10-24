@@ -828,6 +828,7 @@ def test_default_native_resource_path_does_not_invoke_resident_validator(residen
 
 
 @pytest.mark.parametrize("replay_succeeds", [False, True])
+@pytest.mark.local_evidence
 def test_resident_resource_replay_precedes_tensor_decode_and_discloses_profile(
     artifact, monkeypatch, replay_succeeds
 ):
