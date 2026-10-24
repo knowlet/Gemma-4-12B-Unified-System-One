@@ -1,0 +1,162 @@
+{
+  "schema": "decision3-cpu5-operation-browser-diagnostic-results-v1",
+  "status": "GENUINE_STRICT_EXPOSED_BROWSER_DIAGNOSTIC_PASS",
+  "recorded_at_utc": "2026-10-24T07:01:52.300052+00:00",
+  "actual": "owner09/actual-30",
+  "root_public_audit_view": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-browser-worker-cpu5-20261024-01/root-public-browser-review-01.json",
+    "sha256": "64972dd3a528fb733a7e827c9025754434d124ce7b62636dc4ed7725b1c13d03",
+    "size_bytes": 8219
+  },
+  "private_full_audit": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-browser-worker-cpu5-20261024-01/root-closed-operation-browser-actual30-review-01.json",
+    "sha256": "68945e99b0e93588729a4ecdbd1a920e60ba0846b5afe4cbd484ab756c201fe6",
+    "size_bytes": 8678
+  },
+  "candidate": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-readout-cpu5-20261024-01/root-frozen-operation-candidate-capability-01.json",
+    "sha256": "4dbbb9470d011931854f6473c0840ef7f0746c4194c719cde6ab454c3e79d463",
+    "size_bytes": 2875
+  },
+  "numeric_acceptance": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-numeric-qualification-cpu5-20261024-01/root-accepted-operation-numeric-01.json",
+    "sha256": "404828850c2e3b3a46f8e20e712603c31b1d7156728b17bab740937207734c21",
+    "size_bytes": 14650
+  },
+  "strict_success": true,
+  "operation_sequence": [
+    "CLICK",
+    "DONE"
+  ],
+  "HTTP200": 2,
+  "calls": [
+    {
+      "index": 1,
+      "request_id": "caad732c7db7a71e131ce7546754a743",
+      "request_sha256": "e86dddc207fe5b84efc9939aaf8e3545bd2a714be96e9ec6e99811ca9be2c547",
+      "response_sha256": "be75c8b237e388121ffa1a38027ecc0e15458df4ae35633421a7f2070f8c9a7c",
+      "http_status": 200,
+      "client_seconds": 2.319331048987806,
+      "actual_shape": [
+        2,
+        578,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_native_logits_and_distributions_joined": true,
+      "root_FP64_softmax_max_probability_error": 1.4004177595339229e-08,
+      "ordered_head_ids": [
+        "operation",
+        "click_target"
+      ],
+      "legal_counts": [
+        4,
+        2
+      ],
+      "only_adapted_head_id": "operation",
+      "target_legal_logits_bitwise_unchanged": true,
+      "gateway_terminal_sample_ms": 2311.204295983771,
+      "timing_scope": "terminal sample is before writes; source final20 gate charges publication before ASGI start; client measures complete25s return",
+      "operation_argmax_changed_count": 0,
+      "target_argmax_changed_count": 0
+    },
+    {
+      "index": 2,
+      "request_id": "4cad4a5ae9ed4d6f7c68ce6d5f234ac4",
+      "request_sha256": "18d05f31e52c1915a030ccfe0c50cc19d9ec641b59562e5b914e578189f4417a",
+      "response_sha256": "c4d6a6e9d79b15afcb1a40fad5e9b4c8106ccc9fb495d99f14433fd19459eaa1",
+      "http_status": 200,
+      "client_seconds": 2.4286686459963676,
+      "actual_shape": [
+        2,
+        545,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_native_logits_and_distributions_joined": true,
+      "root_FP64_softmax_max_probability_error": 2.3851674108010812e-08,
+      "ordered_head_ids": [
+        "operation",
+        "click_target"
+      ],
+      "legal_counts": [
+        4,
+        1
+      ],
+      "only_adapted_head_id": "operation",
+      "target_legal_logits_bitwise_unchanged": true,
+      "gateway_terminal_sample_ms": 2423.863320000237,
+      "timing_scope": "terminal sample is before writes; source final20 gate charges publication before ASGI start; client measures complete25s return",
+      "operation_argmax_changed_count": 1,
+      "target_argmax_changed_count": 0
+    }
+  ],
+  "trusted_clicks": 1,
+  "wrong_clicks": 0,
+  "goal_satisfied": true,
+  "final_status": "done",
+  "completion_text_reached_next_model_inputs": [
+    false,
+    true
+  ],
+  "helpers": 0,
+  "original_protocol": {
+    "max_ticks": 16,
+    "HTTP_timeout_seconds": 25,
+    "complete_call_seconds": 20,
+    "whole_worker_seconds": 120,
+    "observation_profile": "native-1231850",
+    "caller_source_unchanged": true,
+    "judge_unchanged": true,
+    "offered_options_unchanged": true
+  },
+  "source_union": 63,
+  "model_records_SHA": 20,
+  "runtime_records": {
+    "total": 28,
+    "SHA": 22,
+    "stat_only": 6
+  },
+  "root_seconds": 21.242555041011656,
+  "owned_unit_observed_peak_bytes": 1334431744,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "same_forward_logged_operation_argmax_changes": 1,
+  "same_forward_logged_target_argmax_changes": 0,
+  "FP64_scope": "Retained original/delta/adapted legal logits only; not an independent h/W0/delta matmul or new encoder.",
+  "source_fakes": {
+    "wiring": 14,
+    "root_closed_audit": 4
+  },
+  "separate_reviewer_actual_bytes_read": false,
+  "dev_used_for_model_selection": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "candidate_selection_before_dev_or_sealed": false,
+  "exposed_diagnostic_in_optimizer": false,
+  "exposed_diagnostic_may_enter_training": false,
+  "default_model_or_service_changed": false,
+  "new_unseen_or_official_score_claim": false,
+  "candidate_both_jevbench_scores": {
+    "benchmark_heaven": null,
+    "coherence": null
+  },
+  "quality_or_competitor_win_claim": false,
+  "next_main_comparison": {
+    "suite": "Original Gemma V7 known4 + public6, exactly the same10 tasks",
+    "must_not_substitute": "Nine seeded cases plus exposed travel are a different suite and cannot be compared to prior Gemma4/10",
+    "baseline_source": "docs/validation/2026-10-22/jev-current-nf4-v2-complete-results.json",
+    "observation_profile": "composed-visible-text-settled-v7",
+    "helper": "Same original genuine NF4 base with action adapter disabled and original field grammar, fixed128/context8192/whole20; must have fresh owned admission/provenance/current closure. No reuse of an old running-state claim.",
+    "status": "SOURCE_INTERFACE_PLAN_ONLY_NOT_IMPLEMENTED_OR_RUN",
+    "budget_note": "The diagnostic4GiB/120 job is not a qualified combined helper/candidate full10 configuration; complete fresh resource and source selection first."
+  }
+}
