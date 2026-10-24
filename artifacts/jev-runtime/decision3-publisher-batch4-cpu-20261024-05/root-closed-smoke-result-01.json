@@ -1,0 +1,122 @@
+{
+  "schema": "root-closed-native-batch4-cpu5-fast-smoke-review-v1",
+  "status": "PASS_WITH_LIMITS_SYNTHETIC_SMOKE_ONLY",
+  "reviewer": "root closed actual review",
+  "separate_reviewer_actual_bytes_read": false,
+  "full07_prerequisite_selected": false,
+  "model_key": "edge",
+  "model_revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+  "model_identity_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+  "owner_unit": "jev-d3-llama-cpp-cpu5-fast-4g-coexist-20261024-09.service",
+  "memory_max_bytes": 4294967296,
+  "cpu_affinity": [
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "threads": 5,
+  "model_loads": 1,
+  "calls": [
+    {
+      "index": 0,
+      "durable_seconds": 0.8430829959979746,
+      "shape": [
+        4,
+        135,
+        1024
+      ]
+    },
+    {
+      "index": 1,
+      "durable_seconds": 0.8075265189982019,
+      "shape": [
+        4,
+        135,
+        1024
+      ]
+    }
+  ],
+  "whole_root_seconds": 16.25855358300032,
+  "command_seconds": 14.635288263991242,
+  "actor_seconds": 13.37929329398321,
+  "post_final_auth_memory": {
+    "memory.current": 984616960,
+    "memory.peak": 1022169088,
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "cpu.stat": {
+      "usage_usec": 20383845,
+      "user_usec": 18423533,
+      "system_usec": 1960311,
+      "nice_usec": 0,
+      "core_sched.force_idle_usec": 0,
+      "nr_periods": 136,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    }
+  },
+  "selected_source_records_authenticated": 55,
+  "model_records_authenticated": 20,
+  "runtime_records_authenticated": 28,
+  "runtime_scope": "selected SHA plus original stat-only records; no full DSO claim",
+  "original_authenticated_scoped_closure": true,
+  "whole_tree_exit_confirmed": false,
+  "model_quality_browser_training_or_win_qualified": false,
+  "qualification": {
+    "smoke_complete": true,
+    "external_authenticated_closure": true,
+    "one_actual_constructor": true,
+    "two_actual_four_row_events": true,
+    "durable_call_20s": true,
+    "whole_command_120s": true,
+    "final_full_model_and_sources_authenticated": true
+  },
+  "artifact_refs": {
+    "state": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-01/edge-probe/state.json",
+      "size_bytes": 19151,
+      "sha256": "01fa66d8e80c8600539e906eb8ba3cf0a1243e984e260f5177d628eb64853615"
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/edge-plan.json",
+      "size_bytes": 31270,
+      "sha256": "095db88b78687d90fbed51aafd736c1b06fb1a582312de8dff97bf6109131e96"
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-01/receipt.json",
+      "size_bytes": 72465,
+      "sha256": "dce23433bd16ccb7ef37c2bc6c10c14c1d268fecadb555395353f289307e47b3"
+    },
+    "root_execution": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/root-execution-native05-edge-smoke-01.json",
+      "size_bytes": 1737,
+      "sha256": "dc7fda3495e1d3c578a6289bafbd2ffa19cd8beda99beb7c2f875b373d1fe21b"
+    },
+    "spec": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/root-edge-smoke-command-spec-01.json",
+      "size_bytes": 12694,
+      "sha256": "7ed862c88a81acb05416ebe3c3902073d028597f8ca5531c1dbdf65b0b29e2be"
+    },
+    "closure_observation": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-01/external-boundary-closure.json",
+      "size_bytes": 3838,
+      "sha256": "f149d78684227b7cca6484e3712f24fe2853ad97590e385912b5304b583228d3"
+    },
+    "audit_source": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/root-closed-smoke-audit-01.py",
+      "size_bytes": 16433,
+      "sha256": "af758e383c9f1108fe112098442936cd49cdba8bc91bf2e93b6a1b6024a84423"
+    }
+  },
+  "raw_requests_answers_probabilities_features_or_model_bytes_included": false
+}
