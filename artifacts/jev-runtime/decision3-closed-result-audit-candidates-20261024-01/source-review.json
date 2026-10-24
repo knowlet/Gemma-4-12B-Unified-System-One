@@ -1,6 +1,6 @@
 {
   "schema": "closed-result-audit-candidates-source-text-review-v1",
-  "status": "SOURCE_TEXT_REVIEWED_EXECUTION_CHECKS_HELD",
+  "status": "SOURCE_CHECKS_PASS_PUBLIC_ONLY_ACTUAL_AUDIT_PASS_WITH_LIMITS",
   "reviewers": [
     "root",
     "/root/browser_harness",
@@ -15,18 +15,18 @@
     },
     {
       "path": "artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/README.md",
-      "sha256": "31e1183f1963a0713ea72c9667815fab0b5ea721f4c3b563942b4ecf352897f3",
-      "size_bytes": 3410
+      "sha256": "32011c9f4123012716dbf1a21bcb670b82a49caa4c9a15bfcfd17b55940d5b48",
+      "size_bytes": 4283
     },
     {
       "path": "artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/complete_audit_v02.py",
-      "sha256": "1aad9ca9d2bbc32b4c9a9d9c18e9c2e763185d6f6109ba4b47781d5df1e5f3c1",
-      "size_bytes": 57546
+      "sha256": "e717b27960ea69fc677f2bbc39778719b2230929229b1fbb5ed902d3c2b4c2d6",
+      "size_bytes": 61196
     },
     {
       "path": "artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/public_stage_audit.py",
-      "sha256": "c2886a5c84b90fdbe718868cc9a56c89b66b5773cc2a738dff192360de567754",
-      "size_bytes": 45909
+      "sha256": "c2c9ae7c8cc89a447a448a0579ab06e1ad8314916e955c2a59c5a1f18f0fee99",
+      "size_bytes": 48493
     }
   ],
   "source_corrections": [
@@ -40,10 +40,22 @@
     "public-only publication/continuation durations fit original root wall time",
     "validated first later callback retained as conservative sufficient witness; entry-only timeout may be refused"
   ],
-  "candidate_execution_checks": false,
+  "candidate_execution_checks": true,
   "actual_state_scores_or_requests_read_for_this_review": false,
-  "actual_aggregate_qualification": null,
+  "actual_aggregate_qualification": "Root public231-only closed audit passed; coherence incomplete; independent direct actual read unavailable",
   "known_incomplete_v01_selected": false,
   "next_required": "Wait for original NN/controller terminal; then source checks and exact postclosed evidence review. Never restart current job to test these scripts.",
-  "second_review_scope": "pure source comparison; root applied two concrete fixes and reviewer confirmed text; no actual evidence or execution checks"
+  "second_review_scope": "pure source comparison; root applied two concrete fixes and reviewer confirmed text; no actual evidence or execution checks",
+  "validation": {
+    "path": "artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/source-validation-closed-01.json",
+    "sha256": "7d45a284bdd1a1968a19d42aba8cc1ebb15c623822934b7da938b76d41b37575",
+    "size_bytes": 5056
+  },
+  "actual_audit": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/root-public-stage-only-actual04-result-review-01.json",
+    "sha256": "238f272bd5002853e61587f68c0defdf2f6fbe1932a3301b200666710dadaa79",
+    "size_bytes": 11105
+  },
+  "independent_direct_actual_read": false,
+  "independent_source_review_and_root_provided_metric_consistency_only": true
 }

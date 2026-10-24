@@ -1,11 +1,24 @@
-# Held closed-result audits for full06 actual04
+# Closed-result audits for full06 actual04
 
-These two read-only review candidates are bound to the existing selected
-owner07/native03/full06 actual04 run. They are source preparations, not results.
-Root and a separate source reviewer read them against the frozen producers.
-Neither candidate has been imported, AST-checked, formatted, dry-run, tested or
-executed. Small source hashing and Git publication do not qualify execution.
-All such checks remain held until the original NN and controller are terminal.
+These read-only audits are bound to the selected owner07/native03/full06
+actual04 run. Their authoring and source reviews were held while the original
+NN ran. After its original terminal and positive scoped closure, root checked
+both ASTs, Ruff, formatting and default CLIs. Formatting preserved the entire
+AST. `source-validation-closed-01.json` records these completed checks.
+
+The original campaign ended at its unchanged 10000-second limit with1465/1479
+callbacks. Root executed only `public_stage_audit.py`: exit0,2.153 seconds,
+public231 accuracy158/231. The coherence stage remains incomplete and unscored;
+root1/ownerfalse and all original failure records remain unchanged. The full
+success audit was not executed. The result and review limits are in
+`docs/validation/2026-10-24/decision3-edge-cpu4-jevbench-results.md`.
+
+Independent reviewers read source. A second reviewer's closed-actual read was
+rejected by automatic review, which retained its earlier source-only restriction.
+That reviewer confirmed only consistency of root-provided typed numbers; it
+did not independently read original evidence. No independent actual-read pass
+is claimed. Static default CLI descriptions retain their original held wording;
+current executed status comes from the separate validation and result records.
 
 Both CLIs default to descriptive metadata without reading actual evidence.
 An explicit `--execute` first requires the original root terminal and owner
@@ -47,6 +60,6 @@ No raw tasks, gold, responses, tensors, error text, command stdout/stderr or
 model bytes are copied into a public aggregate. Original records remain local
 and are joined by references and hashes. There is no new score, fit, timing,
 training, browser, rank or competitor-win qualification in this directory.
-After the active run terminates, finish appropriate source checks, re-pin any
-changed audit source, select the applicable path and independently review its
-actual output before reporting results.
+For later invocations, require original termination and the applicable scoped
+closure, then recheck selected audit bytes. Never use this public-only result
+to claim a completed coherence run, browser success, capacity or competitor win.

@@ -1,0 +1,234 @@
+{
+  "schema": "decision3-edge-cpu4-two-jevbench-results-v1",
+  "created_at_utc": "2026-10-24T02:10:46.425180+00:00",
+  "status": "PUBLIC231_QUALIFIED_COHERENCE_INCOMPLETE",
+  "goal_status": "active",
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ],
+    "profile": "decision3-edge-gx10-publisher-cpu2g-coexist-batch4-both-stage-completions-ece-schema-20261024-v1",
+    "device": "cpu",
+    "backbone_dtype": "bfloat16",
+    "readout_dtype": "float32",
+    "temperature": 1.0,
+    "batch_size": 4,
+    "context_limit": 16384,
+    "context_policy": "reject_no_truncation",
+    "permutation_average": false,
+    "constructor_count": 1,
+    "benchmark_heaven_revision": "bb05a335bc809e61b20c0f745d25499a82b326fc",
+    "coherence_revision": "e18733694623aa93058e279c3534f8b8e2edefa3",
+    "source_plan_sha256": "b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021"
+  },
+  "public231": {
+    "n_planned": 231,
+    "n_attempted": 231,
+    "n_scorable": 231,
+    "n_valid": 231,
+    "n_correct": 158,
+    "n_renormalized": 0,
+    "calibration_n": 231,
+    "accuracy": 0.683982683982684,
+    "macro_accuracy": 0.6800714340317023,
+    "coverage": 1.0,
+    "schema_validity": 1.0,
+    "schema_validity_strict": 1.0,
+    "operational_success": 1.0,
+    "brier_mean": 0.4402665217613875,
+    "ordinal_mae": 0.4504952208693158,
+    "price_per_1000_decisions_usd": null,
+    "ledger_charged_usd": null,
+    "ece": {
+      "bins": [
+        {
+          "accuracy": null,
+          "hi": 0.1,
+          "lo": 0.0,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "hi": 0.2,
+          "lo": 0.1,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": 0.25,
+          "hi": 0.3,
+          "lo": 0.2,
+          "mean_confidence": 0.26898711440980383,
+          "n": 4
+        },
+        {
+          "accuracy": 0.25,
+          "hi": 0.4,
+          "lo": 0.3,
+          "mean_confidence": 0.3467874825393653,
+          "n": 12
+        },
+        {
+          "accuracy": 0.42857142857142855,
+          "hi": 0.5,
+          "lo": 0.4,
+          "mean_confidence": 0.46096025798269574,
+          "n": 14
+        },
+        {
+          "accuracy": 0.5925925925925926,
+          "hi": 0.6,
+          "lo": 0.5,
+          "mean_confidence": 0.5621635408240441,
+          "n": 27
+        },
+        {
+          "accuracy": 0.42857142857142855,
+          "hi": 0.7,
+          "lo": 0.6,
+          "mean_confidence": 0.6489473427473992,
+          "n": 21
+        },
+        {
+          "accuracy": 0.68,
+          "hi": 0.8,
+          "lo": 0.7,
+          "mean_confidence": 0.7553461124973461,
+          "n": 25
+        },
+        {
+          "accuracy": 0.6875,
+          "hi": 0.9,
+          "lo": 0.8,
+          "mean_confidence": 0.8555390395564902,
+          "n": 32
+        },
+        {
+          "accuracy": 0.875,
+          "hi": 1.0,
+          "lo": 0.9,
+          "mean_confidence": 0.9751887443867447,
+          "n": 96
+        }
+      ],
+      "ece": 0.1039798354748241,
+      "n": 231
+    },
+    "complete": true
+  },
+  "public_latency": {
+    "count": 231,
+    "median_seconds": 0.32326001097681,
+    "p95_seconds": 5.028488195996033,
+    "max_seconds": 7.281688296992797,
+    "quantile_method": "nearest_rank_p95; ordinary_median",
+    "startup_included": false,
+    "browser_20_second_qualification": false,
+    "unit": "one unchanged complete state/questions callback; native question chunks of up to4"
+  },
+  "coherence_mini": null,
+  "coherence_incomplete": {
+    "completed_requests": 1234,
+    "required_requests": 1248,
+    "missing_requests": 14,
+    "qualified_score": null
+  },
+  "campaign": {
+    "started_calls": 1466,
+    "completed_calls": 1465,
+    "required_calls": 1479,
+    "root_exit_code": 1,
+    "owner_completed": false,
+    "root_wall_seconds": 10001.967004113016,
+    "original_whole_campaign_seconds": 10000,
+    "final_full_authentication_claimed": false,
+    "original_failure_preserved": true,
+    "command_returncode": 124,
+    "command_elapsed_seconds": 10000.290783826
+  },
+  "resource_profile": {
+    "cpu_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "threads": 4,
+    "memory_max_bytes": 2147483648,
+    "swap_max_bytes": 0,
+    "whole_run_memory_fit_qualified": false,
+    "observed_peak_bytes": 2144661504
+  },
+  "closure": {
+    "closure_mode": "authenticated_stop",
+    "post_stop_terminal_verified": true,
+    "cgroup_absent": true,
+    "sources_unchanged": true,
+    "whole_unit_exit_confirmed": true,
+    "observed_cgroup_cohort_exit_confirmed": true,
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "model_qualified": false
+  },
+  "comparison": {
+    "previous_gemma_report": {
+      "path": "docs/validation/2026-10-22/jevbench-both-fresh-gx10-results.json",
+      "sha256": "5035e9b5745336d5361d08ec6fa55360f752df408aa18c0a24e48388d730e275",
+      "size_bytes": 9757
+    },
+    "previous_gemma_public_accuracy": 0.8441558441558441,
+    "decision3_minus_gemma_percentage_points": -16.01731601731601,
+    "previous_gemma_coherence_0_to_100": 41.26307189542484,
+    "coherence_comparison_qualified": false,
+    "hardware_and_profiles_match": false,
+    "speed_or_competitor_win_claim": false
+  },
+  "review": {
+    "root_closed_original_evidence_audit": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/root-public-stage-only-actual04-result-review-01.json",
+      "sha256": "238f272bd5002853e61587f68c0defdf2f6fbe1932a3301b200666710dadaa79",
+      "size_bytes": 11105
+    },
+    "source_validation": {
+      "path": "artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/source-validation-closed-01.json",
+      "sha256": "7d45a284bdd1a1968a19d42aba8cc1ebb15c623822934b7da938b76d41b37575",
+      "size_bytes": 5056
+    },
+    "independent_source_text_review": true,
+    "independent_original_actual_read": false,
+    "independent_review_scope": "Source review and consistency of root-provided typed numbers only",
+    "independent_actual_read_auto_review_rejected": true,
+    "rejection_reason": "Second reviewer retained prior source-only restriction and its closed-read attempt was rejected twice; no original bytes read by that reviewer",
+    "closed_progress": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/edge-both/native-evidence/progress.json",
+      "sha256": "9f106c6e2a53988c28560d4b757b59c2385faacb0308c38f0ed1d0fd1ea2f8d2",
+      "size_bytes": 2086
+    },
+    "original_command_output": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/command-01-output.json",
+      "sha256": "47291568fa0570124f14efe735df88a2c48de5703e7c1fb46aa632bc4009c94f",
+      "size_bytes": 4487
+    }
+  },
+  "browser_score": null,
+  "training_or_model_quality_improvement_claim": false,
+  "raw_tasks_gold_answers_responses_features_or_model_bytes_included": false
+}
