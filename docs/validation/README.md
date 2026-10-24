@@ -5,6 +5,7 @@
 | 日期 | 入口 | 範圍 |
 | --- | --- | --- |
 | 2026-10-22 | [兩套 JevBench](2026-10-22/jevbench-both-fresh-gx10-results.md)、[瀏覽器基準](2026-10-22/jev-current-nf4-raw-complete-results.md)、[V2 對照](2026-10-22/jev-current-nf4-v2-complete-results.md)、[原生訓練](2026-10-22/jev-native-v2-complete-training-results.md)、[Decision3 Edge](2026-10-22/decision3-edge-observed-browser-results.md)、[失效操作回饋](2026-10-22/jev-native-v2-feedback-complete-results.md) | GX10 新推論：public231 為 195/231、一致性 41.26/100；相同 NF4 helper 的十場景基準 2/10、V2 4/10，增加兩題且無退步。142 次訓練與 37 題零更新開發集完成。Edge 十題觀察為 0/10，收尾受檢查工具崩潰回報干擾，完整執行驗證仍未通過；回饋實驗完整核對為 3/10，未採用，V2 維持 4/10。輔助模型設定不同，尚未證明跨模型優勢。 |
+| 2026-10-13 | [Mac 本機 Jev 整合](../local-jev-benchmark-20261013/README.md)、[完整報告](../local-jev-benchmark-20261013/report.md) | 原生 S1 決策與同模型文字 helper、固定輸入 Q4/Q8 比較、隔離瀏覽器 fixture 的 0/3 travel 與 0/5 completion 結果；原始失敗、量測界線與公開遮罩收據完整保留。 |
 | 2026-10-10 | [本輪後續](2026-10-10/README.md)、[公開發布與整理](2026-10-10/publication.md)、[PR 後續修正](2026-10-10/review-followup.md) | CPU03／CPU04 重播、五份公開證據下載核對、批次上限與預設下載修正、乾淨環境測試及 111.24 MiB 重複 ZIP 清理；實際狀態以該日收據為準。 |
 | 2026-10-08 | [八組優化實驗](2026-10-08/breakthrough/README.md)、[完整結果](2026-10-08/breakthrough/results.md) | Jev-Omni 差距、提示與 Head／LoRA 固定對照、完整人口與校驗限制；此封存保存當時六組完整稽核、兩組機率連結未完成的狀態。 |
 | 2026-10-08 | [JevBench campaign](2026-10-08/jevbench/README.md)、[campaign audit](2026-10-08/jevbench/campaign-audit.md) | 市面模型的公開 231 題 screening、獨立 coherence 評測及推論實驗；公開分數不代表正式榜單名次。 |
