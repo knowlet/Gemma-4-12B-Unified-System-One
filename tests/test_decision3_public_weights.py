@@ -5,6 +5,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import shutil
 import struct
 import sys
 import types
@@ -17,19 +18,39 @@ ROOT = Path(__file__).resolve().parents[1]
 PATH = ROOT / "apps/modal/decision3_public_weights.py"
 
 
-def prefix():
+def checkout_paths(module, root):
+    # Modal copies named sources to absolute destinations. Pure tests use the
+    # same bytes in this checkout, without changing those deployment sources.
+    deployed_root = module.ROOT
+    for name, value in list(vars(module).items()):
+        if isinstance(value, Path) and value.is_relative_to(deployed_root):
+            setattr(module, name, root / value.relative_to(deployed_root))
+    return module
+
+
+def prefix(path=PATH):
     module = types.ModuleType("pure_decision3_public_weights")
-    module.__file__ = str(PATH)
-    tree = ast.parse(PATH.read_bytes())
+    module.__file__ = str(path)
+    tree = ast.parse(path.read_bytes())
     stop = next(
         index
         for index, node in enumerate(tree.body)
         if isinstance(node, ast.Import) and any(alias.name == "modal" for alias in node.names)
     )
     exec(
-        compile(ast.Module(body=tree.body[:stop], type_ignores=[]), str(PATH), "exec"),
+        compile(ast.Module(body=tree.body[:stop], type_ignores=[]), str(path), "exec"),
         module.__dict__,
     )
+    root = path.parents[2]
+    checkout_paths(module, root)
+    original_load_service = module.load_service
+
+    def load_service():
+        # Each call still reads and authenticates the real service before its
+        # in-memory paths are relocated. Do not cache or bypass the loader.
+        return checkout_paths(original_load_service(), root)
+
+    module.load_service = load_service
     return module
 
 
@@ -38,6 +59,60 @@ SERVICE = WEIGHTS.load_service()
 spec = importlib.util.spec_from_file_location("pure_public_weights_core", SERVICE.CORE)
 CORE = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(CORE)
+
+
+@pytest.mark.parametrize("tampered", [None, "service", "core", "wrapper", "wire", "source12"])
+def test_relocated_prefix_preserves_real_source_hash_guards(tmp_path, monkeypatch, tampered):
+    root = tmp_path.resolve() / "arbitrary-checkout"
+    # Only the first frozen source is needed: its corruption must be rejected
+    # before inventory can reach the deliberately absent remaining sources.
+    first_frozen = next(iter(CORE.SOURCE_PINS))
+    sources = (
+        PATH,
+        WEIGHTS.SERVICE,
+        SERVICE.CORE,
+        SERVICE.WRAPPER,
+        SERVICE.WIRE,
+        ROOT / first_frozen,
+    )
+    for source in sources:
+        target = root / source.relative_to(ROOT)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+    monkeypatch.chdir(tmp_path)
+    before = set(sys.modules)
+    relocated = prefix(root / PATH.relative_to(ROOT))
+    service = relocated.load_service()
+    assert relocated.ROOT == service.ROOT == root
+    assert relocated.SCRIPT == root / PATH.relative_to(ROOT)
+    assert relocated.SERVICE == service.SCRIPT == root / WEIGHTS.SERVICE.relative_to(ROOT)
+    assert relocated.SERVICE_SHA == WEIGHTS.SERVICE_SHA
+    assert hashlib.sha256(relocated.SERVICE.read_bytes()).hexdigest() == WEIGHTS.SERVICE_SHA
+    for name in ("CORE", "WRAPPER", "WIRE", "WORKER"):
+        assert getattr(service, name) == root / getattr(SERVICE, name).relative_to(ROOT)
+    for name in ("CORE", "WRAPPER", "WIRE"):
+        assert getattr(service, name + "_SHA") == getattr(SERVICE, name + "_SHA")
+        assert hashlib.sha256(getattr(service, name).read_bytes()).hexdigest() == getattr(
+            service, name + "_SHA"
+        )
+    assert service.literal(service.CORE, "SOURCE_PINS") == CORE.SOURCE_PINS
+    assert (
+        hashlib.sha256((root / first_frozen).read_bytes()).hexdigest()
+        == CORE.SOURCE_PINS[first_frozen]
+    )
+    if tampered:
+        target = {
+            "service": relocated.SERVICE,
+            "core": service.CORE,
+            "wrapper": service.WRAPPER,
+            "wire": service.WIRE,
+            "source12": root / first_frozen,
+        }[tampered]
+        with target.open("ab") as stream:
+            stream.write(b"\n# tampered test source\n")
+        with pytest.raises(ValueError, match="source differs|source12 differs"):
+            relocated.inventory()
+    assert not ({"torch", "modal"} & (set(sys.modules) - before))
 
 
 def tiny_tensor(path, header, data):
