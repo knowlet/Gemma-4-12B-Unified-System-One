@@ -1,0 +1,162 @@
+{
+  "schema": "decision3-cpu5-numpy-zero-delta-public-results-v1",
+  "status": "numeric_prerequisite_passed_not_quality_pass",
+  "model": "vllm-sr/d3-edge",
+  "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+  "failed_actual04": {
+    "root_exit": 1,
+    "model_loads": 1,
+    "native_calls": 0,
+    "cause": "GPU BLAS maps included in CPU hash projection",
+    "original_preserved": true
+  },
+  "successful_actual05": {
+    "model_loads": 1,
+    "native_request_calls": 1,
+    "source_union": 58,
+    "model_files_authenticated": 20,
+    "runtime_files_authenticated": 28,
+    "first_layer_events": [
+      [
+        4,
+        188,
+        1024
+      ]
+    ],
+    "final_norm_events": [
+      [
+        4,
+        188,
+        1024
+      ]
+    ],
+    "legal_counts": [
+      8,
+      1,
+      2,
+      3
+    ],
+    "replay": [
+      {
+        "kind": "replay",
+        "all_legal_probabilities_matched": true,
+        "all_ordered_argmaxes_matched": true,
+        "max_absolute_errors": [
+          6.019310017091328e-08,
+          0.0,
+          2.6725210156008927e-08,
+          4.881116133503838e-08
+        ]
+      },
+      {
+        "kind": "numpy_zero_delta",
+        "all_legal_probabilities_matched": true,
+        "all_ordered_argmaxes_matched": true,
+        "max_absolute_errors": [
+          4.774256135986477e-07,
+          0.0,
+          2.6725210156008927e-08,
+          1.0024854777412884e-06
+        ]
+      }
+    ],
+    "additional_stdlib_float64_accumulation_witness": [
+      {
+        "head": "operation",
+        "legal_count": 8,
+        "max_absolute_error": 4.819792025489988e-07
+      },
+      {
+        "head": "click_target",
+        "legal_count": 1,
+        "max_absolute_error": 0.0
+      },
+      {
+        "head": "type_text_target",
+        "legal_count": 2,
+        "max_absolute_error": 5.369038769131862e-09
+      },
+      {
+        "head": "select_target",
+        "legal_count": 3,
+        "max_absolute_error": 8.706673408909182e-07
+      }
+    ],
+    "tolerance": {
+      "absolute": 1e-06,
+      "relative": 1e-05,
+      "comparison": "abs(replay-native) <= 1e-6 + 1e-5*abs(native)"
+    },
+    "call_seconds": 3.2209280890238006,
+    "actor_seconds": 15.150610098993639,
+    "root_seconds": 17.160414864018094,
+    "owned_peak_bytes": 1094119424,
+    "numpy_version": "2.5.2",
+    "critical_files": 22,
+    "critical_bytes": 94612175,
+    "excluded_GPU_stat_only_count": 2,
+    "runtime_SHA256_files": 22,
+    "runtime_stat_only_files": 6
+  },
+  "checks": {
+    "root_exit0": true,
+    "owner_completed": true,
+    "sources_unchanged": true,
+    "current_closure_positive": true,
+    "full_authentication": true,
+    "all_legal_probabilities_matched": true,
+    "all_ordered_argmaxes_matched": true,
+    "FP32_copy_exact": true
+  },
+  "source_checks": {
+    "NP01_released_fakes": 26,
+    "NP02_final_fakes": 28,
+    "ruff_AST_format_and_selected_contract_pass": true
+  },
+  "review_scope": {
+    "root_actual_audit_pass": true,
+    "separate_reviewer_actual_bytes_read": false,
+    "peers_source_only": true
+  },
+  "diagnostic_arrays_permanently_nontraining": true,
+  "training_performed": false,
+  "quality_improvement_or_win": false,
+  "full_DSO_or_transitive_closure_qualified": false,
+  "score_changes": null,
+  "JevBench_public231": {
+    "Decision3_correct": 158,
+    "total": 231,
+    "accuracy": 0.683982683982684,
+    "Gemma_correct": 195,
+    "Gemma_accuracy": 0.8441558441558441
+  },
+  "JevBench_coherence": {
+    "Decision3_score": null,
+    "completed": 1234,
+    "required": 1248,
+    "reason": "prior10000s timeout; incomplete no score",
+    "Gemma_score": 41.26307189542484
+  },
+  "refs": {
+    "audit": {
+      "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/root-closed-actual05-review-03.json",
+      "sha256": "4d6cd6a673c1a9b49f63a21015a7e77aeeee48f9a41c5cf0f1a2ad26fa327824",
+      "size_bytes": 5776
+    },
+    "accepted_prerequisite": {
+      "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/root-accepted-np5-qualification-02.json",
+      "sha256": "81063db0b9044ebf1a5bba6d7c60575f0ec51d0510c5a1ffb840ba89fa3b6bc0",
+      "size_bytes": 5141
+    },
+    "selected_plan": {
+      "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/selected-plan-01.json",
+      "sha256": "39fb916a3adeb093d8900d3d6efa56a772147e65b35ae8edc4260a34759a27b2",
+      "size_bytes": 7982
+    },
+    "command_spec": {
+      "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/root-command-spec-01.json",
+      "sha256": "e0982d1489e8b4d6778c32a964c5c0b61490d9b9a64860582e448f483007b7ab",
+      "size_bytes": 13385
+    }
+  }
+}
