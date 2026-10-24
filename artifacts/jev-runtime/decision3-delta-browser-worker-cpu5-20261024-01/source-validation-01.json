@@ -1,0 +1,122 @@
+{
+  "schema": "delta-cpu5-browser-source-validation-v1",
+  "status": "SOURCE_PASS_ACTUAL_BROWSER_PENDING",
+  "results": [
+    {
+      "name": "imports",
+      "exit_code": 0,
+      "wall_seconds": 0.023633715987671167,
+      "stdout": "Found 3 errors (3 fixed, 0 remaining).\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "wall_seconds": 0.02180416401824914,
+      "stdout": "3 files reformatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "held_fakes",
+      "exit_code": 0,
+      "wall_seconds": 0.2205640790052712,
+      "stdout": "",
+      "stderr": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.096s\n\nOK\n",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": 536870912
+    },
+    {
+      "name": "adapter_released_format",
+      "exit_code": 0,
+      "wall_seconds": 0.015569824987323955,
+      "stdout": "1 file left unchanged\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "worker_released_format",
+      "exit_code": 0,
+      "wall_seconds": 0.01794936798978597,
+      "stdout": "1 file reformatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "ruff",
+      "exit_code": 0,
+      "wall_seconds": 0.023056478996295482,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format_check",
+      "exit_code": 0,
+      "wall_seconds": 0.013142619980499148,
+      "stdout": "5 files already formatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    }
+  ],
+  "files": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/adapter.py",
+      "sha256": "ca65a5d43c6f736cd06517993d012738e56e8276169fdbe67e0290469579d73f",
+      "size_bytes": 11063
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/worker.py",
+      "sha256": "8c9df7a5379a6f8dca1b327ddea13dab861ace7bf6b2721b3d8f87d23c107cbd",
+      "size_bytes": 30048
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/test_candidate_source.py",
+      "sha256": "4ae692c21dab94a12ccfe3f102d6a3b00083842e8e9fb23c35ae521ed6c14355",
+      "size_bytes": 15208
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/adapter_released_v1.py",
+      "sha256": "a03ec4aa05e9a8457d4aa2abb435d1e3db840051e92fab804be5a4142e69aec7",
+      "size_bytes": 11064
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/worker_released_v1.py",
+      "sha256": "59587d6d01e34e71956e8d48ff88a4fb09a76241be8d13fbf50c470f07257d95",
+      "size_bytes": 30173
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/README.md",
+      "sha256": "6e9f62cc58adeeae5470412f4243e44afdd2cdf0822af35d8b330bc70eb2da6e",
+      "size_bytes": 5888
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/plan.pending.json",
+      "sha256": "3323e62cdc66d5feba01eda7cca1f1329599f461be85b4e39e10b6e600cd7789",
+      "size_bytes": 3420
+    }
+  ],
+  "AST_release_changes": "SOURCE_ONLY False and worker two original exact source SHA pins only",
+  "root_review_fixes": [
+    "provided required sink failure rejects result; failed sink preserves exactprimary",
+    "provider evidence deepcopy cannot replace primary",
+    "whole120 equality refuses"
+  ],
+  "no_answer_repair": true,
+  "caller_16ticks_HTTP25_retries_unchanged": true,
+  "genuine_HTTP_browser_qualified": false
+}
