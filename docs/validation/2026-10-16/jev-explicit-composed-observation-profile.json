@@ -1,0 +1,73 @@
+{
+  "schema_id": "jev-explicit-observation-profile-validation-v1",
+  "validation_date": "2026-10-16",
+  "problem": "Native visible-text traversal misses rendered open Shadow DOM text. A separately identified observation profile is needed before collecting new training or evaluation inputs.",
+  "profiles": {
+    "default": "native-1231850",
+    "opt_in": "composed-visible-text-v2"
+  },
+  "canonical_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "source": {
+    "src/s1/jev_observation_profile.py": {
+      "sha256": "6dc09b907701ccbfd6bb771dc7168c415257c076765dddbecbfcd935c4681a3e",
+      "size_bytes": 14435
+    },
+    "tests/test_jev_observation_profile.py": {
+      "sha256": "9958a852df7fe8a8e8eb3144f0a974b844260fcfc75d1f58386c8c300f82ce19",
+      "size_bytes": 11116
+    }
+  },
+  "runtime": {
+    "canonical_files": 7,
+    "changed_files": [
+      "jev_ultrafast/snapshot.js"
+    ],
+    "native_snapshot_sha256": "e50473501c8fb8e70f3b21866d987393e3f2315c639d638bd477d170e81ed78d",
+    "composed_snapshot_sha256": "5327d4ab5d615ac0804f4913bb86bb59b383b11ff80f2408eb4aa565243f9dd5",
+    "read_and_freshness_marker_share_snapshot": true
+  },
+  "behavior": [
+    "Explicit profile selection; unknown aliases are refused and the default keeps all seven canonical files byte exact.",
+    "Generic composed text traversal includes open roots and assigned slots, tests composed visibility, and preserves native action discovery and guards.",
+    "Node or depth exhaustion throws ComposedVisibleTextLimitError inside READ_STATE and its embedded MARKER.",
+    "New materialization preserves canonical and runtime sources separately with source hashes. Existing output directories are refused.",
+    "Source-only CLI materializes a new tree; canonical Git verification remains a separate strict caller prerequisite."
+  ],
+  "verification": {
+    "focused_actual_canonical_tests": 25,
+    "independent_focused_tests": 25,
+    "standard_suite": {
+      "passed": 2753,
+      "skipped": 380,
+      "warnings": 1
+    },
+    "independent_source_checks": 58,
+    "independent_source_report_sha256": "b4600d901b90055c0b89eaf65afc244756d2bbef5e747f64c15028c3d67d10dd",
+    "source_only_CLI_profiles_verified": 2,
+    "owned_browser_cases_passed": 6,
+    "owned_browser_receipt_sha256": "f3211b4a84921cab231872e89e11f1c1a643925bbe07c95de6ec7d6c3eb1bff6",
+    "browser_runtime_identity": "The held prototype and tracked production builder produce the same seven runtime file bytes. The local browser exercised the held prototype materialization.",
+    "fake_policy_calls": 2,
+    "actual_model_calls": 0,
+    "input_actions": 0
+  },
+  "owned_browser_cases": [
+    "controls",
+    "text-6000",
+    "node-limit",
+    "traversal-depth",
+    "ancestry-depth",
+    "native-DONE-shadow-mutation"
+  ],
+  "native_agent_freshness": "Ordinary Agent.predict/act with two fake HTTP DONE responses rejects the stale shadow-text decision, consumes it without history changes, and accepts a newly predicted decision. No Agent state assignment or Browser.act override.",
+  "retained_first_local_run": {
+    "complete": false,
+    "reason": "One ancestry fixture script executed before an explicit body; the intended deep text was absent. Other completed checks and the whole failed run remain retained. A separate repaired run verifies actual DOM structure before testing caps."
+  },
+  "limits": [
+    "The profile is not yet dispatched by the benchmark or collector; existing corpora are unchanged.",
+    "CLICK/SELECT keep native page_key and element guards; this change adds no unconditional cap read immediately before those inputs.",
+    "Node/depth limits do not provide hard peak-memory or wall-clock bounds; open roots only and no general occlusion proof.",
+    "The owned browser used a fake policy. There is no new task score, trained model, model ranking, or claim of parity with historical native scores."
+  ]
+}

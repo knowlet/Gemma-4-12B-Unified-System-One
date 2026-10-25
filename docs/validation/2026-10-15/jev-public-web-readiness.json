@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-15T08:37:20.046323+00:00",
+  "scope": "Public-site harness, native initial-input and external DOM-judge readiness; no model task completion or competitor result",
+  "source_sha256": {
+    "scripts/jev_browser_benchmark.py": "9eb8ca698a695edaf49a2bf0c992958542ea085731968ac510a715a35c4ed4b0",
+    "scripts/jev_local_model.py": "d9ab26d00de85bf2570f686e6dcdc0a842529eeda69995480092a391648db3c1",
+    "scripts/jev_public_web_cases.py": "0ec9826d334cb2fbed24ade8780fa785291017d904b18233419ced760750bca3",
+    "src/s1/browser_evidence.py": "5f24a5927d5174248c513155f1f903d745841f1c1d56e95c3dae6053c8ad6a44",
+    "tests/test_browser_evidence.py": "116e360269f86f043947234ce6f6f84be7fd4d745c6c827f70207217c946c3a5",
+    "tests/test_jev_browser_benchmark.py": "bceeb34a289860c5a48babd56e814f20013ebb1bd3b043a9430f74a0f4e3f68c",
+    "tests/test_jev_local_model.py": "3cb2c5b161ef0a529d92a7930ed9269c5f9d5db230c488a6aacdd9ae559f74a7",
+    "tests/test_jev_public_web_cases.py": "d5acef394fdc15cceb88395364a63376f5685a961e54a5b8cacc67989789ed00"
+  },
+  "case_ids": [
+    "public-arxiv-title-filter-results-v1",
+    "public-python-counter-most-common-v1",
+    "public-nasa-mars-facts-moons-v1",
+    "public-arxiv-original-paper-open-v1"
+  ],
+  "site_hosts": [
+    "arxiv.org",
+    "docs.python.org",
+    "science.nasa.gov"
+  ],
+  "initial_native_observations": [
+    {
+      "case_id": "public-arxiv-title-filter-results-v1",
+      "observed_url": "https://arxiv.org/search/",
+      "actions": 31,
+      "omitted_actions": 0,
+      "candidate_counts": {
+        "operation": 7,
+        "click_target": 13,
+        "type_text_target": 1,
+        "select_target": 15
+      },
+      "generated_prompt_tokens": 3305,
+      "prompt_plus32_fits8192": true,
+      "model_calls": 0,
+      "browser_actions": 0
+    },
+    {
+      "case_id": "public-python-counter-most-common-v1",
+      "observed_url": "https://docs.python.org/3.14/library/datatypes.html",
+      "actions": 76,
+      "omitted_actions": 0,
+      "candidate_counts": {
+        "operation": 7,
+        "click_target": 38,
+        "select_target": 35,
+        "type_text_target": 1
+      },
+      "generated_prompt_tokens": 5744,
+      "prompt_plus32_fits8192": true,
+      "model_calls": 0,
+      "browser_actions": 0
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1",
+      "observed_url": "https://science.nasa.gov/solar-system/",
+      "actions": 15,
+      "omitted_actions": 0,
+      "candidate_counts": {
+        "operation": 6,
+        "click_target": 12,
+        "type_text_target": 1
+      },
+      "generated_prompt_tokens": 1922,
+      "prompt_plus32_fits8192": true,
+      "model_calls": 0,
+      "browser_actions": 0
+    },
+    {
+      "case_id": "public-arxiv-original-paper-open-v1",
+      "observed_url": "https://arxiv.org/search/",
+      "actions": 31,
+      "omitted_actions": 0,
+      "candidate_counts": {
+        "operation": 7,
+        "click_target": 13,
+        "type_text_target": 1,
+        "select_target": 15
+      },
+      "generated_prompt_tokens": 3333,
+      "prompt_plus32_fits8192": true,
+      "model_calls": 0,
+      "browser_actions": 0
+    }
+  ],
+  "actual_final_dom_diagnostics": [
+    {
+      "case_id": "public-arxiv-title-filter-results-v1",
+      "initial_expected": false,
+      "direct_final_expected": true,
+      "model_calls": 0,
+      "native_agent_actions": 0,
+      "initial_success": false,
+      "initial_http_status": 200,
+      "direct_final_success": false,
+      "final_http_status": 429,
+      "final_url": "https://arxiv.org/search/?query=%22Attention+Is+All+You+Need%22&searchtype=title&abstracts=hide&order=-announced_date_first&size=50",
+      "mismatch_keys": [
+        "main",
+        "applied_form",
+        "result_summary",
+        "results",
+        "original_paper_result"
+      ]
+    },
+    {
+      "case_id": "public-arxiv-original-paper-open-v1",
+      "initial_expected": false,
+      "direct_final_expected": true,
+      "model_calls": 0,
+      "native_agent_actions": 0,
+      "initial_success": false,
+      "initial_http_status": 429,
+      "direct_final_success": true,
+      "final_http_status": 200,
+      "final_url": "https://arxiv.org/abs/1706.03762",
+      "mismatch_keys": []
+    },
+    {
+      "case_id": "public-python-counter-most-common-v1",
+      "initial_expected": false,
+      "direct_final_expected": true,
+      "model_calls": 0,
+      "native_agent_actions": 0,
+      "initial_success": false,
+      "initial_http_status": 200,
+      "direct_final_success": true,
+      "final_http_status": 200,
+      "final_url": "https://docs.python.org/3.14/library/collections.html#collections.Counter.most_common",
+      "mismatch_keys": []
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1",
+      "initial_expected": false,
+      "direct_final_expected": true,
+      "model_calls": 0,
+      "native_agent_actions": 0,
+      "initial_success": false,
+      "initial_http_status": 200,
+      "direct_final_success": false,
+      "final_http_status": 200,
+      "final_url": "https://science.nasa.gov/mars/facts/",
+      "mismatch_keys": [
+        "moons_section"
+      ]
+    }
+  ],
+  "separate_nasa_instant_view_diagnostic": {
+    "scope": "Direct final-page DOM and viewport diagnostic only; manual immediate scroll, no upstream agent, policy, native actions or task score",
+    "before_bounds": {
+      "x": 132.5,
+      "y": 2437.53125,
+      "width": 840,
+      "height": 45.59375
+    },
+    "after_bounds": {
+      "x": 132.5,
+      "y": 367.53125,
+      "width": 840,
+      "height": 45.59375
+    },
+    "judge_success": true,
+    "mismatch_keys": [],
+    "model_calls": 0,
+    "native_agent_actions": 0
+  },
+  "actual_harness_smoke": {
+    "created_utc": "2026-10-15T08:32:57.369658+00:00",
+    "scope": "Pipeline smoke only: a scripted local provider always returns BLOCKED; no model, GPU, native action, task success or competitor score",
+    "case_id": "public-python-counter-most-common-v1",
+    "source_identity": "38741edf4ec18aec9d215c51cbf68f4d7aede4abb0af36ba5e75d028f69f0f09",
+    "script_sha256": "40ed06997d56de9e14ffc8b132bc8da151de765bb89f13e3aaae178468525ae4",
+    "diagnostic_provider": "scripted-always-blocked-no-model",
+    "passed": true,
+    "accepted_status": "blocked",
+    "actions": 0,
+    "native_requests": 1,
+    "model_forwards": 0,
+    "source_unchanged": true,
+    "private_judge_fields_in_payload": false,
+    "navigation_events": [
+      {
+        "url": "https://docs.python.org/3.14/library/datatypes.html",
+        "method": "GET",
+        "redirected_from": null,
+        "scope_violation": null
+      }
+    ],
+    "public_judge_sha256": "0ec9826d334cb2fbed24ade8780fa785291017d904b18233419ced760750bca3"
+  },
+  "software_verification": {
+    "full_cpu_suite": {
+      "passed": 2276,
+      "skipped": 299,
+      "elapsed_seconds": 44.44
+    },
+    "final_focused_suite": {
+      "passed": 330,
+      "browser_optin_skipped": 25,
+      "elapsed_seconds": 0.83
+    },
+    "real_chromium_existing_regressions": {
+      "passed": 25,
+      "elapsed_seconds": 45.99
+    },
+    "ruff": "passed",
+    "diff_check": "passed"
+  },
+  "limits": [
+    "Two arXiv tasks share one site; four tasks represent three site families.",
+    "Direct final-page navigation and viewport positioning do not prove native-agent reachability or model success.",
+    "arXiv result access returned429 and is not ready; the failed request remains in the evidence.",
+    "The first NASA probe correctly rejected an offscreen heading during unfinished smooth scrolling; the separately declared immediate-position probe accepted it.",
+    "The scripted BLOCKED smoke checks the harness only, with zero model forwards.",
+    "Initial input sizes do not bound later task states or establish public-web reliability."
+  ],
+  "raw_evidence": {
+    "initial": {
+      "local_path": "artifacts/jev-browser/20261015-public-web-initial-preflight-01/summary.json",
+      "sha256": "7d7414fbe7e1866437d40203496593644061effbbdf5120f9e3c3dfe7586915c"
+    },
+    "final01": {
+      "local_path": "artifacts/jev-browser/20261015-public-web-judge-readiness-01/summary.json",
+      "sha256": "486ee0ccde22e1f6ee2dd434f29066e7dcf02bcfcdad4e24cb7ac818fa565d8a"
+    },
+    "nasa02": {
+      "local_path": "artifacts/jev-browser/20261015-public-web-judge-readiness-02/summary.json",
+      "sha256": "b45ee863f053ac868bb9e8d4a102441b859bf14cd5d6b7aed32feb91c4a216da"
+    },
+    "pipeline": {
+      "local_path": "artifacts/jev-browser/20261015-public-web-harness-smoke-01/receipt.json",
+      "sha256": "aa9772c9672a4efca6765df9b4556997e9c1bf6025f831739e6fcd907a37d182"
+    }
+  },
+  "raw_evidence_note": "Full local raw DOM/snapshots/logs are ignored artifacts; this tracked file is a compact evidence index."
+}

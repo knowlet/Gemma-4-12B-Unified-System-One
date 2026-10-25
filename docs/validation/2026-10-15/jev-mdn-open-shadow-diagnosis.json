@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "scope": "Fresh independent read-only one-page MDN DOM diagnosis, separate from all teacher/model runs. Candidate visibility facts only, no positive private DONE or training row.",
+  "process_exit_code": 0,
+  "receipt": {
+    "path": "artifacts/jev-browser/20261015-mdn-open-shadow-diagnostic-01/receipt.json",
+    "sha256": "632ec29f63a9aa092d7f1cb0f6f076148b785dca46c2af6fdd2caf772a878000",
+    "size_bytes": 13102
+  },
+  "source": {
+    "path": "artifacts/jev-runtime/diagnose_mdn_open_shadow_01.py",
+    "sha256": "388c3ee9d66bb7536fd82c6a877a5bc01f4d238ef18c71f863514483f3056f8c",
+    "size_bytes": 24015
+  },
+  "prospective_plan_wrapper": {
+    "path": "artifacts/jev-runtime/mdn_open_shadow_diagnostic_plan_01.json",
+    "sha256": "d97024e496dce27156b71ad694fca1091ec5a7bef852f3ef95cac63f18bd0593",
+    "size_bytes": 16967
+  },
+  "initial_url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort#syntax",
+  "initial_navigations": 1,
+  "agent_instances": 0,
+  "model_calls": 0,
+  "actions": 0,
+  "task_score": null,
+  "actual_reads": 3,
+  "final_visible_candidate": {
+    "scroll_y": 548,
+    "host": {
+      "path": "/html[1]/body[1]/div[2]/div[1]/main[1]/div[2]/section[1]/mdn-code-example[1]",
+      "overflow": false
+    },
+    "open_shadow": true,
+    "host_display": "block",
+    "code_path": {
+      "path": "/html[1]/body[1]/div[2]/div[1]/main[1]/div[2]/section[1]/mdn-code-example[1]/#shadow-root(open)/div[1]/pre[1]",
+      "overflow": false
+    },
+    "code_text": "abort()\nabort(reason)\n",
+    "code_rect": {
+      "x": 289,
+      "y": 205.5,
+      "width": 527,
+      "height": 88
+    },
+    "center_hit_chain": [
+      {
+        "root": "document",
+        "node": {
+          "path": "/html[1]/body[1]/div[2]/div[1]/main[1]/div[2]/section[1]/mdn-code-example[1]",
+          "overflow": false
+        }
+      },
+      {
+        "root": "/html[1]/body[1]/div[2]/div[1]/main[1]/div[2]/section[1]/mdn-code-example[1]/#shadow-root(open)",
+        "node": {
+          "path": "/html[1]/body[1]/div[2]/div[1]/main[1]/div[2]/section[1]/mdn-code-example[1]/#shadow-root(open)/div[1]/pre[1]/code[1]",
+          "overflow": false
+        }
+      }
+    ],
+    "host_and_composed_ancestor_styles_recorded": true
+  },
+  "independent_check": {
+    "checks": 775,
+    "stable_inputs": 94,
+    "report": {
+      "path": "artifacts/jev-browser/20261015-mdn-open-shadow-independent-check-01.json",
+      "sha256": "f8ccf1e3425f1f0d7c9e3c20cb6175611941ead72867cb351de896f24039ce5b",
+      "size_bytes": 24481
+    }
+  },
+  "raw_artifacts": {
+    "DOM-00.json": {
+      "path": "artifacts/jev-browser/20261015-mdn-open-shadow-diagnostic-01/DOM-00.json",
+      "sha256": "a38f813afb3bc75915498ab8b50481b6f0f1f6abb1c9437888343c3ae6ec8e74",
+      "size_bytes": 17878
+    },
+    "DOM-01.json": {
+      "path": "artifacts/jev-browser/20261015-mdn-open-shadow-diagnostic-01/DOM-01.json",
+      "sha256": "7171ee9d3ac523e9f0f5cc6ba3ff06de67e1c379a838d29ce2011ac6f50b9572",
+      "size_bytes": 18116
+    },
+    "DOM-02.json": {
+      "path": "artifacts/jev-browser/20261015-mdn-open-shadow-diagnostic-01/DOM-02.json",
+      "sha256": "7171ee9d3ac523e9f0f5cc6ba3ff06de67e1c379a838d29ce2011ac6f50b9572",
+      "size_bytes": 18116
+    }
+  },
+  "screenshot": {
+    "path": "artifacts/jev-browser/20261015-mdn-open-shadow-diagnostic-01/viewport.png",
+    "sha256": "03931b1702efe0cc62aec79cca50d4b03b8f7ef66b5685902b89e5c2de830421",
+    "size_bytes": 99628
+  },
+  "limitations": [
+    "Diagnostic section queries can include child subsections; these candidate facts do not themselves prove ownSyntax section ownership. The new judge must stop at the next heading of any level.",
+    "Open roots only; no closed-shadow piercing or synthetic signature.",
+    "No prior collection/model score is changed.",
+    "Native upstream snapshot/choose/Agent/browser contracts were not changed by this diagnostic."
+  ]
+}

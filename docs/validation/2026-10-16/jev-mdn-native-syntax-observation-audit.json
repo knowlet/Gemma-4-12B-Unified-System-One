@@ -1,0 +1,63 @@
+{
+  "schema": "jev-validation-summary-v1",
+  "scope": "Saved collection 07: complete method signatures in eight final accepted native DONE inputs",
+  "completes_pending_check_in": "jev-composed-public-collection-07.json at commit 1c4cedd",
+  "data_authentication_passed": true,
+  "observation_coverage_passed": true,
+  "authenticated_episodes": 8,
+  "covered_episodes": 8,
+  "required_call_checks": 12,
+  "required_call_checks_passed": 12,
+  "report_sha256": "e6216d7e4d335c2b76da6942b1c2226fb56eb7d2ba8fa5128bc76f3fb8f0c0bc",
+  "report_size_bytes": 86913,
+  "wall_seconds": 2.288213720996282,
+  "audit_source_sha256": "7a78bf9f907d8b813a26007229638c242c526808aa1b30f265cb574809daf6c2",
+  "audit_plan_sha256": "23e41484007bff54e8f090e37dea91226e8958bf98d5024f43ccc35265098769",
+  "admission_receipt_sha256": "bb799a48e8bbf1fb0af5afaf23cb38fb09bb67c3d26c833e96ba33bc34b0fcdb",
+  "provenance_sha256": "d80e5106ab67375403f1b3b5ab9132ae7f212a134532d0d0d422ac044a648c80",
+  "closed_inventory_identity_sha256": "d74f729460c648b8c88cf677bc379d1ae34fe7530a9651810e8af2825d449742",
+  "closed_files_reauthenticated": 701,
+  "coverage": [
+    {
+      "method": "IntersectionObserver.observe",
+      "expected_calls": ["observe(targetElement)"],
+      "episodes_passed": 2,
+      "source": "https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/observe#syntax"
+    },
+    {
+      "method": "ResizeObserver.observe",
+      "expected_calls": ["observe(target)", "observe(target, options)"],
+      "episodes_passed": 2,
+      "source": "https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver/observe#syntax"
+    },
+    {
+      "method": "URLSearchParams.get",
+      "expected_calls": ["get(name)"],
+      "episodes_passed": 2,
+      "source": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/get#syntax"
+    },
+    {
+      "method": "AbortController.abort",
+      "expected_calls": ["abort()", "abort(reason)"],
+      "episodes_passed": 2,
+      "source": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort#syntax"
+    }
+  ],
+  "evidence": "Every final accepted DONE is joined to the admitted case, exact native wire, original raw observation, request and compiled sequences, strict pre/post Syntax proofs, ownership, unchanged native history and final state. Original native text is not rewritten; reported spans allow whitespace only between complete lexical tokens.",
+  "validation": {
+    "synthetic_tests_passed": 15,
+    "independent_source_review": "clear",
+    "ruff": "passed",
+    "whole_semantic_admission_reexecuted": false,
+    "basis": "Explicitly pinned successful whole admission, provenance fingerprint and complete closed inventory were authenticated again."
+  },
+  "expectation_correction": "The unexecuted H01 prospect incorrectly used targetElement for ResizeObserver. Independent official MDN verification established target. H01 bytes remain preserved; H02 corrects that expectation and refuses whitespace that joins identifier letters. The corpus was unchanged.",
+  "limits": {
+    "other_16_episodes_method_syntax_audited": false,
+    "per_node_occlusion_proved": false,
+    "model_calls": 0,
+    "training_updates": 0,
+    "task_score": null,
+    "comparison_win_claimed": false
+  }
+}

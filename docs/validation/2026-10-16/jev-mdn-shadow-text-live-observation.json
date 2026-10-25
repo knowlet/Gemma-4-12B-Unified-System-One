@@ -1,0 +1,108 @@
+{
+  "schema_id": "jev-mdn-shadow-text-public-observation-validation-v1",
+  "validation_date": "2026-10-16",
+  "problem": "The pinned native visible-text walker omits code rendered inside open Shadow DOM. A page can offer navigation controls while omitting the method syntax from the model request.",
+  "canonical_repository": "https://github.com/browser-use/jev-ultrafast",
+  "canonical_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "canonical_snapshot_sha256": "e50473501c8fb8e70f3b21866d987393e3f2315c639d638bd477d170e81ed78d",
+  "experimental_snapshot_sha256": "3a4a5e7532a7eb99334b8fd71e181d5d18183af4966757cd42d48e6404cbb197",
+  "method": {
+    "documents": 4,
+    "schedule": "original snapshot, experimental snapshot, original snapshot on the same document",
+    "goal": "Read the visible reference page.",
+    "actual_choose_wire_captures": 12,
+    "model_calls": 0,
+    "input_actions": 0,
+    "private_facts_injected": false
+  },
+  "outcome": {
+    "HTTP200_documents": 4,
+    "native_before_after_exact": 4,
+    "experimental_nontext_fields_exact": 4,
+    "method_syntax_exposed_in_experimental_input": 4,
+    "omitted_actions": 0,
+    "task_score": null
+  },
+  "documents": [
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/observe#syntax",
+      "full_choice_heads": {
+        "operation": 6,
+        "click_target": 42
+      },
+      "syntax_call_presence": {
+        "observe(targetElement)": {
+          "native_Syntax_text": false,
+          "experimental_Syntax_text": true
+        }
+      }
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver/observe#syntax",
+      "full_choice_heads": {
+        "operation": 6,
+        "click_target": 40
+      },
+      "syntax_call_presence": {
+        "observe(target)": {
+          "native_Syntax_text": false,
+          "experimental_Syntax_text": true
+        },
+        "observe(target,options)": {
+          "native_Syntax_text": false,
+          "experimental_Syntax_text": true
+        }
+      }
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/get#syntax",
+      "full_choice_heads": {
+        "operation": 6,
+        "click_target": 43
+      },
+      "syntax_call_presence": {
+        "get(name)": {
+          "native_Syntax_text": false,
+          "experimental_Syntax_text": true
+        }
+      }
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort#syntax",
+      "full_choice_heads": {
+        "operation": 6,
+        "click_target": 50
+      },
+      "syntax_call_presence": {
+        "abort()": {
+          "native_Syntax_text": false,
+          "experimental_Syntax_text": true
+        },
+        "abort(reason)": {
+          "native_Syntax_text": false,
+          "experimental_Syntax_text": true
+        }
+      }
+    }
+  ],
+  "verification": {
+    "independent_saved_evidence_checks": 330,
+    "report_sha256": "fdf14e5244f89a1c1bf1b86b1450d8a06b20f4ea2c72da1bdc2591f357405bce",
+    "report_reproduction_byte_exact": true,
+    "owned_fixture_checks": 67,
+    "protocol_unit_tests": 30
+  },
+  "retained_first_attempt": {
+    "stage": "partial",
+    "attempted_documents": 4,
+    "reason": "The diagnostic initially compared a full URL containing a fragment with a fragment-free browser commit URL. It refused before experimental reads. A subsequent diagnostic uses current frame identity and the current fragment.",
+    "rewritten_or_rescored": false
+  },
+  "limits": [
+    "Observation exposure only; no model inference, navigation task success, training qualification, or model superiority follows.",
+    "Call strings can span newlines. Whitespace-insensitive matching is detached audit analysis only; actual input bytes are unchanged.",
+    "The experimental walker visits open shadow roots and assigned slots; action discovery and existing action guards are unchanged.",
+    "Per-node occlusion proof was not captured. Node/depth limits are not hard peak-memory or wall-clock bounds.",
+    "This experimental diagnostic is separate from the native baseline and does not modify earlier saved corpora."
+  ]
+}

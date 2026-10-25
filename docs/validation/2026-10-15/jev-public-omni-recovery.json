@@ -1,0 +1,557 @@
+{
+  "schema_version": 1,
+  "scope": "Omni-only recovery on exactly the same two exposed public tasks after the earlier host reboot. Worker completed; original controller audit failed and remains infrastructure_failed. An independent post-hoc source-backed serializer audit binds all six policy calls without rerunning or editing execution evidence. No broad superiority or goal-complete claim.",
+  "run": "artifacts/jev-browser/20261015-public-bf16-specialist-selection-02",
+  "controller_sha256": "1f4cd6b104de4291984a0fb5f1527edd3c95145fd4146268f6e08e471a5a5075",
+  "canonical_plan_sha256": "29d09c071f00e4da449b098788bcf9bb9c280a29b3dc7b0db7ab7e45173a156d",
+  "plan_file_sha256": "d1ceca70b7fc9960f2d349d921b018d49ccfa54b679b7066f7e358cd3809578c",
+  "execution_status": {
+    "worker_receipt_stage": "complete",
+    "worker_exit_code": 0,
+    "worker_receipt_sha256": "a482a99382cd3038dcd4fce4685510a9f509457d2526e8948b42ad8502b9a610",
+    "worker_evidence_complete": true,
+    "controller_stage_preserved": "infrastructure_failed",
+    "controller_exit_code": 1,
+    "controller_error_preserved": {
+      "type": "ValueError",
+      "message": "failed client HTTP detail/generation differs from server"
+    },
+    "controller_terminal_state_sha256": "9c76b85c420868716bfea178d263e06a56125679826c70f97313d0553a1cd6a3",
+    "controller_whole_run_success": false,
+    "original_results_preserved": [],
+    "original_aggregate_score_preserved": null,
+    "posthoc_evidence_checks_passed": true,
+    "no_rerun_or_receipt_rewrite": true
+  },
+  "model": {
+    "id": "akhilaaa3/Jev-Omni",
+    "revision": "5addda86ddee081a68fb067477ea100c221b8917",
+    "precision": "bfloat16",
+    "quantization": "none",
+    "native_context_limit": 16384,
+    "native_max_options": 20,
+    "calibration": "checkpoint native head",
+    "model_weights_before_after_root_runtime_telemetry": {
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/models--akhilaaa3--Jev-Omni/snapshots/5addda86ddee081a68fb067477ea100c221b8917/model.safetensors": {
+        "sha256": "d78782f3b9c3302353a7d1a1b6277fa5e05d692f4a0cb2b862797026c65eabe6",
+        "size_bytes": 23919549408
+      },
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/models--akhilaaa3--Jev-Omni/snapshots/5addda86ddee081a68fb067477ea100c221b8917/head.pt": {
+        "sha256": "8c81edecd733f7db327604803c14cf9ecbee53d2af055eeb09f78b64bcbf2638",
+        "size_bytes": 3966079
+      }
+    },
+    "checkpoint_bytes_opened_by_auditors": 0
+  },
+  "actual_results": {
+    "attempts": 2,
+    "strict_successes": 0,
+    "totals": {
+      "policy_calls": 6,
+      "helper_calls": 1,
+      "executed_actions": 5,
+      "elapsed_ms": 40382
+    },
+    "whole_arm_elapsed_ms_including_preservation_loading_finalization": 212565.56634199934,
+    "outcomes": [
+      {
+        "case_id": "public-python-counter-most-common-v1",
+        "success": false,
+        "goal_satisfied": false,
+        "status": "ready",
+        "error": "RuntimeError: Model provider returned HTTP 504; no action executed.",
+        "policy_calls": 1,
+        "helper_calls": 0,
+        "executed_actions": 0,
+        "elapsed_ms": 21294,
+        "classification": "task_failed",
+        "failed_fresh_DOM_conditions": [
+          "path",
+          "collections_heading",
+          "counter_section",
+          "method_signature",
+          "method_description"
+        ],
+        "final_url": "https://docs.python.org/3.14/library/datatypes.html",
+        "final_html_sha256": "93db8f167832cbbf7753acb934f440b13c12255e8b343f22f896a7f8a20529a9",
+        "document_scope": {
+          "blocks": 0,
+          "playwright_navigation_events": 1,
+          "root_document_requests": 1,
+          "root_document_commits": 2,
+          "scope_violations": 0,
+          "observer_errors": [],
+          "commit_urls": [
+            "https://docs.python.org/3.14/library/datatypes.html",
+            "https://docs.python.org/3.14/library/datatypes.html"
+          ]
+        }
+      },
+      {
+        "case_id": "public-nasa-mars-facts-moons-v1",
+        "success": false,
+        "goal_satisfied": false,
+        "status": "blocked",
+        "error": null,
+        "policy_calls": 5,
+        "helper_calls": 1,
+        "executed_actions": 5,
+        "elapsed_ms": 19088,
+        "classification": "task_failed",
+        "failed_fresh_DOM_conditions": [
+          "path",
+          "facts_heading",
+          "moons_section"
+        ],
+        "final_url": "https://science.nasa.gov/solar-system/",
+        "final_html_sha256": "a3c4fa689f6abdd5b03f389efad2232d5093f4668f7eb1cc65b32353caa8a138",
+        "document_scope": {
+          "blocks": 22,
+          "playwright_navigation_events": 1,
+          "root_document_requests": 1,
+          "root_document_commits": 1,
+          "scope_violations": 0,
+          "observer_errors": [],
+          "commit_urls": [
+            "https://science.nasa.gov/solar-system/"
+          ]
+        }
+      }
+    ],
+    "native_costs": {
+      "policy_requests": 6,
+      "expanded": 1,
+      "flat_compatibility": 5,
+      "backend_predict_calls": 12,
+      "reported_input_tokens_including_failed_returned_stages": 39199,
+      "reported_output_tokens": 0
+    },
+    "all_request_costs": [
+      {
+        "request_id": "1bf5924c50cb8e4697742d07a16ec447",
+        "case_id": "public-python-counter-most-common-v1",
+        "policy_index": 0,
+        "mode": "expanded",
+        "HTTP_status": 504,
+        "actual_native_predict_calls": 7,
+        "reported_usage_including_failed_returned_stages": {
+          "input_tokens": 26708,
+          "output_tokens": 0
+        },
+        "usage_scope": "sum of all seven returned stage usages, including final stage failed by post-call cooperative deadline; no successful aggregate response"
+      },
+      {
+        "request_id": "cc54a27668e644c10f316738be0e02a0",
+        "case_id": "public-nasa-mars-facts-moons-v1",
+        "policy_index": 0,
+        "mode": "flat",
+        "HTTP_status": 200,
+        "actual_native_predict_calls": 1,
+        "reported_usage_including_failed_returned_stages": {
+          "input_tokens": 2082,
+          "output_tokens": 0
+        },
+        "usage_scope": "returned terminal usage"
+      },
+      {
+        "request_id": "8313d318f3fdb2164e05c702c1081b28",
+        "case_id": "public-nasa-mars-facts-moons-v1",
+        "policy_index": 1,
+        "mode": "flat",
+        "HTTP_status": 200,
+        "actual_native_predict_calls": 1,
+        "reported_usage_including_failed_returned_stages": {
+          "input_tokens": 2141,
+          "output_tokens": 0
+        },
+        "usage_scope": "returned terminal usage"
+      },
+      {
+        "request_id": "debc97906e1e2998af5dc164ef933340",
+        "case_id": "public-nasa-mars-facts-moons-v1",
+        "policy_index": 2,
+        "mode": "flat",
+        "HTTP_status": 200,
+        "actual_native_predict_calls": 1,
+        "reported_usage_including_failed_returned_stages": {
+          "input_tokens": 2704,
+          "output_tokens": 0
+        },
+        "usage_scope": "returned terminal usage"
+      },
+      {
+        "request_id": "d0be3f54267ffc08457fcc0c69f23a7b",
+        "case_id": "public-nasa-mars-facts-moons-v1",
+        "policy_index": 3,
+        "mode": "flat",
+        "HTTP_status": 200,
+        "actual_native_predict_calls": 1,
+        "reported_usage_including_failed_returned_stages": {
+          "input_tokens": 2756,
+          "output_tokens": 0
+        },
+        "usage_scope": "returned terminal usage"
+      },
+      {
+        "request_id": "0174f961f93c0ed3804eabfe13f1995b",
+        "case_id": "public-nasa-mars-facts-moons-v1",
+        "policy_index": 4,
+        "mode": "flat",
+        "HTTP_status": 200,
+        "actual_native_predict_calls": 1,
+        "reported_usage_including_failed_returned_stages": {
+          "input_tokens": 2808,
+          "output_tokens": 0
+        },
+        "usage_scope": "returned terminal usage"
+      }
+    ],
+    "shared_unadapted_BF16_helper": {
+      "actual_calls": 1,
+      "reported_input_tokens": 223,
+      "reported_output_tokens": 13,
+      "native_EOS_token": 106,
+      "raw_token_ids": [
+        2717,
+        3723,
+        107,
+        14937,
+        1005,
+        1083,
+        623,
+        81522,
+        51901,
+        25938,
+        107,
+        2717,
+        106
+      ],
+      "reconstructed_prompt_sha256": "71120582ec8e8ea65e23d9282586de189c1b4db88e9a38f9105d8749a8331cbb",
+      "applied_text": "Mars Facts"
+    },
+    "NASA_termination": {
+      "status": "blocked",
+      "generated_BLOCKED": false,
+      "reason": "Unchanged upstream automatically blocked after three executed non-wait actions with page_changed=false",
+      "actual_action_sequence": [
+        {
+          "operation": "TYPE_TEXT",
+          "target": "2",
+          "label": "Search Search",
+          "text": "Mars Facts",
+          "page_changed": true
+        },
+        {
+          "operation": "CLICK",
+          "target": "10",
+          "label": "Asteroids & Comets",
+          "text": null,
+          "page_changed": true
+        },
+        {
+          "operation": "CLICK",
+          "target": "2",
+          "label": "Open Search Search",
+          "text": null,
+          "page_changed": false
+        },
+        {
+          "operation": "CLICK",
+          "target": "2",
+          "label": "Open Search Search",
+          "text": null,
+          "page_changed": false
+        },
+        {
+          "operation": "CLICK",
+          "target": "2",
+          "label": "Open Search Search",
+          "text": null,
+          "page_changed": false
+        }
+      ]
+    }
+  },
+  "timeout_and_posthoc_binding": {
+    "failed_request_id": "1bf5924c50cb8e4697742d07a16ec447",
+    "HTTP_status": 504,
+    "error_type": "BackendTimeoutError",
+    "message": "Jev hierarchy cooperative time budget exceeded; blocking calls cannot be hard-cancelled",
+    "all_seven_native_predictions_returned": true,
+    "last_stage_failed_after_raw_return_and_normalization": true,
+    "no_browser_action_or_decision": true,
+    "timeout_journal_sha256": "6a902d2b6c66fdd7c388a16539c275e23bf5fc228b2517c8feb2c46e3be46ef0",
+    "canonical_observed_client_error_body_sha256": "5d03c3fe1f3eaf1a77d93bd7d06b786fdd6df3e0e9a8090d3cc7441affec92d3",
+    "source_backed_alias_proof": {
+      "api_sha256": "7f8afba02e43ea4c65203b818eb09da5900fee1032f20b92a38d68de6599b1c7",
+      "hierarchy_sha256": "c85f8730eaba732c332b268a38e5556304622f3ba8e8f7be3b3a11892e583124",
+      "proof": "fresh _deadline BackendTimeoutError has no existing generation; hierarchy catch binds exc.hierarchy and absent exc.generation to the SAME audit object; pinned API omits generation by identity, not equal-value heuristic",
+      "same_object_and_equal_distinct_synthetic_cases_passed": true
+    },
+    "serializer_explanation": "Pinned hierarchy creates a fresh cooperative BackendTimeoutError, then assigns the SAME audit object to exc.hierarchy and absent exc.generation. The pinned API journals both fields but error_detail omits generation when generation is hierarchy. The borrowed generated-action binder expected both JSON fields and rejected a correctly delivered native HTTP504. Independent checks reconstruct the exact hierarchy-only client body using the pinned source; equal JSON values alone are not an object-identity proof.",
+    "original_controller_failure_retained": true,
+    "posthoc_client_server_requests_exactly_bound": 6,
+    "posthoc_orphan_requests": 0,
+    "canonical_observed_client_error_body_sha256_encoding": "SHA256 of UTF-8 json.dumps(observed response object, ensure_ascii=False, separators=(comma,colon), sort_keys=False, allow_nan=False), retaining captured insertion order. This is the exact ordered JSON object serialization used by the held evidence encoder; it is not raw HTTP byte hashing or sorted-key canonicalization."
+  },
+  "memory_admission": {
+    "module_path": "artifacts/jev-runtime/specialist_memory_admission_02.py",
+    "module_sha256": "74a0a5ee1ca5799d166240cb22bdddb0b7a551350a7c6daa3da17a0289745619",
+    "instrumented_core_path": "artifacts/jev-runtime/public_bf16_specialist_instrumented_core_02.py.txt",
+    "instrumented_core_sha256": "d7ec66dc5c8ff54f5b974b3fcc6ce9e3172f799ee994b9eab5a2a8cd6f150776",
+    "gate_source_contract": "Original immutable function ASTs are unchanged after removing exactly one memory_gate statement per function; gates immediately precede UnifiedDecisionModel and JevOmniBackend constructors. A third gate precedes any weight payload read. Sources add no precision/offload/native policy/helper changes.",
+    "host_boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0",
+    "ledger_path": "artifacts/jev-browser/20261015-public-bf16-specialist-selection-02/memory-admission-jev-omni-public.jsonl",
+    "ledger_sha256": "3757a515cce36f6caede1d5c93dfc5887f5d0515c4128ffab427980986ac628c",
+    "header_only_evidence": {
+      "helper": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+        "file_size_bytes": 23919549408,
+        "header_size_bytes": 88952,
+        "header_sha256": "d8b49f990225888acc5734bd55e2c269404d24b5a7dc2d3122be4f75500d8fb4",
+        "bytes_read": 88960,
+        "tensor_payload_bytes_read": 0,
+        "tensor_payload_bytes": 23919460448,
+        "parameter_elements": 11959730224,
+        "dtype": "BF16",
+        "tensor_count": 677
+      },
+      "omni": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/71/71b74d17a64e4c0c903d27697cb98f5fd52c6224a6366130d5d61ae899e5f464",
+        "file_size_bytes": 23919549408,
+        "header_size_bytes": 88952,
+        "header_sha256": "d8b49f990225888acc5734bd55e2c269404d24b5a7dc2d3122be4f75500d8fb4",
+        "bytes_read": 88960,
+        "tensor_payload_bytes_read": 0,
+        "tensor_payload_bytes": 23919460448,
+        "parameter_elements": 11959730224,
+        "dtype": "BF16",
+        "tensor_count": 677
+      }
+    },
+    "budget": {
+      "schema_version": 1,
+      "resident_bytes": {
+        "helper": 23919549408,
+        "omni": 23919549408,
+        "omni_head_with_copy": 7932158
+      },
+      "simultaneous_resident_bytes": 47847030974,
+      "transient_cpu_copy_bytes": 23919549408,
+      "transient_cpu_copy_count": 1,
+      "reserve_floor_bytes": 25769803776,
+      "reserve_total_fraction": {
+        "numerator": 1,
+        "denominator": 5
+      },
+      "budget_basis": "Both distinct full BF16 checkpoints simultaneously resident; one additional entire largest checkpoint CPU staging copy; two Omni head files; max(24 GiB,20% total system RAM) unused headroom. Conservative declared estimate, not a measured loader maximum.",
+      "uncontrolled_risk": "MemAvailable can change after admission; driver/allocator workspaces and constructor peaks are not proven bounded by this estimate. No swap credit, precision reduction, offload, checkpoint substitution, cache mutation or user-process changes."
+    },
+    "three_actual_admissions": [
+      {
+        "stage": "before_any_weight_payload_read",
+        "admitted": true,
+        "host_boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0",
+        "MemTotal_bytes": 130595860480,
+        "MemAvailable_bytes": 123496460288,
+        "arithmetic": {
+          "whole_campaign_peak_estimate_bytes": 97885752478,
+          "already_loaded_helper_credit_bytes": 0,
+          "new_resident_bytes": 47847030974,
+          "transient_cpu_copy_bytes": 23919549408,
+          "unused_headroom_bytes": 26119172096,
+          "required_current_MemAvailable_bytes": 97885752478,
+          "observed_MemAvailable_bytes": 123496460288,
+          "surplus_bytes": 25610707810
+        }
+      },
+      {
+        "stage": "before_helper_constructor",
+        "admitted": true,
+        "host_boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0",
+        "MemTotal_bytes": 130595860480,
+        "MemAvailable_bytes": 123307827200,
+        "arithmetic": {
+          "whole_campaign_peak_estimate_bytes": 97885752478,
+          "already_loaded_helper_credit_bytes": 0,
+          "new_resident_bytes": 47847030974,
+          "transient_cpu_copy_bytes": 23919549408,
+          "unused_headroom_bytes": 26119172096,
+          "required_current_MemAvailable_bytes": 97885752478,
+          "observed_MemAvailable_bytes": 123307827200,
+          "surplus_bytes": 25422074722
+        }
+      },
+      {
+        "stage": "before_omni_constructor",
+        "admitted": true,
+        "host_boot_id": "9d508fa8-c124-402c-9769-7fa83afcbef0",
+        "MemTotal_bytes": 130595860480,
+        "MemAvailable_bytes": 97816899584,
+        "arithmetic": {
+          "whole_campaign_peak_estimate_bytes": 97885752478,
+          "already_loaded_helper_credit_bytes": 23919549408,
+          "new_resident_bytes": 23927481566,
+          "transient_cpu_copy_bytes": 23919549408,
+          "unused_headroom_bytes": 26119172096,
+          "required_current_MemAvailable_bytes": 73966203070,
+          "observed_MemAvailable_bytes": 97816899584,
+          "surplus_bytes": 23850696514
+        }
+      }
+    ],
+    "all_three_admitted": true,
+    "scope": "Independent recomputation from recorded header-only evidence and MemAvailable; estimates are not a measured peak/OOM guarantee; no checkpoint payload/header bytes opened by auditor",
+    "unused_reserve_rule": "max(24 GiB, ceil(MemTotal/5)); pending full BF16 checkpoint transient copy retained; only the final Omni gate credits the already resident helper once.",
+    "limits": "MemAvailable can change after admission. Source/recorded estimate checks are not a measured peak or OOM/driver-stall guarantee. Helper and Omni are distinct models with different full-weight hashes despite equal sizes; no sharing assumption. No user-process termination, cache/swap change or precision/offload mitigation."
+  },
+  "matched_actual_initial_inputs": [
+    {
+      "case_id": "public-python-counter-most-common-v1",
+      "all_four_actual_initials_equal_after_only_model_alias": true,
+      "normalization": "Only payload.model transport alias; no URL/site/candidate/question/history rewriting",
+      "raw_payload_sha256_by_arm": {
+        "primary-child": "59588df0c7daf853a889bf86aadfad76b8f4060f38429190c4f148f575a19c79",
+        "primary-base": "59588df0c7daf853a889bf86aadfad76b8f4060f38429190c4f148f575a19c79",
+        "historical-decider": "5f1f3b14b07f43b152112955e1069d304dcd0d5beb2953b9f7038156923f400b",
+        "omni-retry": "adf1ff628503b06bc9a32acf5750c750bf111619ffb161af1558c7a4846a3360"
+      },
+      "alias_only_normalized_payload_sha256_by_arm": {
+        "primary-child": "69c070c7d8312df952021043e884861d339218fa0729636b650f41d2471d3ac1",
+        "primary-base": "69c070c7d8312df952021043e884861d339218fa0729636b650f41d2471d3ac1",
+        "historical-decider": "69c070c7d8312df952021043e884861d339218fa0729636b650f41d2471d3ac1",
+        "omni-retry": "69c070c7d8312df952021043e884861d339218fa0729636b650f41d2471d3ac1"
+      }
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1",
+      "all_four_actual_initials_equal_after_only_model_alias": true,
+      "normalization": "Only payload.model transport alias; no URL/site/candidate/question/history rewriting",
+      "raw_payload_sha256_by_arm": {
+        "primary-child": "6e6749b6c0b85027481fcad7588ad7a60d68d04bd2f04d4b273e55b0a6fe19cd",
+        "primary-base": "6e6749b6c0b85027481fcad7588ad7a60d68d04bd2f04d4b273e55b0a6fe19cd",
+        "historical-decider": "c91fb7c8d8cd22ded1828c02163dd1f9f7436b3c0d1c953e78dda42b752b125e",
+        "omni-retry": "15de63293cee2c79ad4daf0ca447d55aa18a80255c5688d299802bf3f53995e1"
+      },
+      "alias_only_normalized_payload_sha256_by_arm": {
+        "primary-child": "e0810b66767a72e126acc4c87367c48df41faad2809c8cd2eaef7fc25ffcaa5e",
+        "primary-base": "e0810b66767a72e126acc4c87367c48df41faad2809c8cd2eaef7fc25ffcaa5e",
+        "historical-decider": "e0810b66767a72e126acc4c87367c48df41faad2809c8cd2eaef7fc25ffcaa5e",
+        "omni-retry": "e0810b66767a72e126acc4c87367c48df41faad2809c8cd2eaef7fc25ffcaa5e"
+      }
+    }
+  ],
+  "comparison_scope": {
+    "tasks": 2,
+    "population": "exact two exposed production-site tasks; one attempt per model/task, serial execution",
+    "current_primary_child": {
+      "strict_successes": 1,
+      "attempts": 2,
+      "record": "docs/validation/2026-10-15/jev-public-bf16-comparison.json"
+    },
+    "current_primary_unadapted_base": {
+      "strict_successes": 1,
+      "attempts": 2,
+      "record": "docs/validation/2026-10-15/jev-public-bf16-comparison.json"
+    },
+    "historical_Decider": {
+      "strict_successes": 0,
+      "attempts": 2,
+      "record": "docs/validation/2026-10-15/jev-public-specialist-decider-interruption.json"
+    },
+    "this_recovery_Omni": {
+      "strict_successes": 0,
+      "attempts": 2
+    },
+    "earlier_interrupted_Omni": "Preserved unscored setup in specialist-selection-01; not substituted with this separate recovery run.",
+    "all_four_initials_equal_after_only_model_alias": true,
+    "claim": "These individual results establish no broad web readiness, statistically general superiority, training causality or fresh transfer success."
+  },
+  "source_bindings": {
+    "controller": {
+      "path": "artifacts/jev-runtime/run_public_bf16_specialist_selection_02.py",
+      "sha256": "1f4cd6b104de4291984a0fb5f1527edd3c95145fd4146268f6e08e471a5a5075",
+      "size_bytes": 18038
+    },
+    "memory_admission_module": {
+      "path": "artifacts/jev-runtime/specialist_memory_admission_02.py",
+      "sha256": "74a0a5ee1ca5799d166240cb22bdddb0b7a551350a7c6daa3da17a0289745619",
+      "size_bytes": 10040
+    },
+    "instrumented_core": {
+      "path": "artifacts/jev-runtime/public_bf16_specialist_instrumented_core_02.py.txt",
+      "sha256": "d7ec66dc5c8ff54f5b974b3fcc6ce9e3172f799ee994b9eab5a2a8cd6f150776",
+      "size_bytes": 17025
+    },
+    "immutable_native_specialist_core": {
+      "path": "artifacts/jev-runtime/run_public_bf16_specialist_selection.py",
+      "sha256": "47abe8a0e3c407e4d843ef42b5a38f6ecec68c050aae2c3f1da5061a4ec167e6",
+      "size_bytes": 49783
+    },
+    "borrowed_public_controller": {
+      "path": "artifacts/jev-runtime/run_public_bf16_counterfactual_selection.py",
+      "sha256": "a0b8714c9a8d10e4b860c6ac8a01ceba0dd65ae13b25ad3105c48d29cfe4cd37",
+      "size_bytes": 49751
+    },
+    "borrowed_BF16_controller": {
+      "path": "artifacts/jev-runtime/run_bf16_counterfactual_selection.py",
+      "sha256": "75b6b67098d22286416ae5653abd13c2c66f405b6c1dd78b6a5bd945958dcbc7",
+      "size_bytes": 53898
+    },
+    "frozen28_manifest": {
+      "path": "artifacts/jev-runtime/frozen-public-web-eval-28/freeze-manifest.json",
+      "sha256": "6ea86492b1b9c3d198ba45e84bb114303b7900e8dcaab73f6bd4e85b753e680c",
+      "size_bytes": 12116
+    },
+    "frozen_API": {
+      "path": "artifacts/jev-runtime/frozen-public-web-eval-28/src/s1/api.py",
+      "sha256": "7f8afba02e43ea4c65203b818eb09da5900fee1032f20b92a38d68de6599b1c7",
+      "size_bytes": 9836
+    },
+    "frozen_hierarchy": {
+      "path": "artifacts/jev-runtime/frozen-public-web-eval-28/src/s1/jev_hierarchy.py",
+      "sha256": "c85f8730eaba732c332b268a38e5556304622f3ba8e8f7be3b3a11892e583124",
+      "size_bytes": 42598
+    },
+    "public_judge": {
+      "path": "artifacts/jev-runtime/frozen-public-web-eval-28/scripts/jev_public_web_cases.py",
+      "sha256": "0ec9826d334cb2fbed24ade8780fa785291017d904b18233419ced760750bca3",
+      "size_bytes": 23665
+    }
+  },
+  "independent_evidence": {
+    "main": {
+      "path": "artifacts/jev-browser/20261015-public-omni-retry-independent-audit.json",
+      "sha256": "c2325052003268bb63cc192238b3ace278d67d752513049a8cb35910bb9213b2",
+      "auditor_sha256": "6bd0a08ac8af096e50cf308914cbcf20f4d76409f1976c6cad8b4847ff72aed8",
+      "native_checker_sha256": "f7442fa3bfa6b5c41aa0413f2482680e40b1b0f82797a6dd9823fa8ebaa17bc0",
+      "checks_passed": 809,
+      "read_input_files": 2271,
+      "read_inputs_identity_sha256": "379d2a26c244ff2daeedfa7b0776dcc1eaccb2f2ecbd8736a32833ba47218fa3",
+      "run_inventory_identity_sha256": "e0150adb4a02e13ccf12476a38c4e8e65d4348617917f77c9151ec5973bb03a7",
+      "worker_inventory_identity_sha256": "d9059a8ca5298130923e0a112c1ec29f170a87e7717eaf448ddf025682d17791"
+    },
+    "timeout_cost_addendum": {
+      "path": "artifacts/jev-browser/20261015-public-omni-retry-timeout-cost-summary.json",
+      "sha256": "bce71f7d435ae5dd7940fb6eb55c77d99125adea35961ae8e298f622a07e9a4b",
+      "auditor_sha256": "1c1846606aaae28c0bb8237a71aad2ec5bf991f6b525be5475ff8c7b39aeb248",
+      "checks_passed": 18,
+      "read_input_files": 7,
+      "read_inputs_identity_sha256": "851cd0d583ff4655db57909d2e5be55bf63fa21fac68bef15116697bf5a5f7fa"
+    }
+  },
+  "limitations": [
+    "Original execution controller failed its binder and EXIT1; this is an independent post-hoc correction of audit interpretation, never an edited receipt or successful controller claim.",
+    "Native classifier prompt token IDs and dense logits are not separately captured; full actual stage requests/distributions/probabilities are independently audited. Failed request costs include all returned stages even the raw stage subsequently failed by a cooperative deadline.",
+    "Memory admission is a conservative declared estimate, not measured peak or guarantee against memory pressure. No checkpoint/header bytes or former live GPU tensors opened by auditor; whole model hashes and invariants are source-bound root runtime telemetry.",
+    "Wide native hierarchy has cooperative20 plus HTTP25; unchanged flat fallback has HTTP25 only. Specialist and primary policies/calibration/context and compute differ.",
+    "All public initial comparisons normalize only model alias; actual unequal site observations, if any, remain unequal. No replacement or discarded attempt.",
+    "Fresh external DOM plus captured HTML are audited without browser replay. Two exposed serial tasks do not establish broad website readiness, transfer, training causality or general superiority.",
+    "Post-hoc reconciliation explains and validates saved HTTP response serialization; it does not convert the original failed execution controller into a successful run.",
+    "Native reported input usage includes every returned raw stage of the failed Python request; 39,199 classifier tokens plus 223 helper input tokens. Actual classifier prompt token IDs are unavailable; helper prompt is independently Rust-tokenized and native output EOS106 retained."
+  ],
+  "new_training": false,
+  "fresh_transfer_seed": null,
+  "production_promoted": false,
+  "all_original_evidence_preserved": true
+}

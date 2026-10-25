@@ -1,0 +1,356 @@
+{
+  "schema_version": 1,
+  "scope": "Completed actual BF16 known-development browser comparison; one original early gate and 13 matched case pairs, not 27 distinct tasks, broad web readiness, production qualification or a competitor result",
+  "model": "knowlet/Gemma-4-12B-Unified-System-One",
+  "revision": "a66f836b56605039fe040f330180e336d19b3362",
+  "original_gate_record": "docs/validation/2026-10-15/jev-bf16-original-browser.json",
+  "controller_sha256": "75b6b67098d22286416ae5653abd13c2c66f405b6c1dd78b6a5bd945958dcbc7",
+  "plan_sha256": "00b53096dd5cc3fb2099f17ce1b24ef3a97315e3f708957269aef4a0035dd901",
+  "frozen28_manifest_sha256": "6ea86492b1b9c3d198ba45e84bb114303b7900e8dcaab73f6bd4e85b753e680c",
+  "candidate_weights_sha256": "165fbd1db402692ec06f4264a16026eb76abbed711d9ff56aef37f44a442f178",
+  "comparison": {
+    "base": "Unadapted pinned BF16 base with native greedy legal-action grammar",
+    "candidate": "Same BF16 base, grammar, full original head and exact child96 FP32 q/v adapter; no new training",
+    "helper": "Same pinned unadapted BF16 base for every text call; candidate adapter disabled and restored under the same lock",
+    "quantization": "none",
+    "seed": 20261014,
+    "repeats": 1,
+    "max_decisions": 16,
+    "policy_seconds": 20,
+    "http_seconds": 25,
+    "max_context_tokens": 8192,
+    "max_action_tokens": 32,
+    "candidate_pruning": false,
+    "truncation": false,
+    "fallback_or_repair": false,
+    "production_attachment": false
+  },
+  "arms": [
+    {
+      "arm": "candidate-original",
+      "attempts": 1,
+      "successes": 1,
+      "receipt_sha256": "15a27300ae3231693ca258282c4ea9f1afcbb65b4165b9c5f684c31c0272cb8d",
+      "totals": {
+        "policy_calls": 6,
+        "helper_calls": 1,
+        "executed_actions": 5
+      }
+    },
+    {
+      "arm": "base13",
+      "attempts": 13,
+      "successes": 11,
+      "receipt_sha256": "c4f74282b95e3c9d89ade44b2f61c48206a7af727103992f2ddfe776a16f6e88",
+      "totals": {
+        "policy_calls": 55,
+        "helper_calls": 6,
+        "executed_actions": 43
+      }
+    },
+    {
+      "arm": "candidate13",
+      "attempts": 13,
+      "successes": 13,
+      "receipt_sha256": "e4d00e1a28b6e9a34274ddd92a00f612bf04f54d291677afb5cf3048345c4f91",
+      "totals": {
+        "policy_calls": 52,
+        "helper_calls": 6,
+        "executed_actions": 39
+      }
+    }
+  ],
+  "accounting": {
+    "completed_arm_attempts": 27,
+    "attempts_per_complete_arm": {
+      "candidate-original": 1,
+      "base13": 13,
+      "candidate13": 13
+    },
+    "strict_successes_per_complete_arm": {
+      "candidate-original": 1,
+      "base13": 11,
+      "candidate13": 13
+    },
+    "paired_distinct_cases": 13,
+    "original_gate_duplicate_attempts": 1,
+    "scope": "The original gate is an extra attempt at a case also present in each13 suite.27 attempts form13 matched base/candidate pairs plus one gate, not27 distinct tasks."
+  },
+  "paired_outcomes": [
+    {
+      "case_id": "development-000-filter_open-01a17c432d03",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "development-000-search_filter_open-01a17c432d03",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "development-000-already_checked-01a17c432d03",
+      "base_strict_success": false,
+      "candidate_strict_success": true,
+      "base_status": "blocked",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "development-000-native_select-01a17c432d03",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "development-000-autocomplete-01a17c432d03",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "development-000-submit_populated-01a17c432d03",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "development-000-premature_done-01a17c432d03",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "development-000-completion_toggle-01a17c432d03",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "development-000-upstream-travel",
+      "base_strict_success": false,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "development-000-unapplied_search-aac8cebe0ad1",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "travel-goal-000-0",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "travel-goal-000-1",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    },
+    {
+      "case_id": "travel-goal-000-2",
+      "base_strict_success": true,
+      "candidate_strict_success": true,
+      "base_status": "done",
+      "candidate_status": "done"
+    }
+  ],
+  "paired_initials": [
+    {
+      "case_id": "development-000-filter_open-01a17c432d03",
+      "suite": "ten",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "607319588abdbec8d2c1cd0e2ed5737b64804486b35de688dde166fdf7414b24",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "feb9f8815c8665ad0a3d51ca8e358e2ea0e088f975ac8421f2b66334322f15c4",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "88825a6cd60665edda900935b8f0eba42d85cebdf45adf447562f2be3c10ec2c",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "development-000-search_filter_open-01a17c432d03",
+      "suite": "ten",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "906efb95688b1f0cabe341462b762f51263061779c25d13cf8e292ef04e17d1f",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "66d2da8f3eee2eb1abcbb62f94fe2e5139f2879fb48879f8adde3cd55d054c9e",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "5e5a36d55d09309c8252794d178f8ce24a22352a853af6778936eb74eef7e003",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "development-000-already_checked-01a17c432d03",
+      "suite": "ten",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "ac29944772f771bf939e1a8d798aae6b6779d31b23b79e53ebdb330f102011b5",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "c3e5a6534220246eb41240de68d4c8cb033f6b97470cb9a53a8059d71af0ad83",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "fe10a1be636b241fc5afb48c41f16ece863d559227227404934ab6c62690a5e6",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "development-000-native_select-01a17c432d03",
+      "suite": "ten",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "ce0c83ea408b9f701ba772962c0c620435f9afbffc00da29e14b06b0b0e46e9c",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "6f32e08608f78a13153b4979a6a54366c55a4767d9add786686005c33197e3f1",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "fa98eff621034e7c36999288dc78b9b8b96606489fe39f3d6a92eece62b7a543",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "development-000-autocomplete-01a17c432d03",
+      "suite": "ten",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "e6ccd6c11eb7f01d9761754c78d44afe7581ce67956b2b6cfc842abd3c3cf9c1",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "15e01385f9a4ece93f6dcc39c26eead545fec4afe168b2c09658343859ccc5b3",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "f7ff6ebf0fade2950fe68539e864e432cc9d24199cdd8e26376a43fbf554c1e0",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "development-000-submit_populated-01a17c432d03",
+      "suite": "ten",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "b15de47c4eb543012fd098c504ff112ea0d211596843beec4bb4d1be3ff9bd17",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "db05139fea206b132475d087e4846c5383b3ba271eb3b113bc141bdad222daf8",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "915c3df9a0fafb8f978ec84d70400e4c82845236e4dccb62ee62e286547447eb",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "development-000-premature_done-01a17c432d03",
+      "suite": "ten",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "fd8e27f03db917e0d7ff7b3508e3fe81ac9b224aff46e758b84c19e10f29cb03",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "d8c6e9fcada2bef9edc01070045c47b2cdc6931c32253bf79dfc74f543d3c4f1",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "ca175856c54fe8b66d1771b5c1945754af1230a71c876845ef85c2203cfbee3e",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "development-000-completion_toggle-01a17c432d03",
+      "suite": "ten",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "acd6377f5e090dcfc9c73526ffd8c2fda5a97e078cc7cca9d8c08b2a5a935d66",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "a19f426808f94bc5ea2ac8b5d33648ffce9f9353c71c80d8ba3d9e28ce880b8e",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "730652a98f58fd13d275f575a535240afc6237eb49d994ae1541074f85b6985a",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "development-000-upstream-travel",
+      "suite": "ten",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "cce4f6dc5a5fc1f6c71a920bb1ea8607a916c0dbe269ff11b12930403947109e",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "57f7bf81bc4486b0cbfaecf3a4490e1a0a552e43d243feaac11b3fb5acd590e2",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "development-000-unapplied_search-aac8cebe0ad1",
+      "suite": "ten",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "fcea99e35f278aa4a9649060341d08d9db4eca8bcc4216f7507100a575cb751a",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "c34bd7b70eeb524e030a7a6799656f23db70d38703da7a9ee6e71b7c2546c767",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "6c2204469440748814833b1eb8e0b344a5daf2cc6cd6935dd94a358f33ecf315",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "travel-goal-000-0",
+      "suite": "challenges",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "171eacf6c4c5625b7fc9bc7b25e7a04a1a6042976e9e17eccf09a5bb6b53d1b1",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "8b6f115c6212be0469249bf1bbbe7110c8747431218a5c6e1d2c618812102676",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "travel-goal-000-1",
+      "suite": "challenges",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "1564e58ddb26938b738d9b95b24d40e349692d870d73d806282eb758c2bcd3ff",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "0a81f14c354b508e54a1e31976f6218a823b5ce06fbc13541e7b219e432245b7",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    },
+    {
+      "case_id": "travel-goal-000-2",
+      "suite": "challenges",
+      "normalized_initial_payload_byte_equal": true,
+      "normalized_initial_payload_sha256": "196fe4593e5fbc86703f0672fa8e25be73217d2d1eb45512bd4e9306015771fa",
+      "fixture_html_byte_equal": true,
+      "fixture_html_sha256": "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe",
+      "private_judge_byte_equal": true,
+      "private_judge_sha256": "883595e1ec24da04e093e70ee399952dd91c1231e0b351ebfe51add525408a1a",
+      "normalization": "Only payload.model alias and state.page.url ephemeral loopback port; all remaining fields and original order retained"
+    }
+  ],
+  "independent_audit": {
+    "path": "artifacts/jev-browser/20261015-bf16-browser-final-independent-audit.json",
+    "sha256": "2cbfb9b35384d64524e617bfc1ff09e7b54e471d19f6042043ba57e07d92a877",
+    "auditor_sha256": "da12b04f853057a6bdc359313967e9dca41f07f680443bfa1b3396985460f23e",
+    "checks_passed": 3928,
+    "checks_total": 3928,
+    "read_inputs": 4069,
+    "base_weight_bytes_opened": 0,
+    "all_infrastructure_complete": true
+  },
+  "baseline_failures": [
+    {
+      "case_id": "development-000-already_checked-01a17c432d03",
+      "status": "blocked",
+      "goal_satisfied": true,
+      "error": null
+    },
+    {
+      "case_id": "development-000-upstream-travel",
+      "status": "done",
+      "goal_satisfied": false,
+      "error": null
+    }
+  ],
+  "interpretation": [
+    "Candidate BF16 strictly completes all13 exposed development cases while the matched unadapted BF16 baseline completes11. Both raw failures remain in the baseline population.",
+    "The candidate fixes already_checked completion (baseline BLOCKED despite satisfied goal) and the original travel premature DONE (baseline never applied the destination search).",
+    "All13 initial full native requests match after replacing only transport model alias and ephemeral loopback port; fixture HTML, private judge and manifests also match. Later trajectories differ and are audited as actual behavior.",
+    "The original task is run once as the early gate and again inside the13; this campaign has27 attempts but only13 distinct matched case pairs.",
+    "Earlier parent NF4 grammar selection12/13 is a historical different-adapter/precision/runtime result, not a matched precision-only comparison.",
+    "This is one seed on exposed development cases with shared GPU activity, not a holdout, latency superiority, broad public-website or matched competitor claim. Production qualification and a tracked CLI reproduction remain separate work."
+  ],
+  "fresh_transfer_seed": null,
+  "production_qualification_issued": false,
+  "local_evidence": {
+    "run": "artifacts/jev-browser/20261015-bf16-counterfactual-selection-01",
+    "audit": "artifacts/jev-browser/20261015-bf16-browser-final-independent-audit.json",
+    "note": "Complete raw snapshots, native requests/tokens/grammar, journals, source/fit copies and weights remain ignored local artifacts; this tracked file is a compact evidence index."
+  }
+}

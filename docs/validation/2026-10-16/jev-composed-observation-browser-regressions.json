@@ -1,0 +1,46 @@
+{
+  "schema_id": "jev-composed-observation-browser-regressions-v1",
+  "validation_date": "2026-10-16",
+  "production_profile_commit": "e45f913f6dca1d22acde9c93c4fa1b9a3ce12d11",
+  "profile": "composed-visible-text-v2",
+  "source": {
+    "tests/test_jev_observation_profile_browser.py": {
+      "sha256": "cf2ccaf30748880c3e278b161ed6a235a54f8f736124c0859ca3907addc43bf9",
+      "size_bytes": 15088
+    },
+    "tests/fixtures/jev_composed_text_controls.html": {
+      "sha256": "12cd80375fcaecbdcd00311ce925ffbdb8615f028380bbe25a91343f2a55f1e1",
+      "size_bytes": 2172
+    }
+  },
+  "execution": {
+    "opt_in_Chromium_tests_passed": 6,
+    "real_model_calls": 0,
+    "fake_HTTP_DONE_responses": 2,
+    "input_actions": 0,
+    "external_requests": 0,
+    "log_sha256": "0ae39519ca6c2db3a60aca479e3bcb2c4ea0a2e5911b72cfba41c9ff360d4b23",
+    "receipt_sha256": "eae889113d0bdf77be307524becef5608d0b2ed03934d91a2af6f33e5bba68d1",
+    "sources_unchanged": true
+  },
+  "checks": [
+    "Actual production helper materializes a separate runtime tree after strict canonical Git verification. Native browser loads READ_STATE and MARKER from the same derived snapshot; the other six files remain canonical.",
+    "Visible direct slots, assigned slot order, nested open roots and Range geometry pass. Closed, hidden, unassigned and offscreen controls are excluded.",
+    "The existing output bound of 6000 JavaScript UTF-16 code units is preserved.",
+    "Actual DOM structure is verified before node, traversal-depth and ancestry-depth exhaustion tests. READ_STATE and native freshness each retain their structured limit exception.",
+    "Ordinary native Agent.predict/act rejects a stale DONE decision after a shadow-text mutation, consumes it, then accepts a fresh DONE decision.",
+    "The rejected state is deep-copied; its single-decision list stays unchanged after the fresh prediction adds a second decision."
+  ],
+  "default_execution": "Six tests skip unless explicitly enabled with an existing pinned checkout and installed Chromium. No browser or model is downloaded.",
+  "independent_prior_prototype_audit": {
+    "checks": 1164,
+    "authenticated_inputs": 174,
+    "report_sha256": "7a620ddfe18c3a3197bd7aa9f23cbbcec6a74d1f42867bdd35a1e6e3afc05ff6",
+    "scope": "Separate saved-only audit of the earlier prototype run. Its rejected snapshot decisions list was a shallow alias and is not phase-exact; raw chronology and fake calls corroborate the native state transitions. This record does not rewrite that prior evidence."
+  },
+  "limits": [
+    "Fake responses test native freshness and source integration; they establish no model score, model ranking, training qualification or public-task success.",
+    "CLICK/SELECT retain their existing native guard branch. The cap tests do not imply a new unconditional cap read before every input.",
+    "Existing saved corpora and model comparisons are unchanged. The next collection requires a separately identified profile, fresh source freeze and all required task pairs."
+  ]
+}

@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "scope": "Six-model official-source authentication and CPU integration contracts only; no Decision 3.0 tensor download, model load, prediction, GPU run, browser outcome, throughput or superiority claim.",
+  "collection": "https://huggingface.co/collections/vllm-sr/decision-30",
+  "models": [
+    {
+      "name": "d3",
+      "model_id": "vllm-sr/d3",
+      "revision": "225be8b1e2270becab69c5fe05b26f99cbbdd66b",
+      "official_revision_url": "https://huggingface.co/vllm-sr/d3/tree/225be8b1e2270becab69c5fe05b26f99cbbdd66b",
+      "publisher_manifest": {
+        "path": "artifacts/jev-d3-native/20261015-native-source-01/d3/MODEL_MANIFEST.json",
+        "sha256": "4959df7ee964c2fad24a8e853df8e3cda9bae61636fa5650cc1a0fed78539677",
+        "size_bytes": 14022
+      },
+      "published_loaded_parameters": 26086635760,
+      "published_backbone_file_bytes": 52170802640,
+      "published_readout_file_bytes": 5222480,
+      "published_native_policy": {
+        "format": "d3-code-readout-v1",
+        "temperature": 1.0,
+        "attention_mode": "noncausal_full_attention",
+        "pooling": "last",
+        "backbone_precision": "bfloat16",
+        "head_precision": "float32",
+        "max_choice_options": 255,
+        "score_levels": [
+          2,
+          10
+        ],
+        "native_max_length": null,
+        "permutation_average": false,
+        "native_question_batch_size_default": 8
+      },
+      "context_metadata": {
+        "native_hard_cap": null,
+        "architecture_max_position_embeddings": 262144,
+        "tokenizer_model_max_length": 262144,
+        "prospective_project_enforced_cap": 16384,
+        "measured_support": false
+      },
+      "actual_model_calls": 0,
+      "browser_score": null
+    },
+    {
+      "name": "d3-flash",
+      "model_id": "vllm-sr/d3-flash",
+      "revision": "8b35c853b90e777595ec36bacae820fe08ea077a",
+      "official_revision_url": "https://huggingface.co/vllm-sr/d3-flash/tree/8b35c853b90e777595ec36bacae820fe08ea077a",
+      "publisher_manifest": {
+        "path": "artifacts/jev-d3-native/20261015-native-source-01/d3-flash/MODEL_MANIFEST.json",
+        "sha256": "abdafb9f4a3e39595a54b7ca977e6bd7a3279c57745231319e3a171a43976e65",
+        "size_bytes": 12193
+      },
+      "published_loaded_parameters": 8393739504,
+      "published_backbone_file_bytes": 16785478976,
+      "published_readout_file_bytes": 4178000,
+      "published_native_policy": {
+        "format": "d3-code-readout-v1",
+        "temperature": 1.0,
+        "attention_mode": "noncausal_full_attention",
+        "pooling": "last",
+        "backbone_precision": "bfloat16",
+        "head_precision": "float32",
+        "max_choice_options": 255,
+        "score_levels": [
+          2,
+          10
+        ],
+        "native_max_length": null,
+        "permutation_average": false,
+        "native_question_batch_size_default": 8
+      },
+      "context_metadata": {
+        "native_hard_cap": null,
+        "architecture_max_position_embeddings": 262144,
+        "tokenizer_model_max_length": 262144,
+        "prospective_project_enforced_cap": 16384,
+        "measured_support": false
+      },
+      "actual_model_calls": 0,
+      "browser_score": null
+    },
+    {
+      "name": "d3-mini",
+      "model_id": "vllm-sr/d3-mini",
+      "revision": "97dd054df4b3e0b3beb6af23ab8c82b7c0052e0e",
+      "official_revision_url": "https://huggingface.co/vllm-sr/d3-mini/tree/97dd054df4b3e0b3beb6af23ab8c82b7c0052e0e",
+      "publisher_manifest": {
+        "path": "artifacts/jev-d3-native/20261015-native-source-01/d3-mini/MODEL_MANIFEST.json",
+        "sha256": "bc638e17982411f6ad0f524d33d0dc1f0db81ad7995c1bfdf93dba7674df5e48",
+        "size_bytes": 11687
+      },
+      "published_loaded_parameters": 4539918336,
+      "published_backbone_file_bytes": 9078616080,
+      "published_readout_file_bytes": 2611280,
+      "published_native_policy": {
+        "format": "d3-code-readout-v1",
+        "temperature": 1.0,
+        "attention_mode": "noncausal_full_attention",
+        "pooling": "last",
+        "backbone_precision": "bfloat16",
+        "head_precision": "float32",
+        "max_choice_options": 255,
+        "score_levels": [
+          2,
+          10
+        ],
+        "native_max_length": null,
+        "permutation_average": false,
+        "native_question_batch_size_default": 8
+      },
+      "context_metadata": {
+        "native_hard_cap": null,
+        "architecture_max_position_embeddings": 262144,
+        "tokenizer_model_max_length": 262144,
+        "prospective_project_enforced_cap": 16384,
+        "measured_support": false
+      },
+      "actual_model_calls": 0,
+      "browser_score": null
+    },
+    {
+      "name": "d3-nano",
+      "model_id": "vllm-sr/d3-nano",
+      "revision": "aeb70d4dd53ed25b855c3b0a66394b8fe265db7f",
+      "official_revision_url": "https://huggingface.co/vllm-sr/d3-nano/tree/aeb70d4dd53ed25b855c3b0a66394b8fe265db7f",
+      "publisher_manifest": {
+        "path": "artifacts/jev-d3-native/20261015-native-source-01/d3-nano/MODEL_MANIFEST.json",
+        "sha256": "db2139c5b5b7060f8f95150ec70ca2fe7e69e6bf4249e5766df5388bf35977f2",
+        "size_bytes": 11236
+      },
+      "published_loaded_parameters": 2213763904,
+      "published_backbone_file_bytes": 4426555160,
+      "published_readout_file_bytes": 2089040,
+      "published_native_policy": {
+        "format": "d3-code-readout-v1",
+        "temperature": 1.0,
+        "attention_mode": "noncausal_full_attention",
+        "pooling": "last",
+        "backbone_precision": "bfloat16",
+        "head_precision": "float32",
+        "max_choice_options": 255,
+        "score_levels": [
+          2,
+          10
+        ],
+        "native_max_length": null,
+        "permutation_average": false,
+        "native_question_batch_size_default": 8
+      },
+      "context_metadata": {
+        "native_hard_cap": null,
+        "architecture_max_position_embeddings": 262144,
+        "tokenizer_model_max_length": 262144,
+        "prospective_project_enforced_cap": 16384,
+        "measured_support": false
+      },
+      "actual_model_calls": 0,
+      "browser_score": null
+    },
+    {
+      "name": "d3-lite",
+      "model_id": "vllm-sr/d3-lite",
+      "revision": "9c10703193afc7c7d28c88201c0364bfbbf58320",
+      "official_revision_url": "https://huggingface.co/vllm-sr/d3-lite/tree/9c10703193afc7c7d28c88201c0364bfbbf58320",
+      "publisher_manifest": {
+        "path": "artifacts/jev-d3-native/20261015-native-source-01/d3-lite/MODEL_MANIFEST.json",
+        "sha256": "31f0ff94ff26619c0a063ccac803edcfe34c56c92e5c9c50b703b62893f125dd",
+        "size_bytes": 11428
+      },
+      "published_loaded_parameters": 853247040,
+      "published_backbone_file_bytes": 1706027688,
+      "published_readout_file_bytes": 1044560,
+      "published_native_policy": {
+        "format": "d3-code-readout-v1",
+        "temperature": 1.0,
+        "attention_mode": "noncausal_full_attention",
+        "pooling": "last",
+        "backbone_precision": "bfloat16",
+        "head_precision": "float32",
+        "max_choice_options": 255,
+        "score_levels": [
+          2,
+          10
+        ],
+        "native_max_length": null,
+        "permutation_average": false,
+        "native_question_batch_size_default": 8
+      },
+      "context_metadata": {
+        "native_hard_cap": null,
+        "architecture_max_position_embeddings": 262144,
+        "tokenizer_model_max_length": 262144,
+        "prospective_project_enforced_cap": 16384,
+        "measured_support": false
+      },
+      "actual_model_calls": 0,
+      "browser_score": null
+    },
+    {
+      "name": "d3-edge",
+      "model_id": "vllm-sr/d3-edge",
+      "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+      "official_revision_url": "https://huggingface.co/vllm-sr/d3-edge/tree/cab71e6ad3461b8086d51ddb572c656babd63b0b",
+      "publisher_manifest": {
+        "path": "artifacts/jev-d3-native/20261015-native-source-01/d3-edge/MODEL_MANIFEST.json",
+        "sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+        "size_bytes": 11428
+      },
+      "published_loaded_parameters": 594582720,
+      "published_backbone_file_bytes": 1188677968,
+      "published_readout_file_bytes": 1044560,
+      "published_native_policy": {
+        "format": "d3-code-readout-v1",
+        "temperature": 1.0,
+        "attention_mode": "noncausal_full_attention",
+        "pooling": "last",
+        "backbone_precision": "bfloat16",
+        "head_precision": "float32",
+        "max_choice_options": 255,
+        "score_levels": [
+          2,
+          10
+        ],
+        "native_max_length": null,
+        "permutation_average": false,
+        "native_question_batch_size_default": 8
+      },
+      "context_metadata": {
+        "native_hard_cap": null,
+        "architecture_max_position_embeddings": 262144,
+        "tokenizer_model_max_length": 262144,
+        "prospective_project_enforced_cap": 16384,
+        "measured_support": false
+      },
+      "actual_model_calls": 0,
+      "browser_score": null
+    }
+  ],
+  "official_source_population": {
+    "files": 119,
+    "bytes": 1825044,
+    "source_receipt": {
+      "path": "artifacts/jev-d3-native/20261015-native-source-01/source-fetch-receipt.json",
+      "sha256": "8ba683ede018b2216618d57bdcbfe8aca35047b016e9e601d2c9737f1ae749e4",
+      "size_bytes": 52163
+    },
+    "source_plan": {
+      "path": "artifacts/jev-d3-native/20261015-native-source-01/native-integration-plan.json",
+      "sha256": "53f19afbb34ac7647af571464338b85db173c6b0ad4f8ede7d0e11e5d8fee771",
+      "size_bytes": 71536
+    },
+    "independent_root_auditor": {
+      "path": "artifacts/jev-d3-native/20261015-native-source-01/audit_pinned_sources.py",
+      "sha256": "67c16176e7f1e16922dadd7b4ed70e0a73569ba7d79fa1f6e53ba06c73b98163",
+      "size_bytes": 4918
+    },
+    "independent_root_audit": {
+      "path": "artifacts/jev-d3-native/20261015-native-source-01/independent-root-source-audit.json",
+      "sha256": "4a9b987f050e046a7c72b1a33725a1731dce8f301166f1269f8ee08107133507",
+      "size_bytes": 20355,
+      "checks": 1274,
+      "stable_input_files": 128,
+      "api_Git_blobs_and_publisher_manifests_verified": true,
+      "publisher_code_executed": false
+    }
+  },
+  "implementation_profile": {
+    "name": "jev_decision3_native_v1",
+    "all_heads_in_original_order": true,
+    "singleton": "actual publisher forward",
+    "raw_ordered_JSON": "publisher serializer; no canonical-string rewrite",
+    "candidate_limit": 255,
+    "unsupported_256_to_400": "reject intact before backend; no hierarchy or pruning",
+    "context_policy": "reject above project16384; publisher hard cap null and architectural262144 remain separate metadata",
+    "timer": "one cooperative20s across parsing/native preparation/native call/evidence callbacks, external caller HTTP25; blocking calls cannot be hard-cancelled",
+    "calibration": "publisher BF16 backbone / FP32 readout / T1 / noncausal full attention / last pooling; actual loaded runtime unverified",
+    "model_loading": "explicit complete cached immutable snapshot; source manifest authenticated before import and publisher full verification; no automatic payload download",
+    "catalog_default": "all six disabled; explicit local native CLI opt-in",
+    "CLI": "--competitor <one of six> --decision3-native --quantization none --server-evidence; same pinned unadapted BF16 Gemma field helper",
+    "memory": "before any CLI model import/read: helper + D3 + max(helper full transient,D3 full transient) + max(24GiB,ceil20%hostRAM); loaded-helper credit once before native constructor; no swap credit, not measured peak"
+  },
+  "verification": {
+    "held_implementation": {
+      "path": "artifacts/jev-d3-native/20261015-native-source-01/implementation-held-03.json",
+      "sha256": "11db574d8fe548dd1945d7dddcfc18b18cb81eab31efc20468ac0fae8f575c3b",
+      "size_bytes": 5676
+    },
+    "independent_review": "clear after primary-error receipt persistence and late-completed-journal deadline fixes",
+    "latest_new_D3_CPU_tests": 81,
+    "root_combined_genuine_CPU_runtime_tests": 199,
+    "root_combined_test_scope": "81 D3 fake-runtime contracts +83 DOM/tasks +35 pre-final-boundary collector tests; real cached Rust compiler included; no model weights or browser",
+    "repository_regressions": {
+      "passed": 2622,
+      "skipped": 306,
+      "warning_count": 1,
+      "seconds": 54.69,
+      "log": {
+        "path": "artifacts/jev-runtime/public_native_v2_decision3_repository_tests_01.log",
+        "sha256": "3f425b077ed34cd532213bd6e6df53df6c25b43221ae970b264896a2b7ca605a",
+        "size_bytes": 16609
+      },
+      "scope": "D3 held03 sources stable; collector tests collected prior to its final passive-deadline repair. Separate latest collector checks are recorded with that change."
+    }
+  },
+  "limitations": [
+    "All six actual model/browser results remain pending; marketing leaderboard claims are not validated here.",
+    "No actual tokenizer payload, tensor header, runtime precision/peak memory or native model numerical replay was verified by the source-only audit.",
+    "The conservative main D3 plus BF16 helper declaration is154390771744bytes, above this host MemTotal; no main-model launch or precision/offload substitution.",
+    "Current CUDA provider stays separate from any future explicitly declared standalone publisher CPU setup smoke.",
+    "All previously recorded primary/base/Decider/Omni public scores remain unchanged."
+  ]
+}

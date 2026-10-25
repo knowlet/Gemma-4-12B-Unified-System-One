@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "scope": "Exactly16 static next-action predictions on four saved requests; no browser completion, promotion, fresh transfer or competitor score",
+  "model": "knowlet/Gemma-4-12B-Unified-System-One",
+  "revision": "a66f836b56605039fe040f330180e336d19b3362",
+  "runtime_source_commit": "2336d688cf4436274d68b0a3af459b3fd653f29e",
+  "frozen26_manifest_sha256": "f02cfa90004e7176717dd7be3c93bc4981146e9b2ac44462cd96a2601b3f284c",
+  "plan_sha256": "82ea744baefd2da322c453317ca6ca3d267bf2861f31b791bf77de936a2078a2",
+  "driver_sha256": "a1ab711594c903c3a4c0139bb5a5d4d36044183747a673168f4f5d1fbc9d0469",
+  "bindings_sha256": "2969125f254f2ac5e1946e6177439e941aef212e2d8e958fb5d4a6956dfbd662",
+  "model_calls": 16,
+  "retries": 0,
+  "errors": 0,
+  "browser_actions": 0,
+  "base_helper_calls": 0,
+  "candidate_pruning": false,
+  "truncation": false,
+  "fresh_transfer_seed": null,
+  "promotion_eligible": false,
+  "inputs": [
+    {
+      "id": "original_complete_design",
+      "request_sha256": "f16ee22c75f2c6e78ebe9fae6c070136c6c66fc6e7b023a6f031b96a205ef5a4",
+      "prompt_sha256": "87edecd7a0b60e14f9cd47992c8fa56a0f646643de1163c864725c3eb8f3e23e",
+      "prompt_tokens": 1269,
+      "legal_actions": 7,
+      "goal": "Use the destination search and filters to find Design stays in Lisbon with Free cancellation, then open Casa Flora.",
+      "actual_url": "http://127.0.0.1:38781/tasks/development-000-upstream-travel?scenario=travel#casa-flora",
+      "expected": {
+        "operation": "DONE",
+        "target": null
+      }
+    },
+    {
+      "id": "nature_post_select",
+      "request_sha256": "fe7c8cca0a9141dae72ef47e3f0cd0a3e5344f2fdf17c8595aeac4048c7e52b8",
+      "prompt_sha256": "8b41f7b1533291177cc384a629074b586da2391be592abaf4f2a1e6b63f14854",
+      "prompt_tokens": 2259,
+      "legal_actions": 15,
+      "goal": "Use the destination search and filters to find Nature stays in Lisbon without enabling Free cancellation, then open Serra Lodge.",
+      "actual_url": "http://127.0.0.1:36265/tasks/travel-goal-000-1?scenario=travel",
+      "expected": {
+        "operation": "TYPE_TEXT",
+        "target": "4"
+      }
+    },
+    {
+      "id": "nature_premature_detail",
+      "request_sha256": "f418c75ffa10746d87de05e79e08dd2e8f985bdc1f0b8db9c4f9832ec1183aea",
+      "prompt_sha256": "2e359676efd2719fbd77a3ef2a4b6770c7b57b1a44bba30a37a88db11028c8e6",
+      "prompt_tokens": 1214,
+      "legal_actions": 7,
+      "goal": "Use the destination search and filters to find Nature stays in Lisbon without enabling Free cancellation, then open Serra Lodge.",
+      "actual_url": "http://127.0.0.1:36265/tasks/travel-goal-000-1?scenario=travel#serra-lodge",
+      "expected": {
+        "operation": "CLICK",
+        "target": "4"
+      }
+    },
+    {
+      "id": "category_only_nature_complete",
+      "request_sha256": "30294a67542094d1330c9d4749e85456e123b346e9b192faa0e05b36b4bbb483",
+      "prompt_sha256": "0044a10a90d123e4272d4def9e1dcd18e724e3a0efc8d1313f1fbac4e301b7cb",
+      "prompt_tokens": 1219,
+      "legal_actions": 7,
+      "goal": "Before viewing the requested property, set Stay category to Nature. Then view Serra Lodge and finish when its details are visible.",
+      "actual_url": "http://127.0.0.1:34443/tasks/training-travel-000-12?scenario=travel#serra-lodge",
+      "expected": {
+        "operation": "DONE",
+        "target": null
+      }
+    }
+  ],
+  "action_table": {
+    "parent_nf4": [
+      {
+        "operation": "DONE",
+        "target": null
+      },
+      {
+        "operation": "CLICK",
+        "target": "8"
+      },
+      {
+        "operation": "DONE",
+        "target": null
+      },
+      {
+        "operation": "DONE",
+        "target": null
+      }
+    ],
+    "child_nf4": [
+      {
+        "operation": "CLICK",
+        "target": "4"
+      },
+      {
+        "operation": "TYPE_TEXT",
+        "target": "4"
+      },
+      {
+        "operation": "CLICK",
+        "target": "4"
+      },
+      {
+        "operation": "DONE",
+        "target": null
+      }
+    ],
+    "parent_bf16": [
+      {
+        "operation": "DONE",
+        "target": null
+      },
+      {
+        "operation": "TYPE_TEXT",
+        "target": "4"
+      },
+      {
+        "operation": "DONE",
+        "target": null
+      },
+      {
+        "operation": "DONE",
+        "target": null
+      }
+    ],
+    "child_bf16": [
+      {
+        "operation": "DONE",
+        "target": null
+      },
+      {
+        "operation": "TYPE_TEXT",
+        "target": "4"
+      },
+      {
+        "operation": "CLICK",
+        "target": "4"
+      },
+      {
+        "operation": "DONE",
+        "target": null
+      }
+    ]
+  },
+  "rows": {
+    "parent_nf4": {
+      "receipt_sha256": "1d3d1ba6bae468037783cd7840364de781552996612cb312140634a061652b78",
+      "bindings_sha256": "2969125f254f2ac5e1946e6177439e941aef212e2d8e958fb5d4a6956dfbd662",
+      "captured_files": 909,
+      "exact_fit_copy_counts": {
+        "parent": 275,
+        "child": 496
+      },
+      "static_label_agreement": 2,
+      "actual_calls": 4,
+      "quantization": "nf4"
+    },
+    "child_nf4": {
+      "receipt_sha256": "9488e936dffcf680ba7ba612405d70725ae2f5b254f6c8d16d5d614acf3dd594",
+      "bindings_sha256": "2969125f254f2ac5e1946e6177439e941aef212e2d8e958fb5d4a6956dfbd662",
+      "captured_files": 909,
+      "exact_fit_copy_counts": {
+        "parent": 275,
+        "child": 496
+      },
+      "static_label_agreement": 3,
+      "actual_calls": 4,
+      "quantization": "nf4"
+    },
+    "parent_bf16": {
+      "receipt_sha256": "4097bab035c0e730d5267f3ab718f573c8bdc6ecc5b0fa2815769e407886bb5f",
+      "bindings_sha256": "2969125f254f2ac5e1946e6177439e941aef212e2d8e958fb5d4a6956dfbd662",
+      "captured_files": 909,
+      "exact_fit_copy_counts": {
+        "parent": 275,
+        "child": 496
+      },
+      "static_label_agreement": 3,
+      "actual_calls": 4,
+      "quantization": "none"
+    },
+    "child_bf16": {
+      "receipt_sha256": "924db7c45b7454446502159f74163de6180721b255a868b27ba650f80b2f2037",
+      "bindings_sha256": "2969125f254f2ac5e1946e6177439e941aef212e2d8e958fb5d4a6956dfbd662",
+      "captured_files": 909,
+      "exact_fit_copy_counts": {
+        "parent": 275,
+        "child": 496
+      },
+      "static_label_agreement": 4,
+      "actual_calls": 4,
+      "quantization": "none"
+    }
+  },
+  "parameter_checks": {
+    "all_rows_passed": true,
+    "stored_qv_tensors": 176,
+    "adapter_storage_dtype": "float32",
+    "all_tensor_values_exact": true,
+    "all_parameters_frozen_eval": true,
+    "exclusive_default_unmerged_peft": true,
+    "original_head_sha256": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+    "original_head_identity_version_preserved": true,
+    "base_parameter_versions_unchanged": true,
+    "temperature": 2.7830344470383452,
+    "base_checkpoint_sha256_before_after": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53"
+  },
+  "precision_contract": {
+    "nf4": "Production verified local attachment;328quantized linears,double quantization,BF16 compute and full head",
+    "bf16": "Isolated diagnostic using the existing exact training initializer, then frozen/eval; truthful quantization=none, zero quantized linears. Production attachment remains NF4-only.",
+    "transport_alias": "generated-actions-nf4",
+    "alias_scope": "The unchanged transport alias preserves exact requests across rows; actual precision is recorded separately and BF16 is not represented as NF4."
+  },
+  "interpretation": [
+    "At the identical completed original-goal request, parent returns DONE under both precisions; child returns Back4 in NF4 and DONE in BF16. The observed child stopping regression depends on deployment composition in this fixed-input comparison.",
+    "At the identical Nature post-SELECT request, parent returns premature View8 in NF4 and correct TYPE_TEXT4 in BF16. Child selects TYPE_TEXT4 in both.",
+    "At the prematurely opened Nature detail, parent falsely returns DONE in both precisions while child correctly chooses Back4 in both. Precision alone does not explain all semantic failures.",
+    "The known category-only Nature training control returns DONE in all four rows. This is a familiar training control, not generalization evidence.",
+    "Child BF16 agrees with all four external next-action labels; this is not four browser task successes and does not establish 13-case completion or a competitor win."
+  ],
+  "limits": [
+    "Four deliberately selected saved development/failure/training inputs are not a holdout or a browser suite.",
+    "Only within-identical-request adapter/precision comparisons are controlled. Across-case differences include goals, authentic historical profile URLs, page state and history.",
+    "The category-only control is a known parent training row and retains its actual profile URL. The original425 parent URL confound remains disclosed.",
+    "BF16 and NF4 use distinct verified loading compositions and numerical modules; do not infer a universal quantization-only cause from four greedy requests.",
+    "Shared GPU workload and setup/hash/invariant costs prevent a controlled latency or throughput superiority claim."
+  ],
+  "independent_audit": {
+    "local_path": "artifacts/jev-browser/20261015-counterfactual-precision-independent-audit.json",
+    "sha256": "6214d25428e11aaa24190f51b6d4e68d452c7fd993f70bb51ecd3431a0cfb6d0",
+    "checks_passed": 1067
+  },
+  "local_evidence": {
+    "results": "artifacts/jev-browser/20261015-counterfactual-precision-replay-01",
+    "plan": "artifacts/jev-runtime/20261015-counterfactual-precision-replay-01/plan.json",
+    "runner": "artifacts/jev-runtime/counterfactual_precision_runner.py",
+    "native_cpu_preflight": "artifacts/jev-browser/20261015-counterfactual-precision-native-input-preflight.json",
+    "note": "Raw requests, token IDs, fsynced events, receipts, captured fits and model weights remain ignored local artifacts. This tracked file is a compact evidence index."
+  },
+  "next_step": "Separate predeclared BF16 browser diagnostic with unchanged native agent: original travel early gate, then matched unadapted-BF16 and child-BF16 known13 arms only after a strict original-task pass. No new training or transfer seed yet.",
+  "independent_lineage_addendum": {
+    "local_path": "artifacts/jev-browser/20261015-counterfactual-precision-lineage-addendum.json",
+    "sha256": "514144ec520359dee5dd81b11b42b6eca37941bfc90c7d37ca1803062c27e1f8",
+    "checks_passed": 52,
+    "input_files_unchanged": 4638
+  }
+}

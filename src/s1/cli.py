@@ -136,6 +136,47 @@ def main(argv=None):
         else:
             sub.add_argument("--host", default="127.0.0.1")
             sub.add_argument("--port", type=int, default=8000)
+            sub.add_argument(
+                "--jev-compatible",
+                action="store_true",
+                help="Accept the upstream Jev structured request on /v1/systemone",
+            )
+            sub.add_argument(
+                "--jev-model-identity",
+                help="Explicit wire model alias for Jev requests; defaults to the backend name",
+            )
+            sub.add_argument(
+                "--jev-hierarchical",
+                action="store_true",
+                help="Score every target with explicit hierarchical probabilities; requires Jev compatibility",
+            )
+            sub.add_argument(
+                "--jev-batch-stages",
+                action="store_true",
+                help="Batch hierarchical stage scoring when the backend supports it",
+            )
+            sub.add_argument(
+                "--jev-prompt-mode",
+                choices=["user", "grounded", "goal-first", "reasoned"],
+                help="Explicit Gemma browser prompt policy; requires Jev compatibility",
+            )
+            sub.add_argument(
+                "--jev-decision-readout",
+                type=Path,
+                help="Pinned decision readout artifact directory; requires a user browser mode",
+            )
+            sub.add_argument(
+                "--jev-prefix-cache",
+                action="store_true",
+                help="Reuse exact Gemma browser prefixes; requires a user browser mode",
+            )
+            sub.add_argument(
+                "--jev-prefix-suffix-batch-size",
+                type=int,
+                choices=[1, 2],
+                default=1,
+                help="Bound cached suffix forwards; size 2 requires --jev-prefix-cache",
+            )
     compare = commands.add_parser("compare")
     compare.add_argument("reports", nargs="+", type=Path)
     evaluation = commands.add_parser("eval", help="v2 evaluation planning and execution")
@@ -252,6 +293,32 @@ def main(argv=None):
     train.add_argument("--brier-weight", type=float, default=0.1)
     train.add_argument("--lr", type=float, default=2e-5)
     args = parser.parse_args(argv)
+    if args.command == "serve" and args.jev_hierarchical and not args.jev_compatible:
+        parser.error("--jev-hierarchical requires --jev-compatible")
+    if args.command == "serve" and args.jev_batch_stages and not args.jev_hierarchical:
+        parser.error("--jev-batch-stages requires --jev-hierarchical")
+    if args.command == "serve":
+        if args.jev_prefix_suffix_batch_size != 1 and not args.jev_prefix_cache:
+            parser.error("--jev-prefix-suffix-batch-size=2 requires --jev-prefix-cache")
+        browser_policy_requested = (
+            args.jev_prompt_mode is not None
+            or args.jev_decision_readout is not None
+            or args.jev_prefix_cache
+        )
+        if browser_policy_requested and not args.jev_compatible:
+            parser.error("browser prompt/readout/cache options require --jev-compatible")
+        if browser_policy_requested and args.backend != "gemma":
+            parser.error("browser prompt/readout/cache options require --backend gemma")
+        if (
+            args.jev_decision_readout is not None or args.jev_prefix_cache
+        ) and args.jev_prompt_mode not in (
+            "user",
+            "grounded",
+            "goal-first",
+        ):
+            parser.error(
+                "decision readout and prefix cache require --jev-prompt-mode user, grounded or goal-first"
+            )
     try:
         if args.command == "eval":
             if args.eval_command == "gate":
@@ -492,8 +559,37 @@ def main(argv=None):
 
                 from .api import create_app
 
+                serving_backend = backend
+                if args.jev_prompt_mode is not None:
+                    from .browser_policy import BrowserDecisionBackend
+
+                    browser_options = {
+                        "prompt_mode": args.jev_prompt_mode,
+                        "prefix_cache": args.jev_prefix_cache,
+                    }
+                    if args.jev_prefix_suffix_batch_size != 1:
+                        browser_options["prefix_suffix_batch_size"] = (
+                            args.jev_prefix_suffix_batch_size
+                        )
+                    serving_backend = BrowserDecisionBackend(backend.model, **browser_options)
+                    if args.jev_decision_readout is not None:
+                        from .browser_readout import load_readout
+
+                        decision_readout = load_readout(
+                            args.jev_decision_readout, backend.model, serving_backend.prompt_variant
+                        )
+                        serving_backend = BrowserDecisionBackend(
+                            backend.model, decision_readout=decision_readout, **browser_options
+                        )
                 uvicorn.run(
-                    create_app(backend, api_key=os.environ.get("S1_API_KEY")),
+                    create_app(
+                        serving_backend,
+                        api_key=os.environ.get("S1_API_KEY"),
+                        jev_compatible=args.jev_compatible,
+                        jev_hierarchical=args.jev_hierarchical,
+                        jev_hierarchical_batch=args.jev_batch_stages,
+                        model_identity=args.jev_model_identity,
+                    ),
                     host=args.host,
                     port=args.port,
                 )

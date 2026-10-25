@@ -93,6 +93,12 @@ def case_eligibility(model: ModelSpec, case) -> dict:
         unsupported.extend(
             reason for reason in request_blockers(case.request) if reason not in unsupported
         )
+    if model.adapter == "decision3":
+        from .decision3 import request_blockers
+
+        unsupported.extend(
+            reason for reason in request_blockers(case.request) if reason not in unsupported
+        )
     if model.adapter in ("tfidf", "prior", "setfit") and model.artifact_file:
         from .baselines import schema_key
 
@@ -138,6 +144,7 @@ def _configuration_blockers(
         "agentjev",
         "clef",
         "jev_omni",
+        "decision3",
         "embedding",
         "nli",
         "cross_encoder",

@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "scope": "Two predeclared development public-site attempts using the original425 fit01 adapter; strict1/2, no competitor comparison or four-case score",
+  "source_commit": "e60690e511df8c0d98dd0ad121ca66d01854cf43",
+  "model": "knowlet/Gemma-4-12B-Unified-System-One",
+  "revision": "a66f836b56605039fe040f330180e336d19b3362",
+  "quantization": "nf4",
+  "precision": "bfloat16",
+  "policy": "greedy_legal_action_v2",
+  "grammar": "legal_action_token_trie_v1",
+  "max_context": 8192,
+  "max_new_tokens": 32,
+  "cooperative_policy_budget_seconds": 20,
+  "http_budget_seconds": 25,
+  "max_decisions": 16,
+  "repeats": 1,
+  "seed": 20261014,
+  "fresh_transfer_seed": null,
+  "evidence_verification_passed": true,
+  "strict_successes": 1,
+  "actual_attempts": 2,
+  "all_attempted_tasks_passed": false,
+  "promotion_performed": false,
+  "prospective_plan_sha256": "6001623727bf4349d121ab69091ec4cb9268e0b9ed3fdc5e47760e7a09c6dc93",
+  "terminal_receipt_sha256": "b322145da7cb5c58c285dcd371b06b1019cd690d5ce13f7458c9463050f87a35",
+  "frozen27_manifest_sha256": "9efcdb60058a357b6be00f393fa3f942203523e7aed6cf37921884edc256e288",
+  "source_identity_sha256": "38741edf4ec18aec9d215c51cbf68f4d7aede4abb0af36ba5e75d028f69f0f09",
+  "original_fit01_adapter": {
+    "manifest_sha256": "97053843aea7c2820793f6f46b10df73b81b7d77151094df63c5ed13aec634e1",
+    "training_receipt_sha256": "15cf18f70e775e8d6dc7cff7c6738ede4fdb4d9875198b387260e8fa73ae63c5",
+    "weights_sha256": "a3eb2c03e40459818a5ce059fc30c0de0fd6ef0b89580f53cc380de0fd73ea8d"
+  },
+  "rejected_counterfactual_child_used": false,
+  "outcomes": [
+    {
+      "case_id": "public-python-counter-most-common-v1",
+      "strict_success": true,
+      "goal_satisfied": true,
+      "status": "done",
+      "premature_done": false,
+      "policy_calls": 6,
+      "base_helper_calls": 1,
+      "executed_actions": 3,
+      "final_url": "https://docs.python.org/3.14/library/collections.html#collections.Counter.most_common",
+      "mismatch_keys": [],
+      "elapsed_ms": 71752,
+      "blocked_requests": 0,
+      "observed_top_level_navigation_requests": 3
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1",
+      "strict_success": false,
+      "goal_satisfied": false,
+      "status": "done",
+      "premature_done": true,
+      "policy_calls": 9,
+      "base_helper_calls": 1,
+      "executed_actions": 8,
+      "final_url": "https://science.nasa.gov/mars/moons/",
+      "mismatch_keys": [
+        "path",
+        "facts_heading",
+        "moons_section"
+      ],
+      "elapsed_ms": 50636,
+      "blocked_requests": 47,
+      "observed_top_level_navigation_requests": 1
+    }
+  ],
+  "policy_calls": 15,
+  "base_helper_calls": 2,
+  "executed_actions": 11,
+  "guard_rejected_decisions": 2,
+  "native_questions_candidates_history_verified": 15,
+  "full_raw_snapshot_payload_reconstructions": 13,
+  "raw_snapshot_capture_limits": [
+    {
+      "case_id": "public-python-counter-most-common-v1",
+      "policy_call": 5,
+      "operation": "DONE",
+      "fingerprint": "bafb633fa8df4ac96c9bf634f394cd317b06f86c6386fb7aa89dc954070613e9",
+      "reason": "Agent.predict refreshed the page before choose; that exact full raw snapshot was not separately saved"
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1",
+      "policy_call": 7,
+      "operation": "SCROLL_DOWN",
+      "fingerprint": "ff0351c7509c9b3013c48c5e305337c34f6d4f7090b0fc44cca8b4d2fa08b68d",
+      "reason": "Agent.predict refreshed the page before choose; that exact full raw snapshot was not separately saved"
+    }
+  ],
+  "NASA_search_interface_observation": {
+    "post_fill_value": "Mars Facts",
+    "offered_elements": 12,
+    "separate_submit_button_offered": false,
+    "ENTER_operation_offered": false,
+    "chosen_click": "Open Search Search",
+    "chosen_click_role": "searchbox",
+    "search_submission_observed": false,
+    "scope": "Do not attribute failure to skipping an offered Search button. No conclusion that the whole goal was infeasible; menu navigation remained available."
+  },
+  "request_guard_audit": {
+    "blocked_HTTP_POSTs": 47,
+    "observed_top_level_network_requests": 4,
+    "scope_violations": 0,
+    "observer_errors": 0,
+    "ledger_sha256": "972e011651b387a37af4db1784b881e547d688304dfeba50933c4eeba1913947",
+    "redirect_contacts_prevented": false,
+    "scope": "Direct HTTP navigation is guarded; redirects are audited after contact; subresource hosts retained. This is not a general network security boundary.",
+    "coverage_limit": "The frozen NASA ledger recorded only the initial top-level network navigation despite fresh native snapshots showing later full-document transitions. Complete intermediate network coverage is unproven. Installed GET/HEAD and host guards and the absence of recorded violations do not establish that every hop was observed."
+  },
+  "deferred_arxiv_proposals": {
+    "public-arxiv-title-filter-results-v1": "Latest direct search requestHTTP429; accessfailurepreserved; no retry/bypass",
+    "public-arxiv-original-paper-open-v1": "Latest initialsearchHTTP429 even though finalpaperHTTP200; notreadyfornativeagentstart"
+  },
+  "independent_audits": {
+    "main": {
+      "local_path": "artifacts/jev-browser/20261015-public-policy-independent-audit.json",
+      "sha256": "233c103979d8978652f571f66c639812202b79e929c44a24600e8e124d41c495"
+    },
+    "tokenizer": {
+      "local_path": "artifacts/jev-browser/20261015-public-policy-independent-tokenizer-audit.json",
+      "sha256": "0d0b44ced8f756b5f9e3184b220d68239977bba4dcdebaf3d5632e55e444d5ad"
+    },
+    "dom": {
+      "local_path": "artifacts/jev-browser/20261015-public-policy-dom-independent-audit-r2.json",
+      "sha256": "8a3588c4b66dc949ec07ce6131b6735b3b8ddaca8ef2e890d5fb6a00d7613142"
+    }
+  },
+  "limits": [
+    "Two public tasks on two website families do not establish broad reliability; the full four-case proposal includes two deferred arXiv tasks on one additional family.",
+    "The saved exact native model payloads are complete, but two internally refreshed raw page snapshots were not separately captured; do not claim all15 raw geometry/fingerprint reconstructions.",
+    "A searchbox click only focused the NASA field. No offered standalone submit or ENTER was skipped; alternative menu reachability is a separate diagnostic.",
+    "Public guard logs audit redirected contacts after contact; ordinary subresource hosts remain allowed.",
+    "One existing setup seed, no fresh transfer seed, no matched competitor/public-control result and no promotion.",
+    "Observed elapsed times include the shared GPU workload; this diagnostic does not establish controlled latency superiority.",
+    "The retained NASA policy and scripted reachability runs reveal missing intermediate navigation events in the frozen Playwright request ledger. Preserve this coverage limitation; the independent final-DOM result remains separately supported."
+  ],
+  "local_raw_evidence": {
+    "run": "artifacts/jev-browser/20261015-public-web-policy-diagnostic-01",
+    "note": "Large raw DOM, journals, snapshots and weights remain ignored local artifacts. This tracked file is a compact evidence index, not the full raw evidence."
+  },
+  "scripted_native_reachability": {
+    "scope": "Scripted route discovery and native guarded actions only; zero model/helper calls, no model task-score claim",
+    "attempts": 2,
+    "first_attempt": "Preserved post-navigation observation failure after two executed clicks",
+    "successful_attempt": 2,
+    "native_clicks": 4,
+    "route": [
+      "Planets",
+      "Mars",
+      "Facts",
+      "Moons"
+    ],
+    "final_url": "https://science.nasa.gov/mars/facts/#h-moons",
+    "fresh_frozen27_judge_success": true,
+    "model_calls": 0,
+    "text_helper_calls": 0,
+    "source_pins_unchanged": 92,
+    "audit_checks_passed": 257,
+    "allowed_difference_in_second_diagnostic": "Bounded read-only observation retries around unchanged upstream observe; no repeated mutation, new executor or model policy change",
+    "prohibited_actions_used": false,
+    "evidence": {
+      "audit.json": {
+        "local_path": "artifacts/jev-browser/20261015-nasa-native-reachability-02/audit.json",
+        "sha256": "dfc2f173c38579c183c1f5224a05fb077e64574258275a95e5fcc17310090288"
+      },
+      "receipt.json": {
+        "local_path": "artifacts/jev-browser/20261015-nasa-native-reachability-02/receipt.json",
+        "sha256": "ce9af8af88f224f67be18b9d3a9b943c6d0894d1b741bb1f0583125a68b308fd"
+      },
+      "final-fresh-judge.json": {
+        "local_path": "artifacts/jev-browser/20261015-nasa-native-reachability-02/final-fresh-judge.json",
+        "sha256": "98cef259c05b7d5fcaca2c4dd79a7d9a33cbfe29fe164555bac6904250d01719"
+      }
+    }
+  }
+}

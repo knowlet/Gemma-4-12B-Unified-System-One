@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-15T08:34:20.074445+00:00",
+  "scope": "Experimental clean96 continuation and one actual Chromium regression; no complete13 comparison, fresh transfer, public-web performance or competitor win",
+  "source_commit": "2336d688cf4436274d68b0a3af459b3fd653f29e",
+  "source_freeze_manifest_sha256": "f02cfa90004e7176717dd7be3c93bc4981146e9b2ac44462cd96a2601b3f284c",
+  "model": "knowlet/Gemma-4-12B-Unified-System-One",
+  "revision": "a66f836b56605039fe040f330180e336d19b3362",
+  "training": {
+    "historical_updates": 425,
+    "new_updates": 96,
+    "development_updates": 0,
+    "learning_rate": 5e-05,
+    "seed": 42,
+    "strict_artifact_verification_passed": true,
+    "strict_verification_sha256": "e38afda6f2d184383f072c01461369a9e2a31eb5122ed95e670ac297c97d2bc3",
+    "adapter": {
+      "kind": "jev_action_lora_v1",
+      "manifest_sha256": "7edcf9cd1af3d3d7cb04c9eca14e2b2c67847bc2caeef25c32eebfce6de8ddc3",
+      "weights_sha256": "165fbd1db402692ec06f4264a16026eb76abbed711d9ff56aef37f44a442f178",
+      "training_receipt_sha256": "6d04b5ba6301f0d9cf4d38bd4f335e1447250d556939779ab6a986d2bd4a504a",
+      "policy": "greedy_legal_action_v2",
+      "base_model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+      "base_revision": "a66f836b56605039fe040f330180e336d19b3362",
+      "training_quantization": "none",
+      "training_dtype": "bfloat16",
+      "deployment_quantization": "nf4",
+      "train_cases": 96,
+      "development_cases": 66,
+      "source_scope": "development_only",
+      "tensor_count": 176,
+      "parameters": 5193728,
+      "stored_dtypes": [
+        "torch.float32"
+      ],
+      "lineage_depth": 1,
+      "historical_training_cases": 425,
+      "historical_completed_updates": 425
+    },
+    "original_head_sha256_before": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+    "original_head_sha256_after": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+    "frozen_base_versions_unchanged": true,
+    "compiled": {
+      "train": {
+        "examples": 96,
+        "sha256": "9c0e82b280f5b7d92beeace6193062570fa0a8f9de6ed2d469caba6d2cd36081",
+        "prompt_tokens": 186532,
+        "target_tokens": 992
+      },
+      "development": {
+        "examples": 66,
+        "sha256": "eae4f01ce28e132ee6a810350a135af46e497e62da9209b28ccc5ddbf642b2c1",
+        "prompt_tokens": 111053,
+        "target_tokens": 688
+      }
+    },
+    "diagnostics_not_task_score": {
+      "teacher_forced_exact_sequences": 61,
+      "examples": 66,
+      "correct_tokens": 683,
+      "target_tokens": 688,
+      "loss_mean": 0.03247621896487245
+    }
+  },
+  "actual_browser_regression": {
+    "upstream": {
+      "repository": "https://github.com/browser-use/jev-ultrafast",
+      "revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+      "source_sha256": {
+        "jev_ultrafast/__init__.py": "60f025b8d24465e2c0f7a3547d43b8020fd8843de7b6cb3f892ef63f5548cf63",
+        "jev_ultrafast/agent.py": "aaf8b271cb0ee6643fe7beb525328ab80de8568c7ac044d02b9c6721161e7c8b",
+        "jev_ultrafast/browser.py": "ee08dafa93d731bd292aa0263a578a29c8001cf22eef3c59fe44a159649155ee",
+        "jev_ultrafast/model.py": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3",
+        "jev_ultrafast/questions.py": "66a7054b85040b949e1757311257ea0c5a843c635f9a40c99f6d15ad660fb422",
+        "jev_ultrafast/snapshot.js": "e50473501c8fb8e70f3b21866d987393e3f2315c639d638bd477d170e81ed78d",
+        "jev_ultrafast/static/fixture.html": "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe"
+      }
+    },
+    "fixture_sha256": "e48e7d7b6225b215060692e0a28c3d0b59e465e4b94c1bc510d5f37ff0b8bfbe",
+    "goal": "Use the destination search and filters to find Design stays in Lisbon with Free cancellation, then open Casa Flora.",
+    "attempts": 1,
+    "successes": 0,
+    "final_goal_satisfied": true,
+    "final_status": "ready",
+    "error": "Runner stopped at the 16-decision budget",
+    "policy_calls": 16,
+    "text_calls": 1,
+    "elapsed_ms": 87916,
+    "fresh_final_observed_conditions": {
+      "hash": "#casa-flora",
+      "name": "Casa Flora",
+      "category": "Design",
+      "free": true,
+      "query": "Lisbon",
+      "searched": true
+    },
+    "actions": [
+      {
+        "step": 1,
+        "action": "Free cancellation",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "7",
+        "text": null
+      },
+      {
+        "step": 2,
+        "action": "Stay category → Design",
+        "kind": "select",
+        "operation": "SELECT",
+        "target": "6:1",
+        "text": null
+      },
+      {
+        "step": 3,
+        "action": "Destination",
+        "kind": "fill",
+        "operation": "TYPE_TEXT",
+        "target": "4",
+        "text": "Lisbon"
+      },
+      {
+        "step": 4,
+        "action": "Find stays",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "5",
+        "text": null
+      },
+      {
+        "step": 5,
+        "action": "View Casa Flora",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "8",
+        "text": null
+      },
+      {
+        "step": 6,
+        "action": "← All stays",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "4",
+        "text": null
+      },
+      {
+        "step": 7,
+        "action": "View Casa Flora",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "8",
+        "text": null
+      },
+      {
+        "step": 8,
+        "action": "← All stays",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "4",
+        "text": null
+      },
+      {
+        "step": 9,
+        "action": "View Casa Flora",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "8",
+        "text": null
+      },
+      {
+        "step": 10,
+        "action": "← All stays",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "4",
+        "text": null
+      },
+      {
+        "step": 11,
+        "action": "View Casa Flora",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "8",
+        "text": null
+      },
+      {
+        "step": 12,
+        "action": "← All stays",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "4",
+        "text": null
+      },
+      {
+        "step": 13,
+        "action": "View Casa Flora",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "8",
+        "text": null
+      },
+      {
+        "step": 14,
+        "action": "← All stays",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "4",
+        "text": null
+      },
+      {
+        "step": 15,
+        "action": "Find stays",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "5",
+        "text": null
+      },
+      {
+        "step": 16,
+        "action": "View Casa Flora",
+        "kind": "click",
+        "operation": "CLICK",
+        "target": "8",
+        "text": null
+      }
+    ],
+    "promotion_eligible": false,
+    "other13_suite_arms_run": false,
+    "source_selection_state_sha256": "3a62481049085b7e9916ef58ded6e7e8b4f7ee1cfcef3e28e58f954c3e90110e"
+  },
+  "interpretation": "Correct search/filter/open actions followed by Back/View cycling; no accepted DONE before16-decision limit. Child is rejected. Best previously audited candidate remains12/13 vs matched base8/13.",
+  "local_raw_evidence": {
+    "fit": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01",
+    "selection": "artifacts/jev-browser/20261015-action-lora-counterfactual-selection-01",
+    "note": "Large raw logs and model weights remain local ignored artifacts; this tracked file is a compact evidence index, not a copy of the raw evidence."
+  },
+  "independent_evidence_audit": {
+    "evidence_verification_passed": true,
+    "promotion_eligible": false,
+    "fit_checks_passed": 58,
+    "full_native_policy_payloads_verified": 16,
+    "all_final_DOM_conditions_verified": 6,
+    "main": {
+      "local_path": "artifacts/jev-browser/20261015-counterfactual-diagnostic-independent-audit.json",
+      "sha256": "e2d3cb5d8dd91435be4d8093875e9d1b23b59a53aa7d70de041ccbeefc68052d"
+    },
+    "fit": {
+      "local_path": "artifacts/jev-browser/20261015-counterfactual-fit-independent-cpu-review.json",
+      "sha256": "8b9e3f1792241acc8bf5cff146fe8c8ae911b6d0b7c0fe9320cf49ba0c456a47"
+    },
+    "tokenizer": {
+      "local_path": "artifacts/jev-browser/20261015-counterfactual-diagnostic-independent-tokenizer-audit.json",
+      "sha256": "2cfc7e831ee1b8ac23cfc4fa0740f6522d1c5a22753df45487b1ece76904ec0c"
+    }
+  }
+}

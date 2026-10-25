@@ -44,7 +44,9 @@ def _collate(prepared, pad_id):
     return result
 
 
-def predict_batch(model, requests, *, independent=True, readout="candidate"):
+def predict_batch(
+    model, requests, *, independent=True, readout="candidate", candidate_projector=None
+):
     """Native prompts with bounded pending tensors and compatible forward groups.
 
     Independent mode still uses one prompt per question. Causal mode retains
@@ -54,6 +56,10 @@ def predict_batch(model, requests, *, independent=True, readout="candidate"):
 
     if readout not in ("candidate", "full"):
         raise ValueError("native batching requires candidate or full readout")
+    if candidate_projector is not None and (
+        readout != "candidate" or not callable(candidate_projector)
+    ):
+        raise ValueError("candidate_projector must be callable and requires candidate readout")
     if not requests:
         raise ValueError("empty batch")
     buckets, answers = defaultdict(list), [{} for _ in requests]
@@ -71,9 +77,25 @@ def predict_batch(model, requests, *, independent=True, readout="candidate"):
             )
             counts = torch.cat([p[2] for p in prepared])
             if readout == "candidate":
-                logits = project_candidates(
-                    hidden, model.head, model.letters, counts, model.softcap
-                )
+                if candidate_projector is None:
+                    logits = project_candidates(
+                        hidden, model.head, model.letters, counts, model.softcap
+                    )
+                else:
+                    logits = candidate_projector(hidden, counts, model.softcap)
+                    if (
+                        not torch.is_tensor(logits)
+                        or tuple(logits.shape) != (len(counts), len(model.letters))
+                        or not logits.is_floating_point()
+                    ):
+                        raise ValueError("candidate_projector must return batch-by-52 float logits")
+                    mask = (
+                        torch.arange(len(model.letters), device=logits.device)[None]
+                        >= counts.to(logits.device)[:, None]
+                    )
+                    if not torch.isfinite(logits.masked_fill(mask, 0)).all().item():
+                        raise ValueError("candidate_projector returned nonfinite legal logits")
+                    logits = logits.masked_fill(mask, float("-inf"))
             else:
                 logits = model.head(hidden.to(model.head.weight.dtype))
                 if model.softcap is not None:
@@ -122,6 +144,11 @@ def predict_batch(model, requests, *, independent=True, readout="candidate"):
                 "scope": "whole_adapter_batch",
                 "readout": readout,
                 "independent_questions": independent,
+                **(
+                    {"candidate_projector": "explicit_callback"}
+                    if candidate_projector is not None
+                    else {}
+                ),
             },
         }
         for request, result in zip(requests, answers, strict=True)

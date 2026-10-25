@@ -173,6 +173,11 @@ The [October 1 summary](docs/validation/2026-10-01/comparison-summary.json) rema
 
 ## Development
 
+The [real-browser Jev campaign](docs/jev-browser.md) adds an opt-in structured
+wire adapter, an experimental user-prompt policy, and independently judged
+Chromium tasks. It targets the archived 0/8 browser failures; passing harness
+checks is not a model task-success or competitive-performance claim.
+
 ```bash
 uv sync --extra api
 uv run --no-sync pytest
