@@ -4,6 +4,7 @@
 
 | 日期 | 入口 | 範圍 |
 | --- | --- | --- |
+| 2026-10-25 | [Checked-control 原生收集驗收](2026-10-25/decision3-checked-control-collection-results.md) | 兩個自建 train-only radio 場景完成真實瀏覽器收集與獨立 admission，共 10 筆完整原生資料；實際選項皆為 K6，每筆保留四個問題 head 與完整順序。八筆勾選後資料仍提供已勾選 radio 的點擊選項。模型呼叫為 0，尚未擷取特徵或訓練，沒有新增模型分數或競品勝出；先前首案例雙方 0/1 與完整十案例 null 維持原範圍。 |
 | 2026-10-25 | [首案例 GPU 配對診斷](2026-10-25/decision3-firstcase-gpu-paired-results.md) | 109 筆 operation delta 候選與相同 NF4 helper 的基線均完成單一案例，任務各為 0/1。四次真實 Decision3 呼叫的 144 個機率位置通過獨立數值核對，最大絕對誤差約 1.50e-7；候選重複點擊已勾選 radio，觸發原本三次頁面未變的中止規則。完整十案例與候選兩套 JevBench 分數仍為 null，未建立競品勝出。 |
 | 2026-10-25 | [原生 GPU 完整 coherence MINI](2026-10-25/decision3-native-coherence-gpu-results.md) | 原始 Edge 一致性 69.64／100，完整 240 案例、50 關係、1,200 檢查。已核對的 921 筆 GPU 前段結果接續 327 次新增呼叫，原請求共 1,248 個；完整快取重播與獨立計分均通過。與 Benchmark Heaven 159／231（68.83%）分開報分；兩段計時分列，候選完整瀏覽器分數仍為 null，未建立競品勝出。 |
 | 2026-10-25 | [原生 GPU 完整 Benchmark Heaven](2026-10-25/decision3-native-heaven-gpu-results.md) | 原始 Edge 在 GX10 GPU 完整作答 231 題，159／231（68.83%），格式有效 231／231；載入後完整 predict 的 p50／p95 約 0.386／0.523 秒。獨立核對全部原請求、回傳、計分、775 個原生機率純量及範圍收尾。未載入 operation delta；coherence 另見上列接續紀錄，候選完整瀏覽器比較仍為 null，尚未建立競品勝出。 |

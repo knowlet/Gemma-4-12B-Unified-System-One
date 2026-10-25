@@ -40,9 +40,99 @@ NORMALIZATION = fixtures.GOAL_NORMALIZATION
 ROOT = Path(__file__).resolve().parents[1]
 MAX_TICKS = 16
 SETTLED_V7_PROFILE = "composed-visible-text-settled-v7"
+DEFAULT_SCENARIO_PROFILE = "affordance-v1"
+CHECKED_CONTROL_PROFILE = "checked-control-progress-v1"
+_SCENARIO_REGISTRY = {
+    DEFAULT_SCENARIO_PROFILE: (
+        "jev_decision3_affordance_scenarios",
+        "decision3-owned-affordance-scenarios-v1",
+        "decision3-owned-affordance-training-v1",
+        (4, 7, 8),
+    ),
+    CHECKED_CONTROL_PROFILE: (
+        "jev_decision3_checked_control_scenarios",
+        "decision3-owned-checked-control-scenarios-v1",
+        "decision3-owned-checked-control-training-v1",
+        (6,),
+    ),
+}
+SCENARIO_PROFILES = tuple(_SCENARIO_REGISTRY)
 _ADMISSION_PROOF = object()
 _HEX = re.compile(r"[0-9a-f]{64}\Z")
 _IDENTITY = re.compile(r"[a-z0-9][a-z0-9._-]{0,95}\Z")
+
+
+def _scenario_definition(scenario_profile):
+    if type(scenario_profile) is not str or scenario_profile not in _SCENARIO_REGISTRY:
+        raise ValueError("Unknown explicit scenario profile")
+    return _SCENARIO_REGISTRY[scenario_profile]
+
+
+def _scenario_module(scenario_profile=DEFAULT_SCENARIO_PROFILE):
+    name, schema, namespace, counts = _scenario_definition(scenario_profile)
+    selected = (
+        fixtures if scenario_profile == DEFAULT_SCENARIO_PROFILE else importlib.import_module(name)
+    )
+    if (
+        Path(selected.__file__).resolve() != ROOT / "scripts" / (name + ".py")
+        or selected.SCHEMA != schema
+        or selected.NAMESPACE != namespace
+        or selected.GOAL_NORMALIZATION != NORMALIZATION
+        or (
+            scenario_profile != DEFAULT_SCENARIO_PROFILE and selected.EXPECTED_MENU_COUNTS != counts
+        )
+    ):
+        raise ValueError("Scenario module origin, namespace, schema or menu profile changed")
+    return selected
+
+
+def _validate_scenario_spec(spec, scenario_profile):
+    _, schema, namespace, counts = _scenario_definition(scenario_profile)
+    if (
+        type(spec) is not dict
+        or spec.get("schema_id") != schema
+        or spec.get("namespace") != namespace
+        or spec.get("split") != "train"
+    ):
+        raise ValueError("Scenario profile, namespace, schema or train split mismatch")
+    intended = spec.get("expected_menu_counts")
+    if (
+        type(intended) is not list
+        or not intended
+        or any(type(value) is not int or value not in counts for value in intended)
+        or len(set(intended)) != len(intended)
+    ):
+        raise ValueError("Scenario menu counts differ from the selected profile")
+
+
+def _plan_scenarios(plan):
+    """Legacy missing bindings mean only the original scenario population."""
+    profile = plan.get("scenario_profile", DEFAULT_SCENARIO_PROFILE)
+    selected = _scenario_module(profile)
+    _, schema, namespace, counts = _scenario_definition(profile)
+    expected = {
+        "scenario_schema_id": schema,
+        "scenario_namespace": namespace,
+        "expected_menu_counts": list(counts),
+    }
+    if "scenario_profile" in plan:
+        if any(
+            type(plan.get(key)) is not type(value) or plan.get(key) != value
+            for key, value in expected.items()
+        ):
+            raise ValueError("Explicit scenario profile binding changed")
+    elif any(key in plan for key in expected):
+        raise ValueError("Scenario binding requires its explicit scenario profile")
+    for episode in plan.get("episodes", []):
+        _validate_scenario_spec(episode["scenario"], profile)
+    return profile, selected
+
+
+def _assert_menu_coverage(observed, scenario_profile=DEFAULT_SCENARIO_PROFILE):
+    counts = _scenario_definition(scenario_profile)[3]
+    if observed != set(counts):
+        bins = "/".join("K" + str(count) for count in counts)
+        raise ValueError("Complete genuine " + bins + " population is required")
 
 
 def _encode(value):
@@ -140,11 +230,12 @@ def exclusion_manifest(path):
     return data, source_sha
 
 
-def _source_inventory():
+def _source_inventory(scenario_profile=DEFAULT_SCENARIO_PROFILE):
     """A NEW inventory, without changing any older frozen collector inventory."""
     paths = [
         Path(__file__).resolve(),
         Path(fixtures.__file__).resolve(),
+        Path(_scenario_module(scenario_profile).__file__).resolve(),
         Path(benchmark.__file__).resolve(),
         ROOT / "scripts" / "jev_observation_profile_v7.py",
         ROOT / "pyproject.toml",
@@ -160,8 +251,8 @@ def _source_inventory():
     return result
 
 
-def _assert_sources(expected):
-    if _source_inventory() != expected:
+def _assert_sources(expected, scenario_profile=DEFAULT_SCENARIO_PROFILE):
+    if _source_inventory(scenario_profile) != expected:
         raise ValueError("Collector source inventory changed")
 
 
@@ -216,8 +307,11 @@ def collection_plan(
     chromium=None,
     observation_profile=benchmark.NATIVE_OBSERVATION_PROFILE,
     observation_helper_sha256=None,
+    scenario_profile=DEFAULT_SCENARIO_PROFILE,
 ):
     """Return an unwritten, deterministic prospective plan; launch nothing."""
+    selected = _scenario_module(scenario_profile)
+    _, scenario_schema, scenario_namespace, expected_counts = _scenario_definition(scenario_profile)
     if type(collection_id) is not str or not _IDENTITY.fullmatch(collection_id):
         raise ValueError("Use a bounded new collection identity")
     if type(seed) is not int or not 0 <= seed < 2**63:
@@ -229,12 +323,13 @@ def collection_plan(
     bundle = _prepare_observation_profile(
         upstream_path, observation_profile, observation_helper_sha256
     )
-    source = _source_inventory()
-    specs = fixtures.scenarios(seed, set(exclusions["goal_sha256"]))
+    source = _source_inventory(scenario_profile)
+    specs = selected.scenarios(seed, set(exclusions["goal_sha256"]))
     if not specs or len({spec["id"] for spec in specs}) != len(specs):
         raise ValueError("Fresh authored scenario identities must be unique")
     planned = []
     for spec in specs:
+        _validate_scenario_spec(spec, scenario_profile)
         if spec["split"] != "train" or spec["id"] in exclusions["scenario_ids"]:
             raise ValueError("A held-out or nontraining scenario cannot enter this collection")
         if spec["ancestor_id"] in exclusions["ancestor_ids"]:
@@ -248,13 +343,17 @@ def collection_plan(
                 "scenario": copy.deepcopy(spec),
                 "scenario_sha256": _digest(spec),
                 "goal_sha256": goal_sha,
-                "fixture_sha256": _sha(fixtures.render_fixture(spec).encode()),
+                "fixture_sha256": _sha(selected.render_fixture(spec).encode()),
                 "intended_menu_counts": list(spec["expected_menu_counts"]),
             }
         )
     return {
         "schema_id": SCHEMA,
         "schema_version": 1,
+        "scenario_profile": scenario_profile,
+        "scenario_schema_id": scenario_schema,
+        "scenario_namespace": scenario_namespace,
+        "expected_menu_counts": list(expected_counts),
         "purpose": "new owned train-only operation supervision; no model evaluation",
         "collection_id": collection_id,
         "seed": seed,
@@ -653,7 +752,10 @@ def _field_context(goal, action, page, history):
     }
 
 
-def _verify_executor(step, journal, upstream, read_state):
+def _verify_executor(
+    step, journal, upstream, read_state, *, scenario_profile=DEFAULT_SCENARIO_PROFILE
+):
+    selected = _scenario_module(scenario_profile)
     descriptor, action = step["teacher"], step["action"]
     operation = descriptor["operation"]
     calls = journal[step["tick_start"] : step["tick_end"]]
@@ -689,7 +791,7 @@ def _verify_executor(step, journal, upstream, read_state):
             or step["field_calls"]
         ):
             raise ValueError("DONE requires original terminal handling without browser input")
-        if decision["choice"] != "DONE" or not fixtures.verify_goal(
+        if decision["choice"] != "DONE" or not selected.verify_goal(
             step["scenario"], step["after"]
         ):
             raise ValueError("DONE lacks independently checked goal completion")
@@ -857,18 +959,20 @@ def _verify_executor(step, journal, upstream, read_state):
     return {"native_guarded_action": True, "input_calls": len(inputs)}
 
 
-def _verify_step(step, journal, upstream, read_state):
+def _verify_step(step, journal, upstream, read_state, *, scenario_profile=DEFAULT_SCENARIO_PROFILE):
     """Replay raw observation, native publisher, executor and independent DOM joins."""
     spec = step["scenario"]
+    selected = _scenario_module(scenario_profile)
+    _validate_scenario_spec(spec, scenario_profile)
     if spec["split"] != "train":
         raise ValueError("Only new train-only scenarios are allowed")
     if (
-        _runtime_value(journal, step["private_before_call"], fixtures.private_state_expression())
+        _runtime_value(journal, step["private_before_call"], selected.private_state_expression())
         != step["before"]
     ):
         raise ValueError("Private precondition lacks its actual raw evaluation")
     if (
-        _runtime_value(journal, step["private_after_call"], fixtures.private_state_expression())
+        _runtime_value(journal, step["private_after_call"], selected.private_state_expression())
         != step["after"]
     ):
         raise ValueError("Private postcondition lacks its actual raw evaluation")
@@ -902,7 +1006,7 @@ def _verify_step(step, journal, upstream, read_state):
         raise ValueError(
             "The full native publisher wire changed, including ordering or instructions"
         )
-    descriptor = fixtures.teacher_step(spec, step["before"])
+    descriptor = selected.teacher_step(spec, step["before"])
     if descriptor != step["teacher"]:
         raise ValueError("Teacher annotation differs from the authored independent route")
     target, action = _selected_action(step["page"], descriptor)
@@ -911,10 +1015,12 @@ def _verify_step(step, journal, upstream, read_state):
     before_events, after_events = step["before"]["events"], step["after"]["events"]
     if after_events[: len(before_events)] != before_events:
         raise ValueError("Owned event history was replaced")
-    effect = fixtures.verify_transition(
+    effect = selected.verify_transition(
         spec, step["before"], step["after"], descriptor, after_events[len(before_events) :]
     )
-    execution = _verify_executor(step, journal, upstream, read_state)
+    execution = _verify_executor(
+        step, journal, upstream, read_state, scenario_profile=scenario_profile
+    )
     if effect.get("requires_native_select_executor_join") and not execution.get(
         "native_select_executor_join"
     ):
@@ -951,11 +1057,23 @@ def _verify_step(step, journal, upstream, read_state):
 
 
 def collect_episode(
-    *, spec, episode_id, origin, transport, agent_module, model_module, upstream, read_state
+    *,
+    spec,
+    episode_id,
+    origin,
+    transport,
+    agent_module,
+    model_module,
+    upstream,
+    read_state,
+    scenario_profile=DEFAULT_SCENARIO_PROFILE,
 ):
     """Run original Agent ticks; retain failed attempts and never retry a stale action."""
+    selected = _scenario_module(scenario_profile)
+    _validate_scenario_spec(spec, scenario_profile)
     trace = {
         "schema_id": SCHEMA,
+        "scenario_profile": scenario_profile,
         "episode_id": episode_id,
         "scenario": copy.deepcopy(spec),
         "steps": [],
@@ -978,7 +1096,7 @@ def collect_episode(
 
         def private():
             start = len(transport.journal)
-            value = agent.browser.evaluate(fixtures.private_state_expression())
+            value = agent.browser.evaluate(selected.private_state_expression())
             if len(transport.journal) != start + 1:
                 raise ValueError("A private proof must have one actual protocol evaluation")
             return value, start
@@ -1032,7 +1150,7 @@ def collect_episode(
             if _encode(payload) != _encode(expected):
                 raise ValueError("The original publisher request was altered")
             before, before_call = private()
-            descriptor = fixtures.teacher_step(spec, before)
+            descriptor = selected.teacher_step(spec, before)
             target, action = _selected_action(page, descriptor)
             pending.update(
                 {
@@ -1112,7 +1230,13 @@ def collect_episode(
                     ),
                     "status": agent.state["status"],
                 }
-                step["proof"] = _verify_step(step, transport.journal, upstream, read_state)
+                step["proof"] = _verify_step(
+                    step,
+                    transport.journal,
+                    upstream,
+                    read_state,
+                    scenario_profile=scenario_profile,
+                )
                 trace["steps"].append(step)
                 trace["rows"].append(
                     build_native_training_row(
@@ -1325,6 +1449,7 @@ def _load_runtime(plan, transport, runtime):
 
 
 def _replan(plan):
+    scenario_profile, _ = _plan_scenarios(plan)
     return collection_plan(
         output_dir=plan["output_dir"],
         upstream=plan["upstream_path"],
@@ -1334,6 +1459,7 @@ def _replan(plan):
         chromium=None if plan["chromium"] is None else plan["chromium"]["path"],
         observation_profile=plan["observation_profile"],
         observation_helper_sha256=plan["observation_helper_sha256"],
+        scenario_profile=scenario_profile,
     )
 
 
@@ -1343,6 +1469,7 @@ def collect(plan, *, collector_sha256, plan_sha256):
         raise ValueError("Reviewed collector SHA256 does not match")
     if _hash_pin(plan_sha256) != _digest(plan) or _encode(_replan(plan)) != _encode(plan):
         raise ValueError("Reviewed prospective plan changed")
+    scenario_profile, selected = _plan_scenarios(plan)
     if plan["chromium"] is None:
         raise ValueError("Explicit collection requires a pinned --chromium executable")
     output = _prospective_output(plan["output_dir"])
@@ -1352,6 +1479,7 @@ def collect(plan, *, collector_sha256, plan_sha256):
         output / "receipt.pending.json",
         {
             "schema_id": SCHEMA,
+            "scenario_profile": scenario_profile,
             "plan_sha256": plan_sha256,
             "status": "pending",
             "completed": False,
@@ -1362,6 +1490,7 @@ def collect(plan, *, collector_sha256, plan_sha256):
     receipt = {
         "schema_id": SCHEMA,
         "schema_version": 1,
+        "scenario_profile": scenario_profile,
         "plan_sha256": plan_sha256,
         "status": "pending",
         "completed": False,
@@ -1395,7 +1524,7 @@ def collect(plan, *, collector_sha256, plan_sha256):
                 case_id=item["scenario"]["id"],
                 task_id=item["scenario"]["id"],
                 goal=item["scenario"]["goal"],
-                html=fixtures.render_fixture(item["scenario"]),
+                html=selected.render_fixture(item["scenario"]),
                 expected={},
             )
             for item in plan["episodes"]
@@ -1451,6 +1580,7 @@ def collect(plan, *, collector_sha256, plan_sha256):
                         model_module=model_module,
                         upstream=plan["upstream_path"],
                         read_state=read_state,
+                        scenario_profile=scenario_profile,
                     )
                     relative = "episodes/" + item["episode_id"] + ".json"
                     target = output / relative
@@ -1500,7 +1630,7 @@ def collect(plan, *, collector_sha256, plan_sha256):
         _write_json(output / "network.json", network)
         receipt["network_sha256"] = _sha((output / "network.json").read_bytes())
         try:
-            _assert_sources(plan["sources"])
+            _assert_sources(plan["sources"], scenario_profile)
             receipt["sources_unchanged"] = True
             if benchmark.upstream_manifest(plan["upstream_path"]) != plan["upstream"]:
                 raise ValueError("Pinned canonical upstream changed")
@@ -1640,6 +1770,9 @@ def admit_training_collection(output_dir, *, expected_receipt_sha256, expected_p
         or receipt.get("status") != "completed_pending_admission"
     ):
         raise ValueError("Incomplete or failed collections are quarantined")
+    scenario_profile, selected = _plan_scenarios(plan)
+    if receipt.get("scenario_profile", DEFAULT_SCENARIO_PROFILE) != scenario_profile:
+        raise ValueError("Receipt scenario profile differs from the selected plan")
     if (
         receipt.get("model_calls") != 0
         or receipt.get("model_score") is not None
@@ -1662,7 +1795,7 @@ def admit_training_collection(output_dir, *, expected_receipt_sha256, expected_p
         or receipt.get("observation_profile_errors")
     ):
         raise ValueError("Collection closure is incomplete")
-    _assert_sources(plan["sources"])
+    _assert_sources(plan["sources"], scenario_profile)
     if benchmark.upstream_manifest(plan["upstream_path"]) != plan["upstream"]:
         raise ValueError("Canonical upstream source changed")
     if _executable_pin(plan["chromium"]["path"]) != plan["chromium"]:
@@ -1674,7 +1807,7 @@ def admit_training_collection(output_dir, *, expected_receipt_sha256, expected_p
         raw = _confined_file(output, "sources/" + name).read_bytes()
         if _sha(raw) != pin["sha256"] or len(raw) != pin["bytes"]:
             raise ValueError("Captured source changed")
-    expected_specs = fixtures.scenarios(plan["seed"], set(exclusions["goal_sha256"]))
+    expected_specs = selected.scenarios(plan["seed"], set(exclusions["goal_sha256"]))
     if [item["scenario"] for item in plan["episodes"]] != list(expected_specs):
         raise ValueError("Planned scenario population differs from the new authored inventory")
     journal, journal_sha = _plain_json(output / "cdp-journal.json")
@@ -1743,7 +1876,7 @@ def admit_training_collection(output_dir, *, expected_receipt_sha256, expected_p
         spec = planned["scenario"]
         if (
             _digest(spec) != planned["scenario_sha256"]
-            or _sha(fixtures.render_fixture(spec).encode()) != planned["fixture_sha256"]
+            or _sha(selected.render_fixture(spec).encode()) != planned["fixture_sha256"]
         ):
             raise ValueError("Authored fixture or scenario changed")
         if (
@@ -1762,6 +1895,7 @@ def admit_training_collection(output_dir, *, expected_receipt_sha256, expected_p
             trace_sha != summary["sha256"]
             or trace.get("schema_id") != SCHEMA
             or trace.get("scenario") != spec
+            or trace.get("scenario_profile", DEFAULT_SCENARIO_PROFILE) != scenario_profile
         ):
             raise ValueError("Episode evidence changed or belongs to a foreign schema")
         if (
@@ -1802,7 +1936,13 @@ def admit_training_collection(output_dir, *, expected_receipt_sha256, expected_p
                 raise ValueError("Each new episode must start with empty native history")
             if previous is not None and step["history_before"] != previous["history_after"]:
                 raise ValueError("Original Agent history was replaced")
-            proof = _verify_step(step, journal, plan["upstream_path"], read_state)
+            proof = _verify_step(
+                step,
+                journal,
+                plan["upstream_path"],
+                read_state,
+                scenario_profile=scenario_profile,
+            )
             if proof != step.get("proof"):
                 raise ValueError("Stored proof differs from independent evidence replay")
             rebuilt = build_native_training_row(
@@ -1828,7 +1968,7 @@ def admit_training_collection(output_dir, *, expected_receipt_sha256, expected_p
             )
             encoded_rows.append(_encode(row))
             previous = step
-        if steps[-1]["teacher"]["operation"] != "DONE" or not fixtures.verify_goal(
+        if steps[-1]["teacher"]["operation"] != "DONE" or not selected.verify_goal(
             spec, steps[-1]["after"]
         ):
             raise ValueError("Every completed episode requires actual independently verified DONE")
@@ -1840,8 +1980,7 @@ def admit_training_collection(output_dir, *, expected_receipt_sha256, expected_p
             raise ValueError("Intended K bins were not genuinely observed in this complete episode")
         if not any(step["teacher"]["operation"] != "DONE" for step in steps):
             raise ValueError("A menu bin must include continuing and completed states")
-    if observed != {4, 7, 8}:
-        raise ValueError("Complete genuine K4/K7/K8 population is required")
+    _assert_menu_coverage(observed, scenario_profile)
     if any(roles != {"continuing", "completed"} for roles in menu_roles.values()):
         raise ValueError("Each observed K must have continuing and verified completed states")
     if previous_cdp_end != len(journal):
@@ -1906,6 +2045,9 @@ def main(argv=None):
     parser.add_argument("--exclusion-manifest", required=True)
     parser.add_argument("--chromium")
     parser.add_argument(
+        "--scenario-profile", choices=SCENARIO_PROFILES, default=DEFAULT_SCENARIO_PROFILE
+    )
+    parser.add_argument(
         "--observation-profile",
         required=True,
         choices=[
@@ -1933,6 +2075,7 @@ def main(argv=None):
         chromium=args.chromium,
         observation_profile=args.observation_profile,
         observation_helper_sha256=args.observation_helper_sha256,
+        scenario_profile=args.scenario_profile,
     )
     if not args.collect:
         if args.collector_sha256 or args.plan_sha256:
