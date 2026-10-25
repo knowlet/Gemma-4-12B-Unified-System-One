@@ -594,7 +594,15 @@ def make_application(
                     },
                     "Only the declared current browser API routes are available",
                 )
-                original = await request.body()
+                # Body receipt can suspend indefinitely while holding the shared
+                # policy/helper lane. Charge it to the original HTTP budget.
+                try:
+                    async with asyncio.timeout(max(0, 20 - (clock() - started))):
+                        original = await request.body()
+                except TimeoutError as exc:
+                    raise TimeoutError(
+                        "Whole HTTP model/helper20s exceeded while receiving body"
+                    ) from exc
                 require(len(original) <= MAX_BODY, "Bounded original HTTP body")
                 write(directory / "request.bin", original, raw=True)
                 gate.check("before-http-request")
