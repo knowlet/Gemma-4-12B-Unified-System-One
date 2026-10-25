@@ -4,8 +4,10 @@
 verified full-TRAIN results. Operation correctness improves from 62/153 to
 147/153, including 10/34 to 31/34 on the new goal-routed rows. CLICK-target
 correctness improves from 6/14 to 14/14. These measurements reuse the same
-cached TRAIN features. The new candidate has no GPU composition, browser,
-held-out or JevBench result yet.
+cached TRAIN features. At this fit milestone, the new candidate had no GPU
+composition, browser, held-out or JevBench result. The subsequent
+[GPU verification and matched browser result](decision3-goal-routed-two-head-gpu-browser-results.md)
+is reported separately; both browser arms fail the first case, 0/1.
 
 The [collection and base-model diagnosis](decision3-goal-routed-native-collection-results.md)
 identified eight incorrect teacher-active CLICK targets that operation-only
@@ -84,17 +86,17 @@ a fresh process validates all 74 inventory entries before retry. Seven audit
 controls and eleven launcher controls pass. The successful fit artifacts are
 unchanged by the audit correction.
 
-The two-head GPU backend passes 25 invented controls. The planned 37-call native
-GPU qualifier awaits execution; those controls provide no
-CUDA numerical proof. Fresh native composition and browser evaluation must
-still establish whether the new readouts improve actual task progress.
+At this fit milestone, the two-head GPU backend passes 25 invented controls,
+while the planned 37-call native GPU qualifier remains unexecuted. Those
+controls provide no CUDA numerical proof. Subsequent native composition and
+browser measurements are in the separate follow-up report linked above.
 
 The historical 119-row operation-only candidate and its matched NF4 baseline
 each failed the first browser case, 0/1. That is a
 [different previous profile](decision3-checked-control-sgd10000-gpu-browser-results.md),
-not a result for this two-head candidate. The new candidate's browser score,
-full ten-case score, JevBench coherenceMINI score and Benchmark Heaven score
-remain null. The two JevBench suites remain separate. No held-out accuracy,
+not a result for this two-head candidate. At this fit milestone, the new
+candidate's browser score, full ten-case score, JevBench coherenceMINI score
+and Benchmark Heaven score remain null. The two JevBench suites remain separate. No held-out accuracy,
 generalization, model qualification or competitor win is established.
 
 The accepted fit-integrity audit has SHA-256
