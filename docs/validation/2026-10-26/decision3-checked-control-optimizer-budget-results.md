@@ -42,8 +42,10 @@ capability remains unchanged; separate capabilities authorize the new budgets.
 | 10,000 steps | 21.012695601966698 s | 18.997982117987704 s | 4.646902266142284 |
 
 These timings cover cached-feature fitting, not encoder inference. Both runs
-retained CPUs 15–19, a 500% CPU quota, 4 GiB memory, zero swap and the original
-120-second whole-work limit. Independent stdlib audits accepted the original
+retained CPUs 15–19, a 500% CPU quota, 4 GiB memory and zero swap. Each fitter
+has a 120-second cooperative deadline; the selected outer CPU command unit
+retains its separate 10,800-second limit. The observed whole launches are the
+timings above. Independent stdlib audits accepted the original
 terminal and scoped closure, all 51 selected sources, complete ordered 119-row
 mapping, W0/delta bytes, tensor norms, and exact zero unused delta rows. Neither
 run changed ComfyUI service state.
