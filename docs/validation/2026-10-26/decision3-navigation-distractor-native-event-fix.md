@@ -52,7 +52,9 @@ closure for the observed owned cohort; it is not a universal containment claim.
 | Original protocol journal | `ab23f7b2dc1ab6f059e552b8a5c3ea13f0927b910712102adee427a6eaa698f7` |
 | Independent three-failure event diagnosis | `eda4153167508b86854e2f406b352911b81bb296c43129b90b8152ecc39bf19d` |
 
-A fresh full 24-scene collection and independent admission are still required.
+At this fix's initial snapshot, a fresh full collection was still required.
+The subsequent [complete collection report](decision3-navigation-distractor-collection-results.md)
+records independently admitted results from a new 24-scene batch.
 The earlier [two-head browser result](decision3-goal-routed-two-head-gpu-browser-results.md)
 remains 0/1 for both candidate and matched baseline. Full browser and both new
 candidate JevBench scores remain unmeasured. The helper's refusal of a null
