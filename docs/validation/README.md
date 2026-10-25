@@ -1,9 +1,10 @@
 # 驗證與發布證據索引
 
-更新日期：2026-10-24（Asia/Taipei）。各日期目錄保存當時的人口、執行來源與收據；後續結果另立紀錄，保留既有封存檔與報告。
+更新日期：2026-10-25（Asia/Taipei）。各日期目錄保存當時的人口、執行來源與收據；後續結果另立紀錄，保留既有封存檔與報告。
 
 | 日期 | 入口 | 範圍 |
 | --- | --- | --- |
+| 2026-10-25 | [可變操作選項收集與長輸入後續](2026-10-25/decision3-affordance-collection-results.md) | 四個新 train-only 場景取得 13 筆完整原生請求，涵蓋 K4／K7／K8，已獨立重播，尚未訓練。CPU10 自造長輸入後續有兩次約 17.16／17.06 秒通過 20 秒，但尚未證明穩定延遲或瀏覽器品質提升；兩套 JevBench 分數分開保留。 |
 | 2026-10-24 | [Decision3 兩套 JevBench](2026-10-24/decision3-edge-cpu4-coherence-complete-results.md)、[fresh 瀏覽器比較](2026-10-24/decision3-v7-long-page-timeout-results.md)、[多核心長輸入診斷](2026-10-24/decision3-edge-cpu-long-input-diagnostic-results.md) | Edge 原模型 public231 為 158/231、一致性 70.59/100；operation 候選瀏覽器比較因長頁面逾時未完成。相同自造長輸入的 CPU10／CPU16／CPU5 呼叫約 23.30／24.26／28.3 秒，均未通過原 20 秒期限；尚無競品勝出證據。 |
 | 2026-10-22 | [兩套 JevBench](2026-10-22/jevbench-both-fresh-gx10-results.md)、[瀏覽器基準](2026-10-22/jev-current-nf4-raw-complete-results.md)、[V2 對照](2026-10-22/jev-current-nf4-v2-complete-results.md)、[原生訓練](2026-10-22/jev-native-v2-complete-training-results.md)、[Decision3 Edge](2026-10-22/decision3-edge-observed-browser-results.md)、[失效操作回饋](2026-10-22/jev-native-v2-feedback-complete-results.md) | GX10 新推論：public231 為 195/231、一致性 41.26/100；相同 NF4 helper 的十場景基準 2/10、V2 4/10，增加兩題且無退步。142 次訓練與 37 題零更新開發集完成。Edge 十題觀察為 0/10，收尾受檢查工具崩潰回報干擾，完整執行驗證仍未通過；回饋實驗完整核對為 3/10，未採用，V2 維持 4/10。輔助模型設定不同，尚未證明跨模型優勢。 |
 | 2026-10-13 | [Mac 本機 Jev 整合](../local-jev-benchmark-20261013/README.md)、[完整報告](../local-jev-benchmark-20261013/report.md) | 原生 S1 決策與同模型文字 helper、固定輸入 Q4/Q8 比較、隔離瀏覽器 fixture 的 0/3 travel 與 0/5 completion 結果；原始失敗、量測界線與公開遮罩收據完整保留。 |
