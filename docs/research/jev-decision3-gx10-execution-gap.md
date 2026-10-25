@@ -54,3 +54,44 @@ query through the helper returned all five properties without changing the
 calling environment or importing models. GPU service integration and browser
 quality after this fix remain unverified; no benchmark or competitor result is
 inferred from these controls.
+
+## 2026-10-25: empty Python package sources
+
+The next real launch exited 1 after 162.03695940895705 seconds, before service
+readiness or any case result. Its new failure was `complete positive file
+identity required`. Replaying the original verifier without models accepted
+182 of the 188 source records and rejected six correctly pinned, zero-byte
+Uvicorn `__init__.py` files. The failure is in source authentication; it is not
+a scored browser mistake.
+The independent audit reauthenticated all 859 selected sources and confirmed
+both original observed process scopes had closed. Audit SHA256:
+`8924e941929a0fa898739f221b886547e7b00674165be55de87e245f6df9b806`.
+
+The upstream Uvicorn 0.34.3 tag resolves to
+`5e33d430f13622c8363fe74d97963ab37f3df3c2`. Its
+[lifespan package initializer](https://github.com/Kludex/uvicorn/blob/5e33d430f13622c8363fe74d97963ab37f3df3c2/uvicorn/lifespan/__init__.py)
+is empty (Git blob `e69de29bb2d1d6434b8b29ae775ad8c2e48c5391`). Uvicorn's
+[BSD license](https://github.com/Kludex/uvicorn/blob/5e33d430f13622c8363fe74d97963ab37f3df3c2/LICENSE.md)
+was checked; no upstream implementation is copied for this fix. Python also
+[permits empty package initializers](https://docs.python.org/3/tutorial/modules.html#packages).
+
+| Existing component | Decision |
+| --- | --- |
+| `SourcePins.pin` in the public runtime-profile builder at `32c6789` | Reuse for zero-byte Python sources: it checks the exact hash and size, ordinary paths, regular files and stable file-descriptor/path identity. |
+| Original GPU actor `verify_record` | Retain for every other source, model and payload; its positive-size policy remains unchanged. |
+| Browser worker `pin` | Do not reuse here: its read has no byte limit. |
+
+The service successor will select and authenticate the existing builder source,
+then use `SourcePins.pin` only for exact three-field inventory references whose
+size is an integer zero and whose path is an ordinary absolute `.py` file.
+Dependencies, metadata, model files, delta and explicit source loaders keep
+their existing nonempty checks. No upstream file is padded, omitted or edited.
+The builder itself is unchanged; its file-descriptor and bounded-hash mechanism
+is reused rather than introducing a second implementation.
+
+The new [seven regression controls](../../tests/test_jev_empty_python_sources.py)
+passed under Python 3.12 in 0.026 seconds, with Ruff lint and formatting checks
+passing. They cover a real temporary empty package source, incorrect pins,
+nonempty content, symlinks, path replacement during hashing, invalid size types
+and tensor filenames. Actual successor service readiness and browser quality
+remain to be tested; paired and complete ten-case scores remain null.
