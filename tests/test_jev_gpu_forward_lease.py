@@ -64,7 +64,9 @@ class Fixture:
     def __init__(self, module):
         self.module = module
         self.temporary = tempfile.TemporaryDirectory(prefix="invented-gpu-lease-")
-        self.directory = Path(self.temporary.name)
+        # macOS temp roots can traverse /var -> /private/var. Select the real
+        # directory before passing it to the serializer's strict path checks.
+        self.directory = Path(self.temporary.name).resolve(strict=True)
         self.lock, self.journal = self.directory / "lock", self.directory / "journal"
         self.lock.write_bytes(b"")
         self.journal.write_bytes(b"")
@@ -136,6 +138,25 @@ class SerializerControls(unittest.TestCase):
         self.module = fresh_module()
         self.fixture = Fixture(self.module)
         self.addCleanup(self.fixture.close)
+
+    def test_fixture_resolves_a_platform_temp_directory_alias(self):
+        with tempfile.TemporaryDirectory(prefix="invented-temp-alias-") as name:
+            parent = Path(name).resolve(strict=True)
+            actual, alias = parent / "actual", parent / "alias"
+            actual.mkdir()
+            alias.symlink_to(actual, target_is_directory=True)
+            with mock.patch.object(tempfile, "tempdir", str(alias)):
+                fixture = Fixture(self.module)
+                try:
+                    self.assertEqual(fixture.directory.parent, actual)
+                    self.assertEqual(fixture.directory, fixture.directory.resolve(strict=True))
+                    fixture.lease.begin("decision3-gpu", lambda: None)
+                    fixture.lease.end(synchronize=lambda: None, deadline=lambda: None)
+                    self.assertEqual(
+                        [row["event"] for row in fixture.records()], ["acquired", "completed"]
+                    )
+                finally:
+                    fixture.close()
 
     def test_held_gate_precedes_paths_framework_and_hook_dependencies(self):
         held, poison = fresh_module(released=False), Poison()
