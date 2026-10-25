@@ -1,5 +1,9 @@
 # Checked-control optimizer budget diagnosis
 
+Follow-up: [fresh native GPU calls confirm TRAIN 10/10, while the SGD10000 browser
+pair remains 0/1](decision3-checked-control-sgd10000-gpu-browser-results.md).
+The measurements below retain their original cached-feature scope.
+
 2026-10-26. Increasing the zero-start SGD budget from 512 to 10,000 steps teaches
 all ten added checked-control training examples in independent FP64 readout
 replay. This is a training-set result. The 10,000-step candidate still requires
