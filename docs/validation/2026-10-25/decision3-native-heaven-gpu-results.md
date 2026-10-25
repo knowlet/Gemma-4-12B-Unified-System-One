@@ -29,7 +29,7 @@
 
 來源執行前有 15 項自造控制通過，耗時 4.804 秒，並通過 Ruff 與同儕來源審查。這些控制與本次真正模型結果分開記錄。獨立稽核狀態為 `ROOT_ACCEPTED_NATIVE_EDGE_GPU_PUBLIC231_RESEARCH_SCREENING`，SHA256：`1f460ef7798c4ced8285b6eb57c247ea064f9edc7c74b2fb4e9846deaabf7403`。稽核重算全部 family／split、Brier、ECE、序數誤差、改寫對與全題延遲，並確認原始程序身分及範圍收尾。
 
-| 其他目標 | 最新狀態 |
+| 本報告建立時的其他目標 | 當時狀態 |
 | --- | --- |
 | JevBench coherence 新 GPU 分數 | null，尚未執行 |
 | operation 候選完整十場景比較 | null，先前中止，候選未執行 |
@@ -39,3 +39,5 @@
 此結果尚未超過先前 Gemma 的 [195／231 公開題紀錄](../2026-10-22/jevbench-both-fresh-gx10-results.md)。執行設定不同，仍需同設定完整比較。公開題目與標籤可能已暴露於訓練或過往調整，本次只接受公開研究測試；沒有提交榜單或執行 sealed 評測。真實瀏覽器目標仍需以完整場景成功率驗收。
 
 聚合欄位見[機器可讀紀錄](decision3-native-heaven-gpu-results.json)，前置原生 API 診斷見[先前報告](decision3-native-typed-gpu-results.md)，瀏覽器中止紀錄見[完整十場景比較](decision3-full10-gpu-interrupted-results.md)。公開內容只含聚合數字與雜湊，沒有原始題目、回答、機率陣列、標籤、程序／裝置識別資訊或私人產物路徑。
+
+後續 [coherence GPU 完整紀錄](decision3-native-coherence-gpu-results.md)已完成，分數為 69.64052287581698／100；其 921＋327 筆 GPU 結果接續、計分及計時另行核對。本份 public231 原結果與執行範圍保持原值。
