@@ -1,10 +1,18 @@
 # Goal-routed collection, GPU features and TRAIN diagnosis
 
-2026-10-26. Fresh base-model GPU calls select the correct operation on 10/34 new
+2026-10-26. A subsequent
+[two-head fit and independent full-TRAIN replay](decision3-goal-routed-two-head-fit-results.md)
+now improves operation correctness on these cached rows from 10/34 to 31/34,
+and teacher-active CLICK-target correctness from 6/14 to 14/14. The new
+candidate's GPU composition, browser and both JevBench results remain pending.
+The collection and base-model diagnosis below retain their original scope.
+
+Fresh base-model GPU calls select the correct operation on 10/34 new
 TRAIN wires and the correct target on 14/22 target-bearing wires. Joint operation
 and target correctness is 10/34. Eight incorrect CLICK targets expose a second
 gap that operation-only training cannot repair. Independent checks now accept
-both the genuine collection and its GPU features; no new weights have been fit.
+both the genuine collection and its GPU features. That collection and diagnosis
+do not fit weights.
 
 The collection itself covers twelve newly authored TRAIN scenes and 34 rows
 with **zero model calls**. A subsequent feature capture makes 34 genuine
@@ -91,7 +99,7 @@ All eight incorrect targets occur in teacher-active CLICK rows. With these
 target answers fixed, even perfect operation selection would cap joint
 correctness at **26/34 on these same TRAIN wires**. This is an in-sample
 counterfactual; a new browser rollout can visit different states. It motivates a
-separate 14-row CLICK-target training component alongside the planned 153
+separate 14-row CLICK-target training component alongside the 153
 operation rows. The original row masks and target IDs remain unchanged.
 
 This milestone does not change the earlier trained-candidate result. The 119-row,
@@ -102,11 +110,13 @@ matched baseline, 0/1 each. See the
 The new data and TRAIN diagnosis do not establish that the repeated-radio
 failure is fixed.
 
-The next implementation combines the unchanged 119 operation rows with these
+The [subsequent two-head fit](decision3-goal-routed-two-head-fit-results.md)
+combines the unchanged 119 operation rows with these
 34 new operation rows and adds only the 14 teacher-active CLICK-target labels in
 a separate component. Independent dataset acceptance and a new fit capability
-must bind that component; the existing raw masks and target identities stay
-unchanged. The new fit, weights and candidate browser evaluation remain pending.
+bind that component; the existing raw masks and target identities stay
+unchanged. Its final artifacts and cached TRAIN metrics are independently
+accepted. New GPU composition and candidate browser evaluation remain pending.
 The full ten-case browser score, Benchmark Heaven score and JevBench coherence
 score remain null. The two JevBench scores are kept separate, and no competitor
 win or new model qualification is claimed.
