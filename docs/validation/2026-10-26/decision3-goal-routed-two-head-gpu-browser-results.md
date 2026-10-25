@@ -66,11 +66,14 @@ path spelling and removes three duplicate references while preserving every
 original hash and size. The controller, resource limits and scoring rules are
 unchanged. That failed launch supplies no task score.
 
-The next training change adds 24 independent local TRAIN scenes with navigation
+At this report's snapshot, the next training change adds 24 independent local TRAIN scenes with navigation
 distractors and 14, 18 or 24 authored clickable elements. Actual publisher menu
 counts await genuine collection. The 120 related source and event controls
 pass; no new browser examples have been accepted yet. The helper's null refusal remains;
 evaluation goals and predictions do not become optimizer examples.
+
+The subsequent [native-event collection diagnosis](decision3-navigation-distractor-native-event-fix.md)
+records the first quarantined attempt and a narrow text-to-radio event fix.
 
 The [machine-readable report](decision3-goal-routed-two-head-gpu-browser-results.json)
 records aggregate evidence and hashes. Raw goals, wires, labels, predictions,

@@ -772,6 +772,12 @@ def verify_transition(spec, before, after, step, events):
         )
         target, value = radio["id"], radio["value"]
         expected = [dict(choice, checked=choice["value"] == value) for choice in before["radios"]]
+        signatures = [
+            (event["type"], event["target"], event["trusted"], event["value"], event["checked"])
+            for event in events
+        ]
+        radio_events = [(kind, target, True, value, True) for kind in ("click", "input", "change")]
+        text_blur = ("change", "entry-text", True, before["note_value"], None)
         _require(
             after_selection is not None
             and after_selection["value"] == value
@@ -780,10 +786,7 @@ def verify_transition(spec, before, after, step, events):
                 "note_value", "mode_value", "mode_label", "submission_count", *_RECORDED_FIELDS
             )
             and after["submitted"] is False
-            and all(
-                matched(kind, target, True, value, True) for kind in ("click", "input", "change")
-            )
-            and all(event["target"] == target for event in events),
+            and signatures in (radio_events, [text_blur, *radio_events]),
             "Trusted radio click must change selection with native group exclusion",
         )
         proof["input_executed"] = True

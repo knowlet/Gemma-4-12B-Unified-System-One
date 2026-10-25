@@ -380,3 +380,117 @@ def test_done_requires_actual_saved_record_and_never_executes_an_input():
     event(changed, "click", spec["navigation_links"][0]["id"])
     with pytest.raises(ValueError, match="must not execute"):
         effect(spec, complete, changed)
+
+
+def mixed_radio_after_text():
+    """Invent a real authored text-before-radio route; no browser calls occur."""
+    for seed in range(16):
+        for spec in specs(seed):
+            if not spec["family"].startswith("mixed-all-three"):
+                continue
+            if spec["goal_order"].index("text") > spec["goal_order"].index("radio"):
+                continue
+            states = route(spec)
+            for before, after in zip(states, states[1:]):
+                step = fixtures.teacher_step(spec, before)
+                if step["operation"] == "CLICK" and step["label"] == spec["desired_radio_label"]:
+                    assert before["note_value"] == spec["desired_text"]
+                    return spec, before, after
+    raise AssertionError("Authored permutations did not provide a mixed text-before-radio route")
+
+
+def with_text_blur(before, after):
+    result = copy.deepcopy(after)
+    radio_events = result["events"][len(before["events"]) :]
+    result["events"] = copy.deepcopy(before["events"])
+    event(result, "change", "entry-text", before["note_value"])
+    for row in radio_events:
+        row["sequence"] = len(result["events"])
+        result["events"].append(row)
+    return result
+
+
+def test_mixed_text_to_radio_accepts_only_original_trio_or_unchanged_trusted_blur_then_trio():
+    spec, before, after = mixed_radio_after_text()
+    assert before["events"] and before["note_value"] == spec["desired_text"]
+    assert effect(spec, before, after)["input_executed"] is True
+    with_blur = with_text_blur(before, after)
+    proof = effect(spec, before, with_blur)
+    assert proof["appended_event_count"] == 4
+    assert proof["requires_canonical_native_executor_join"] is True
+    assert with_blur["note_value"] == before["note_value"]
+    assert with_blur["navigation"] == before["navigation"]
+    assert [r["value"] for r in with_blur["radios"] if r["checked"]] == [
+        spec["desired_radio_value"]
+    ]
+
+
+@pytest.mark.parametrize(
+    "corruption",
+    [
+        "blur-value",
+        "blur-trust",
+        "blur-target",
+        "blur-checked",
+        "blur-kind",
+        "radio-order",
+        "blur-last",
+        "duplicate-blur",
+        "duplicate-radio",
+        "foreign-extra",
+        "missing-radio",
+        "radio-value",
+        "radio-trust",
+        "radio-checked",
+        "actual-note",
+        "actual-radio",
+        "radio-exclusion",
+    ],
+)
+def test_text_to_radio_refuses_changed_blur_extra_reordered_or_forged_radio_effects(corruption):
+    spec, before, original = mixed_radio_after_text()
+    after = with_text_blur(before, original)
+    appended = copy.deepcopy(after["events"][len(before["events"]) :])
+    blur = appended[0]
+    if corruption == "blur-value":
+        blur["value"] = "different value"
+    elif corruption == "blur-trust":
+        blur["trusted"] = False
+    elif corruption == "blur-target":
+        blur["target"] = "entry-select"
+    elif corruption == "blur-checked":
+        blur["checked"] = True
+    elif corruption == "blur-kind":
+        blur["type"] = "input"
+    elif corruption == "radio-order":
+        appended[1], appended[2] = appended[2], appended[1]
+    elif corruption == "blur-last":
+        appended = [*appended[1:], blur]
+    elif corruption == "duplicate-blur":
+        appended.insert(1, copy.deepcopy(blur))
+    elif corruption == "duplicate-radio":
+        appended.append(copy.deepcopy(appended[1]))
+    elif corruption == "foreign-extra":
+        appended.append(dict(blur, type="click", target=spec["navigation_links"][0]["id"]))
+    elif corruption == "missing-radio":
+        appended.pop()
+    elif corruption == "radio-value":
+        appended[1]["value"] = "different radio value"
+    elif corruption == "radio-trust":
+        appended[1]["trusted"] = False
+    elif corruption == "radio-checked":
+        appended[1]["checked"] = False
+    elif corruption == "actual-note":
+        after["note_value"] = "changed actual note"
+    elif corruption == "actual-radio":
+        for radio in after["radios"]:
+            radio["checked"] = False
+    else:
+        next(r for r in after["radios"] if r["value"] != spec["desired_radio_value"])["checked"] = (
+            True
+        )
+    for index, row in enumerate(appended, start=len(before["events"])):
+        row["sequence"] = index
+    after["events"] = copy.deepcopy(before["events"]) + appended
+    with pytest.raises(ValueError):
+        effect(spec, before, after)
