@@ -54,7 +54,8 @@ jobs:
   inference:
     # macOS wheels have no CUDA payload; tiny models need no GPU or HF access.
     runs-on: macos-14
-    timeout-minutes: 15
+    # The complete CPU suite can approach 15 minutes on shared macOS runners.
+    timeout-minutes: 20
     env:
       HF_HUB_OFFLINE: '1'
     steps:
@@ -75,7 +76,7 @@ jobs:
       - run: uv run --no-sync python scripts/prepare_ci_jev.py
       - name: Check portable grammar fixtures before model imports
         run: uv run --no-sync pytest --strict-markers -m "not frozen_decoder" tests/test_jev_field_json_grammar.py
-      - run: uv run --no-sync pytest -m "not frozen_decoder"
+      - run: uv run --no-sync pytest -m "not frozen_decoder" --durations=15
   frozen-decoder:
     # The frozen Rust oracle is Linux ARM64, not the x86/macOS inference library.
     # Standard ARM64 runners are free for this public repository. This job is
