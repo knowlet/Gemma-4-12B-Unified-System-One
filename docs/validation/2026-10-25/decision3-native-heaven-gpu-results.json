@@ -1,0 +1,256 @@
+{
+  "schema": "public-decision3-native-heaven-gpu-results-v1",
+  "date": "2026-10-25",
+  "timezone": "Asia/Taipei",
+  "status": "accepted_native_edge_GPU_public231_research_screening",
+  "evidence_origin": "root_independently_verified_allowlisted_aggregates",
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "backbone_dtype": "bfloat16",
+    "readout_dtype": "float32",
+    "operation_delta_loaded": false
+  },
+  "benchmark_heaven": {
+    "n_planned": 231,
+    "n_attempted": 231,
+    "n_scorable": 231,
+    "n_correct": 159,
+    "accuracy": 0.6883116883116883,
+    "n_valid": 231,
+    "schema_validity": 1.0,
+    "schema_validity_strict": 1.0,
+    "n_invalid": 0,
+    "n_renormalized": 0,
+    "coverage": 1.0,
+    "operational_success": 1.0,
+    "macro_accuracy": 0.6870158784761468,
+    "brier_mean": 0.43976790151118605,
+    "ece_top_label_10_bins": 0.11335639451848327,
+    "ordinal_mae": 0.45338869011526534,
+    "latency": {
+      "n": 231,
+      "p50_s": 0.3856968939653598,
+      "p95_s": 0.522869176522363
+    },
+    "latency_failures": {
+      "n": 0,
+      "p50_s": null,
+      "p95_s": null
+    },
+    "paraphrase_consistency": {
+      "agree": 29,
+      "agreement": 0.8055555555555556,
+      "both_correct_rate_all_pairs": 0.75,
+      "both_valid": 36,
+      "pairs": 36
+    },
+    "per_family": {
+      "adequacy": {
+        "n_scorable": 12,
+        "n_correct": 6,
+        "accuracy": 0.5
+      },
+      "adversarial": {
+        "n_scorable": 6,
+        "n_correct": 6,
+        "accuracy": 1.0
+      },
+      "ambiguous": {
+        "n_scorable": 7,
+        "n_correct": 4,
+        "accuracy": 0.5714285714285714
+      },
+      "extraction": {
+        "n_scorable": 24,
+        "n_correct": 23,
+        "accuracy": 0.9583333333333334
+      },
+      "fact": {
+        "n_scorable": 12,
+        "n_correct": 12,
+        "accuracy": 1.0
+      },
+      "intent": {
+        "n_scorable": 24,
+        "n_correct": 23,
+        "accuracy": 0.9583333333333334
+      },
+      "judge_hard": {
+        "n_scorable": 17,
+        "n_correct": 8,
+        "accuracy": 0.47058823529411764
+      },
+      "long_policy": {
+        "n_scorable": 19,
+        "n_correct": 5,
+        "accuracy": 0.2631578947368421
+      },
+      "multi_hop": {
+        "n_scorable": 18,
+        "n_correct": 8,
+        "accuracy": 0.4444444444444444
+      },
+      "ordinal": {
+        "n_scorable": 12,
+        "n_correct": 11,
+        "accuracy": 0.9166666666666666
+      },
+      "policy": {
+        "n_scorable": 12,
+        "n_correct": 11,
+        "accuracy": 0.9166666666666666
+      },
+      "probability": {
+        "n_scorable": 10,
+        "n_correct": 3,
+        "accuracy": 0.3
+      },
+      "routing": {
+        "n_scorable": 12,
+        "n_correct": 11,
+        "accuracy": 0.9166666666666666
+      },
+      "routing_hard": {
+        "n_scorable": 5,
+        "n_correct": 4,
+        "accuracy": 0.8
+      },
+      "temporal_numeric": {
+        "n_scorable": 15,
+        "n_correct": 4,
+        "accuracy": 0.26666666666666666
+      },
+      "tool_selection": {
+        "n_scorable": 12,
+        "n_correct": 12,
+        "accuracy": 1.0
+      },
+      "tradeoff": {
+        "n_scorable": 6,
+        "n_correct": 2,
+        "accuracy": 0.3333333333333333
+      },
+      "trap": {
+        "n_scorable": 8,
+        "n_correct": 6,
+        "accuracy": 0.75
+      }
+    }
+  },
+  "execution": {
+    "original_process_retained_until_terminal": true,
+    "exit_code": 0,
+    "root_wall_seconds": 113.03421857999638,
+    "leaf_wall_seconds": 109.78241920401342,
+    "model_loads": 1,
+    "model_load_seconds": 3.3859841550001875,
+    "native_calls": 231,
+    "typed_head_counts": {
+      "noul": 74,
+      "choice": 139,
+      "score": 18
+    },
+    "configured_max_batch_size": 8,
+    "actual_batch_size_every_call": 1,
+    "minimum_tokens_per_head": 116,
+    "maximum_tokens_per_head": 3970,
+    "requests_per_task": 1,
+    "warmup": 0,
+    "retries": 0,
+    "cache_reused": false,
+    "calibration_fitted": false,
+    "truncation": false,
+    "latency_scope": "complete loaded-model predict and native-probability adapter, including source authentication, prepare/forward, CUDA fences, evidence and terminal guards; excludes model load, official scoring and subsequent runner writes"
+  },
+  "audit": {
+    "status": "ROOT_ACCEPTED_NATIVE_EDGE_GPU_PUBLIC231_RESEARCH_SCREENING",
+    "sha256": "1f460ef7798c4ced8285b6eb57c247ea064f9edc7c74b2fb4e9846deaabf7403",
+    "size_bytes": 51873,
+    "full_original_population_and_order_verified": true,
+    "raw_request_response_and_native_witnesses_verified": true,
+    "all_metrics_independently_recomputed": true,
+    "native_probability_scalars_checked": 775,
+    "noul_scalar_count_per_answer": 1,
+    "model_and_source_files_reauthenticated": true,
+    "selected_physical_GPU_matches": true,
+    "original_W0_unchanged": true,
+    "original_child_stable_identity_samples": 2,
+    "original_scoped_closure_verified": true,
+    "current_selected_unit_cgroup_and_original_child_absent": true,
+    "per_process_peak_CUDA_tensor_bytes": 1701608448,
+    "per_process_final_CUDA_tensor_bytes": 0,
+    "memory_scope": "this_process_CUDA_tensor_allocator_only",
+    "OS_no_escape_claim": false,
+    "full_transitive_DSO_closure_claim": false
+  },
+  "offline_limits": {
+    "per_call_cooperative_seconds": 180,
+    "whole_actor_seconds": 7000,
+    "outer_hard_seconds": 7200,
+    "owner_command_seconds": 7193,
+    "browser_original_per_call_seconds": 20,
+    "browser_limit_changed": false
+  },
+  "source_controls": {
+    "invented_controls_passed": 15,
+    "seconds": 4.804,
+    "ruff_passed": true,
+    "source_peer_review_passed": true,
+    "quality_qualified_by_controls": false
+  },
+  "earlier_aborted_attempt": {
+    "reason": "Comfy_state_observation_temporarily_unavailable",
+    "original_process_terminal": true,
+    "scoped_closure_independently_verified": true,
+    "official_records_created": 0,
+    "native_callback_evidence_created": 0,
+    "score": null,
+    "results_or_cache_reused": false,
+    "fresh_original_observer_idle_admissions_before_complete_run": 3,
+    "audit": {
+      "sha256": "d7ce978f041b048d6113a1e2f01325a7206a433cbc1d857cf9db25b642f0912f",
+      "size_bytes": 2129
+    },
+    "model_load_completion": "unknown"
+  },
+  "other_results": {
+    "jevbench_coherence_new_GPU_score": null,
+    "operation_candidate_full10_matched_score": null,
+    "browser_exercised_this_run": false,
+    "operation_candidate_exercised_this_run": false,
+    "official_composite": null,
+    "official_rank": null,
+    "cost_per_1000_decisions_usd": null,
+    "cost_basis": "unknown_local_compute_not_free",
+    "leaderboard_status": "not_submitted",
+    "sealed_evaluation": "not_run",
+    "competitor_win_established": false,
+    "stable_browser_SLO_established": false
+  },
+  "public_exposure": "Released public tasks and labels; potentially exposed to model training or prior tuning. Research screening, not a sealed evaluation.",
+  "references": {
+    "prior_native_typed_diagnostic": "decision3-native-typed-gpu-results.md",
+    "interrupted_browser_comparison": "decision3-full10-gpu-interrupted-results.md",
+    "research": "../../research/jev-operation-only-readout.md"
+  },
+  "privacy": {
+    "aggregate_only": true,
+    "raw_questions_responses_predictions_probabilities_or_labels_included": false,
+    "process_device_job_or_prompt_identifiers_included": false,
+    "private_artifact_paths_included": false
+  },
+  "error_concentration": {
+    "families": [
+      "long_policy",
+      "temporal_numeric",
+      "probability",
+      "multi_hop"
+    ],
+    "errors_in_selected_families": 42,
+    "total_errors": 72,
+    "share_of_errors": 0.5833333333333334,
+    "causal_browser_failure_attribution_established": false,
+    "benchmark_labels_used_for_optimizer": false
+  }
+}
