@@ -95,3 +95,11 @@ passing. They cover a real temporary empty package source, incorrect pins,
 nonempty content, symlinks, path replacement during hashing, invalid size types
 and tensor filenames. Actual successor service readiness and browser quality
 remain to be tested; paired and complete ten-case scores remain null.
+
+## 2026-10-25: first-case pair completed after the startup fixes
+
+The later [accepted first-case GPU pair](../validation/2026-10-25/decision3-firstcase-gpu-paired-results.md) reached candidate readiness and completed both infrastructure paths. The original launch exited 0 after 243.1005604180391 seconds; candidate and matched NF4 baseline each failed the task, 0/1. The audit verified 860 selected files, the 189-entry source inventory including six empty Python files, original worker identity, both observed owned process scopes and the worker's final allocator zero. The earlier startup failures above remain separate historical attempts; no OS-level containment or whole-machine GPU-zero claim follows.
+
+All four genuine Decision3 requests returned HTTP 200, with matching original client/server bytes. Independent FP64 replay checked 144 legal probability positions at the original tolerance, with maximum absolute error `1.4973786233163366e-7`. The observed failure was task progress: one radio click changed unchecked to checked, then three repeated clicks left the page unchanged and triggered the original stagnation stop. W0 BLOCKED-to-composed CLICK on the same features is a local readout comparison, not a separate unmodified Edge trajectory.
+
+The full ten-case score and both fresh candidate JevBench scores remain null; there is no browser qualification or competitor win. Further generic checked-control and state-progress examples must remain separate from this exposed evaluation case and its goal, with the API action choices and original judge unchanged.
