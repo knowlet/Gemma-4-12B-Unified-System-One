@@ -76,3 +76,10 @@ this experiment supplies neither score. See the
 [optimizer-budget experiment](decision3-checked-control-optimizer-budget-results.md)
 and [512-step browser result](decision3-checked-control-gpu-browser-results.md).
 Raw goals, requests, labels, features and weights remain private.
+
+The [goal-routed collection and native TRAIN diagnostic](decision3-goal-routed-native-collection-results.md)
+now adds 34 independently admitted rows and 34 genuine base-model GPU calls.
+The base model selects only 6/14 correct teacher-active CLICK targets in that
+training probe. The next candidate therefore needs separate operation and
+CLICK-target supervision; increasing operation-only accuracy cannot correct
+those target errors. New candidate browser and JevBench scores remain pending.

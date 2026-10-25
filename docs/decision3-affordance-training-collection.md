@@ -130,3 +130,5 @@ Operation-only 監督可提供勾選完成後轉向 TYPE_TEXT 或 SELECT 的訊�
 這項收集始終回報 `model_calls=0`、`model_score=null`，不替代真正模型在瀏覽器中的評測，也不改寫兩套 JevBench 的個別分數。
 
 2026-10-25 的 [checked-control 收集驗收](validation/2026-10-25/decision3-checked-control-collection-results.md)已接受兩個場景的 10 筆完整原生資料，實際皆為 K6，並通過獨立 admission。這是模型呼叫為 0 的資料收集；後續特徵擷取、訓練與真正模型評測仍需各自的新證據。
+
+2026-10-26 的 [goal-routed 收集、GPU 特徵與 TRAIN 診斷](validation/2026-10-26/decision3-goal-routed-native-collection-results.md)已接受 12 個新 TRAIN 場景、34 筆完整 K6／四個 head 的資料，以及後續 34 次真實 GPU 呼叫的特徵與獨立數值重播。原始資料收集的模型呼叫為 0；事後診斷未新增模型呼叫。原始模型在這 34 筆 TRAIN wire 中選對 10 筆操作，在 22 筆需 target 的資料中選對 14 筆，操作與所需 target 同時正確為 10/34；其中 8 個 CLICK target 錯誤，無法只靠 operation 訓練修正。後續擬以 153 筆 operation 資料及另外 14 筆教師實際執行 CLICK 的 target 標籤實作新訓練，保留原始 mask 與 target ID，並完成獨立資料驗收與新的 fit capability。新權重、候選模型瀏覽器評測、完整 10 題及兩套 JevBench 分數仍待後續驗證。
