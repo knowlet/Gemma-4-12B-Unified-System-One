@@ -1,0 +1,235 @@
+{
+  "schema": "decision3-affordance-feature-replay-public-aggregate-v1",
+  "date": "2026-10-25",
+  "timezone": "Asia/Taipei",
+  "publication_base_commit": "97e1e6696e598c0f7db1ef8ba1cf7943464a91f4",
+  "runtime_source_base_commit": "5add90155fc811648865d8ed60cfd4f57efdc98e",
+  "model": {
+    "id": "vllm-sr/d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "backbone_precision": "BF16",
+    "readout_precision": "FP32",
+    "readout_shape": [
+      255,
+      1024
+    ],
+    "temperature": 1.0,
+    "adaptation_applied": false
+  },
+  "resource_contract": {
+    "cpu_affinity": [
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_quota_percent": 500,
+    "threads": 5,
+    "memory_max_bytes": 4294967296,
+    "swap_max_bytes": 0,
+    "whole_hard_seconds": 120,
+    "per_call_hard_seconds": 20,
+    "native_max_batch": 4
+  },
+  "aggregate": {
+    "requests_planned": 13,
+    "requests_complete_and_independently_replayed": 13,
+    "operation_K_counts": {
+      "4": 4,
+      "7": 5,
+      "8": 4
+    },
+    "question_head_counts": {
+      "2": 4,
+      "4": 9
+    },
+    "head_comparisons": 44,
+    "legal_probability_comparisons": 139,
+    "ordered_argmax_matches": 44,
+    "absolute_tolerance": 1e-06,
+    "relative_tolerance": 1e-05,
+    "independent_float64_witness_max_absolute_error": 1.5103635578883612e-06,
+    "all_full_wires_heads_singletons_and_orders_preserved": true,
+    "same_FP32_baseline_bytes_across_loads": true,
+    "baseline_raw_FP32_sha256": "d408d94a0ab2915fa85c511dd9b8d62af49903c4e4ca28e2e2d5aff9ef565e0f",
+    "model_loads": 2,
+    "optimizer_steps": 0,
+    "fit_authorized": false,
+    "model_qualified": false,
+    "model_score": null,
+    "general_long_input_latency_or_browser_quality_claimed": false
+  },
+  "runs": [
+    {
+      "chunk_index": 0,
+      "requests": 8,
+      "operation_K_counts": {
+        "4": 4,
+        "7": 4
+      },
+      "question_head_counts": {
+        "2": 4,
+        "4": 4
+      },
+      "head_comparisons": 24,
+      "legal_probability_comparisons": 72,
+      "independent_float64_witness_max_absolute_error": 5.72657545161448e-07,
+      "all_ordered_argmaxes_matched": true,
+      "all_native_Torch_NumPy_and_stdlib_witnesses_matched": true,
+      "owner_completed": true,
+      "scoped_closure_positive": true,
+      "source_refs_checked": 27,
+      "original_flags": {
+        "model_qualified": false,
+        "continuation_authorized": false,
+        "whole_tree_exit_confirmed": false,
+        "no_escape_enforced": false
+      },
+      "fit_authorized": false,
+      "model_score": null,
+      "case_seconds": [
+        3.8048309999867342,
+        3.734906994010089,
+        3.9056103659968358,
+        3.9748411780165043,
+        6.343525526986923,
+        6.577483702014433,
+        6.480536685994593,
+        6.86897459498141
+      ],
+      "controller_wall_seconds": 57.32735912501812,
+      "unit_memory_peak_bytes": 1789501440,
+      "unit_memory_events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "proof_sha256": {
+        "root_independent_audit": "5e40f1c3f61642b207dc626aa90c19796b65a55c10b45c6513e6865fad9b162d",
+        "root_execution": "dcc23827a2d2c4a105dfbbdaafc1c0eeb1938f6484ad5499ecfea134b51405c1",
+        "owner_receipt": "f3686e56763c2f4aea509fdaf6f0f33fb590ad59a9e4088f64aad459884b476c",
+        "closure": "3ca1a18413a56709c9fef409f8eee0ce61a75d2cc67aaffbf872ac8bba6f96a1",
+        "admission": "d7041a2de48ddaefdb2e1f8dc7d972a12035fe6dccf408eb0003f06b71e43bf3",
+        "sealed_config": "7793447dddd6fa517e6d659644f1329817c2278e69f9bfaa7876abcf7c0fe19c",
+        "command_intent": "c11379a8fef28afbfed6dda9e59e3be4b94c33b2afef4214bbce7f533d92f931",
+        "command_started": "3168bf0f04eceb90fa59036a53f6ca9f4381352407abda8c3d75387b8029e40a",
+        "command_result": "adc5ae0524ed38e067c9321d4a91a6077032d1dbfc9a02bcace2e309bc0110ba",
+        "plan": "cd523ccc1acf5e4b196761cea0fc2ffba0067d6c5048117de22a27893e4e3424",
+        "selection": "6bef6342eaff5d81ba8fdca3e06b0a42af598682b3c042913582cba181e72aed",
+        "chunk": "3a8cb30bbfe51fbf37651c9853507e2c20929177169d2a11fe4187acead4b312",
+        "state": "3fe333dc207bb2b73b5cd75cfd968ebedecb0a8687f9e41fc0a06d753413e213",
+        "audit_source": "bf1dd7dd1f09c4cd4d2a67581888f2757ffbb86a9def47af1a13ba3026cd835a"
+      }
+    },
+    {
+      "chunk_index": 1,
+      "requests": 5,
+      "operation_K_counts": {
+        "7": 1,
+        "8": 4
+      },
+      "question_head_counts": {
+        "4": 5
+      },
+      "head_comparisons": 20,
+      "legal_probability_comparisons": 67,
+      "independent_float64_witness_max_absolute_error": 1.5103635578883612e-06,
+      "all_ordered_argmaxes_matched": true,
+      "all_native_Torch_NumPy_and_stdlib_witnesses_matched": true,
+      "owner_completed": true,
+      "scoped_closure_positive": true,
+      "source_refs_checked": 27,
+      "original_flags": {
+        "model_qualified": false,
+        "continuation_authorized": false,
+        "whole_tree_exit_confirmed": false,
+        "no_escape_enforced": false
+      },
+      "fit_authorized": false,
+      "model_score": null,
+      "case_seconds": [
+        6.466458364011487,
+        6.734668199002044,
+        7.182984132989077,
+        6.9715610739949625,
+        7.342196006997256
+      ],
+      "controller_wall_seconds": 48.969420377979986,
+      "unit_memory_peak_bytes": 1447174144,
+      "unit_memory_events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "proof_sha256": {
+        "root_independent_audit": "e4ea1eedd070953a9ca2b6de049c25ff06dcefb564e0e66e52b171ae90a393fc",
+        "root_execution": "a345bc0a4fb6fa8c92ea4a1f25e3be2884ca4bb003ffd84011d7282b34b9cdbe",
+        "owner_receipt": "7efa6dddda683979b5248182eb44099468f2e57214a43c0c759614b1455b4fc2",
+        "closure": "e77c3265d507549c4832b6f9bb804ed6aeb223d396acf6f32e83551f7b6eb54c",
+        "admission": "f02ec4780260177a1a50e9ce3bdb703ab39db753bef23a0fbf6057cb94a676a5",
+        "sealed_config": "0faec1cf5b161f0978b6d68447b9359c5ad55edac1a0c2301ee002a33b57cd25",
+        "command_intent": "7142e4e84c613b9b691ee8594f8f9c3af77d307785863f45039130c70c640c5a",
+        "command_started": "05b7bf52c6f5a73f9c41680971ccd634ecb22e501ac029e6e3cb1a1318403df4",
+        "command_result": "c8b29878dd7ec352a968005a0cebc7847d27a753f4104703718973f5e7a8e1c8",
+        "plan": "80a6f7b587ef1c762267d632f7f640a24037aa98953285895f5db4472cbbcbe8",
+        "selection": "8c3470433488bd27bc98b614e79668140600913daa771ee427ae56d69df327ec",
+        "chunk": "4dd676cbac7f5177aec1c55520fb3824d49606a90d9e0d3cfd093ab110ab5efa",
+        "state": "8aaf4b95976640fcb5e4bc9d62068b9cdd898f9cd14a7e0de8abd0861be1a17a",
+        "audit_source": "bf1dd7dd1f09c4cd4d2a67581888f2757ffbb86a9def47af1a13ba3026cd835a"
+      }
+    }
+  ],
+  "prelaunch_refusal": {
+    "owner_output_created": false,
+    "model_started": false,
+    "reason": "source reference duplicated between owner base and selected pool",
+    "unchanged_controller_preflight_passed_after_pool_deduplication": true,
+    "root_review_sha256": "f189388d2948e4319b32f76c0b754bfcfbf485bb4fc247ceb7c0478da1fd11e1"
+  },
+  "source_qualification": {
+    "held_collector_sha256": "85eaa283c702dcbf15095ae38b5e3d7fa959dbc652ae510ef44f0b9069b2a30f",
+    "released_collector_sha256": "d7e1b246a13bd0bdb023eb23eff4a894d39a1d3f2f08b58e100def127ceb810c",
+    "release_diff": "SOURCE_ONLY True to False only",
+    "stdlib_fake_tests_passed": 7,
+    "fake_test_source_sha256": "541b57c5c0797ec2337474803fb618eb456f8d4eb426382abd712bd1dbb3626b",
+    "independent_source_review": "no definite blocker found; source only, not independent actual execution review",
+    "root_source_review_sha256": "fcf64b404ada49be83ecaef1478c7f843cfb99852eb2c12f7da33ce76788d76d",
+    "root_stdlib_audit_source_sha256": "bf1dd7dd1f09c4cd4d2a67581888f2757ffbb86a9def47af1a13ba3026cd835a"
+  },
+  "operation_labels": {
+    "rows": 13,
+    "source": "independently admitted authored valid_next_targets",
+    "model_raw_choices_used": false,
+    "step_ID_used_to_infer_label": false,
+    "separate_from_feature_capture_inputs": true,
+    "labels_file_sha256": "8be7bdcaf1fea155c9da82d6eb4ed089b1d750e2ac1b4921d98bb93926aa994b",
+    "root_export_provenance_sha256": "99290c856ee3921720300238c254cb94c6163adbe75827f802affe02cae73eed",
+    "fit_authorized": false
+  },
+  "ci_fix": {
+    "commit": "97e1e6696e598c0f7db1ef8ba1cf7943464a91f4",
+    "previous_run_id": 40163776603,
+    "previous_cause": "macOS full-suite job reached 98 percent and exceeded the 15 minute outer job cap",
+    "new_run_id": 40165094891,
+    "all_five_jobs_succeeded": true,
+    "outer_job_timeout_minutes": 20,
+    "model_and_benchmark_deadlines_changed": false,
+    "pytest_slowest_tests_reported": 15
+  },
+  "new_candidate_scores": {
+    "trained": false,
+    "browser_10_case_score": null,
+    "benchmark_heaven_public231": null,
+    "jevbench_coherenceMINI": null,
+    "competitor_win_established": false
+  },
+  "private_payloads_in_public_report": false,
+  "complete_public_replay_archive_claimed": false
+}
