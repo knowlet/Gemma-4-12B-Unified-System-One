@@ -1,6 +1,6 @@
 # Decision3 可變操作選項訓練資料收集
 
-此收集器最初用來補足固定 K=8 訓練資料與實際可變選項之間的覆蓋缺口。新增的 checked-control 設定另提供勾選控制項與後續欄位操作的通用場景；兩種設定分別驗證，均不提供模型品質分數。
+此收集器最初用來補足固定 K=8 訓練資料與實際可變選項之間的覆蓋缺口。checked-control 設定提供勾選控制項與後續欄位操作；goal-routed 設定另涵蓋依目標選擇下一個操作的場景。各設定分別驗證，均不提供模型品質分數。
 
 [收集器](../scripts/jev_decision3_affordance_collection.py)透過 `--scenario-profile` 明確選擇 train-only 場景來源：
 
@@ -8,6 +8,7 @@
 | --- | --- | --- | --- |
 | `affordance-v1`（預設） | [原始場景模組](../scripts/jev_decision3_affordance_scenarios.py) | 四個可變選項場景 | 4、7、8 |
 | `checked-control-progress-v1`（須明確選定） | [checked-control 場景模組](../scripts/jev_decision3_checked_control_scenarios.py) | `radio-two`、`radio-three` | 6 |
+| `goal-routed-control-v1`（須明確選定） | [依目標選擇操作的場景模組](../scripts/jev_decision3_goal_routed_control_scenarios.py) | 每個種子 12 個場景，初始 CLICK／TYPE_TEXT／SELECT 各 4 個 | 6 |
 
 預設設定保留原來四個場景與 K4／K7／K8 的完整要求：
 
@@ -19,6 +20,8 @@
 | `form-middle` | 捲動至段落，再填寫、選取與送出 | 7、8 |
 
 新設定的兩個場景族各有兩個或三個 radio 控制項，另有文字欄位、選單與送出按鈕，不需要捲動。種子會輪替可見標籤、所需值與 DOM 順序。教師路徑依實際狀態選取尚未勾選的目標 radio，再填寫、選取、送出，最後重新驗證 DONE；已勾選的 radio 仍保持可見且可點擊。研究依據與資料界線見 [checked-control 狀態進度設計](research/jev-checked-control-progress.md)。
+
+`goal-routed-control-v1` 補足固定 radio→文字→選單路徑的覆蓋缺口：radio 可能與目標無關，也可能已符合要求；教師只操作尚未完成且目標有要求的欄位，再送出並驗證實際記錄。普通表單起始值、目標文字順序與 DOM 排列會變化；可見且可點的控制項保留在原始選項中。場景網址使用不包含路徑類別的識別碼。這份設定沒有加入合成操作歷史，也不修改停滯規則。計畫中的新場景仍須完成真實瀏覽器收集與獨立 admission，才能成為資料證據。
 
 K 由原始 publisher 根據實際觀測建立，不注入或刪減選項。表中的數字是各設定的收集計畫要求；只有獨立驗證通過，才能確認實際涵蓋。每種 K 都須包含繼續操作與經驗證的完成狀態，新設定的 K6 不會放寬預設設定的 K4／K7／K8 要求。
 
@@ -44,10 +47,10 @@ K 由原始 publisher 根據實際觀測建立，不注入或刪減選項。表�
 
 | 欄位 | 用途 |
 | --- | --- |
-| `scenario_profile` | 明確選定 `affordance-v1` 或 `checked-control-progress-v1` |
-| `scenario_schema_id` | 所選場景模組的 schema；新設定為 `decision3-owned-checked-control-scenarios-v1` |
-| `scenario_namespace` | 所選訓練身分範圍；新設定為 `decision3-owned-checked-control-training-v1` |
-| `expected_menu_counts` | 預設為 `[4, 7, 8]`；新設定為 `[6]`，仍須由真實觀測證明 |
+| `scenario_profile` | 明確選定上表中的設定；省略時沿用 `affordance-v1` |
+| `scenario_schema_id` | 所選場景模組的獨立 schema |
+| `scenario_namespace` | 所選場景模組的獨立訓練身分範圍 |
+| `expected_menu_counts` | 預設為 `[4, 7, 8]`；兩個控制項設定為 `[6]`，仍須由真實觀測證明 |
 
 來源庫存包含收集器內的設定登錄與所選場景模組；新設定也固定原始模組，涵蓋共用輔助程式。重新規劃、收據、軌跡與 admission 都會核對設定身分；profile、schema 或 namespace 不符時，在教師或 DOM 重播前拒絕。缺少設定欄位的舊計畫只能解讀為原始場景，不能讓新 namespace 退回預設設定。新場景的 scenario、ancestor 及正規化目標雜湊仍須通過同一套排除清單，已曝光的評測案例與目標不得轉為訓練標籤。
 
@@ -72,6 +75,8 @@ python scripts/jev_decision3_affordance_collection.py \
 沒有 `--collect` 時只回傳計畫，不建立輸出目錄，也不啟動瀏覽器。CLI 必須明確指定 `--observation-profile`；settled V7 可用，也可選擇 CLI 列出的原生或其他支援設定。
 
 上述範例選擇新 checked-control 設定。若要使用原來四個場景，可指定 `--scenario-profile affordance-v1`；省略此參數也會保留原始預設。收集時必須沿用檢視過的場景設定及所有其他參數。
+
+若要選擇依目標決定操作的 12 個場景，改用 `--scenario-profile goal-routed-control-v1`，並使用全新的輸出目錄與 collection ID。不同設定的計畫、收據及軌跡不可互換；新設定不會改寫先前已接受的 119 筆訓練資料或授權。
 
 檢視 `prospective.json` 後，保留完全相同的參數，再加上：
 

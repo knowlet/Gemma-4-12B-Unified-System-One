@@ -42,6 +42,7 @@ MAX_TICKS = 16
 SETTLED_V7_PROFILE = "composed-visible-text-settled-v7"
 DEFAULT_SCENARIO_PROFILE = "affordance-v1"
 CHECKED_CONTROL_PROFILE = "checked-control-progress-v1"
+GOAL_ROUTED_CONTROL_PROFILE = "goal-routed-control-v1"
 _SCENARIO_REGISTRY = {
     DEFAULT_SCENARIO_PROFILE: (
         "jev_decision3_affordance_scenarios",
@@ -53,6 +54,12 @@ _SCENARIO_REGISTRY = {
         "jev_decision3_checked_control_scenarios",
         "decision3-owned-checked-control-scenarios-v1",
         "decision3-owned-checked-control-training-v1",
+        (6,),
+    ),
+    GOAL_ROUTED_CONTROL_PROFILE: (
+        "jev_decision3_goal_routed_control_scenarios",
+        "decision3-owned-goal-routed-control-scenarios-v1",
+        "decision3-owned-goal-routed-control-training-v1",
         (6,),
     ),
 }
