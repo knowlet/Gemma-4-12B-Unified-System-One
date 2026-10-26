@@ -60,9 +60,10 @@ usage. Complete real native calls, including their watchdog cleanup, take
 not include the full browser, HTTP service or text helper.
 
 The [machine-readable report](decision3-navigation-distractor-two-head-gpu-results.json)
-contains aggregate evidence and immutable hashes. The next step is a short
-matched browser pair with unchanged actions, helper, judge and budgets. This
-candidate's full browser score, JevBench coherence score and Benchmark Heaven
-score remain unmeasured. The previous candidate's
+contains aggregate evidence and immutable hashes. This is the GPU milestone
+snapshot. The subsequent [matched browser report](decision3-navigation-distractor-two-head-browser-results.md)
+records 0/1 for both this candidate and NF4, including repeated clicks on an
+already-selected radio. Full browser, JevBench coherence and Benchmark Heaven
+scores remain unmeasured. The previous candidate's
 [0/1 versus 0/1 pair](decision3-goal-routed-two-head-gpu-browser-results.md)
 remains historical evidence; no ranking or win is claimed.
