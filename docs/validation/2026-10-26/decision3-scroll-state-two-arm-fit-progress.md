@@ -1,5 +1,7 @@
 # Decision3 scroll-state two-arm training progress
 
+Update: the source-selection correction, fresh fits and independent FP64 acceptance are complete. See the [accepted two-arm results](decision3-scroll-state-two-arm-fit-results.md). The initial observations and failure record below remain preserved.
+
 Two genuine GX10 CPU5 training runs completed, each fitting separate operation273 and teacher-active CLICK65 delta heads from zero. Equal weighting took 44.01 seconds; balanced weighting took 43.01 seconds. Both used the same immutable 225/47 prefix, new 48/18 rows, frozen encoder and W0, 10,000 steps per head, learning rate 0.003, L2 0.0001 and seed 20261023. Both heads now use effective minibatches of 64; the previous CLICK47 fit used 47.
 
 **Numerical acceptance is pending.** The independent FP64 replay stopped at its final source-selection guard: one authenticated transitive original119 loader actually executes and also needs explicit parent selection. The guard remains enforced. The next attempt will select that exact source, preserve these outputs and rerun both training arms with fresh capabilities and owner outputs. These figures are the fit programs' TRAIN observations, with no accepted independent numerical output yet.
