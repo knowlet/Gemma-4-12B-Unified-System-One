@@ -1,0 +1,67 @@
+{
+  "schema": "decision3-gpu-forward-lease-service-preparation-results-v1",
+  "status": "service_preparation_only",
+  "date": "2026-10-25",
+  "code_base_commit": "4d22c8444422c3889612111879903bd8c21bf866",
+  "public_sources": {
+    "scripts/jev_gpu_forward_lease.py": {
+      "path": "scripts/jev_gpu_forward_lease.py",
+      "sha256": "256aaefbda3148a506043dc81b2211a57ea8adb79e61dd7a9d34c29153363325"
+    },
+    "tests/test_jev_gpu_forward_lease.py": {
+      "path": "tests/test_jev_gpu_forward_lease.py",
+      "sha256": "3c5680ec4217c504093c388849bd21be2c9c8082db919687a6914ae03306a3f7"
+    }
+  },
+  "frozen_private_serializer_sha256": "6f1a7a06ab0ed65be6d8551c5ebcc9602666d15c0097a3422e4ad230932ecaac",
+  "public_serializer_AST_identical_to_private": true,
+  "invented_stdlib_controls": {
+    "passed": 22,
+    "wall_seconds": 0.195,
+    "execution_exit_code": 0,
+    "RLIMIT_AS_bytes": 536870912,
+    "cpu_affinity": [
+      0
+    ],
+    "actual_Torch_imported": false,
+    "actual_GPU_qualified": false
+  },
+  "model_free_resource_control": {
+    "original_execution_exit_code": 0,
+    "original_execution_wall_seconds": 1.724675584002398,
+    "configured_runtime_seconds": 7200,
+    "runtime_readback": "2h",
+    "memory_max_bytes": 8589934592,
+    "memory_swap_max_bytes": 0,
+    "cpu_quota_percent": 500,
+    "observed_main_thread_affinity": [
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "source_pins_verified": 6,
+    "stable_child_identity_samples": 2,
+    "original_scoped_unit_and_observed_cohort_closure_verified": true,
+    "current_unit_cgroup_and_selected_process_identities_absent": true,
+    "model_calls": 0,
+    "browser_calls": 0,
+    "GPU_context_created": false
+  },
+  "model_free_resource_control_proof_sha256": "2badb7bffc0bc04f1633f675468220cde7d4fc30c63ac3b9939532aea3cd1172",
+  "resource_control_is_two_hour_endurance_test": false,
+  "shared_lease_actual_CUDA_execution_qualified": false,
+  "full_GPU_HTTP_service_qualified": false,
+  "full10_matched_browser_qualified": false,
+  "benchmark_qualified": false,
+  "model_qualified": false,
+  "no_escape_enforced": false,
+  "whole_tree_exit_claimed": false,
+  "scores": {
+    "fresh_GPU_candidate_full10_browser": null,
+    "fresh_GPU_candidate_benchmark_heaven": null,
+    "fresh_GPU_candidate_JevBench_coherence": null
+  },
+  "private_material_published": false
+}

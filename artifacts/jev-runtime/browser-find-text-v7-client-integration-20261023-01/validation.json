@@ -1,0 +1,67 @@
+{
+  "schema_id": "v7-find-client-source-validation-v1",
+  "status": "SOURCE_AND_CPU_FLOW_VERIFIED_NOT_RUNTIME_OR_QUALITY_QUALIFIED",
+  "source_refs": [
+    {
+      "path": "artifacts/jev-runtime/browser-find-text-v7-client-integration-20261023-01/find_client_selector.py",
+      "sha256": "0c663f03f9900c5b7c1d0d3e7c64ad51908133eedfea53bd2baf4b5ba3253150",
+      "size_bytes": 15765
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-find-text-v7-client-integration-20261023-01/test_find_client_selector.py",
+      "sha256": "f2dc3d8228d545f802b007b3f2a005173c3f276be551ed8b84fb3df9159e2f4e",
+      "size_bytes": 12341
+    }
+  ],
+  "CPU_receipt": {
+    "path": "artifacts/jev-runtime/browser-find-text-v7-client-integration-20261023-01/cpu-tests-02.xml",
+    "sha256": "2de0b1e47c09f5625cc720b77970dac3c6e55dd509e078903aed6c31e07e03c5",
+    "size_bytes": 3618
+  },
+  "tests": {
+    "passed": 17,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "XML_suite_seconds": 4.548,
+    "pytest_reported_wall_seconds": 4.68,
+    "scope": "Actual canonical Agent/choose/field_text/post_json retry plus original model_adapter and private script main, with explicit fake transport and fake Browser CDP replies only"
+  },
+  "CPU_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 taskset -c 0 prlimit --as=1073741824 --cpu=30 --core=0 timeout 45s .venv/bin/python -B -m pytest -q -p no:cacheprovider artifacts/jev-runtime/browser-find-text-v7-client-integration-20261023-01/test_find_client_selector.py --junitxml=artifacts/jev-runtime/browser-find-text-v7-client-integration-20261023-01/cpu-tests-02.xml",
+  "safe_Ruff": {
+    "check": "PASS",
+    "format": "PASS",
+    "limits": "RAYON_NUM_THREADS=1, one CPU,30-second CPU/45-second wall, core0; no address-space cap on Ruff"
+  },
+  "supporting_CPU_fixture": {
+    "path": "artifacts/jev-runtime/browser-find-text-profile-20261022-01/test_find_profile.py",
+    "sha256": "498c05819cb153c2d01717675847eb43899eab33cbc0f095942ad779e5c009ac",
+    "size_bytes": 25433
+  },
+  "independent_source_review": {
+    "path": "artifacts/jev-runtime/browser-find-text-v7-client-integration-20261023-01/independent-review.json",
+    "sha256": "90d8e2ce44e1ec2fbe7e2a1e0675be5f88aaf6221be543e17fe101ca7517f5dc",
+    "size_bytes": 3193
+  },
+  "parity": {
+    "path": "artifacts/jev-runtime/browser-find-text-v7-client-integration-20261023-01/source-parity.json",
+    "sha256": "5e7ed410da007b0e0243c9354c4007a563840dd9bc3c14e8769e86c7cb040794",
+    "size_bytes": 3406
+  },
+  "prepared_metadata": {
+    "path": "artifacts/jev-runtime/browser-find-text-v7-client-integration-20261023-01/prepared-bundle-manifests.json",
+    "sha256": "de4b0aab9e9ca960f85625371b0d048b2ece2211bf6f1d6c4d6dd478f9953623",
+    "size_bytes": 8271
+  },
+  "historical_receipt": "cpu-tests-01.xml contains the initial two test-only failures caused by incorrectly treating an imported verifier as a local function. Corrected fixture assertions compare its import AST and checked source bytes. It is excluded from the final inventory and does not qualify final source.",
+  "actual_browser_model_service_network_or_production_task_started": false,
+  "live_helper_seed_read": false,
+  "quality_score": null,
+  "pending": [
+    "Explicit new owner/source-union binding of this client and compatible c371 service selector",
+    "Fresh actual Q95 helper authorization/liveness and physical resource admission",
+    "Actual canonical loaded module/runtime/N3/device/cache/geometry/text identity checks",
+    "Actual V7 browser execution, complete ten-task outputs, judges and final closure",
+    "Matched quality and cross-model comparison"
+  ]
+}

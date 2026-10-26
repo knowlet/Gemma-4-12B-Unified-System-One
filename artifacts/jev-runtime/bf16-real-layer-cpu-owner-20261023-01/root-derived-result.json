@@ -1,0 +1,612 @@
+{
+  "schema": "bf16-real-layer-root-derived-result-v1",
+  "created_at_utc": "2026-10-23T00:26:53.440599+00:00",
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/receipt.json",
+      "sha256": "7cf81ded5ed522343a4bc90a1ea29af7df258befebc1fb1d30829603e0f54175",
+      "size_bytes": 92481
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/receipt.json",
+      "sha256": "c887fbfdc144703fb8422ac11e4a21fd17afb893170349d5836bb8a2162a87cf",
+      "size_bytes": 245152
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/root-execution-01.json",
+      "sha256": "8b35b2dae5a2b37fa6f41f108e5f682f70d0523bd134ca519d6f4098cd6a3a97",
+      "size_bytes": 1161
+    }
+  ],
+  "controller_exit_code": 0,
+  "root_wall_seconds": 18.758682708998094,
+  "actor_elapsed_seconds": 17.74222436600394,
+  "actor_peak_RSS_bytes": 1491501056,
+  "unit_preclose_memory": {
+    "MainPID": "315824",
+    "Result": "success",
+    "ExecMainPID": "315824",
+    "ExecMainCode": "0",
+    "ExecMainStatus": "0",
+    "MemoryPeak": "1593921536",
+    "Description": "jev-d3-boundary-6e44901eaa5b68dc8fb39604abb78768",
+    "InvocationID": "a4779510347a49708111bffb29c8a2a6"
+  },
+  "selected_weight_bytes": 931986436,
+  "explicit_selected_range_hash_bytes": 1863972872,
+  "completed_case_timings": [
+    {
+      "layer_index": 0,
+      "tokens": 1,
+      "forward_seconds": [
+        0.38799882600142155,
+        0.35632019400509307
+      ],
+      "output_sha256": "048abb1debbf0488d78cb29f089e4a2754be10c7346cc440d72adf8a938cf607"
+    },
+    {
+      "layer_index": 0,
+      "tokens": 32,
+      "forward_seconds": [
+        0.3633051290016738,
+        0.362044714995136
+      ],
+      "output_sha256": "4b07e9ce95c3d71a5764dcc83d1ff25da02f8487276ce926741780083d2ac763"
+    },
+    {
+      "layer_index": 5,
+      "tokens": 1,
+      "forward_seconds": [
+        0.4358123609999893,
+        0.42850304099556524
+      ],
+      "output_sha256": "5c5e15aee1cd9fb9ef273365eecd945b3e894d465d39587d7956254922c8115d"
+    },
+    {
+      "layer_index": 5,
+      "tokens": 32,
+      "forward_seconds": [
+        0.4115860390011221,
+        0.4065121419989737
+      ],
+      "output_sha256": "e805f87e96b2391c3b54e5085d61ce428d07a925f9e7f403a4869a82a2c0b86e"
+    }
+  ],
+  "stage_count": 21,
+  "stages": [
+    {
+      "name": "imports-native-config-rotary-ready",
+      "elapsed_seconds": 10.481837823004753,
+      "process": {
+        "RssAnon_bytes": 511868928,
+        "RssFile_bytes": 342233088,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 854102016,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 516464640,
+        "memory_peak_bytes": 516464640,
+        "memory_stat": {
+          "anon": 511873024,
+          "file": 630784,
+          "kernel": 3739648,
+          "pgfault": 136965,
+          "pgmajfault": 0,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-0-selected-range-prehash",
+      "elapsed_seconds": 11.355681717999687,
+      "process": {
+        "RssAnon_bytes": 514469888,
+        "RssFile_bytes": 342233088,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 856702976,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 967614464,
+        "memory_peak_bytes": 967614464,
+        "memory_stat": {
+          "anon": 514469888,
+          "file": 449273856,
+          "kernel": 3743744,
+          "pgfault": 137599,
+          "pgmajfault": 0,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-0-before-meta-construction",
+      "elapsed_seconds": 11.359239665005589,
+      "process": {
+        "RssAnon_bytes": 514469888,
+        "RssFile_bytes": 342233088,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 856702976,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 967614464,
+        "memory_peak_bytes": 967614464,
+        "memory_stat": {
+          "anon": 514469888,
+          "file": 449273856,
+          "kernel": 3743744,
+          "pgfault": 137599,
+          "pgmajfault": 0,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-0-meta-constructed",
+      "elapsed_seconds": 11.367536326004483,
+      "process": {
+        "RssAnon_bytes": 514527232,
+        "RssFile_bytes": 343019520,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 857546752,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 967614464,
+        "memory_peak_bytes": 967614464,
+        "memory_stat": {
+          "anon": 514469888,
+          "file": 449273856,
+          "kernel": 3743744,
+          "pgfault": 137599,
+          "pgmajfault": 0,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-0-meta-strict-assign-VMA",
+      "elapsed_seconds": 11.427909240002919,
+      "process": {
+        "RssAnon_bytes": 516272128,
+        "RssFile_bytes": 344375296,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 860647424,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 969449472,
+        "memory_peak_bytes": 969449472,
+        "memory_stat": {
+          "anon": 516263936,
+          "file": 449290240,
+          "kernel": 3784704,
+          "pgfault": 138079,
+          "pgmajfault": 0,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-0-tokens-1-repeat-0",
+      "elapsed_seconds": 11.842428880001535,
+      "process": {
+        "RssAnon_bytes": 634978304,
+        "RssFile_bytes": 806428672,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1441406976,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1092972544,
+        "memory_peak_bytes": 1092972544,
+        "memory_stat": {
+          "anon": 634970112,
+          "file": 451518464,
+          "kernel": 4984832,
+          "pgfault": 145377,
+          "pgmajfault": 23,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-0-tokens-1-repeat-1",
+      "elapsed_seconds": 12.204392956002266,
+      "process": {
+        "RssAnon_bytes": 635240448,
+        "RssFile_bytes": 806428672,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1441669120,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1095065600,
+        "memory_peak_bytes": 1109749760,
+        "memory_stat": {
+          "anon": 635240448,
+          "file": 451522560,
+          "kernel": 4993024,
+          "pgfault": 145458,
+          "pgmajfault": 23,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-0-tokens-32-repeat-0",
+      "elapsed_seconds": 12.583594465002534,
+      "process": {
+        "RssAnon_bytes": 518991872,
+        "RssFile_bytes": 808574976,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1327566848,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 981254144,
+        "memory_peak_bytes": 1109749760,
+        "memory_stat": {
+          "anon": 518991872,
+          "file": 453152768,
+          "kernel": 4792320,
+          "pgfault": 146618,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-0-tokens-32-repeat-1",
+      "elapsed_seconds": 12.952352129999781,
+      "process": {
+        "RssAnon_bytes": 638767104,
+        "RssFile_bytes": 808574976,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1447342080,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1101484032,
+        "memory_peak_bytes": 1109749760,
+        "memory_stat": {
+          "anon": 638771200,
+          "file": 453156864,
+          "kernel": 5025792,
+          "pgfault": 147791,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-0-after-repeat-state-and-range-integrity",
+      "elapsed_seconds": 13.673551626001426,
+      "process": {
+        "RssAnon_bytes": 640716800,
+        "RssFile_bytes": 808574976,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1449291776,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1103319040,
+        "memory_peak_bytes": 1109749760,
+        "memory_stat": {
+          "anon": 640716800,
+          "file": 453160960,
+          "kernel": 5021696,
+          "pgfault": 148266,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-0-model-and-handle-released-gc",
+      "elapsed_seconds": 13.944560298004944,
+      "process": {
+        "RssAnon_bytes": 640716800,
+        "RssFile_bytes": 360263680,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1000980480,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1102520320,
+        "memory_peak_bytes": 1109749760,
+        "memory_stat": {
+          "anon": 640716800,
+          "file": 453181440,
+          "kernel": 4128768,
+          "pgfault": 148266,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-5-selected-range-prehash",
+      "elapsed_seconds": 14.896711938999943,
+      "process": {
+        "RssAnon_bytes": 640716800,
+        "RssFile_bytes": 360263680,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1000980480,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1586421760,
+        "memory_peak_bytes": 1586421760,
+        "memory_stat": {
+          "anon": 640716800,
+          "file": 935317504,
+          "kernel": 4132864,
+          "pgfault": 148266,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-5-before-meta-construction",
+      "elapsed_seconds": 14.900940733001335,
+      "process": {
+        "RssAnon_bytes": 640716800,
+        "RssFile_bytes": 360263680,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1000980480,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1586421760,
+        "memory_peak_bytes": 1586421760,
+        "memory_stat": {
+          "anon": 640716800,
+          "file": 935317504,
+          "kernel": 4132864,
+          "pgfault": 148266,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-5-meta-constructed",
+      "elapsed_seconds": 14.908964659000048,
+      "process": {
+        "RssAnon_bytes": 640716800,
+        "RssFile_bytes": 360263680,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1000980480,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1586421760,
+        "memory_peak_bytes": 1586421760,
+        "memory_stat": {
+          "anon": 640716800,
+          "file": 935317504,
+          "kernel": 4132864,
+          "pgfault": 148266,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-5-meta-strict-assign-VMA",
+      "elapsed_seconds": 14.966549192002276,
+      "process": {
+        "RssAnon_bytes": 640729088,
+        "RssFile_bytes": 360640512,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1001369600,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1586421760,
+        "memory_peak_bytes": 1586421760,
+        "memory_stat": {
+          "anon": 640716800,
+          "file": 935317504,
+          "kernel": 4132864,
+          "pgfault": 148266,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-5-tokens-1-repeat-0",
+      "elapsed_seconds": 15.4092747110044,
+      "process": {
+        "RssAnon_bytes": 645238784,
+        "RssFile_bytes": 844034048,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1489272832,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1591918592,
+        "memory_peak_bytes": 1591918592,
+        "memory_stat": {
+          "anon": 645238784,
+          "file": 937185280,
+          "kernel": 5120000,
+          "pgfault": 155846,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-5-tokens-1-repeat-1",
+      "elapsed_seconds": 15.842955809006526,
+      "process": {
+        "RssAnon_bytes": 645238784,
+        "RssFile_bytes": 844034048,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1489272832,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1591914496,
+        "memory_peak_bytes": 1591918592,
+        "memory_stat": {
+          "anon": 645238784,
+          "file": 937189376,
+          "kernel": 5124096,
+          "pgfault": 155903,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-5-tokens-32-repeat-0",
+      "elapsed_seconds": 16.266160793005838,
+      "process": {
+        "RssAnon_bytes": 641200128,
+        "RssFile_bytes": 844296192,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1485496320,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1587892224,
+        "memory_peak_bytes": 1592709120,
+        "memory_stat": {
+          "anon": 641200128,
+          "file": 937193472,
+          "kernel": 5132288,
+          "pgfault": 156657,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-5-tokens-32-repeat-1",
+      "elapsed_seconds": 16.67967150100594,
+      "process": {
+        "RssAnon_bytes": 641200128,
+        "RssFile_bytes": 844296192,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1485496320,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1587961856,
+        "memory_peak_bytes": 1593921536,
+        "memory_stat": {
+          "anon": 641200128,
+          "file": 937197568,
+          "kernel": 5132288,
+          "pgfault": 157787,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-5-after-repeat-state-and-range-integrity",
+      "elapsed_seconds": 17.451995818002615,
+      "process": {
+        "RssAnon_bytes": 642031616,
+        "RssFile_bytes": 844296192,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1486327808,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1588748288,
+        "memory_peak_bytes": 1593921536,
+        "memory_stat": {
+          "anon": 641200128,
+          "file": 937197568,
+          "kernel": 5132288,
+          "pgfault": 157787,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    },
+    {
+      "name": "layer-5-model-and-handle-released-gc",
+      "elapsed_seconds": 17.725669444000232,
+      "process": {
+        "RssAnon_bytes": 642031616,
+        "RssFile_bytes": 360591360,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 1002622976,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 1587945472,
+        "memory_peak_bytes": 1593921536,
+        "memory_stat": {
+          "anon": 642031616,
+          "file": 937222144,
+          "kernel": 4165632,
+          "pgfault": 157990,
+          "pgmajfault": 37,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+      }
+    }
+  ],
+  "runtime_host_gate_count": 248,
+  "retained_runtime_gate_count": 64,
+  "minimum_retained_runtime_MemAvailable_bytes": 28027523072,
+  "host_minimum_scope": "Only the64 retained runtime snapshots; not a minimum over248 executed gates or a continuous run minimum.",
+  "reserve_bytes": 26119172916,
+  "initial_MemAvailable_bytes": 28726435840,
+  "final_MemAvailable_bytes": 28591939584,
+  "closure_before_fallback_margin_seconds": 4.575873804002185,
+  "unit": "jev-d3-real-layer-cpu-20261023-01.service",
+  "invocation_id": "a4779510347a49708111bffb29c8a2a6",
+  "actor": {
+    "pid": 315824,
+    "start_ticks": 6414518,
+    "pgid": 315824,
+    "sid": 315824,
+    "uid": 1001,
+    "state": "S",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+  },
+  "status": "COMPLETE_SELECTED_NATIVE_LAYER_CPU_MECHANICS_ONLY",
+  "large_model_or_quality_qualified": false,
+  "limits": [
+    "Synthetic prefill1/32; no decode/KVcache,1024boundary,8192context or full12B.",
+    "Warm selected payload pages; prehash latency excluded from individual forward timings.",
+    "Finite exact-repeat hashes, no independent math oracle or clone arm.",
+    "RSS breakdown, memory.stat, memory.current/peak are distinct non-atomic accounting scopes.",
+    "Deleting layer unmaps selected tensor VMAs; it does not reclaim all charged file cache or allocator anonymous pages.",
+    "CPU SDPA API route observed, no native-kernel or GPU/UMA claim.",
+    "Original Q95 memory/context/finalization gates and prior quality scores unchanged."
+  ]
+}

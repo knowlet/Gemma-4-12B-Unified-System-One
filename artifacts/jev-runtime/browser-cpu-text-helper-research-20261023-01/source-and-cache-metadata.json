@@ -1,0 +1,573 @@
+{
+  "schema": "browser-cpu-text-helper-source-plan-v1",
+  "inspected_at_utc": "2026-10-23T10:16:40.413354+00:00",
+  "repository_head": "3b89b4c4c18b058c30b7d2a15d99f76455249214",
+  "upstream_browser_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "model_payloads_read": false,
+  "tokenizer_payloads_read": false,
+  "runtime_imports_or_execution": false,
+  "source_pins": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts/jev_browser_benchmark.py",
+      "size_bytes": 101360,
+      "sha256": "fe1410675e4decb06a8491a5a83d2ec965629c99f8912b797446c4cb2c155f6c",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts/jev_browser_profile_v7_benchmark.py",
+      "size_bytes": 13506,
+      "sha256": "31450f9002ad216c32b77751997eb27748c491d7bc757c4410294d3704fdfb9e",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts/jev_browser_heldout_benchmark.py",
+      "size_bytes": 9862,
+      "sha256": "e8cf8de413202db27ead401da816bc7d62dc22100b7492a4cf9912ca8f37d601",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts/jev_native_v2_browser.py",
+      "size_bytes": 45824,
+      "sha256": "c513dc5bcb091de4fd0d4bd7a0776078e82be16106328b6de9d8424e32f2ee11",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts/jev_field_syntax_helper.py",
+      "size_bytes": 28699,
+      "sha256": "b1b5d206843dbea9fe840d5ecf74fcf5697b5f6dd579fccebb172de059cd9800",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts/jev_field_json_grammar.py",
+      "size_bytes": 25950,
+      "sha256": "3efe0870aa03fd036a89a83dd9c56fdba32dac673231a81bb0507aeccdedb6de",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/browser_text.py",
+      "size_bytes": 5455,
+      "sha256": "381299d3961afba4ba2a296b1ce9ee5e4b137f5494b14cb4291b70340462b577",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/public6/results/observation-profile/canonical/jev_ultrafast/model.py",
+      "size_bytes": 8469,
+      "sha256": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/public6/results/observation-profile/canonical/jev_ultrafast/questions.py",
+      "size_bytes": 2048,
+      "sha256": "66a7054b85040b949e1757311257ea0c5a843c635f9a40c99f6d15ad660fb422",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/bitsandbytes/__init__.py",
+      "size_bytes": 2222,
+      "sha256": "aafa6ae3b78c28a1fda4fbe47b6b0348aca77ea953c119b4ef5cb6e635bf0811",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/bitsandbytes/backends/cpu/ops.py",
+      "size_bytes": 20911,
+      "sha256": "d4bfca8b4ce6a6a368aeccdd1516f98f505bf374f6e66d64fb22e6229eb1ff67",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/bitsandbytes/backends/default/ops.py",
+      "size_bytes": 19802,
+      "sha256": "e39afd16dca6e6f34a14305ade0ba4acbb49dc2c7a9baf937341d7e33b682819",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/bitsandbytes/autograd/_functions.py",
+      "size_bytes": 17700,
+      "sha256": "77ca54c87b69ad470ac73e5d7dde94948f20de9de8b8764957728bc29831f37f",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/bitsandbytes/nn/modules.py",
+      "size_bytes": 44262,
+      "sha256": "f7ab2160681e2f089caae80d6fd283ac6a9b9f1b82269e6f395c3b046faf606e",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/bitsandbytes/functional.py",
+      "size_bytes": 65287,
+      "sha256": "520a9e9d3afba11124734df60e48a27e38b6389305df888834405b435e285817",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/bitsandbytes/libbitsandbytes_cpu.so",
+      "size_bytes": 32848,
+      "sha256": "f42856ee6795d28a3ab360132e1418fb41686144fd15b510a57da2b50bbe4501",
+      "scope": "installed_runtime_DSO_pin_only_no_execution"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/quantizers/quantizer_bnb_4bit.py",
+      "size_bytes": 7270,
+      "sha256": "284dee75276e56147743c46b15af4c6855bc416f249b532c9fbe25abe13a0cbc",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/models/qwen2/modeling_qwen2.py",
+      "size_bytes": 21608,
+      "sha256": "34390fea7648b444d5727abef0b85acceba28f856aedec6c335d51253806bfee",
+      "scope": "source"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/generation/utils.py",
+      "size_bytes": 232146,
+      "sha256": "bb558d8676be95457126c82a32600dad206c13e4fb96b4f5d114f1f2483d7f62",
+      "scope": "source"
+    }
+  ],
+  "cache_metadata": [
+    {
+      "snapshot": "/home/albert_hsieh/.cache/huggingface/hub/models--unsloth--Qwen3-1.7B/snapshots/6262b50d6c1f8ee5e4ac750d710c33603bfc2a0c",
+      "role": "cached_bf16_generator",
+      "files": [
+        {
+          "relative_path": ".gitattributes",
+          "size_bytes": 1570,
+          "payload_read": false
+        },
+        {
+          "relative_path": "README.md",
+          "size_bytes": 13033,
+          "payload_read": false
+        },
+        {
+          "relative_path": "added_tokens.json",
+          "size_bytes": 707,
+          "payload_read": false
+        },
+        {
+          "relative_path": "chat_template.jinja",
+          "size_bytes": 4761,
+          "payload_read": false
+        },
+        {
+          "relative_path": "config.json",
+          "size_bytes": 752,
+          "payload_read": true,
+          "sha256": "9668cf6a1bb8c53a415b65169988a8ba8b4c3a8ce80e81997cf4d5424110742c",
+          "config": {
+            "architectures": [
+              "Qwen3ForCausalLM"
+            ],
+            "attention_bias": false,
+            "attention_dropout": 0.0,
+            "eos_token_id": 151645,
+            "head_dim": 128,
+            "hidden_act": "silu",
+            "hidden_size": 2048,
+            "initializer_range": 0.02,
+            "intermediate_size": 6144,
+            "max_position_embeddings": 40960,
+            "max_window_layers": 28,
+            "model_type": "qwen3",
+            "num_attention_heads": 16,
+            "num_hidden_layers": 28,
+            "num_key_value_heads": 8,
+            "pad_token_id": 151654,
+            "rms_norm_eps": 1e-06,
+            "rope_scaling": null,
+            "rope_theta": 1000000,
+            "sliding_window": null,
+            "tie_word_embeddings": true,
+            "torch_dtype": "bfloat16",
+            "transformers_version": "4.51.3",
+            "unsloth_fixed": true,
+            "use_cache": true,
+            "use_sliding_window": false,
+            "vocab_size": 151936
+          },
+          "read_scope": "bounded_configuration_metadata_only"
+        },
+        {
+          "relative_path": "generation_config.json",
+          "size_bytes": 237,
+          "payload_read": true,
+          "sha256": "7995f74dd367a291e8a6209c8e8bd44653b3582f43908a5a113551fc18515105",
+          "config": {
+            "bos_token_id": 151643,
+            "do_sample": true,
+            "eos_token_id": [
+              151645,
+              151643
+            ],
+            "max_length": 40960,
+            "pad_token_id": 151654,
+            "temperature": 0.6,
+            "top_k": 20,
+            "top_p": 0.95,
+            "transformers_version": "4.51.3"
+          },
+          "read_scope": "bounded_configuration_metadata_only"
+        },
+        {
+          "relative_path": "merges.txt",
+          "size_bytes": 1671853,
+          "payload_read": false
+        },
+        {
+          "relative_path": "model.safetensors",
+          "size_bytes": 3441185608,
+          "payload_read": false
+        },
+        {
+          "relative_path": "special_tokens_map.json",
+          "size_bytes": 614,
+          "payload_read": false
+        },
+        {
+          "relative_path": "tokenizer.json",
+          "size_bytes": 11422654,
+          "payload_read": false
+        },
+        {
+          "relative_path": "tokenizer_config.json",
+          "size_bytes": 5429,
+          "payload_read": false
+        },
+        {
+          "relative_path": "vocab.json",
+          "size_bytes": 2776833,
+          "payload_read": false
+        }
+      ]
+    },
+    {
+      "snapshot": "/home/albert_hsieh/.cache/huggingface/hub/models--unsloth--qwen3-1.7b-unsloth-bnb-4bit/snapshots/a972f4304f86a0a705d35b378d7a7675d58063a7",
+      "role": "cached_nf4_generator",
+      "files": [
+        {
+          "relative_path": "added_tokens.json",
+          "size_bytes": 707,
+          "payload_read": false
+        },
+        {
+          "relative_path": "chat_template.jinja",
+          "size_bytes": 4673,
+          "payload_read": false
+        },
+        {
+          "relative_path": "config.json",
+          "size_bytes": 1356,
+          "payload_read": true,
+          "sha256": "016ba45fbd6cfb57e1f4e3e0cd9a5a943f9fa5fb47cdbf5b8f8e5bd760f274b0",
+          "config": {
+            "architectures": [
+              "Qwen3ForCausalLM"
+            ],
+            "attention_bias": false,
+            "attention_dropout": 0.0,
+            "eos_token_id": 151645,
+            "head_dim": 128,
+            "hidden_act": "silu",
+            "hidden_size": 2048,
+            "initializer_range": 0.02,
+            "intermediate_size": 6144,
+            "max_position_embeddings": 40960,
+            "max_window_layers": 28,
+            "model_type": "qwen3",
+            "num_attention_heads": 16,
+            "num_hidden_layers": 28,
+            "num_key_value_heads": 8,
+            "pad_token_id": 151654,
+            "quantization_config": {
+              "_load_in_4bit": true,
+              "_load_in_8bit": false,
+              "bnb_4bit_compute_dtype": "bfloat16",
+              "bnb_4bit_quant_storage": "uint8",
+              "bnb_4bit_quant_type": "nf4",
+              "bnb_4bit_use_double_quant": true,
+              "llm_int8_enable_fp32_cpu_offload": false,
+              "llm_int8_has_fp16_weight": false,
+              "llm_int8_skip_modules": [
+                "lm_head",
+                "multi_modal_projector",
+                "merger",
+                "modality_projection",
+                "model.layers.2.mlp"
+              ],
+              "llm_int8_threshold": 6.0,
+              "load_in_4bit": true,
+              "load_in_8bit": false,
+              "quant_method": "bitsandbytes"
+            },
+            "rms_norm_eps": 1e-06,
+            "rope_scaling": null,
+            "rope_theta": 1000000,
+            "sliding_window": null,
+            "tie_word_embeddings": true,
+            "torch_dtype": "bfloat16",
+            "transformers_version": "4.51.3",
+            "unsloth_fixed": true,
+            "use_cache": true,
+            "use_sliding_window": false,
+            "vocab_size": 151936
+          },
+          "read_scope": "bounded_configuration_metadata_only"
+        },
+        {
+          "relative_path": "generation_config.json",
+          "size_bytes": 237,
+          "payload_read": true,
+          "sha256": "7995f74dd367a291e8a6209c8e8bd44653b3582f43908a5a113551fc18515105",
+          "config": {
+            "bos_token_id": 151643,
+            "do_sample": true,
+            "eos_token_id": [
+              151645,
+              151643
+            ],
+            "max_length": 40960,
+            "pad_token_id": 151654,
+            "temperature": 0.6,
+            "top_k": 20,
+            "top_p": 0.95,
+            "transformers_version": "4.51.3"
+          },
+          "read_scope": "bounded_configuration_metadata_only"
+        },
+        {
+          "relative_path": "merges.txt",
+          "size_bytes": 1671853,
+          "payload_read": false
+        },
+        {
+          "relative_path": "model.safetensors",
+          "size_bytes": 1406002142,
+          "payload_read": false
+        },
+        {
+          "relative_path": "special_tokens_map.json",
+          "size_bytes": 614,
+          "payload_read": false
+        },
+        {
+          "relative_path": "tokenizer.json",
+          "size_bytes": 11422654,
+          "payload_read": false
+        },
+        {
+          "relative_path": "tokenizer_config.json",
+          "size_bytes": 10534,
+          "payload_read": false
+        },
+        {
+          "relative_path": "vocab.json",
+          "size_bytes": 2776833,
+          "payload_read": false
+        }
+      ]
+    },
+    {
+      "snapshot": "/home/albert_hsieh/.cache/huggingface/hub/models--inclusionAI--SingGuard-NSFA-0.8B/snapshots/455a72e4331b9ef37ae49154eff2a3715642c17a",
+      "role": "no_backbone_payload",
+      "files": [
+        {
+          "relative_path": "chat_template.jinja",
+          "size_bytes": 7755,
+          "payload_read": false
+        },
+        {
+          "relative_path": "config.json",
+          "size_bytes": 2715,
+          "payload_read": true,
+          "sha256": "d125f037a667ed5653d54718cc3a1531c6024770ad62fe34831cb06d95bc60d2",
+          "config": {
+            "architectures": [
+              "Qwen3_5ForConditionalGeneration"
+            ],
+            "dtype": "bfloat16",
+            "eos_token_id": 248044,
+            "hidden_size": 1024,
+            "image_token_id": 248056,
+            "model_type": "qwen3_5",
+            "pad_token_id": 248044,
+            "text_config": {
+              "attention_bias": false,
+              "attention_dropout": 0.0,
+              "attn_output_gate": true,
+              "bos_token_id": null,
+              "dtype": "bfloat16",
+              "eos_token_id": 248044,
+              "full_attention_interval": 4,
+              "head_dim": 256,
+              "hidden_act": "silu",
+              "hidden_size": 1024,
+              "initializer_range": 0.02,
+              "intermediate_size": 3584,
+              "layer_types": [
+                "linear_attention",
+                "linear_attention",
+                "linear_attention",
+                "full_attention",
+                "linear_attention",
+                "linear_attention",
+                "linear_attention",
+                "full_attention",
+                "linear_attention",
+                "linear_attention",
+                "linear_attention",
+                "full_attention",
+                "linear_attention",
+                "linear_attention",
+                "linear_attention",
+                "full_attention",
+                "linear_attention",
+                "linear_attention",
+                "linear_attention",
+                "full_attention",
+                "linear_attention",
+                "linear_attention",
+                "linear_attention",
+                "full_attention"
+              ],
+              "linear_conv_kernel_dim": 4,
+              "linear_key_head_dim": 128,
+              "linear_num_key_heads": 16,
+              "linear_num_value_heads": 16,
+              "linear_value_head_dim": 128,
+              "mamba_ssm_dtype": "float32",
+              "max_position_embeddings": 262144,
+              "mlp_only_layers": [],
+              "model_type": "qwen3_5_text",
+              "mtp_num_hidden_layers": 1,
+              "mtp_use_dedicated_embeddings": false,
+              "num_attention_heads": 8,
+              "num_hidden_layers": 24,
+              "num_key_value_heads": 2,
+              "pad_token_id": 248044,
+              "partial_rotary_factor": 0.25,
+              "rms_norm_eps": 1e-06,
+              "rope_parameters": {
+                "mrope_interleaved": true,
+                "mrope_section": [
+                  11,
+                  11,
+                  10
+                ],
+                "partial_rotary_factor": 0.25,
+                "rope_theta": 10000000,
+                "rope_type": "default"
+              },
+              "tie_word_embeddings": true,
+              "use_cache": false,
+              "vocab_size": 248081
+            },
+            "tie_word_embeddings": true,
+            "transformers_version": "5.2.0",
+            "use_cache": false,
+            "video_token_id": 248057,
+            "vision_config": {
+              "deepstack_visual_indexes": [],
+              "depth": 12,
+              "dtype": "bfloat16",
+              "hidden_act": "gelu_pytorch_tanh",
+              "hidden_size": 768,
+              "in_channels": 3,
+              "initializer_range": 0.02,
+              "intermediate_size": 3072,
+              "model_type": "qwen3_5",
+              "num_heads": 12,
+              "num_position_embeddings": 2304,
+              "out_hidden_size": 1024,
+              "patch_size": 16,
+              "spatial_merge_size": 2,
+              "temporal_patch_size": 2
+            },
+            "vision_end_token_id": 248054,
+            "vision_start_token_id": 248053
+          },
+          "read_scope": "bounded_configuration_metadata_only"
+        },
+        {
+          "relative_path": "generation_config.json",
+          "size_bytes": 137,
+          "payload_read": true,
+          "sha256": "3487343fcf7aca3b261e72c3ed951525246c6b5f6a8038886bdc0c7cfab2bdf5",
+          "config": {
+            "_from_model_config": true,
+            "eos_token_id": [
+              248044,
+              248046
+            ],
+            "transformers_version": "5.2.0",
+            "use_cache": true
+          },
+          "read_scope": "bounded_configuration_metadata_only"
+        },
+        {
+          "relative_path": "nsfa_heads/NSFA-Dangerous_Operations_Tool_Abuse_head.pth",
+          "size_bytes": 268589,
+          "payload_read": false
+        },
+        {
+          "relative_path": "nsfa_heads/NSFA-Hazardous_Action_Generation_head.pth",
+          "size_bytes": 268541,
+          "payload_read": false
+        },
+        {
+          "relative_path": "nsfa_heads/NSFA-Malicious_Code_and_Cyberattack_head.pth",
+          "size_bytes": 268577,
+          "payload_read": false
+        },
+        {
+          "relative_path": "nsfa_heads/NSFA-Prompt_Injection_and_Jailbreak_head.pth",
+          "size_bytes": 268577,
+          "payload_read": false
+        },
+        {
+          "relative_path": "nsfa_heads/NSFA-Resource_Abuse_head.pth",
+          "size_bytes": 268321,
+          "payload_read": false
+        },
+        {
+          "relative_path": "nsfa_heads/NSFA-Sensitive_Information_Leakage_head.pth",
+          "size_bytes": 268565,
+          "payload_read": false
+        },
+        {
+          "relative_path": "nsfa_heads/NSFA-Sensitive_Information_Stealing_head.pth",
+          "size_bytes": 268577,
+          "payload_read": false
+        },
+        {
+          "relative_path": "preprocessor_config.json",
+          "size_bytes": 390,
+          "payload_read": false
+        },
+        {
+          "relative_path": "processor_config.json",
+          "size_bytes": 1301,
+          "payload_read": false
+        },
+        {
+          "relative_path": "tokenizer.json",
+          "size_bytes": 19990085,
+          "payload_read": false
+        },
+        {
+          "relative_path": "tokenizer_config.json",
+          "size_bytes": 1240,
+          "payload_read": false
+        }
+      ]
+    },
+    {
+      "snapshot": "/home/albert_hsieh/.cache/huggingface/hub/models--ggml-org--models/snapshots/499bc8821c6b12b4e53c5bffcb21ec206f212d81",
+      "role": "toy_story_generator_only",
+      "files": [
+        {
+          "relative_path": "tinyllamas/stories260K.gguf",
+          "size_bytes": 1185376,
+          "payload_read": false
+        }
+      ]
+    }
+  ]
+}

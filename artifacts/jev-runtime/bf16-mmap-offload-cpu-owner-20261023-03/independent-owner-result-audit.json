@@ -1,0 +1,250 @@
+{
+  "checks": {
+    "actor_identity_before_after_join": true,
+    "all_saved_host_and_property_samples_checked": true,
+    "authenticated_live_stop_before_fallback_deadline": true,
+    "core_fd_file_limits": true,
+    "cpu_quota_kernel_readback_and_observed_main_affinity": true,
+    "exact_nonce_invocation_and_source_seal_join": true,
+    "fresh_exact_unit_process_cgroup_absent": true,
+    "pre_torch_dual_admission": true,
+    "root_exit_and_entry_exit_zero": true,
+    "same_pid_start_session_cgroup_across_true_interpreter_exec": true,
+    "source_integrity_rechecked_now": true,
+    "two_saved_no_match_no_unknown_process_scans": true,
+    "unit_memory_swap_and_runtime_readback": true
+  },
+  "conclusion": "PASS: the exact reviewed tiny true-CPU actor completed under authenticated ownership and saved resource/host gates, and the selected unit plus observed cohort closed before the fallback deadline. Actual01/02 remain preserved pre-Torch failures.",
+  "evidence_inventory": [
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/selection.json",
+      "sha256": "b03b26563fbf4da2847b475481aa9fd9258d885644ad492ff8c36633b278c09d",
+      "size_bytes": 7518
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/actual-01/bootstrap-identity.json",
+      "sha256": "0930f5a949adc53b8856ac4ffa6b29de0bc6bcf07bc8d33ada247479502f0a15",
+      "size_bytes": 1371
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/actual-01/receipt.json",
+      "sha256": "69a5cb12d205e1f44b53673339b325813d739a47932c11a05e3e8535b26f0750",
+      "size_bytes": 8536
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/actual-01/bootstrap-identity.json",
+      "sha256": "6e1896849fd68835b50a0dec22e928bcec0a157535184a6a4db2a50551d32c68",
+      "size_bytes": 1419
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/actual-01/receipt.json",
+      "sha256": "a07c0a77048f091c0a954707f127854c5b3d395de571bd37180cac0fdbe76f76",
+      "size_bytes": 8353
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/actor-exit.json",
+      "sha256": "79f468b8b8804f541613c2d899c65853df07b66dd2701e35f15432ae9877712c",
+      "size_bytes": 616
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/actor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/actor.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/admission.json",
+      "sha256": "f7ae7469881f2f4e09a7ebe6ee1abdbef8b465fa02d31420b95381721bb29189",
+      "size_bytes": 455
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/bootstrap-identity.json",
+      "sha256": "a86b16fc3a9569ec3be1cac889a754316a571e7c4441160b539d25961ce2d513",
+      "size_bytes": 1419
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/exec-admission.json",
+      "sha256": "f7ae7469881f2f4e09a7ebe6ee1abdbef8b465fa02d31420b95381721bb29189",
+      "size_bytes": 455
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/exec-identity.json",
+      "sha256": "c80d75fe812d3b858bc9a0905b245ebbb5404d5ba07cb917ba97b911501fcdbd",
+      "size_bytes": 1374
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/external-boundary-closure.json",
+      "sha256": "9bed6b98324ad4a7d7027a8fac595a60c7b606168af2cbd67535156e47b0bd85",
+      "size_bytes": 3445
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/fixture/intent.json",
+      "sha256": "d7c873d7dec8351f54774c03130feb6e32694274b44c3e1fc6fc45414c22b59d",
+      "size_bytes": 592
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/fixture/receipt.json",
+      "sha256": "5cc515f84eece980631f4c06b2ddf0d7ddbac08c852f9b958ec3631f7da44240",
+      "size_bytes": 61149
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/launch-intent.json",
+      "sha256": "5364c5c11404af61dc80f975e8a73b75205e0b1539276a3f63064ca5cd9db0c8",
+      "size_bytes": 2755
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/receipt.json",
+      "sha256": "dd012a37e66fa109e7ad901e11527d8744dc5c73903aa4cdab10b36f991dad1f",
+      "size_bytes": 212439
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/sealed-config.json",
+      "sha256": "1e0d17674b3589bd3fd2aa050c6110560f181036d8fce6b11afe43cf2277e96d",
+      "size_bytes": 2019
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/unit-readback.json",
+      "sha256": "29bed855d0c09d483a11d18873cb4e9f61c813879883a5a2fd7b4c27f0e884bb",
+      "size_bytes": 2495
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/root-execution-01.json",
+      "sha256": "24da1218c6734280c91ac5a1ac1c7cc1c33b14292d747e33d33e672c1f9f9259",
+      "size_bytes": 1100
+    }
+  ],
+  "execution": {
+    "RSS_and_memcg_different_metrics": true,
+    "actor_peak_RSS_MiB": 873.515625,
+    "actor_peak_RSS_bytes": 915947520,
+    "closure_before_deadline_margin_seconds": 4.468742749995727,
+    "controller_exit_code": 0,
+    "cpu_max": [
+      "100000",
+      "100000"
+    ],
+    "delegated_cpuset_available": false,
+    "entry_exit_code": 0,
+    "fixture_elapsed_seconds": 13.738226560002659,
+    "identity": {
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-mmap-cpu-20261023-03.service",
+      "pgid": 307373,
+      "pid": 307373,
+      "sid": 307373,
+      "start_ticks": 6229653,
+      "uid": 1001
+    },
+    "invocation_id": "97199c26d03c4ddfa28f4aa796aca62e",
+    "memory_cgroup_peak_MiB": 699.62109375,
+    "memory_cgroup_peak_bytes": 733605888,
+    "memory_max_bytes": 2147483648,
+    "memory_swap_max_bytes": 0,
+    "nonce": "jev-d3-boundary-456fe3f13277c2df6ef245f05b9ca499",
+    "observed_main_affinity": [
+      0
+    ],
+    "root_wall_seconds": 14.927579590999812,
+    "runtime_max_seconds": 30,
+    "unit": "jev-d3-mmap-cpu-20261023-03.service"
+  },
+  "fresh_absence": {
+    "argv": [
+      "systemctl",
+      "--user",
+      "show",
+      "jev-d3-mmap-cpu-20261023-03.service",
+      "--property=LoadState",
+      "--property=ActiveState",
+      "--property=SubState",
+      "--property=MainPID",
+      "--property=ControlGroup",
+      "--property=InvocationID"
+    ],
+    "cgroup_absent": true,
+    "exact_pid_absent": true,
+    "exit_code": 0,
+    "observed_at_utc": "2026-10-22T23:57:10.523155+00:00",
+    "same_boot": true,
+    "stderr": "",
+    "stdout": "MainPID=0\nControlGroup=\nLoadState=not-found\nActiveState=inactive\nSubState=dead\nInvocationID=\n"
+  },
+  "host_samples": {
+    "all_66_saved_comfy_states": "http_idle with running0 pending0 and savedHTTP200",
+    "continuous_all_host_hard_cap_claim": false,
+    "initial_available_bytes": 28847656960,
+    "initial_plus_final_plus_retained_runtime_count": 66,
+    "initial_required_available_bytes": 28266656564,
+    "min_available_bytes_of_66_saved_samples_only": 28244250624,
+    "reported_runtime_gate_count": 192,
+    "retained_runtime_records": 64,
+    "retention": "first63 plus latest; other128 records are not archived and cannot be independently recomputed",
+    "runtime_reserve_bytes": 26119172916
+  },
+  "limits": [
+    "Owner/execution qualification for this tiny CPU fixture only; no model, GPU transfer,12B,8192context,20s,Q95 or benchmark quality qualification.",
+    "Numerical/storage/tie/LoRA conclusions require the separate mechanism audit.",
+    "Saved host minimum describes66 records, not all192 runtime gates or a continuous host maximum.",
+    "CPU0 affinity covers observed main-thread samples; unavailable delegated cpuset provides no prevention of later widening or all-thread lifetime proof.",
+    "RSS and cgroup memory peak measure different scopes and are not interchangeable.",
+    "Authenticated unit and observed cohort closure only; no whole-process-tree or escape-prevention claim.",
+    "Five binary identities are stat-only; generated tensor and binary payloads were not read by this audit."
+  ],
+  "prior_failures_preserved": [
+    {
+      "closure_pass": true,
+      "error": {
+        "evidence": null,
+        "message": "[Errno 2] No such file or directory: '/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-mmap-cpu-20261023-01.service/cpuset.cpus.effective'",
+        "phase": "controller",
+        "returncode": null,
+        "stderr": null,
+        "stdout": null,
+        "type": "FileNotFoundError"
+      },
+      "owner": "01",
+      "pre_torch": true,
+      "receipt": {
+        "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/actual-01/receipt.json",
+        "sha256": "69a5cb12d205e1f44b53673339b325813d739a47932c11a05e3e8535b26f0750",
+        "size_bytes": 8536
+      }
+    },
+    {
+      "closure_pass": true,
+      "error": {
+        "evidence": null,
+        "message": "Actual process limit: Max core file size",
+        "phase": "controller",
+        "returncode": null,
+        "stderr": null,
+        "stdout": null,
+        "type": "ValueError"
+      },
+      "owner": "02",
+      "pre_torch": true,
+      "receipt": {
+        "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/actual-01/receipt.json",
+        "sha256": "a07c0a77048f091c0a954707f127854c5b3d395de571bd37180cac0fdbe76f76",
+        "size_bytes": 8353
+      }
+    }
+  ],
+  "reviewed_at_utc": "2026-10-22T23:57:10.533302+00:00",
+  "reviewer": "independent peer /root/q95_owner05_review",
+  "schema": "bf16-mmap-cpu-independent-owner-result-audit-v1",
+  "scope": "Independent saved-only execution, host, resource, identity, source and authenticated closure audit. No Torch, fixture, mmap, HTTP observer or Comfy operation was run by reviewer. Read-only fresh unit/process/cgroup absence checked. Numerical/storage/LoRA semantics are delegated to a separate audit.",
+  "source_integrity": {
+    "actor_critical_small_refs": 23,
+    "binary_payloads_read": false,
+    "binary_stat_only_refs": 5,
+    "combined_distinct_small_refs": 28,
+    "full_installed_runtime_integrity_claim": false,
+    "generated_tensor_file_read_or_hashed": false,
+    "sealed_local_refs": 6
+  },
+  "status": "PASS"
+}

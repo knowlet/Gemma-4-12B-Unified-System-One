@@ -1,0 +1,178 @@
+{
+  "schema": "decision3-cpu5-operation-dev24-model-selection-results-v1",
+  "status": "COMPLETE_MODEL_SELECTION_GAIN_BROWSER_PENDING",
+  "recorded_at_utc": "2026-10-24T06:35:35.587062+00:00",
+  "actual": "owner09/actual-28",
+  "root_acceptance": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-dev-metrics-cpu5-20261024-01/root-accepted-operation-dev24-metrics-01.json",
+    "sha256": "00af6a6f870b08e8851a7a35ff4b28286ef6fe6e4721a2fd810f191e56d27b26",
+    "size_bytes": 8514
+  },
+  "capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-dev-metrics-cpu5-20261024-01/root-selected-operation-dev24-metrics-capability-01.json",
+    "sha256": "c717035ec0b26b0ed5e8429b775910783d10cd327891a03d78b0db82d2784530",
+    "size_bytes": 23346
+  },
+  "candidate": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-readout-cpu5-20261024-01/root-frozen-operation-candidate-capability-01.json",
+    "sha256": "4dbbb9470d011931854f6473c0840ef7f0746c4194c719cde6ab454c3e79d463",
+    "size_bytes": 2875
+  },
+  "complete_cases": 24,
+  "supervised_rows": 33,
+  "unused_heads_skipped": 63,
+  "metrics": {
+    "frozen_candidate": {
+      "all_supervised_heads_correct": {
+        "accuracy": 0.625,
+        "cases": 24,
+        "correct": 15
+      },
+      "by_head": {
+        "click_target": {
+          "accuracy": 0.6666666666666666,
+          "correct": 2,
+          "mean_soft_ce": 0.32228283677250147,
+          "rows": 3
+        },
+        "operation": {
+          "accuracy": 0.625,
+          "correct": 15,
+          "mean_soft_ce": 1.300224901176989,
+          "rows": 24
+        },
+        "select_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.647754485408465,
+          "rows": 3
+        },
+        "type_text_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.0010522009494403999,
+          "rows": 3
+        }
+      },
+      "full_mean_soft_ce": 1.0338990688323975,
+      "l2_applied": false,
+      "optimizer_steps": 0,
+      "supervised_rows": 33,
+      "valid_target_argmax_accuracy": 0.696969696969697,
+      "valid_target_argmax_correct": 23
+    },
+    "zero_delta": {
+      "all_supervised_heads_correct": {
+        "accuracy": 0.4166666666666667,
+        "cases": 24,
+        "correct": 10
+      },
+      "by_head": {
+        "click_target": {
+          "accuracy": 0.6666666666666666,
+          "correct": 2,
+          "mean_soft_ce": 0.32228283677250147,
+          "rows": 3
+        },
+        "operation": {
+          "accuracy": 0.4166666666666667,
+          "correct": 10,
+          "mean_soft_ce": 1.615516694340234,
+          "rows": 24
+        },
+        "select_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.647754485408465,
+          "rows": 3
+        },
+        "type_text_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.0010522009494403999,
+          "rows": 3
+        }
+      },
+      "full_mean_soft_ce": 1.2632020711898804,
+      "l2_applied": false,
+      "optimizer_steps": 0,
+      "supervised_rows": 33,
+      "valid_target_argmax_accuracy": 0.5454545454545454,
+      "valid_target_argmax_correct": 18
+    }
+  },
+  "FP64_witness": {
+    "zero_delta": {
+      "stdlib_FP64_full_mean_soft_ce": 1.263202014682637,
+      "published_FP32_full_mean_soft_ce": 1.2632020711898804,
+      "CE_absolute_tolerance": 1e-05,
+      "correct": 18,
+      "rows": 33,
+      "all_heads_correct_cases": 10
+    },
+    "frozen_candidate": {
+      "stdlib_FP64_full_mean_soft_ce": 1.033898904641167,
+      "published_FP32_full_mean_soft_ce": 1.0338990688323975,
+      "CE_absolute_tolerance": 1e-05,
+      "correct": 23,
+      "rows": 33,
+      "all_heads_correct_cases": 15
+    }
+  },
+  "all_original_bundle_values_independently_rederived": true,
+  "original_feature_collection_identity_preserved": true,
+  "private_bundle_copied": false,
+  "operation_rows_adapted": 24,
+  "supervised_target_rows_original": 9,
+  "optimizer_steps": 0,
+  "model_forwards": 0,
+  "whole_root_seconds": 1.7842597409908194,
+  "owned_unit_observed_peak_bytes": 39378944,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "source_union": 28,
+  "source_fakes": {
+    "metrics": 11,
+    "root_audit": 3,
+    "numeric_held": 12,
+    "numeric_note": "Numeric held fakes are source-only; a discovered publisher normalization-contract issue requires new v2 witness before a genuine numeric run."
+  },
+  "separate_reviewer_actual_bytes_read": false,
+  "source_peer_review_scope": "Final metrics source only, no blocker. Root performs actual audit; no independent peer actual-read claim.",
+  "argmax_comparison_scope": "FP64 uses first ordered argmax per row; actual FP32 publishes aggregate hits only, not independently retained per-row choices",
+  "dev_used_for_model_selection": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "candidate_selection_before_dev_or_sealed": false,
+  "new_unseen_generalization_or_browser_win_claim": false,
+  "sealed_reveal_authorized": false,
+  "default_model_or_service_changed": false,
+  "candidate_official_jevbench_scores": {
+    "benchmark_heaven": null,
+    "coherence": null
+  },
+  "original_d3_jevbench_separate": {
+    "benchmark_heaven": {
+      "correct": 158,
+      "total": 231,
+      "accuracy": 0.683982683982684
+    },
+    "coherence": {
+      "completed": 1234,
+      "required": 1248,
+      "score": null,
+      "status": "INCOMPLETE_NO_SCORE"
+    }
+  },
+  "promotion_decision": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-dev-metrics-cpu5-20261024-01/candidate-promotion-decision-01.json",
+    "sha256": "46838b2fd3845dda7521a408d1586f2ebe43940a4649a71db4fead3074d9fe51",
+    "size_bytes": 1374
+  }
+}

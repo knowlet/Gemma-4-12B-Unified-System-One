@@ -37,7 +37,7 @@ jobs:
       - run: uv sync --locked --extra api --extra browser
       - run: uv run --no-sync ruff check .
       - run: uv run --no-sync ruff format --check .
-      - run: uv run --no-sync pytest --cov=s1 --cov-report=xml
+      - run: uv run --no-sync pytest -m "not frozen_decoder" --cov=s1 --cov-report=xml
       - run: uv run --no-sync s1 benchmark --backend uniform examples/benchmarks/smoke.jsonl --output artifacts/uniform.json
       - run: uv run --no-sync s1 eval plan --profile smoke --enable-model uniform --output artifacts/evaluation/smoke-plan.json
       - run: uv run --no-sync s1 eval run --profile text-smoke --enable-model uniform --output artifacts/evaluation/text-smoke-run
@@ -54,7 +54,8 @@ jobs:
   inference:
     # macOS wheels have no CUDA payload; tiny models need no GPU or HF access.
     runs-on: macos-14
-    timeout-minutes: 15
+    # The complete CPU suite can approach 15 minutes on shared macOS runners.
+    timeout-minutes: 20
     env:
       HF_HUB_OFFLINE: '1'
     steps:
@@ -73,4 +74,29 @@ jobs:
           enable-cache: true
       - run: uv sync --locked --extra inference --extra api --extra train --extra baselines --extra browser
       - run: uv run --no-sync python scripts/prepare_ci_jev.py
-      - run: uv run --no-sync pytest
+      - name: Check portable grammar fixtures before model imports
+        run: uv run --no-sync pytest --strict-markers -m "not frozen_decoder" tests/test_jev_field_json_grammar.py
+      - run: uv run --no-sync pytest -m "not frozen_decoder" --durations=15
+  frozen-decoder:
+    # The frozen Rust oracle is Linux ARM64, not the x86/macOS inference library.
+    # Standard ARM64 runners are free for this public repository. This job is
+    # mandatory: no conditional skip, allow-failure, or substitute binary pin.
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.12.19'
+          python-version: '3.12'
+          enable-cache: true
+      - run: uv sync --locked --extra api --extra browser
+      - name: Install the exact public frozen decoder wheel
+        run: >-
+          uv pip install --no-deps --target artifacts/jev-runtime/overlay
+          'https://files.pythonhosted.org/packages/15/fc/ae987741829b1cd547668c4c94be732ae3eefd1d74344e64c3d2ca714acd/tokenizers-0.23.3-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl#sha256=ec82e80e65a862275b97c3d90b7a523df8d9519ee48aeb4e9625b2cc909274e0'
+      - run: uv run --no-sync python scripts/prepare_ci_jev.py
+      - name: Restore exact historical grammar cache bytes
+        run: uv run --no-sync python scripts/restore_ci_jev_cache.py
+      - name: Verify the unchanged frozen Rust oracle contracts
+        run: uv run --no-sync pytest --strict-markers -m frozen_decoder tests/test_jev_field_json_grammar.py tests/test_jev_field_json_helper.py tests/test_jev_qualify_public_field_json_bf16.py

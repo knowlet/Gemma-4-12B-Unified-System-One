@@ -1,0 +1,143 @@
+{
+  "AST_all_original_top_level_assignments_unchanged": true,
+  "AST_other_TimedPredictor_methods_unchanged": true,
+  "AST_parse": "Both local Python sources parsed without model/framework import",
+  "AST_unchanged_top_level_definitions": [
+    "CampaignAbort",
+    "require",
+    "sha",
+    "unique",
+    "read_json",
+    "selected_small_json",
+    "finite_seconds",
+    "profile",
+    "load_plan",
+    "check_smoke",
+    "check_audit",
+    "latency_distribution",
+    "run_unchanged_suites",
+    "check_counts",
+    "durable_success",
+    "main"
+  ],
+  "baseline_regressions": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/baseline-regression.json",
+    "sha256": "fc6f457b2a5b99869adca30faaeba449d2bb658b060b63e6aea5444c57e62f88",
+    "size_bytes": 5569
+  },
+  "dry": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--as=536870912",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+      "-B",
+      "-s",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/campaign.py"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "{\"status\": \"dry_default_no_model_or_benchmark_execution\", \"models\": [\"edge\", \"lite\"], \"batch_size\": 4, \"constructor_count\": 1, \"suites\": {\"legacy-public231\": 231, \"jevbench-mini\": 1248}, \"fresh_calls\": 1479, \"whole_campaign_seconds\": 10000, \"per_call_seconds\": 180, \"owner_runtime_seconds\": 10800, \"requires_exact_successful_smoke_and_closed_independent_audit\": true, \"browser20_qualification_or_batch1_scores_inherited\": false}\n"
+  },
+  "plan_delta_keys": {
+    "edge": [
+      "campaign_sha256"
+    ],
+    "lite": [
+      "campaign_sha256"
+    ]
+  },
+  "predecessor_source_unchanged": [
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/campaign.py",
+      "sha256": "b9a09b13bf18c08ac1b1f1facb8c095f710c151225c3279afa86e82a5245e62f",
+      "size_bytes": 30843
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/test_campaign.py",
+      "sha256": "0b1185925edec5bd333d0a256cbb1ad3af987825db08b600d2a7631a50dfa378",
+      "size_bytes": 18144
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/edge-plan.json",
+      "sha256": "3f314b5bd292e1861b4a365ff9aae093153024e6a0d16fb9ffc4c28e86a5b2a9",
+      "size_bytes": 5074
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/lite-plan.json",
+      "sha256": "927c401bc009a49279877b2fe97db1a5f3fe16e6b81370935a1d0d20232f110e",
+      "size_bytes": 5386
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/freeze.json",
+      "sha256": "2428f92b18b06a93fde850cd7c44918a9ae950cec5e71f5960e73b75befac035",
+      "size_bytes": 1633
+    }
+  ],
+  "recorded_utc": "2026-10-23T11:52:15.548719+00:00",
+  "requires": "Independent source/real selection review and root exact new spec/fresh admission before actual execution",
+  "resource_scope": "Stdlib fake tests/dry CPU0,512MiB address-space,30CPU seconds; Ruff CPU0/30CPU seconds without smallAS. No real timers/model/scorers/tasks/units/network/git executed.",
+  "ruff_check": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+      "check",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "All checks passed!\n"
+  },
+  "ruff_format_check": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+      "format",
+      "--check",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "2 files already formatted\n"
+  },
+  "source_edit_scope": [
+    "New primary-preserving DeadlineScope",
+    "TimedPredictor.__call__ success after cleanup with rollback on cleanup/late failure",
+    "execute success after cleanup with failed-state/no-score handling"
+  ],
+  "status": "SOURCE_ONLY_SUCCESSOR_VALIDATION_PASS_NO_EXECUTION",
+  "tests": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--as=536870912",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+      "-I",
+      "-B",
+      "-s",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/test_campaign.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "stderr": "test_both_model_plans_are_separate_with_provenance_only_head (__main__.CampaignTests.test_both_model_plans_are_separate_with_provenance_only_head) ... ok\ntest_callback_accepted_latency_includes_successful_deadline_cleanup (__main__.CampaignTests.test_callback_accepted_latency_includes_successful_deadline_cleanup) ... ok\ntest_callback_cleanup_error_preserves_original_primary (__main__.CampaignTests.test_callback_cleanup_error_preserves_original_primary) ... ok\ntest_callback_cleanup_expiry_or_raise_reverses_complete_count_and_keeps_failure (__main__.CampaignTests.test_callback_cleanup_expiry_or_raise_reverses_complete_count_and_keeps_failure) ... ok\ntest_default_dry_requires_no_plan_smoke_framework_or_benchmark (__main__.CampaignTests.test_default_dry_requires_no_plan_smoke_framework_or_benchmark) ... ok\ntest_failure_evidence_cannot_replace_primary (__main__.CampaignTests.test_failure_evidence_cannot_replace_primary) ... ok\ntest_failure_evidence_is_also_inside_call_watchdog_and_late_checks (__main__.CampaignTests.test_failure_evidence_is_also_inside_call_watchdog_and_late_checks) ... ok\ntest_frozen_closed_audit_schema_matches_without_reading_referenced_artifacts (__main__.CampaignTests.test_frozen_closed_audit_schema_matches_without_reading_referenced_artifacts) ... ok\ntest_full_call_counts_and_latency_population_refuse_partial_or_cached_campaigns (__main__.CampaignTests.test_full_call_counts_and_latency_population_refuse_partial_or_cached_campaigns) ... ok\ntest_independent_audit_requires_exact_closed_state_plan_identity_and_all_refs (__main__.CampaignTests.test_independent_audit_requires_exact_closed_state_plan_identity_and_all_refs) ... ok\ntest_late_durable_progress_aborts_outside_harness_exception_catch_and_reverses_counts (__main__.CampaignTests.test_late_durable_progress_aborts_outside_harness_exception_catch_and_reverses_counts) ... ok\ntest_late_final_results_or_state_never_return_complete (__main__.CampaignTests.test_late_final_results_or_state_never_return_complete) ... ok\ntest_nonfinite_original_retained_and_primary_validation_error_not_replaced (__main__.CampaignTests.test_nonfinite_original_retained_and_primary_validation_error_not_replaced) ... ok\ntest_original_harness_interfaces_and_populations_remain_unchanged (__main__.CampaignTests.test_original_harness_interfaces_and_populations_remain_unchanged) ... ok\ntest_same_model_actual_smoke_rejects_dry_batch1_gpu_late_missing_auth_or_rows (__main__.CampaignTests.test_same_model_actual_smoke_rejects_dry_batch1_gpu_late_missing_auth_or_rows) ... ok\ntest_timed_bridge_retains_raw_before_validation_preserves_inputs_and_returns_same_object (__main__.CampaignTests.test_timed_bridge_retains_raw_before_validation_preserves_inputs_and_returns_same_object) ... ok\ntest_whole_cleanup_expiry_or_raise_never_returns_complete_or_keeps_score_claim (__main__.CampaignTests.test_whole_cleanup_expiry_or_raise_never_returns_complete_or_keeps_score_claim) ... ok\ntest_whole_cleanup_failure_keeps_existing_primary (__main__.CampaignTests.test_whole_cleanup_failure_keeps_existing_primary) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 0.333s\n\nOK\n",
+    "stdout": ""
+  }
+}

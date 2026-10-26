@@ -1,0 +1,198 @@
+{
+  "schema_id": "public-decision3-checked-control-feature-results-v1",
+  "date": "2026-10-26",
+  "timezone": "Asia/Taipei",
+  "status": "features_independently_verified_no_fit_authority",
+  "hardware": {
+    "system": "GX10",
+    "execution_device": "cpu",
+    "cpu_count": 5,
+    "memory_max_bytes": 4294967296,
+    "swap_max_bytes": 0,
+    "encoder_dtype": "bfloat16",
+    "readout_dtype": "float32"
+  },
+  "population": {
+    "split": "train",
+    "accepted_full_wire_requests": 10,
+    "operation_menu_counts": {
+      "6": 10
+    },
+    "question_head_count_histogram": {
+      "4": 10
+    },
+    "verified_question_heads": 40,
+    "verified_legal_probability_positions": 141,
+    "operation_supervision_rows": 10,
+    "target_heads_retained_as_evidence_only": 30,
+    "original_wire_alias_and_order_preserved": true,
+    "teacher_labels_in_feature_only_inputs": false,
+    "authoring_or_label_bearing_projection_used_as_feature_inputs": false
+  },
+  "chunks": [
+    {
+      "chunk_index": 0,
+      "requests": 8,
+      "question_heads": 32,
+      "legal_probability_positions": 113,
+      "original_launch_exit_code": 0,
+      "original_launch_through_cleanup_seconds": 74.02052065404132,
+      "selected_small_source_files_reauthenticated": 22,
+      "original_scoped_closure_positive": true,
+      "selected_unit_currently_absent": true
+    },
+    {
+      "chunk_index": 1,
+      "requests": 2,
+      "question_heads": 8,
+      "legal_probability_positions": 28,
+      "original_launch_exit_code": 0,
+      "original_launch_through_cleanup_seconds": 30.014974675956182,
+      "selected_small_source_files_reauthenticated": 22,
+      "original_scoped_closure_positive": true,
+      "selected_unit_currently_absent": true
+    }
+  ],
+  "budgets": {
+    "complete_native_call_seconds": 20,
+    "whole_chunk_seconds": 120,
+    "browser_deadline_changed": false
+  },
+  "complete_native_call_timing_seconds": {
+    "count": 10,
+    "minimum": 6.974492524983361,
+    "median": 7.4828501054726075,
+    "maximum": 7.934742737037595,
+    "scope": "Native preparation, prediction, numerical checks and required evidence; excludes each chunk's startup and closure.",
+    "browser_end_to_end_latency_or_SLO_qualified": false
+  },
+  "numerical_verification": {
+    "same_forward_features_and_full_native_answers_joined": true,
+    "all_original_heads_and_criteria_replayed": true,
+    "native_Torch_NumPy_zero_delta_and_stdlib_float64_witnesses_matched": true,
+    "all_ordered_argmaxes_matched": true,
+    "legal_probability_positions": 141,
+    "maximum_absolute_error": 1.3444587606548097e-06,
+    "absolute_tolerance": 1e-06,
+    "relative_tolerance": 1e-05,
+    "comparison": "abs(replay-native) <= 1e-6 + 1e-5*abs(native)",
+    "original_full_source_model_and_runtime_authentication_preserved": true
+  },
+  "command_observation": {
+    "mandatory_live_double_OS_observation": true,
+    "same_stable_process_identity_fields": 6,
+    "selected_argv_length": 10,
+    "literal_NUL_framing_required": true,
+    "resolved_executable_and_cwd_joined": true,
+    "observation_window_within_original_command_span": true,
+    "early_argv_policy": "Only empty or exactly selected; a complete live late observation remains mandatory in both cases.",
+    "nonempty_wrong_early_argv_refused": true
+  },
+  "quarantined_prior_attempts": [
+    {
+      "reason": "Duplicate owner base source in selected source pool",
+      "phase": "before model construction",
+      "model_constructed": false,
+      "accepted_as_training_features": false
+    },
+    {
+      "reason": "Initial actual process argv was empty and complete live argv evidence was absent",
+      "captured_requests": 8,
+      "accepted_as_training_features": false,
+      "original_evidence_rewritten": false
+    }
+  ],
+  "provenance_sha256": {
+    "native_feature_collector": "182212b242cf4e00e9841055c3ea16e5b671af1042f8ff59a67d8994345da2a5",
+    "independent_feature_auditor": "3e300a3f73b9f375b07850e9c31c6fb9ff6073711ed2ce5df8cec5456dd8962b",
+    "W0_raw_FP32_bytes": "d408d94a0ab2915fa85c511dd9b8d62af49903c4e4ca28e2e2d5aff9ef565e0f",
+    "feature_set_acceptance": "3ac7d214402c7828edeb0f76d2ab8d1f1df7ebd4b1137f5943895021259d72c3"
+  },
+  "original_scope_flags": {
+    "model_qualified": false,
+    "continuation_authorized": false,
+    "whole_tree_exit_confirmed": false,
+    "no_escape_enforced": false
+  },
+  "authority_and_quality_limits": {
+    "fit_authorized_by_feature_acceptance": false,
+    "combined_119_operation_training_status": "trained_artifact_integrity_verified_pending_numerical_and_browser_qualification",
+    "new_candidate_browser_score": null,
+    "new_candidate_benchmark_heaven_score": null,
+    "new_candidate_jevbench_coherence_score": null,
+    "competitor_win_established": false,
+    "OS_containment_claim": false
+  },
+  "previous_browser_diagnostic": {
+    "candidate": "Decision3 Edge with 109-row operation delta",
+    "candidate_successes": 0,
+    "matched_NF4_baseline_successes": 0,
+    "cases_per_arm": 1,
+    "result_changed_by_feature_collection": false,
+    "report": "../2026-10-25/decision3-firstcase-gpu-paired-results.md"
+  },
+  "separate_original_Edge_benchmarks": {
+    "inherited_by_new_candidate": false,
+    "benchmark_heaven": {
+      "accuracy": 0.6883116883116883,
+      "report": "../2026-10-25/decision3-native-heaven-gpu-results.md"
+    },
+    "jevbench_coherence": {
+      "score_out_of_100": 69.64052287581698,
+      "report": "../2026-10-25/decision3-native-coherence-gpu-results.md"
+    }
+  },
+  "combined_operation_fit": {
+    "operation_rows": 119,
+    "K_counts": {
+      "4": 4,
+      "6": 10,
+      "7": 5,
+      "8": 100
+    },
+    "original_accepted_rows": 109,
+    "new_checked_control_rows": 10,
+    "initial_delta": "zeros_like_baseline_fp32",
+    "hyperparameters": {
+      "steps": 512,
+      "learning_rate": 0.003,
+      "l2": 0.0001,
+      "seed": 20261023,
+      "batch_size": 64
+    },
+    "operation_head_only": true,
+    "old_delta_warm_start": false,
+    "target_heads_enter_loss": false,
+    "fit_elapsed_before_final_write_seconds": 2.282731982995756,
+    "original_owner_wall_seconds": 4.007547136978246,
+    "loss_observation": {
+      "first": 1.591557502746582,
+      "last": 0.9743014574050903,
+      "maximum": 1.6993706226348877,
+      "minimum": 0.8119125962257385,
+      "steps": 512
+    },
+    "loss_scope": "Training loss only; no validation or browser score.",
+    "independently_reconstructed_row_mapping": true,
+    "source_refs_checked": 47,
+    "original_scoped_closure_positive": true,
+    "delta_shape": [
+      255,
+      1024
+    ],
+    "delta_dtype": "float32",
+    "delta_rows_8_through_254_exact_zero": true,
+    "delta_l2_norm": 0.8079483741699617,
+    "delta_npy_sha256": "4ede82ebdd13c95a6ab5f9947e580c3509c1ed0b57c7dfe319d17eec6db3dff4",
+    "delta_raw_FP32_sha256": "eac911c8ceb870b10109898bae876fc97ebd046f054f6655949937bea51b1e48",
+    "artifact_integrity_acceptance_sha256": "542a62e4e79fc26a924af2aa1d70d642daa25ba882779ce407ec0edfb8e087b5",
+    "integrity_audit_source_sha256": "5a682eb54de5d55d70b826b67a985de646c3a5b7c785511595b4972b6a05afaa",
+    "fit_capability_sha256": "10c41db107260abb17b44ab540ae6f1f9f76ad1ce907a07c116b6c9efd8f2432",
+    "optimizer_replay_verified": false,
+    "numerical_deployment_qualified": false,
+    "browser_qualified": false,
+    "benchmark_qualified": false,
+    "model_scores": null,
+    "ranking_or_win_claim": false
+  }
+}

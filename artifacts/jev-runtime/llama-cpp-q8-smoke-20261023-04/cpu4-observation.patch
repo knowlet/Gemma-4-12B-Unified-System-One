@@ -1,0 +1,383 @@
+--- artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/run_smoke.py
++++ artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/run_smoke.py
+@@ -33,6 +33,137 @@
+ 
+ MAX_RESPONSE = 1024**2
+ STDERR_LIMIT = 4 * 1024**2
++NATIVE_THREADS = 4
++OWNER_UNIT = "jev-d3-llama-cpp-cpu4-20261023-03.service"
++CPU_CORES = frozenset({16, 17, 18, 19})
++TASK_LIMIT = 64
++SMALL_PROC_LIMIT = 8192
++
++
++def small_kernel_text(path):
++    with path.open("rb") as stream:
++        blob = stream.read(SMALL_PROC_LIMIT + 1)
++    need(len(blob) <= SMALL_PROC_LIMIT, "Bounded selected proc/cgroup metadata")
++    return blob.decode()
++
++
++def task_affinities(pid):
++    tasks = Path("/proc") / str(pid) / "task"
++    records, errors, seen = [], [], 0
++    with os.scandir(tasks) as entries:
++        for entry in entries:
++            need(entry.name.isdigit(), "Numeric native task ID")
++            seen += 1
++            if seen > TASK_LIMIT:
++                break
++            tid, base = int(entry.name), tasks / entry.name
++            try:
++                before = small_kernel_text(base / "stat").rsplit(")", 1)[1].split()
++                first = os.sched_getaffinity(tid)
++                status = small_kernel_text(base / "status")
++                second = os.sched_getaffinity(tid)
++                after = small_kernel_text(base / "stat").rsplit(")", 1)[1].split()
++                need(before[19] == after[19], "Stable native task start identity")
++                allowed = re.search(r"(?m)^Cpus_allowed_list:\s*(\S+)$", status)
++                need(allowed is not None, "Native task proc affinity present")
++                records.append(
++                    {
++                        "tid": tid,
++                        "start_ticks": int(after[19]),
++                        "user_ticks": int(after[11]),
++                        "system_ticks": int(after[12]),
++                        "sched_before": sorted(first),
++                        "sched_after": sorted(second),
++                        "proc_Cpus_allowed_list": allowed[1],
++                        "matches_selected_mask_in_both_interfaces": first == second == CPU_CORES
++                        and allowed[1] == "16-19",
++                    }
++                )
++            except (OSError, ValueError, IndexError) as error:
++                errors.append({"tid": tid, **error_row(error)})
++    return {
++        "retained_task_count": len(records),
++        "task_population_observed_at_least": seen,
++        "enumeration_truncated": seen > TASK_LIMIT,
++        "records": sorted(records, key=lambda row: row["tid"]),
++        "observation_errors": errors,
++        "clock_ticks_per_second": os.sysconf("SC_CLK_TCK"),
++        "scope": "At most64 native tasks in this bounded non-atomic observation, with per-task sched/proc masks and cumulative CPU ticks; transient/exited tasks may be missing; no all-thread lifetime or delegated cpuset claim",
++    }
++
++
++def owned_cpu_stat():
++    path = Path("/proc/self/cgroup")
++    before = small_kernel_text(path).strip()
++    need(
++        len(before.splitlines()) == 1 and before.startswith("0::/"),
++        "Own unified cgroup only",
++    )
++    group = before[3:]
++    need(
++        ".." not in Path(group).parts and Path(group).name == OWNER_UNIT,
++        "Exact CPU4 owned service cgroup path",
++    )
++    raw = small_kernel_text(Path("/sys/fs/cgroup") / group.lstrip("/") / "cpu.stat")
++    pairs = [line.split() for line in raw.splitlines()]
++    need(
++        1 <= len(pairs) <= 32
++        and all(len(row) == 2 and row[1].isdigit() for row in pairs)
++        and len({row[0] for row in pairs}) == len(pairs),
++        "Bounded distinct numeric own cgroup CPU counters",
++    )
++    counters = {key: int(value) for key, value in pairs}
++    need(
++        {"usage_usec", "user_usec", "system_usec", "nr_periods", "nr_throttled", "throttled_usec"}
++        <= counters.keys()
++        and small_kernel_text(path).strip() == before,
++        "Stable own cgroup CPU usage/throttle counters",
++    )
++    return {
++        "cgroup": before,
++        "observed_monotonic": time.monotonic(),
++        "counters": counters,
++        "scope": "This inherited owned cgroup including native child, scoring actor and wrapper overhead; sampled counters are not native-only or continuous thread utilization",
++    }
++
++
++def cpu_stat_delta(before, after):
++    need(before["cgroup"] == after["cgroup"], "Same own cgroup across CPU snapshots")
++    need(
++        before["counters"].keys() == after["counters"].keys(),
++        "Same own CPU counter population across snapshots",
++    )
++    elapsed = after["observed_monotonic"] - before["observed_monotonic"]
++    counters = {key: after["counters"][key] - value for key, value in before["counters"].items()}
++    need(elapsed > 0 and all(value >= 0 for value in counters.values()), "Forward CPU snapshots")
++    return {
++        "elapsed_seconds": elapsed,
++        "counter_deltas": counters,
++        "average_cpu_cores": counters["usage_usec"] / (elapsed * 1_000_000),
++        "scope": "Aggregate owned-cgroup CPU time divided by sampled wall time, including wrapper/scoring overhead; affinity alone does not establish four busy threads",
++    }
++
++
++def native_argv(native, package, context, full):
++    return [
++        native["path"],
++        "--model",
++        package["model"]["path"],
++        "--mmproj",
++        package["mmproj"]["path"],
++        "--ctx-size",
++        str(context),
++        "--batch-size",
++        "512",
++        "--threads",
++        str(NATIVE_THREADS),
++        "--gpu-layers",
++        "0",
++        "--swa-full",
++        "1" if full else "0",
++        "--cpu-mmap-only",
++        "1",
++    ]
+ 
+ 
+ def map_metadata(maps, selected_model):
+@@ -100,6 +231,7 @@
+     need(len(paths) <= 128, "Bounded actual library population")
+     for path in sorted(paths):
+         result["loaded_library_stats"].append({"path": path, "stat": file_stat(path)})
++    result["native_task_affinities"] = task_affinities(pid)
+     need(process() == before, "Stable owned child PID/start/session/cgroup during observation")
+     return result
+ 
+@@ -377,25 +509,7 @@
+             directory = out / name
+             directory.mkdir(mode=0o700)
+             native = cfg["native"]
+-            argv = [
+-                native["path"],
+-                "--model",
+-                cfg["package"]["model"]["path"],
+-                "--mmproj",
+-                cfg["package"]["mmproj"]["path"],
+-                "--ctx-size",
+-                str(context),
+-                "--batch-size",
+-                "512",
+-                "--threads",
+-                "1",
+-                "--gpu-layers",
+-                "0",
+-                "--swa-full",
+-                "1" if full else "0",
+-                "--cpu-mmap-only",
+-                "1",
+-            ]
++            argv = native_argv(native, cfg["package"], context, full)
+             row = {
+                 "name": name,
+                 "argv": argv,
+@@ -406,6 +520,7 @@
+             }
+             state["cases"].append(row)
+             save(directory / "intent.json", row)
++            row["cpu_stat_before_launch"] = owned_cpu_stat()
+             active = NativeRPC(argv, directory, context, full)
+             try:
+                 row["initial_identity"] = process_identity(
+@@ -436,6 +551,12 @@
+                 all(loaded.get(lib["path"]) == lib["stat"] for lib in native["libraries"]),
+                 "Selected native libraries actually mapped with pinned stats after warm response",
+             )
++            row["cpu_stat_after_warm"] = owned_cpu_stat()
++            need(
++                row["postwarm_identity"]["process"]["cgroup"]
++                == row["cpu_stat_after_warm"]["cgroup"],
++                "Native and scoring actor share the observed owned cgroup",
++            )
+             long = active.score(payloads["long"], SCORING_SECONDS, "long")
+             logits = response_check(long, payloads["long"], context, full)
+             row["postscore_identity"] = process_identity(
+@@ -444,6 +565,10 @@
+             need(
+                 row["postscore_identity"]["process"] == row["initial_identity"]["process"],
+                 "Same native PID/start/session/cgroup through scores",
++            )
++            row["cpu_stat_after_long"] = owned_cpu_stat()
++            row["cpu_usage_throttle_delta"] = cpu_stat_delta(
++                row["cpu_stat_before_launch"], row["cpu_stat_after_long"]
+             )
+             row["normal_exit"] = active.finish()
+             row["RPCs"] = active.rows
+@@ -467,6 +592,20 @@
+         primary = error_row(error)
+     finally:
+         if active is not None:
++            row = state["cases"][-1]
++            try:
++                row["failed_live_identity"] = process_identity(
++                    active.process.pid, cfg["package"]["model"]["path"]
++                )
++            except (OSError, ValueError) as error:
++                row["failed_identity_observation_error"] = error_row(error)
++            try:
++                row["cpu_stat_after_failure"] = owned_cpu_stat()
++                row["cpu_usage_throttle_delta"] = cpu_stat_delta(
++                    row["cpu_stat_before_launch"], row["cpu_stat_after_failure"]
++                )
++            except (OSError, ValueError) as error:
++                row["cpu_stat_observation_error"] = error_row(error)
+             state["failed_child"] = active.evidence()
+             state["failed_RPCs"] = active.rows
+             notes.extend(active.detach())
+@@ -497,7 +636,7 @@
+                 "secondary_errors": notes,
+                 "Torch_imported": "torch" in sys.modules,
+                 "quality_N3_Q95_or_20s_qualified": False,
+-                "scope": "Synthetic CPU1 cache arithmetic; 8192 is actual allocated context for same <=2048-token input, not an8192-length benchmark",
++                "scope": "Synthetic requested4-thread CPU cache arithmetic; 8192 is actual allocated context for same <=2048-token input, not an8192-length benchmark",
+             },
+         )
+     return 0 if primary is None and not notes else 1
+--- artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/test_smoke.py
++++ artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/test_smoke.py
+@@ -475,5 +475,143 @@
+         )
+ 
+ 
++class CPU4ObservationTests(unittest.TestCase):
++    @staticmethod
++    def stat(start=123, user=50, system=7):
++        fields = ["R"] + ["0"] * 51
++        fields[11], fields[12], fields[19] = str(user), str(system), str(start)
++        return "101 (fake thread) " + " ".join(fields)
++
++    def tasks(self, count=4, *, changed_start=False, mask=None, disappeared=False):
++        scan = Mock()
++        scan.__enter__ = Mock(
++            return_value=iter(types.SimpleNamespace(name=str(100 + n)) for n in range(count))
++        )
++        scan.__exit__ = Mock(return_value=False)
++        stats = 0
++
++        def text(path):
++            nonlocal stats
++            if path.name == "status":
++                return "Cpus_allowed_list:\t16-19\n"
++            self.assertEqual(path.name, "stat")
++            if disappeared:
++                raise FileNotFoundError("fake exited task")
++            stats += 1
++            return self.stat(start=123 + int(changed_start and stats % 2 == 0))
++
++        with (
++            patch.object(run.os, "scandir", return_value=scan),
++            patch.object(run, "small_kernel_text", side_effect=text),
++            patch.object(run.os, "sched_getaffinity", return_value=mask or set(run.CPU_CORES)),
++            patch.object(run.os, "sysconf", return_value=100),
++        ):
++            return run.task_affinities(999)
++
++    def test_native_argv_changes_only_requested_threads_in_all_three_arms(self):
++        native = {"path": "/FAKE-native"}
++        package = {"model": {"path": "/FAKE-model"}, "mmproj": {"path": "/FAKE-projector"}}
++        for context, full in ((2048, True), (2048, False), (8192, False)):
++            argv = run.native_argv(native, package, context, full)
++            self.assertEqual(
++                argv,
++                [
++                    "/FAKE-native",
++                    "--model",
++                    "/FAKE-model",
++                    "--mmproj",
++                    "/FAKE-projector",
++                    "--ctx-size",
++                    str(context),
++                    "--batch-size",
++                    "512",
++                    "--threads",
++                    "4",
++                    "--gpu-layers",
++                    "0",
++                    "--swa-full",
++                    "1" if full else "0",
++                    "--cpu-mmap-only",
++                    "1",
++                ],
++            )
++
++    def test_four_task_observations_retain_dual_masks_and_cpu_ticks(self):
++        row = self.tasks()
++        self.assertEqual(row["retained_task_count"], 4)
++        self.assertEqual(row["task_population_observed_at_least"], 4)
++        self.assertEqual(row["observation_errors"], [])
++        for task in row["records"]:
++            self.assertEqual(task["sched_before"], [16, 17, 18, 19])
++            self.assertEqual(task["sched_after"], task["sched_before"])
++            self.assertTrue(task["matches_selected_mask_in_both_interfaces"])
++            self.assertEqual((task["user_ticks"], task["system_ticks"]), (50, 7))
++
++    def test_widened_task_mask_is_recorded_without_universal_affinity_claim(self):
++        row = self.tasks(mask=set(range(20)))
++        self.assertEqual(row["records"][0]["sched_after"], list(range(20)))
++        self.assertFalse(row["records"][0]["matches_selected_mask_in_both_interfaces"])
++
++    def test_task_population_bound_and_transient_identity_errors_remain_visible(self):
++        row = self.tasks(count=1000)
++        self.assertEqual(row["retained_task_count"], 64)
++        self.assertEqual(row["task_population_observed_at_least"], 65)
++        self.assertTrue(row["enumeration_truncated"])
++        for kwargs in ({"changed_start": True}, {"disappeared": True}):
++            row = self.tasks(count=1, **kwargs)
++            self.assertEqual(row["records"], [])
++            self.assertEqual(len(row["observation_errors"]), 1)
++
++    def cpu_stat(self, *, raw=None, changed=False):
++        own = "0::/FAKE-parent/" + run.OWNER_UNIT
++        count = 0
++        text = (
++            raw
++            or "usage_usec 8000000\nuser_usec 7000000\nsystem_usec 1000000\nnr_periods 20\nnr_throttled 2\nthrottled_usec 100\n"
++        )
++
++        def read(path):
++            nonlocal count
++            if path == Path("/proc/self/cgroup"):
++                count += 1
++                return own + ("-changed" if changed and count == 2 else "")
++            self.assertEqual(path, Path("/sys/fs/cgroup/FAKE-parent") / run.OWNER_UNIT / "cpu.stat")
++            return text
++
++        with (
++            patch.object(run, "small_kernel_text", side_effect=read),
++            patch.object(run.time, "monotonic", return_value=100),
++        ):
++            return run.owned_cpu_stat()
++
++    def test_cpu_stat_reads_only_own_unified_group_and_keeps_throttling(self):
++        row = self.cpu_stat()
++        self.assertEqual(row["cgroup"], "0::/FAKE-parent/" + run.OWNER_UNIT)
++        self.assertEqual(row["counters"]["usage_usec"], 8000000)
++        self.assertEqual(row["counters"]["nr_throttled"], 2)
++        self.assertEqual(row["counters"]["throttled_usec"], 100)
++        with self.assertRaisesRegex(ValueError, "Stable own cgroup"):
++            self.cpu_stat(changed=True)
++        with self.assertRaisesRegex(ValueError, "distinct numeric"):
++            self.cpu_stat(raw="usage_usec 1\nusage_usec 2\n")
++        with self.assertRaisesRegex(ValueError, "Stable own cgroup"):
++            self.cpu_stat(raw="usage_usec 1\n")
++
++    def test_cpu_delta_quantifies_aggregate_cores_and_refuses_reset_or_foreign_group(self):
++        after = self.cpu_stat()
++        before = {
++            **after,
++            "observed_monotonic": 98,
++            "counters": {key: 0 for key in after["counters"]},
++        }
++        delta = run.cpu_stat_delta(before, after)
++        self.assertEqual(delta["average_cpu_cores"], 4)
++        self.assertEqual(delta["counter_deltas"]["nr_throttled"], 2)
++        with self.assertRaisesRegex(ValueError, "Same own cgroup"):
++            run.cpu_stat_delta({**before, "cgroup": "0::/FOREIGN"}, after)
++        with self.assertRaisesRegex(ValueError, "Forward CPU snapshots"):
++            run.cpu_stat_delta(after, before)
++
++
+ if __name__ == "__main__":
+     unittest.main(verbosity=2)

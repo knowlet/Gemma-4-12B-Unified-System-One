@@ -1,0 +1,254 @@
+{
+  "schema_id": "jev-v2-saved-public-failure-diagnosis-v1",
+  "UTC": "2026-10-22T10:56:51.432338+00:00",
+  "completed_run_plan_sha256": "73bff770e242b93d5b7b53d24ef933926bd63897a4707d6d2e2a0f06f4438b6d",
+  "full_run_score_unchanged": {
+    "successes": 4,
+    "denominator": 10
+  },
+  "diagnostic_subset_cases": 2,
+  "cases": [
+    {
+      "case_id": "heldout-public-002-000",
+      "case_success": false,
+      "policy_calls": 16,
+      "recorded_actions": 16,
+      "terminal_status": "ready",
+      "outer_stop": "16-decision budget",
+      "no_unrecorded_policy_attempts": true,
+      "fresh_judge_replay_equal": true,
+      "judge_mismatch_keys": [
+        "visible_definition"
+      ],
+      "captured_document_requests": 2,
+      "captured_document_commits": 2,
+      "scope_violations": 0,
+      "observer_errors": 0,
+      "terminal_document_HTTP_response_status_recorded": false,
+      "network_scope": "Captured GET/document-request/frame-commit evidence; redirect_status is not the final document response status.",
+      "failure_class": "goal_relevant_reference_absent_from_actual_decision_inputs_after_freshness_refresh",
+      "operations": {
+        "CLICK": 1,
+        "SCROLL_DOWN": 15
+      },
+      "all_actions_changed_page": true,
+      "raw_observation_count": 18,
+      "model_call_to_raw_observation_indices": [
+        0,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "transient_rich_snapshot": {
+        "raw_observation_index": 1,
+        "snapshot_action_count": 252,
+        "element_count": 250,
+        "omitted_actions": 47,
+        "goal_relevant_anchor_present": true,
+        "goal_relevant_anchor_rect_within_viewport": true,
+        "actual_model_requests_using_this_snapshot": 0,
+        "physical_execution_of_unselected_anchor": "not tested; not inferred"
+      },
+      "fresh_request_observation": {
+        "raw_observation_index": 2,
+        "protocol_call": 184,
+        "preceding_marker_protocol_call": 183,
+        "preceding_marker_differs_from_saved_snapshot": true,
+        "action_count": 20,
+        "element_count": 18,
+        "omitted_actions": 0,
+        "goal_relevant_anchor_present": false
+      },
+      "goal_relevant_anchor_in_actual_model_requests": 0,
+      "actual_model_choice_observations_omitted_actions": 0,
+      "maximum_manual_page_model_elements": 20,
+      "recorded_document_height_before_refresh": 38185,
+      "recorded_document_height_after_refresh": 175667,
+      "recorded_scroll_step_pixels": 560,
+      "recorded_total_scroll_pixels": 8400,
+      "final_goal_entry_viewport_top_pixels": 105269.84375,
+      "conditional_scroll_only_lower_bound_from_page_top": 202,
+      "scroll_budget_after_navigation": 15,
+      "reachability_scope": "Recorded fixed-step scrolling cannot reach the goal content within the remaining15 calls under final saved geometry. No direct goal-relevant candidate was offered in actual requests. Alternative unexecuted navigation or future layout changes were not tested; no universal16-step impossibility claim.",
+      "observation_cause_scope": "The marker mismatch and request-time observation replacement are recorded. Why the layout/candidate population changed is unproven; no stylesheet/network-response timing claim.",
+      "generic_followup": "Evaluate generic layout-stability, document-navigation/search affordances and progress-budget diagnostics on separate tasks, preserving full candidates, shared budgets and judges. No benchmark-derived route or training label is produced."
+    },
+    {
+      "case_id": "heldout-public-004-000",
+      "case_success": false,
+      "policy_calls": 16,
+      "recorded_actions": 16,
+      "terminal_status": "ready",
+      "outer_stop": "16-decision budget",
+      "no_unrecorded_policy_attempts": true,
+      "fresh_judge_replay_equal": true,
+      "judge_mismatch_keys": [
+        "main",
+        "submitted_term",
+        "applied_filter_url",
+        "applied_search_form",
+        "applied_filter_ui",
+        "result_count",
+        "citation_results"
+      ],
+      "captured_document_requests": 1,
+      "captured_document_commits": 1,
+      "scope_violations": 0,
+      "observer_errors": 0,
+      "terminal_document_HTTP_response_status_recorded": false,
+      "network_scope": "Captured GET/document-request/frame-commit evidence; redirect_status is not the final document response status.",
+      "failure_class": "visible_access_error_document_with_no_goal_advancing_controls",
+      "operations": {
+        "WAIT": 16
+      },
+      "all_actions_changed_page": false,
+      "visible_document_title": "403",
+      "visible_body_contains": "403 Forbidden",
+      "visible_error_across_all17_snapshots": true,
+      "raw_observation_count": 17,
+      "model_element_count": 0,
+      "offered_operations": [
+        "WAIT",
+        "DONE",
+        "BLOCKED"
+      ],
+      "query_forms_or_filter_controls_offered": 0,
+      "final_rendered_main_present": false,
+      "final_search_forms": 0,
+      "final_citations": 0,
+      "distinct_policy_requests": 11,
+      "stable_last_six_requests_equal": true,
+      "actual_HTTP_403_response_proven": false,
+      "access_error_origin_or_cause": "not recorded; do not infer rate limit, anti-bot or origin server status",
+      "reachability_scope": "Given the recorded unchanged error document, offered WAIT/DONE/BLOCKED cannot perform the required search/filter task. WAIT repeated16 times; BLOCKED could end honestly but cannot satisfy the goal. A later external page change or different attempt is not ruled out.",
+      "generic_followup": "Record document response status and generic visible-error/progress diagnostics in future profiles. Keep this failure in the denominator and do not bypass or weaken the task judge.",
+      "judge_diagnostic_scope": "Judge correctly fails missing main/form/filter/results. Its page_status text uses title/headings/main, so body-only Forbidden is not surfaced as a separate page_status mismatch; no score change follows."
+    }
+  ],
+  "method": {
+    "prior_independent_audit_authenticated": true,
+    "all_selected_evidence_pins_match_completed_output_index": true,
+    "fixed_judges_compiled_from_verified_bytes": true,
+    "original_pure_action_space_function_extracted_from_verified_source": true,
+    "raw_DOM_goal_answer_request_or_action_route_published": false,
+    "training_labels_generated": false,
+    "actual_network_browser_model_GPU_units_or_process_control": false,
+    "new_stale_feedback_effect_on_recorded_failure": "Neither trace has missing recorded actions:16 model calls and16 history entries. These are not the earlier swallowed-pre-input-StalePage loop. A new run could differ, but no fix or score is inferred."
+  },
+  "refs": {
+    "completed_independent_audit": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/independent-audit-v2-01.json",
+      "sha256": "f6f15214f49cd4ec2602ba0bc265884106a605df9993065a26a365be0898747c",
+      "size_bytes": 15198
+    },
+    "output_index": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/output-index.json",
+      "sha256": "b1914dbaa59f71d82bb35224b9a0b0404c74ee1c9cf506329efab94dfddc89e9",
+      "size_bytes": 95857
+    },
+    "original_action_space_source": {
+      "path": "artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+      "sha256": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3",
+      "size_bytes": 8469
+    },
+    "judge": {
+      "path": "scripts/jev_heldout_public_cases.py",
+      "sha256": "339cddf596a25ab433ca66e23924631b6261e62efc06f351878d4ef5c3f6f8f9",
+      "size_bytes": 16622
+    },
+    "common_judge": {
+      "path": "scripts/jev_public_web_cases.py",
+      "sha256": "0ec9826d334cb2fbed24ade8780fa785291017d904b18233419ced760750bca3",
+      "size_bytes": 23665
+    },
+    "selected_evidence": {
+      "public6/results/public-request-ledger.json": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/public-request-ledger.json",
+        "sha256": "6ab6adeacf7bd3cf848695ed4bd9fc9d6b759c39a010483b98035b852312b104",
+        "size_bytes": 56766
+      },
+      "public6/results/attempts/heldout-public-002-000/states.json": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-002-000/states.json",
+        "sha256": "58190477cb08c6512a5f7a6fa45ce914a68a68da4da8d4ac3b09cdf7cfa52652",
+        "size_bytes": 3084563
+      },
+      "public6/results/attempts/heldout-public-002-000/model_calls.json": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-002-000/model_calls.json",
+        "sha256": "765b4b1ab5ae23c4533ce7e2e9e363d2bece1aa0c3b70618555a82996ce6ecd9",
+        "size_bytes": 1790771
+      },
+      "public6/results/attempts/heldout-public-002-000/outcome.json": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-002-000/outcome.json",
+        "sha256": "b33e1a6321e7c9de7203c5a147324ca2e26d1162b9f504674c6da2b6ffbd5734",
+        "size_bytes": 288327
+      },
+      "public6/results/attempts/heldout-public-002-000/final_state.json": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-002-000/final_state.json",
+        "sha256": "a565759533204c908eea1ae8c9ed2b03ebb202023148b6964ba7f845d4a7524a",
+        "size_bytes": 183334
+      },
+      "public6/results/attempts/heldout-public-002-000/observations.jsonl": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-002-000/observations.jsonl",
+        "sha256": "5e09086609a6a1b0639fcaaeeaa9dd9b77fa9e4b3b8fdcd044de903e4b70e857",
+        "size_bytes": 1339309
+      },
+      "public6/results/attempts/heldout-public-002-000/observation-profile-events.jsonl": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-002-000/observation-profile-events.jsonl",
+        "sha256": "f6eb8e7dc7feadcb7e522b5f6b08f53243b75f10fb806653868863b702429948",
+        "size_bytes": 1422831
+      },
+      "public6/results/attempts/heldout-public-002-000/final.html": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-002-000/final.html",
+        "sha256": "307e353e574b292e327dec69ff9bf292238c6c7b313c38d0a392c3feaa9364f4",
+        "size_bytes": 458817
+      },
+      "public6/results/attempts/heldout-public-004-000/states.json": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-004-000/states.json",
+        "sha256": "7e80c11d79ea312e0ed9f8540ecae2b5ed26782d86a163bd68511237ad07e995",
+        "size_bytes": 661078
+      },
+      "public6/results/attempts/heldout-public-004-000/model_calls.json": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-004-000/model_calls.json",
+        "sha256": "616c0b5755d396741d0680b78cd3183e7f120561be9caf8ddd85e830e216ca32",
+        "size_bytes": 958873
+      },
+      "public6/results/attempts/heldout-public-004-000/outcome.json": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-004-000/outcome.json",
+        "sha256": "c9fdc809ba4c31b7625898accbbe479f902e19a6d3ca4d14432a69c74eeecba7",
+        "size_bytes": 5712
+      },
+      "public6/results/attempts/heldout-public-004-000/final_state.json": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-004-000/final_state.json",
+        "sha256": "6a37525fac3eb622b2f2f5a43bd8077f3b8f1f52ac4d2ce0fe95259be1ee4744",
+        "size_bytes": 77438
+      },
+      "public6/results/attempts/heldout-public-004-000/observations.jsonl": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-004-000/observations.jsonl",
+        "sha256": "3a521eb276035a387e1357a694bdc27a7f027f0d6737c481c1fb3a8e43424406",
+        "size_bytes": 13046
+      },
+      "public6/results/attempts/heldout-public-004-000/observation-profile-events.jsonl": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-004-000/observation-profile-events.jsonl",
+        "sha256": "88c435b4b95daa8ed572e793371829b1cba4bb8879e7401a2334149ba8857944",
+        "size_bytes": 34806
+      },
+      "public6/results/attempts/heldout-public-004-000/final.html": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/attempts/heldout-public-004-000/final.html",
+        "sha256": "f82b4ebc965a15b4589b675c6c8fa684cbab759b173fd600f4d3dcc1c2a4d803",
+        "size_bytes": 160
+      }
+    }
+  }
+}

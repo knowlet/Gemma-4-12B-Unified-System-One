@@ -1,0 +1,252 @@
+{
+  "profile": "decision3-external-unit-boundary-v1",
+  "selection": {
+    "unit": "jev-d3-q95-helper-20261022-01.service",
+    "nonce": "jev-d3-boundary-22ba144db6dd25ce554abb6ad3f6c189",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "memory_max_bytes": 42949672960,
+    "runtime_seconds": 10800,
+    "stop_seconds": 20
+  },
+  "invocation_id": "ed098a7b1a69469686a88ddc57d80078",
+  "actor": {
+    "pid": 85926,
+    "start_ticks": 1382277,
+    "pgid": 85926,
+    "sid": 85926,
+    "uid": 1001,
+    "state": "S",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-01.service"
+  },
+  "tracked_cohort": [
+    {
+      "pid": 85926,
+      "start_ticks": 1382277,
+      "pgid": 85926,
+      "sid": 85926,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-01.service"
+    },
+    {
+      "pid": 85943,
+      "start_ticks": 1382363,
+      "pgid": 85926,
+      "sid": 85926,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-01.service"
+    },
+    {
+      "pid": 86012,
+      "start_ticks": 1383166,
+      "pgid": 86012,
+      "sid": 86012,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-01.service"
+    }
+  ],
+  "before_stop": {
+    "Type": "exec",
+    "Restart": "no",
+    "TimeoutStopUSec": "20s",
+    "RuntimeMaxUSec": "3h",
+    "RemainAfterExit": "yes",
+    "MainPID": "85926",
+    "Result": "success",
+    "OOMPolicy": "kill",
+    "ExecMainPID": "85926",
+    "ExecMainCode": "0",
+    "ExecMainStatus": "0",
+    "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-q95-helper-20261022-01.service",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "42949672960",
+    "MemorySwapMax": "0",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-boundary-22ba144db6dd25ce554abb6ad3f6c189",
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "SubState": "running",
+    "InvocationID": "ed098a7b1a69469686a88ddc57d80078"
+  },
+  "stop_result": "",
+  "after_stop": {
+    "Type": "",
+    "Restart": "no",
+    "TimeoutStopUSec": "1min 30s",
+    "RuntimeMaxUSec": "infinity",
+    "RemainAfterExit": "no",
+    "MainPID": "0",
+    "Result": "success",
+    "OOMPolicy": "",
+    "ExecMainPID": "0",
+    "ExecMainCode": "0",
+    "ExecMainStatus": "0",
+    "ControlGroup": "",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "infinity",
+    "MemorySwapMax": "infinity",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-q95-helper-20261022-01.service",
+    "LoadState": "not-found",
+    "ActiveState": "inactive",
+    "SubState": "dead",
+    "InvocationID": ""
+  },
+  "primary_error": {
+    "type": "ObservationError",
+    "message": "Selected Q95 owner stage refused",
+    "observation_evidence": {
+      "samples": [
+        {
+          "started_monotonic": 14408.668442533,
+          "finished_monotonic": 14408.854290917,
+          "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+          "mem_total_bytes": 130595864576,
+          "mem_available_bytes": 96525983744,
+          "tcp": {
+            "listeners": [],
+            "inventories": [
+              {
+                "family": "tcp",
+                "rows": 55,
+                "sha256": "4d79f5acfffaf8ce37edc969914fdfdc6e380492f52fd33f20f90875dd73be9f"
+              },
+              {
+                "family": "tcp6",
+                "rows": 4,
+                "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+              }
+            ]
+          },
+          "processes": {
+            "scanned": 561,
+            "inventory_sha256": "0ae368f18b9e34c31907befc016407fc7159ce193b2e551b0e430c8e15dcefaa",
+            "known_comfy": [],
+            "uncertain": [],
+            "vanished_sample": [],
+            "identity_retries": 0,
+            "retry_samples": []
+          }
+        },
+        {
+          "started_monotonic": 14408.854296645,
+          "finished_monotonic": 14408.946267399,
+          "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+          "mem_total_bytes": 130595864576,
+          "mem_available_bytes": 96512552960,
+          "tcp": {
+            "listeners": [],
+            "inventories": [
+              {
+                "family": "tcp",
+                "rows": 55,
+                "sha256": "bf76dff4796c2a073717b872b331ea47e20496a883eed67b966c8cfc142b22fc"
+              },
+              {
+                "family": "tcp6",
+                "rows": 4,
+                "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+              }
+            ]
+          },
+          "processes": {
+            "scanned": 566,
+            "inventory_sha256": "9cdfd210c311818e91697d6f5335938bf3b0db96e02507adb89aad8967e55abf",
+            "known_comfy": [],
+            "uncertain": [
+              {
+                "pid": 91598,
+                "start_ticks": 1440884,
+                "classification": "uncertain_python_cwd",
+                "context_diagnostics": [
+                  {
+                    "cwd_failure_type": "PermissionError",
+                    "cwd_sha256": null
+                  },
+                  {
+                    "cwd_failure_type": "PermissionError",
+                    "cwd_sha256": null
+                  }
+                ],
+                "proc_owner_uid": 0,
+                "disappearance_resolution_eligible": true
+              }
+            ],
+            "vanished_sample": [
+              {
+                "pid": 91594,
+                "start_ticks": null
+              },
+              {
+                "pid": 91595,
+                "start_ticks": null
+              },
+              {
+                "pid": 91597,
+                "start_ticks": null
+              }
+            ],
+            "identity_retries": 0,
+            "retry_samples": []
+          }
+        }
+      ],
+      "resolution": {
+        "started_monotonic": 14408.946274855,
+        "offenders": [
+          {
+            "pid": 91598,
+            "start_ticks": 1440884,
+            "classification": "uncertain_python_cwd",
+            "context_diagnostics": [
+              {
+                "cwd_failure_type": "PermissionError",
+                "cwd_sha256": null
+              },
+              {
+                "cwd_failure_type": "PermissionError",
+                "cwd_sha256": null
+              }
+            ],
+            "proc_owner_uid": 0,
+            "disappearance_resolution_eligible": true
+          }
+        ],
+        "disappeared": []
+      }
+    }
+  },
+  "closure_errors": [],
+  "post_stop_terminal_verified": true,
+  "cgroup_absent": true,
+  "two_process_scans": [
+    {
+      "matches": [],
+      "unknown": []
+    },
+    {
+      "matches": [],
+      "unknown": []
+    }
+  ],
+  "sources_unchanged": true,
+  "whole_unit_exit_confirmed": true,
+  "observed_cgroup_cohort_exit_confirmed": true,
+  "no_escape_enforced": false,
+  "whole_tree_exit_confirmed": false,
+  "continuation_authorized": false,
+  "model_qualified": false,
+  "scope": "Authenticated selected unit and observed cgroup cohort only. The audited fork/setsid/empty-env case is covered; explicit delegated cgroup migration or user-manager requests are not prevented."
+}

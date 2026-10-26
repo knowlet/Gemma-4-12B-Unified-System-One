@@ -1,0 +1,126 @@
+{
+  "compile_without_import": "All selected local Python sources compiled in memory, no bytecode written",
+  "dry": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--as=536870912",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+      "-B",
+      "-s",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "{\"mode\": \"DRY_SOURCE_ONLY\", \"unit_started\": false, \"torch_imported\": false, \"unit\": \"jev-d3-llama-cpp-cpu4-20261023-03.service\", \"memory_max_bytes\": 2147483648, \"runtime_choices_seconds\": [30, 7200], \"cpu_quota_percent\": 400, \"main_thread_cpu_affinity\": [16, 17, 18, 19], \"model_or_quality_qualified\": false}\n"
+  },
+  "head_at_validation": "3b89b4c4c18b058c30b7d2a15d99f76455249214",
+  "original_authorities_unchanged": [
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+      "size_bytes": 38483
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    }
+  ],
+  "profile": "cpu4-bounded-stdlib-source-validation-v1",
+  "recorded_utc": "2026-10-23T09:59:47.268007+00:00",
+  "resource_scope": "Each stdlib test/dry process fixed CPU0; address-space536870912 bytes; CPU30 seconds. Ruff fixed CPU0/CPU30 seconds without small address-space cap. No actual workload unit started.",
+  "ruff_check": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+      "check",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "All checks passed!\n"
+  },
+  "ruff_format_check": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+      "format",
+      "--check",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "6 files already formatted\n"
+  },
+  "runtime": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+      "-I",
+      "-B",
+      "-s",
+      "--version"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "Python 3.12.13\n"
+  },
+  "scope": "Pure stdlib/fake regressions only; no real systemd/native/processor/Torch/observer/HTTP/GPU/model/large-payload execution or reads. Existing authorities were read as small source bytes by tests only.",
+  "source_entries": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py",
+      "sha256": "882ba1579b17b31dca0ee01fe2e89f46b1bc8c17b7635a0c4aa05042fc847ac0",
+      "size_bytes": 39721
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/test_controller.py",
+      "sha256": "77447797bf1431f8ee08b256b8c3cc1ef7d49012679c6223abb8fb35b50a071b",
+      "size_bytes": 29505
+    }
+  ],
+  "status": "PASS_SOURCE_TEST_ONLY",
+  "tests": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--as=536870912",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+      "-I",
+      "-B",
+      "-s",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/test_controller.py"
+    ],
+    "exit_code": 0,
+    "stderr": "test_bootstrap_dual_affinity_failure_precedes_identity_publish_or_commands (__main__.CPU4Tests.test_bootstrap_dual_affinity_failure_precedes_identity_publish_or_commands) ... ok\ntest_cpu4_successor_keeps_original_reserve_and_unique_unit (__main__.CPU4Tests.test_cpu4_successor_keeps_original_reserve_and_unique_unit) ... ok\ntest_exact_main_sched_proc_affinity_accepts_selected_four (__main__.CPU4Tests.test_exact_main_sched_proc_affinity_accepts_selected_four) ... ok\ntest_kernel_quota_accepts_four_times_any_positive_period (__main__.CPU4Tests.test_kernel_quota_accepts_four_times_any_positive_period) ... ok\ntest_main_affinity_refuses_widening_clipping_proc_disagreement_and_race (__main__.CPU4Tests.test_main_affinity_refuses_widening_clipping_proc_disagreement_and_race) ... ok\ntest_memory_event_evidence_requires_bounded_numeric_own_oom_counters (__main__.CPU4Tests.test_memory_event_evidence_requires_bounded_numeric_own_oom_counters) ... ok\ntest_quota_refuses_one_core_unlimited_ratio_mismatch_and_zero_period (__main__.CPU4Tests.test_quota_refuses_one_core_unlimited_ratio_mismatch_and_zero_period) ... ok\ntest_all_successful_sample_min_survives_discarded_raw_low (__main__.Tests.test_all_successful_sample_min_survives_discarded_raw_low) ... ok\ntest_binary_stats_never_open_tool_payload (__main__.Tests.test_binary_stats_never_open_tool_payload) ... ok\ntest_child_failure_retained_before_refusal (__main__.Tests.test_child_failure_retained_before_refusal) ... ok\ntest_command_cleanup_attempts_all_steps_and_preserves_original (__main__.Tests.test_command_cleanup_attempts_all_steps_and_preserves_original) ... ok\ntest_command_pipe_close_failure_does_not_hide_primary (__main__.Tests.test_command_pipe_close_failure_does_not_hide_primary) ... ok\ntest_default_dry_no_authority_or_framework (__main__.Tests.test_default_dry_no_authority_or_framework) ... ok\ntest_environment_exact_cpu_overlay_no_inherited_secret (__main__.Tests.test_environment_exact_cpu_overlay_no_inherited_secret) ... ok\ntest_exact_spec_accepts_runtime30_and7200 (__main__.Tests.test_exact_spec_accepts_runtime30_and7200) ... ok\ntest_existing_cgroup_rejected_when_unit_absent (__main__.Tests.test_existing_cgroup_rejected_when_unit_absent) ... ok\ntest_existing_unit_rejected_without_stop (__main__.Tests.test_existing_unit_rejected_without_stop) ... ok\ntest_exit0_does_not_allow_missing_command_successes (__main__.Tests.test_exit0_does_not_allow_missing_command_successes) ... ok\ntest_explicit_logical_symlink_preserves_argv_and_pins_target (__main__.Tests.test_explicit_logical_symlink_preserves_argv_and_pins_target) ... ok\ntest_final_source_and_host_failures_preserve_primary_and_receipt (__main__.Tests.test_final_source_and_host_failures_preserve_primary_and_receipt) ... ok\ntest_final_source_verification_uses_base_refs_with_nonempty_spec (__main__.Tests.test_final_source_verification_uses_base_refs_with_nonempty_spec) ... ok\ntest_final_success_requires_authenticated_live_hold_close (__main__.Tests.test_final_success_requires_authenticated_live_hold_close) ... ok\ntest_generated_binary_only_inside_owned_fresh_output (__main__.Tests.test_generated_binary_only_inside_owned_fresh_output) ... ok\ntest_host_reserve_initial_plus2_and_busy_refusal (__main__.Tests.test_host_reserve_initial_plus2_and_busy_refusal) ... ok\ntest_identity_ignores_dynamic_state_but_not_start_or_argv (__main__.Tests.test_identity_ignores_dynamic_state_but_not_start_or_argv) ... ok\ntest_original_boundary_accepts_selected_30_and_7200_unchanged (__main__.Tests.test_original_boundary_accepts_selected_30_and_7200_unchanged) ... ok\ntest_sources_bounded_exact_no_duplicate_or_changed_bytes (__main__.Tests.test_sources_bounded_exact_no_duplicate_or_changed_bytes) ... ok\ntest_spec_refuses_relative_executable_or_unselected_substitution (__main__.Tests.test_spec_refuses_relative_executable_or_unselected_substitution) ... ok\ntest_spec_refuses_runtime_or_file_cap_relaxation (__main__.Tests.test_spec_refuses_runtime_or_file_cap_relaxation) ... ok\ntest_spec_sha_is_independent_gate (__main__.Tests.test_spec_sha_is_independent_gate) ... ok\ntest_stream_is_bounded_but_all_bytes_hashed (__main__.Tests.test_stream_is_bounded_but_all_bytes_hashed) ... ok\ntest_timeout_byte_output_bounded_and_json_safe (__main__.Tests.test_timeout_byte_output_bounded_and_json_safe) ... ok\ntest_wrong_sha_refuses_before_authorities_or_commands (__main__.Tests.test_wrong_sha_refuses_before_authorities_or_commands) ... ok\n\n----------------------------------------------------------------------\nRan 33 tests in 0.100s\n\nOK\n",
+    "stdout": ""
+  },
+  "validation_recorder_history": "First recorder used Python-I for the smoke dry entry, which excludes its adjacent smoke_common module. Pure test commands passed; no production source change. Final dry invocation matches owner-selected-B-s flags, and all final commands pass."
+}

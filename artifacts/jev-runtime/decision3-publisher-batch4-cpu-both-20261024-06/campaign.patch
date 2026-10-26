@@ -1,0 +1,89 @@
+--- frozen-full05/campaign.py
++++ ece-schema-full06/campaign.py
+@@ -110,7 +110,7 @@
+ 
+ 
+ def profile(key):
+-    return f"decision3-{key}-gx10-publisher-cpu2g-coexist-batch4-both-stage-completions-20261024-v1"
++    return f"decision3-{key}-gx10-publisher-cpu2g-coexist-batch4-both-stage-completions-ece-schema-20261024-v1"
+ 
+ 
+ def load_plan(path, expected):
+@@ -483,6 +483,61 @@
+         return self(state, questions)["answers"]
+ 
+ 
++def project_public_ece(value, calibration_n):
++    """Copy the pinned official global ECE object unchanged; never rescore it."""
++    if value is None:
++        require(calibration_n == 0, "absent official ECE requires zero calibration pairs")
++        return None
++    require(
++        type(value) is dict and set(value) == {"ece", "n", "bins"},
++        "official ECE object keys differ",
++    )
++
++    def unit(number):
++        return type(number) in (int, float) and math.isfinite(number) and 0 <= number <= 1
++
++    require(
++        unit(value["ece"])
++        and type(value["n"]) is int
++        and 0 <= value["n"] <= 231
++        and value["n"] == calibration_n,
++        "official ECE metric/count differs",
++    )
++    bins = value["bins"]
++    require(type(bins) is list and len(bins) == 10, "official ECE requires ten global bins")
++    projected = []
++    for index, item in enumerate(bins):
++        require(
++            type(item) is dict and set(item) == {"lo", "hi", "n", "mean_confidence", "accuracy"},
++            "official ECE bin keys differ",
++        )
++        require(
++            unit(item["lo"])
++            and unit(item["hi"])
++            and item["lo"] == index / 10
++            and item["hi"] == (index + 1) / 10
++            and type(item["n"]) is int
++            and 0 <= item["n"] <= value["n"],
++            "official ECE bin edges/count differ",
++        )
++        if item["n"] == 0:
++            require(
++                item["mean_confidence"] is None and item["accuracy"] is None,
++                "empty official ECE bin means must be absent",
++            )
++        else:
++            require(
++                unit(item["mean_confidence"]) and unit(item["accuracy"]),
++                "populated official ECE bin means must be finite unit metrics",
++            )
++        projected.append(dict(item))
++    require(
++        sum(item["n"] for item in bins) == value["n"],
++        "official ECE bin total differs from calibration count",
++    )
++    return {"ece": value["ece"], "n": value["n"], "bins": projected}
++
++
+ def stage_metrics(stage, aggregate):
+     """Copy only typed official global aggregates, never item records or responses."""
+     require(type(aggregate) is dict, "official stage aggregate required")
+@@ -504,7 +559,6 @@
+             "schema_validity_strict",
+             "operational_success",
+             "brier_mean",
+-            "ece",
+             "ordinal_mae",
+             "price_per_1000_decisions_usd",
+             "ledger_charged_usd",
+@@ -519,6 +573,7 @@
+             all(type(result[key]) is int and 0 <= result[key] <= 231 for key in integers),
+             "public aggregate integer counts differ",
+         )
++        result["ece"] = project_public_ece(aggregate["ece"], result["calibration_n"])
+         result["complete"] = True
+     else:
+         require(stage == STAGES[1], "selected original stage required")

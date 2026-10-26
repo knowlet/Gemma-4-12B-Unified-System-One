@@ -1,0 +1,58 @@
+{
+  "conclusion": "Source-ready for a separately reviewed tiny CPU owner. Historical review remains applicable subject to the stricter query-error gate. This review supplies no actual mechanism result.",
+  "limits": [
+    "All limitations in the prior review remain.",
+    "CUDA guard starts after Torch import; real masked availability queries are allowed and recorded. Full-native-runtime zero-CUDA-call claims are unsupported.",
+    "Mechanism observation completion does not establish preserved Parameter object ties or automatic post-hook recovery after body exceptions.",
+    "The fixture does not itself enforce unit/admission resource limits. Controller source and runtime evidence are separate.",
+    "No full-model, GPU, 12B capacity, 20-second, Q95, numerical-quality or benchmark qualification."
+  ],
+  "must_fix": [],
+  "narrow_delta_proof": {
+    "independently_verified": true,
+    "new_gate": "all(\"error\" not in row for row in cuda_queries) before mechanism_checks_completed",
+    "purpose": "A dependency swallowing an unexpected real availability-query wrapper exception cannot produce success.",
+    "remove_exact_gate_restores_entry_sha256": "2e503fadd413cf4b0f1bcf0dce50d4fc44a977e4937590df0e97fbdab9746211",
+    "restore_only_entry_sha_and_size_in_sorted_manifest_restores_sha256": "73aafa4edd506cb8ef60265edb5d86a062ba7fb595f03f032a9736280f1de9d6"
+  },
+  "prior_review_preserved": {
+    "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/independent-review.json",
+    "sha256": "46a1b76b0c3ecab0e920405e9c9acfe27780ae334c04d3d550b799b279ad1762",
+    "size_bytes": 5143
+  },
+  "review_method": "Read-only source, exact small-byte hashes, binary stat-only identities, and saved stdlib evidence. No reviewed actor or test execution.",
+  "reviewed_at_utc": "2026-10-22T23:45:09.536119+00:00",
+  "reviewer": "independent peer /root/q95_owner05_review",
+  "saved_tests": {
+    "reference": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/static-tests-02.txt",
+      "sha256": "258a2774d1b42df8f2e418b1c7c5878856e9dba08286f2190436ddd2010bd06e",
+      "size_bytes": 1245
+    },
+    "result": "9 stdlib tests PASS, 0.084 s; reviewed saved evidence only, no Torch run"
+  },
+  "schema": "bf16-mmap-cpu-fixture-independent-review-successor-v1",
+  "selected_integrity": {
+    "binary_payload_read": false,
+    "binary_stat_only_checked": 5,
+    "small_sources_rehashed": 23
+  },
+  "sources": {
+    "entry": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/fixture.py",
+      "sha256": "d86ff0144a22e68f2399b1c0ed8c416ceab14ae892b7c27a9acba1f059844185",
+      "size_bytes": 26546
+    },
+    "selection": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/selection.json",
+      "sha256": "b03b26563fbf4da2847b475481aa9fd9258d885644ad492ff8c36633b278c09d",
+      "size_bytes": 7518
+    },
+    "test": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/test_static.py",
+      "sha256": "f1c131490b262381e2dda7f318a887d9801981cefe1fbf14bc62e6ca58622be2",
+      "size_bytes": 8540
+    }
+  },
+  "status": "CLEAR"
+}

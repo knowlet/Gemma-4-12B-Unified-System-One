@@ -1,0 +1,128 @@
+{
+  "schema": "cpu5-browser-progress-v2-source-validation-v1",
+  "status": "SOURCE_CHECKS_PASS_NO_NEW_ACTUAL",
+  "fake_tests_pass": 10,
+  "results": [
+    {
+      "name": "import_order",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "--select",
+        "I",
+        "--fix",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker_v2.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_v2.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.01522123598260805,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker_v2.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_v2.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.01499591299216263,
+      "stdout": "2 files left unchanged\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "stdlib_fakes_and_progress_regressions",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01",
+        "-p",
+        "test_worker_v2.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.2727383839956019,
+      "stdout": "",
+      "stderr": "..........\n----------------------------------------------------------------------\nRan 10 tests in 0.059s\n\nOK\n",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "ruff_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker_v2.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_v2.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.018520416982937604,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "format_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "--check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker_v2.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_v2.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.01223598700016737,
+      "stdout": "2 files already formatted\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    }
+  ],
+  "files": [
+    {
+      "path": "artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker_v2.py",
+      "size_bytes": 34059,
+      "sha256": "b317cf48300bfbf3c2c4d54d72dae1589278a28ebec0eeb20eac683a931eb15d"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_v2.py",
+      "size_bytes": 11063,
+      "sha256": "4091bb143b149be311251abf2723fe65a52d19564ae43d869bf7cb2a82724330"
+    }
+  ],
+  "original_failed_sources_unchanged": true,
+  "source_delta": "Only add _ReceiptWriter and call it in run nested save; all inference/caller/authority/deadline/fatal/drain semantics retained",
+  "no_directory_fsync_or_power_loss_claim": true,
+  "failed_original_root_review": {
+    "path": "artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/root-closed-failed-actual02-review-01.json",
+    "size_bytes": 2067,
+    "sha256": "a05e511729b78c43f811120dfd020ba204aaaa1628f716ef1dda9108215f2772"
+  },
+  "actual_browser_qualification": false
+}

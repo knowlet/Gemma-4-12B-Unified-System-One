@@ -1,0 +1,104 @@
+{
+  "status": "PASS_AUTHOR_SOURCE_ONLY_CHECKS_REQUIRES_INDEPENDENT_REVIEW_AND_FRESH_ACTUAL_ADMISSION",
+  "source_checks": {
+    "tests": {
+      "exit_code": 0,
+      "output": "....................\n----------------------------------------------------------------------\nRan 20 tests in 0.467s\n\nOK\n",
+      "wall_time_seconds": 0.554230297
+    },
+    "ruff": {
+      "exit_code": 0,
+      "output": "All checks passed!\n",
+      "wall_time_seconds": 1.416e-05
+    },
+    "format": {
+      "exit_code": 0,
+      "output": "4 files already formatted\n",
+      "wall_time_seconds": 3.0416e-05
+    },
+    "dry": {
+      "exit_code": 0,
+      "output": "{\"status\": \"dry_default_no_model_or_job_execution\", \"models\": [\"edge\"], \"batch_size\": 4, \"ordered_independent_questions\": 4, \"native_calls\": 2, \"constructor_count\": 1, \"owner_unit\": \"jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service\", \"owner_profile\": \"llama-cpp-cpu4-2g-long-command-owned-v1\", \"memory_max_bytes\": 2147483648, \"startup_available_bytes\": 28266656564, \"whole_seconds\": 120, \"durable_call_seconds\": 20, \"benchmark_or_batch1_score_inherited\": false}\n",
+      "wall_time_seconds": 2.656e-05
+    }
+  },
+  "bounds": {
+    "tests_and_dry": {
+      "affinity": [
+        0
+      ],
+      "RLIMIT_AS_bytes": 268435456,
+      "RLIMIT_CPU_seconds": 20,
+      "timeout_seconds": 30,
+      "python": "python3 -B -s"
+    },
+    "Ruff": {
+      "affinity": [
+        0
+      ],
+      "RLIMIT_CPU_seconds": 20,
+      "timeout_seconds": 30,
+      "address_space_bound": null
+    }
+  },
+  "tests_count": 20,
+  "test_groups": {
+    "retained_native_fake_boundary_tests": 8,
+    "resource_and_AST_tests": 5,
+    "new_timing_finalization_tests": 7
+  },
+  "replaced_source_tests": {
+    "count": 2,
+    "reason": "The two old tests reopened publisher model source files. This successor keeps the historical publisher-source audit byte-identical and instead tests local source AST preservation plus extracted stdlib resource closure, without reopening referenced model/runtime files."
+  },
+  "resource": {
+    "owner_unit": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+    "owner_profile": "llama-cpp-cpu4-2g-long-command-owned-v1",
+    "reserve_bytes": 26119172916,
+    "memory_max_bytes": 2147483648,
+    "startup_available_bytes": 28266656564,
+    "swap_max_bytes": 0,
+    "owner_runtime_seconds": 10800,
+    "cpu_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_quota_percent": 400
+  },
+  "test_log": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/static-tests.log",
+    "sha256": "e090a3ee9aded4f7b8538928c71d29bed4015905b5067c197bb6dcd1f276731c",
+    "size_bytes": 681
+  },
+  "source_provenance": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source-provenance.json",
+    "sha256": "c91d414c869376e4f2a16d79525745a0db8222cb85eb330026bc80846da6e7e0",
+    "size_bytes": 5650
+  },
+  "baseline_regressions": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/baseline-regression.json",
+    "sha256": "fed7d58b3527458f78911ae7ac2302b7b394a4e9f57a602e33816e5f0675bda8",
+    "size_bytes": 1966
+  },
+  "model_payload_access": false,
+  "runtime_import_or_execution": false,
+  "actual_host_unit_observer_network_Git_access": false,
+  "qualification": {
+    "real_2GiB_smoke": false,
+    "real_2GiB_fit": false,
+    "full_suite_fit": false,
+    "quality_or_browser_score": false,
+    "prior_3GiB_or_batch1_inherited": false
+  },
+  "initial_lint_correction": "Earlier pre-timing preparation had one I001 future-import blank-line issue in the new helper; corrected before these final passing checks. No frozen origin changed.",
+  "final_AST_compile_and_small_source_pin_consistency": {
+    "exit_code": 0,
+    "AST_compile_sources": 4,
+    "selected_small_source_records_exact": 5,
+    "model_runtime_modules_imported": false,
+    "model_or_runtime_payloads_read": false,
+    "bounds_same_as_fake_tests": true
+  }
+}

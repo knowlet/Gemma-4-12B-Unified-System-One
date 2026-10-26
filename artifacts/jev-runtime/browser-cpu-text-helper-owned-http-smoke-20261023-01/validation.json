@@ -1,0 +1,147 @@
+{
+  "schema": "owned-one-shot-http-source-validation-v1",
+  "status": "ALL_SOURCE_VALIDATION_PASSED_NO_ACTUAL_HTTP_OR_NN",
+  "profile": "qwen25-05b-cpu4-2g-owned-http-smoke-v1",
+  "stdlib_fake_tests": 36,
+  "legacy_fake_tests": 25,
+  "new_http_fake_tests": 11,
+  "environment": {
+    "python": "repository CPython3.12.13",
+    "cpu_affinity": [
+      0
+    ],
+    "address_space_limit_bytes": 268435456,
+    "cpu_seconds": 20,
+    "wall_seconds": 30,
+    "ruff": "CPU0/wall30s without extra AS cap"
+  },
+  "final_checks": [
+    {
+      "name": "legacy25",
+      "cmd": "taskset -c 0 timeout 30s prlimit --as=268435456 --cpu=20 .venv/bin/python -B -s artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/test_smoke.py",
+      "chunk_id": "94001a",
+      "wall_time_seconds": 0.182596514,
+      "exit_code": 0,
+      "original_token_count": 31,
+      "output": ".........................\n----------------------------------------------------------------------\nRan 25 tests in 0.089s\n\nOK\n"
+    },
+    {
+      "name": "http_fakes",
+      "cmd": "taskset -c 0 timeout 30s prlimit --as=268435456 --cpu=20 .venv/bin/python -B -s artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/test_transport.py",
+      "chunk_id": "785d7c",
+      "wall_time_seconds": 0.177235429,
+      "exit_code": 0,
+      "original_token_count": 437,
+      "output": "test_auto_protocol_policy_refuses_before_source_import_or_socket (__main__.Tests.test_auto_protocol_policy_refuses_before_source_import_or_socket) ... ok\ntest_client_elapsed20_is_observation_only_not_extra_scoregate (__main__.Tests.test_client_elapsed20_is_observation_only_not_extra_scoregate) ... ok\ntest_observer_preserves_primary_when_evidence_also_fails (__main__.Tests.test_observer_preserves_primary_when_evidence_also_fails) ... ok\ntest_observer_returns_same_response_forwards_same_objects_and_restores (__main__.Tests.test_observer_returns_same_response_forwards_same_objects_and_restores) ... ok\ntest_original_502_refusal_does_not_retry (__main__.Tests.test_original_502_refusal_does_not_retry) ... ok\ntest_post_cleanup_parent_refusal_cannot_return_success (__main__.Tests.test_post_cleanup_parent_refusal_cannot_return_success) ... ok\ntest_private_package_reads_only_exact_questions_model_and_preserves_code (__main__.Tests.test_private_package_reads_only_exact_questions_model_and_preserves_code) ... ok\ntest_second_request_never_reaches_application_or_another_arm (__main__.Tests.test_second_request_never_reaches_application_or_another_arm) ... ok\ntest_server_is_not_blocked_by_sync_client_and_cleanup_completes (__main__.Tests.test_server_is_not_blocked_by_sync_client_and_cleanup_completes) ... ok\ntest_success_cleanup_failure_refuses_and_failure_primary_is_preserved (__main__.Tests.test_success_cleanup_failure_refuses_and_failure_primary_is_preserved) ... ok\ntest_upstream_original_constructor_payload_reasoning_and_retry_unchanged (__main__.Tests.test_upstream_original_constructor_payload_reasoning_and_retry_unchanged) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.096s\n\nOK\n"
+    },
+    {
+      "name": "ruff",
+      "cmd": "taskset -c 0 timeout 30s .venv/bin/ruff check artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01",
+      "chunk_id": "451dda",
+      "wall_time_seconds": 0.000014256,
+      "exit_code": 0,
+      "original_token_count": 5,
+      "output": "All checks passed!\n"
+    },
+    {
+      "name": "format",
+      "cmd": "taskset -c 0 timeout 30s .venv/bin/ruff format --check artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01",
+      "chunk_id": "612f80",
+      "wall_time_seconds": 0.000012896,
+      "exit_code": 0,
+      "original_token_count": 7,
+      "output": "5 files already formatted\n"
+    },
+    {
+      "name": "dry",
+      "cmd": "taskset -c 0 timeout 30s prlimit --as=268435456 --cpu=20 .venv/bin/python -B -s artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/actor.py",
+      "chunk_id": "ab7a12",
+      "wall_time_seconds": 0.046649774,
+      "exit_code": 0,
+      "original_token_count": 61,
+      "output": "{\"profile\": \"qwen25-05b-cpu4-2g-owned-http-smoke-v1\", \"status\": \"source_only_not_ready\", \"model_started\": false, \"owner_started\": false, \"transport\": \"one_shot_loopback_HTTP\", \"requires_closed_catalog_acceptance_and_root_command_spec\": true}\n"
+    },
+    {
+      "name": "ast",
+      "cmd": "taskset -c 0 timeout 30s prlimit --as=268435456 --cpu=20 .venv/bin/python -B -s -c 'import ast,json,sys; from pathlib import Path; p=Path(\"artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01\"); old=p.with_name(\"browser-cpu-text-helper-owned-smoke-20261023-03\"); files=sorted(p.glob(\"*.py\")); trees={f.name:ast.parse(f.read_bytes()) for f in files}; prior=ast.parse((old/\"actor.py\").read_bytes()); a={n.name:n for n in prior.body if isinstance(n,(ast.FunctionDef,ast.ClassDef))}; b={n.name:n for n in trees[\"actor.py\"].body if isinstance(n,(ast.FunctionDef,ast.ClassDef))}; names=[\"RequestWatchdog\",\"ParentGate\",\"stop_exact_worker\",\"exact_snapshot\",\"failure_receipt\",\"accepted_catalog\",\"elapsed_check\",\"small\",\"write_new\",\"load_source\"]; assert all(ast.dump(a[n])==ast.dump(b[n]) for n in names); assert (old/\"authority.py\").read_bytes()==(p/\"authority.py\").read_bytes(); print(json.dumps({\"python\":sys.version,\"ast_files\":len(files),\"unchanged_functions\":names,\"authority_byte_identical\":True,\"actual_network_or_ML_modules\":sorted(set(sys.modules)&{\"uvicorn\",\"httpx\",\"httpcore\",\"h11\",\"torch\",\"transformers\",\"tokenizers\"})}))'",
+      "chunk_id": "f1b9dc",
+      "wall_time_seconds": 0.020566702,
+      "exit_code": 0,
+      "original_token_count": 86,
+      "output": "{\"python\": \"3.12.13 (main, Jun 23 2026, 15:19:07) [Clang 22.1.3 ]\", \"ast_files\": 5, \"unchanged_functions\": [\"RequestWatchdog\", \"ParentGate\", \"stop_exact_worker\", \"exact_snapshot\", \"failure_receipt\", \"accepted_catalog\", \"elapsed_check\", \"small\", \"write_new\", \"load_source\"], \"authority_byte_identical\": true, \"actual_network_or_ML_modules\": []}\n"
+    }
+  ],
+  "baseline_and_fixture_corrections": [
+    {
+      "reason": "Inherited pidfd mock assumed signal.pidfd_send_signal exists in the repository Python. Two fake-only patch.object sites use create=True; production hasattrs/exact-pidfd API checks and authority bytes are unchanged.",
+      "initial_failure": {
+        "status": "fulfilled",
+        "value": {
+          "name": "legacy25",
+          "cmd": "taskset -c 0 timeout 30s prlimit --as=268435456 --cpu=20 .venv/bin/python -B -s artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/test_smoke.py",
+          "chunk_id": "421334",
+          "wall_time_seconds": 0.216436592,
+          "exit_code": 1,
+          "original_token_count": 341,
+          "output": "............E............\n======================================================================\nERROR: test_pidfd_kill_requires_exact_current_identity (__main__.IdentityTests.test_pidfd_kill_requires_exact_current_identity)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/test_smoke.py\", line 268, in test_pidfd_kill_requires_exact_current_identity\n    with patch.object(a.signal, \"pidfd_send_signal\") as signal_call:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/lib/python3.12/unittest/mock.py\", line 1467, in __enter__\n    original, local = self.get_original()\n                      ^^^^^^^^^^^^^^^^^^^\n  File \"/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/lib/python3.12/unittest/mock.py\", line 1437, in get_original\n    raise AttributeError(\nAttributeError: <module 'signal' from '/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/lib/python3.12/signal.py'> does not have the attribute 'pidfd_send_signal'\n\n----------------------------------------------------------------------\nRan 25 tests in 0.078s\n\nFAILED (errors=1)\n"
+        }
+      }
+    },
+    {
+      "reason": "New namespace test initially inspected sys.modules after patch.dict had correctly removed its temporary package. Assertions now execute inside the fake scope and block every unselected import. Original source/codeobject equality remains the test expectation.",
+      "initial_failure": {
+        "status": "fulfilled",
+        "value": {
+          "name": "http_fakes",
+          "cmd": "taskset -c 0 timeout 30s prlimit --as=268435456 --cpu=20 .venv/bin/python -B -s artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/test_transport.py",
+          "chunk_id": "b690bd",
+          "wall_time_seconds": 0.174136961,
+          "exit_code": 1,
+          "original_token_count": 628,
+          "output": "test_auto_protocol_policy_refuses_before_source_import_or_socket (__main__.Tests.test_auto_protocol_policy_refuses_before_source_import_or_socket) ... ok\ntest_client_elapsed20_is_observation_only_not_extra_scoregate (__main__.Tests.test_client_elapsed20_is_observation_only_not_extra_scoregate) ... ok\ntest_observer_preserves_primary_when_evidence_also_fails (__main__.Tests.test_observer_preserves_primary_when_evidence_also_fails) ... ok\ntest_observer_returns_same_response_forwards_same_objects_and_restores (__main__.Tests.test_observer_returns_same_response_forwards_same_objects_and_restores) ... ok\ntest_original_502_refusal_does_not_retry (__main__.Tests.test_original_502_refusal_does_not_retry) ... ok\ntest_post_cleanup_parent_refusal_cannot_return_success (__main__.Tests.test_post_cleanup_parent_refusal_cannot_return_success) ... ok\ntest_private_package_reads_only_exact_questions_model_and_preserves_code (__main__.Tests.test_private_package_reads_only_exact_questions_model_and_preserves_code) ... ERROR\ntest_second_request_never_reaches_application_or_another_arm (__main__.Tests.test_second_request_never_reaches_application_or_another_arm) ... ok\ntest_server_is_not_blocked_by_sync_client_and_cleanup_completes (__main__.Tests.test_server_is_not_blocked_by_sync_client_and_cleanup_completes) ... ok\ntest_success_cleanup_failure_refuses_and_failure_primary_is_preserved (__main__.Tests.test_success_cleanup_failure_refuses_and_failure_primary_is_preserved) ... ok\ntest_upstream_original_constructor_payload_reasoning_and_retry_unchanged (__main__.Tests.test_upstream_original_constructor_payload_reasoning_and_retry_unchanged) ... ok\n\n======================================================================\nERROR: test_private_package_reads_only_exact_questions_model_and_preserves_code (__main__.Tests.test_private_package_reads_only_exact_questions_model_and_preserves_code)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/test_transport.py\", line 163, in test_private_package_reads_only_exact_questions_model_and_preserves_code\n    package = sys.modules[\"_owned_one_shot_http_upstream\"]\n              ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nKeyError: '_owned_one_shot_http_upstream'\n\n----------------------------------------------------------------------\nRan 11 tests in 0.092s\n\nFAILED (errors=1)\n"
+        }
+      }
+    }
+  ],
+  "meaningful_regressions": [
+    "Original Client(http2=True,timeout25), unchanged1024/reasoningnone/prompt/two-message body and original3-attempt retry/backoff behavior",
+    "Observer forwards exact original argument objects and returns same Response; HTTP502 does not retry; primary retained across evidence failure",
+    "Sync client runs outside asyncio server thread; one additional valid request cannot reach another native app/arm",
+    "Client elapsed21s changes observation flag only, not score/refusal gates",
+    "Post-cleanup parent refusal and successful-cleanup failure cannot return success; original failure remains primary",
+    "Private namespace reads and SHA-checks only questions.py/model.py, never package init/Agent/Browser, and original field_text/post_json codeobjects compare equal"
+  ],
+  "auth_scope": {
+    "outer_direct_execution_refs": 20,
+    "original_runtime_sources_retained": 13,
+    "in_root_runtime_sources": 12,
+    "outer_critical_http_refs": 6,
+    "manifest_inner_http_sources": 30,
+    "manifest_inner_upstream_sources": 2,
+    "known_root_union": 32,
+    "projected_total_with_distinct_future_reserves": 51,
+    "projected_explicit_excluding_mandatory_five": 46,
+    "unchanged_original_explicit_limit": 58,
+    "actual_future_root_spec_not_constructed": true,
+    "inner_expected_rows_bound_by_outer_manifest_sha": true,
+    "inner_pre_auth_before_runtime_transitive_http_import": true,
+    "inner_post_auth_after_exchange_and_server_client_cleanup": true,
+    "not_all_inner_rows_are_outer_rechecked": true
+  },
+  "qualifications": {
+    "source_only_candidate": true,
+    "actual_HTTP": false,
+    "actual_NN": false,
+    "actual_runtime_or_http_stack_import": false,
+    "actual_socket_or_network": false,
+    "host_or_observer_or_unit": false,
+    "model_or_native_payload_read": false,
+    "Git": false,
+    "multi_request_or_retry_success": false,
+    "client_whole20": false,
+    "browser_or_score": false,
+    "full_Python_transitive_or_native_DSO_closure": false
+  },
+  "raw_content_policy": "Future actual raw HTTP response bytes live only in private-http attempt journals and original native helper journals. Worker receipts contain hashes/refs/metrics, no raw HTTP response body. No actual generated content exists in this source package or is added to Git.",
+  "prerequisites": "Root independently accepts closed catalog02 five refs and separately closed Qwen native smoke03, constructs exact real ROOTspec union<=58explicit, selects compatible pidfd parentPython, and passes fresh original owner03 admission before execution."
+}

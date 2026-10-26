@@ -1,0 +1,11 @@
+# Optional visible-completion review client
+
+This component adds an explicitly selected Agent subclass. When the policy proposes DONE, it keeps that exact proposal and asks an injected native callback one separate binary question. The input includes only the user goal, current observed page/elements and recent actual action history. An INCOMPLETE answer returns control to canonical navigation with typed feedback; it never invents a different native operation. COMPLETE changes the agent status only after fresh, valid, timely review. External benchmark scoring stays independent.
+
+Each review consumes one of the existing sixteen action slots. Policy prediction and review share twenty seconds starting before prediction. Their combined logical request-attempt ceiling is thirty-two, including failed policy attempts. Successful policy proposals and failed attempts retain separate records. These slots do not bound upstream HTTP retries, backend forwards or native question heads; future server integration must account for those populations separately.
+
+The original Agent and model modules are unchanged. The component composes with the separately selected FIND_TEXT subclass. Review transport errors propagate with typed incomplete evidence; stale or late answers never authorize completion. A final deadline check follows snapshot construction.
+
+Twenty CPU tests use checked canonical Agent/choose bodies, fake browser I/O and a fake native reviewer. They cover veto then actual canonical navigation, approval, freshness before/after review, shared deadline, slow freshness/snapshot publication, failed callbacks, invalid responses, unchanged proposals, 16-action/32-attempt limits including 32 failed canonical predictor attempts, observed-input whitelisting and FIND_TEXT composition. This is client control-flow evidence. No actual model, HTTP route, browser, GPU, helper, service or ComfyUI operation ran in these tests.
+
+There is no generic-native server route, launcher or selected evaluation bundle here. The callback must enforce its own remaining request deadline and native authentication. Model reliability, fairness of the changed protocol and complete ten-task results remain unmeasured. The best existing browser result is still 4/10.

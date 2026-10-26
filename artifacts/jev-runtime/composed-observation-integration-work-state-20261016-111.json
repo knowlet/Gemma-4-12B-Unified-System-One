@@ -1,0 +1,71 @@
+{
+  "schema_id": "composed-observation-integration-work-state-v1",
+  "sequence": 111,
+  "created_at_utc": "2026-10-22T11:20:17.834546+00:00",
+  "previous_state": {
+    "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-110.json",
+    "sha256": "408f608dec65b90f69302b24d01941f4b93e3425e0245f7979f5c9a95b2814f1",
+    "size_bytes": 3468
+  },
+  "goal_status": "active",
+  "status": "Both_JevBench_complete_Edge_observed0of10_finalization_interrupted_NF4feedback_running",
+  "fresh_jevbench": {
+    "Benchmark_Heaven": "195/231 =84.42%",
+    "coherence_mini": "41.2630718954/100"
+  },
+  "Gemma_current_NF4_V2_browser": "4/10 complete and independently replayed",
+  "Decision3_Edge": {
+    "observed_browser_score": {
+      "path": "artifacts/jev-runtime/decision3-edge-observed-score-20261022-01/observed-score.json",
+      "sha256": "bbea39857110fb89c2a9d3c36e571d2baafb5c01663902656ae33540450ca31e",
+      "size_bytes": 6003
+    },
+    "successes": 0,
+    "attempts": 10,
+    "execution_completed": false,
+    "campaign_qualified": false,
+    "public6_final_receipts_missing": true,
+    "selected_actors_and_observed_cohorts_late_absent": true,
+    "same_helper_cross_model_control": false
+  },
+  "Q95_helper02": {
+    "snapshot_active": false,
+    "seed_dead_do_not_reuse": true,
+    "closure": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-02/owner-02/owner-final.json",
+      "sha256": "b21014fb38c7bc6e9da42ab228bb9e34476b53fbee4fa524416f46912f4520e2",
+      "size_bytes": 13016
+    }
+  },
+  "NF4_feedback": {
+    "source_commit": "f883619",
+    "plan": {
+      "path": "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/launch-plan-feedback-01.json",
+      "sha256": "17627efbf0f1f2e61f7a233c503fd6d9b7ebae998e4bf11521590bab0bc90ea9",
+      "size_bytes": 230577
+    },
+    "session": 79269,
+    "unit": "jev-current-nf4-v2-feedback-20261022-01.service",
+    "actor_pid": 109805,
+    "invocation": "0a9104b344394114b71da5f399efe6ac",
+    "snapshot_running": true,
+    "actual_final_score": null,
+    "live_status_must_be_requeried": true
+  },
+  "Q95_helper03_prepared": {
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-03/launch-plan-01.json",
+      "sha256": "73b18a7de1f966795ed86d9bd1b4ca7a9faf5a5dd3d1554deda2678d8fd571b0",
+      "size_bytes": 3193
+    },
+    "source_only_no_actual_launch": true,
+    "peer_review": "CLEAR: exactly3 output/unit literals, inverse bytes+AST match reviewed02"
+  },
+  "all_six_Decision3_complete": false,
+  "other_models_beaten": false,
+  "next": [
+    "Complete and independently audit NF4 typed stale-action feedback arm",
+    "FreshQ95 helper03 then all remaining admissible Decision3 and matched Gemma control",
+    "Separate measured largest-model streaming resource profile; keep original conservative refusal unchanged"
+  ]
+}

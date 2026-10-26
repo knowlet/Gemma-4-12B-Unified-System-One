@@ -19,6 +19,7 @@ from types import SimpleNamespace
 import jev_qualify_public_actions_bf16 as OLD
 import jev_qualify_public_field_json_bf16 as Q
 import pytest
+from local_evidence import require_local_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 HISTORY = (
@@ -32,6 +33,7 @@ HANDOFF = (
 
 
 def wrapper():
+    require_local_evidence(HISTORY)
     historical = HISTORY.read_bytes()
     delta = Q.strict_json(historical)
     return (ROOT / delta["base_plan"]["path"]).read_bytes(), {
@@ -42,12 +44,16 @@ def wrapper():
     }
 
 
-def test_historical_design_and_all41_native_physical_contracts_are_preserved():
+@pytest.mark.local_evidence
+def test_historical_design_preserves_original_inference_design():
     base, selected = wrapper()
     effective = Q.apply_design_delta(base, Q.canonical(selected))
     assert effective["historical_inference_design"] == OLD.apply_design_delta(
         base, HISTORY.read_bytes()
     )
+
+
+def test_all41_native_physical_contracts_are_preserved():
     assert Q.expected_case_ids() == OLD.expected_case_ids()
     assert len(Q.expected_case_ids()) == 41
     profile = Q.runtime_profile()
@@ -60,6 +66,7 @@ def test_historical_design_and_all41_native_physical_contracts_are_preserved():
 
 
 @pytest.mark.parametrize("fault", ["historical", "base", "kind", "tokens", "extra"])
+@pytest.mark.local_evidence
 def test_rehashed_design_cannot_change_history_or_helper_contract(fault):
     base, selected = wrapper()
     if fault == "historical":
@@ -117,6 +124,7 @@ def test_original_fresh_resource_floor_has_no_resident_or_swap_credit(tmp_path, 
 
 @pytest.fixture
 def genuine93():
+    require_local_evidence(HANDOFF)
     training_blob = HANDOFF.read_bytes()
     assert Q.digest(training_blob) == Q.TRAINING90_SHA
     original = Q._artifact_module().verify_source_handoff(
@@ -149,6 +157,7 @@ def verify93(fixture, changed=None):
     )
 
 
+@pytest.mark.local_evidence
 def test_real_original90_plus_exact_selected3_is_detached_immutable_and_rechecked(genuine93):
     verified = verify93(genuine93)
     assert len(verified.manifest()["files"]) == 93
@@ -160,6 +169,7 @@ def test_real_original90_plus_exact_selected3_is_detached_immutable_and_rechecke
 
 
 @pytest.mark.parametrize("fault", ["old91", "cfg95", "oldQ", "missing", "helper", "old90", "order"])
+@pytest.mark.local_evidence
 def test_even_rehashed_source_authority_cannot_substitute_old_or_CFG_closures(genuine93, fault):
     value = copy.deepcopy(genuine93[1])
     if fault == "old91":
@@ -346,6 +356,7 @@ def actual_helper_transcript():
         monkeypatch.undo()
 
 
+@pytest.mark.frozen_decoder
 def test_actual_helper_fake_LM_transcript_validates_full_native_masks_EOS_and_preauthorization_events(
     actual_helper_transcript,
 ):
@@ -374,6 +385,7 @@ def test_actual_helper_fake_LM_transcript_validates_full_native_masks_EOS_and_pr
         "deadline",
     ],
 )
+@pytest.mark.frozen_decoder
 def test_native_generation_evidence_cannot_be_repaired_or_forge_prefix_masks_or_terminal(
     actual_helper_transcript, fault
 ):
@@ -416,6 +428,7 @@ def test_native_generation_evidence_cannot_be_repaired_or_forge_prefix_masks_or_
         ([0xE4, "x", 0xBD, 0xA0], "\ufffdx\ufffd\ufffd"),
     ],
 )
+@pytest.mark.frozen_decoder
 def test_native_decoder_projection_preserves_whole_fallback_run_and_flush_boundaries(
     actual_helper_transcript, pieces, expected
 ):
@@ -433,6 +446,7 @@ def test_native_decoder_projection_preserves_whole_fallback_run_and_flush_bounda
     assert cache.consume(ids).terminated
 
 
+@pytest.mark.frozen_decoder
 def test_native_decoder_projection_cannot_skip_nonEOS_specials(actual_helper_transcript):
     _, _, cache, _ = actual_helper_transcript
     with pytest.raises(ValueError, match="nonEOS special"):
@@ -442,6 +456,7 @@ def test_native_decoder_projection_cannot_skip_nonEOS_specials(actual_helper_tra
 @pytest.mark.parametrize(
     "fault", ["request", "order", "sequence", "raw", "callback", "authorized", "restore"]
 )
+@pytest.mark.frozen_decoder
 def test_durable_event_sequence_and_transition_cannot_be_fabricated(
     actual_helper_transcript, fault
 ):
@@ -808,6 +823,7 @@ def test_pure_suite_never_imports_model_frameworks():
             "-c",
             "import runpy, sys; "
             f"sys.path.insert(0, {str(ROOT / 'scripts')!r}); "
+            f"sys.path.insert(0, {str(ROOT / 'tests')!r}); "
             f"runpy.run_path({str(Path(__file__).resolve())!r}); "
             "assert not any(name.split('.')[0] in "
             "{'torch', 'transformers', 'peft', 'modal'} for name in sys.modules)",

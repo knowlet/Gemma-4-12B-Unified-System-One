@@ -1,0 +1,229 @@
+{
+  "profile": "decision3-external-unit-terminal-boundary-v1",
+  "selection": {
+    "unit": "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
+    "nonce": "jev-d3-boundary-6c6149aa2592e4e6a7e9c2029ff2957c",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "memory_max_bytes": 2147483648,
+    "runtime_seconds": 10800,
+    "stop_seconds": 3
+  },
+  "invocation_id": "e149c09fc3c8494788e62ba549e8b4a6",
+  "actor": {
+    "pid": 670359,
+    "start_ticks": 12433880,
+    "pgid": 670359,
+    "sid": 670359,
+    "uid": 1001,
+    "state": "S",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service"
+  },
+  "tracked_cohort": [
+    {
+      "pid": 670359,
+      "start_ticks": 12433880,
+      "pgid": 670359,
+      "sid": 670359,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service"
+    },
+    {
+      "pid": 670366,
+      "start_ticks": 12433902,
+      "pgid": 670359,
+      "sid": 670359,
+      "uid": 1001,
+      "state": "R",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service"
+    }
+  ],
+  "before_stop": {
+    "Type": "exec",
+    "Restart": "no",
+    "TimeoutStopUSec": "3s",
+    "RuntimeMaxUSec": "3h",
+    "RemainAfterExit": "yes",
+    "MainPID": "670359",
+    "Result": "success",
+    "OOMPolicy": "kill",
+    "ExecMainPID": "670359",
+    "ExecMainCode": "0",
+    "ExecMainStatus": "0",
+    "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "2147483648",
+    "MemorySwapMax": "0",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-boundary-6c6149aa2592e4e6a7e9c2029ff2957c",
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "SubState": "running",
+    "InvocationID": "e149c09fc3c8494788e62ba549e8b4a6"
+  },
+  "closure_mode": "authenticated_stop",
+  "stop_required": true,
+  "already_terminal_identity_samples": [],
+  "already_terminal_identity_sandwich_verified": false,
+  "stop_result": "",
+  "after_stop": {
+    "Type": "",
+    "Restart": "no",
+    "TimeoutStopUSec": "1min 30s",
+    "RuntimeMaxUSec": "infinity",
+    "RemainAfterExit": "no",
+    "MainPID": "0",
+    "Result": "success",
+    "OOMPolicy": "",
+    "ExecMainPID": "0",
+    "ExecMainCode": "0",
+    "ExecMainStatus": "0",
+    "ControlGroup": "",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "infinity",
+    "MemorySwapMax": "infinity",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
+    "LoadState": "not-found",
+    "ActiveState": "inactive",
+    "SubState": "dead",
+    "InvocationID": ""
+  },
+  "primary_error": {
+    "phase": "controller",
+    "type": "ValueError",
+    "message": "Selected child command failed; original error retained",
+    "evidence": {
+      "config_sha256": "694219e03deac4aa28aafbc2926376cfb943af3f83f123e5db13608f0c57cacf",
+      "actor": {
+        "pid": 670359,
+        "start_ticks": 12433880,
+        "pgid": 670359,
+        "sid": 670359,
+        "uid": 1001,
+        "state": "R",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service"
+      },
+      "entry_exit_code": 1,
+      "error": {
+        "type": "CalledProcessError",
+        "message": "Command '['/home/albert_hsieh/ComfyUI/.venv/bin/python', '-B', '-s', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/campaign.py', '--execute', '--plan', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/edge-plan.json', '--plan-sha256', '4bacfb19400f48425f334ab5f4f930a4063adfdab0ef4fe0276a1db2aa908b3e', '--smoke-receipt', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-01/edge-probe/state.json', '--smoke-receipt-sha256', '9e6d990af0aef03a7fd2e073fe1489fb86409d6147badc5f8c4e048acad74dc7', '--smoke-audit', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/independent-actual-edge-2g-coexist-review-01.json', '--smoke-audit-sha256', 'd31ec9357d21e018d34b8a18c1b71d3b9557506ce7972ae03e918f313c7df412', '--output', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-02/edge-both']' returned non-zero exit status 1.",
+        "evidence": null,
+        "returncode": 1,
+        "stdout": null,
+        "stderr": null,
+        "command_cleanup_errors": null
+      },
+      "command_results": [
+        {
+          "argv": [
+            "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+            "-B",
+            "-s",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/campaign.py",
+            "--execute",
+            "--plan",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/edge-plan.json",
+            "--plan-sha256",
+            "4bacfb19400f48425f334ab5f4f930a4063adfdab0ef4fe0276a1db2aa908b3e",
+            "--smoke-receipt",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-01/edge-probe/state.json",
+            "--smoke-receipt-sha256",
+            "9e6d990af0aef03a7fd2e073fe1489fb86409d6147badc5f8c4e048acad74dc7",
+            "--smoke-audit",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/independent-actual-edge-2g-coexist-review-01.json",
+            "--smoke-audit-sha256",
+            "d31ec9357d21e018d34b8a18c1b71d3b9557506ce7972ae03e918f313c7df412",
+            "--output",
+            "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-02/edge-both"
+          ],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "resolved_executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+          "pid": 670366,
+          "observed_identity": {
+            "process": {
+              "pid": 670366,
+              "start_ticks": 12433902,
+              "pgid": 670359,
+              "sid": 670359,
+              "uid": 1001,
+              "state": "R",
+              "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service"
+            },
+            "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+            "argv": [
+              "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+              "-B",
+              "-s",
+              "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/campaign.py",
+              "--execute",
+              "--plan",
+              "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/edge-plan.json",
+              "--plan-sha256",
+              "4bacfb19400f48425f334ab5f4f930a4063adfdab0ef4fe0276a1db2aa908b3e",
+              "--smoke-receipt",
+              "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-01/edge-probe/state.json",
+              "--smoke-receipt-sha256",
+              "9e6d990af0aef03a7fd2e073fe1489fb86409d6147badc5f8c4e048acad74dc7",
+              "--smoke-audit",
+              "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/independent-actual-edge-2g-coexist-review-01.json",
+              "--smoke-audit-sha256",
+              "d31ec9357d21e018d34b8a18c1b71d3b9557506ce7972ae03e918f313c7df412",
+              "--output",
+              "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-02/edge-both"
+            ],
+            "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+          },
+          "executable_stat_at_start": {
+            "st_dev": 66306,
+            "st_ino": 17956884,
+            "st_size": 22257464,
+            "st_mtime_ns": 1784109750677901111
+          },
+          "returncode": 1,
+          "elapsed_seconds": 370.3927519849967
+        }
+      ],
+      "planned_command_count": 1,
+      "postreceipt_hold_seconds": 5,
+      "hold_started_monotonic": 124709.419294519,
+      "hold_deadline_monotonic": 124714.419294519,
+      "reason": "Keep admitted wrapper live for original authenticated unit close"
+    },
+    "returncode": null,
+    "stdout": null,
+    "stderr": null,
+    "command_cleanup_errors": null
+  },
+  "closure_errors": [],
+  "post_stop_terminal_verified": true,
+  "cgroup_absent": true,
+  "two_process_scans": [
+    {
+      "matches": [],
+      "unknown": []
+    },
+    {
+      "matches": [],
+      "unknown": []
+    }
+  ],
+  "sources_unchanged": true,
+  "whole_unit_exit_confirmed": true,
+  "observed_cgroup_cohort_exit_confirmed": true,
+  "no_escape_enforced": false,
+  "whole_tree_exit_confirmed": false,
+  "continuation_authorized": false,
+  "model_qualified": false,
+  "scope": "Authenticated selected unit and observed cgroup cohort only. The audited fork/setsid/empty-env case is covered; explicit delegated cgroup migration or user-manager requests are not prevented."
+}

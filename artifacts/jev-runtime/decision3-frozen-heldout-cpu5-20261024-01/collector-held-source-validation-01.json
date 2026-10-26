@@ -1,0 +1,77 @@
+{
+  "schema": "dev-collector-held-source-validation-v1",
+  "status": "SOURCE_PASS_STILL_HELD",
+  "results": [
+    {
+      "name": "imports",
+      "returncode": 0,
+      "seconds": 0.01946476398734376,
+      "stdout": "Found 1 error (1 fixed, 0 remaining).\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format",
+      "returncode": 0,
+      "seconds": 0.020718081999802962,
+      "stdout": "2 files reformatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "held_fakes",
+      "returncode": 0,
+      "seconds": 0.28812406698125415,
+      "stdout": "",
+      "stderr": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.082s\n\nOK\n",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": 536870912
+    },
+    {
+      "name": "ruff",
+      "returncode": 0,
+      "seconds": 0.019436860020505264,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format_check",
+      "returncode": 0,
+      "seconds": 0.012549392995424569,
+      "stdout": "2 files already formatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    }
+  ],
+  "files": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/eval_collector_held.py",
+      "sha256": "11f6b702be5dd57f597c98bfed5edd6411678453ac028ad317b4fa4a77a79479",
+      "size_bytes": 39104
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/test_eval_collector_held.py",
+      "sha256": "2eec3f777ab503afc655441138cc573d44dfd024ae19be0d600982665eaaa679",
+      "size_bytes": 14829
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/README.md",
+      "sha256": "161aea0e3e6d9a3bb9f79a9d747f8e9a9190e714b829d20bdd830cc7062fff16",
+      "size_bytes": 6220
+    }
+  ],
+  "NN_jobs_started": 0,
+  "real_dev_data_or_labels_read": false,
+  "source_author_scope": "pure source; no import/check/hash/actual/split/capability reads",
+  "training_eligible": false
+}

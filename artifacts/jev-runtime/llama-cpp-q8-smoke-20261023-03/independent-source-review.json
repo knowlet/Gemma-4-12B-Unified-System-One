@@ -1,0 +1,231 @@
+{
+  "created_at_UTC": "2026-10-23T02:41:20.932302+00:00",
+  "findings": [
+    {
+      "conclusion": "Fixed: launch_monotonic is sampled immediately before Popen. Warm effective origin is launch, including initial identity/maps observation; long effective origin remains submission. Warm60/long600/browser20 constants are unchanged.",
+      "topic": "Startup deadline"
+    },
+    {
+      "conclusion": "Fixed: after exact response parsing and response_check, one validated_at sample must be strictly before the same deadline. That sample is also successful RPC completion/elapsed/meets20 origin-to-finish. Later local finalization is separately recorded; late valid replies and fast invalid replies cannot pass meets20.",
+      "topic": "Validated completion deadline"
+    },
+    {
+      "conclusion": "Unchanged original UnifiedDecisionModel.prepare, candidate_ids, DecisionRequest and make_native_payload are reused with a real local processor and CPU text-only context. No language-model constructor or generation is invoked by preparation; synthetic goldless inputs preserve ordered unfilled answer boundaries.",
+      "topic": "Original prompt and payload"
+    },
+    {
+      "conclusion": "Fresh full2048, compact2048 and compact8192 arms share exact prepared payloads, batch/microbatch512, threads1, GPU0 and explicit cpu-mmap-only1. Native returned runtime and legal-row identities are checked; max absolute difference<=0.001 and identical argmax remain preselected.",
+      "topic": "Cache comparison"
+    },
+    {
+      "conclusion": "Single-line stdout remains bounded1MiB. Stderr retains first4MiB with hash/count of observed drained bytes only. Exact wire hashes, prior exchanges and partial/error evidence are saved. Selected-model VMAs reuse the existing bounded maps bytes, retain first64 plus total observed count/virtual bytes, and do not read model content.",
+      "topic": "Bounded evidence"
+    },
+    {
+      "conclusion": "Successful arms request stdin EOF and require bounded normal exit0 before another arm. On failure the script closes its descriptors, preserves the primary/error evidence and stops starting arms, leaving any own live child to the parent-authorized authenticated outer unit close. No manual kill or terminate path was introduced.",
+      "topic": "Ownership and cleanup"
+    },
+    {
+      "conclusion": "The actors do not relax resource or host/observer limits. Concrete outer owner/spec and real selected runtime identities must still be reviewed separately; source tests cannot prove runtime admission, successful model load or authenticated closure.",
+      "topic": "Admission boundary"
+    }
+  ],
+  "historical_must_fix_review": {
+    "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/independent-source-review.json",
+    "sha256": "9d6d09821fe550ee1586574fdad16feb59608a90080281f8bc62c1e2448e84d4",
+    "size_bytes": 4663
+  },
+  "independent_stdlib_checks": {
+    "NativeRPC_initialization_launch_clock_preserved_from02": true,
+    "all_recorded_small_refs_rehashed_exact": true,
+    "changed_NativeRPC_methods_vs02": [
+      "score"
+    ],
+    "changed_top_level_AST_definitions_vs02": [
+      "NativeRPC",
+      "process_identity",
+      "run"
+    ],
+    "new_top_level_AST_definitions_vs02": [
+      "map_metadata"
+    ],
+    "prepare_and_common_identical_to_frozen01_and02": true,
+    "saved_unified_patch_exactly_recomputed": true,
+    "tests_rerun_by_reviewer": false
+  },
+  "limits": [
+    "No framework, processor, tokenizer content, model payload, native library bytes, executable, unit, HTTP, GPU, observer or hardware operation was performed by this review.",
+    "Real native v3 executable/library identities, completed package receipt and current stats, concrete selection and owner command specification are supplied separately by root; this source receipt is not their validation.",
+    "The package mechanism uses a previous full streaming SHA receipt plus fresh stat identities; it does not detect arbitrary later content modification that preserves those selected metadata identities.",
+    "8192 is requested and returned context allocation for the same at-most2048-token input; this does not test8192 input tokens or long-context quality.",
+    "Selected model VMAs are virtual mappings in bounded observations, not resident memory, full-weight backing, no-anonymous-buffer proof, or a universal mmap guarantee.",
+    "60-second startup-inclusive and600-second post-warm research deadlines are not the20-second browser contract. Per-call meets20 is an observation only; the actor always leaves quality_N3_Q95_or_20s_qualified false.",
+    "Goldless cache agreement is not an independent model-math, quantization, training/LoRA, accuracy, JevBench, browser, Q95 or competing-model oracle.",
+    "Actual model load, resource peaks, partial outcomes, native logs and exact owner closure require separate saved-result audit after an explicitly selected execution."
+  ],
+  "modifications": "Only this new independent-source-review.json was written; all existing source, tests, metadata, prior reviews and runtime results were left unchanged.",
+  "must_fix": [],
+  "profile": "llama-cpp-q8-smoke03-independent-source-review-v1",
+  "reviewer": "/root/q95_owner05_review",
+  "saved_validation": {
+    "Ruff_returncode": 0,
+    "passed_pure_stdlib_mock_tests": 21,
+    "reference": {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/static-validation.json",
+      "sha256": "2f4c290ac9266ec7e4548b6ad704f8014b914fedec31477b35e2ef80a73df5db",
+      "size_bytes": 6818
+    },
+    "scope": "Author-saved bounded mock tests; no actual processor, Torch, native protocol, model or hardware qualification.",
+    "subprocess_wall_seconds": 0.21392200799891725,
+    "unittest_seconds": 0.08
+  },
+  "scope": "Frozen source, AST, exact patch and saved pure-stdlib evidence only. This receipt does not authorize an unreviewed concrete runtime selection or command specification.",
+  "selected_native_v3_source_review": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-03/independent-source-review.json",
+    "sha256": "4517708e666fe2afaa30ad36ea1da8b1ef876003754df1c21f903a2a1d8e0e1b",
+    "size_bytes": 14431
+  },
+  "source_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/README.md",
+      "sha256": "08711ac5552308059ffab11150fc032d951425f5fb8093199cf90a4109a925bb",
+      "size_bytes": 4082
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/narrow-diff.json",
+      "sha256": "b5b367b41c85d16ee44962a0243ae3d81dfcd503f320fd1360751a5bb42d5ae5",
+      "size_bytes": 2897
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/prepare_smoke.py",
+      "sha256": "cf7dc23b2f22bf69cda0fa98da965c055c027becf79c632db1c7501071bdd88f",
+      "size_bytes": 10776
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/research-decision.md",
+      "sha256": "e0031aa6b1d4392f3b3d890cbc7a864cc79bfeaffc76e4d742641f38b41a12a3",
+      "size_bytes": 4455
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/run_smoke.py",
+      "sha256": "ebf92cbc662118c310d4ef75defac21b9d60e7c054e047187315e0ec9142c46a",
+      "size_bytes": 19601
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/smoke_common.py",
+      "sha256": "e423db2402184b2adafbcda78b98ef43fa8d6e32b0f90ee2faf51561b2a93eb7",
+      "size_bytes": 11929
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/source-freeze.json",
+      "sha256": "ab8056a0829734b4a24055f0d501cffe50c76e10e8e116dcb93976e032d36e94",
+      "size_bytes": 4549
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/startup-timing.patch",
+      "sha256": "7aa87d9f663e724d57297fb4a256052bb83832047814fedc203210e6a6101c89",
+      "size_bytes": 2504
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/static-validation.json",
+      "sha256": "e1c933f3b006f3a1119a6fe682a3ccdd179a9096bd2dedf1433b203ca6bb259c",
+      "size_bytes": 5964
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/test_smoke.py",
+      "sha256": "8dd0c0252132d4196286bb9c6461d3ea2a0c6af9b7f79dbea0461b9d86219f46",
+      "size_bytes": 18185
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/README.md",
+      "sha256": "3c7d48ee9dc48dbd80a8f69a803c61209888ecce3fbaf0a3b1186c4c094c06cb",
+      "size_bytes": 4619
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/narrow-diff.json",
+      "sha256": "ddbf7abaf9005802f7ba446e04ccd617cefd0b3065e70bc47b4bc4bdbd7f7038",
+      "size_bytes": 3744
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/prepare_smoke.py",
+      "sha256": "cf7dc23b2f22bf69cda0fa98da965c055c027becf79c632db1c7501071bdd88f",
+      "size_bytes": 10776
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/research-decision.md",
+      "sha256": "e9b0a10c62906069d5383d37d33f9659749f9ad3e38a8db6eadd080e036113e5",
+      "size_bytes": 4992
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/run_smoke.py",
+      "sha256": "588899bfb330fc46f433543581850ec683d85b3ef5b61ba4224447a948793a7b",
+      "size_bytes": 21847
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/smoke_common.py",
+      "sha256": "e423db2402184b2adafbcda78b98ef43fa8d6e32b0f90ee2faf51561b2a93eb7",
+      "size_bytes": 11929
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/source-freeze.json",
+      "sha256": "2123b5f1c16c370916e4890aef7a04d67de8343a4293cf0dd0cc51b1944b6f7b",
+      "size_bytes": 4755
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/static-validation.json",
+      "sha256": "2f4c290ac9266ec7e4548b6ad704f8014b914fedec31477b35e2ef80a73df5db",
+      "size_bytes": 6818
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/test_smoke.py",
+      "sha256": "c1c3d62b0ad3105bafa54c5d8d11b332c003a95754ab5e51ddb3a420a8a329d1",
+      "size_bytes": 21613
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/timing-vma.patch",
+      "sha256": "95107c42ceea55bf8d584241cfaf10df313b6ecf441f2fc24fb7ee4c170c6e54",
+      "size_bytes": 6344
+    },
+    {
+      "path": "scripts/gguf_adapter.py",
+      "sha256": "95e9343ead0656f13197c4371ab48b445826d48bd37f8cc9f03b94ae926351c1",
+      "size_bytes": 18519
+    },
+    {
+      "path": "src/s1/__init__.py",
+      "sha256": "c9c7ba0ea4cc81609fcf1f0ff2a853243a173a994257e0b9dd19be1a2e6dd52e",
+      "size_bytes": 117
+    },
+    {
+      "path": "src/s1/checkpoint.py",
+      "sha256": "d26007c4e1cf691d041549fac4440dbdc2d77ee6b2376a62fc06bde632fa3ef6",
+      "size_bytes": 2274
+    },
+    {
+      "path": "src/s1/contracts.py",
+      "sha256": "24c24c3ded9c35bfd263a4488bf88916a8960fa0b79283ccedbac232983f8a0a",
+      "size_bytes": 6048
+    },
+    {
+      "path": "src/s1/errors.py",
+      "sha256": "e5ad1d9b7e700f07a704d74d3e4ade7156c7a9eaad304d3fe4296bad0dc8c997",
+      "size_bytes": 709
+    },
+    {
+      "path": "src/s1/runtime.py",
+      "sha256": "8f6103c600f73b64adc8186cf0c081475e69e891eb1d3d7e89c36c2e5417abda",
+      "size_bytes": 1357
+    },
+    {
+      "path": "src/s1/schema.py",
+      "sha256": "995cac528f3b5579dd7d9a12146fc69c335853e62e5063b1a5471645c12242d2",
+      "size_bytes": 7365
+    },
+    {
+      "path": "src/s1/unified.py",
+      "sha256": "42ba5f076af164e0e54690a735e25a272bdd678279901946c2e5accefa385a6c",
+      "size_bytes": 18796
+    }
+  ],
+  "verdict": "CLEAR_WITH_LIMITS"
+}

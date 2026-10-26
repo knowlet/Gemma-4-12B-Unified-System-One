@@ -1,0 +1,51 @@
+{
+  "CPU_ONLY": false,
+  "CUDA": {
+    "initialized_final": null,
+    "logical_device_index": 0,
+    "selected_uuid": "GPU-e3429caa-b057-cbe0-917d-d3b85b313be7"
+  },
+  "GPU_context_measured": false,
+  "GPU_model_transfer_measured": false,
+  "completed": false,
+  "completed_stages": [],
+  "context_and_tiny_operator_completed": false,
+  "entry_sha256": "d2d08a697078aeb5955b01b77ddec52cf0cfd41721f05471d534ba06e45b09ad",
+  "identity": {
+    "pgid": 325722,
+    "pid": 325722,
+    "sid": 325722,
+    "start_ticks": 6616351
+  },
+  "large_model_runtime_or_quality_qualified": false,
+  "limits": "Context and tiny BF16 fill/matmul only; no model/header/payload/mmap,UMA physical cap,12B,8192,20s,N3/Q95 or benchmark qualification.",
+  "mechanism_checks_completed": false,
+  "model_header_read": false,
+  "model_loaded": false,
+  "model_mmap": false,
+  "model_payload_read": false,
+  "no_model_loaded": true,
+  "parent_deadline_monotonic": 66188.462885878,
+  "passed": false,
+  "planned_stages": [
+    "stdlib-before-torch",
+    "torch-imported-preinit",
+    "cuda-init-returned",
+    "cuda-init-synchronized",
+    "own-allocator-cap-set",
+    "tiny-allocation-fill-enqueued",
+    "tiny-fill-synchronized",
+    "tiny-matmul-synchronized",
+    "tiny-readback-oracle",
+    "own-tensors-released-empty-cache"
+  ],
+  "profile": "gpu-context-probe-fixture-v1",
+  "source_selection_sha256": "806356d55b504f55dd62ca5d6b403321e68fd890c614f3d495daf7c555bdb48f",
+  "stages": [],
+  "started_monotonic": 66163.91575031,
+  "status": "started",
+  "timings": {},
+  "tiny_operator": {
+    "completed": false
+  }
+}

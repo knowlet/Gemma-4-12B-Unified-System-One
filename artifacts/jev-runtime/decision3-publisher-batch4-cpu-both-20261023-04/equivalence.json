@@ -1,0 +1,100 @@
+{
+  "schema": "native-batch4-stage-completion-source-equivalence-v1",
+  "base": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/campaign.py",
+    "size_bytes": 34545,
+    "sha256": "2c0f587f139176cc43342be49d1cc96d2c9d1e5540783853caafb928e7eecf6b"
+  },
+  "successor": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/campaign.py",
+    "size_bytes": 51139,
+    "sha256": "a96dd36184db3c54fab7a7bfa397dbce89ea1737119f33e5cfc53572ffe52747"
+  },
+  "unchanged_top_level_definitions": [
+    "CampaignAbort",
+    "DeadlineScope",
+    "require",
+    "sha",
+    "unique",
+    "read_json",
+    "selected_small_json",
+    "finite_seconds",
+    "check_smoke",
+    "check_audit",
+    "latency_distribution",
+    "TimedPredictor",
+    "check_counts",
+    "durable_success"
+  ],
+  "changed_existing_definitions": [
+    "profile",
+    "load_plan",
+    "run_unchanged_suites",
+    "execute",
+    "main"
+  ],
+  "new_definitions": [
+    "stage_metrics",
+    "durable_stage_json",
+    "StageCompletions"
+  ],
+  "original_official_call_AST_exact": {
+    "run_public": "Call(func=Name(id='run_public', ctx=Load()), args=[Name(id='predictor', ctx=Load()), Name(id='heaven_root', ctx=Load()), BinOp(left=Name(id='output', ctx=Load()), op=Div(), right=Constant(value='public231')), Name(id='identity', ctx=Load())], keywords=[])",
+    "jb.evaluate": "Call(func=Attribute(value=Name(id='jb', ctx=Load()), attr='evaluate', ctx=Load()), args=[Call(func=Attribute(value=Name(id='jb', ctx=Load()), attr='from_callable', ctx=Load()), args=[Attribute(value=Name(id='predictor', ctx=Load()), attr='answers', ctx=Load())], keywords=[keyword(arg='name', value=Subscript(value=Name(id='identity', ctx=Load()), slice=Constant(value='profile'), ctx=Load()))])], keywords=[keyword(arg='suite', value=Constant(value='jevbench-mini')), keyword(arg='cache', value=Call(func=Name(id='str', ctx=Load()), args=[BinOp(left=Name(id='output', ctx=Load()), op=Div(), right=Constant(value='coherence-cache'))], keywords=[])), keyword(arg='concurrency', value=Constant(value=1)), keyword(arg='progress', value=Constant(value=True))])",
+    "report.save": "Call(func=Attribute(value=Name(id='report', ctx=Load()), attr='save', ctx=Load()), args=[BinOp(left=Name(id='output', ctx=Load()), op=Div(), right=Constant(value='coherence-mini.json'))], keywords=[])",
+    "jb.from_callable": "Call(func=Attribute(value=Name(id='jb', ctx=Load()), attr='from_callable', ctx=Load()), args=[Attribute(value=Name(id='predictor', ctx=Load()), attr='answers', ctx=Load())], keywords=[keyword(arg='name', value=Subscript(value=Name(id='identity', ctx=Load()), slice=Constant(value='profile'), ctx=Load()))])"
+  },
+  "original_coherence_metric_dictionary_AST_exact_sha256": "df00201ac8b4625c715f6287b17ed2bf7dc357a87a9a7cd91bbe9d54df5a379d",
+  "single_load_constructor_backend_and_TimedPredictor_calls_AST_exact": true,
+  "math_timing_callback_validation_and_primary_retention_classes_AST_identical": true,
+  "plan_changed_keys": [
+    "campaign_sha256",
+    "profile",
+    "separate_stage_score_policy",
+    "stage_completion_policy",
+    "stage_completion_schema"
+  ],
+  "base_8_frozen_files_unchanged": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/README.md",
+      "size_bytes": 4308,
+      "sha256": "5158c07e3e000e5e25d56aa6dd35ff4d2ee4b0e68b6461e3d69d041ec53a0a78"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/campaign.py",
+      "size_bytes": 34545,
+      "sha256": "2c0f587f139176cc43342be49d1cc96d2c9d1e5540783853caafb928e7eecf6b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/edge-plan.json",
+      "size_bytes": 6420,
+      "sha256": "dc18c0e122a174dd88c68a0840ce06d0c3283fe85d32dd0cd6d7af596a2ef620"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/pending-prerequisites.json",
+      "size_bytes": 1068,
+      "sha256": "481fb0b8c8d445672137d31f569affcdb7b64bec3b3db3e926c6036d0cbcdce6"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/research.json",
+      "size_bytes": 4306,
+      "sha256": "f41f00d2c60a801153e0e1fe88e9ed8e6f70d7e5a25b63ec984c648ed74d2643"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/test_campaign.py",
+      "size_bytes": 28021,
+      "sha256": "da4c5a82967fe12c616878099669cbdf4e566997a6e165e2626084282e77fbe0"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/tests.log",
+      "size_bytes": 1254,
+      "sha256": "745c89853daa72b77e2d08970aa33a0ba9d9e59b46c36edff4133d7837189c6a"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/validation.json",
+      "size_bytes": 9454,
+      "sha256": "c45f02598f1f542555d20deee91ac73ed9e56eabd0f0bf66a42fb396282cca77"
+    }
+  ],
+  "no_actual_runtime_or_response_evidence": true
+}

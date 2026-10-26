@@ -1,0 +1,288 @@
+{
+  "all_3_owned_children_reaped_exit_zero": true,
+  "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+  "original_sha256": "5220799afc459a3fb702aff5e0d30a7362d14030293b79872a83def6dd1efae2",
+  "results": {
+    "owned_fake_comfy_argv0_sticky": {
+      "accepted": false,
+      "elapsed_seconds": 0.0960256100006518,
+      "evidence": [
+        {
+          "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+          "finished_monotonic": 8265.499772505,
+          "mem_available_bytes": 123565461504,
+          "mem_total_bytes": 130595864576,
+          "processes": {
+            "identity_retries": 0,
+            "inventory_sha256": "2661bd6ed6ffebe8560c5c59c168c6485fbaa1f5f018cd421f38612c0bb2d556",
+            "known_comfy": [
+              {
+                "classification": "comfy_runtime",
+                "pid": 55274,
+                "start_ticks": 826538
+              }
+            ],
+            "retry_samples": [],
+            "scanned": 564,
+            "uncertain": [],
+            "vanished_sample": []
+          },
+          "started_monotonic": 8265.404309505,
+          "tcp": {
+            "inventories": [
+              {
+                "family": "tcp",
+                "rows": 75,
+                "sha256": "36938d681a2b0d563337ec8a9672f90b384f92db81d22fdc62e39279ef409ddd"
+              },
+              {
+                "family": "tcp6",
+                "rows": 4,
+                "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+              }
+            ],
+            "listeners": []
+          }
+        }
+      ],
+      "failure_type": "ObservationError",
+      "pid": 55274
+    },
+    "owned_undumpable_natural_exit": {
+      "new": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "comfy_evidence": {
+          "errno": 111,
+          "natural_exit_resolution": {
+            "disappeared": [
+              55262
+            ],
+            "finished_monotonic": 8264.497614324,
+            "mechanism": "read-only pidfd exit and fresh proc absence; no signals",
+            "offenders": [
+              {
+                "classification": "uncertain_python_cwd",
+                "context_diagnostics": [
+                  {
+                    "cwd_failure_type": "PermissionError",
+                    "cwd_sha256": null
+                  },
+                  {
+                    "cwd_failure_type": "PermissionError",
+                    "cwd_sha256": null
+                  }
+                ],
+                "disappearance_resolution_eligible": true,
+                "pid": 55262,
+                "proc_owner_uid": 1001,
+                "start_ticks": 826420
+              }
+            ],
+            "prior_samples_sha256": "4de22e4517d2056c46f0a514c11d8d3e1179131af6338c08684eb740a98299a6",
+            "started_monotonic": 8264.409133888
+          },
+          "samples": [
+            {
+              "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+              "finished_monotonic": 8264.593132541,
+              "mem_available_bytes": 123569467392,
+              "mem_total_bytes": 130595864576,
+              "processes": {
+                "identity_retries": 0,
+                "inventory_sha256": "c2b965e1796db1ea78b7a645227410fdf266f515d4f6e5d53ab9d6ebe6a8f7a8",
+                "known_comfy": [],
+                "retry_samples": [],
+                "scanned": 563,
+                "uncertain": [],
+                "vanished_sample": []
+              },
+              "started_monotonic": 8264.497702565,
+              "tcp": {
+                "inventories": [
+                  {
+                    "family": "tcp",
+                    "rows": 75,
+                    "sha256": "41e60e0d03776688f605b1a5116367b6924daf0f2dfdac89aeababfa282a3f77"
+                  },
+                  {
+                    "family": "tcp6",
+                    "rows": 4,
+                    "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+                  }
+                ],
+                "listeners": []
+              }
+            },
+            {
+              "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+              "finished_monotonic": 8264.686748145,
+              "mem_available_bytes": 123568680960,
+              "mem_total_bytes": 130595864576,
+              "processes": {
+                "identity_retries": 0,
+                "inventory_sha256": "c2b965e1796db1ea78b7a645227410fdf266f515d4f6e5d53ab9d6ebe6a8f7a8",
+                "known_comfy": [],
+                "retry_samples": [],
+                "scanned": 563,
+                "uncertain": [],
+                "vanished_sample": []
+              },
+              "started_monotonic": 8264.593138782,
+              "tcp": {
+                "inventories": [
+                  {
+                    "family": "tcp",
+                    "rows": 75,
+                    "sha256": "2d70e37be7def1ac0d3eb65c59bb1e44f6f883b99d49973fe9a03a1836da1035"
+                  },
+                  {
+                    "family": "tcp6",
+                    "rows": 4,
+                    "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+                  }
+                ],
+                "listeners": []
+              }
+            }
+          ],
+          "scope": "Two fresh no-listener/no-runtime process scans; not an HTTP queue response or guarantee of future absence.",
+          "transport": "connection_refused"
+        },
+        "comfy_pending": 0,
+        "comfy_running": 0,
+        "comfy_state": "absent_confirmed",
+        "mem_available_bytes": 123568680960,
+        "mem_total_bytes": 130595864576
+      },
+      "old": {
+        "accepted": false,
+        "elapsed_seconds": 0.09001532099864562,
+        "evidence": [
+          {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "finished_monotonic": 8264.31387212,
+            "mem_available_bytes": 123569463296,
+            "mem_total_bytes": 130595864576,
+            "processes": {
+              "identity_retries": 0,
+              "inventory_sha256": "bc57d8eb50aa19fa5ed09c6c69ccd7fe270bd6bcbfa6c9dce1c7c78bf4cdc5d4",
+              "known_comfy": [],
+              "retry_samples": [],
+              "scanned": 564,
+              "uncertain": [
+                {
+                  "classification": "uncertain_python_cwd",
+                  "pid": 55262,
+                  "start_ticks": 826420
+                }
+              ],
+              "vanished_sample": []
+            },
+            "started_monotonic": 8264.224423952,
+            "tcp": {
+              "inventories": [
+                {
+                  "family": "tcp",
+                  "rows": 74,
+                  "sha256": "649d0611820670704d6e585e7ff686e727766b1fa543b5f4d59940b4de8233f4"
+                },
+                {
+                  "family": "tcp6",
+                  "rows": 4,
+                  "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+                }
+              ],
+              "listeners": []
+            }
+          }
+        ],
+        "failure_type": "ObservationError"
+      },
+      "pid": 55262
+    },
+    "owned_undumpable_still_alive": {
+      "accepted": false,
+      "elapsed_seconds": 0.5974516309997853,
+      "evidence": {
+        "resolution": {
+          "disappeared": [],
+          "offenders": [
+            {
+              "classification": "uncertain_python_cwd",
+              "context_diagnostics": [
+                {
+                  "cwd_failure_type": "PermissionError",
+                  "cwd_sha256": null
+                },
+                {
+                  "cwd_failure_type": "PermissionError",
+                  "cwd_sha256": null
+                }
+              ],
+              "disappearance_resolution_eligible": true,
+              "pid": 55266,
+              "proc_owner_uid": 1001,
+              "start_ticks": 826468
+            }
+          ],
+          "started_monotonic": 8264.803013031
+        },
+        "samples": [
+          {
+            "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+            "finished_monotonic": 8264.803007159,
+            "mem_available_bytes": 123565715456,
+            "mem_total_bytes": 130595864576,
+            "processes": {
+              "identity_retries": 0,
+              "inventory_sha256": "985d0ed33c1bc03b9e9cfdcc638c33b921d04b090f4b5b3473c16473fb9c02ae",
+              "known_comfy": [],
+              "retry_samples": [],
+              "scanned": 564,
+              "uncertain": [
+                {
+                  "classification": "uncertain_python_cwd",
+                  "context_diagnostics": [
+                    {
+                      "cwd_failure_type": "PermissionError",
+                      "cwd_sha256": null
+                    },
+                    {
+                      "cwd_failure_type": "PermissionError",
+                      "cwd_sha256": null
+                    }
+                  ],
+                  "disappearance_resolution_eligible": true,
+                  "pid": 55266,
+                  "proc_owner_uid": 1001,
+                  "start_ticks": 826468
+                }
+              ],
+              "vanished_sample": []
+            },
+            "started_monotonic": 8264.706438555,
+            "tcp": {
+              "inventories": [
+                {
+                  "family": "tcp",
+                  "rows": 75,
+                  "sha256": "32e2a9d43377a75ca6afafdeb74486490786f038bcb16656a887a6faf7349799"
+                },
+                {
+                  "family": "tcp6",
+                  "rows": 4,
+                  "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+                }
+              ],
+              "listeners": []
+            }
+          }
+        ]
+      },
+      "failure_type": "ObservationError",
+      "pid": 55266
+    }
+  },
+  "scope": "Owned harmless PR_SET_DUMPABLE=0 Python fixtures, natural exits, no signals",
+  "source_sha256": "103804b05e3047011aa5daf099c04ee71a60b3e1435c0690dc7b0377bd486df7"
+}

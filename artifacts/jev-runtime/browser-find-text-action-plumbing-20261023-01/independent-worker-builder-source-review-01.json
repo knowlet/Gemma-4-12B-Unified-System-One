@@ -1,0 +1,176 @@
+{
+  "schema_id": "independent-find-text-worker-builder-source-review-v1",
+  "reviewer": "/root/cpu_text_helper_route/helper_boundary_review",
+  "result": "CLEAR_SOURCE_ONLY_WITH_LIMITS_PENDING_REAL_NN_HTTP_HELPER_CHROMIUM_ACCEPTANCE",
+  "blocking_findings": [],
+  "reviewed_files": [
+    {
+      "path": "scripts/jev_decision3_browser_worker.py",
+      "size_bytes": 57241,
+      "sha256": "40b80fa0534316b6c469b577617828a9d9372df96e3bb7c999488e76d78cb77e"
+    },
+    {
+      "path": "scripts/jev_find_text_browser.py",
+      "size_bytes": 12864,
+      "sha256": "bd34ca6e4bdb9d762188666cdf39c640860f57e227559d5e1e84d56f874a99e5"
+    },
+    {
+      "path": "tests/test_jev_decision3_action_profile.py",
+      "size_bytes": 12539,
+      "sha256": "19666a3782594f645ca15691f7e15d44f382f633e2429d8f05890682c406841d"
+    },
+    {
+      "path": "tests/test_jev_find_text_browser.py",
+      "size_bytes": 8625,
+      "sha256": "bffc57191c6314cc30dce11fc431d5bc779a86696f6e708f537b2cad85f62c4e"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-find-text-action-plumbing-20261023-01/validation.json",
+      "size_bytes": 5657,
+      "sha256": "490d4fe6c2f5a56873f42415ea047ca99bfba873fa0137b739ea24305bad0ba2"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-find-text-action-plumbing-20261023-01/research.json",
+      "size_bytes": 2448,
+      "sha256": "592a920cf84192bbbac1390e29dd7654309cfce5f1a02307589c5484529b791d"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-find-text-action-plumbing-20261023-01/tests.log",
+      "size_bytes": 400,
+      "sha256": "be2f319335970a05fae48713e56f19e0241f95ddc04ea93004ccc67ed7f238a2"
+    }
+  ],
+  "freeze": {
+    "path": "artifacts/jev-runtime/browser-find-text-action-plumbing-20261023-01/freeze.json",
+    "size_bytes": 1846,
+    "sha256": "38e93eb9a2912df167a42910d08ea222f3ba1138149a1303dcf06ef758f6d89b"
+  },
+  "original_immutable_pins_verified": [
+    {
+      "path": "scripts/jev_browser_profile_v7_benchmark.py",
+      "size_bytes": 13506,
+      "sha256": "31450f9002ad216c32b77751997eb27748c491d7bc757c4410294d3704fdfb9e"
+    },
+    {
+      "path": "scripts/jev_browser_benchmark.py",
+      "size_bytes": 101360,
+      "sha256": "fe1410675e4decb06a8491a5a83d2ec965629c99f8912b797446c4cb2c155f6c"
+    },
+    {
+      "path": "src/s1/jev_decision3_native.py",
+      "size_bytes": 8958,
+      "sha256": "67616bb70a8acdbf96b1d2e4c1407cf8cc2a24db51b5ca383e33b4d9a0488de9"
+    },
+    {
+      "path": "src/s1/jev_generated.py",
+      "size_bytes": 23569,
+      "sha256": "c356e0eb3c046cb0787d7be0c5960803006231e8bdb414de644ae2167e72d849"
+    },
+    {
+      "path": "src/s1/jev_action_grammar.py",
+      "size_bytes": 8833,
+      "sha256": "399e06e28172c96004b774ba97c04100687340e6b1326d317dbdf10557da75d2"
+    },
+    {
+      "path": "scripts/jev_decision3_browser_wire.py",
+      "size_bytes": 4132,
+      "sha256": "c048d7779e60fce5d1a56b38e26b9ddf5ed9e1ff9c6adc478786d0267cca3027"
+    }
+  ],
+  "separately_authored_dependency_identity_only_not_self_reviewed": {
+    "path": "src/s1/jev_action_profiles.py",
+    "size_bytes": 12003,
+    "sha256": "fdf8873c5ebe68d7947a60b8c320f0fd118ae3918d0b87a870006e8678e7c747"
+  },
+  "worker_saved_insertion_draft": {
+    "path": "/tmp/jev_decision3_action_profile_worker.patch",
+    "size_bytes": 8228,
+    "sha256": "94a1831930c75ca95a80bdfc8640375a074815b5fd255882124f78a21c851ef7"
+  },
+  "worker_source_lines": {
+    "selected_action_profile": 53,
+    "authenticate_action_profile": 131,
+    "resolve_action_profile": 209,
+    "authenticate_sources": 842,
+    "initialize": 933,
+    "run": 1155,
+    "main": 1413
+  },
+  "builder_source_lines": {
+    "_source_references": 82,
+    "_edits": 101,
+    "_derive": 139,
+    "prepare_bundle": 172,
+    "verify_bundle": 227
+  },
+  "independent_static_checks": {
+    "selector_resolution_before_Torch_import": {
+      "resolve_line": 995,
+      "torch_import_line": 996
+    },
+    "four_original_runner_anchors_unique": true,
+    "unchanged_v7_canonical_three_protocol_and_wire_pins": true,
+    "new_worker_builder_and_tests_match_frozen_7entry_inventory": true
+  },
+  "checks": [
+    {
+      "name": "Original benchmark and defaults preserved",
+      "finding": "Canonical benchmark fe141... and original v7 builder31450... remain exact, as do the original generated/native/grammar/wire bytes. New builder calls the original v7 preparation/verification, retains its base-v7 population and copies every unrelated source byte unchanged. Its four added seams are budget/helper guard, explicit configuration metadata, local selected Agent factory after model_adapter instrumentation and before task population, and only that Agent constructor replacement. No case/judge/order/scoring edit is permitted by the inverse checks."
+    },
+    {
+      "name": "Four seam byte/AST closure",
+      "finding": "Each injected seam must be unique, its inverse must be unique, and reversing all four must recover exact predecessor bytes and AST. verify_bundle reconstructs the derivative and patch, checks the flat exact new population, verifies original nested base and unchanged unrelated files, and compares manifest bytes/content. Independently confirmed all four anchors occur once in the pinned original canonical source; no candidate builder was executed for review."
+    },
+    {
+      "name": "Only explicit Agent16/common real HTTP helper",
+      "finding": "Actual factory selection occurs inside the existing model_adapter context, retaining its original request/transport/retry instrumentation and using the actual loaded jev_ultrafast.browser.MARKER. The new guard requires integer16, nonempty text_endpoint/text_model and rejects text_helper callbacks. The separately authored pinned selector supplies canonical60-to-private16 behavior. Original module/class is not replaced by this builder. Complete ten-case population remains the unchanged nativeV2 driver selection, not a new result claimed by this preparation library."
+    },
+    {
+      "name": "Worker profile selection failclosed",
+      "finding": "Only standard/default and exact jev-find-text-experimental-v1 are accepted. Conflicting CLI/config selections refuse before output/backend initialization. Standard returns no selected factory, retains original native adapter/wire imports and emits no additional action-profile fields. An experimental source attached to standard is rejected rather than silently used."
+    },
+    {
+      "name": "Exact17 retained plus prebackend additional source auth",
+      "finding": "authenticate_sources keeps the exact17 inventory with original twelve pinned production sources, core/wrapper/wire and current service/worker composition sources. Experimental config separately requires exact absolute selector path, bounded size and selected SHA before import; imported selector origin/profile API are checked. Its required seven unique repository-relative Python dependencies are bounded and hashed against byte-pinned selector provenance. Resolution is before Torch/backend construction; metadata names/count/native profile/wire profile must match the one explicit experiment."
+    },
+    {
+      "name": "Paired native and named wire",
+      "finding": "resolve_action_profile returns the factory native class and ActionProfileWire bound to the same selected profile. initialize uses both together; standard uses the legacy pair. The wrapper delegates the original request/response directly to the checked converter without changing probabilities/values/order, adding a head, supplying a query or manufacturing a completion choice. Native candidate/context/numerical and existing worker request/control/deadline behavior remain outside the new helper logic."
+    },
+    {
+      "name": "Final auth and provenance",
+      "finding": "Only opt-in ready/state evidence receives profile, selector source and a deep copy of factory provenance. Final source authentication rechecks both the original17 inventory and selector plus stored seven-source projection before a successful closed receipt. Source failure remains an existing failed final-source-authentication event and cannot qualify success."
+    },
+    {
+      "name": "Meaningful test evidence and source limits",
+      "finding": "Saved48 new fake tests cover malformed/conflicting selection, standard opt-out, selector/dependency/origin change, missing/escaping dependency projection, mixed native/wire identifiers, direct actual DTO/adapter/wire behavior with an invented provider, exact builder inverse/population refusal and HTTP-helper/budget guard. Saved116 portable regressions/AST/Ruff PASS are author records, not independently rerun. Review read source and metadata only."
+    }
+  ],
+  "nonblocking_limits": [
+    {
+      "id": "N1",
+      "detail": "No saved complete pre-change worker source was available. The saved insertion-only preformat patch and current critical source were inspected; this review does not claim independent whole-worker old/new AST equivalence. Immutable protocol/default predecessor bytes were independently hashed."
+    },
+    {
+      "id": "N2",
+      "detail": "Client builder directly checks four new source pins (selector and three frozen components); the seven-dependency protocol projection is checked by the factory/worker on the model-service side. This is selected source authentication, not full transitive Python/native/DSO closure."
+    },
+    {
+      "id": "N3",
+      "detail": "New script is a preparation library, not an independent model/browser launcher. Root-owned nativeV2/driver integration must select it only for the opt-in profile and must supply the identical actual helper endpoint/model/auth qualification across compared policy arms."
+    },
+    {
+      "id": "N4",
+      "detail": "No real NN-selected FIND_TEXT query, HTTP delivery, Chromium navigation, original task/judge success, latency or quality improvement is established by source/fake tests. Original full tasks/options/judges/16-step/request budgets, fresh admission and authenticated runtime closure remain required for real acceptance."
+    }
+  ],
+  "acceptance_path": "After independent source/integration selection and fresh original admission, retain original eight-operation control; run the same original ten browser cases with one common real HTTP text helper, actual NN/native DTO+paired wire, exact original request budgets and Chromium. At least one genuine NN-selected FIND_TEXT followed by native generated helper query and actual CDP navigation is capability evidence only; report unchanged independent task judges separately. No oracle, forced action, regex field fallback or DONE reinterpretation.",
+  "review_actions": {
+    "source_small_metadata_static_AST_hash_only": true,
+    "candidate_or_tests_imported_executed": false,
+    "model_backend_NN_HTTP_browser_task_DOM_gold_perresponse_payload_read": false,
+    "actual_live_host_observer_unit_network_Git_actions": false,
+    "reviewed_source_edited": false,
+    "only_new_independent_review_written": true
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "operation-dev-root-audit-source-validation-v1",
+  "status": "SOURCE_PASS_GENUINE_AUDIT_PENDING",
+  "files": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-dev-metrics-cpu5-20261024-01/root-closed-operation-dev-metrics-audit-held.py",
+      "sha256": "517edd40eeb0a302576582b9d6175432c78ce64601d0a75df031d988d4da59a6",
+      "size_bytes": 29144
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-dev-metrics-cpu5-20261024-01/test_root_operation_dev_audit.py",
+      "sha256": "93823321db6a1bea1b3bf7fab34fc610ee2edf177dd8e1a4e12e8f93de194ba7",
+      "size_bytes": 1829
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-dev-metrics-cpu5-20261024-01/root-closed-operation-dev-metrics-audit-01.py",
+      "sha256": "988673e24ff9d1785ea721590e73e3c9f3641cae1fc5f72cfe523565b7d201e5",
+      "size_bytes": 29145
+    }
+  ],
+  "fakes": 3,
+  "fake_limits": {
+    "CPU0": true,
+    "AS_bytes": 536870912,
+    "CPU_seconds": 30,
+    "wall_seconds": 35
+  },
+  "results": [
+    {
+      "name": "imports",
+      "returncode": 0,
+      "seconds": 0.01670319799450226,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "name": "format",
+      "returncode": 0,
+      "seconds": 0.01808292098576203,
+      "stdout": "1 file reformatted, 1 file left unchanged\n",
+      "stderr": ""
+    },
+    {
+      "name": "root_audit_fake_witness",
+      "returncode": 0,
+      "seconds": 0.15222744198399596,
+      "stdout": "",
+      "stderr": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.021s\n\nOK\n"
+    },
+    {
+      "name": "lint",
+      "returncode": 0,
+      "seconds": 0.01684507098980248,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "name": "format_check",
+      "returncode": 0,
+      "seconds": 0.011673480010358617,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "AST_only_release_change": "SOURCE_ONLY=False",
+  "scope": "Reconstruct all original24/33 data byte values and original collection capability separately from new operation candidate; FP64 changes only true operation head IDs; no optimizer/NN."
+}

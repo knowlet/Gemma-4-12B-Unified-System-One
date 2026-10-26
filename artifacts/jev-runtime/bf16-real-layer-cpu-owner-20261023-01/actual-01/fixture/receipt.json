@@ -1,0 +1,2808 @@
+{
+  "CPU_ONLY": true,
+  "CUDA": {
+    "GPU_transfer_measured": false,
+    "attempts": [],
+    "guard_scope": "Guard starts after Torch import; that interval and unwrapped native calls are not monitored. Real is_available/device_count queries require False/0; own operations are CPU.",
+    "initialized_after_torch_import": false,
+    "initialized_final": false,
+    "queries": [],
+    "visible_devices": ""
+  },
+  "GPU_transfer_measured": false,
+  "attention_interface_restored": true,
+  "attention_trace": [
+    {
+      "devices": [
+        "cpu",
+        "cpu",
+        "cpu"
+      ],
+      "dropout": 0.0,
+      "k_dtype": "torch.bfloat16",
+      "k_shape": [
+        1,
+        8,
+        1,
+        256
+      ],
+      "layer_index": 0,
+      "mask": null,
+      "module_is_causal": true,
+      "native_sdpa_rule_expected_is_causal": false,
+      "num_key_value_groups": 2,
+      "observed_route": "original transformers.integrations.sdpa_attention.sdpa_attention_forward; no profiler/kernel-kind claim",
+      "q_dtype": "torch.bfloat16",
+      "q_shape": [
+        1,
+        16,
+        1,
+        256
+      ],
+      "scaling": 1.0,
+      "sliding_window": 1024,
+      "v_dtype": "torch.bfloat16",
+      "v_shape": [
+        1,
+        8,
+        1,
+        256
+      ]
+    },
+    {
+      "devices": [
+        "cpu",
+        "cpu",
+        "cpu"
+      ],
+      "dropout": 0.0,
+      "k_dtype": "torch.bfloat16",
+      "k_shape": [
+        1,
+        8,
+        1,
+        256
+      ],
+      "layer_index": 0,
+      "mask": null,
+      "module_is_causal": true,
+      "native_sdpa_rule_expected_is_causal": false,
+      "num_key_value_groups": 2,
+      "observed_route": "original transformers.integrations.sdpa_attention.sdpa_attention_forward; no profiler/kernel-kind claim",
+      "q_dtype": "torch.bfloat16",
+      "q_shape": [
+        1,
+        16,
+        1,
+        256
+      ],
+      "scaling": 1.0,
+      "sliding_window": 1024,
+      "v_dtype": "torch.bfloat16",
+      "v_shape": [
+        1,
+        8,
+        1,
+        256
+      ]
+    },
+    {
+      "devices": [
+        "cpu",
+        "cpu",
+        "cpu"
+      ],
+      "dropout": 0.0,
+      "k_dtype": "torch.bfloat16",
+      "k_shape": [
+        1,
+        8,
+        32,
+        256
+      ],
+      "layer_index": 0,
+      "mask": null,
+      "module_is_causal": true,
+      "native_sdpa_rule_expected_is_causal": true,
+      "num_key_value_groups": 2,
+      "observed_route": "original transformers.integrations.sdpa_attention.sdpa_attention_forward; no profiler/kernel-kind claim",
+      "q_dtype": "torch.bfloat16",
+      "q_shape": [
+        1,
+        16,
+        32,
+        256
+      ],
+      "scaling": 1.0,
+      "sliding_window": 1024,
+      "v_dtype": "torch.bfloat16",
+      "v_shape": [
+        1,
+        8,
+        32,
+        256
+      ]
+    },
+    {
+      "devices": [
+        "cpu",
+        "cpu",
+        "cpu"
+      ],
+      "dropout": 0.0,
+      "k_dtype": "torch.bfloat16",
+      "k_shape": [
+        1,
+        8,
+        32,
+        256
+      ],
+      "layer_index": 0,
+      "mask": null,
+      "module_is_causal": true,
+      "native_sdpa_rule_expected_is_causal": true,
+      "num_key_value_groups": 2,
+      "observed_route": "original transformers.integrations.sdpa_attention.sdpa_attention_forward; no profiler/kernel-kind claim",
+      "q_dtype": "torch.bfloat16",
+      "q_shape": [
+        1,
+        16,
+        32,
+        256
+      ],
+      "scaling": 1.0,
+      "sliding_window": 1024,
+      "v_dtype": "torch.bfloat16",
+      "v_shape": [
+        1,
+        8,
+        32,
+        256
+      ]
+    },
+    {
+      "devices": [
+        "cpu",
+        "cpu",
+        "cpu"
+      ],
+      "dropout": 0.0,
+      "k_dtype": "torch.bfloat16",
+      "k_shape": [
+        1,
+        1,
+        1,
+        512
+      ],
+      "layer_index": 5,
+      "mask": null,
+      "module_is_causal": true,
+      "native_sdpa_rule_expected_is_causal": false,
+      "num_key_value_groups": 16,
+      "observed_route": "original transformers.integrations.sdpa_attention.sdpa_attention_forward; no profiler/kernel-kind claim",
+      "q_dtype": "torch.bfloat16",
+      "q_shape": [
+        1,
+        16,
+        1,
+        512
+      ],
+      "scaling": 1.0,
+      "sliding_window": null,
+      "v_dtype": "torch.bfloat16",
+      "v_shape": [
+        1,
+        1,
+        1,
+        512
+      ]
+    },
+    {
+      "devices": [
+        "cpu",
+        "cpu",
+        "cpu"
+      ],
+      "dropout": 0.0,
+      "k_dtype": "torch.bfloat16",
+      "k_shape": [
+        1,
+        1,
+        1,
+        512
+      ],
+      "layer_index": 5,
+      "mask": null,
+      "module_is_causal": true,
+      "native_sdpa_rule_expected_is_causal": false,
+      "num_key_value_groups": 16,
+      "observed_route": "original transformers.integrations.sdpa_attention.sdpa_attention_forward; no profiler/kernel-kind claim",
+      "q_dtype": "torch.bfloat16",
+      "q_shape": [
+        1,
+        16,
+        1,
+        512
+      ],
+      "scaling": 1.0,
+      "sliding_window": null,
+      "v_dtype": "torch.bfloat16",
+      "v_shape": [
+        1,
+        1,
+        1,
+        512
+      ]
+    },
+    {
+      "devices": [
+        "cpu",
+        "cpu",
+        "cpu"
+      ],
+      "dropout": 0.0,
+      "k_dtype": "torch.bfloat16",
+      "k_shape": [
+        1,
+        1,
+        32,
+        512
+      ],
+      "layer_index": 5,
+      "mask": null,
+      "module_is_causal": true,
+      "native_sdpa_rule_expected_is_causal": true,
+      "num_key_value_groups": 16,
+      "observed_route": "original transformers.integrations.sdpa_attention.sdpa_attention_forward; no profiler/kernel-kind claim",
+      "q_dtype": "torch.bfloat16",
+      "q_shape": [
+        1,
+        16,
+        32,
+        512
+      ],
+      "scaling": 1.0,
+      "sliding_window": null,
+      "v_dtype": "torch.bfloat16",
+      "v_shape": [
+        1,
+        1,
+        32,
+        512
+      ]
+    },
+    {
+      "devices": [
+        "cpu",
+        "cpu",
+        "cpu"
+      ],
+      "dropout": 0.0,
+      "k_dtype": "torch.bfloat16",
+      "k_shape": [
+        1,
+        1,
+        32,
+        512
+      ],
+      "layer_index": 5,
+      "mask": null,
+      "module_is_causal": true,
+      "native_sdpa_rule_expected_is_causal": true,
+      "num_key_value_groups": 16,
+      "observed_route": "original transformers.integrations.sdpa_attention.sdpa_attention_forward; no profiler/kernel-kind claim",
+      "q_dtype": "torch.bfloat16",
+      "q_shape": [
+        1,
+        16,
+        32,
+        512
+      ],
+      "scaling": 1.0,
+      "sliding_window": null,
+      "v_dtype": "torch.bfloat16",
+      "v_shape": [
+        1,
+        1,
+        32,
+        512
+      ]
+    }
+  ],
+  "cache_state": "Selected-range prehash prefaults/warms pages. No cold latency claim or cache eviction. OS page-level read-ahead may touch adjacent bytes; only explicit application range requests are restricted.",
+  "cleanup_errors": [],
+  "completed": true,
+  "completed_cases": [
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 32
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 32
+    }
+  ],
+  "configuration": {
+    "attention_implementation": "sdpa",
+    "cache_used": false,
+    "cloned_weight_baseline": false,
+    "num_hidden_layers": 48,
+    "num_kv_shared_layers": 0,
+    "synthetic_inputs": true
+  },
+  "elapsed_seconds": 17.74222436600394,
+  "entry_sha256": "056e55bedd82bd9704f1c96df4ea63e9185e62533a7929a30647f7762e17f419",
+  "error": null,
+  "identity": {
+    "pgid": 315824,
+    "pid": 315824,
+    "sid": 315824,
+    "start_ticks": 6414518
+  },
+  "identity_after": {
+    "pgid": 315824,
+    "pid": 315824,
+    "sid": 315824,
+    "start_ticks": 6414518
+  },
+  "large_model_runtime_or_quality_qualified": false,
+  "layers": [
+    {
+      "cases": [
+        {
+          "RoPE_shapes": [
+            [
+              1,
+              1,
+              256
+            ],
+            [
+              1,
+              1,
+              256
+            ]
+          ],
+          "input_object_id": 255992459311728,
+          "input_sha256": "34461699ffecc1ab023b50af193435c149eb86bd97880128849987ec85c56468",
+          "layer_index": 0,
+          "mask": null,
+          "mask_builder": "create_sliding_window_causal_mask",
+          "prefetched_warm_pages": true,
+          "repeat_determinism_only": true,
+          "repeats": [
+            {
+              "absolute_max": 15.875,
+              "finite": true,
+              "forward_seconds": 0.38799882600142155,
+              "output_dtype": "torch.bfloat16",
+              "output_sha256": "048abb1debbf0488d78cb29f089e4a2754be10c7346cc440d72adf8a938cf607",
+              "output_shape": [
+                1,
+                1,
+                3840
+              ],
+              "repeat": 0
+            },
+            {
+              "absolute_max": 15.875,
+              "finite": true,
+              "forward_seconds": 0.35632019400509307,
+              "output_dtype": "torch.bfloat16",
+              "output_sha256": "048abb1debbf0488d78cb29f089e4a2754be10c7346cc440d72adf8a938cf607",
+              "output_shape": [
+                1,
+                1,
+                3840
+              ],
+              "repeat": 1
+            }
+          ],
+          "tokens": 1
+        },
+        {
+          "RoPE_shapes": [
+            [
+              1,
+              32,
+              256
+            ],
+            [
+              1,
+              32,
+              256
+            ]
+          ],
+          "input_object_id": 255992495479280,
+          "input_sha256": "88e6a7d75eda545aa44b79e678c46caef37b9f1fd345ba50c77cfb8239cc4bb0",
+          "layer_index": 0,
+          "mask": null,
+          "mask_builder": "create_sliding_window_causal_mask",
+          "prefetched_warm_pages": true,
+          "repeat_determinism_only": true,
+          "repeats": [
+            {
+              "absolute_max": 26.125,
+              "finite": true,
+              "forward_seconds": 0.3633051290016738,
+              "output_dtype": "torch.bfloat16",
+              "output_sha256": "4b07e9ce95c3d71a5764dcc83d1ff25da02f8487276ce926741780083d2ac763",
+              "output_shape": [
+                1,
+                32,
+                3840
+              ],
+              "repeat": 0
+            },
+            {
+              "absolute_max": 26.125,
+              "finite": true,
+              "forward_seconds": 0.362044714995136,
+              "output_dtype": "torch.bfloat16",
+              "output_sha256": "4b07e9ce95c3d71a5764dcc83d1ff25da02f8487276ce926741780083d2ac763",
+              "output_shape": [
+                1,
+                32,
+                3840
+              ],
+              "repeat": 1
+            }
+          ],
+          "tokens": 32
+        }
+      ],
+      "layer_index": 0,
+      "mapped_after": {
+        "input_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2047761280
+          },
+          "class": "Parameter",
+          "data_ptr": 255946650442624,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992445748000,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "layer_scalar": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2047768960
+          },
+          "class": "Tensor",
+          "data_ptr": 255946650450304,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446192928,
+          "requires_grad": false,
+          "shape": [
+            1
+          ],
+          "storage_bytes": 2,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.down_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2047768962
+          },
+          "class": "Parameter",
+          "data_ptr": 255946650450306,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446196208,
+          "requires_grad": false,
+          "shape": [
+            3840,
+            15360
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            15360,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.gate_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2165733762
+          },
+          "class": "Parameter",
+          "data_ptr": 255946768415106,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446196368,
+          "requires_grad": false,
+          "shape": [
+            15360,
+            3840
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.up_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2283698562
+          },
+          "class": "Parameter",
+          "data_ptr": 255946886379906,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446194288,
+          "requires_grad": false,
+          "shape": [
+            15360,
+            3840
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "post_attention_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2401663362
+          },
+          "class": "Parameter",
+          "data_ptr": 255947004344706,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446197328,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "post_feedforward_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2401671042
+          },
+          "class": "Parameter",
+          "data_ptr": 255947004352386,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446193648,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "pre_feedforward_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2401678722
+          },
+          "class": "Parameter",
+          "data_ptr": 255947004360066,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446192848,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.k_norm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2401686402
+          },
+          "class": "Parameter",
+          "data_ptr": 255947004367746,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446194128,
+          "requires_grad": false,
+          "shape": [
+            256
+          ],
+          "storage_bytes": 512,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.k_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2401686914
+          },
+          "class": "Parameter",
+          "data_ptr": 255947004368258,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446193568,
+          "requires_grad": false,
+          "shape": [
+            2048,
+            3840
+          ],
+          "storage_bytes": 15728640,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.o_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2417415554
+          },
+          "class": "Parameter",
+          "data_ptr": 255947020096898,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446193888,
+          "requires_grad": false,
+          "shape": [
+            3840,
+            4096
+          ],
+          "storage_bytes": 31457280,
+          "storage_offset": 0,
+          "stride": [
+            4096,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.q_norm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2448872834
+          },
+          "class": "Parameter",
+          "data_ptr": 255947051554178,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446194208,
+          "requires_grad": false,
+          "shape": [
+            256
+          ],
+          "storage_bytes": 512,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.q_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2448873346
+          },
+          "class": "Parameter",
+          "data_ptr": 255947051554690,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446197088,
+          "requires_grad": false,
+          "shape": [
+            4096,
+            3840
+          ],
+          "storage_bytes": 31457280,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.v_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2480330626
+          },
+          "class": "Parameter",
+          "data_ptr": 255947083011970,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446193488,
+          "requires_grad": false,
+          "shape": [
+            2048,
+            3840
+          ],
+          "storage_bytes": 15728640,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        }
+      },
+      "mapped_before": {
+        "input_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2047761280
+          },
+          "class": "Parameter",
+          "data_ptr": 255946650442624,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992445748000,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "layer_scalar": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2047768960
+          },
+          "class": "Tensor",
+          "data_ptr": 255946650450304,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446192928,
+          "requires_grad": false,
+          "shape": [
+            1
+          ],
+          "storage_bytes": 2,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.down_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2047768962
+          },
+          "class": "Parameter",
+          "data_ptr": 255946650450306,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446196208,
+          "requires_grad": false,
+          "shape": [
+            3840,
+            15360
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            15360,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.gate_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2165733762
+          },
+          "class": "Parameter",
+          "data_ptr": 255946768415106,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446196368,
+          "requires_grad": false,
+          "shape": [
+            15360,
+            3840
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.up_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2283698562
+          },
+          "class": "Parameter",
+          "data_ptr": 255946886379906,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446194288,
+          "requires_grad": false,
+          "shape": [
+            15360,
+            3840
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "post_attention_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2401663362
+          },
+          "class": "Parameter",
+          "data_ptr": 255947004344706,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446197328,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "post_feedforward_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2401671042
+          },
+          "class": "Parameter",
+          "data_ptr": 255947004352386,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446193648,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "pre_feedforward_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2401678722
+          },
+          "class": "Parameter",
+          "data_ptr": 255947004360066,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446192848,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.k_norm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2401686402
+          },
+          "class": "Parameter",
+          "data_ptr": 255947004367746,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446194128,
+          "requires_grad": false,
+          "shape": [
+            256
+          ],
+          "storage_bytes": 512,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.k_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2401686914
+          },
+          "class": "Parameter",
+          "data_ptr": 255947004368258,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446193568,
+          "requires_grad": false,
+          "shape": [
+            2048,
+            3840
+          ],
+          "storage_bytes": 15728640,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.o_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2417415554
+          },
+          "class": "Parameter",
+          "data_ptr": 255947020096898,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446193888,
+          "requires_grad": false,
+          "shape": [
+            3840,
+            4096
+          ],
+          "storage_bytes": 31457280,
+          "storage_offset": 0,
+          "stride": [
+            4096,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.q_norm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2448872834
+          },
+          "class": "Parameter",
+          "data_ptr": 255947051554178,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446194208,
+          "requires_grad": false,
+          "shape": [
+            256
+          ],
+          "storage_bytes": 512,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.q_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2448873346
+          },
+          "class": "Parameter",
+          "data_ptr": 255947051554690,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446197088,
+          "requires_grad": false,
+          "shape": [
+            4096,
+            3840
+          ],
+          "storage_bytes": 31457280,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.v_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7bf200000-e8cd50d76000",
+            "tensor_file_offset": 2480330626
+          },
+          "class": "Parameter",
+          "data_ptr": 255947083011970,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992446193488,
+          "requires_grad": false,
+          "shape": [
+            2048,
+            3840
+          ],
+          "storage_bytes": 15728640,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        }
+      },
+      "selected_range_integrity_final": true
+    },
+    {
+      "cases": [
+        {
+          "RoPE_shapes": [
+            [
+              1,
+              1,
+              512
+            ],
+            [
+              1,
+              1,
+              512
+            ]
+          ],
+          "input_object_id": 255992963273808,
+          "input_sha256": "34461699ffecc1ab023b50af193435c149eb86bd97880128849987ec85c56468",
+          "layer_index": 5,
+          "mask": null,
+          "mask_builder": "create_causal_mask",
+          "prefetched_warm_pages": true,
+          "repeat_determinism_only": true,
+          "repeats": [
+            {
+              "absolute_max": 10.75,
+              "finite": true,
+              "forward_seconds": 0.4358123609999893,
+              "output_dtype": "torch.bfloat16",
+              "output_sha256": "5c5e15aee1cd9fb9ef273365eecd945b3e894d465d39587d7956254922c8115d",
+              "output_shape": [
+                1,
+                1,
+                3840
+              ],
+              "repeat": 0
+            },
+            {
+              "absolute_max": 10.75,
+              "finite": true,
+              "forward_seconds": 0.42850304099556524,
+              "output_dtype": "torch.bfloat16",
+              "output_sha256": "5c5e15aee1cd9fb9ef273365eecd945b3e894d465d39587d7956254922c8115d",
+              "output_shape": [
+                1,
+                1,
+                3840
+              ],
+              "repeat": 1
+            }
+          ],
+          "tokens": 1
+        },
+        {
+          "RoPE_shapes": [
+            [
+              1,
+              32,
+              512
+            ],
+            [
+              1,
+              32,
+              512
+            ]
+          ],
+          "input_object_id": 255992933564976,
+          "input_sha256": "88e6a7d75eda545aa44b79e678c46caef37b9f1fd345ba50c77cfb8239cc4bb0",
+          "layer_index": 5,
+          "mask": null,
+          "mask_builder": "create_causal_mask",
+          "prefetched_warm_pages": true,
+          "repeat_determinism_only": true,
+          "repeats": [
+            {
+              "absolute_max": 16.875,
+              "finite": true,
+              "forward_seconds": 0.4115860390011221,
+              "output_dtype": "torch.bfloat16",
+              "output_sha256": "e805f87e96b2391c3b54e5085d61ce428d07a925f9e7f403a4869a82a2c0b86e",
+              "output_shape": [
+                1,
+                32,
+                3840
+              ],
+              "repeat": 0
+            },
+            {
+              "absolute_max": 16.875,
+              "finite": true,
+              "forward_seconds": 0.4065121419989737,
+              "output_dtype": "torch.bfloat16",
+              "output_sha256": "e805f87e96b2391c3b54e5085d61ce428d07a925f9e7f403a4869a82a2c0b86e",
+              "output_shape": [
+                1,
+                32,
+                3840
+              ],
+              "repeat": 1
+            }
+          ],
+          "tokens": 32
+        }
+      ],
+      "layer_index": 5,
+      "mapped_after": {
+        "input_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21572307926
+          },
+          "class": "Parameter",
+          "data_ptr": 255966063840214,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448446976,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "layer_scalar": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21572315606
+          },
+          "class": "Tensor",
+          "data_ptr": 255966063847894,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448444976,
+          "requires_grad": false,
+          "shape": [
+            1
+          ],
+          "storage_bytes": 2,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.down_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21572315608
+          },
+          "class": "Parameter",
+          "data_ptr": 255966063847896,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448445696,
+          "requires_grad": false,
+          "shape": [
+            3840,
+            15360
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            15360,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.gate_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21690280408
+          },
+          "class": "Parameter",
+          "data_ptr": 255966181812696,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448445856,
+          "requires_grad": false,
+          "shape": [
+            15360,
+            3840
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.up_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21808245208
+          },
+          "class": "Parameter",
+          "data_ptr": 255966299777496,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448441296,
+          "requires_grad": false,
+          "shape": [
+            15360,
+            3840
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "post_attention_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21926210008
+          },
+          "class": "Parameter",
+          "data_ptr": 255966417742296,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448442016,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "post_feedforward_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21926217688
+          },
+          "class": "Parameter",
+          "data_ptr": 255966417749976,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448445616,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "pre_feedforward_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21926225368
+          },
+          "class": "Parameter",
+          "data_ptr": 255966417757656,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448444816,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.k_norm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21926233048
+          },
+          "class": "Parameter",
+          "data_ptr": 255966417765336,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448444896,
+          "requires_grad": false,
+          "shape": [
+            512
+          ],
+          "storage_bytes": 1024,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.k_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21926234072
+          },
+          "class": "Parameter",
+          "data_ptr": 255966417766360,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448444416,
+          "requires_grad": false,
+          "shape": [
+            512,
+            3840
+          ],
+          "storage_bytes": 3932160,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.o_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21930166232
+          },
+          "class": "Parameter",
+          "data_ptr": 255966421698520,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448438496,
+          "requires_grad": false,
+          "shape": [
+            3840,
+            8192
+          ],
+          "storage_bytes": 62914560,
+          "storage_offset": 0,
+          "stride": [
+            8192,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.q_norm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21993080792
+          },
+          "class": "Parameter",
+          "data_ptr": 255966484613080,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448442096,
+          "requires_grad": false,
+          "shape": [
+            512
+          ],
+          "storage_bytes": 1024,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.q_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21993081816
+          },
+          "class": "Parameter",
+          "data_ptr": 255966484614104,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448442176,
+          "requires_grad": false,
+          "shape": [
+            8192,
+            3840
+          ],
+          "storage_bytes": 62914560,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        }
+      },
+      "mapped_before": {
+        "input_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21572307926
+          },
+          "class": "Parameter",
+          "data_ptr": 255966063840214,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448446976,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "layer_scalar": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21572315606
+          },
+          "class": "Tensor",
+          "data_ptr": 255966063847894,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448444976,
+          "requires_grad": false,
+          "shape": [
+            1
+          ],
+          "storage_bytes": 2,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.down_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21572315608
+          },
+          "class": "Parameter",
+          "data_ptr": 255966063847896,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448445696,
+          "requires_grad": false,
+          "shape": [
+            3840,
+            15360
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            15360,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.gate_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21690280408
+          },
+          "class": "Parameter",
+          "data_ptr": 255966181812696,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448445856,
+          "requires_grad": false,
+          "shape": [
+            15360,
+            3840
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "mlp.up_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21808245208
+          },
+          "class": "Parameter",
+          "data_ptr": 255966299777496,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448441296,
+          "requires_grad": false,
+          "shape": [
+            15360,
+            3840
+          ],
+          "storage_bytes": 117964800,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "post_attention_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21926210008
+          },
+          "class": "Parameter",
+          "data_ptr": 255966417742296,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448442016,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "post_feedforward_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21926217688
+          },
+          "class": "Parameter",
+          "data_ptr": 255966417749976,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448445616,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "pre_feedforward_layernorm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21926225368
+          },
+          "class": "Parameter",
+          "data_ptr": 255966417757656,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448444816,
+          "requires_grad": false,
+          "shape": [
+            3840
+          ],
+          "storage_bytes": 7680,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.k_norm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21926233048
+          },
+          "class": "Parameter",
+          "data_ptr": 255966417765336,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448444896,
+          "requires_grad": false,
+          "shape": [
+            512
+          ],
+          "storage_bytes": 1024,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.k_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21926234072
+          },
+          "class": "Parameter",
+          "data_ptr": 255966417766360,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448444416,
+          "requires_grad": false,
+          "shape": [
+            512,
+            3840
+          ],
+          "storage_bytes": 3932160,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.o_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21930166232
+          },
+          "class": "Parameter",
+          "data_ptr": 255966421698520,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448438496,
+          "requires_grad": false,
+          "shape": [
+            3840,
+            8192
+          ],
+          "storage_bytes": 62914560,
+          "storage_offset": 0,
+          "stride": [
+            8192,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.q_norm.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21993080792
+          },
+          "class": "Parameter",
+          "data_ptr": 255966484613080,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448442096,
+          "requires_grad": false,
+          "shape": [
+            512
+          ],
+          "storage_bytes": 1024,
+          "storage_offset": 0,
+          "stride": [
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        },
+        "self_attn.q_proj.weight": {
+          "VMA": {
+            "device": "103:02",
+            "file_mapping_offset": "00000000",
+            "inode": "11034709",
+            "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+            "permissions": "rw-p",
+            "range": "e8c7b8800000-e8cd4a376000",
+            "tensor_file_offset": 21993081816
+          },
+          "class": "Parameter",
+          "data_ptr": 255966484614104,
+          "device": "cpu",
+          "dtype": "torch.bfloat16",
+          "object_id": 255992448442176,
+          "requires_grad": false,
+          "shape": [
+            8192,
+            3840
+          ],
+          "storage_bytes": 62914560,
+          "storage_offset": 0,
+          "stride": [
+            3840,
+            1
+          ],
+          "version": 0,
+          "version_error": null
+        }
+      },
+      "selected_range_integrity_final": true
+    }
+  ],
+  "limits": "Mapped native single-layer synthetic CPU determinism only; no clone-equivalence,GPU,UMA,12B,8192,20s,N3,Q95,browser or score qualification",
+  "mechanism_checks_completed": true,
+  "parent_deadline_monotonic": 64170.146329368,
+  "passed": true,
+  "peak_RSS_bytes": 1491501056,
+  "planned_cases": [
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 32
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 32
+    }
+  ],
+  "profile": "bf16-real-layer-cpu-fixture-v1",
+  "range_hashes": {
+    "0": {
+      "after": {
+        "elapsed_seconds": 0.6626636840010178,
+        "explicit_selected_payload_hash_bytes": 448297986,
+        "ranges": [
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              2047761280,
+              2047768960
+            ],
+            "key": "model.language_model.layers.0.input_layernorm.weight",
+            "sha256": "dd35b9a13bad56480383b97c261b4a4f6ca270e9f12b7e7f3f350bb1b9bd3b94"
+          },
+          {
+            "bytes_hashed": 2,
+            "complete": true,
+            "file_offsets_half_open": [
+              2047768960,
+              2047768962
+            ],
+            "key": "model.language_model.layers.0.layer_scalar",
+            "sha256": "0beb7f7bfab513967da65da30afd2a3687f190e2ae33f496fcc0ef609d5cf958"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              2047768962,
+              2165733762
+            ],
+            "key": "model.language_model.layers.0.mlp.down_proj.weight",
+            "sha256": "39c7935f5f0d2b491af13596579eadd58101a2af128ffec922b20f0a3ef29bab"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              2165733762,
+              2283698562
+            ],
+            "key": "model.language_model.layers.0.mlp.gate_proj.weight",
+            "sha256": "382d11f00312d1f2f00729252250be971b17372e3f1cf73ef7b9498db806d9a6"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              2283698562,
+              2401663362
+            ],
+            "key": "model.language_model.layers.0.mlp.up_proj.weight",
+            "sha256": "f3b0d2579d1745c6dcdfcb04edc5e3e72f3be21274c21411a0fefbe55da1a2be"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              2401663362,
+              2401671042
+            ],
+            "key": "model.language_model.layers.0.post_attention_layernorm.weight",
+            "sha256": "e553d298b17cbda45858d4f696e906252cffa9f81b7adfe3a305dae141a099fd"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              2401671042,
+              2401678722
+            ],
+            "key": "model.language_model.layers.0.post_feedforward_layernorm.weight",
+            "sha256": "32c91e1b49f7f317df9e2f815d079ce1e86cedfa56d6d07bd0fea224e51c8fde"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              2401678722,
+              2401686402
+            ],
+            "key": "model.language_model.layers.0.pre_feedforward_layernorm.weight",
+            "sha256": "15834ae04bd2d3c6365c90aa874f5d3acb88fcd2c08495ce6c1ce304d3ffb3fb"
+          },
+          {
+            "bytes_hashed": 512,
+            "complete": true,
+            "file_offsets_half_open": [
+              2401686402,
+              2401686914
+            ],
+            "key": "model.language_model.layers.0.self_attn.k_norm.weight",
+            "sha256": "82dbd230fa6158cdafdf769a7ed09db864b9b957b379d356408db8c75496b1b4"
+          },
+          {
+            "bytes_hashed": 15728640,
+            "complete": true,
+            "file_offsets_half_open": [
+              2401686914,
+              2417415554
+            ],
+            "key": "model.language_model.layers.0.self_attn.k_proj.weight",
+            "sha256": "843789b11dad1b4c1d6b613619b636d275f7791fe393cbdcf270d5689de6b648"
+          },
+          {
+            "bytes_hashed": 31457280,
+            "complete": true,
+            "file_offsets_half_open": [
+              2417415554,
+              2448872834
+            ],
+            "key": "model.language_model.layers.0.self_attn.o_proj.weight",
+            "sha256": "d6d6d5d68167f552a10a9c3dae6ee9b97c490a4aba7221296565857423bcf173"
+          },
+          {
+            "bytes_hashed": 512,
+            "complete": true,
+            "file_offsets_half_open": [
+              2448872834,
+              2448873346
+            ],
+            "key": "model.language_model.layers.0.self_attn.q_norm.weight",
+            "sha256": "a80f3176d8c4e9c8d113aee90863711847acaf9bc112dc49f85690fd355c7866"
+          },
+          {
+            "bytes_hashed": 31457280,
+            "complete": true,
+            "file_offsets_half_open": [
+              2448873346,
+              2480330626
+            ],
+            "key": "model.language_model.layers.0.self_attn.q_proj.weight",
+            "sha256": "26bce2f3f189d5462ef59712e2a22b804ec1f3192d8b02274d080969cb8d1c74"
+          },
+          {
+            "bytes_hashed": 15728640,
+            "complete": true,
+            "file_offsets_half_open": [
+              2480330626,
+              2496059266
+            ],
+            "key": "model.language_model.layers.0.self_attn.v_proj.weight",
+            "sha256": "9c358a7956935e4ca8de8f3b6bfa4913d1b6d6bab3c3b3839e5ee0face19279d"
+          }
+        ]
+      },
+      "before": {
+        "elapsed_seconds": 0.8699048120033694,
+        "explicit_selected_payload_hash_bytes": 448297986,
+        "ranges": [
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              2047761280,
+              2047768960
+            ],
+            "key": "model.language_model.layers.0.input_layernorm.weight",
+            "sha256": "dd35b9a13bad56480383b97c261b4a4f6ca270e9f12b7e7f3f350bb1b9bd3b94"
+          },
+          {
+            "bytes_hashed": 2,
+            "complete": true,
+            "file_offsets_half_open": [
+              2047768960,
+              2047768962
+            ],
+            "key": "model.language_model.layers.0.layer_scalar",
+            "sha256": "0beb7f7bfab513967da65da30afd2a3687f190e2ae33f496fcc0ef609d5cf958"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              2047768962,
+              2165733762
+            ],
+            "key": "model.language_model.layers.0.mlp.down_proj.weight",
+            "sha256": "39c7935f5f0d2b491af13596579eadd58101a2af128ffec922b20f0a3ef29bab"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              2165733762,
+              2283698562
+            ],
+            "key": "model.language_model.layers.0.mlp.gate_proj.weight",
+            "sha256": "382d11f00312d1f2f00729252250be971b17372e3f1cf73ef7b9498db806d9a6"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              2283698562,
+              2401663362
+            ],
+            "key": "model.language_model.layers.0.mlp.up_proj.weight",
+            "sha256": "f3b0d2579d1745c6dcdfcb04edc5e3e72f3be21274c21411a0fefbe55da1a2be"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              2401663362,
+              2401671042
+            ],
+            "key": "model.language_model.layers.0.post_attention_layernorm.weight",
+            "sha256": "e553d298b17cbda45858d4f696e906252cffa9f81b7adfe3a305dae141a099fd"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              2401671042,
+              2401678722
+            ],
+            "key": "model.language_model.layers.0.post_feedforward_layernorm.weight",
+            "sha256": "32c91e1b49f7f317df9e2f815d079ce1e86cedfa56d6d07bd0fea224e51c8fde"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              2401678722,
+              2401686402
+            ],
+            "key": "model.language_model.layers.0.pre_feedforward_layernorm.weight",
+            "sha256": "15834ae04bd2d3c6365c90aa874f5d3acb88fcd2c08495ce6c1ce304d3ffb3fb"
+          },
+          {
+            "bytes_hashed": 512,
+            "complete": true,
+            "file_offsets_half_open": [
+              2401686402,
+              2401686914
+            ],
+            "key": "model.language_model.layers.0.self_attn.k_norm.weight",
+            "sha256": "82dbd230fa6158cdafdf769a7ed09db864b9b957b379d356408db8c75496b1b4"
+          },
+          {
+            "bytes_hashed": 15728640,
+            "complete": true,
+            "file_offsets_half_open": [
+              2401686914,
+              2417415554
+            ],
+            "key": "model.language_model.layers.0.self_attn.k_proj.weight",
+            "sha256": "843789b11dad1b4c1d6b613619b636d275f7791fe393cbdcf270d5689de6b648"
+          },
+          {
+            "bytes_hashed": 31457280,
+            "complete": true,
+            "file_offsets_half_open": [
+              2417415554,
+              2448872834
+            ],
+            "key": "model.language_model.layers.0.self_attn.o_proj.weight",
+            "sha256": "d6d6d5d68167f552a10a9c3dae6ee9b97c490a4aba7221296565857423bcf173"
+          },
+          {
+            "bytes_hashed": 512,
+            "complete": true,
+            "file_offsets_half_open": [
+              2448872834,
+              2448873346
+            ],
+            "key": "model.language_model.layers.0.self_attn.q_norm.weight",
+            "sha256": "a80f3176d8c4e9c8d113aee90863711847acaf9bc112dc49f85690fd355c7866"
+          },
+          {
+            "bytes_hashed": 31457280,
+            "complete": true,
+            "file_offsets_half_open": [
+              2448873346,
+              2480330626
+            ],
+            "key": "model.language_model.layers.0.self_attn.q_proj.weight",
+            "sha256": "26bce2f3f189d5462ef59712e2a22b804ec1f3192d8b02274d080969cb8d1c74"
+          },
+          {
+            "bytes_hashed": 15728640,
+            "complete": true,
+            "file_offsets_half_open": [
+              2480330626,
+              2496059266
+            ],
+            "key": "model.language_model.layers.0.self_attn.v_proj.weight",
+            "sha256": "9c358a7956935e4ca8de8f3b6bfa4913d1b6d6bab3c3b3839e5ee0face19279d"
+          }
+        ]
+      }
+    },
+    "5": {
+      "after": {
+        "elapsed_seconds": 0.7181372359991656,
+        "explicit_selected_payload_hash_bytes": 483688450,
+        "ranges": [
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              21572307926,
+              21572315606
+            ],
+            "key": "model.language_model.layers.5.input_layernorm.weight",
+            "sha256": "b44e86d7f9946943f5044495452f7b2e0fe1e836b778a1206a5738949fb1d59e"
+          },
+          {
+            "bytes_hashed": 2,
+            "complete": true,
+            "file_offsets_half_open": [
+              21572315606,
+              21572315608
+            ],
+            "key": "model.language_model.layers.5.layer_scalar",
+            "sha256": "066c1c83a8edd3a842297bbbec4eb6fac3fcbf35a25004200a00c7e885174d39"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              21572315608,
+              21690280408
+            ],
+            "key": "model.language_model.layers.5.mlp.down_proj.weight",
+            "sha256": "26f5a0db5d2578caacb7ae67dbd909d9230c9167bbd5c3d805b610ad0c365dd3"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              21690280408,
+              21808245208
+            ],
+            "key": "model.language_model.layers.5.mlp.gate_proj.weight",
+            "sha256": "a6437637fd770a4c3d9ec847475fd65336bcd19f8f1aa8ad8f3c45c6e2b9c4e0"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              21808245208,
+              21926210008
+            ],
+            "key": "model.language_model.layers.5.mlp.up_proj.weight",
+            "sha256": "ef7f2e3e837bf9d87a8d9383d19d996773dd6c709b027395f8f9680bd873c2d6"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              21926210008,
+              21926217688
+            ],
+            "key": "model.language_model.layers.5.post_attention_layernorm.weight",
+            "sha256": "d16d0068556292c072d5fc5cb4f1c6ced4cb5b248b5b1410dae45253e499a654"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              21926217688,
+              21926225368
+            ],
+            "key": "model.language_model.layers.5.post_feedforward_layernorm.weight",
+            "sha256": "e92c820fae74ef9bba4bc73fe98338a467c11f1b8b97a2afeb6210f3e8924974"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              21926225368,
+              21926233048
+            ],
+            "key": "model.language_model.layers.5.pre_feedforward_layernorm.weight",
+            "sha256": "84a196d44d16cd9c8d0eaddfc1c9cf0f54aa7bd6b720877e20a1741435e41396"
+          },
+          {
+            "bytes_hashed": 1024,
+            "complete": true,
+            "file_offsets_half_open": [
+              21926233048,
+              21926234072
+            ],
+            "key": "model.language_model.layers.5.self_attn.k_norm.weight",
+            "sha256": "ccbba19df6f1bc17748c769f4e8305fa30aa2e149339526d99ad1f10aaae86b9"
+          },
+          {
+            "bytes_hashed": 3932160,
+            "complete": true,
+            "file_offsets_half_open": [
+              21926234072,
+              21930166232
+            ],
+            "key": "model.language_model.layers.5.self_attn.k_proj.weight",
+            "sha256": "8995012374fbf2ddc11b4f4b21e3f1bfae8d8383e0ffbbcaed5ae696e36be7c9"
+          },
+          {
+            "bytes_hashed": 62914560,
+            "complete": true,
+            "file_offsets_half_open": [
+              21930166232,
+              21993080792
+            ],
+            "key": "model.language_model.layers.5.self_attn.o_proj.weight",
+            "sha256": "2da719c341e13809b49da63e578408921d95e44264c29a85a7c772949a42fa88"
+          },
+          {
+            "bytes_hashed": 1024,
+            "complete": true,
+            "file_offsets_half_open": [
+              21993080792,
+              21993081816
+            ],
+            "key": "model.language_model.layers.5.self_attn.q_norm.weight",
+            "sha256": "aa5907fb4f08d7727b1ee433b824c28f0cc65cc4d4573d2021a6ca3e0055d9f9"
+          },
+          {
+            "bytes_hashed": 62914560,
+            "complete": true,
+            "file_offsets_half_open": [
+              21993081816,
+              22055996376
+            ],
+            "key": "model.language_model.layers.5.self_attn.q_proj.weight",
+            "sha256": "220d06af4a2532b9a46f9cf15aee3476b5a238047ebad6f1b491f621cbadeb0b"
+          }
+        ]
+      },
+      "before": {
+        "elapsed_seconds": 0.9467421439985628,
+        "explicit_selected_payload_hash_bytes": 483688450,
+        "ranges": [
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              21572307926,
+              21572315606
+            ],
+            "key": "model.language_model.layers.5.input_layernorm.weight",
+            "sha256": "b44e86d7f9946943f5044495452f7b2e0fe1e836b778a1206a5738949fb1d59e"
+          },
+          {
+            "bytes_hashed": 2,
+            "complete": true,
+            "file_offsets_half_open": [
+              21572315606,
+              21572315608
+            ],
+            "key": "model.language_model.layers.5.layer_scalar",
+            "sha256": "066c1c83a8edd3a842297bbbec4eb6fac3fcbf35a25004200a00c7e885174d39"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              21572315608,
+              21690280408
+            ],
+            "key": "model.language_model.layers.5.mlp.down_proj.weight",
+            "sha256": "26f5a0db5d2578caacb7ae67dbd909d9230c9167bbd5c3d805b610ad0c365dd3"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              21690280408,
+              21808245208
+            ],
+            "key": "model.language_model.layers.5.mlp.gate_proj.weight",
+            "sha256": "a6437637fd770a4c3d9ec847475fd65336bcd19f8f1aa8ad8f3c45c6e2b9c4e0"
+          },
+          {
+            "bytes_hashed": 117964800,
+            "complete": true,
+            "file_offsets_half_open": [
+              21808245208,
+              21926210008
+            ],
+            "key": "model.language_model.layers.5.mlp.up_proj.weight",
+            "sha256": "ef7f2e3e837bf9d87a8d9383d19d996773dd6c709b027395f8f9680bd873c2d6"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              21926210008,
+              21926217688
+            ],
+            "key": "model.language_model.layers.5.post_attention_layernorm.weight",
+            "sha256": "d16d0068556292c072d5fc5cb4f1c6ced4cb5b248b5b1410dae45253e499a654"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              21926217688,
+              21926225368
+            ],
+            "key": "model.language_model.layers.5.post_feedforward_layernorm.weight",
+            "sha256": "e92c820fae74ef9bba4bc73fe98338a467c11f1b8b97a2afeb6210f3e8924974"
+          },
+          {
+            "bytes_hashed": 7680,
+            "complete": true,
+            "file_offsets_half_open": [
+              21926225368,
+              21926233048
+            ],
+            "key": "model.language_model.layers.5.pre_feedforward_layernorm.weight",
+            "sha256": "84a196d44d16cd9c8d0eaddfc1c9cf0f54aa7bd6b720877e20a1741435e41396"
+          },
+          {
+            "bytes_hashed": 1024,
+            "complete": true,
+            "file_offsets_half_open": [
+              21926233048,
+              21926234072
+            ],
+            "key": "model.language_model.layers.5.self_attn.k_norm.weight",
+            "sha256": "ccbba19df6f1bc17748c769f4e8305fa30aa2e149339526d99ad1f10aaae86b9"
+          },
+          {
+            "bytes_hashed": 3932160,
+            "complete": true,
+            "file_offsets_half_open": [
+              21926234072,
+              21930166232
+            ],
+            "key": "model.language_model.layers.5.self_attn.k_proj.weight",
+            "sha256": "8995012374fbf2ddc11b4f4b21e3f1bfae8d8383e0ffbbcaed5ae696e36be7c9"
+          },
+          {
+            "bytes_hashed": 62914560,
+            "complete": true,
+            "file_offsets_half_open": [
+              21930166232,
+              21993080792
+            ],
+            "key": "model.language_model.layers.5.self_attn.o_proj.weight",
+            "sha256": "2da719c341e13809b49da63e578408921d95e44264c29a85a7c772949a42fa88"
+          },
+          {
+            "bytes_hashed": 1024,
+            "complete": true,
+            "file_offsets_half_open": [
+              21993080792,
+              21993081816
+            ],
+            "key": "model.language_model.layers.5.self_attn.q_norm.weight",
+            "sha256": "aa5907fb4f08d7727b1ee433b824c28f0cc65cc4d4573d2021a6ca3e0055d9f9"
+          },
+          {
+            "bytes_hashed": 62914560,
+            "complete": true,
+            "file_offsets_half_open": [
+              21993081816,
+              22055996376
+            ],
+            "key": "model.language_model.layers.5.self_attn.q_proj.weight",
+            "sha256": "220d06af4a2532b9a46f9cf15aee3476b5a238047ebad6f1b491f621cbadeb0b"
+          }
+        ]
+      }
+    }
+  },
+  "selected_range_integrity_final": true,
+  "source_integrity_final": true,
+  "source_selection_sha256": "a552b73a839483a521eedb8bcd5efefaaed3873fd8a77d6b971ee60197509bfe",
+  "stages": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-00.json",
+      "sha256": "144ac9569964c89caf7554cdd5e3f48b79384188028fab0ed47e3316a35b7f0e",
+      "size_bytes": 1561
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-01.json",
+      "sha256": "a7f6436501957b9e99ba48a788b0b1ef9fa21a820f2fdf4c0a464a7c2aea4c71",
+      "size_bytes": 5998
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-02.json",
+      "sha256": "adbb99b99ea98ff871aaae9928437b718dd141aab3533843430caa44bf2054c1",
+      "size_bytes": 1370
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-03.json",
+      "sha256": "e6fdba993314d52604d6b42809979572c2462b1a24b9fa07721d8a97c3ceb850",
+      "size_bytes": 1402
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-04.json",
+      "sha256": "4a7aeb2ead531c360457a9f3309424c85fd51e2ff87ac47647ca9bc19bd97acb",
+      "size_bytes": 13028
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-05.json",
+      "sha256": "934443289f6a770c5afdcfe16ad11150ba089d7a77a69c24d455e77776f54a1c",
+      "size_bytes": 2152
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-06.json",
+      "sha256": "6e9d337ab2b62fade188dfbcf04cef4e05b73c04880455109bcc60822411af38",
+      "size_bytes": 2506
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-07.json",
+      "sha256": "f230f0ba801d3e756b450c5d29cc1705ddb2481f5a38f579f1fca1b4ad871fad",
+      "size_bytes": 2232
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-08.json",
+      "sha256": "31dd69bebea227197acfbb9f951e7795b54274e7c6ed4397bbe5f4095a99515e",
+      "size_bytes": 2586
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-09.json",
+      "sha256": "921fdd06114e59ee23911b02714352fe47527e1c78b26c41159575211f094d1e",
+      "size_bytes": 18967
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-10.json",
+      "sha256": "af105013be49afa29e8e07840739be6055ec3e3a27760013f2bd54ca325a65c6",
+      "size_bytes": 1683
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-11.json",
+      "sha256": "a628348eb8199b81223cb9e834594aa5d777fc47a03430feb065f58d07271735",
+      "size_bytes": 5860
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-12.json",
+      "sha256": "0e278968f840fa3511fd960056f11393fcb5a48c6dced16e04fda5774b4016e9",
+      "size_bytes": 1527
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-13.json",
+      "sha256": "02810181c427a23a5eb6548d3b9dfd8e83ae036a3636de2c537ee092accdd8c6",
+      "size_bytes": 1560
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-14.json",
+      "sha256": "0b26821faa31ab56e63de689bda54b377c5f9729837931b7622d6e67d0d72daf",
+      "size_bytes": 12351
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-15.json",
+      "sha256": "e7e87a14a6d67013bd3520ca6615a6749e8c6e899e8578dc49454712f1b846fa",
+      "size_bytes": 2286
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-16.json",
+      "sha256": "b1e1286bb0423ced733e28ed26699e173841c3ccdff2de6263492486cce21351",
+      "size_bytes": 2640
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-17.json",
+      "sha256": "d87d0195c3bfbb731309b0140749bbf0fb2ebdd0841e0caa327af33b00dab51d",
+      "size_bytes": 2368
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-18.json",
+      "sha256": "267d8f9119babd9771d027753a2832c5a8bb51506a6a2c16a981dd44829330f3",
+      "size_bytes": 2722
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-19.json",
+      "sha256": "1315db759bb15e41fd04d4ce0b210f3658ceb2c4d809f41963da85f74622a0ef",
+      "size_bytes": 17907
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-20.json",
+      "sha256": "690ef1a731917766bb623a3fb576f4297231796a98a7420c85536f5c8568744b",
+      "size_bytes": 1834
+    }
+  ],
+  "started_monotonic": 64145.581385891,
+  "status": "completed_mechanism_observations",
+  "versions": {
+    "safetensors": "0.8.0",
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0"
+  }
+}

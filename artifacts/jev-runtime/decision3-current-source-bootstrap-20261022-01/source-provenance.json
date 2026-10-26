@@ -1,0 +1,98 @@
+{
+  "schema_id": "decision3-gx10-current-source-provenance-v1",
+  "profile": "decision3-gx10-current-q95-text48-component-v1",
+  "source_text_forks_only_no_runtime_rewriting": true,
+  "function_class_AST_parity": [
+    {
+      "reference": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts/jev_decision3_public_dev22_gpu_replay.py",
+        "sha256": "9919e3b1dd5d5a68377b8e74c1b313c9a368a1716400d32af72e8a548ef02b4c",
+        "size_bytes": 59545
+      },
+      "current": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-current-source-bootstrap-20261022-01/current_core.py",
+        "sha256": "13b77299787d77587de2253a5f953b101113fc8d694edd27ee651d709be0e435",
+        "size_bytes": 26252
+      },
+      "exact_AST_equal": {
+        "memory_decision": true,
+        "Gates": true,
+        "authenticate_cache": true,
+        "tensor_header": true,
+        "backbone_layout": true
+      }
+    },
+    {
+      "reference": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-matched-v7-warm-readiness-20261018-01/source-candidate-01/jev_decision3_browser_worker.py",
+        "sha256": "f46fae94b759e373fce18d8e75abcac261b4e1f7c79bead0614cbed0e3d4f7d7",
+        "size_bytes": 51315
+      },
+      "current": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-current-source-bootstrap-20261022-01/current_worker.py",
+        "sha256": "edb7e6ed3e6b250a76d00189998d403c1cdda2bdec2cedafacc08aa8f97306c3",
+        "size_bytes": 29872
+      },
+      "exact_AST_equal": {
+        "publisher_warmup": true,
+        "process_request": true,
+        "DeadlineBackend": true,
+        "matched_context_spec": true
+      }
+    },
+    {
+      "reference": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-warm-successor-20261020-01/gx10_warm_bootstrap.py",
+        "sha256": "4f383edd45dc4ce3d5e6be90a83bed0a431f42dcb115f92fcbb20be25e62f91a",
+        "size_bytes": 25273
+      },
+      "current": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-current-source-bootstrap-20261022-01/current_bootstrap.py",
+        "sha256": "a39e811764f83eff793f3f5ade7fb9defd7e21fdc7d86207b5e12ce7c22b8581",
+        "size_bytes": 30181
+      },
+      "exact_AST_equal": {
+        "validate_helper": true,
+        "live_helper_check": true,
+        "RuntimeSelection": true,
+        "UUIDGates": true,
+        "geometry": true
+      }
+    }
+  ],
+  "generated_request_AST_equal": true,
+  "frozen_generated": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-current-source-bootstrap-20261022-01/frozen-generated-reference.txt",
+    "sha256": "582b520615cf123367436622f4e5ca6f5d94abb227449d866ec64cbb8adc9b3c",
+    "size_bytes": 18825
+  },
+  "current_generated": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/jev_generated.py",
+    "sha256": "c356e0eb3c046cb0787d7be0c5960803006231e8bdb414de644ae2167e72d849",
+    "size_bytes": 23569
+  },
+  "added_transitive_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src/s1/jev_prompt.py",
+    "sha256": "2891ecbe94e5cbb01b7a2de6d7be9ed35ee55d26f904cfeb6b401416254b5f3c",
+    "size_bytes": 17207
+  },
+  "historical_source17": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-matched-v7-warm-readiness-20261018-01/source-inventory17.json",
+    "sha256": "d8c886416bfc54192a3f861a8cb386e25754606a42410317056d2eef2f638985",
+    "size_bytes": 4392
+  },
+  "H15_preserved": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/native_uma_peak_probe_01.py",
+    "sha256": "2ed7cda3054da62e7440bf57e4bfae15e26ee6d22de8b80aede6c8f53973e3cb",
+    "size_bytes": 118654
+  },
+  "intentional_bootstrap_delta": [
+    "explicit new current-source profiles and own forked helper imports",
+    "exact current13/selected18/component19 inventories, historical17 separately retained",
+    "all6 configuration selection without dropping full-d3 capacity refusal",
+    "backend helper_already_loaded=True retains existing helper-resident transient gate",
+    "sealed descriptor reader pins bootstrap, source union and runtime before framework imports",
+    "explicit no whole-tree/continuation/qualification claims",
+    "Compile authenticated worker/CORE/wire source bytes and import fresh selected13 project modules through checked-byte loader; reject stale pyc/preloaded module substitution."
+  ]
+}

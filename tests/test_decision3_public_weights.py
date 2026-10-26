@@ -13,6 +13,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from decision3_test_support import frozen_source_root
 
 ROOT = Path(__file__).resolve().parents[1]
 PATH = ROOT / "apps/modal/decision3_public_weights.py"
@@ -115,6 +116,20 @@ def test_relocated_prefix_preserves_real_source_hash_guards(tmp_path, monkeypatc
     assert not ({"torch", "modal"} & (set(sys.modules) - before))
 
 
+@pytest.fixture
+def frozen_weights(tmp_path_factory, monkeypatch):
+    root = frozen_source_root(tmp_path_factory.mktemp("frozen-source") / "checkout")
+    weights = prefix(root / PATH.relative_to(ROOT))
+    monkeypatch.setitem(globals(), "WEIGHTS", weights)
+    monkeypatch.setitem(globals(), "SERVICE", weights.load_service())
+    return weights
+
+
+def test_current_checkout_still_rejects_frozen_source_drift():
+    with pytest.raises(ValueError, match="Frozen source12 differs"):
+        WEIGHTS.inventory()
+
+
 def tiny_tensor(path, header, data):
     blob = json.dumps(header, separators=(",", ":")).encode()
     path.write_bytes(struct.pack("<Q", len(blob)) + blob + data)
@@ -161,13 +176,15 @@ def cache(tmp_path, *, single_file=False):
     return staging, identity, manifest, files
 
 
-def test_source18_is_service17_plus_only_downloader_and_preparation_is_stdlib(tmp_path):
+def test_source18_is_service17_plus_only_downloader_and_preparation_is_stdlib(
+    tmp_path, frozen_weights
+):
     before = set(sys.modules)
     actual = WEIGHTS.inventory()
     original = SERVICE.source_inventory()
     assert actual["files"] == len(actual["rows"]) == 18
     assert {row["path"] for row in actual["rows"]} - {row["path"] for row in original["rows"]} == {
-        str(PATH)
+        str(WEIGHTS.SCRIPT)
     }
     assert (
         actual["service_source_inventory_sha256"]
@@ -221,7 +238,9 @@ def test_real_stdlib_tensor_header_and_all_shard_geometry(tmp_path, fault, singl
 
 
 @pytest.mark.parametrize("corrupt", [False, True])
-def test_download_requests_only_exact_public_files_and_full_sha(tmp_path, monkeypatch, corrupt):
+def test_download_requests_only_exact_public_files_and_full_sha(
+    tmp_path, monkeypatch, corrupt, frozen_weights
+):
     staging, identity, manifest, files = cache(tmp_path)
     calls = []
     output = tmp_path / "output"

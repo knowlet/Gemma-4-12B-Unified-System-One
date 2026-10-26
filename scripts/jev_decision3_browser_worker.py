@@ -33,6 +33,9 @@ WRAPPER_SHA = "1cd90e5e98ad1c7c63985cdc5c9b7795021bf252b6ca1b5437bdc653d065f533"
 WIRE_PATH = ROOT / "scripts/jev_decision3_browser_wire.py"
 WIRE_SHA = "c048d7779e60fce5d1a56b38e26b9ddf5ed9e1ff9c6adc478786d0267cca3027"
 SERVICE_PATH = ROOT / "apps/modal/decision3_browser_service.py"
+ACTION_PROFILE_PATH = ROOT / "src/s1/jev_action_profiles.py"
+ACTION_PROFILES = ("standard", "jev-find-text-experimental-v1")
+DEFAULT_ACTION_PROFILE = "standard"
 INTERPRETER = "/opt/decision3/bin/python"
 PROFILE = "decision3-browser-local-rpc-v1"
 WARM_PROFILE = "decision3-browser-publisher-text48-v1"
@@ -45,6 +48,31 @@ CORE = None
 def require(condition, message):
     if not condition:
         raise ValueError(message)
+
+
+def selected_action_profile(config, override=None):
+    """Missing legacy configuration keeps the original eight-operation path."""
+    require(type(config) is dict, "Worker config object required")
+    profile = config.get("action_profile", DEFAULT_ACTION_PROFILE)
+    require(
+        type(profile) is str and profile in ACTION_PROFILES,
+        "Unknown explicit worker action profile",
+    )
+    if override is not None:
+        require(
+            type(override) is str and override in ACTION_PROFILES,
+            "Unknown explicit worker action profile override",
+        )
+        require(
+            "action_profile" not in config or profile == override,
+            "Worker CLI/config action profiles differ",
+        )
+        profile = override
+    require(
+        profile != DEFAULT_ACTION_PROFILE or "action_profile_source" not in config,
+        "Standard worker does not select an experimental action-profile source",
+    )
+    return profile
 
 
 def encode(value):
@@ -98,6 +126,117 @@ def pin(path):
         "Source changed while hashing",
     )
     return {"sha256": hashed.hexdigest(), "size_bytes": before.st_size}
+
+
+def authenticate_action_profile(config, provenance=None):
+    """Authenticate the opt-in selector and its seven declared small sources.
+
+    The original exact17 inventory remains unchanged. The explicit selector pin
+    is additional configuration; its byte-pinned factory supplies the dependency
+    projection, checked before Torch and again during final authentication.
+    """
+    if selected_action_profile(config) == DEFAULT_ACTION_PROFILE:
+        return None
+    row = config.get("action_profile_source")
+    require(
+        type(row) is dict
+        and set(row) == {"path", "pin"}
+        and row["path"] == str(ACTION_PROFILE_PATH),
+        "Exact experimental action-profile selector source required",
+    )
+    expected = row["pin"]
+    require(
+        type(expected) is dict
+        and set(expected) == {"sha256", "size_bytes"}
+        and type(expected["sha256"]) is str
+        and re.fullmatch(r"[0-9a-f]{64}", expected["sha256"])
+        and type(expected["size_bytes"]) is int
+        and 0 < expected["size_bytes"] <= 200_000,
+        "Bounded experimental action-profile selector pin required",
+    )
+    require(
+        ordinary(ACTION_PROFILE_PATH).stat().st_size == expected["size_bytes"],
+        "Experimental action-profile selector size differs",
+    )
+    require(pin(ACTION_PROFILE_PATH) == expected, "Experimental action-profile selector changed")
+    if provenance is not None:
+        dependencies = provenance.get("source_dependencies")
+        require(
+            type(dependencies) is list and len(dependencies) == 7,
+            "Exact seven experimental action-profile dependencies required",
+        )
+        seen = set()
+        for dependency in dependencies:
+            require(
+                type(dependency) is dict
+                and set(dependency) == {"path", "sha256"}
+                and type(dependency["path"]) is str,
+                "Exact experimental action-profile dependency row required",
+            )
+            label = dependency["path"]
+            relative = Path(label)
+            require(
+                relative.parts
+                and not relative.is_absolute()
+                and ".." not in relative.parts
+                and relative.as_posix() == label
+                and label.endswith(".py")
+                and label not in seen
+                and type(dependency["sha256"]) is str
+                and re.fullmatch(r"[0-9a-f]{64}", dependency["sha256"]),
+                "Unique repository-relative action-profile source required",
+            )
+            seen.add(label)
+            path = ordinary(ROOT / relative)
+            require(0 < path.stat().st_size <= 200_000, "Bounded action-profile source required")
+            require(
+                pin(path)["sha256"] == dependency["sha256"],
+                "Experimental action-profile dependency changed: " + label,
+            )
+    return copy.deepcopy(row)
+
+
+class ActionProfileWire:
+    """Keep the selected native adapter and checked wire on the same profile."""
+
+    def __init__(self, profile, module):
+        self.profile, self.module = profile, module
+
+    def named_browser_response(self, request, response):
+        return self.module.named_browser_response(self.profile, request, response)
+
+
+def resolve_action_profile(config, state):
+    profile = selected_action_profile(config)
+    if profile == DEFAULT_ACTION_PROFILE:
+        return None, None
+    source = authenticate_action_profile(config)
+    module = importlib.import_module("s1.jev_action_profiles")
+    require(
+        Path(module.__file__).resolve() == ACTION_PROFILE_PATH
+        and module.ACTION_PROFILES == ACTION_PROFILES
+        and module.DEFAULT_ACTION_PROFILE == DEFAULT_ACTION_PROFILE,
+        "Imported action-profile selector origin/API differs",
+    )
+    protocol = module.resolve_protocol(profile)
+    provenance = protocol.provenance
+    require(
+        isinstance(protocol.native_adapter_class, type)
+        and type(provenance) is dict
+        and provenance.get("action_profile") == profile
+        and provenance.get("operation_count") == 9
+        and provenance.get("implementation") == "checked_private_derivatives"
+        and provenance.get("native_profile") == "jev_decision3_native_find_text_experimental_v1"
+        and provenance.get("wire_profile") == "jev_decision3_browser_find_text_experimental_v1",
+        "Selected experimental native/wire protocol differs",
+    )
+    authenticate_action_profile(config, provenance)
+    state.update(
+        action_profile=profile,
+        action_profile_source=source,
+        action_profile_provenance=copy.deepcopy(provenance),
+    )
+    return protocol.native_adapter_class, ActionProfileWire(profile, module)
 
 
 def persist(path, value, *, terminal=False):
@@ -792,6 +931,7 @@ def validate_output(path):
 
 
 def initialize(config, state, output):
+    selected_action_profile(config)
     require(
         sys.executable == INTERPRETER
         and sys.version_info[:2] == (3, 13)
@@ -804,6 +944,7 @@ def initialize(config, state, output):
     if startup is not None:
         state["startup_timing"] = {}
     identities = authenticate_sources(config["source_manifest"])
+    authenticate_action_profile(config)
     if startup is not None:
         state["startup_timing"]["initial_source_authentication_seconds"] = (
             time.monotonic() - initialization_started
@@ -851,6 +992,7 @@ def initialize(config, state, output):
 
     sys.addaudithook(deny_network)
     sys.path.insert(0, str(ROOT / "src"))
+    action_adapter, action_wire = resolve_action_profile(config, state)
     import torch
 
     from s1.evaluation.decision3 import CHECKPOINTS, Decision3Backend, decision3_spec
@@ -990,8 +1132,12 @@ def initialize(config, state, output):
             "provenance": provenance,
         }
         state["startup_timing"]["postwarm_authentication_seconds"] = time.monotonic() - post_started
-    wire = load_file("jev_decision3_browser_named_wire", WIRE_PATH)
-    adapter = JevDecision3NativeAdapter(backend, model_identity=config["alias"])
+    if action_adapter is None:
+        wire = load_file("jev_decision3_browser_named_wire", WIRE_PATH)
+        adapter = JevDecision3NativeAdapter(backend, model_identity=config["alias"])
+    else:
+        wire = action_wire
+        adapter = action_adapter(backend, model_identity=config["alias"])
     return adapter, wire, torch, gates, identity, blocked
 
 
@@ -1007,6 +1153,7 @@ def send(control, message):
 
 
 def run(config, control):
+    selected_action_profile(config)
     output = validate_output(config["output_dir"])
     require(
         type(config.get("nonce")) is str and SAFE_ID.fullmatch(config["nonce"]),
@@ -1096,6 +1243,17 @@ def run(config, control):
             "resources": state["resources_after_load"],
             "runtime": state["runtime"],
         }
+        if "action_profile" in state:
+            ready.update(
+                {
+                    key: copy.deepcopy(state[key])
+                    for key in (
+                        "action_profile",
+                        "action_profile_source",
+                        "action_profile_provenance",
+                    )
+                }
+            )
         if startup is not None:
             ready.update(
                 {
@@ -1216,6 +1374,7 @@ def run(config, control):
                 failed(exc, "final_cache_authentication")
         try:
             authenticate_sources(config["source_manifest"])
+            authenticate_action_profile(config, state.get("action_profile_provenance"))
         except BaseException as exc:
             failed(exc, "final_source_authentication")
         state["network_attempts_blocked"] = blocked
@@ -1254,6 +1413,7 @@ def run(config, control):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--worker", required=True, type=Path)
+    parser.add_argument("--action-profile", choices=ACTION_PROFILES)
     args = parser.parse_args(argv)
     # FD-level redirection also catches C extension and publisher print output.
     control = os.fdopen(os.dup(1), "wb", buffering=0)
@@ -1263,6 +1423,9 @@ def main(argv=None):
     require(config_path.stat().st_size <= MAX_FRAME, "Worker config byte bound")
     config = parse(config_path.read_bytes())
     require(type(config) is dict, "Worker config object required")
+    profile = selected_action_profile(config, args.action_profile)
+    if args.action_profile is not None:
+        config["action_profile"] = profile
     try:
         return run(config, control)
     finally:

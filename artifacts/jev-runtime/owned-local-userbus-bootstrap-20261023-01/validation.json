@@ -1,0 +1,99 @@
+{
+  "status": "AUTHOR_SOURCE_ONLY_TESTS_PASS_PENDING_INDEPENDENT_PEER_REVIEW",
+  "checks": {
+    "tests": {
+      "exit_code": 0,
+      "output": "...............\n----------------------------------------------------------------------\nRan 15 tests in 0.093s\n\nOK\n",
+      "wall_time_seconds": 0.194955477
+    },
+    "ruff": {
+      "exit_code": 0,
+      "output": "All checks passed!\n",
+      "wall_time_seconds": 3.1712e-05
+    },
+    "format": {
+      "exit_code": 0,
+      "output": "2 files already formatted\n",
+      "wall_time_seconds": 2.792e-05
+    },
+    "dry": {
+      "exit_code": 0,
+      "output": "{\"status\": \"dry_default_no_bus_query_entry_or_runtime_execution\", \"environment_keys\": [\"XDG_RUNTIME_DIR\", \"DBUS_SESSION_BUS_ADDRESS\"], \"dispatch\": \"same Python runpy.run_path\", \"model_or_service_or_qualification_action\": false}\n",
+      "wall_time_seconds": 2.0736e-05
+    }
+  },
+  "AST_compile_sources": 2,
+  "test_count": 15,
+  "bounds": {
+    "tests_dry_AST": {
+      "cpu_affinity": [
+        0
+      ],
+      "RLIMIT_AS_bytes": 268435456,
+      "RLIMIT_CPU_seconds": 20,
+      "timeout_seconds": 30,
+      "flags": [
+        "-B",
+        "-s"
+      ]
+    },
+    "Ruff": {
+      "cpu_affinity": [
+        0
+      ],
+      "RLIMIT_CPU_seconds": 20,
+      "timeout_seconds": 30,
+      "AS_bound": null
+    }
+  },
+  "test_scope": "Fake runtime-directory/socket/credential observations; tiny ordinary owned Python source fixtures executed with real stdlib runpy in the same test PID. No original catalog/helper entry or real bus/service/ML/HTTP execution.",
+  "meaningful_cases": [
+    "canonical owned directory0700 and socket0666",
+    "known private-parent socket0600/0660",
+    "wrong owner/type/mode and symlink refusal",
+    "real/effective credential mismatch",
+    "ordinary owned source SHA/path/permission and symlink checks",
+    "same selected interpreter and original flags; reject model modules",
+    "real tiny-source runpy same PID/executable/file/argv and only two computed env additions",
+    "SystemExit0 plus late source/bus authentication failure refuses success",
+    "nonzero SystemExit and original KeyboardInterrupt retained",
+    "source or selected env mutation after entry refuses success",
+    "self-dispatch and wrong wrapper hash refused",
+    "original sys.argv restored and explicit -- separator required",
+    "fixed ML logical symlink and system Python3.12 exact allowlist; canonical path and all four stat fields checked; reject adjacent stats, canonical-only alias, unselected /usr/bin/python3 and repo uvPython"
+  ],
+  "initial_test_setup_correction": "Repository umask created group-writable synthetic sources; fixtures now explicitly use umask022 and bootstrap pre-freeze mode0644 to match the unchanged strict ordinary-source policy. Production validation was not weakened.",
+  "initial_lint_correction": "Removed one unused test-only json import; final lint is clean.",
+  "artifact_refs": {
+    "source": {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/bootstrap.py",
+      "sha256": "e6a97860ff4fe7a36e8fc7900c514593d4f17b8836c1cc308c48a52e4f7f644d",
+      "size_bytes": 7599
+    },
+    "tests": {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/test_bootstrap.py",
+      "sha256": "f377cecd4f56c474743e21919edbc951623e039bdf2cabc95e4507ed8c57720a",
+      "size_bytes": 15289
+    },
+    "test_log": {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/static-tests.log",
+      "sha256": "98d292124d07690bbecaa114e12d7a638749cc461b7c1b994c898276321d5a63",
+      "size_bytes": 441
+    },
+    "requirements": {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/entry-requirements.json",
+      "sha256": "5faadee2c3b177569041c533f99a051e60999aa3551e548098c91c3bfb119ff4",
+      "size_bytes": 5571
+    },
+    "failure_source_finding": {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/closed-failure-source-finding.json",
+      "sha256": "4e57fcfda41945dcb5c27ffd1d983619b5cea8215aaff620ab2a4cc8f1a05f8e",
+      "size_bytes": 4252
+    }
+  },
+  "no_real_bus_host_unit_observer_model_native_or_network_probes": true,
+  "no_Git": true,
+  "requires_peer_review_new_spec_and_fresh_original_gate": true,
+  "interpreter_policy": "Exact2 profile metadata supplied by root. ML logical symlink allowed for catalog; system Python3.12 retained for parent pidfd features. Original entry-specific interpreter and feature checks unchanged; no current native executable payload reads.",
+  "test_setup_secondary_correction": "New exact-interpreter fake initially nested autospec over an existing mock; corrected only mock setup before final passing results."
+}

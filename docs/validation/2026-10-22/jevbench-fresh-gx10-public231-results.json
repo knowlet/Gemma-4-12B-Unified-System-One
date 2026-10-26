@@ -1,0 +1,200 @@
+{
+  "schema_id": "jevbench-fresh-gx10-public231-partial-campaign-v1",
+  "created_at_utc": "2026-10-22T08:06:22.594735+00:00",
+  "status": "public231_completed_coherence_incomplete_owned_process_closed",
+  "scope": "Fresh GX10 inference, separate namesake suites. Public231 stage completed; entire two-stage worker was forcibly closed after observer refusal. This is not a completed coherence result or final whole-worker qualification.",
+  "public231": {
+    "n_correct": 195,
+    "n_attempted": 231,
+    "n_valid": 231,
+    "n_scorable": 231,
+    "coverage": 1.0,
+    "accuracy": 0.8441558441558441,
+    "macro_accuracy": 0.8507143403170235,
+    "brier_mean": 0.22862292231064194,
+    "operational_success": 1.0,
+    "latency": {
+      "n": 231,
+      "p50_s": 0.18236493799940945,
+      "p95_s": 1.8011149134999869
+    },
+    "official_composite": null,
+    "official_rank": null,
+    "leaderboard_status": "not_submitted",
+    "ece": 0.055990034980433284
+  },
+  "coherence_mini": {
+    "score": null,
+    "complete": false,
+    "expected_requests": 1248,
+    "completed_model_calls_in_stage": 240,
+    "worker_receipt_stage": "evaluating",
+    "scope": "240 completed model calls in the coherence stage; no full relation score reported."
+  },
+  "profile": {
+    "profile": "released-gx10-bf16-causal-multislot-20261022-v1",
+    "model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+    "revision": "a66f836b56605039fe040f330180e336d19b3362",
+    "precision": "bfloat16",
+    "quantization": "none",
+    "temperature": 2.7830344470383452,
+    "context": 16384,
+    "question_mode": "causal_multislot",
+    "gpu": "NVIDIA GB10",
+    "versions": {
+      "httpx": "0.28.1",
+      "numpy": "2.5.2",
+      "safetensors": "0.8.0",
+      "torch": "2.13.0+cu130",
+      "transformers": "5.17.0"
+    },
+    "training_executed": false
+  },
+  "initial_checkpoint_authentication": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+    "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
+    "size_bytes": 23919549408
+  },
+  "final_worker_checkpoint_reauthentication": null,
+  "outer_source_closure": {
+    "exact_sources": 203,
+    "changed_sources": [],
+    "closure": {
+      "path": "artifacts/jevbench/20261022-local-score-01/root-external-closure-01.json",
+      "sha256": "358755b58e281e30ee2f55860841df80dd8fc7276ccac5258cad3c76491aa1d2",
+      "size_bytes": 411068
+    }
+  },
+  "closure": {
+    "whole_process_and_cgroup_absent": true,
+    "stop_result": "timeout",
+    "exit_status": "9",
+    "graceful_worker_finalization": false,
+    "host_after_state": "absent_confirmed",
+    "scope": "Authenticated own invocation stopped; SIGINT exceeded20s and systemd killed it. No final worker receipt, inference count or calibration result fabricated."
+  },
+  "interruption": {
+    "reason": "owner_error",
+    "error": {
+      "type": "ObservationError",
+      "message": "Connection refused but Comfy process absence is unproven",
+      "observation_evidence": [
+        {
+          "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+          "finished_monotonic": 5052.282709359,
+          "mem_available_bytes": 96014766080,
+          "mem_total_bytes": 130595864576,
+          "processes": {
+            "identity_retries": 0,
+            "inventory_sha256": "114dd22da1c32f8777a17332800737c20715ae939173b38566a0928f49d54084",
+            "known_comfy": [],
+            "retry_samples": [],
+            "scanned": 561,
+            "uncertain": [
+              {
+                "classification": "uncertain_python_cwd",
+                "pid": 39692,
+                "start_ticks": 505206
+              }
+            ],
+            "vanished_sample": []
+          },
+          "started_monotonic": 5052.193221053,
+          "tcp": {
+            "inventories": [
+              {
+                "family": "tcp",
+                "rows": 63,
+                "sha256": "dd2d787f6c1857528f9b2e05ac43137524262bf428d12f1f2033eea98116b4d0"
+              },
+              {
+                "family": "tcp6",
+                "rows": 4,
+                "sha256": "a4889647ff99a8423a8147c2a4525aee5183d217bb502a243c93da38d2974d1c"
+              }
+            ],
+            "listeners": []
+          }
+        }
+      ]
+    },
+    "not_model_quality_failure": true
+  },
+  "observer": {
+    "source": {
+      "path": "artifacts/jev-runtime/comfy-observer-stable-scan-20261022-01/comfy_observer.py",
+      "sha256": "4084e7651a2f4e1559e2b20b061a73e2bb25426097e039ffaab0dc553c88ce7c",
+      "size_bytes": 17501
+    },
+    "tests_passed": 63,
+    "tests_receipt": {
+      "path": "artifacts/jev-runtime/comfy-observer-stable-scan-20261022-01/observer-tests-01.xml",
+      "sha256": "239e4daf3f5b0802d57481fc131759ba477b6668d058922f8e1bcb3bcc220306",
+      "size_bytes": 12859
+    },
+    "soak": {
+      "path": "artifacts/jev-runtime/comfy-observer-stable-scan-20261022-01/new-observer-owned-exec-soak-01.json",
+      "sha256": "f7b611d9d8400d8226414c7da7868fb18520905d6321c109bfe3293db9de3bc4",
+      "size_bytes": 486427
+    },
+    "soak_passed": 150,
+    "soak_total": 150,
+    "owned_exec_children": 549,
+    "soak_scope": "Recovered an identity race; later actualrun exposed a distinct missingcwd/vanished-context case. This is not proof of no future observation failures."
+  },
+  "prior_native_retry": {
+    "receipt": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/fit-01/receipt.json",
+      "sha256": "8ff32c6379e53c86961e1e1528346280ef4f6ccc380693c681a642aefd40d08f",
+      "size_bytes": 209545
+    },
+    "closure": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/root-external-closure-01.json",
+      "sha256": "24decfd2c050f364c3fd32639294d27516651c3994f890222216adf21332a8ab",
+      "size_bytes": 875153
+    },
+    "completed_updates": 72,
+    "planned_updates": 142,
+    "partial_weights_present": true,
+    "usable_sealed_adapter": false,
+    "optimizer_resume_checkpoint": false,
+    "owned_closed": true,
+    "changed_sources": [],
+    "qualifying_training_complete": false
+  },
+  "evidence": [
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-05.json",
+      "sha256": "52022e43348e8b90e297e81957775a34bc59fd44ec730e54749dceb5489656d1",
+      "size_bytes": 56399
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-01/stage-results.json",
+      "sha256": "ad567d6c488ba8c880d3c15674077f253cb3748d84547ae78440a60419719c2b",
+      "size_bytes": 31783
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-01/public231/manifest.json",
+      "sha256": "6708062633e1615a20a7468cba44fb933bea772724c04c01ba3fca6f1ef9d0c5",
+      "size_bytes": 45756
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-01/model-loaded.json",
+      "sha256": "34333635691d67207d6d318f2f5a93f1adb70736dde4b40d09e51b2281008477",
+      "size_bytes": 2563
+    }
+  ],
+  "historical_comparison": {
+    "historical_correct": 197,
+    "historical_total": 231,
+    "historical_answer_date": "2026-10-08",
+    "fresh_correct": 195,
+    "fresh_total": 231,
+    "same_profile_controlled_cause_established": false
+  },
+  "browser": {
+    "fresh_score": null,
+    "previous_score": "5/10 unchanged"
+  },
+  "next": "Resolve missingcwd only when process absence is actually proven, preserving knownComfy/permission/livecwd refusal. New owned attempt reruns both suites from fresh output; then full142 training and matchedraw/V2browser."
+}

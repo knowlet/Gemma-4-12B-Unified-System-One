@@ -1,0 +1,325 @@
+{
+  "profile": "decision3-edge-gx10-publisher-cpu2g-batch4-both-stage-completions-20261023-v1",
+  "model_key": "edge",
+  "status": "running_original_public231_then_coherence_mini",
+  "plan_sha256": "363f59055ad7c830e3728fed1f6e262534161fbc0273c721060de64d4cd5df96",
+  "prerequisite": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/independent-actual-edge-2g-review-01.json",
+    "sha256": "7a3bf73a6d75036c96ed4705e9e6358624757cf2d8f330084b6fdfc828789be8",
+    "result": "PASS_WITH_LIMITS",
+    "qualification": {
+      "smoke_complete": true,
+      "external_authenticated_closure": true,
+      "one_actual_constructor": true,
+      "two_actual_four_row_events": true,
+      "durable_call_20s": true,
+      "whole_command_120s": true,
+      "final_full_model_and_sources_authenticated": true
+    },
+    "artifact_refs": {
+      "state": {
+        "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/edge-probe/state.json",
+        "size_bytes": 18988,
+        "sha256": "9d4a288d0587b108b219113b7a9db58959e0e8e16d22f1dc1f23127070deaf30"
+      },
+      "plan": {
+        "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+        "size_bytes": 30406,
+        "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+      },
+      "owner_receipt": {
+        "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/receipt.json",
+        "size_bytes": 70570,
+        "sha256": "59fb5662917e1dbedcfcdf9e07417d0f94b4ea7a303957cdbf8a2130625dab92"
+      },
+      "root_execution": {
+        "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-native02-edge-01.json",
+        "size_bytes": 1698,
+        "sha256": "73f6ea0d32ecd4163edb2a3fe77d1897dbe4de2d8671a5e315ed002e88ca33ec"
+      },
+      "spec": {
+        "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/root-edge-smoke-command-spec.json",
+        "size_bytes": 10418,
+        "sha256": "168af260c93c9904640045f01c6c295d3eb9a50ccf4792f97de56db2d704856f"
+      },
+      "closure_observation": {
+        "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/external-boundary-closure.json",
+        "size_bytes": 3790,
+        "sha256": "ec1f9608f9621b09dc601e2e40cbb7d6867075436f6f6cbf9b01e8f07796caa1"
+      }
+    },
+    "limits": [
+      "This qualifies only the genuine completed Edge2GiB CPU4 synthetic two-call/four-question smoke at this exact checkpoint/profile/source selection. It is not semantic accuracy, model quality, JevBench public/coherence/fullbenchmark, browser/HTTP20, ranking or3GiB performance inheritance. No benchmark tasks/gold/options/cache/real responses were read.",
+      "All raw developer request/answers/probabilities are omitted from this aggregate audit. Independent checks recomputed envelope/schema/normalization/argmax/entropy confidence using only the explicitly authorized synthetic state; no semantic expected-answer score was computed.",
+      "The independently reviewed actor ran full20model+manifest/runtime/owner authentication before and after NN, then exited0; originalowner reported final source authentication and original closure. Auditor did not reopen/hash/stat any model/tokenizer/native/runtime binary payload, importTorch/model/source, or repeat NN/tests/live probes.",
+      "Only saved own-cgroup cumulative memory/cpu counters and main-thread/actor affinity samples are qualified. No universal all-thread lifetime cpuset/noescape/fullDSO/transitiveclosure claim; quota and average observed multi-core utilization do not identify every runtime thread. OOMzero applies only to the observed selected cgroup counters.",
+      "Actor state elapsed alone precedes final evidence/watchdog cleanup. Genuine full child elapsed15.917s and rootwall17.269s with exit0 independently bound the complete command below120; calls recorded after-cleanup durable elapsed1.0770/0.9480 below20. This is measured evidence, not a universal hard realtime guarantee.",
+      "Source-content SHA and structural contract flags govern source identity. Prepared versus actual per-symbol ast.dump digests vary across the recorded Python3.12 preparation/3.13 execution and are not treated as a source-byte mismatch or a new semantic proof. Same pinned d3_runtime contentSHA is reported and owned-authenticated.",
+      "Original authenticatedstop confirms selected unit and observed cohort exited withtwoempty scans/cgroupabsence. Originalfalse whole_tree/no_escape/continuation/model-qualified flags stayfalse. Any later fullcampaign still requires exact new ROOTspec and fresh originaladmission; this audit does not authorize starting another job."
+    ]
+  },
+  "process": {
+    "pid": 561929,
+    "starttime_ticks": 11305782,
+    "pgid": 561922,
+    "sid": 561922,
+    "cgroup": "0::/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+    "affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "",
+      "HF_HUB_OFFLINE": "1",
+      "TRANSFORMERS_OFFLINE": "1",
+      "ACCELERATE_USE_CPU": "true",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": null,
+      "TOKENIZERS_PARALLELISM": null,
+      "HF_ENABLE_PARALLEL_LOADING": null,
+      "HF_PARALLEL_LOADING_WORKERS": null,
+      "USE_HUB_KERNELS": null,
+      "D3_FAST": null,
+      "D3_FUSED": null,
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1"
+    }
+  },
+  "owned_limits": {
+    "memory.max": "2147483648",
+    "memory.swap.max": "0",
+    "cpu.max": "400000 100000"
+  },
+  "host_startup_admission": {
+    "MemTotal": 130595864576,
+    "MemAvailable": 29440188416,
+    "reserve_bytes": 26119172916,
+    "required_available_bytes": 28266656564,
+    "swap_credit_bytes": 0,
+    "cache_credit_bytes": 0,
+    "already_loaded_credit_bytes": 0
+  },
+  "model_loads": 1,
+  "whole_campaign_deadline_seconds": 10000,
+  "per_call_deadline_seconds": 180,
+  "per_call_deadline_basis": "official offline benchmark180s; no browser20 qualification",
+  "head_field_is_provenance_only": true,
+  "local_head_at_creation": "1a6a2c6c50673238c79bb4d4cc2f440ed10a9de3",
+  "benchmark_scores": null,
+  "completed_stage_receipts": {},
+  "campaign_started_unix": 1792763980.657216,
+  "browser_score": null,
+  "batch1_score_or_parity_inherited": false,
+  "before_load_owned_counters": {
+    "cgroup": "0::/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+    "observed_monotonic": 113057.89789061,
+    "counters": {
+      "memory.current": 29331456,
+      "memory.peak": 29331456,
+      "memory.events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "cpu.stat": {
+        "usage_usec": 196570,
+        "user_usec": 162815,
+        "system_usec": 33754,
+        "nice_usec": 0,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 2,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    },
+    "scope": "Only this selected owned unit; includes actor/framework/cache/wrapper activity, not native-only peak or external closure"
+  },
+  "host_before_full_authentication": {
+    "MemTotal": 130595864576,
+    "MemAvailable": 29440188416,
+    "reserve_bytes": 26119172916,
+    "required_available_bytes": 28266656564,
+    "swap_credit_bytes": 0,
+    "cache_credit_bytes": 0,
+    "already_loaded_credit_bytes": 0
+  },
+  "initial_full_model_manifest_runtime_sources_authenticated": true,
+  "publisher_source_AST_contract": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_runtime.py",
+    "sha256": "adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917",
+    "size": 95505,
+    "one_constructor": true,
+    "one_backbone_loader": true,
+    "native_batch_argument": true,
+    "shipped_default_batch_unchanged": 8,
+    "original_request_question_order": true,
+    "original_sequences_context_options": true,
+    "left_padding_and_original_masks": true,
+    "BF16_backbone_FP32_readout_temperature_softmax_unchanged": true,
+    "symbols": {
+      "__init__": {
+        "line": 1109,
+        "ast_sha256": "d018a3426717854c038c276982a953b9b3463b4d9cd65e98c9a0e38318a94449"
+      },
+      "from_pretrained": {
+        "line": 1279,
+        "ast_sha256": "7b56b80a9b2b6946389baf95116b7f72937ffd7f98fcfc8f14dc22ebc73fa94d"
+      },
+      "logits": {
+        "line": 1673,
+        "ast_sha256": "a61d9edcddc6cd31bf1504cf65726246b16d84df8bad56ab74192b5a68b224c9"
+      },
+      "probabilities": {
+        "line": 1703,
+        "ast_sha256": "5ecdc08923a83d1dacb5d34e8becab7aeeb222c2db362682a2c8c81199c3aecc"
+      },
+      "run": {
+        "line": 1996,
+        "ast_sha256": "d4c5262f7279bc6cac0ee74de9c713e274d4202bbfad70fdace36f3824e9d750"
+      },
+      "respond": {
+        "line": 2025,
+        "ast_sha256": "5244bd692522b3cc14e33f317f76319ed2b2490afa6ed31b781d072d278a5fe7"
+      }
+    },
+    "runtime_executed": false
+  },
+  "package_versions": {
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "safetensors": "0.8.0",
+    "huggingface_hub": "1.33.0",
+    "accelerate": "1.15.0"
+  },
+  "actual_environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "ACCELERATE_USE_CPU": "true",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "4",
+    "NUMEXPR_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false",
+    "HF_ENABLE_PARALLEL_LOADING": "false",
+    "HF_PARALLEL_LOADING_WORKERS": "1",
+    "USE_HUB_KERNELS": "0",
+    "D3_FAST": "0",
+    "D3_FUSED": "0",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "actual_kernel_bindings": {
+    "torch_chunk_gated_delta_rule": "torch-reference",
+    "torch_recurrent_gated_delta_rule": "torch-reference",
+    "causal_conv1d_fn": "torch-reference",
+    "causal_conv1d_update": "torch-reference"
+  },
+  "model_load_seconds": 3.109371069993358,
+  "native_provenance": {
+    "kind": "d3-code-readout",
+    "runtime": "d3-runtime/1",
+    "model_name": "d3-edge",
+    "repo_id": "vllm-sr/d3-edge",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "format_id": "d3-code-readout-v1",
+    "prompt": "d3",
+    "attention_mode": "noncausal_full_attention",
+    "pooling": "last",
+    "temperature": 1.0,
+    "max_length": null,
+    "readout_dtype": "float32",
+    "backbone_dtype": "bfloat16",
+    "attn_implementation": "sdpa",
+    "batch_size": 4,
+    "files_sha256": {
+      "decision_config.json": "30b6095b945d5a93697868afdf9be9123ea892085fbaff3078112c48da20dc6b",
+      "readout.safetensors": "de33d5dc795bbd77168e40bfadc340cca9b9f163b88744c10e1a788f4e166d3d",
+      "config.json": "5e529d9aea2f8d387750acf5b02cc32a47d7e87dc65d6d008fba98e5d15acc4d",
+      "MODEL_MANIFEST.json": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59"
+    },
+    "kernels": {
+      "torch_chunk_gated_delta_rule": "torch-reference",
+      "causal_conv1d_fn": "torch-reference",
+      "fla": "missing (ModuleNotFoundError)"
+    },
+    "policy": "One forward pass per question; options under single-token answer codes; last-token readout over the question's codes only; argmax choice; no truncation (over-limit questions are refused); no option filtering; one fixed prompt for every request.",
+    "images": {
+      "supported": true,
+      "min_pixels": 65536,
+      "max_pixels": 1638400,
+      "placement": "before the text of the user turn, one placeholder per image, request order",
+      "patch_embedding": "matrix product (equal to the Conv3d with kernel = stride)",
+      "image_processor": "Qwen2VLImageProcessor",
+      "torchvision": "0.28.0+cu130"
+    },
+    "videos": {
+      "supported": true,
+      "fps": 2.0,
+      "min_frames": 4,
+      "max_frames": 32,
+      "max_pixels_per_frame": 200704,
+      "max_tokens_per_request": 16384,
+      "placement": "after the images, before the text of the user turn, one placeholder per video, request order; every two frames are one token group after their timestamp",
+      "sampling": "source frames spread evenly over the whole video (frame arrays: frames at 2 per second)",
+      "video_processor": "Qwen3VLVideoProcessor",
+      "opencv": "5.0.0"
+    }
+  },
+  "native_runtime_info": {
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "device": "cpu",
+    "cuda": "13.0",
+    "hip": null,
+    "loaded_seconds": 1.57,
+    "fast_path": {
+      "active": false,
+      "reason": "D3_FAST=0"
+    }
+  },
+  "model_identity": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ],
+    "profile": "decision3-edge-gx10-publisher-cpu2g-batch4-both-stage-completions-20261023-v1",
+    "device": "cpu",
+    "backbone_dtype": "bfloat16",
+    "readout_dtype": "float32",
+    "temperature": 1.0,
+    "batch_size": 4,
+    "context_limit": 16384,
+    "context_policy": "reject_no_truncation",
+    "permutation_average": false,
+    "constructor_count": 1,
+    "benchmark_heaven_revision": "bb05a335bc809e61b20c0f745d25499a82b326fc",
+    "coherence_revision": "e18733694623aa93058e279c3534f8b8e2edefa3",
+    "source_plan_sha256": "b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021"
+  }
+}

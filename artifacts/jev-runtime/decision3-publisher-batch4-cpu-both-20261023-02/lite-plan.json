@@ -1,0 +1,130 @@
+{
+  "schema": "decision3-native-batch4-cpu-both-candidate-plan-v1",
+  "profile": "decision3-lite-gx10-publisher-cpu-batch4-both-20261023-v1",
+  "model_key": "lite",
+  "model": {
+    "model_id": "vllm-sr/d3-lite",
+    "name": "d3-lite",
+    "revision": "9c10703193afc7c7d28c88201c0364bfbbf58320",
+    "manifest_sha256": "31f0ff94ff26619c0a063ccac803edcfe34c56c92e5c9c50b703b62893f125dd",
+    "model_sha256": "fda5cfc7bc9063fbb7cd40b50fa9a0963d83a4790a3d6a11a356833fd1171992",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention"
+    ]
+  },
+  "campaign_sha256": "945334a69824d10f45cbcf9dfa59e3df9449a8a597c27bb32a49987e7df2f695",
+  "local_head_at_creation": "1a6a2c6c50673238c79bb4d4cc2f440ed10a9de3",
+  "head_field_is_provenance_only": true,
+  "batch_actor_sha256": "ec38584ccfc08d26d74081161a206a9fd4ee544e8bf35351e91f18c0b6256344",
+  "batch_freeze_sha256": "19e1224dcdce91a3b89893d1ebc6a1df423f1d31f765562838ea1dfb6a9b1d5c",
+  "native_plan_sha256": "72b4a083d10fafa494fb83fe3a7c6b690439597cdaeb180e1c8b2e3a93862e14",
+  "benchmark_source_plan_sha256": "b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021",
+  "whole_campaign_seconds": 10000,
+  "per_call_seconds": 180,
+  "per_call_policy": "Official offline benchmark complete callback default180s includes prepare, full native input/order, raw retention, validation and durable progress; never browser20 compliance.",
+  "owner_runtime_seconds": 10800,
+  "owner_unit": "jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+  "owner_profile": "llama-cpp-cpu4-3g-long-command-owned-v1",
+  "owner_sources": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+      "size": 40319,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12983529,
+        "st_size": 40319,
+        "st_mtime_ns": 1792753177195001839
+      },
+      "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/source-freeze-02.json",
+      "size": 2351,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12983705,
+        "st_size": 2351,
+        "st_mtime_ns": 1792753764319903901
+      },
+      "sha256": "b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe"
+    }
+  ],
+  "reserve_bytes": 26119172916,
+  "memory_max_bytes": 3221225472,
+  "startup_available_bytes": 29340398388,
+  "swap_max_bytes": 0,
+  "threads": 4,
+  "cpu_affinity": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "cpu_quota_percent": 400,
+  "batch_size": 4,
+  "constructor_count": 1,
+  "concurrency": 1,
+  "fresh_calls": 1479,
+  "context_limit": 16384,
+  "context_policy": "reject_no_truncation",
+  "suites": [
+    {
+      "name": "legacy-public231",
+      "tasks": 231,
+      "revision": "bb05a335bc809e61b20c0f745d25499a82b326fc"
+    },
+    {
+      "name": "jevbench-mini",
+      "requests": 1248,
+      "cases": 240,
+      "relations": 50,
+      "planned_tests": 1200,
+      "revision": "e18733694623aa93058e279c3534f8b8e2edefa3"
+    }
+  ],
+  "prerequisite": {
+    "selection": "Future root exact command argv supplies same-model real batch4 state SHA and independently reviewed closed audit SHA. Both are mandatory before model/library/payload loading. No successful values fabricated here.",
+    "audit_schema": "independent-native-batch4-synthetic-result-audit-v1",
+    "review_kind": "closed_real_smoke_result",
+    "required_qualification_fields": [
+      "smoke_complete",
+      "external_authenticated_closure",
+      "one_actual_constructor",
+      "two_actual_four_row_events",
+      "durable_call_20s",
+      "whole_command_120s",
+      "final_full_model_and_sources_authenticated"
+    ],
+    "native_plan_sha256": "72b4a083d10fafa494fb83fe3a7c6b690439597cdaeb180e1c8b2e3a93862e14"
+  },
+  "fresh_output_and_coherence_cache_required": true,
+  "final_authentication": "Full all20 model files+manifest+selected runtime/owner sources; all78 original scorer source files+2 existing dataset metadata manifests; campaign source+plan+native plan/freeze/helper+smoke state/audit+every small audit artifact ref. All inside future owned campaign.",
+  "score_scope": "Fresh lite nativebatch4 CPU results only. No batch1/profile/browser/rank inheritance. Actual smoke is short synthetic input and does not establish full-context/suite fit.",
+  "execution_selection": "CANDIDATE_ONLY; root must use actual batch4 speed/fit, exact frozen plan/spec and fresh owner admission. Lite10000 fit is unknown; preserve full suite regardless.",
+  "benchmark_inputs_gold_answers_or_caches_copied_into_source": false,
+  "Torch_model_or_eval_executed_during_preparation": false,
+  "external_authenticated_current_campaign_closure_required_before_final_claim": true
+}

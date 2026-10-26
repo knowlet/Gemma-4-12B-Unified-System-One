@@ -1,0 +1,16 @@
+{
+  "schema_id": "jev-generic-stale-feedback-runtime-decision-v1",
+  "status": "research_before_implementation",
+  "references": [
+    "artifacts/jev-runtime/browser-stale-feedback-20261022-01/proof-receipt.json",
+    "artifacts/jev-runtime/upstream/jev_ultrafast/agent.py",
+    "artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+    "scripts/jev_browser_benchmark.py",
+    "scripts/jev_browser_profile_v7_benchmark.py"
+  ],
+  "upstream": "browser-use/jev-ultrafast@1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "reuse": "Keep original Agent.command, choose, native safety guards, candidate sets, observations and judges. Wrap the predict/act calls that propagate typed StalePage before tick handles it, then supply bounded independent feedback to the next policy request.",
+  "design": "A separately selected agent protocol. Preserve real executed history and page text. Record only typed outcome, phase, attempted operation/target and actual history delta, without inferring whether physical input occurred. Keep four recent records per agent. First requests and helper requests remain byte-equivalent.",
+  "verification": "Original verified upstream Agent and model with fake I/O: pre-input refusal changes next policy context; post-input stale keeps recorded execution; candidate/questions/page/history unchanged; independent agents and wrapper cleanup remain isolated.",
+  "browser_improvement_claimed": false
+}

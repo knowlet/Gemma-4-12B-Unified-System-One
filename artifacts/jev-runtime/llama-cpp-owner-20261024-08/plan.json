@@ -1,0 +1,105 @@
+{
+  "schema_id": "generic-cpu16-4g-coexist-owner-source-only-pending-v1",
+  "status": "SOURCE_CHECKS_PASS_NO_ACTUAL",
+  "execution_authorized": false,
+  "runnable_command_spec_created": false,
+  "freeze_created": true,
+  "owner_profile": "llama-cpp-cpu16-4g-coexist-command-owned-v1",
+  "unit": "jev-d3-llama-cpp-cpu16-4g-coexist-20261024-08.service",
+  "host_observation_policy": "comfy-observed-cpu-coexist-v1",
+  "generic_command_spec_profile_unchanged": "llama-cpp-command-spec-v1",
+  "parent_provenance_recorded_not_reverified_during_authoring": {
+    "controller": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/controller.py",
+      "sha256": "685a9f809f429f4e9658083dc8530b563740625f9ba7816908fdc58002de256d"
+    },
+    "freeze": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/freeze.json",
+      "sha256": "c3f79bf2397f839931068846022b984a62d54b06175ec3fd679fa9aa7478189c"
+    }
+  },
+  "resources": {
+    "declared_host_total_bytes": 130595864576,
+    "runtime_reserve_bytes": 26119172916,
+    "memory_max_bytes": 4294967296,
+    "initial_full_cap_extra_bytes": 4294967296,
+    "initial_required_available_bytes": 30414140212,
+    "cpu_affinity": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_affinity_selection": "Root selected4-19 after its own read-only online/allowed0-19 observation; no topology probe by this author",
+    "cpu_quota_percent": 1600,
+    "cpu_quota_manager_readback": "16s",
+    "cpu_quota_kernel_ratio": 16,
+    "memory_swap_max_bytes": 0,
+    "file_size_max_bytes": 268435456,
+    "command_output_limit_bytes_per_stream": 4194304,
+    "runtime_choices_seconds": [
+      30,
+      7200,
+      10800
+    ],
+    "stop_seconds": 3,
+    "post_receipt_hold_seconds": 5
+  },
+  "unchanged_authority_pins": [
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5"
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45"
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727"
+    }
+  ],
+  "source_pins_pending": {
+    "controller.py": "ba91e1cbf66f9d1a0f4e16e610a1fe8952c2efde81e2a28f39a111a98ca10c9b",
+    "test_controller.py": "8455dd419fc4388390181632199147537f1a7c1a58641714fe3549fdba739965",
+    "README.md": "4e1f422bab3066dd3a30921ef48da4e4a917563fe7154eccd4a3fcf6e325dd1c",
+    "research.md": "f06cb9a4b5fda18fa985dc5ef66938cb2238ad8ac466a5080500b2d9735aafb6"
+  },
+  "source_checks_or_authoring_execution": {
+    "imports": false,
+    "AST_or_builder": false,
+    "formatter": false,
+    "tests": false,
+    "dry_run": false,
+    "host_or_resource_observation": false,
+    "model_or_service": false,
+    "Git": false
+  },
+  "independent_review": null,
+  "validation_results": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-08/validation.json",
+    "sha256": "0755bd4040f77ef7c5cec9bf857499c62d5c634d767528700c881fb412401bc0",
+    "size_bytes": 11044
+  },
+  "future_native_profile_and_pins": null,
+  "future_campaign_profile_and_pins": null,
+  "future_exact_command_selection_and_sha256": null,
+  "fresh_actual_admission_or_closure": null,
+  "model_native_timing_memory_quality_or_browser_qualification": null,
+  "no_escape_or_whole_tree_qualification": false,
+  "required_next_step": "Root reviews exact source delta, then separately releases bounded checks and resealing. No import/check/launch is authorized by this pending metadata. Preserve every old frozen source and current live run.",
+  "source_checks_completed": true,
+  "source_pending_template_is_historical": true
+}

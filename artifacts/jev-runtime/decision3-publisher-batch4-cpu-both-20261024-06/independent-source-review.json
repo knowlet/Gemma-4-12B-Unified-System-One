@@ -1,0 +1,183 @@
+{
+  "schema": "independent-full06-ece-schema-successor-source-review-v1",
+  "result": "CLEAR_SOURCE_ONLY_PENDING_EXACT_ROOT_SELECTION_FRESH_ADMISSION_AND_CURRENT_CLOSED_RESULT_AUDIT",
+  "reviewer": "/root/cpu_text_helper_route/helper_boundary_review",
+  "author": "/root/cpu_followup_review",
+  "blocking_findings": [],
+  "artifact_refs": {
+    "freeze": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/freeze.json",
+      "size_bytes": 5389,
+      "sha256": "a10ece98ee8f5e9cfdc3dc00facc661cfb77f12ae2d92dc1c682bf5f6218e9ea"
+    },
+    "campaign": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/campaign.py",
+      "size_bytes": 53752,
+      "sha256": "81113f1e2e1f1342c547b156e307ef78844c5947a9fa47f85fb054579eb4d966"
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/edge-plan.json",
+      "size_bytes": 7845,
+      "sha256": "351500bcdfdd0b1c3c6096b21bd767321e761a0af79a64ed080dad518d9d575c"
+    },
+    "tests": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/test_campaign.py",
+      "size_bytes": 50809,
+      "sha256": "35af87c3a5cda2c0ada959322d6ec7da523988ddf6438e5de592a3d537243d46"
+    },
+    "validation": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/validation.json",
+      "size_bytes": 2617,
+      "sha256": "760ba5ff7d7d36c0e5e9ef22e5efb830506ed45d12893922a91c81aa0ba4a6c9"
+    },
+    "equivalence": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/equivalence.json",
+      "size_bytes": 2969,
+      "sha256": "9e2f37217b21d99281332ef4560db296ac07ea0bdf021f2061ceb57b382f557f"
+    },
+    "patch": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/campaign.patch",
+      "size_bytes": 3344,
+      "sha256": "e9903de287397b815e318aa95bd4fed728ec43b4d68e7dabc8535b1e34991276"
+    },
+    "base_campaign": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/campaign.py",
+      "size_bytes": 51653,
+      "sha256": "11d81a7e5e1010e23870667f936a29bb978e82ee0f5c5a264752ce3ae1cfd017"
+    },
+    "base_plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/edge-plan.json",
+      "size_bytes": 6981,
+      "sha256": "4bacfb19400f48425f334ab5f4f930a4063adfdab0ef4fe0276a1db2aa908b3e"
+    },
+    "base_freeze": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/freeze.json",
+      "size_bytes": 4095,
+      "sha256": "ed9953b105e645c5e6440c4620e07684b158ffa68249ef62ee8bac9f9e8f7cc1"
+    },
+    "official_ECE_source": {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/metrics.py",
+      "size_bytes": 5604,
+      "sha256": "4038c8423ad1cf28601afb6babe777b71f08e379b9ca125b09b52c0ac7d60515"
+    },
+    "accepted_failed_actual02_audit_successor": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/independent-failed-actual02-review-02.json",
+      "size_bytes": 11455,
+      "sha256": "18349424baae1b706fb3f3a047211289df5ad3acdd88449c1aa9130dbef0288a"
+    }
+  },
+  "inventory_verification": {
+    "frozen_files_excluding_manifest": 15,
+    "bytes_excluding_manifest": 135246,
+    "files_including_manifest": 16,
+    "bytes_including_manifest": 140635,
+    "all_source_aggregate_inventory_SHA_size_mode444_verified": true,
+    "all_predecessor_frozen_inventory_rows_SHA_size_mode444_unchanged": true,
+    "review_is_outside_author_frozen_inventory": true
+  },
+  "independent_static_verification": {
+    "unchanged20_definitions": [
+      "CampaignAbort",
+      "DeadlineScope",
+      "StageCompletions",
+      "TimedPredictor",
+      "check_audit",
+      "check_counts",
+      "check_smoke",
+      "durable_stage_json",
+      "durable_success",
+      "execute",
+      "finite_seconds",
+      "latency_distribution",
+      "load_plan",
+      "main",
+      "read_json",
+      "require",
+      "run_unchanged_suites",
+      "selected_small_json",
+      "sha",
+      "unique"
+    ],
+    "changed_existing_definitions": [
+      "profile",
+      "stage_metrics"
+    ],
+    "added_definitions": [
+      "project_public_ece"
+    ],
+    "all_other_top_level_AST_exact": true,
+    "changed_plan_keys_only": [
+      "campaign_sha256",
+      "global_metric_projection",
+      "profile"
+    ],
+    "all_other_plan_fields_exact": true,
+    "candidate_source_was_parsed_only_never_imported_or_executed": true
+  },
+  "checks": [
+    {
+      "id": "actual_official_ECE_ABI",
+      "result": "PASS_SOURCE",
+      "evidence": "Independently read exact selected metrics.py ece_top_label55–92 and verified SHA4038 against pinned benchmark source-plan record. Default n_bins10 returns exact {ece,n,bins}; each global bin exposes lo,hi,n,mean_confidence,accuracy, with empty-bin meansNone. Full05 scalar assumption is incompatible with this official object. No actual benchmark response or pairs were opened."
+    },
+    {
+      "id": "strict_lossless_projection",
+      "result": "PASS_SOURCE",
+      "evidence": "project_public_ece486–538 requires exact top/bin key sets, ten default bin edges, exact integer bounded counts, n==calibration_n and bin-total join, finite unit metrics and empty/populated mean semantics. None only with calibration_n0. Returns copied top/list/bin containers while retaining every scalar value unchanged: no ECE recomputation, rounding, tolerance relaxation, clamp, coercion or aliasing."
+    },
+    {
+      "id": "ordinary_metrics_remain_strict",
+      "result": "PASS_SOURCE",
+      "evidence": "Only ECE is removed from the public scalar list and copied through the dedicated validator after original exact integer population checks. Other scalar fields still reject object/string/bool/nonfinite values. Coherence branch is text/AST unchanged. Root separately reported source-only checking of coherence overall/CI stdlib ABI; this reviewer does not claim rerunning or independently reading that additional source."
+    },
+    {
+      "id": "meaningful_regression_tests",
+      "result": "PASS_REVIEWED_AUTHOR_TEST_SOURCE",
+      "evidence": "Seven new tests use exact SHA-pinned official pure ece_top_label AST on invented confidence/correctness pairs, proving legitimate official object accepted without alias while frozen full05 refuses the same object. None/zero-pair semantics, scalar/string/malformed/extra fields, wrong count/edge/bin total, bool/nonfinite/range/empty semantics and ordinary nonnumeric fields have refusal coverage. No official tasks,gold or actual output is used. Reviewer ran no tests."
+    },
+    {
+      "id": "unchanged_runtime_scorers_and_counts",
+      "result": "PASS_INDEPENDENT_AST_AND_PLAN",
+      "evidence": "All20 other functions/classes and all nondefinition top-level AST nodes exact versus frozen full05, including execute,run_unchanged_suites,TimedPredictor,StageCompletions,DeadlineScope,load_plan,check_smoke/check_audit and authentication/finalization. Same native03/owner07 pins/model math/BF16CPU+FP32head/oneconstructor/serialbatch4/context16384reject-no-truncate. Both original public231 then coherence1248 suites and1479callbacks/240cases/50relations/1200tests remain unchanged."
+    },
+    {
+      "id": "unchanged_resources_deadlines_and_stage_authority",
+      "result": "PASS_INDEPENDENT_AST_AND_PLAN",
+      "evidence": "R26119172916+entire2GiB28266656564 initialfloor,CPU16–19/400percent/fourthreads/swap0,strict selected HOP and owner10800 unchanged. Callback180/whole10000 and all retention/publication/postcleanup late checks unchanged. Successful stage requires full auth and durable evidence/cleanup within original budget plus independent exact invocation/current owner closure audit; overall still both stages/final auth. Failed05 marker remains failed and yields no inherited score."
+    },
+    {
+      "id": "source_claims_and_future_execution",
+      "result": "PASS_LIMITS",
+      "evidence": "Distinct ece-schema profile truthfully identifies presentation correction. Pending source slots remain null; future completed root selection must independently bind genuine native03 smoke/audit, new source/plan and fresh output/cache/current absence/admission. No current full06 model/score/fit/HTTP/browser/training qualification or answer reuse is claimed."
+    }
+  ],
+  "author_validation_attribution": {
+    "passed_stdlib_fake_tests": 37,
+    "inherited": 30,
+    "new_ECE_regressions": 7,
+    "saved_test_seconds": 0.612,
+    "saved_bounded_wall_seconds": 0.8720218390080845,
+    "CPU_affinity": [
+      0
+    ],
+    "address_space_max_bytes": 536870912,
+    "CPU_seconds_limit": 30,
+    "Ruff_address_space_limit": null,
+    "saved_Ruff_AST_dry_builder": "PASS",
+    "all_author_check_processes_terminal": "Saved validation and author final report; no reviewer process probe",
+    "reviewer_reran_tests_or_candidate_checks": false
+  },
+  "limits": [
+    "Source clearance does not qualify a campaign or retroactively accept failed full05 public aggregates.",
+    "Full06 requires a fresh independently reviewed exact root selection and current original owner admission/closure; all original false universal flags remain false.",
+    "The ECE copy validator validates official output schema and cross-counts, not independent recalculation of ECE from pairs. The unchanged official scorer remains the only calculator.",
+    "No model/HTTP/browser/quality/harmless-coexistence conclusion follows from source-only tests."
+  ],
+  "actions": {
+    "small_source_aggregate_metadata_reads_and_new_review_write_only": true,
+    "own_stdlib_hash_AST_parse_and_JSON_comparison_only": true,
+    "candidate_execute_import_tests_formatter_planner_or_live_probe": false,
+    "official_tasks_gold_DOM_perresponses_model_native_tokenizer_payload_or_Git": false
+  },
+  "status": "ALL_REVIEW_ACTIONS_STOPPED"
+}

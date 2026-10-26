@@ -1,0 +1,137 @@
+{
+  "actor_findings": [
+    "Explicit fixed CUDA_VISIBLE_DEVICES UUID before Torch import; no accelerator CPU mask. Preinit stage reads only own proc/cgroup/host and is_initialized flag, without device_count,properties,mem_get_info or allocator queries.",
+    "Explicit CUDA init then explicit synchronize precede metrics. Logical0 must be the only visible device and native properties.uuid must match the original pinned physicalUUID with optional GPU- normalization only; no ordinal fallback.",
+    "Successful profile requires initialized_final=true,CPU_ONLY=false,actual context and tiny operator completed,model/header/payload/mmap absent. It does not inherit CPU-only success semantics.",
+    "Before tiny inputs, native set/get_per_process_memory_fraction roundtrip requests64MiB divided by native total memory. Backend and actual fraction are recorded; no increase on failure.",
+    "Only two16x16 BF16 CUDA ones inputs and their matmul output are created. Fill and matmul synchronization stages are distinct;512B CPU readback must match both CPU closed-form16 and independent BF16 bitpattern0x4180.",
+    "Stage files are exclusive,bounded,fsynced and hashed. Own RSS/anon/file,cgroup,current/peak/stat,host and global CUDA/allocator observations are separated and labeled sequential/non-atomic. GPU-metric failure retains CPU evidence before raising.",
+    "All ten planned stages,cleanup,final source/stat integrity and finite sealed deadline are mandatory for completion. Deadline partial retains stages with exit2 and false completion; final source/cleanup failure remains failure."
+  ],
+  "conclusion": "CLEAR_WITH_LIMITS for one attempt using these exact frozen sources. Actual initialization,resource costs and tiny-operator compatibility remain unmeasured by this review; no new runtime was started.",
+  "frozen_references": [
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/controller.py",
+      "sha256": "8435685d33e868ff3b79706e8736c7d391461fc880e4365c04ad5b5679db4604",
+      "size_bytes": 34559
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/test_controller.py",
+      "sha256": "bb61eb4a6cc4c8c9bc4c8d03dc0db84f35d54df8c5d70b404d9f1337fca46886",
+      "size_bytes": 26150
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/source-freeze.json",
+      "sha256": "a87636ffb39dc26460d2796588eed436128875743fe3260e71fd58c6feb8a90b",
+      "size_bytes": 9510
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/static-validation.json",
+      "sha256": "7950c215dddd3350afe08e777be0304bfbd03c2431ee855f6b79ebc3b9be8eb9",
+      "size_bytes": 6127
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/narrow-diff.json",
+      "sha256": "8eb9ce31258b2579f4e6413d8ed80b4f132422d8ee5317bc7d09ca9dcd7493d0",
+      "size_bytes": 3000
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-01/fixture.py",
+      "sha256": "d2d08a697078aeb5955b01b77ddec52cf0cfd41721f05471d534ba06e45b09ad",
+      "size_bytes": 23717
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-01/selection.json",
+      "sha256": "806356d55b504f55dd62ca5d6b403321e68fd890c614f3d495daf7c555bdb48f",
+      "size_bytes": 4440
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-01/test_static.py",
+      "sha256": "cd35baf72ad6879cc952fec741f26460a9b329983fb5937f7e725a21df464ddf",
+      "size_bytes": 13187
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-01/static-validation.json",
+      "sha256": "f3378bce477f2ad0fb00ec508684df46440330f32a63051dd4d7903490181a1b",
+      "size_bytes": 3469
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-root-hardware-20261023-01.json",
+      "sha256": "6dbd1e1b15195c9909c40fbd5144a1c6bb355cf7d9f1b65b13828537a66584f4",
+      "size_bytes": 752
+    }
+  ],
+  "integrity": {
+    "actor_critical_small_refs_rehashed": 11,
+    "combined_distinct_small_refs_rehashed": 16,
+    "hardware_baseline_is_runtime_host_admission": false,
+    "hardware_identity_source_sha256": "6dbd1e1b15195c9909c40fbd5144a1c6bb355cf7d9f1b65b13828537a66584f4",
+    "model_data_read_or_statted": false,
+    "native_library_bytes_read_or_hashed": false,
+    "native_library_stat_only_refs_checked": 6
+  },
+  "limits": [
+    "2GiB memcg is not proven to account for or cap all shared GB10 GPU,driver,context or physical UMA pages.64MiB cap applies only to own PyTorch caching allocator,not context/driver/cuBLAS or a global GPU cap.",
+    "Host MemAvailable and global CUDA free overlap on shared memory and must never be added. Global CUDA-free changes are not exclusively attributable to this process/context.",
+    "Successful sampled-host aggregate minimum covers executed successful samples only,not continuous time; raw sample retention alone cannot recompute omitted values.",
+    "Sequential RSS/cgroup/host/GPU counters have different scopes and are not additive physical totals. Preinit GPUfree is deliberately unmeasured; GPU metric calls may synchronize or perturb timing.",
+    "ones fill may precede matmul. This tests tiny first matmul/operator behavior,not an identified first CUDA kernel,native kernel kind,model throughput or browser quality.",
+    "empty_cache releases unused own allocator cache but does not destroy CUDA context. Context remains initialized during actor receipt/hold; own process/unit closure supplies lifetime evidence,not proof of total driver/global-free restoration.",
+    "Native/device calls can block past cooperative deadline; original30s unit still limits the attempt. Earlier fsynced partial stages never count as complete qualification.",
+    "Native libraries are stat-only,not byte-hashed; critical Python/type sources are selected,not a complete installed-runtime integrity proof.",
+    "No model/header/payload/mmap,real layer transfer,full12B,8192context,20s,N3,Q95,UMAcapacity,training,browser or benchmark-score qualification; original Q95 gates remain unchanged."
+  ],
+  "must_fix": [],
+  "original_authorities_unchanged": {
+    "boundary_sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+    "observer_sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+    "resource_identity_bootstrap_function_AST_exact_to_reviewed_parent": [
+      "need",
+      "ordinary",
+      "read",
+      "sha",
+      "ref",
+      "encoded",
+      "load_fixed",
+      "sources_match",
+      "reserve",
+      "host",
+      "failure",
+      "keep",
+      "selection",
+      "stable_process",
+      "same_identity",
+      "process_identity",
+      "properties",
+      "main_affinity",
+      "ensure_absent",
+      "actor_argv",
+      "bootstrap_argv",
+      "bootstrap"
+    ],
+    "service_authority_sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727"
+  },
+  "owner_findings": [
+    "Fresh unit and dual pre-Torch live interpreter admission retain exact PID/start/session/cgroup,executable,argv,cwd and source/nonce/Invocation joins.",
+    "Original2GiB memcg/swap0,30s unit,3s stop,CPUquota100%,observed mainCPU0,core0,FD512,file8MiB,initialR+2GiB/runtimeR/finalR and original idle observer gates remain.",
+    "Initial host admission seals monotonic+25s through controlled GPU-probe environment. Prior root NVML metadata binds only sameboot/UUID and supplies neither current host nor GPUfree admission.",
+    "Typed operator shape/readback/oracle hash and native UUID/init/no-model flags gate success; partial actor receipt is retained before exit2 refusal.",
+    "New scalar aggregation counts every successful postlaunch readiness/preexec/loop host gate,including samples omitted by raw64 retention,without new observer calls. Phase counts distinguish these from loop observations; failing gate evidence and initial/final observations remain separate.",
+    "Final cleanup still requires original authenticated live-main stop and completion before fallback125 deadline,original whole-unit/observed-cohort closure and final source/host checks. Full-tree closure remains false."
+  ],
+  "resolved_findings": [
+    "Small.pyi files are admitted under the same1MiB exactSHA bound; model/blob paths are refused and only native.so identities are statted.",
+    "Failure/partial cleanup now best-effort synchronizes own device first, preserves primary errors and notes, clears owned tensors and still attempts own empty_cache even when synchronization fails. Cleanup errors cannot become success or an accepted deadline partial."
+  ],
+  "reviewed_at_utc": "2026-10-23T00:57:25.927968+00:00",
+  "reviewer": "independent peer /root/q95_owner05_review",
+  "schema": "gpu-context-probe-independent-source-review-v1",
+  "scope": "Final source-only readiness review for one own pinned-GPU CUDA context/tiny16x16BF16 operator experiment. Reviewer imports no Torch, invokes no CUDA/NVML/observer/HTTP/service/probe and reads no model/header/payload or native-library bytes.",
+  "validation_reviewed": {
+    "actor": "17 pure stdlib tests PASS0.097s and RuffPASS; saved evidence and test source read, not rerun.",
+    "owner": "21 pure stdlib tests PASS0.019s and Ruff check/formatPASS; saved evidence and new regression source read, not rerun.",
+    "scope": "Fake API/metadata tests provide no actual CUDA,context,capacity or kernel result."
+  },
+  "verdict": "CLEAR_WITH_LIMITS",
+  "write_lifetime": "Both authors explicitly confirmed all source,tests and metadata FINAL ALLSTOPPED before review receipt. Reviewer writes this new receipt only."
+}

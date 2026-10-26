@@ -1,0 +1,43 @@
+{
+  "created_at_utc": "2026-10-23T10:56:34.189135+00:00",
+  "status": "PASS_SOURCE_ONLY_NO_ACQUISITION",
+  "stdlib_synthetic_tests": 12,
+  "checks": [
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/test_acquire.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_complete_git_blob_stream_and_durable_receipt (__main__.AcquisitionBoundaries.test_complete_git_blob_stream_and_durable_receipt) ... ok\ntest_complete_lfs_stream_uses_sha256 (__main__.AcquisitionBoundaries.test_complete_lfs_stream_uses_sha256) ... ok\ntest_corrupt_same_size_stream_retained_without_qualified_file (__main__.AcquisitionBoundaries.test_corrupt_same_size_stream_retained_without_qualified_file) ... ok\ntest_deadline_before_network_and_after_stream (__main__.AcquisitionBoundaries.test_deadline_before_network_and_after_stream) ... ok\ntest_excess_bytes_rejected_before_write (__main__.AcquisitionBoundaries.test_excess_bytes_rejected_before_write) ... ok\ntest_failed_evidence_does_not_return_success (__main__.AcquisitionBoundaries.test_failed_evidence_does_not_return_success) ... ok\ntest_http_partial_or_wrong_length_no_file (__main__.AcquisitionBoundaries.test_http_partial_or_wrong_length_no_file) ... ok\ntest_outside_owner_stops_before_any_output_or_network (__main__.AcquisitionBoundaries.test_outside_owner_stops_before_any_output_or_network) ... ok\ntest_preexisting_path_preserved (__main__.AcquisitionBoundaries.test_preexisting_path_preserved) ... ok\ntest_real_pinned_metadata_identity_only (__main__.AcquisitionBoundaries.test_real_pinned_metadata_identity_only) ... ok\ntest_short_stream_not_published (__main__.AcquisitionBoundaries.test_short_stream_not_published) ... ok\ntest_symlink_output_rejected (__main__.AcquisitionBoundaries.test_symlink_output_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 0.078s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/acquire.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"profile\": \"qwen25-05b-cpu-helper-public-acquisition-v1\", \"status\": \"dry_default_no_download\", \"model_id\": \"Qwen/Qwen2.5-0.5B-Instruct\", \"revision\": \"7ae557604adf67be50417f59c2c2f167def9a775\", \"files\": [\"LICENSE\", \"README.md\", \"config.json\", \"generation_config.json\", \"tokenizer_config.json\", \"merges.txt\", \"vocab.json\", \"tokenizer.json\", \"model.safetensors\"], \"whole_seconds\": 600, \"owner_required\": \"owner02_download_only_2GiB_CPU0_32GiBfile\"}\n",
+      "stderr": ""
+    }
+  ],
+  "AST_files": 2,
+  "ruff": {
+    "exit_code": 0,
+    "scope": [
+      "acquire.py",
+      "test_acquire.py"
+    ],
+    "result": "All checks passed!"
+  },
+  "model_loaded": false,
+  "actual_download": false,
+  "owned_runtime_executed": false,
+  "limits": "CPU0 source/test only, 1GiB AS,30 CPU seconds; no network sockets, tensor/tokenizer payload, benchmark, Comfy or active-unit operations in tests"
+}

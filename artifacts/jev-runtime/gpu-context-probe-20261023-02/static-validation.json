@@ -1,0 +1,102 @@
+{
+  "README": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-20261023-02/README.md",
+    "sha256": "ec2714abcb53b48ea6b5998ee01bb5908163f8f294347812642ff44079f9bb3f",
+    "size_bytes": 4437
+  },
+  "UUID_regression": "Pure stdlib FakeUUID.__str__, actual checked assignment AST seam, exact normalization and JSON serialization; no real Torch/GPU.",
+  "cleanup_regression": "Fake synchronization failure preserves original DeadlinePartial and notes, still clears owned list and calls own empty_cache; cleanup errors prevent partial success.",
+  "entry": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-20261023-02/fixture.py",
+    "sha256": "01ed4cb4feb7c7221bd6a604fa98e1aac8f1b22f29659b688417b6eb128c5c2d",
+    "size_bytes": 23793
+  },
+  "expected_allocator_cap_bytes": 67108864,
+  "narrow_successor": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-20261023-02/narrow-diff.json",
+    "sha256": "a0c6c1d606a83c61708bb7d3f2ff767772c009ea15a61e950c80488869ba8aa1",
+    "size_bytes": 2891
+  },
+  "oracle": {
+    "BF16_shape": [
+      16,
+      16
+    ],
+    "CPU_readback_bytes": 512,
+    "expected_output_sha256": "1cb8e75fc462d0af48a69d1c2ecc3b67abdb9358db5a4d38a1c5b1dbbe6fa003",
+    "expected_value": 16
+  },
+  "parent_intended_limits": {
+    "cpu": 0,
+    "fit_proven": false,
+    "memcg_bytes": 2147483648,
+    "runtime_seconds": 30,
+    "sealed_cooperative_seconds": 25
+  },
+  "planned_stages": [
+    "stdlib-before-torch",
+    "torch-imported-preinit",
+    "cuda-init-returned",
+    "cuda-init-synchronized",
+    "own-allocator-cap-set",
+    "tiny-allocation-fill-enqueued",
+    "tiny-fill-synchronized",
+    "tiny-matmul-synchronized",
+    "tiny-readback-oracle",
+    "own-tensors-released-empty-cache"
+  ],
+  "preparation_actions_not_performed": [
+    "Torch/framework import",
+    "CUDA/NVML API execution",
+    "model header or payload read",
+    "mmap or model construction",
+    "actor/service/GPU launch"
+  ],
+  "profile": "gpu-context-probe-fixture-v2",
+  "qualification": {
+    "12B": false,
+    "20s": false,
+    "8192": false,
+    "GPU_model_transfer": false,
+    "N3_Q95": false,
+    "UMA_capacity": false,
+    "actual_context": false,
+    "quality_or_benchmark_score": false
+  },
+  "research": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-20261023-02/research-decision.md",
+    "sha256": "592bacfa3d3410586f44dee65758abfe20806b3b2b2eee5f4f3cab0d7021d0d3",
+    "size_bytes": 3825
+  },
+  "ruff": {
+    "exit_code": 0,
+    "limits": "CPU0,one thread,CPU30s,timeout45s,core0",
+    "observed_output": "All checks passed!"
+  },
+  "schema": "gpu-context-probe-static-validation-v1",
+  "selection": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-20261023-02/selection.json",
+    "sha256": "f7d7fe39df15666d53c05ba05c2d63e3ba6bb1a726f96dd979668e19edb74e1f",
+    "size_bytes": 4440
+  },
+  "selection_check": {
+    "complete_runtime_qualified": false,
+    "native_stat_only_refs": 6,
+    "passed": true,
+    "small_source_refs": 11
+  },
+  "status": "SOURCE_PREPARED_STOPPED_NO_GPU_EXECUTION",
+  "stdlib_tests": {
+    "command": "taskset -c0 prlimit --cpu=30 --as=1073741824 --core=0 timeout45 repoPython -S -B test_static.py",
+    "exit_code": 0,
+    "failed": 0,
+    "passed": 18,
+    "scope": "Pure stdlib synthetic metadata/fake API tests only; no Torch/CUDA/NVML/model/header/payload/mmap/actor.",
+    "unittest_seconds": 0.088
+  },
+  "test": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-20261023-02/test_static.py",
+    "sha256": "cbde23e340df23d87a63948fe735ccf491c62e11757e1afdd9ece197a8dd1ee6",
+    "size_bytes": 14967
+  }
+}

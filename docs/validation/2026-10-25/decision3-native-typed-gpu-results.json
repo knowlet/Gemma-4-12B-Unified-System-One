@@ -1,0 +1,122 @@
+{
+  "schema": "public-decision3-native-typed-gpu-results-v1",
+  "date": "2026-10-25",
+  "timezone": "Asia/Taipei",
+  "status": "accepted_native_typed_gpu_diagnostic_only",
+  "evidence_origin": "root_supplied_independently_verified_aggregates",
+  "execution": {
+    "original_process_retained_until_terminal": true,
+    "exit_code": 0,
+    "root_wall_seconds": 23.00653588300338,
+    "genuine_Edge_GPU_model_loads": 1,
+    "model_load_seconds": 3.384253732045181,
+    "native_typed_calls": 2,
+    "total_question_heads": 12,
+    "synthetic_requests_only": true,
+    "route": "publisher_native_typed_API_without_browser_DTO",
+    "algebra_rewritten": false,
+    "operation_delta_loaded": false
+  },
+  "calls": [
+    {
+      "scope": "mixed_nine_typed_questions",
+      "question_heads": 9,
+      "question_types_present": ["choice", "noul", "score"],
+      "ordered_native_option_counts": [255, 2, 2, 1, 2, 10, 3, 2, 4],
+      "actual_batch_rows": [8, 1],
+      "complete_tail_executed": true,
+      "minimum_tokens_per_question": 113,
+      "maximum_tokens_per_question": 2157,
+      "complete_call_seconds": 2.9819842079887167
+    },
+    {
+      "scope": "complete_long_typed_questions",
+      "question_heads": 3,
+      "question_types_present": ["choice", "noul", "score"],
+      "actual_batch_rows": [3],
+      "ordered_tokens_per_question": [5117, 5118, 5122],
+      "complete_call_seconds": 1.245128178037703,
+      "observed_after_first_call": true,
+      "stable_latency_or_SLO_qualified": false,
+      "controlled_speedup_claimed": false
+    }
+  ],
+  "native_contract_audit": {
+    "probability_scalars_checked": 284,
+    "noul_scalar_count_per_answer": 1,
+    "full_payload_preserved": true,
+    "original_question_and_criteria_order_preserved": true,
+    "original_W0_unchanged": true,
+    "FP64_replay_claimed": false,
+    "candidate_109row_numerical_qualification_inherited": false,
+    "renamed_question_delta_application": false
+  },
+  "budgets": {
+    "per_call_cooperative_seconds": 20,
+    "whole_upper_bound_seconds": 120,
+    "owner_command_seconds": 113,
+    "limits_changed": false,
+    "per_call_scope": ["authentication", "hashing", "CUDA_fences", "evidence", "hook_cleanup"]
+  },
+  "ownership_and_cleanup": {
+    "actual_physical_GPU_matches_selection": true,
+    "original_child_stable_identity_samples": 2,
+    "repeated_source_and_owner_guards_verified": true,
+    "original_scoped_closure_verified": true,
+    "current_selected_unit_absent": true,
+    "current_original_cgroup_absent": true,
+    "current_original_child_absent": true,
+    "per_process_peak_CUDA_tensor_allocated_bytes": 3311346688,
+    "per_process_final_CUDA_tensor_allocated_bytes": 0,
+    "memory_measurement_scope": "this_process_CUDA_tensor_allocator_only",
+    "whole_machine_GPU_or_shared_memory_zero_claimed": false,
+    "no_escape_enforced": false,
+    "full_transitive_DSO_closure_claimed": false
+  },
+  "source_controls": {
+    "invented_controls_passed": 19,
+    "elapsed_seconds": 0.447,
+    "ruff_passed": true,
+    "independent_source_peer_review_passed": true,
+    "quality_qualified_by_controls": false
+  },
+  "quality_and_scores": {
+    "model_quality_qualified": false,
+    "browser_task_exercised": false,
+    "browser_qualified": false,
+    "benchmark_heaven_exercised": false,
+    "jevbench_coherence_exercised": false,
+    "benchmark_qualified": false,
+    "full10_matched_score": null,
+    "fresh_benchmark_heaven_score": null,
+    "fresh_jevbench_coherence_score": null,
+    "official_rank": null,
+    "competitor_win_established": false,
+    "full_16k_context_qualified": false
+  },
+  "prior_interrupted_full10": {
+    "historical_report_preserved": true,
+    "partial_baseline_infrastructure_records": 9,
+    "task_success_true_among_completed_records": 4,
+    "candidate_was_not_run": true,
+    "complete_matched_score": null,
+    "candidate_zero_of_ten_claimed": false
+  },
+  "independent_audit": {
+    "status": "ROOT_ACCEPTED_NATIVE_TYPED_GPU_DIAGNOSTIC_ONLY",
+    "sha256": "bf6f79fd136629d0c0ff09bfe1a0bce79ed4697cb0b0e551a792a3885dd49287",
+    "size_bytes": 3119
+  },
+  "references": {
+    "research": "../../research/jev-operation-only-readout.md",
+    "prior_candidate_GPU_numerical_qualification": "decision3-affordance-operation-gpu-numerical-results.md",
+    "prior_interrupted_full10": "decision3-full10-gpu-interrupted-results.md"
+  },
+  "privacy": {
+    "aggregate_only": true,
+    "process_device_or_job_identifiers_included": false,
+    "prompt_identifiers_or_prompt_hashes_included": false,
+    "private_artifact_paths_included": false,
+    "raw_requests_arrays_predictions_or_labels_included": false
+  }
+}

@@ -1,0 +1,23 @@
+$ python3 -B /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-01/test_smoke.py
+................
+----------------------------------------------------------------------
+Ran 16 tests in 0.022s
+
+OK
+exit_code=0
+
+$ ruff check /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-01
+All checks passed!
+exit_code=0
+
+$ ruff format --check /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-01
+3 files already formatted
+exit_code=0
+
+$ python3 -B /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-01/actor.py
+{"profile": "qwen25-05b-cpu4-owned-native-smoke-v1", "status": "source_only_not_ready", "model_started": false, "owner_started": false, "transport": "in_process_ASGI_not_HTTP", "requires_closed_catalog_acceptance_and_root_command_spec": true}
+exit_code=0
+
+$ ruff --version
+ruff 0.16.6
+exit_code=0

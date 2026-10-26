@@ -1,0 +1,953 @@
+{
+  "build_evidence": {
+    "CPU_release_configuration": "GGML_CUDA/BLAS/KLEIDIAI OFF, COMMON/SERVER OFF, MTMD ON; -j1; helper compile flags contain exact upstream revision and link/RPATH select actual02/build/bin.",
+    "compiler": "GNU13.3.0 per saved configure output",
+    "feature_probe_interpretation": "Multiple ARM compiler/machine capability checks returned Failed and configure fell back to -mcpu=native with FMA. These are configure probes, not failed selected build commands. All selected configure/build/help commands returned0; kernel selection/performance was not measured.",
+    "help_scope": "Saved --help returned123B usage text and exit0. Source exits during option parsing before model/backend construction; no model loaded or scored.",
+    "helper_help_bytes": 123,
+    "helper_output_sha256": "22ee835d223f0384b0617cf15f82a24ddece247c78a7c320fa5d3925ff71f89a",
+    "helper_target": "s1-gguf",
+    "library_targets": [
+      "llama",
+      "mtmd"
+    ],
+    "offline_warning": "CMake reports FETCHCONTENT_FULLY_DISCONNECTED was unused in this configure. Other network-related features were disabled by selected flags, but this audit does not prove network-denial or complete absence of native queries.",
+    "source_Cpp_unchanged": true,
+    "upstream_commit": "184f6536024668e8908ab8c86033d56708e62b40"
+  },
+  "closure": {
+    "invocation_id": "20c14f8562924a97b2e71d4b5edb124a",
+    "margin_before_fallback_seconds": 4.303046884990181,
+    "mode": "authenticated_stop",
+    "nonce": "jev-d3-boundary-db6f1d881ce5e879f62e1f7f4fd7367c",
+    "saved_after_stop_loadstate": "not-found",
+    "saved_cgroup_absent": true,
+    "scope": "Authenticated exact selected invocation and observed cohort terminal evidence. No fresh systemctl query or universal process-tree/GPU/free-memory restoration claim.",
+    "sealed_config_sha256": "82370d5bc104b7ef11ac9cde07b602f8e9ce85b2175b961cc1ada703e515cc99",
+    "tracked_unique_PID_start_cohort": 425,
+    "two_empty_scans": true,
+    "wrapper": {
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+      "pgid": 341440,
+      "pid": 341440,
+      "sid": 341440,
+      "start_ticks": 6936571,
+      "state": "R",
+      "uid": 1001
+    }
+  },
+  "compiled_artifacts": [
+    {
+      "ELF_class": 2,
+      "ELF_endianness": 1,
+      "ELF_machine": 183,
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-base.so.0.27.0",
+      "read_scope": "Streaming SHA and ELF header metadata only; no load/execute",
+      "sha256": "1f0ae342506805fe5a9615e1ed26b8e77af792fead0e614cf9b54d8e62b13289",
+      "size_bytes": 876552,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12981978,
+        "st_mtime_ns": 1792720341928372975,
+        "st_size": 876552
+      }
+    },
+    {
+      "ELF_class": 2,
+      "ELF_endianness": 1,
+      "ELF_machine": 183,
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-cpu.so.0.27.0",
+      "read_scope": "Streaming SHA and ELF header metadata only; no load/execute",
+      "sha256": "3b821a744016ccc74836c15bcd6b345f73362dcd3970e775d518dd493942ec24",
+      "size_bytes": 1002152,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12982028,
+        "st_mtime_ns": 1792720414739129267,
+        "st_size": 1002152
+      }
+    },
+    {
+      "ELF_class": 2,
+      "ELF_endianness": 1,
+      "ELF_machine": 183,
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml.so.0.27.0",
+      "read_scope": "Streaming SHA and ELF header metadata only; no load/execute",
+      "sha256": "7348930a2bd8e3bac909b7de9451e7fe3e56e125de5c52fba18d1f2d6c08fddb",
+      "size_bytes": 78392,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12982037,
+        "st_mtime_ns": 1792720419621112992,
+        "st_size": 78392
+      }
+    },
+    {
+      "ELF_class": 2,
+      "ELF_endianness": 1,
+      "ELF_machine": 183,
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libllama.so.0.7.0",
+      "read_scope": "Streaming SHA and ELF header metadata only; no load/execute",
+      "sha256": "96a48dc8eb94c0045ab64d763e77a4c98d92e5a5f3af385a9c914f5fdcd24234",
+      "size_bytes": 4911136,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12982163,
+        "st_mtime_ns": 1792720800651861779,
+        "st_size": 4911136
+      }
+    },
+    {
+      "ELF_class": 2,
+      "ELF_endianness": 1,
+      "ELF_machine": 183,
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libmtmd.so.0.7.0",
+      "read_scope": "Streaming SHA and ELF header metadata only; no load/execute",
+      "sha256": "04aa19e388fc781957188aa51c2fa76728391fce8ba5cfb4931f85e600ac42dc",
+      "size_bytes": 1975008,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12982336,
+        "st_mtime_ns": 1792721030322443747,
+        "st_size": 1975008
+      }
+    },
+    {
+      "ELF_class": 2,
+      "ELF_endianness": 1,
+      "ELF_machine": 183,
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/s1-build/bin/s1-gguf",
+      "read_scope": "Streaming SHA and ELF header metadata only; no load/execute",
+      "sha256": "22ee835d223f0384b0617cf15f82a24ddece247c78a7c320fa5d3925ff71f89a",
+      "size_bytes": 250496,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12982171,
+        "st_mtime_ns": 1792721046827484376,
+        "st_size": 250496
+      }
+    }
+  ],
+  "evidence_inventory": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/controller.py",
+      "sha256": "5672bc297869cee138726301f8c7d607adda138169b204747b9e8a2766546326",
+      "size_bytes": 38075
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/independent-source-review.json",
+      "sha256": "58cd5c6f0ff1a9253328704338b5b01e49cf3b5734f83783cf2c8eb38c8751bd",
+      "size_bytes": 30327
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/root-execution-build-01.json",
+      "sha256": "456c0ec667a13ca28e9f974ced4b98a1a79d033e03e7f74db075f2851d5daaa6",
+      "size_bytes": 939
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/root-native-build-spec.json",
+      "sha256": "f584335a9f005b20db6a9b0cefecceebec3f15cbddb824cb77b0705a1691a5ba",
+      "size_bytes": 6281
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/CMakeLists.txt",
+      "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+      "size_bytes": 2004
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/s1_gguf.cpp",
+      "sha256": "8dd7f74a3ba38fda24d305c2bcbb7793d23eb38011ccb58f4f0230f677caa70e",
+      "size_bytes": 16564
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/receipt.json",
+      "sha256": "e3467d83247d8e96c7544d8f2a40521b4525ffcd28c13643971772de7ac1562e",
+      "size_bytes": 270046
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/sealed-config.json",
+      "sha256": "82370d5bc104b7ef11ac9cde07b602f8e9ce85b2175b961cc1ada703e515cc99",
+      "size_bytes": 6338
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/actor-exit.json",
+      "sha256": "31a41394455a1e8737195c77afad0492789427ac16f921b416efffff88060c4b",
+      "size_bytes": 9557
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/admission.json",
+      "sha256": "eacfd04bc0b80b3ddca4cf6ea1bea514b1c7d0132570f69eb4077d41b0078cf8",
+      "size_bytes": 456
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/bootstrap-identity.json",
+      "sha256": "b2059389dc67d5a468210a03e9ced8ecc1a64c5ff21b34e01587685e26625750",
+      "size_bytes": 1397
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/unit-readback.json",
+      "sha256": "e84343b280b23841b125490c5396198b02a936eab94b672d158e95035584f975",
+      "size_bytes": 2498
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/launch-intent.json",
+      "sha256": "e42cc80e6f8f16d1f68e08aa8bccf3a791686eb4e00339622ff94917c13fdc9c",
+      "size_bytes": 2842
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/external-boundary-closure.json",
+      "sha256": "fd44dbccd680b9b21e7dc1eaff51ef50a3d655ec907d0a4dbc7a72f979f47c07",
+      "size_bytes": 112419
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/CMakeCache.txt",
+      "sha256": "4a25522cb9897bac0912380e003b29ab3677dd29b6b396fe879ff9735c49e38f",
+      "size_bytes": 33121
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/s1-build/CMakeCache.txt",
+      "sha256": "b65dc5827cc1616287f42bb4a39eda6a8bac7dcff0304ef883aac523761ae485",
+      "size_bytes": 14294
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/s1-build/CMakeFiles/s1-gguf.dir/flags.make",
+      "sha256": "e44f5585b41ad16f31dc8be3c67c9348cabd16861d769d14ebed9db7ea33afde",
+      "size_bytes": 689
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/s1-build/CMakeFiles/s1-gguf.dir/link.txt",
+      "sha256": "264612f75c417d721c5ef6ab4293628f5b3956686904d387c2e1d8a3729c17f9",
+      "size_bytes": 739
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-01-intent.json",
+      "sha256": "3a3eeb94691a85d91aa1a2d66e6f52e905ee02ab7df2afeebb79f5c040d702ce",
+      "size_bytes": 673
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-01-started.json",
+      "sha256": "4d9d0109beafce314a8974c68e3ac9b56d64f83e435cc382c8e80c0b3d8008ae",
+      "size_bytes": 545
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-01-output.json",
+      "sha256": "65818541144bfd7ad1f29e55aa0144faa355160d513b39a313cbfe43d192d30a",
+      "size_bytes": 2019
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-02-intent.json",
+      "sha256": "f09514504224aefc9d26235dcfc0322ad37dd0295b39194a9db4a6a4feb88754",
+      "size_bytes": 1314
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-02-started.json",
+      "sha256": "d2d28fa636b678d46db4823103a5263c605cb8db0cacb314a52f5b4a110b4c7a",
+      "size_bytes": 547
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-02-output.json",
+      "sha256": "06fcf1b457159833f8c3b91af9dd29182318353eb5a17423b0be490a34352617",
+      "size_bytes": 2701
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-03-intent.json",
+      "sha256": "38f73ac9ecbc05483b8b7173a540f2395ab8ff7380ccfcb36d46cfff74d7854a",
+      "size_bytes": 752
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-03-started.json",
+      "sha256": "594963978cacab6aadbabcace56f2e02ade4bd07bd2995c50db09a5bb9d2e48e",
+      "size_bytes": 547
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-03-output.json",
+      "sha256": "e10832136c16c2a3c7adf3f66f044c00b90bc7ebf185d61d816a018d8e1ee7ef",
+      "size_bytes": 2111
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-04-intent.json",
+      "sha256": "8b397a2175f6f931336c17675402f4eb5280d55f12afb552bd46f043755cf2ef",
+      "size_bytes": 1079
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-04-started.json",
+      "sha256": "3a5aa5bf4a243dca4d0b0efaf2fd54b909be908a1fd930e878cbe8e3572fd08e",
+      "size_bytes": 547
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-04-output.json",
+      "sha256": "387235174522eba5ec1fdc3b7343818010f6135a38ae5a7a26a4a6d86aa10c2b",
+      "size_bytes": 2431
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-05-intent.json",
+      "sha256": "555ade79fd8b8d3f094766672ccab46694ef64f19962c48439766435bdde6891",
+      "size_bytes": 714
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-05-started.json",
+      "sha256": "147937de0757d30265862b713a4b9c07807cde56c8c398ce527b7e3147b87e5d",
+      "size_bytes": 546
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-05-output.json",
+      "sha256": "cb61b58b976c5007eca76a60770e9f88d0c382509a0c9a77dd821924b46db12f",
+      "size_bytes": 2064
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-06-intent.json",
+      "sha256": "692eef4bd9b7c23cb195a1dcd778b71776cd9a1fda60fbaf2cf66efd45ab7193",
+      "size_bytes": 883
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-06-started.json",
+      "sha256": "b350f5f800047a0ac45dd63f1e6850a5bd232d42375a192b3088237588f9d3ef",
+      "size_bytes": 662
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-06-output.json",
+      "sha256": "b701a57a0d662b46e3d13e195088e77223a1240a524e06d49e252d15a781a119",
+      "size_bytes": 2225
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-07-intent.json",
+      "sha256": "3a3eeb94691a85d91aa1a2d66e6f52e905ee02ab7df2afeebb79f5c040d702ce",
+      "size_bytes": 673
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-07-started.json",
+      "sha256": "ca7cd3f35a42ff837a11123f502702bb5831d7fb0c5b78f6b6c284def67eb813",
+      "size_bytes": 544
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-07-output.json",
+      "sha256": "6a8e0108d1049dfbbb607a4696b5606da631402bb597491903b26c0a774d6dfe",
+      "size_bytes": 2019
+    }
+  ],
+  "execution": {
+    "all_commands_cleanup_errors_empty": true,
+    "all_commands_exit0": true,
+    "all_logs_untruncated_hash_size_match": true,
+    "child_argv_observation_limit": "All seven immediate child /proc argv snapshots are empty; exact spec/intent/Popen-result argv agree, and exe/PID-start/cgroup are observed, but actual full child argv was not independently captured.",
+    "command_results": [
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-C",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-source-184f653",
+          "diff",
+          "--exit-code",
+          "HEAD"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+        "elapsed_seconds": 0.021249272002023645,
+        "executable_stat_at_start": {
+          "st_dev": 66306,
+          "st_ino": 47973055,
+          "st_mtime_ns": 1754494562000000000,
+          "st_size": 4003072
+        },
+        "observed_identity": {
+          "argv": [],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "exe": "/usr/bin/git",
+          "process": {
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+            "pgid": 341440,
+            "pid": 341445,
+            "sid": 341440,
+            "start_ticks": 6936592,
+            "state": "R",
+            "uid": 1001
+          }
+        },
+        "pid": 341445,
+        "resolved_executable": "/usr/bin/git",
+        "returncode": 0
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "-S",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-source-184f653",
+          "-B",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DGGML_CUDA=OFF",
+          "-DGGML_CPU_KLEIDIAI=OFF",
+          "-DGGML_BLAS=OFF",
+          "-DGGML_NATIVE=ON",
+          "-DFETCHCONTENT_FULLY_DISCONNECTED=ON",
+          "-DLLAMA_OPENSSL=OFF",
+          "-DLLAMA_BUILD_TESTS=OFF",
+          "-DLLAMA_BUILD_COMMON=OFF",
+          "-DLLAMA_BUILD_EXAMPLES=OFF",
+          "-DLLAMA_BUILD_TOOLS=OFF",
+          "-DLLAMA_BUILD_SERVER=OFF",
+          "-DLLAMA_BUILD_APP=OFF",
+          "-DLLAMA_BUILD_MTMD=ON",
+          "-DLLAMA_BUILD_UI=OFF",
+          "-DLLAMA_USE_PREBUILT_UI=OFF",
+          "-DLLAMA_CONNECT=OFF",
+          "-DLLAMA_LLGUIDANCE=OFF"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+        "elapsed_seconds": 3.316580578990397,
+        "executable_stat_at_start": {
+          "st_dev": 66306,
+          "st_ino": 48002409,
+          "st_mtime_ns": 1713179337000000000,
+          "st_size": 10489912
+        },
+        "observed_identity": {
+          "argv": [],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "exe": "/usr/bin/cmake",
+          "process": {
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+            "pgid": 341440,
+            "pid": 341453,
+            "sid": 341440,
+            "start_ticks": 6936595,
+            "state": "R",
+            "uid": 1001
+          }
+        },
+        "pid": 341453,
+        "resolved_executable": "/usr/bin/cmake",
+        "returncode": 0
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build",
+          "--config",
+          "Release",
+          "--target",
+          "llama",
+          "mtmd",
+          "-j",
+          "1"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+        "elapsed_seconds": 738.3033328910096,
+        "executable_stat_at_start": {
+          "st_dev": 66306,
+          "st_ino": 48002409,
+          "st_mtime_ns": 1713179337000000000,
+          "st_size": 10489912
+        },
+        "observed_identity": {
+          "argv": [],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "exe": "/usr/bin/cmake",
+          "process": {
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+            "pgid": 341440,
+            "pid": 341767,
+            "sid": 341440,
+            "start_ticks": 6936927,
+            "state": "R",
+            "uid": 1001
+          }
+        },
+        "pid": 341767,
+        "resolved_executable": "/usr/bin/cmake",
+        "returncode": 0
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "-S",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-native-s1-20261023-01",
+          "-B",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/s1-build",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DLLAMA_CPP_DIR=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-source-184f653",
+          "-DLLAMA_CPP_BUILD_DIR=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+        "elapsed_seconds": 0.4335454030078836,
+        "executable_stat_at_start": {
+          "st_dev": 66306,
+          "st_ino": 48002409,
+          "st_mtime_ns": 1713179337000000000,
+          "st_size": 10489912
+        },
+        "observed_identity": {
+          "argv": [],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "exe": "/usr/bin/cmake",
+          "process": {
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+            "pgid": 341440,
+            "pid": 346828,
+            "sid": 341440,
+            "start_ticks": 7010758,
+            "state": "R",
+            "uid": 1001
+          }
+        },
+        "pid": 346828,
+        "resolved_executable": "/usr/bin/cmake",
+        "returncode": 0
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/s1-build",
+          "--config",
+          "Release",
+          "-j",
+          "1"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+        "elapsed_seconds": 16.063072910008486,
+        "executable_stat_at_start": {
+          "st_dev": 66306,
+          "st_ino": 48002409,
+          "st_mtime_ns": 1713179337000000000,
+          "st_size": 10489912
+        },
+        "observed_identity": {
+          "argv": [],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "exe": "/usr/bin/cmake",
+          "process": {
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+            "pgid": 341440,
+            "pid": 346873,
+            "sid": 341440,
+            "start_ticks": 7010802,
+            "state": "R",
+            "uid": 1001
+          }
+        },
+        "pid": 346873,
+        "resolved_executable": "/usr/bin/cmake",
+        "returncode": 0
+      },
+      {
+        "argv": [
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/s1-build/bin/s1-gguf",
+          "--help"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+        "elapsed_seconds": 0.013824944995576516,
+        "executable_stat_at_start": {
+          "st_dev": 66306,
+          "st_ino": 12982171,
+          "st_mtime_ns": 1792721046827484376,
+          "st_size": 250496
+        },
+        "observed_identity": {
+          "argv": [],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "exe": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/s1-build/bin/s1-gguf",
+          "process": {
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+            "pgid": 341440,
+            "pid": 347030,
+            "sid": 341440,
+            "start_ticks": 7012409,
+            "state": "R",
+            "uid": 1001
+          }
+        },
+        "pid": 347030,
+        "resolved_executable": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/s1-build/bin/s1-gguf",
+        "returncode": 0
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-C",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-source-184f653",
+          "diff",
+          "--exit-code",
+          "HEAD"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+        "elapsed_seconds": 0.019651087000966072,
+        "executable_stat_at_start": {
+          "st_dev": 66306,
+          "st_ino": 47973055,
+          "st_mtime_ns": 1754494562000000000,
+          "st_size": 4003072
+        },
+        "observed_identity": {
+          "argv": [],
+          "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+          "exe": "/usr/bin/git",
+          "process": {
+            "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+            "pgid": 341440,
+            "pid": 347031,
+            "sid": 341440,
+            "start_ticks": 7012410,
+            "state": "R",
+            "uid": 1001
+          }
+        },
+        "pid": 347031,
+        "resolved_executable": "/usr/bin/git",
+        "returncode": 0
+      }
+    ],
+    "finished_at_utc": "2026-10-23T02:04:07.667396+00:00",
+    "planned_completed_commands": 7,
+    "root_exit_code": 0,
+    "root_wall_seconds": 759.3790832899977,
+    "started_at_utc": "2026-10-23T01:51:28.288334+00:00"
+  },
+  "host": {
+    "final": {
+      "initial": false,
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "comfy_evidence": {
+          "comfy_pending": 0,
+          "comfy_running": 0,
+          "http_status": 200,
+          "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0",
+          "transport": "HTTP"
+        },
+        "comfy_pending": 0,
+        "comfy_running": 0,
+        "comfy_state": "http_idle",
+        "mem_available_bytes": 29590458368,
+        "mem_total_bytes": 130595864576
+      },
+      "required_available_bytes": 26119172916,
+      "reserve_bytes": 26119172916
+    },
+    "initial": {
+      "initial": true,
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "comfy_evidence": {
+          "comfy_pending": 0,
+          "comfy_running": 0,
+          "http_status": 200,
+          "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0",
+          "transport": "HTTP"
+        },
+        "comfy_pending": 0,
+        "comfy_running": 0,
+        "comfy_state": "http_idle",
+        "mem_available_bytes": 29589872640,
+        "mem_total_bytes": 130595864576
+      },
+      "required_available_bytes": 28266656564,
+      "reserve_bytes": 26119172916
+    },
+    "postlaunch_summary": {
+      "min_MemAvailable_bytes": 29041745920,
+      "min_margin_vsR_bytes": 2922573004,
+      "phase_counts": {
+        "loop": 741,
+        "preexec": 1,
+        "readiness": 3
+      },
+      "runtime_host_gate_count": 745,
+      "scope": "All successful executed post-launch readiness/preexec/loop host-gate samples, including discarded raw samples; failing gates stay in primary evidence; initial/final separate; not a continuous-time minimum"
+    },
+    "raw_loop_total_count": 741,
+    "reserve_bytes": 26119172916,
+    "retained_loop_min_available_bytes": 29227507712,
+    "retained_loop_rows": 64,
+    "scope": "745 accepted discrete gates include3 readiness+1preexec+741loop. Only first63+latest64 loop rows retained; their minimum29227507712B differs from745-sample summary29041745920B. Full summary minimum cannot independently be recomputed from64 raw rows and is not continuous."
+  },
+  "library_symlinks": [
+    {
+      "link_text": "libggml-base.so.0",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-base.so",
+      "resolved_path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-base.so.0.27.0"
+    },
+    {
+      "link_text": "libggml-base.so.0.27.0",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-base.so.0",
+      "resolved_path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-base.so.0.27.0"
+    },
+    {
+      "link_text": "libggml-cpu.so.0",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-cpu.so",
+      "resolved_path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-cpu.so.0.27.0"
+    },
+    {
+      "link_text": "libggml-cpu.so.0.27.0",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-cpu.so.0",
+      "resolved_path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-cpu.so.0.27.0"
+    },
+    {
+      "link_text": "libggml.so.0",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml.so",
+      "resolved_path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml.so.0.27.0"
+    },
+    {
+      "link_text": "libggml.so.0.27.0",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml.so.0",
+      "resolved_path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml.so.0.27.0"
+    },
+    {
+      "link_text": "libllama.so.0",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libllama.so",
+      "resolved_path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libllama.so.0.7.0"
+    },
+    {
+      "link_text": "libllama.so.0.7.0",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libllama.so.0",
+      "resolved_path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libllama.so.0.7.0"
+    },
+    {
+      "link_text": "libmtmd.so.0",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libmtmd.so",
+      "resolved_path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libmtmd.so.0.7.0"
+    },
+    {
+      "link_text": "libmtmd.so.0.7.0",
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libmtmd.so.0",
+      "resolved_path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libmtmd.so.0.7.0"
+    }
+  ],
+  "log_inventory": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-01.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-02.stdout",
+      "sha256": "fb3b71b57da5c5fa2d22675e8c148f6baa6e8c86547ba5ba36c66c74a80c95dc",
+      "size_bytes": 2917
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-02.stderr",
+      "sha256": "000ffce194cfe49690ba1d70791d739856b41d7b84d871d1515206f6deb53984",
+      "size_bytes": 366
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-03.stdout",
+      "sha256": "a7a351d5870704b7f3f36df3d7a5315832699d9e6914c34421cd3f9222842679",
+      "size_bytes": 10883
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-03.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-04.stdout",
+      "sha256": "a65903e92bff3c1ef1741ddf890f170d4fd6e34acb837f8a89cc1b271aacf6fc",
+      "size_bytes": 513
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-04.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-05.stdout",
+      "sha256": "cff9603164e5ea3dee097ee387de618b4862ff90d746dd85965b6cc9502d41ba",
+      "size_bytes": 134
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-05.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-06.stdout",
+      "sha256": "60a0ce0770c20a2486b49e1742641c513ebbe0f40439ee286d476d0afc1618c3",
+      "size_bytes": 123
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-06.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-07.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/command-07.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    }
+  ],
+  "milestone_history": "State132/report and build-progress-01 were earlier explicit live snapshots, not erroneous completed-build claims. This audit is later completion evidence and does not rewrite them.",
+  "qualification_limits": [
+    "Compilation, linkage and no-model help startup succeeded; model loading, Q8 identity/content verification, tokenizer, LoRA, all-slot numerical parity and real scoring remain separate.",
+    "No full48-layer/8192-context/20-second capacity/latency qualification or browser/benchmark gain is established.",
+    "Original Q95 resource/context/identity/finalization gates and previous scores remain unchanged."
+  ],
+  "resources": {
+    "CPU_max": [
+      "100000",
+      "100000"
+    ],
+    "core_max_bytes": 0,
+    "memory_max_bytes": 2147483648,
+    "memory_swap_max_bytes": 0,
+    "nofile_max": 512,
+    "observed_main_affinity": [
+      0
+    ],
+    "per_file_size_max_bytes": 268435456,
+    "process_RSS_peak_measured": false,
+    "runtime_seconds": 7200,
+    "scope": "Unit memory accounting and sampled observed main affinity; not all-thread cpuset, GPU/UMA cap or full-model capacity.",
+    "unit_peak_MiB": 638.17578125,
+    "unit_peak_bytes": 669175808
+  },
+  "reviewed_at_utc": "2026-10-23T02:12:29.279906+00:00",
+  "reviewer": "/root/q95_owner05_review",
+  "schema": "llama-cpp-native-S1-independent-saved-build-result-audit-v1",
+  "scope": "Read saved build execution/source/log/cache/closure only, plus explicitly authorized streaming SHA and ELF-header/stat of generated helper/libraries. No binary load/execute, build rerun, Torch/GPU/HTTP/observer/systemctl/model/checkpoint/payload access. Active owner02 Q8 download was not touched. Only this new audit written.",
+  "source_integrity": {
+    "critical_source_count": 18,
+    "critical_sources": [
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/controller.py",
+        "sha256": "5672bc297869cee138726301f8c7d607adda138169b204747b9e8a2766546326",
+        "size_bytes": 38075
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/root-native-build-spec.json",
+        "sha256": "f584335a9f005b20db6a9b0cefecceebec3f15cbddb824cb77b0705a1691a5ba",
+        "size_bytes": 6281
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+        "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+        "size_bytes": 21002
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+        "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+        "size_bytes": 38483
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+        "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+        "size_bytes": 2196
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/CMakeLists.txt",
+        "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+        "size_bytes": 2004
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/s1_gguf.cpp",
+        "sha256": "8dd7f74a3ba38fda24d305c2bcbb7793d23eb38011ccb58f4f0230f677caa70e",
+        "size_bytes": 16564
+      },
+      {
+        "path": "tools/gguf/s1_gguf.cpp",
+        "sha256": "8dd7f74a3ba38fda24d305c2bcbb7793d23eb38011ccb58f4f0230f677caa70e",
+        "size_bytes": 16564
+      },
+      {
+        "path": "tools/gguf/CMakeLists.txt",
+        "sha256": "a4dc6f4cd7e64d55bf12e2fcb82cf5040878165dfddc4ce1c69b303a884f67ea",
+        "size_bytes": 1889
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-source-184f653/CMakeLists.txt",
+        "sha256": "22d9a3e112e2b01d43a3ed514a249f38244f931a3c1c53dc2738794249714f91",
+        "size_bytes": 11036
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-source-184f653/ggml/CMakeLists.txt",
+        "sha256": "aedecbcad995197e5d912aa9f789520df6463c737c095e5c12b5d5dfbf02980e",
+        "size_bytes": 21801
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-source-184f653/ggml/src/ggml-cpu/CMakeLists.txt",
+        "sha256": "b69ed1a14063642c47c70b7b4c67177388e02ee3c27d2e7adfde9ed5ba5859bf",
+        "size_bytes": 33159
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-source-184f653/tools/mtmd/CMakeLists.txt",
+        "sha256": "ce6608a6e0d2ee63b753b2b9b564176d577a8009d4159115e5ea80199e106ae2",
+        "size_bytes": 6090
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-source-184f653/src/models/gemma4.cpp",
+        "sha256": "247d458f93ddace3091141d7d7e4da0c0b589bc843e5737d3b39f804eb889339",
+        "size_bytes": 24538
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-source-184f653/include/llama.h",
+        "sha256": "961430f89e2553dbcd99e3e6c59826af9ec143f05911520c74f804d986ff3cd2",
+        "size_bytes": 90731
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-source-184f653/tools/mtmd/mtmd.h",
+        "sha256": "b73526ee090cad221c88c092acab7daef528a2756e0be4b871093e026a126448",
+        "size_bytes": 26180
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-source-184f653/tools/mtmd/mtmd-helper.h",
+        "sha256": "971822a6c1b629bf6c4a5a2477e22e8a5cef1e4944939f6f6433baed9ef70a15",
+        "size_bytes": 15432
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-source-184f653/LICENSE",
+        "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+        "size_bytes": 1078
+      }
+    ],
+    "owner_final_sources_unchanged": true,
+    "scope": "Critical refs/stat identities only; not every source-tree file, compiler/dependency byte or all CMake side effects. Generated binary SHA establishes these saved file bytes, not future file immutability or full numerical equivalence.",
+    "selected_tool_stats": [
+      {
+        "path": "/usr/bin/cmake",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 48002409,
+          "st_mtime_ns": 1713179337000000000,
+          "st_size": 10489912
+        }
+      },
+      {
+        "path": "/usr/bin/git",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 47973055,
+          "st_mtime_ns": 1754494562000000000,
+          "st_size": 4003072
+        }
+      },
+      {
+        "path": "/usr/bin/aarch64-linux-gnu-g++-13",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 48006951,
+          "st_mtime_ns": 1766091591000000000,
+          "st_size": 990040
+        }
+      },
+      {
+        "path": "/usr/bin/make",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 48012593,
+          "st_mtime_ns": 1712592721000000000,
+          "st_size": 267672
+        }
+      }
+    ]
+  },
+  "verdict": "PASS_WITH_LIMITS"
+}

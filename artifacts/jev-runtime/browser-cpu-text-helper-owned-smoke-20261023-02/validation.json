@@ -1,0 +1,253 @@
+{
+  "schema": "owned-helper-smoke-source-validation-v1",
+  "recorded_utc": "2026-10-23T12:24:40.875748+00:00",
+  "status": "source_fake_boundaries_passed_no_actual_execution",
+  "python_used_for_stdlib_fakes": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "checks": [
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/test_smoke.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.18820005499583203,
+      "output": "......................\n----------------------------------------------------------------------\nRan 22 tests in 0.026s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.014156385004753247,
+      "output": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        "ruff",
+        "format",
+        "--check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.019462014010059647,
+      "output": "3 files already formatted\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/actor.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.11039099100162275,
+      "output": "{\"profile\": \"qwen25-05b-cpu4-owned-native-smoke-v1\", \"status\": \"source_only_not_ready\", \"model_started\": false, \"owner_started\": false, \"transport\": \"in_process_ASGI_not_HTTP\", \"requires_closed_catalog_acceptance_and_root_command_spec\": true}\n"
+    },
+    {
+      "argv": [
+        "ruff",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.004801550996489823,
+      "output": "ruff 0.16.6\n"
+    }
+  ],
+  "stdlib_fake_test_count": 22,
+  "prior_component_fake_count": 16,
+  "new_frame_fake_count": 6,
+  "absolute_frame_regression": {
+    "frozen01_five_fragments_at_seconds_each": 0.04,
+    "receive_timeout_seconds": 0.05,
+    "frozen01_fake_elapsed_success_seconds": 0.2,
+    "successor02_fake_refuses_at_original_seconds": 0.05,
+    "actual_socket_used": false,
+    "late_final_fragment_and_parse_completion_refuse": true,
+    "EOF_and_pending_semantics_preserved": true,
+    "timeout_positive_finite_numeric_gate": true
+  },
+  "authority_source_diff": "--- frozen01/authority.py\n+++ successor02/authority.py\n@@ -104,8 +104,8 @@\n \n \n class Channel:\n-    def __init__(self, sock):\n-        self.sock, self.pending = sock, bytearray()\n+    def __init__(self, sock, clock=time.monotonic):\n+        self.sock, self.pending, self.clock = sock, bytearray(), clock\n \n     def send(self, value):\n         blob = encoded(value)\n@@ -117,16 +117,28 @@\n             type(timeout) in (int, float) and math.isfinite(timeout) and timeout > 0,\n             \"Control timeout\",\n         )\n-        self.sock.settimeout(timeout)\n+        deadline = self.clock() + timeout\n+        need(math.isfinite(deadline), \"Finite whole-frame deadline\")\n+\n+        def remaining():\n+            value = deadline - self.clock()\n+            if value <= 0:\n+                raise TimeoutError(\"External parent whole-frame deadline reached\")\n+            return value\n+\n         while b\"\\n\" not in self.pending:\n+            self.sock.settimeout(remaining())\n             block = self.sock.recv(4096)\n             if not block:\n                 raise EOFError(\"External parent channel closed\")\n             self.pending.extend(block)\n             need(len(self.pending) <= MAX_MESSAGE, \"Bounded control input\")\n+        remaining()\n         line, _, rest = self.pending.partition(b\"\\n\")\n         self.pending = bytearray(rest)\n-        return json.loads(line)\n+        result = json.loads(line)\n+        remaining()\n+        return result\n \n \n class Authority:\n",
+  "ast_parse_compile_stdlib_imports": {
+    "actor.py": [
+      "__future__",
+      "argparse",
+      "asyncio",
+      "copy",
+      "hashlib",
+      "importlib",
+      "json",
+      "math",
+      "os",
+      "pathlib",
+      "secrets",
+      "selectors",
+      "signal",
+      "socket",
+      "subprocess",
+      "sys",
+      "time"
+    ],
+    "authority.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "math",
+      "os",
+      "pathlib",
+      "socket",
+      "time"
+    ],
+    "test_smoke.py": [
+      "contextlib",
+      "copy",
+      "hashlib",
+      "importlib",
+      "io",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "types",
+      "unittest"
+    ]
+  },
+  "selected_small_source_refs_unchanged": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/actor.py",
+      "size_bytes": 34108,
+      "sha256": "8a008cec2ec6e4ecd9f3c8c8481641ff6a3c77f52b9a4234bf48487ebcd451f2"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/authority.py",
+      "size_bytes": 7020,
+      "sha256": "b13236ef540378e2ba685d950bba296c89a49a93f4b02d50c7d3ea9ad4b6cbec"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/test_smoke.py",
+      "size_bytes": 21327,
+      "sha256": "501244ef87f139af1b6e19afe243905c96442763f8cd19ddbce46a84bef8f9e8"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/catalog-acceptance.pending.json",
+      "size_bytes": 854,
+      "sha256": "c674642c9aec99ed03c37d0e75ac9d7e759dd31579e41d52c9f4de22330446ab"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+      "size_bytes": 40319,
+      "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/source-freeze-02.json",
+      "size_bytes": 2351,
+      "sha256": "b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
+      "size_bytes": 31089,
+      "sha256": "a312dba1fabd173e1ce502f6896431a7cc3d6b4979a7eae49c2b1807d343b0fa"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/frozen-manifest.json",
+      "size_bytes": 1776,
+      "sha256": "b171c7cece01d96f7634cb75f08b8ba72c1fe94fb52043de91d6c49c44193d46"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/runtime-selection.pending.json",
+      "size_bytes": 6582,
+      "sha256": "b5e0c09b60b2de3dadfb48d98febc8e61c236bb9e61a0d03ae9b126a26223e26"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py",
+      "size_bytes": 4918,
+      "sha256": "38f4e346c47c4091b22f396e38aca583f33729bd357c04a3e5abeb329cf2b62d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/frozen-manifest.json",
+      "size_bytes": 1494,
+      "sha256": "31b0d40c57d533aa97fa0cb31586607a8d72f8a9ab4c58a9c65bff969355a67b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/catalog.py",
+      "size_bytes": 19543,
+      "sha256": "7d0d837b451089a9c3d3974bd5a24dcdb51b59247d2f7be1d10316beb6109610"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/plan.json",
+      "size_bytes": 16882,
+      "sha256": "67c646e5fd921b4ee86f6ee73096e4afab09efe6cdbf29c9fe4765777b073911"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/freeze.json",
+      "size_bytes": 2903,
+      "sha256": "e8ed396d808458ef4f74d79857a1cbdcd8ee7dcf204b40e4803123228ae24915"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/package-receipt.json",
+      "size_bytes": 7663,
+      "sha256": "fce23ca9ae2e3aa00dc5e412c9c9a06eed3ee53083447cadbeb7a0d7e471638e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/independent-actual-review.json",
+      "size_bytes": 24331,
+      "sha256": "afd7504e4ecc0f5434e169357c1515cee1aab28a87a6aad357b365db8e9e5bd4"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/README.md",
+      "size_bytes": 10531,
+      "sha256": "4ff23b5f552897be717419158668a8056f5feb86801bfc3a4204db10acc9bc37"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-01/authority.py",
+      "size_bytes": 6590,
+      "sha256": "4a636a05e5093087c7105f6c8f728203330d1e81862f93f719659ce14a75e549"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-01/freeze.json",
+      "size_bytes": 2737,
+      "sha256": "e318783624c11706fb8a35b1d39555b783e14e43cb2f56b118d38bc863b10ff4"
+    }
+  ],
+  "plan": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/plan.json",
+    "size_bytes": 8538,
+    "sha256": "df756f2016bc9c0b8b69b3983a7397ac52484690ba63ee8b841d4e2f815945f8"
+  },
+  "predecessor_freeze_unchanged": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-01/freeze.json",
+    "size_bytes": 2737,
+    "sha256": "e318783624c11706fb8a35b1d39555b783e14e43cb2f56b118d38bc863b10ff4"
+  },
+  "predecessor_independent_review_unchanged": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-review-20261023-01/independent-source-review.json",
+    "size_bytes": 23161,
+    "sha256": "7089e4127029f69a30d2ad4d815e054c774523347952f13c83c3214a982ce0a8"
+  },
+  "actor_and_pending_acceptance_bytes_unchanged": true,
+  "no_actual_operations": {
+    "torch_import": true,
+    "native_runtime_import": true,
+    "model_or_tokenizer_payload_read": true,
+    "native_binary_read_or_hash": true,
+    "owner_or_unit_start": true,
+    "observer_invocation": true,
+    "model_load_or_generation": true,
+    "browser_or_HTTP_or_socket": true,
+    "network": true,
+    "git": true
+  },
+  "qualified": {
+    "source_fake_boundaries": true,
+    "actual_owner": false,
+    "runtime_catalog": false,
+    "model_load": false,
+    "NN_generation": false,
+    "in_process_ASGI": false,
+    "actual_HTTP": false,
+    "browser_score": false,
+    "hard20": false,
+    "full_native_DSO_closure": false
+  }
+}

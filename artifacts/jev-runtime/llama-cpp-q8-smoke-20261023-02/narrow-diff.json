@@ -1,0 +1,71 @@
+{
+  "byte_identical_sources": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/prepare_smoke.py",
+      "sha256": "cf7dc23b2f22bf69cda0fa98da965c055c027becf79c632db1c7501071bdd88f",
+      "size_bytes": 10776
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/smoke_common.py",
+      "sha256": "e423db2402184b2adafbcda78b98ef43fa8d6e32b0f90ee2faf51561b2a93eb7",
+      "size_bytes": 11929
+    }
+  ],
+  "changed_NativeRPC_methods": [
+    "__init__",
+    "score"
+  ],
+  "changed_runner_AST_classes": [
+    "NativeRPC"
+  ],
+  "other_module_functions_and_class_methods_AST_unchanged": true,
+  "parent_inputs_unchanged": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/prepare_smoke.py",
+      "sha256": "cf7dc23b2f22bf69cda0fa98da965c055c027becf79c632db1c7501071bdd88f",
+      "size_bytes": 10776
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/run_smoke.py",
+      "sha256": "390697fed01af3d702a10029e3c529d3bb1841190e459a101695fd9a99d82fad",
+      "size_bytes": 19106
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/smoke_common.py",
+      "sha256": "e423db2402184b2adafbcda78b98ef43fa8d6e32b0f90ee2faf51561b2a93eb7",
+      "size_bytes": 11929
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/test_smoke.py",
+      "sha256": "99d6f7287a75c43d6df101553752b19fd3714213092ef75a85725b118a25ec23",
+      "size_bytes": 14962
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/static-validation.json",
+      "sha256": "10e6a776e1da59de9569fc1293fd0354f454d06af0d70ddad9738f35cd4974f1",
+      "size_bytes": 5386
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/source-freeze.json",
+      "sha256": "992b6ee9db1563c68cc2e07f6c53a92f55d0d40c754b52b769948259146d073f",
+      "size_bytes": 4229
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/README.md",
+      "sha256": "9e5f99869a11757a3901811dde8ff81a657b498323b63b4daaf9ec34ae8330b1",
+      "size_bytes": 3518
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-01/research-decision.md",
+      "sha256": "a9ec1abd773e8572c798a3dfa6514a34a9cf5e88edfb54244ead52617bf0e204",
+      "size_bytes": 3860
+    }
+  ],
+  "profile": "q8-smoke-startup-timer-successor-v1",
+  "source_patch": {
+    "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-02/startup-timing.patch",
+    "sha256": "7aa87d9f663e724d57297fb4a256052bb83832047814fedc203210e6a6101c89",
+    "size_bytes": 2504
+  },
+  "timing": "Capture launch monotonic immediately before Popen. Warm deadline/elapsed/meets20 use launch-to-response, including initial process/map observation. Long calls retain submission-to-response. No owner, selection, payload, numerical, resource or cleanup changes."
+}

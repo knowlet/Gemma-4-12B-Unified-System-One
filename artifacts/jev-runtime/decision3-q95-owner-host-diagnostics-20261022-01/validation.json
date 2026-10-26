@@ -1,0 +1,73 @@
+{
+  "actual_gpu_model_browser_or_unit_started": false,
+  "actual_host_or_queue_observed": false,
+  "delta": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01/source-delta.json",
+    "sha256": "c0a37cd25c5a5cea7e7a8c13cdb3b515d4e78abfc57861c2208fff457527baed",
+    "size_bytes": 1401
+  },
+  "head_before_edits": "ca3ce1410ed938febc254d23b42576ef9152ffea",
+  "historical_helper04_specific_failure_stage_proven": false,
+  "model_qualified": false,
+  "parent": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-04/q95_owner.py",
+    "sha256": "68e44e99bfbb1c9114a5b5b378cac38f80b78c37d23f8e898b290c23e3a0a4a6",
+    "size_bytes": 29120
+  },
+  "peer_review": {
+    "receipt": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01/independent-review.json",
+      "sha256": "173885fb8b58ed91db3e14043f3c5c31d651b3fc1d1e4e54cd7c7081d766fdf7",
+      "size_bytes": 789
+    },
+    "scope": "read-only source delta review",
+    "status": "CLEAR"
+  },
+  "ruff": {
+    "address_space_limit": null,
+    "core_limit": 0,
+    "cpu_affinity": "0",
+    "cpu_seconds": 30,
+    "exit_code": 0,
+    "rayon_threads": 1,
+    "receipt": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01/ruff-01.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "size_bytes": 19
+    },
+    "wall_seconds": 45
+  },
+  "schema_id": "q95-host-diagnostics-validation-v1",
+  "source": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01/q95_owner.py",
+    "sha256": "1e8cd00560f19d85ccdf2ff4b56b4334573b98240177218be430bae8a8c7054b",
+    "size_bytes": 31657
+  },
+  "source_union": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01/source-union.json",
+    "sha256": "524da48dea17462a8f9de1ee1f436358fc1a26ea02e6c4dfad220f8dfc78ba27",
+    "size_bytes": 2214
+  },
+  "tests": {
+    "actors_subprocesses_host_probes_or_http": false,
+    "admission_matrix_comparisons": 58,
+    "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 taskset -c 0 prlimit --cpu=30 --core=0 timeout 45s /usr/bin/python3 -B -m unittest discover -s artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01 -p test_host_diagnostics.py -v",
+    "count": 11,
+    "elapsed_seconds": 0.12,
+    "exit_code": 0,
+    "kind": "pure stdlib fake observers and source AST",
+    "receipt": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01/tests-01.txt",
+      "sha256": "1160b02b9aafa6f48c7d18d40772f0466db1f8056c8ba66154730b1c3f5854f8",
+      "size_bytes": 2205
+    }
+  },
+  "verified": {
+    "full_inverse_bytes_equal_parent": true,
+    "host_math_ast_unchanged": true,
+    "host_need_calls_ast_unchanged": true,
+    "new_launch_entry_or_plan": false,
+    "other_24_functions_ast_unchanged": true,
+    "secrets_excluded": true
+  }
+}

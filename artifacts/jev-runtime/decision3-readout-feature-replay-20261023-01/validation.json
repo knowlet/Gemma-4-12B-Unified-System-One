@@ -1,0 +1,113 @@
+{
+  "schema": "decision3-readout-feature-replay-source-validation-v1",
+  "status": "AUTHOR_SOURCE_CHECKS_PASS_PENDING_INDEPENDENT_REVIEW_NO_ACTUAL",
+  "test_count": 25,
+  "stdlib_tests_pass": true,
+  "check_receipt": {
+    "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/static-checks.json",
+    "size_bytes": 2057,
+    "sha256": "ed74bd518ad490968723e92180c00ebce327de340c40ac5c43d3b35f2dd3982f"
+  },
+  "candidate_runtime_sources": [
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/actor.py",
+      "size_bytes": 16126,
+      "sha256": "852404f61534828c7574a5be1465a99435a87b55b7e6948896a8196c9bb0370d"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/observer.py",
+      "size_bytes": 6416,
+      "sha256": "d5dbcbc77775d0dcd6c42345b4bf0e633bb3d54f9a9b4fbdfda4bb6109873783"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/fixture.json",
+      "size_bytes": 1351,
+      "sha256": "990300078cd14ea16b00fdc2d73a82614326e82df7251fe655b995adcbcd6332"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/plan.json",
+      "size_bytes": 5313,
+      "sha256": "21817cfd2e961de040d40cabd5f5bd54245a58e68e936715f5e589482b5e5558"
+    }
+  ],
+  "unchanged_native_runtime_dependencies": [
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size_bytes": 30552,
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+      "size_bytes": 7734,
+      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source_audit.py",
+      "size_bytes": 5079,
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+      "size_bytes": 30406,
+      "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/freeze.json",
+      "size_bytes": 3646,
+      "sha256": "9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a"
+    }
+  ],
+  "constructor_loader_backend_owner_auth_validation_and_math": "Reused by pinned imports; no AST extraction, overrides or modifications",
+  "new_source_calls": {
+    "genuine_constructor": "only frozen native02 load_runtime",
+    "native_request": "only frozen NativeBatch4Backend once",
+    "replay": "observer FP32 matrix multiply/mask/softmax only, no encoder"
+  },
+  "timing_regressions": [
+    "hook/write/watchdog cleanup counted",
+    "call late watchdog cleanup demotes",
+    "whole last-write120 expiry demotes",
+    "execute-entry preflight time not reset",
+    "hook cleanup raise demotes",
+    "watchdog cleanup raise demotes",
+    "original KeyboardInterrupt survives hook/timer/evidence secondary failures",
+    "last write failure demotes"
+  ],
+  "numeric_observer_regressions": [
+    "last-position copy detached and hooks returnNone",
+    "real partial-row shape requirements",
+    "wrong dtype/GPU/nonfinite rejected",
+    "missing/extra forward events rejected",
+    "huge illegal-code logits masked; known analytic probability matches; no extra events",
+    "non-unit temperature refused",
+    "baseline parameter version change detectable",
+    "all legal probabilities/order/argmax",
+    "fixed tolerance acceptance and rejection",
+    "missing rows/options refused",
+    "ordered tie uses first original label"
+  ],
+  "test_scope": {
+    "cpu_affinity": [
+      0
+    ],
+    "address_space_bytes": 536870912,
+    "cpu_seconds": 30,
+    "ruff_address_space_limit": null,
+    "model_or_runtime_imported": false,
+    "actual_NN_or_payload_opened": false
+  },
+  "plan_builder_scope": "Reads only eight small UTF8 source/metadata records including native plan; no model/native/tokenizer stat or payload reads",
+  "whole_source_qualification": false,
+  "actual_transaction_or_numeric_equivalence_qualified": false,
+  "features_collected": false,
+  "training_eligible": false,
+  "root_acceptance_not_self_authored": true,
+  "all_author_check_processes_terminal": true,
+  "hold": "No further target execution, tests or formatter processes after root hold; only new source/metadata authoring and small source reads",
+  "limitations": [
+    "Fake list tensor math is not a Torch/BLAS numeric qualification",
+    "Live tensor identity/version witness does not hash values",
+    "Output state whole elapsed is sampled before last state write; returned post-cleanup elapsed and external root wall need actual audit",
+    "Observer feature storage and raw output remain ignored local PENDING; no success on any nonzero root or failed original owner/closure/full auth"
+  ]
+}

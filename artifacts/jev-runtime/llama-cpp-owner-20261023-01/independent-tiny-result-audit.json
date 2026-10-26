@@ -1,0 +1,385 @@
+{
+  "actual_five_test_results": {
+    "CUDA_initialized_false_and_empty_visibility_asserted": true,
+    "all_finite_BF16_patterns_checked_by_test": 65280,
+    "all_passed": true,
+    "default_and_selected_types_shapes_bytes_assert_equal": true,
+    "embedding_truncation_asserted": true,
+    "lazy_Torch_asserted": true,
+    "nonfinite_noncontiguous_wrong_dtype_refusals_asserted": true,
+    "norm_and_scalar_F32_asserted": true,
+    "qualification": "Actual Torch/NumPy execution over synthetic small checkpoint/tensors. Source assertions and complete untruncated unittest output agree. Temporary GGUF files were deleted by test; reviewer independently joins saved pass evidence to frozen source, not a second tensor payload replay. CLI-main guard refusals, all actual677 checkpoint keys/values, complete tokenizer/LoRA or full conversion are not measured.",
+    "real_upstream_prepare_and_original_writer": true,
+    "selected_no_matrix_F32_cast_asserted": true,
+    "tests_in_saved_order": [
+      "test_actual_prepare_writer_default_and_raw_match",
+      "test_all_finite_bf16_bit_patterns_equal_upstream",
+      "test_lazy_real_torch_byte_path",
+      "test_noncontiguous_and_wrong_dtype_refused",
+      "test_nonfinite_refused_before_return"
+    ]
+  },
+  "evidence_inventory": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/root-execution-tiny-01.json",
+      "sha256": "25957e2cadde49bbda804e034cb26a4edb23628f4b475f9b42d92d9ac4807dfc",
+      "size_bytes": 933
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/controller.py",
+      "sha256": "5672bc297869cee138726301f8c7d607adda138169b204747b9e8a2766546326",
+      "size_bytes": 38075
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/root-tiny-test-spec.json",
+      "sha256": "410df1f573a43dd9a625831d43772c3d3fb1d0a81026cddbce3ed9e390f410f1",
+      "size_bytes": 3250
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/independent-source-review.json",
+      "sha256": "58cd5c6f0ff1a9253328704338b5b01e49cf3b5734f83783cf2c8eb38c8751bd",
+      "size_bytes": 30327
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/test_converter.py",
+      "sha256": "b86c7571b70c2d083843c6b462ffafea627df337f3be1e8c700295ab9c5d1071",
+      "size_bytes": 5367
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/independent-source-review.json",
+      "sha256": "6fa0ef8570eca0abfa40c1df7b488585f0e986acf5f24e5d907cb40138ec44b3",
+      "size_bytes": 7284
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/receipt.json",
+      "sha256": "a0bbdc495a1c79d24866ae89cca1af5d0a4313378c3036371182e097e0217913",
+      "size_bytes": 44429
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/sealed-config.json",
+      "sha256": "0ab4027d3bea6931707af42afcda626cd5572ae7123fbc7cde645c798dd19cb4",
+      "size_bytes": 5680
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/launch-intent.json",
+      "sha256": "fa876807064d5b811f40d273669f733fb0dacbd19df3d24974d15fdee1c14a62",
+      "size_bytes": 2838
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/unit-readback.json",
+      "sha256": "a43a5ce253fa5e9546edc65ffc7d400e24d8bdce0a27ba4418c9f4d73ff14883",
+      "size_bytes": 2499
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/bootstrap-identity.json",
+      "sha256": "75936a4bcb704cc0406fa94cf8aadffb9ac925473b4eeb3aa5d1c69fd2542a02",
+      "size_bytes": 1397
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/admission.json",
+      "sha256": "1641a6f79a16cbd930ab8097d7fcd46cdd223365891f3ac0ea7ffc4ffbea66f6",
+      "size_bytes": 456
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/actor-exit.json",
+      "sha256": "c024b6680d902df01c09fcbc7b54c3560d57f9ac4d8d8afcc17aeef45556acb7",
+      "size_bytes": 1883
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/command-01-intent.json",
+      "sha256": "6f447ee234cfa714e8b412f2decc1c62f1631e88d944cc4ee4d9179a36bd5988",
+      "size_bytes": 811
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/command-01-started.json",
+      "sha256": "599493b3505565a6a32761da826fe49f41c79c88fc6b9fb8133b29ede6d11bf2",
+      "size_bytes": 623
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/command-01-output.json",
+      "sha256": "1e8860d95bc93ff0a9cbe7e97d3e48cad38ae7aa9e85a35c75e3fe480c52ed01",
+      "size_bytes": 2202
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/external-boundary-closure.json",
+      "sha256": "498ed76d8e4e1eca4cff5ba33751738ce19650f076799ad1054e44624937903b",
+      "size_bytes": 3707
+    }
+  ],
+  "execution": {
+    "child_argv_scope": "Exact fixed argv is joined through selected spec, Popen intent and result, but the immediate /proc child snapshot has argv=[]; do not describe it as independently observed full child argv.",
+    "child_argv_snapshot_empty": true,
+    "cleanup_errors": [],
+    "command_argv": [
+      "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+      "-B",
+      "-s",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/test_converter.py"
+    ],
+    "command_elapsed_seconds": 12.370692593991407,
+    "error": null,
+    "logical_venv_preserved": true,
+    "observed_child": {
+      "argv": [],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+      "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+      "process": {
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+        "pgid": 341104,
+        "pid": 341159,
+        "sid": 341104,
+        "start_ticks": 6931777,
+        "state": "R",
+        "uid": 1001
+      }
+    },
+    "observed_resolved_interpreter": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+    "planned_and_completed_commands": 1,
+    "root_exit_code": 0,
+    "root_wall_seconds": 14.030674426001497,
+    "unittest_seconds": 5.031
+  },
+  "host": {
+    "final": {
+      "initial": false,
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "comfy_evidence": {
+          "comfy_pending": 0,
+          "comfy_running": 0,
+          "http_status": 200,
+          "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0",
+          "transport": "HTTP"
+        },
+        "comfy_pending": 0,
+        "comfy_running": 0,
+        "comfy_state": "http_idle",
+        "mem_available_bytes": 29372129280,
+        "mem_total_bytes": 130595864576
+      },
+      "required_available_bytes": 26119172916,
+      "reserve_bytes": 26119172916
+    },
+    "initial": {
+      "initial": true,
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "comfy_evidence": {
+          "comfy_pending": 0,
+          "comfy_running": 0,
+          "http_status": 200,
+          "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0",
+          "transport": "HTTP"
+        },
+        "comfy_pending": 0,
+        "comfy_running": 0,
+        "comfy_state": "http_idle",
+        "mem_available_bytes": 29258731520,
+        "mem_total_bytes": 130595864576
+      },
+      "required_available_bytes": 28266656564,
+      "reserve_bytes": 26119172916
+    },
+    "postlaunch_summary": {
+      "min_MemAvailable_bytes": 28662661120,
+      "min_margin_vsR_bytes": 2543488204,
+      "phase_counts": {
+        "loop": 13,
+        "preexec": 1,
+        "readiness": 3
+      },
+      "runtime_host_gate_count": 17,
+      "scope": "All successful executed post-launch readiness/preexec/loop host-gate samples, including discarded raw samples; failing gates stay in primary evidence; initial/final separate; not a continuous-time minimum"
+    },
+    "reserve_bytes": 26119172916,
+    "retained_loop_min_MemAvailable_bytes": 28662661120,
+    "retained_raw_loop_count": 13,
+    "scope": "Summary covers17 accepted postlaunch samples;13 loop rows are raw and4 readiness/preexec samples only summarized. Summary minimum cannot be recomputed for all17 from raw loop records alone. Neither is a continuous-time minimum. Saved Comfy idle observations only; no service mutation."
+  },
+  "limits": [
+    "Five synthetic real-Torch tests provide converter mechanism regression evidence only.",
+    "No full checkpoint conversion, existing Q8 download/content verification, GGUF model loading, LoRA application or model equivalence is established.",
+    "No full12B/8192/20s behavior, browser score, BenchmarkHeaven/coherence gain or cross-model superiority is established; original Q95 gates unchanged.",
+    "Root14.0307s, command12.3707s and unittest5.031s measure different scopes; no model latency or throughput inference."
+  ],
+  "log_inventory": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/command-01.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-01/command-01.stderr",
+      "sha256": "8661ab9ff5fefa41087d0759c6edc2741f56adcdac024406059e7cbc0cd615db",
+      "size_bytes": 711
+    }
+  ],
+  "owner_and_resources": {
+    "admitted_wrapper": {
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+      "pgid": 341104,
+      "pid": 341104,
+      "sid": 341104,
+      "start_ticks": 6931755,
+      "state": "R",
+      "uid": 1001
+    },
+    "command_deadline_monotonic": 69340.530241644,
+    "core_max_bytes": 0,
+    "cpu_max": [
+      "100000",
+      "100000"
+    ],
+    "file_size_max_bytes": 268435456,
+    "invocation_id": "ef822b4291924f9689a6d92311ff0bfe",
+    "limits_scope": "Selected unit accounting/observed main affinity; no all-thread cpuset or shared GPU hardcap claim.",
+    "memory_max_bytes": 2147483648,
+    "nofile_max": 512,
+    "nonce": "jev-d3-boundary-c1fe09bf144c8f63a4ebe8f8b660c659",
+    "observed_main_affinity": [
+      0
+    ],
+    "original_boundary_profile": "decision3-external-unit-terminal-boundary-v1",
+    "process_RSS_peak_measured": false,
+    "runtime_seconds": 30,
+    "sealed_config_sha256": "0ab4027d3bea6931707af42afcda626cd5572ae7123fbc7cde645c798dd19cb4",
+    "swap_max_bytes": 0,
+    "unit_kernel_and_manager_peak_bytes": 524214272,
+    "unit_peak_MiB": 499.9296875
+  },
+  "reviewed_at_utc": "2026-10-23T01:56:19.704581+00:00",
+  "reviewer": "/root/q95_owner05_review",
+  "saved_closure": {
+    "closure_finished_monotonic": 69331.384577021,
+    "hold_deadline_monotonic": 69335.173550686,
+    "margin_before_fallback_seconds": 3.788973664995865,
+    "mode": "authenticated_stop",
+    "saved_after_stop_LoadState": "not-found",
+    "saved_cgroup_absent": true,
+    "scope": "Saved exact invocation/observed cohort terminal evidence before the next legitimate build invocation. No fresh unit-not-found query was made while the later build is active, and no universal escape/process-tree/GPU memory restoration guarantee.",
+    "selected_live_wrapper_PID": 341104,
+    "selected_start_ticks": 6931755,
+    "tracked_cohort": [
+      {
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+        "pgid": 341104,
+        "pid": 341104,
+        "sid": 341104,
+        "start_ticks": 6931755,
+        "state": "S",
+        "uid": 1001
+      },
+      {
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service",
+        "pgid": 341104,
+        "pid": 341159,
+        "sid": 341104,
+        "start_ticks": 6931777,
+        "state": "R",
+        "uid": 1001
+      }
+    ],
+    "two_empty_scans": true
+  },
+  "schema": "llama-cpp-converter-independent-tiny-saved-result-audit-v1",
+  "scope": "Saved actual01 tiny CPU converter test only. Reviewer reads small frozen source/results and stats selected interpreter; no test rerun, Torch/NumPy/native import, probe, HTTP/observer/systemctl, compiler/helper execution, model/checkpoint/header/payload reads. Only this audit written. Another build invocation is now live under the same unit name; this audit addresses the historical selected invocation only.",
+  "source_integrity": {
+    "critical_small_refs": [
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/controller.py",
+        "sha256": "5672bc297869cee138726301f8c7d607adda138169b204747b9e8a2766546326",
+        "size_bytes": 38075
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/root-tiny-test-spec.json",
+        "sha256": "410df1f573a43dd9a625831d43772c3d3fb1d0a81026cddbce3ed9e390f410f1",
+        "size_bytes": 3250
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+        "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+        "size_bytes": 21002
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+        "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+        "size_bytes": 38483
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+        "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+        "size_bytes": 2196
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/test_converter.py",
+        "sha256": "b86c7571b70c2d083843c6b462ffafea627df337f3be1e8c700295ab9c5d1071",
+        "size_bytes": 5367
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/source-manifest.json",
+        "sha256": "39ac6af9ced3875a5e2c52f4b8acfdcf438f385cc9d439c2865929e5f9743202",
+        "size_bytes": 22258
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/runtime/conversion/base.py",
+        "sha256": "26f374a6fdbd9ce591d3f1961c22bd9b2e19b9a29dfedc59cf138d9098623c8a",
+        "size_bytes": 164442
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/runtime/conversion/jev_bf16.py",
+        "sha256": "eef362708dd54cb7aa64fdc19e34afa1ae63654ad5eaa7b144df6f40482a281b",
+        "size_bytes": 1443
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/runtime/convert_hf_to_gguf.py",
+        "sha256": "97db9ab27f9c9c538410fe9e4eea7fb3629e91ef594b0a842f53531eda011142",
+        "size_bytes": 13948
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/runtime/conversion/gemma.py",
+        "sha256": "e0704e560cdbedea9a89a7d5b49a570e7482971301dc80389ce39ac9ac3c9aac",
+        "size_bytes": 58042
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/runtime/gguf-py/gguf/lazy.py",
+        "sha256": "dbc98e3ee9ef8606df34e9d91f98ab29c2697e6824995f1dd8952938c135ad85",
+        "size_bytes": 12015
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/runtime/gguf-py/gguf/gguf_writer.py",
+        "sha256": "5f7818929091dbfbf78fed8865536f5d92ee8186b2782393d29d6d69667f5001",
+        "size_bytes": 78312
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/runtime/gguf-py/gguf/quants.py",
+        "sha256": "5c30d83fda855283a3239e479a26f35ea002ddd7650fcc4d255e6210fc9e72f1",
+        "size_bytes": 66774
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-bf16-converter-20261023-01/runtime/gguf-py/gguf/utility.py",
+        "sha256": "da920e2c62166ec9f30e407e9fb35ec29fda671310ffbf0f8ce856b62f1c70d7",
+        "size_bytes": 13534
+      },
+      {
+        "path": "artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/header-selection.json",
+        "sha256": "31201ff6d076838459d3abe1efd1d20df4d3f3a8d3a589495736949368385efa",
+        "size_bytes": 28508
+      }
+    ],
+    "critical_small_refs_rehashed_count": 16,
+    "interpreter_stat_only": [
+      {
+        "path": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 17956884,
+          "st_mtime_ns": 1784109750677901111,
+          "st_size": 22257464
+        }
+      }
+    ],
+    "owner_sources_unchanged": true,
+    "scope": "Selected critical refs and interpreter metadata only, not complete installed Torch/runtime/package/toolchain byte closure or a fresh Torch version query."
+  },
+  "verdict": "PASS_WITH_LIMITS"
+}

@@ -1,0 +1,194 @@
+{
+  "schema": "independent-original-readout-feature-replay-source-review-v1",
+  "reviewer": "/root/cpu_text_helper_route/helper_boundary_review",
+  "author": "/root/cpu_followup_review",
+  "created_at_utc": "2026-10-23T15:41:09.975385+00:00",
+  "result": "CLEAR_SOURCE_ONLY_WITH_LIMITS_PENDING_EXACT_ROOT_SELECTION_FRESH_ADMISSION_AND_CLOSED_ACTUAL_PARITY_AUDIT",
+  "source_blockers": [],
+  "artifact_refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/freeze.json",
+      "size_bytes": 3770,
+      "sha256": "06f8347c651934067a6270b3f57d80cd2c4db124217c89031a9eb2964a44dc2c"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/README.md",
+      "size_bytes": 4114,
+      "sha256": "d385093678849250b94c45c6193ae22a41555fbdb67240cb5b16a6643f36588c"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/actor.py",
+      "size_bytes": 16126,
+      "sha256": "852404f61534828c7574a5be1465a99435a87b55b7e6948896a8196c9bb0370d"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/build_plan.py",
+      "size_bytes": 4345,
+      "sha256": "a6110887c8d30e9c16839fd4aebff46e3523058ef16ffc9bebb0a7d29306105e"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/fixture.json",
+      "size_bytes": 1351,
+      "sha256": "990300078cd14ea16b00fdc2d73a82614326e82df7251fe655b995adcbcd6332"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/observer.py",
+      "size_bytes": 6416,
+      "sha256": "d5dbcbc77775d0dcd6c42345b4bf0e633bb3d54f9a9b4fbdfda4bb6109873783"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/plan.json",
+      "size_bytes": 5313,
+      "sha256": "21817cfd2e961de040d40cabd5f5bd54245a58e68e936715f5e589482b5e5558"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/research.json",
+      "size_bytes": 3005,
+      "sha256": "9fce19965f84b68a38115e191988973d509237b597c9533b5cc9b2c3786b4ffe"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/static-checks.json",
+      "size_bytes": 2057,
+      "sha256": "ed74bd518ad490968723e92180c00ebce327de340c40ac5c43d3b35f2dd3982f"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/test_replay.py",
+      "size_bytes": 16943,
+      "sha256": "f6b937a370843fb563d1643894ceb8da5ab28ba47af5bfb139ab2e5cab3cf79f"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/validation.json",
+      "size_bytes": 5061,
+      "sha256": "191fa0b84d0a78e90645ca60aa4da65ce6deacde190f2f663fedf3b2ed88b83b"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size_bytes": 30552,
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+      "size_bytes": 7734,
+      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source_audit.py",
+      "size_bytes": 5079,
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+      "size_bytes": 30406,
+      "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/freeze.json",
+      "size_bytes": 3646,
+      "sha256": "9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a"
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_runtime.py",
+      "size_bytes": 95505,
+      "sha256": "adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917"
+    }
+  ],
+  "verified_execution_source_record_count": 8,
+  "checks": [
+    {
+      "id": "S1",
+      "result": "PASS",
+      "source": "observer.py:34-81",
+      "finding": "FinalNormObserver sees exact complete [3,L,1024] BF16 CPU tensors, checks CUDA uninitialized, returns None from both hooks, retains only detached FP32 cloned [3,1024] last-position features and rejects extra/missing layer/norm events."
+    },
+    {
+      "id": "S2",
+      "result": "PASS",
+      "source": "actor.py:196-227; publisher d3_runtime.py:1012-1072,1673-1709",
+      "finding": "Owner runtime.encoder.language_model is the same runtime.backbone.language_model; observer norm is exactly PromptEncoder final model.norm, and original logits uses returned hidden[:,-1] before FP32 readout. Native02 validates fast is None. No replacement forward or fake CUDA path."
+    },
+    {
+      "id": "S3",
+      "result": "PASS",
+      "source": "observer.py:84-121",
+      "finding": "Replay uses captured h.float() @ baseline readout.T, original 255-code legal-count mask with -infinity, temperature1.0 and softmax, then slices each original legal count. Illegal mass must be exactly zero. No encoder, backbone, prepare or systemone call occurs during replay."
+    },
+    {
+      "id": "S4",
+      "result": "PASS",
+      "source": "observer.py:124-172",
+      "finding": "Every legal probability must meet predeclared abs1e-6+rel1e-5*abs(native). Exact label order and ordered argmax/native choice must match. Tests are parity proof, with no semantic gold."
+    },
+    {
+      "id": "S5",
+      "result": "PASS",
+      "source": "actor.py:212-248",
+      "finding": "One genuine NativeBatch4Backend call on three original question rows, counts2/3/4; preflight retains full texts up to16384 and refuses overflow. First-layer and final-norm witnesses enforce one partial pass, no dummy rows or extra encoder evaluation."
+    },
+    {
+      "id": "S6",
+      "result": "PASS",
+      "source": "observer.py:21-32; actor.py:188,234-239",
+      "finding": "Baseline parameter/readout object, shape, dtype, device, data pointer and version witnesses surround the pass and replay. These are metadata/version witnesses, explicitly not live tensor byte hashes. Pre/post unchanged native02 full model/manifest/runtime/source authentication remains required."
+    },
+    {
+      "id": "S7",
+      "result": "PASS",
+      "source": "actor.py:123-164,167-283",
+      "finding": "Prediction timer starts before prepare/hooks/native/replay/evidence retention. Hook removal and final state write run in finally, Deadline cleanup completes, then literal monotonic20s refusal occurs. Late/write/cleanup failures demote completion."
+    },
+    {
+      "id": "S8",
+      "result": "PASS",
+      "source": "actor.py:287-401",
+      "finding": "Whole120 begins at execute entry, not after model import/load. Remaining timer subtracts preflight; final full authentication/source checks, evidence write and Deadline cleanup precede final elapsed check. Success return occurs afterward."
+    },
+    {
+      "id": "S9",
+      "result": "PASS",
+      "source": "actor.py:105-164; resource_helper.py:139-160",
+      "finding": "Primary operation error survives secondary hook/watchdog/state-write errors through notes and inherited finalize_state. Late failures demote rows and whole state; no repaired success is emitted."
+    },
+    {
+      "id": "S10",
+      "result": "PASS",
+      "source": "actor.py:68-103; plan.json",
+      "finding": "Pinned native02 actor977004...,baseplan115b7850...,owner06 distinct2GiB/unchangedR26119172916/full-floor28266656564, CPU16-19/400percent/swap0/10800 match. No runtime cap or numerical change is introduced."
+    },
+    {
+      "id": "S11",
+      "result": "PASS",
+      "source": "actor.py:254-265,320-344; plan.json",
+      "finding": "Feature JSON remains PENDING_EXTERNAL_TRANSACTION_ACCEPTANCE_NO_TRAINING_ELIGIBILITY and training_eligible false. State/model/HTTP/browser/continuation/whole-tree flags stay unqualified. Owned output creates ignore-all; no repository feature cache or optimizer is implemented."
+    },
+    {
+      "id": "S12",
+      "result": "PASS",
+      "source": "freeze.json; plan.json; build_plan.py",
+      "finding": "All10 frozen file rows and five unchanged native source/metadata rows independently size/SHA verified; eight execution source_records match exact bytes. Exact selected plan/source freeze remains separate from future root command selection/admission."
+    },
+    {
+      "id": "S13",
+      "result": "PASS_WITH_LIMITS",
+      "source": "test_replay.py; validation.json",
+      "finding": "Read all25 test names and critical fake boundaries, but did not import or execute tests. Author-reported25fakes/Ruff/AST/dry are source/fake evidence only."
+    }
+  ],
+  "limits": [
+    "No actual model/runtime was imported or executed by reviewer; hook endpoint, tensor dtype/shape and probability parity still require a fresh genuine owned pass and independent actual review.",
+    "Observer copies inference-mode values; this package serializes plain FP32 feature values but does not create an autograd training cache. A future loader must create ordinary owned tensors before any gradient work and must preserve split/ancestry taint.",
+    "Tensor identity/data-pointer/version witnesses are not live tensor byte checks. Exact pre/post payload authentication and original owner/closure remain mandatory.",
+    "Durable completed state is written before final whole Deadline cleanup and final monotonic check. A positive state or features-pending file alone never qualifies; root terminal/post-cleanup output, accepted owner receipt and original closure plus full auth are required.",
+    "Post-cleanup return fields are in CLI stdout, not necessarily the last durable state write. External root wall and stdout/evidence identity join are needed for actual audit.",
+    "Only a source parity diagnostic is proposed. No semantic score, corpus collection, training eligibility, HTTP/browser result or real quality improvement follows.",
+    "Owner isolation and selected pins do not imply full native DSO closure or prevention of all possible delegated cgroup escape."
+  ],
+  "review_actions": {
+    "only_small_source_and_self_authored_fixture_metadata_read": true,
+    "model_tensor_tokenizer_or_native_binary_payload_opened_or_hashed": false,
+    "candidate_or_tests_imported_or_executed": false,
+    "live_host_unit_observer_network_Git_used": false,
+    "frozen_or_baseline_files_changed": false,
+    "only_new_independent_review_written": true
+  },
+  "actions_status": "ALLSTOPPED"
+}

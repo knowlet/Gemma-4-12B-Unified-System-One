@@ -1,0 +1,67 @@
+{
+  "schema": "root-closed-train-audit-source-validation-v1",
+  "status": "SOURCE_PASS_ACTUAL_AUDIT_NOT_YET_EXECUTED",
+  "fakes": 5,
+  "results": [
+    {
+      "name": "imports",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "stdout": "2 files left unchanged\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "held_corruption_fakes",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.039s\n\nOK\n",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": 536870912
+    },
+    {
+      "name": "ruff",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "released_corruption_fakes",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.039s\n\nOK\n",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": 536870912
+    }
+  ],
+  "sources": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-closed-train-chunk-audit-01.py",
+      "sha256": "32fe02844a82f35f662ede5699ae0dd0dec7d8fff0e68259a8228021084eeef8",
+      "size_bytes": 32789
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/test_closed_train_audit.py",
+      "sha256": "26138df9e5db08f88e533870beece28208f4b5a7b62da58e432d209e555c86d0",
+      "size_bytes": 6432
+    }
+  ],
+  "release_only_change": "SOURCE_ONLY",
+  "root_will_be_actual_reader": true,
+  "peers_source_only": true
+}

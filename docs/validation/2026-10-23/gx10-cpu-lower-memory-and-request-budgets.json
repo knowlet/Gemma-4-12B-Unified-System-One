@@ -1,0 +1,151 @@
+{
+  "schema": "gx10-cpu-lower-memory-and-request-budgets-v1",
+  "created_at_utc": "2026-10-23T12:47:50.790112+00:00",
+  "goal_status": "active",
+  "precommit_head": "5e7c0ad7b9e5133989fcf57970039a1adcf058b0",
+  "status": "SOURCE_AND_EXACT_CATALOG_SELECTION_READY_NO_ACTUAL_LAUNCH_OR_NEW_MODEL_SCORE",
+  "source_refs": {
+    "catalog_freeze": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/freeze.json",
+      "sha256": "cfaf4ff3c43d3cde1069af8033a01a50a4a3a07e74be13e111b10b7851c3ea1b",
+      "size_bytes": 4307
+    },
+    "catalog_source_review": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/independent-source-review.json",
+      "sha256": "e4cb7da54e8318a71ad1c7b35fab2279f708ce56af30a2c1364307932f5aadf7",
+      "size_bytes": 14690
+    },
+    "catalog_exact_spec": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/root-catalog-command-spec.json",
+      "sha256": "6a7ad7eec88e0c0730a43ed37978abe2d080431e34faa02f3fd5acf564d2db75",
+      "size_bytes": 10438
+    },
+    "catalog_pure_preflight": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/root-catalog-preflight.json",
+      "sha256": "dd9f373215f85bd5989cf2b60d199c6aac980d24bd77ac1c6808a5f29ec1155f",
+      "size_bytes": 1150
+    },
+    "catalog_exact_selection_review": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/independent-command-selection-review.json",
+      "sha256": "2ab5e152bd589025bb8d7765d6708a2fd9ef321d96af72dff95f83f4e641d83a",
+      "size_bytes": 13883
+    },
+    "helper_freeze": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/freeze.json",
+      "sha256": "8c8c6ffbd7c645d54d77e595c90845693df3416935f785cb7057e9563021e023",
+      "size_bytes": 5230
+    },
+    "helper_source_review": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-review-20261023-03/independent-source-review.json",
+      "sha256": "bfccd9d486b05e042ee1ee0ae2ad17679ca12de32f004906cd6b3c7d85a15298",
+      "size_bytes": 16445
+    },
+    "original_http_and_timing_source_audit": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-integration-review-20261023-01/source-only-http-timing-audit.json",
+      "sha256": "142c258233303c82b852957840740ff3b36be904695d0ab661e6d1297070ecf8",
+      "size_bytes": 12169
+    }
+  },
+  "original_gate": {
+    "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/root-initial-gate-01.json",
+    "sha256": "c9ad6cad2a9f82a5da07d12d86a52cc216f1cd2b0c68390999fe96e04a55ae13",
+    "size_bytes": 5265
+  },
+  "last_original_observation": {
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "mem_total_bytes": 130595864576,
+    "mem_available_bytes": 25015144448,
+    "comfy_running": 1,
+    "comfy_pending": 0,
+    "comfy_state": "http_busy",
+    "comfy_evidence": {
+      "transport": "HTTP",
+      "comfy_running": 1,
+      "comfy_pending": 0,
+      "http_status": 200,
+      "response_sha256": "82c6230aba0d80613374ce8718f50160fabe6d87d1744ebfd7609e281b1f247d"
+    }
+  },
+  "selected_resources": {
+    "memory_max_bytes": 2147483648,
+    "swap_max_bytes": 0,
+    "cpu_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_quota_percent": 400,
+    "original_reserve_bytes": 26119172916,
+    "initial_required_available_bytes": 28266656564,
+    "runtime_required_available_bytes": 26119172916,
+    "owner_runtime_seconds": 7200
+  },
+  "timing_scope": {
+    "decisions_per_browser_task": 16,
+    "per_complete_prediction_or_helper_request_seconds": 20,
+    "helper_started_at": "ASGI entry, including serial queue/body/generation/retention/publication; parent deadline unchanged through child receipt/exit/parent cleanup",
+    "original_http_timeout_seconds": 25,
+    "original_http_retry_semantics_unchanged": true,
+    "whole_browser_task_20_second_gate": false,
+    "native_helper_max_new_tokens": 128,
+    "original_client_payload_max_tokens": 1024,
+    "catalog_whole_seconds": 600,
+    "helper_whole_seconds": 180
+  },
+  "validation": {
+    "catalog_stdlib_fakes": 13,
+    "helper_stdlib_fakes": 25,
+    "ruff_format_ast_dry": "PASS_SAVED_AT_EXACT_FROZEN_SOURCE",
+    "actual_model_load_or_generation": false,
+    "actual_http": false,
+    "new_unit_started": false,
+    "new_actual_output_created": false,
+    "prior_false_closure_fields_unchanged": true,
+    "fresh_later_two_original_selected_unit_scans_empty": true,
+    "ComfyUI_service_cache_queue_modified": false
+  },
+  "complete_scores_separate_existing_Gemma_BF16_only": {
+    "source": {
+      "path": "docs/validation/2026-10-22/jevbench-both-fresh-gx10-results.json",
+      "sha256": "5035e9b5745336d5361d08ec6fa55360f752df408aa18c0a24e48388d730e275",
+      "size_bytes": 9757
+    },
+    "Benchmark_Heaven_public231": {
+      "n_correct": 195,
+      "n_scorable": 231,
+      "accuracy_percent": 84.4155844155844
+    },
+    "JevBench_coherence_MINI": {
+      "score_0_to_100": 41.26307189542484,
+      "reported_95pct_interval_0_to_100": [
+        38.4254644890415,
+        43.79505211023108
+      ]
+    },
+    "not_transferred_to_2GiB_CPU_or_Decision3": true
+  },
+  "new_complete_Decision3_scores": {
+    "Edge_native_batch4_Benchmark_Heaven_public231": null,
+    "Edge_native_batch4_JevBench_coherence_MINI": null,
+    "Lite_native_batch4_Benchmark_Heaven_public231": null,
+    "Lite_native_batch4_JevBench_coherence_MINI": null
+  },
+  "latest_full_Decision3_attempt": {
+    "completed_callbacks": 165,
+    "started_callbacks": 166,
+    "stop_reason": "Original runtime Comfy idle gate became busy",
+    "full_final_authentication": false,
+    "quality_score_promoted": false
+  },
+  "pending": [
+    "Genuinely admitted and authenticated closed catalog",
+    "Completed immutable five-ref acceptance and exact helper selection",
+    "Actual native helper model/EOS/JSON/timing/memory and original closure",
+    "Actual loopback HTTP and shared helper policy integration",
+    "Original complete both JevBench suites and matched browser controls",
+    "Full six-model comparison and evidence of passing/competition"
+  ],
+  "budget_constraint": "Existing2GiB owner03 max7200 cannot replace10000 full campaign budget. Distinct long owner/native resource closure must preserve original10000 callback campaign/10800 owner and all math/context/order/judges; future2GiB prerequisites cannot inherit3GiB results.",
+  "completion_claim": false
+}

@@ -11,6 +11,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from local_evidence import require_local_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -1250,6 +1251,7 @@ def test_final_snapshot_failure_restores_hooks_and_preserves_primary(
     assert result["actual_native_requests_by_entry_phase"] == {"bootstrap": 0, "supervised": 0}
 
 
+@pytest.mark.local_evidence
 def test_native_compiler_real_cached_Rust_full58_and_no_pruning():
     pytest.importorskip("tokenizers")
     pytest.importorskip("jinja2")
@@ -1257,6 +1259,7 @@ def test_native_compiler_real_cached_Rust_full58_and_no_pruning():
         ROOT
         / "artifacts/jev-browser/20261015-public-native-training-start-readiness-01/postgres18-limit-offset/native-original-wire.json"
     )
+    require_local_evidence(path)
     wire = json.loads(path.read_text())
     wire["model"] = m.MODEL_ALIAS
     compiled = m.NativeCompiler().compile(wire)

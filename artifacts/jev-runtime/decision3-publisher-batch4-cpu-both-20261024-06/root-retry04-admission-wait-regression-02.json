@@ -1,0 +1,63 @@
+{
+  "status": "PASS",
+  "scope": "Actual wait main with invented clock/controller only; no host observation, launcher, process, model, or benchmark executed",
+  "source": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/root-full06-retry04-reviewed-admission-wait-02.py",
+    "sha256": "39997dd9a8482e089facebcb03827eef065367c54080809ef6b8c55cac92d9d9",
+    "size_bytes": 8791
+  },
+  "regressions": [
+    {
+      "source": "root-full06-retry04-reviewed-admission-wait.py",
+      "invented_host_cost_seconds": 3.0,
+      "invented_one_gate_failure_at": null,
+      "return_code": 0,
+      "admitted": true,
+      "fake_elapsed_seconds": 67.0,
+      "checks": 9,
+      "window_resets": 0,
+      "sampled_span": 64.0
+    },
+    {
+      "source": "root-full06-retry04-reviewed-admission-wait-02.py",
+      "invented_host_cost_seconds": 3.0,
+      "invented_one_gate_failure_at": null,
+      "return_code": 2,
+      "admitted": false,
+      "fake_elapsed_seconds": 180.0,
+      "checks": 23,
+      "window_resets": 22,
+      "sampled_span": null
+    },
+    {
+      "source": "root-full06-retry04-reviewed-admission-wait-02.py",
+      "invented_host_cost_seconds": 0.0,
+      "invented_one_gate_failure_at": null,
+      "return_code": 0,
+      "admitted": true,
+      "fake_elapsed_seconds": 60.0,
+      "checks": 13,
+      "window_resets": 0,
+      "sampled_span": 60.0
+    },
+    {
+      "source": "root-full06-retry04-reviewed-admission-wait-02.py",
+      "invented_host_cost_seconds": 0.0,
+      "invented_one_gate_failure_at": 30.0,
+      "return_code": 0,
+      "admitted": true,
+      "fake_elapsed_seconds": 95.0,
+      "checks": 20,
+      "window_resets": 1,
+      "sampled_span": 60.0
+    }
+  ],
+  "wall_seconds": 0.0366819090268109,
+  "limits": {
+    "cpu_affinity": [
+      0
+    ],
+    "address_space_bytes": 536870912,
+    "cpu_seconds": 30
+  }
+}

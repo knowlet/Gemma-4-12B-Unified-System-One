@@ -1,0 +1,60 @@
+{
+  "functional_proof_vs_actor_status": "Replay result must separately report functionalproofPASS and actor_completed=false with originaloracleerror preserved.",
+  "historical_actor02_entry_archive": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/run_fixture-attempt-02.py",
+    "sha256": "98c4ccf631b070b33d63037ce222fd824611d7c632790ff835c8a428ff36907d",
+    "size_bytes": 54965
+  },
+  "historical_auditor_archive": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/audit_saved-before-oracle-fix.py.txt",
+    "sha256": "0ad4999de57b75177d83590152c18323a60ebb44342efa556cb40df53d473a9b",
+    "size_bytes": 11212
+  },
+  "historical_fixture_source_freeze": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/source-freeze-attempt-02.json",
+    "sha256": "211acbff8eb58016564d55eec63629d307bcbe46b699cbbe3e15e91751e9a01a",
+    "size_bytes": 3113
+  },
+  "known_attempt_immutable_manifest": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/attempt-02-immutable-files.json",
+    "sha256": "b0044f72780b14ea9077fe45dd0f6627931fa0dce2499e9aeabd32f89df18b2a",
+    "size_bytes": 13116
+  },
+  "lint_and_format": "PASS selected frozen Python sources",
+  "no_original_attempt_file_written": true,
+  "oracle_correction": "OriginalAgent DONE branch returns before history.append; expecthistoryFIND only, decisionsFIND/DONE, terminaldecisionNone andplan_index1.",
+  "original_failed_actor_receipt": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/actual-02/receipt.json",
+    "sha256": "2d2153b752f06c4f7089ca4ac31b2eb367d28c9f3a5c0e59fe85e7ce307e006a",
+    "size_bytes": 17771
+  },
+  "replay_gate": "Only actual02 exact98c entry + exact2d2153 failedreceipt + exactknownValueError + independently frozen47file manifest may replay. Only that original selfpath+SHA remaps to exact98 archive; all48 other consumed source refs keep exact original path+hash.",
+  "review_status": "PENDING_ROOT_PEER_BEFORE_SAVED_REPLAY",
+  "root_actor02_source_review": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/independent-review-attempt-02.json",
+    "sha256": "a01c2bf2d5fb595a9d3762ff34a394a3ee52d003fb4d4e4cd57ca5ccc0595f1a",
+    "size_bytes": 3475
+  },
+  "schema_id": "find-current-stack-cpu-oracle-source-freeze-v3",
+  "scope": "SAVED_ONLY_REPLAY_NO_THIRD_BROWSER",
+  "sources": {
+    "audit_saved.py": {
+      "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/audit_saved.py",
+      "sha256": "4f49fcfff364e718f1c419668ecc3f9ed1dfceaa3e070578be8291f6ebf1c51f",
+      "size_bytes": 21404
+    },
+    "run_fixture.py": {
+      "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/run_fixture.py",
+      "sha256": "4c2b2699c7b850c777055d3cc658bade06c99ad8cf629b1a017c24503f432816",
+      "size_bytes": 55124
+    },
+    "test_static.py": {
+      "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/test_static.py",
+      "sha256": "d19e69c84914da60587a46f074e68d222def357b3ad45ee0a2a74ebdabd72539",
+      "size_bytes": 9578
+    }
+  },
+  "static_stdout": "16 passed in 0.83s",
+  "static_tests_passed": 16,
+  "third_actor_started": false
+}

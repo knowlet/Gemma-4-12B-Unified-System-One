@@ -1,0 +1,66 @@
+{
+  "profile": "decision3-external-unit-boundary-v1",
+  "selection": {
+    "unit": "jev-d3-edge-known4-20261022-01.service",
+    "nonce": "jev-d3-boundary-95adf7f090e3b9c34430f9d458b2f577",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "memory_max_bytes": 85899345920,
+    "runtime_seconds": 7200,
+    "stop_seconds": 10
+  },
+  "invocation_id": "5b02ed105ae743f880d31801d646f151",
+  "actor": {
+    "pid": 88598,
+    "start_ticks": 1411199,
+    "pgid": 88598,
+    "sid": 88598,
+    "uid": 1001,
+    "state": "S",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-edge-known4-20261022-01.service"
+  },
+  "tracked_cohort": [
+    {
+      "pid": 88598,
+      "start_ticks": 1411199,
+      "pgid": 88598,
+      "sid": 88598,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-edge-known4-20261022-01.service"
+    }
+  ],
+  "before_stop": null,
+  "stop_result": null,
+  "after_stop": null,
+  "primary_error": {
+    "type": "ValueError",
+    "message": "Selected execution refused; see bounded stage evidence"
+  },
+  "closure_errors": [
+    {
+      "stage": "authenticated_stop",
+      "type": "ValueError",
+      "message": "Exact selected cgroup"
+    }
+  ],
+  "post_stop_terminal_verified": false,
+  "cgroup_absent": true,
+  "two_process_scans": [
+    {
+      "matches": [],
+      "unknown": []
+    },
+    {
+      "matches": [],
+      "unknown": []
+    }
+  ],
+  "sources_unchanged": true,
+  "whole_unit_exit_confirmed": false,
+  "observed_cgroup_cohort_exit_confirmed": false,
+  "no_escape_enforced": false,
+  "whole_tree_exit_confirmed": false,
+  "continuation_authorized": false,
+  "model_qualified": false,
+  "scope": "Authenticated selected unit and observed cgroup cohort only. The audited fork/setsid/empty-env case is covered; explicit delegated cgroup migration or user-manager requests are not prevented."
+}

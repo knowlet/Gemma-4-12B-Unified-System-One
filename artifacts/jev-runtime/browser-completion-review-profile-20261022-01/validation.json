@@ -1,0 +1,68 @@
+{
+  "schema_id": "jev-completion-review-client-validation-v1",
+  "created_at_utc": "2026-10-22T12:39:58.536740+00:00",
+  "source": {
+    "path": "artifacts/jev-runtime/browser-completion-review-profile-20261022-01/completion_review.py",
+    "sha256": "581ebf1d591aa7c2f2b7fb1fc562e028ea4923f10059e93bdd31095ab305e2e6",
+    "size_bytes": 11417
+  },
+  "tests_source": {
+    "path": "artifacts/jev-runtime/browser-completion-review-profile-20261022-01/test_completion_review.py",
+    "sha256": "33511d5d342fa1328fbfd611de4ccdf655aa957860f6a4eada3c3b8dbb5c51d6",
+    "size_bytes": 12791
+  },
+  "source_union": {
+    "path": "artifacts/jev-runtime/browser-completion-review-profile-20261022-01/source-union.json",
+    "sha256": "b54c6cf1f7b5ecd3f8215cc9053213c4c768bbacaf02f4f904807b30977f7da2",
+    "size_bytes": 2111
+  },
+  "CPU_tests": {
+    "count": 20,
+    "failures": 0,
+    "errors": 0,
+    "elapsed_seconds": 1.35,
+    "receipt": {
+      "path": "artifacts/jev-runtime/browser-completion-review-profile-20261022-01/cpu-tests-fixed.xml",
+      "sha256": "5cc19900dd10b1633b24342d70005816553d3590af57407f02bee34c4e2e6b61",
+      "size_bytes": 4131
+    },
+    "address_space_bytes": 1073741824,
+    "cpu_seconds": 30,
+    "wall_seconds": 45,
+    "core_limit": 0,
+    "fixture": "checked canonical Agent/choose and fake browser/native callbacks",
+    "initial18test_receipts": "Historical only, pre independent failed-policy accounting fix; not credited to final source"
+  },
+  "ruff": {
+    "result": "PASS",
+    "rayon_threads": 1,
+    "cpu_affinity": "0",
+    "address_space_limit": null,
+    "core_limit": 0
+  },
+  "independent_review": {
+    "path": "artifacts/jev-runtime/browser-completion-review-profile-20261022-01/independent-review.json",
+    "sha256": "321abfd5a53cd1ec86be335c2b25bcc2c918496385f87ae7eb5c7db7740de7dd",
+    "size_bytes": 2769
+  },
+  "preserved": {
+    "original_modules_unchanged": true,
+    "original_DONE_and_native_answer_separate": true,
+    "no_fabricated_navigation_operation": true,
+    "external_task_success_not_evaluated": true,
+    "all_native_review_binary_labels_and_order": true
+  },
+  "budgets": {
+    "counted_action_slots": 16,
+    "combined_logical_policy_and_review_attempt_slots": 32,
+    "failed_policy_attempts_counted": true,
+    "combined_policy_and_review_seconds": 20,
+    "HTTP_retries_backend_forwards_or_native_heads_bounded_by_client_slots": false
+  },
+  "actual_model_HTTP_browser_GPU_Comfy_service_calls": false,
+  "generic_native_server_route_qualified": false,
+  "selected_launch_bundle": false,
+  "quality_score": null,
+  "best_current_browser_score": "4/10 unchanged",
+  "followup": "Actual owned CPU Chromium composition proof is separate; actual model quality needs selected generic native route and complete matched benchmark"
+}

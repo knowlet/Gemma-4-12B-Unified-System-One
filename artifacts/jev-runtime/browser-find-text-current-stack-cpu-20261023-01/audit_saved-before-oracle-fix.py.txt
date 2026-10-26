@@ -1,0 +1,298 @@
+"""Read only saved owned-fixture evidence; never start actors or model imports."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from pathlib import Path
+
+HERE = Path(__file__).absolute().parent
+ROOT = HERE.parents[2]
+
+
+def need(value, reason):
+    if not value:
+        raise ValueError(reason)
+
+
+def sha(blob):
+    return hashlib.sha256(blob).hexdigest()
+
+
+def load(path):
+    blob = path.read_bytes()
+    need(len(blob) <= 8 * 1024**2, "Bounded saved evidence")
+    return json.loads(blob)
+
+
+def pin(path):
+    blob = path.read_bytes()
+    return {"sha256": sha(blob), "size_bytes": len(blob)}
+
+
+def audit(output):
+    output = Path(output).absolute()
+    need(
+        output.parent == HERE and not any(p.is_symlink() for p in (output, *output.parents)),
+        "Owned ordinary saved attempt",
+    )
+    receipt, ledger = load(output / "receipt.json"), load(output / "join-ledger.json")
+    need(
+        receipt["completed"] is True
+        and receipt["fixture_only"] is True
+        and receipt["quality_score"] is None,
+        "Completed fixture scope only",
+    )
+    need(
+        receipt["real_model_calls"] == receipt["comfy_calls"] == 0
+        and receipt["true_torch_imported"] is False
+        and receipt["whole_tree_exit_claimed"] is False,
+        "No model/Comfy/universal containment claim",
+    )
+    need(
+        receipt["actions"] == ["FIND_TEXT", "DONE"]
+        and receipt["viewport_before_after"] == [False, True],
+        "Physical FIND then fake completion",
+    )
+    need(
+        receipt["policy_http_calls"] == receipt["fake_model_generations"] == 2
+        and receipt["strict_helper_http_calls"] == 1,
+        "Expected actual HTTP counts",
+    )
+    need(
+        receipt["service_inverse"]["inverse_exact"]
+        and receipt["service_inverse"]["declared_edits"] == 1,
+        "Exact selected c513 API import seam",
+    )
+    need(
+        receipt["all_selected_sources_unchanged"]
+        and receipt["environment_restored"]
+        and receipt["browser_close_returned"]
+        and receipt["closed_observed_browser_processes"],
+        "Source and observed browser closure",
+    )
+    need(
+        receipt["all_owned_server_threads_sockets_closed"]
+        and not receipt["owned_threads_remaining"]
+        and len(receipt["servers"]) == 3,
+        "All own listeners/threads closed",
+    )
+    for row in receipt["servers"]:
+        need(
+            row["host"] == "127.0.0.1"
+            and row["thread_joined"]
+            and row["socket_fd_after_close"] == -1
+            and row["after_close_probe"]["refused"],
+            "Actual loopback thread/socket cleanup",
+        )
+    observed, closure = receipt["observed_browser_processes"], receipt["process_closure"]
+    need(
+        bool(observed)
+        and len(observed) == len(closure)
+        and len({(row["pid"], row["start_ticks"]) for row in observed}) == len(observed),
+        "Exact nonempty observed process cohort",
+    )
+    for original, row in zip(observed, closure, strict=True):
+        current = row["after"]
+        absent = current is None or (
+            current["pid"] == original["pid"] and current["start_ticks"] != original["start_ticks"]
+        )
+        need(
+            row["before"] == original and row["same_process_absent"] is absent and absent,
+            "Recomputed saved PID/start absence for every observed identity",
+        )
+    need(
+        receipt["resources"]["memory_global_hard_cap_claimed"] is False,
+        "Measured memory scope only",
+    )
+    need(
+        receipt["n3_fake_contexts"] == ["enter", "exit", "enter", "exit"]
+        and not receipt["observation_profile_errors"],
+        "Original prompt context and V7 runtime complete",
+    )
+    document = load(output / "owned-document.json")
+    before, after, final = (
+        load(output / name)
+        for name in ("before-state.json", "after-find-state.json", "final-state.json")
+    )
+    needle = document["needle"]
+    need(
+        needle not in before["page"]["text"]
+        and needle in after["page"]["text"]
+        and needle in final["page"]["text"],
+        "Saved actual visible observations transition",
+    )
+    need(
+        final["status"] == "done"
+        and [row["operation"] for row in final["history"]] == ["FIND_TEXT", "DONE"]
+        and len(final["text_calls"]) == 1,
+        "Saved original Agent action history",
+    )
+    need(
+        after["find_text_feedback"][-1]["status"] == "found"
+        and after["find_text_feedback"][-1]["query"] == needle
+        and after["find_text_feedback"][-1]["scroll_changed"] is True,
+        "Actual FIND feedback retained",
+    )
+    view0, view1 = ledger["viewport"]
+    need(
+        view0["value"]["in_view"] is False
+        and view1["value"]["in_view"] is True
+        and view1["value"]["y"] > view0["value"]["y"],
+        "CDP viewport and scroll evidence",
+    )
+    need(
+        [row["kind"] for row in ledger["model_adapter"]] == ["policy", "text", "policy"],
+        "Original model_adapter path order",
+    )
+    policy_records = [r for r in ledger["model_adapter"] if r["kind"] == "policy"]
+    joins = []
+    for index, record in enumerate(policy_records):
+        directory = output / "policy-service/http" / f"{index:04d}"
+        request_blob, response_blob = (
+            (directory / "request.bin").read_bytes(),
+            (directory / "response.bin").read_bytes(),
+        )
+        request, response, exchange = (
+            json.loads(request_blob),
+            json.loads(response_blob),
+            load(directory / "exchange.json"),
+        )
+        need(
+            record["request"] == request and record["response"] == response,
+            "Client and actual ASGI body equality",
+        )
+        actual_http = [r for r in ledger["real_http"] if r["url"] == record["endpoint"]][index]
+        need(
+            actual_http["method"] == "POST"
+            and actual_http["real_socket_transport"]
+            and actual_http["request_bytes_sha256"] == sha(request_blob)
+            and actual_http["response_bytes_sha256"] == sha(response_blob)
+            and actual_http["x_request_id"] == exchange["api_request_id"],
+            "Actual socket response header/body/server request-ID join",
+        )
+        need(
+            exchange["request"] == pin(directory / "request.bin")
+            and exchange["response"] == pin(directory / "response.bin")
+            and exchange["status"] == 200
+            and exchange["api_request_id"],
+            "Original server evidence pins/request ID",
+        )
+        need(
+            [a["http_status"] for a in record["transport_attempts"]] == [200],
+            "Original true-HTTP transport status",
+        )
+        need(
+            list(request["questions"]) == record["runtime_question_ids"]
+            and {k: list(v["criteria"]) for k, v in request["questions"].items()}
+            == record["runtime_candidate_labels"],
+            "Runtime question and candidate order preserved",
+        )
+        need(
+            response["answers"]["operation"]["choice"] == ("FIND_TEXT", "DONE")[index]
+            and set(response["answers"]) == {"operation"},
+            "Selected untargeted generated head only; no all-head numerical claim",
+        )
+        need(
+            response["generation"]["decoded_action"]
+            == {"operation": ("FIND_TEXT", "DONE")[index], "target": None},
+            "Actual current generated parser",
+        )
+        need(
+            response["generation"]["grammar"]["max_new_tokens"] == 32
+            and response["generation"]["grammar"]["max_legal_actions"] == 1205,
+            "Original generated grammar caps",
+        )
+        event_ids = [
+            e["request_id"] for e in ledger["server_events"] if e["event"] == "server_returned"
+        ]
+        need(exchange["api_request_id"] in event_ids, "Server API request ID joins returned event")
+        joins.append(
+            {
+                "index": index,
+                "request_sha256": sha(request_blob),
+                "response_sha256": sha(response_blob),
+                "api_request_id": exchange["api_request_id"],
+                "operation": response["answers"]["operation"]["choice"],
+            }
+        )
+    helper = ledger["helper"][0]
+    text_record = ledger["model_adapter"][1]
+    need(
+        helper["request"] == text_record["request"]
+        and helper["response"] == text_record["response"]
+        and helper["schema_valid"]
+        and helper["query"] == needle
+        and helper["model_numbers_fake"],
+        "Strict helper joins actual client request/response",
+    )
+    actual_text_http = [r for r in ledger["real_http"] if r["url"] == text_record["endpoint"]]
+    need(
+        len(actual_text_http) == 1
+        and actual_text_http[0]["request_bytes_sha256"] == helper["request_bytes_sha256"]
+        and actual_text_http[0]["status"] == 200
+        and actual_text_http[0]["real_socket_transport"],
+        "Actual strict-helper socket request join",
+    )
+    need(
+        helper["context"]["field"]["role"] == "browser_find_query"
+        and helper["context"]["goal"] == document["goal"],
+        "Strict original TEXT_VALUE context",
+    )
+    need(
+        [g["operation"] for g in ledger["fake_generations"]] == ["FIND_TEXT", "DONE"]
+        and all(
+            g["numerical_output_fake"]
+            and not g["real_weights_loaded"]
+            and all(t["accepted"] for t in g["allowed_token_checks"])
+            for g in ledger["fake_generations"]
+        ),
+        "Explicit fake numerical output consumes actual legal trie",
+    )
+    need(
+        not ledger["blocked_requests"]
+        and ledger["documents"]
+        and ledger["network"]
+        and ledger["cdp"],
+        "Own request/CDP evidence populated",
+    )
+    sources = load(output / "source-evidence.json")
+    need(
+        sources["fixture_source"]["sha256"]
+        == sources["reviewed_fixture_sha256"]
+        == sources["final_fixture_sha256"]
+        == receipt["reviewed_source_sha256"],
+        "Reviewed self source exact at admission and final closure",
+    )
+    for row in [sources["fixture_source"], *sources["selected_sources"]]:
+        need(
+            pin(ROOT / row["path"]) == {k: row[k] for k in ("sha256", "size_bytes")},
+            "Final selected source unchanged",
+        )
+    return {
+        "schema_id": "find-current-stack-cpu-saved-audit-v1",
+        "passed": True,
+        "fixture_only": True,
+        "quality_score": None,
+        "policy_request_joins": joins,
+        "strict_helper_join": True,
+        "viewport_before_after": [False, True],
+        "actions": ["FIND_TEXT", "DONE"],
+        "all_owned_listeners_threads_closed": True,
+        "observed_browser_pid_start_closure": len(receipt["process_closure"]),
+        "whole_tree_claim": False,
+        "numerical_model_outputs": "ALL_SIMULATED_NOT_MODEL_QUALITY",
+    }
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("output", type=Path)
+    args = parser.parse_args(argv)
+    print(json.dumps(audit(args.output), sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

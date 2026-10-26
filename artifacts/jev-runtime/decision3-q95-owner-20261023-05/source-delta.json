@@ -1,0 +1,31 @@
+{
+  "parent": "artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01/q95_owner.py",
+  "parent_sha256": "1e8cd00560f19d85ccdf2ff4b56b4334573b98240177218be430bae8a8c7054b",
+  "new_sha256": "62ac775cedd7d16864564955a40f86aee5a4e6240a8f8b715271749ecd80582b",
+  "edits": [
+    {
+      "old": "Source-only Q95 owner successor with bounded host-refusal diagnostics.\n\nNo launch entry/plan is supplied; inherited04 slots are historical and dead.",
+      "new": "Fresh selected Q95 owner with bounded host-refusal diagnostics.\n\nOnly explicit SHA-selected launch can create its own fifth unit/service slot."
+    },
+    {
+      "old": "SERVICE = FROZEN / \"serve-04\"",
+      "new": "SERVICE = FROZEN / \"serve-05\""
+    },
+    {
+      "old": "PROFILE = \"decision3-q95-host-diagnostics-source-only-v1\"",
+      "new": "PROFILE = \"decision3-q95-guarded-owner-host-diagnostics-v3\""
+    },
+    {
+      "old": "UNIT = \"jev-d3-q95-helper-20261022-04.service\"",
+      "new": "UNIT = \"jev-d3-q95-helper-20261023-05.service\""
+    },
+    {
+      "old": "Path(plan[\"output\"]).name == \"owner-04\"",
+      "new": "Path(plan[\"output\"]).name == \"owner-05\""
+    }
+  ],
+  "full_inverse_bytes_equal": true,
+  "full_inverse_AST_equal": true,
+  "entry_bytes_identical_to_parent": true,
+  "source_only_no_live_plan_or_actor": true
+}

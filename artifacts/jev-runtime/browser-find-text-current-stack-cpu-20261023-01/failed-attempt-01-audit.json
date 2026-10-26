@@ -1,0 +1,127 @@
+{
+  "actual01_contents_modified_by_audit": false,
+  "actual02_exists": false,
+  "actual_call_counts": {
+    "cdp": 0,
+    "documents": 0,
+    "fake_generations": 0,
+    "helper": 0,
+    "model_adapter": 0,
+    "real_http": 0
+  },
+  "entry_sha256": "e17a1235c2cb0b7bbd67603eaf450c6919fc634340dca5ea870fb0533b91fb84",
+  "environment_restored": true,
+  "error": {
+    "message": "Existing sixteen-action cap",
+    "notes": [],
+    "type": "ValueError"
+  },
+  "known_cause": "Canonical questions.py imports internalMAX_STEPS60. Original benchmark enforces outermax_steps16 but never assigns internal cap. Current0c663 selector requires internal16 and rejects genuine load_upstream default60.",
+  "ledger": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/actual-01/join-ledger.json",
+    "sha256": "7e88842c7b1db4172bb4bd22c1eb02b608786d9c43b325f7c53bc97785b2489a",
+    "size_bytes": 226
+  },
+  "next_step": "Await independently reviewed formal V7 selector successor; use it directly without a harness cap override, preserveactual01 and review new source before separately authorizedactual02.",
+  "nonbaseline_final_threads_observed_only": [],
+  "owned_identity_closure_now": [
+    {
+      "after": null,
+      "same_process_absent": true,
+      "selected": {
+        "pid": 287488,
+        "start_ticks": 5805949
+      }
+    },
+    {
+      "after": null,
+      "same_process_absent": true,
+      "selected": {
+        "pid": 287516,
+        "start_ticks": 5806308
+      }
+    },
+    {
+      "after": null,
+      "same_process_absent": true,
+      "selected": {
+        "pid": 287534,
+        "start_ticks": 5806317
+      }
+    },
+    {
+      "after": null,
+      "same_process_absent": true,
+      "selected": {
+        "pid": 287544,
+        "start_ticks": 5806402
+      }
+    }
+  ],
+  "process_exit_code": 1,
+  "quality_score": null,
+  "receipt": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/actual-01/receipt.json",
+    "sha256": "963eaf9552199774e724ddca2b43b5c4110f761170129a5a5d17d03b1fc684c7",
+    "size_bytes": 17312
+  },
+  "reviewed_source": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/independent-review.json",
+    "sha256": "2aa80437eb97f15761e0a58c6edd80696c38eb60d8cd1dea55adf0e638e9c324",
+    "size_bytes": 15592
+  },
+  "same_processes_absent": true,
+  "schema_id": "find-current-stack-cpu-failed-attempt01-audit-v1",
+  "source_evidence": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/actual-01/source-evidence.json",
+    "sha256": "79849b652d1a37ff232095dee56945df9b16c5159543bbe0b3620e3bd6e35d31",
+    "size_bytes": 9466
+  },
+  "sources_and_streamed_chromium_unchanged": true,
+  "status": "FAILED_SOURCE_PROFILE_COMPATIBILITY_BEFORE_AGENT_ACTIONS",
+  "three_owned_server_socket_thread_closure": [
+    {
+      "after_close_probe": {
+        "connect_errno": 111,
+        "refused": true
+      },
+      "errors": [],
+      "host": "127.0.0.1",
+      "name": "actual-current-policy-asgi",
+      "port": 46041,
+      "socket_fd_after_close": -1,
+      "socket_fd_at_start": 3,
+      "thread_joined": true,
+      "thread_started": true
+    },
+    {
+      "after_close_probe": {
+        "connect_errno": 111,
+        "refused": true
+      },
+      "errors": [],
+      "host": "127.0.0.1",
+      "name": "document",
+      "port": 34433,
+      "socket_fd_after_close": -1,
+      "socket_fd_at_start": 7,
+      "thread_joined": true,
+      "thread_started": true
+    },
+    {
+      "after_close_probe": {
+        "connect_errno": 111,
+        "refused": true
+      },
+      "errors": [],
+      "host": "127.0.0.1",
+      "name": "strict-text-helper",
+      "port": 42253,
+      "socket_fd_after_close": -1,
+      "socket_fd_at_start": 8,
+      "thread_joined": true,
+      "thread_started": true
+    }
+  ],
+  "true_torch_imported": false
+}

@@ -13,6 +13,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from local_evidence import require_local_evidence
 
 from s1 import browser_action_adapter as action
 from s1 import browser_native_action_data as data_api
@@ -28,6 +29,10 @@ from s1.jev_action_grammar import LegalActionTokenTrie
 from s1.jev_generated import INSTRUCTIONS, POLICY, format_action_request
 
 ROOT = Path(__file__).absolute().parents[1]
+HISTORICAL_MANIFEST = (
+    ROOT
+    / "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/actual-admit-02/mixed-manifest-A.json"
+)
 
 
 @pytest.fixture(autouse=True)
@@ -301,8 +306,7 @@ def check(identity):
 
 @pytest.fixture(scope="module")
 def full179(tmp_path_factory):
-    if not (ROOT / data_api.COMPONENT["path"]).is_file():
-        pytest.skip("Ignored original historical DATA is not distributed")
+    require_local_evidence(ROOT / data_api.COMPONENT["path"], HISTORICAL_MANIFEST)
     data = data_api.load_historical_data(ROOT)
     root = tmp_path_factory.mktemp("native-artifact")
     descriptor = data_api.freeze_historical_data(data, root / "inputs/historical")
@@ -512,6 +516,7 @@ def reseal(root, mutate):
     write(root / "adapter/manifest.json", manifest)
 
 
+@pytest.mark.local_evidence
 def test_full179_native_branch_is_distinct_and_relocatable(artifact):
     verified = action.verify_action_adapter(
         artifact / "adapter", expected_prompt_format=NATIVE_FORMAT
@@ -534,6 +539,7 @@ def test_full179_native_branch_is_distinct_and_relocatable(artifact):
         "source-pin",
     ],
 )
+@pytest.mark.local_evidence
 def test_resealed_native_contract_corruption_precedes_tensor_decode(
     artifact, monkeypatch, mutation
 ):
@@ -562,6 +568,7 @@ def test_resealed_native_contract_corruption_precedes_tensor_decode(
         action.verify_action_adapter(artifact / "adapter")
 
 
+@pytest.mark.local_evidence
 def test_native_raw_mismatch_fails_before_tensor_decode(artifact, monkeypatch):
     monkeypatch.setattr(
         action, "_tensor_bytes", lambda _: pytest.fail("Wrong format reached tensors")
@@ -574,6 +581,7 @@ def test_native_raw_mismatch_fails_before_tensor_decode(artifact, monkeypatch):
     "mutation",
     ["duplicate-update", "gradient", "loss", "trace", "development-bool", "quality-claim"],
 )
+@pytest.mark.local_evidence
 def test_actual_ledger_corruption_cannot_publish_native_complete(artifact, mutation):
     def mutate(receipt, _manifest):
         if mutation in {"duplicate-update", "gradient", "loss"}:
@@ -599,6 +607,7 @@ def test_actual_ledger_corruption_cannot_publish_native_complete(artifact, mutat
         action.verify_action_adapter(artifact / "adapter")
 
 
+@pytest.mark.local_evidence
 def test_original_frozen_data_and_legacy_kind_bypass_refuse(artifact):
     manifest = json.loads((artifact / "adapter/manifest.json").read_bytes())
     first = next(iter(manifest["native_data"]["files"]))
@@ -612,6 +621,7 @@ def test_original_frozen_data_and_legacy_kind_bypass_refuse(artifact):
         action.verify_action_adapter(artifact / "adapter")
 
 
+@pytest.mark.local_evidence
 def test_verified_raw_parent_can_initialize_distinct_native_child(artifact, tmp_path):
     from s1.contracts import DecisionRequest
 
@@ -818,6 +828,7 @@ def test_default_native_resource_path_does_not_invoke_resident_validator(residen
 
 
 @pytest.mark.parametrize("replay_succeeds", [False, True])
+@pytest.mark.local_evidence
 def test_resident_resource_replay_precedes_tensor_decode_and_discloses_profile(
     artifact, monkeypatch, replay_succeeds
 ):

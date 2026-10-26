@@ -1,0 +1,46 @@
+--- artifacts/jev-runtime/llama-cpp-owner-20261023-04/test_controller.py
++++ artifacts/jev-runtime/llama-cpp-owner-20261023-05/test_controller.py
+@@ -64,9 +64,9 @@
+         ):
+             c.run(types.SimpleNamespace(expected_entry_sha256="0" * 64))
+ 
+-    def test_original_boundary_accepts_selected_30_and_7200_unchanged(self):
++    def test_original_boundary_accepts_selected_30_7200_10800_unchanged(self):
+         owner = c.load_fixed("boundary")
+-        for runtime in (30, 7200):
++        for runtime in (30, 7200, 10800):
+             selected = c.selection(
+                 {
+                     "nonce": "jev-d3-boundary-" + "a" * 32,
+@@ -145,8 +145,8 @@
+                     path, "0" * 64 if bad_sha else c.sha(blob), [c.ref(path)]
+                 )
+ 
+-    def test_exact_spec_accepts_runtime30_and7200(self):
+-        for runtime in (30, 7200):
++    def test_exact_spec_accepts_runtime30_7200_10800(self):
++        for runtime in (30, 7200, 10800):
+             value = spec()
+             value["runtime_seconds"] = runtime
+             self.assertEqual(self.selected(value), value)
+@@ -157,7 +157,8 @@
+ 
+     def test_spec_refuses_runtime_or_file_cap_relaxation(self):
+         for key, value in (
+-            ("runtime_seconds", 10800),
++            ("runtime_seconds", 10801),
++            ("runtime_seconds", 10799),
+             ("runtime_seconds", True),
+             ("file_size_max_bytes", 8 * 1024**2),
+             ("file_size_max_bytes", 40 * c.GIB),
+@@ -655,8 +656,8 @@
+ 
+     def test_cpu4_successor_keeps_original_reserve_and_unique_unit(self):
+         self.assertEqual(c.reserve(130595864576), 26119172916)
+-        self.assertEqual(c.UNIT, "jev-d3-llama-cpp-cpu4-3g-20261023-04.service")
+-        self.assertEqual(c.PROFILE, "llama-cpp-cpu4-3g-command-owned-v1")
++        self.assertEqual(c.UNIT, "jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service")
++        self.assertEqual(c.PROFILE, "llama-cpp-cpu4-3g-long-command-owned-v1")
+         self.assertEqual(c.SPEC_PROFILE, "llama-cpp-command-spec-v1")
+ 
+ 

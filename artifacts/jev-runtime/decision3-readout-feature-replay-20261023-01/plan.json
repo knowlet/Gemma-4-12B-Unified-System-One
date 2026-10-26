@@ -1,0 +1,121 @@
+{
+  "schema": "decision3-original-readout-feature-replay-plan-v1",
+  "profile": "decision3-edge-original-readout-feature-replay-cpu-2g-20261023-v1",
+  "actor_sha256": "852404f61534828c7574a5be1465a99435a87b55b7e6948896a8196c9bb0370d",
+  "observer_sha256": "d5dbcbc77775d0dcd6c42345b4bf0e633bb3d54f9a9b4fbdfda4bb6109873783",
+  "fixture_sha256": "990300078cd14ea16b00fdc2d73a82614326e82df7251fe655b995adcbcd6332",
+  "native_actor_sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b",
+  "native_plan_path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+  "native_plan_sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8",
+  "source_records": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/actor.py",
+      "size": 16126,
+      "sha256": "852404f61534828c7574a5be1465a99435a87b55b7e6948896a8196c9bb0370d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/observer.py",
+      "size": 6416,
+      "sha256": "d5dbcbc77775d0dcd6c42345b4bf0e633bb3d54f9a9b4fbdfda4bb6109873783"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/fixture.json",
+      "size": 1351,
+      "sha256": "990300078cd14ea16b00fdc2d73a82614326e82df7251fe655b995adcbcd6332"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size": 30552,
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+      "size": 7734,
+      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source_audit.py",
+      "size": 5079,
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
+      "size": 30406,
+      "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/freeze.json",
+      "size": 3646,
+      "sha256": "9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a"
+    }
+  ],
+  "model_key": "edge",
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "owner_unit": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+  "owner_profile": "llama-cpp-cpu4-2g-long-command-owned-v1",
+  "owner_runtime_seconds": 10800,
+  "reserve_bytes": 26119172916,
+  "memory_max_bytes": 2147483648,
+  "startup_available_bytes": 28266656564,
+  "swap_max_bytes": 0,
+  "cpu_affinity": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "cpu_quota_percent": 400,
+  "runtime_python": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+  "requests": 1,
+  "head_counts": [
+    2,
+    3,
+    4
+  ],
+  "batch_size_maximum": 4,
+  "actual_partial_rows_required": 3,
+  "temperature": 1.0,
+  "wall_seconds": 120,
+  "call_seconds": 20,
+  "absolute_tolerance": 1e-06,
+  "relative_tolerance": 1e-05,
+  "comparison": "abs(replay-native) <= 1e-6 + 1e-5*abs(native); exact ordered argmax",
+  "timing_scope": {
+    "whole": "execute entry through final state write and watchdog cleanup, followed by a literal monotonic refusal",
+    "prediction": "prepare, hook registration, original native call, replay, raw/features/state retention, hook and watchdog cleanup; followed by a literal monotonic refusal",
+    "startup_is_not_a_20_second_claim": true
+  },
+  "payload_authentication": "Unchanged native02 plan fully authenticates all20 model files+manifest+runtime/owner sources before constructor and again after replay; no payload opened by this builder",
+  "feature_commit_status": "PENDING",
+  "training_eligible": false,
+  "external_acceptance_required": [
+    "root exit0",
+    "accepted unchanged original owner receipt",
+    "authenticated original closure",
+    "pre/post full model/manifest/runtime/source auth",
+    "independent actual proof review"
+  ],
+  "semantic_expected_answers": null,
+  "benchmark_scores": null,
+  "http_browser_or_training_qualification": false
+}

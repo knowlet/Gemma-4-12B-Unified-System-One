@@ -1,0 +1,14 @@
+{
+  "schema_id": "nativeV2-find-source-research-v1",
+  "primary_local_sources": [
+    "scripts/jev_native_v2_browser.py",
+    "src/s1/jev_generated.py",
+    "src/s1/jev_action_grammar.py",
+    "src/s1/browser_action_prompt.py",
+    "tests/test_jev_generated.py"
+  ],
+  "existing_reuse": "Reviewed6a8 private protocol/API source factory and original c513 service bodies; one explicit local import seam",
+  "reason": "Current4/10 nativeV2 browser path is grammar-constrained generated JSON with N3 LoRA. FIND requires one extra untargeted grammar option rather than a classifier/LM-head resize. Actual model willingness to choose FIND is unmeasured.",
+  "input_semantics": "Preserve all submitted heads and candidate order in prompt+complete legal grammar; existing generated policy returns only selected heads and deterministic decoded point masses. No fake unused native posteriors.",
+  "scope": "New explicit source-only profile; no model weights, runtime launch, Q95 seed, service listener, browser, Comfy or production tasks"
+}

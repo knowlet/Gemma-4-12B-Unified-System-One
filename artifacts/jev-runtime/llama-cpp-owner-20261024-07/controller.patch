@@ -1,0 +1,91 @@
+--- frozen-owner06/controller.py
++++ candidate-owner07/controller.py
+@@ -17,8 +17,9 @@
+ 
+ HERE = Path(__file__).absolute().parent
+ ROOT = HERE.parents[2]
+-UNIT = "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service"
+-PROFILE = "llama-cpp-cpu4-2g-long-command-owned-v1"
++UNIT = "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service"
++PROFILE = "llama-cpp-cpu4-2g-coexist-command-owned-v1"
++HOST_OBSERVATION_POLICY = "comfy-observed-cpu-coexist-v1"
+ CPU_CORES = frozenset({16, 17, 18, 19})
+ CPU_ALLOWED_LIST = "16-19"
+ SPEC_PROFILE = "llama-cpp-command-spec-v1"
+@@ -123,6 +124,40 @@
+     return MEMORY_MAX_BYTES
+ 
+ 
++def comfy_observation(row):
++    running, pending = row["comfy_running"], row["comfy_pending"]
++    need(
++        type(running) is int and running >= 0 and type(pending) is int and pending >= 0,
++        "Typed nonnegative observed Comfy counts",
++    )
++    state, evidence = row["comfy_state"], row.get("comfy_evidence")
++    need(type(evidence) is dict, "Explicit original Comfy observation evidence")
++    if state in {"http_idle", "http_busy"}:
++        need(
++            evidence.get("transport") == "HTTP"
++            and type(evidence.get("http_status")) is int
++            and evidence["http_status"] == 200
++            and type(evidence.get("response_sha256")) is str
++            and re.fullmatch(r"[0-9a-f]{64}", evidence["response_sha256"]) is not None
++            and type(evidence.get("comfy_running")) is int
++            and type(evidence.get("comfy_pending")) is int
++            and evidence["comfy_running"] == running
++            and evidence["comfy_pending"] == pending,
++            "Exact typed HTTP200 Comfy count evidence",
++        )
++        need(
++            (state == "http_busy") == (running > 0 or pending > 0),
++            "Consistent observed Comfy HTTP state/counts",
++        )
++    else:
++        need(
++            state == "absent_confirmed"
++            and running == pending == 0
++            and evidence.get("transport") == "connection_refused",
++            "Original confirmed absence or explicit observed HTTP state required",
++        )
++
++
+ def host(observer, boot_id, total=None, *, initial=False):
+     fixed_memory()
+     row = observer.observe(boot_id)
+@@ -132,11 +167,7 @@
+             row["boot_id"] == boot_id and (total is None or row["mem_total_bytes"] == total),
+             "Same actual boot/host",
+         )
+-        need(
+-            row["comfy_state"] in {"http_idle", "absent_confirmed"}
+-            and row["comfy_running"] == row["comfy_pending"] == 0,
+-            "Original read-only Comfy idle gate",
+-        )
++        comfy_observation(row)
+         required = reserve(row["mem_total_bytes"]) + (INITIAL_HOST_EXTRA_BYTES if initial else 0)
+         need(
+             type(row["mem_available_bytes"]) is int and row["mem_available_bytes"] >= required,
+@@ -144,12 +175,14 @@
+         )
+     except BaseException as error:
+         error.evidence = {
++            "host_observation_policy": HOST_OBSERVATION_POLICY,
+             "observation": row,
+             "required_available_bytes": required,
+             "initial": initial,
+         }
+         raise
+     return {
++        "host_observation_policy": HOST_OBSERVATION_POLICY,
+         "observation": row,
+         "reserve_bytes": reserve(row["mem_total_bytes"]),
+         "required_available_bytes": required,
+@@ -1066,6 +1099,7 @@
+                     "unit_started": False,
+                     "torch_imported": False,
+                     "unit": UNIT,
++                    "host_observation_policy": HOST_OBSERVATION_POLICY,
+                     "memory_max_bytes": fixed_memory(),
+                     "initial_host_extra_bytes": INITIAL_HOST_EXTRA_BYTES,
+                     "runtime_choices_seconds": [30, 7200, 10800],

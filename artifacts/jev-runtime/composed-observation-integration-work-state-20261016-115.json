@@ -1,0 +1,99 @@
+{
+  "schema_id": "composed-observation-integration-work-state-v1",
+  "sequence": 115,
+  "created_at_utc": "2026-10-22T12:24:24.522653+00:00",
+  "previous_state": {
+    "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-114.json",
+    "sha256": "587e435f0707bb82de8f8af924563bc718b8af5fc99a5c6cefdf7e512189fadc",
+    "size_bytes": 6976
+  },
+  "goal_status": "active",
+  "status": "Q95_retry02_interrupted_on_actual_Comfy_work_both_owned_units_closed_CPU_navigation_and_diagnostics_progress",
+  "completed_results": {
+    "Benchmark_Heaven": "195/231 =84.4155844155844%",
+    "coherence_mini": "41.26307189542484/100",
+    "Gemma_NF4_raw": "2/10",
+    "Gemma_NF4_V2": "4/10 best current browser result",
+    "Gemma_NF4_V2_feedback": "3/10 not promoted",
+    "D3_Edge": "observed0/10; finalization incomplete, unqualified"
+  },
+  "Gemma_Q95_retry02": {
+    "complete_groups": 0,
+    "planned_tasks": 10,
+    "quality_score": null,
+    "durable_partial_attempts": 1,
+    "verified_complete_attempts": 0,
+    "native_stop": "Comfy_became_busy_stop_own_unit_only",
+    "native_HTTP200_candidates": 15,
+    "outer_HTTP200": 14,
+    "outer_selected503": 1,
+    "selected503_client_delivery_proven": false,
+    "real_Q95_text_generations": 0,
+    "audit": {
+      "path": "artifacts/jev-runtime/native-v2-q95-pin-successor-20261022-01/independent-audit-q95-partial-02.json",
+      "sha256": "6b61a5f13e9e0b0357f29f9e6ee3f2c964101982bb39cd82808d50d32abe3a38",
+      "size_bytes": 68500
+    },
+    "both_selected_units_and_cohorts_closed": true,
+    "native_sources_unchanged": 900,
+    "Q95_sources_unchanged": 478
+  },
+  "helper04": {
+    "closed": true,
+    "seed_dead": true,
+    "exact_historical_refusal_stage": "unproven; generic ValueError/final_host null",
+    "no_reuse_of_prepared_D3_plans": true
+  },
+  "host_diagnostics_component": {
+    "source": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01/q95_owner.py",
+      "sha256": "1e8cd00560f19d85ccdf2ff4b56b4334573b98240177218be430bae8a8c7054b",
+      "size_bytes": 31657
+    },
+    "validation": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01/validation.json",
+      "sha256": "84517c01e6b2c697b0728daa943ae54c8c2ff52e2c0feec70fdd6c4e8a29e385",
+      "size_bytes": 2959
+    },
+    "independent_review": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-host-diagnostics-20261022-01/independent-review.json",
+      "sha256": "173885fb8b58ed91db3e14043f3c5c31d651b3fc1d1e4e54cd7c7081d766fdf7",
+      "size_bytes": 789
+    },
+    "CPU_tests": 11,
+    "original_admission_error_parity_comparisons": 58,
+    "cleanup_and_thresholds_unchanged": true,
+    "actual_host_or_model_calls": false,
+    "launch_plan_present": false
+  },
+  "find_text_component": {
+    "source": {
+      "path": "artifacts/jev-runtime/browser-find-text-profile-20261022-01/find_profile.py",
+      "sha256": "98c7fa29265e2c0c25bdcae0825522cebcd35dc86c16ed53aa7609bd52e6a08d",
+      "size_bytes": 13344
+    },
+    "validation": {
+      "path": "artifacts/jev-runtime/browser-find-text-profile-20261022-01/validation.json",
+      "sha256": "6687baee73ff4e462d27fef0e1e4aa346414d7422530d22de6ad30055f53b3c1",
+      "size_bytes": 4219
+    },
+    "CPU_tests": 26,
+    "server_bootstrap_qualified": false,
+    "quality_score": null,
+    "real_CPU_Chromium_fixture": "running owned localhost only; no models or production benchmark"
+  },
+  "resource_status": {
+    "last_actual_observation": "Comfy busy, running1 pending0; all our selected model jobs closed",
+    "Comfy_operations": "read-only observation; no stop/unload/queue mutation",
+    "new_GPU_work": "must wait for observed idle and applicable memory admission",
+    "all04_bound_D3_prepared_plans": "dead; future fresh owner seed and units required"
+  },
+  "all_six_Decision3_complete": false,
+  "other_models_beaten": false,
+  "next": [
+    "Finish actual CPU Chromium FIND_TEXT functional proof and commit explicit component",
+    "Implement explicitly selected source/wire/bootstrap capability integration without gold or judge feedback",
+    "Continue separate measured serial fullD3 constructor+publisher48 preparation, score null",
+    "When Comfy observed idle and memory permits, prepare fresh Q95 owner and resume matched ten-task controls and serial Decision3 tests"
+  ]
+}

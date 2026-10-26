@@ -1,0 +1,62 @@
+{
+  "CUDA": {
+    "allocated_bytes": 33555968,
+    "free_bytes": 986263552,
+    "initialized": true,
+    "max_allocated_bytes": 33555968,
+    "max_reserved_bytes": 35651584,
+    "metrics_seconds": 0.07681487800437026,
+    "reserved_bytes": 35651584,
+    "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+    "total_bytes": 130595864576
+  },
+  "details": {
+    "all_exact_16": true,
+    "closed_form_expected_sha256": "1cb8e75fc462d0af48a69d1c2ecc3b67abdb9358db5a4d38a1c5b1dbbe6fa003",
+    "completed": true,
+    "dtype": "bfloat16",
+    "output_sha256": "1cb8e75fc462d0af48a69d1c2ecc3b67abdb9358db5a4d38a1c5b1dbbe6fa003",
+    "readback_bytes": 512,
+    "scope": "Tiny fill/matmul and512B CPU readback only; no model transfer, layer, accuracy or throughput qualification.",
+    "shape": [
+      16,
+      16
+    ]
+  },
+  "elapsed_seconds": 3.700502203995711,
+  "host": {
+    "MemAvailable_bytes": 28649144320,
+    "MemTotal_bytes": 130595864576
+  },
+  "memory": {
+    "monotonic_after": 66812.220627516,
+    "monotonic_before": 66812.219137647,
+    "own_cgroup": {
+      "memory_current_bytes": 585285632,
+      "memory_peak_bytes": 585285632,
+      "memory_stat": {
+        "anon": 526675968,
+        "file": 54824960,
+        "kernel": 3530752,
+        "pgfault": 157411,
+        "pgmajfault": 1,
+        "shmem": 46333952
+      },
+      "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+    },
+    "process": {
+      "RssAnon_bytes": 526671872,
+      "RssFile_bytes": 277299200,
+      "RssShmem_bytes": 46333952,
+      "VmRSS_bytes": 850305024,
+      "VmSwap_bytes": 0
+    },
+    "scope": "Sequential non-atomic own-process/own-cgroup snapshot; page cache release and disk IO bytes are not inferred."
+  },
+  "monotonic": 66812.297637066,
+  "peak_RSS_bytes": 850128896,
+  "ru_majflt": 1,
+  "ru_minflt": 157319,
+  "snapshot_scope": "Sequential non-atomic own process/cgroup, host and global CUDA samples; owner admission remains external.",
+  "stage": "tiny-readback-oracle"
+}

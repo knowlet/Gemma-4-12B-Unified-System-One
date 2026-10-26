@@ -1,0 +1,126 @@
+{
+  "audit_elapsed_seconds": 4.039542847999655,
+  "coherence_mini": {
+    "cases": 240,
+    "dimensions": {
+      "BAT": 0.4083333333333333,
+      "CHO": 0.2222222222222222,
+      "LOG": 0.6791666666666667,
+      "MEA": 0.16176470588235292,
+      "REP": 0.5916666666666667
+    },
+    "errors": 0,
+    "full_coverage_checks": 50,
+    "graded_overall": 0.888685278520654,
+    "interval": [
+      0.38425464489041505,
+      0.43795052110231086
+    ],
+    "official_scores_and_seeded_bootstrap_recomputed_exact": true,
+    "outcomes": 1468,
+    "overall": 0.41263071895424835,
+    "planned_tests": 1200,
+    "relations": 50,
+    "requests": 1248,
+    "skipped_outcomes": 0,
+    "truncated": false
+  },
+  "execution": {
+    "actor": {
+      "pgid": 44378,
+      "pid": 44378,
+      "sid": 44378,
+      "start_ticks": 596815
+    },
+    "checkpoint_pin_matches_plan_and_worker_unchanged_flag": true,
+    "completed_predictions": 1479,
+    "constructor_calls": 1,
+    "external_whole_unit_closure_verified": true,
+    "final_host_state": "absent_confirmed",
+    "final_postexit_cgroup_counters": null,
+    "invocation_id": "c2e9dfa2813147fb94fd3b7c0f2c1114",
+    "journal_started_and_returned_sequence_complete": true,
+    "large_checkpoint_independently_reread": false,
+    "metadata_unchanged": true,
+    "plan_source_pins_rehashed_before_and_after": 203,
+    "runtime_and_score_sources_unchanged": true
+  },
+  "inputs": [
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-07.json",
+      "sha256": "821600d11c09ff56601669592950450622d36a31d2c3d7068019f3414261ea80",
+      "size_bytes": 59299
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/root-external-closure-02b.json",
+      "sha256": "87a3fef31e202a263ed3a9a552e81255cc956fc5cec705e63de236137ed42caf",
+      "size_bytes": 1173135
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-02/stage-results.json",
+      "sha256": "1a3e742c7c8893c3b51fac82f11efb08062897b903721e9a68577a250e002c90",
+      "size_bytes": 43507
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-02/coherence-mini.json",
+      "sha256": "3de15e3a481d0afdd13050868571eab52152353ede16e1432b7c6f4ad10a8426",
+      "size_bytes": 1079698
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-02/receipt.json",
+      "sha256": "d1f401cdc6ff3bb53371db9ebf532892d2a847f6713dab960f1e34149ad26ad0",
+      "size_bytes": 49240
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-02/public231/manifest.json",
+      "sha256": "f15875d1a9bec5229e5f53b5d6943dc3df8998cd6e09a237cef27ac9426c4bd8",
+      "size_bytes": 45758
+    }
+  ],
+  "limitations": [
+    "Released legacy public231 screening; potential prior exposure, not sealed evaluation.",
+    "Official coherence-mini aggregate, not the full coherence suite or an official leaderboard rank.",
+    "Accuracy/calibration and coherence are separate scores; no composite or rank computed.",
+    "Local cost remains unknown and loaded predict latency excludes model loading and client round trip.",
+    "Checkpoint unchanged is supported by the worker's final hash and matching plan pin; this audit did not reread 23.9 GB weights.",
+    "External closure confirms recorded unit/process absence; no final zero-OOM claim after cgroup removal."
+  ],
+  "official_aggregate_sources": [
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/score.py",
+      "sha256": "74ad886d4f1e249b80096575f0e6b7674630e1331057926a2806f92d75100e07",
+      "size_bytes": 10611
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/taxonomy.py",
+      "sha256": "b2ec01efc881c14a6c6d06d32c2f20dab58754651f1061bc31e1e758ba0487e8",
+      "size_bytes": 19646
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/summarize.py",
+      "sha256": "aa5f24da407d004cd80bad1cd957b6987aba152591084c096d1de51dd9775cbe",
+      "size_bytes": 3940
+    }
+  ],
+  "profile": "released-gx10-bf16-causal-multislot-20261022-v1",
+  "public231": {
+    "accuracy": 0.8441558441558441,
+    "accuracy_percent": 84.41558441558442,
+    "artifact_hashes_verified": 233,
+    "attempted": 231,
+    "brier_mean": 0.22862292231064194,
+    "correct": 195,
+    "ece": 0.055990034980433284,
+    "loaded_predict_latency": {
+      "n": 231,
+      "p50_s": 0.18407084899990878,
+      "p95_s": 1.7977478799998607
+    },
+    "macro_accuracy": 0.8507143403170235,
+    "official_summary_recomputed_exact": true,
+    "planned": 231,
+    "valid": 231
+  },
+  "raw_request_answer_content_exported": false,
+  "verdict": "CLEAR"
+}

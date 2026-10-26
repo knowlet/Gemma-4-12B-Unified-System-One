@@ -1,0 +1,239 @@
+{
+  "schema": "gx10-cpu-deadlines-local-service-access-milestone-v1",
+  "created_at_utc": "2026-10-23T13:39:39.406974+00:00",
+  "precommit_head": "a60b9ab3da82f94cd55c21afb8d49822e5f5347a",
+  "report": {
+    "path": "docs/validation/2026-10-23/gx10-cpu-deadlines-and-local-service-access.md",
+    "sha256": "d2c86bf8ea5307de037f343eaaaddc31dff8625c88725171ac6f36a095fcbdcd",
+    "size_bytes": 4144
+  },
+  "status": "closed_catalog_startup_failure_diagnosed_source_repairs_peer_reviewed_new_model_launch_still_gated",
+  "commits_already_pushed": {
+    "deadline_and_2GiB_profiles": "795641c20820fecad4b5dc81da49c8c6b209ea8f",
+    "real_HTTP_probe_source": "a60b9ab3da82f94cd55c21afb8d49822e5f5347a"
+  },
+  "closed_actual_catalog04": {
+    "completed": false,
+    "root_exit_code": 1,
+    "root_wall_seconds": 1.7452771209937055,
+    "child_exit_code": 1,
+    "child_wall_seconds": 0.13873888899979647,
+    "failure": "original read-only user service status query in deliberately clean child environment; missing local user-bus environment",
+    "native_hash_or_runtime_import_reached": false,
+    "model_load_generation_HTTP_or_benchmark_reached": false,
+    "authenticated_original_closure": true,
+    "two_empty_original_process_scans": true,
+    "selected_cgroup_absent": true,
+    "universal_no_escape_or_whole_tree_claim": false
+  },
+  "resource_contract": {
+    "CPU_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "CPU_quota_percent": 400,
+    "memory_max_bytes": 2147483648,
+    "memory_swap_max_bytes": 0,
+    "original_host_reserve_bytes": 26119172916,
+    "required_initial_available_bytes": 28266656564,
+    "ComfyUI_idle_required": true,
+    "owner_boundary_observer_modified": false,
+    "ComfyUI_service_queue_cache_actions": false
+  },
+  "budgets": {
+    "native_smoke_per_call_seconds": 20,
+    "native_smoke_whole_seconds": 120,
+    "catalog_whole_seconds": 600,
+    "helper_whole_seconds": 180,
+    "helper_complete_ASGI_request_seconds": 20,
+    "upstream_client_timeout_seconds": 25,
+    "browser_decisions_per_task": 16,
+    "full_benchmark_callback_seconds": 180,
+    "full_benchmark_whole_seconds": 10000,
+    "full_benchmark_owner_seconds": 10800,
+    "full_benchmark_callbacks": 1479,
+    "full_benchmark_context_limit": 16384,
+    "success_checks_after_cleanup": true
+  },
+  "bounded_stdlib_tests_by_profile": {
+    "owner06": 37,
+    "native02": 20,
+    "bootstrap01": 15,
+    "campaign03": 20,
+    "HTTPsmoke01": 36
+  },
+  "test_count_scope": "Distinct profile executions with inherited tests; no claim these are disjoint NN trials. Source/AST/Ruff/format/dry checks only.",
+  "latest_original_gate": {
+    "reference": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/root-wrapped-initial-gate-01.json",
+      "sha256": "2f0e5b17fb363c85734038a0565d89f1afe3645feaa4c1da5efc72da22f7e13e",
+      "size_bytes": 5286
+    },
+    "created_at_utc": "2026-10-23T13:36:12.210223+00:00",
+    "passed": false,
+    "observation": {
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "mem_total_bytes": 130595864576,
+      "mem_available_bytes": 25108037632,
+      "comfy_running": 1,
+      "comfy_pending": 0,
+      "comfy_state": "http_busy",
+      "comfy_evidence": {
+        "transport": "HTTP",
+        "comfy_running": 1,
+        "comfy_pending": 0,
+        "http_status": 200,
+        "response_sha256": "bfa1e04a2c8e233f84f60864ff87882943b13f6005fcb90bdcbcc9f97a761f61"
+      }
+    },
+    "new_actual_output_or_model_job_created": false
+  },
+  "active_owned_model_job": null,
+  "new_model_NN_ASGI_HTTP_browser_qualification": false,
+  "scores_separate": {
+    "Decision3_Edge_native_batch4_CPU4_2GiB": {
+      "Benchmark_Heaven_public231": null,
+      "JevBench_coherence_MINI": null
+    },
+    "Decision3_Lite_CPU4": {
+      "Benchmark_Heaven_public231": null,
+      "JevBench_coherence_MINI": null
+    }
+  },
+  "historical_complete_Gemma_BF16_separate": {
+    "Benchmark_Heaven_public231": {
+      "correct": 195,
+      "total": 231,
+      "accuracy_percent": 84.4155844155844
+    },
+    "JevBench_coherence_MINI": {
+      "score": 41.26307189542484,
+      "scale": 100,
+      "confidence_95_percent": [
+        38.4255,
+        43.7951
+      ]
+    },
+    "source_report": {
+      "path": "docs/validation/2026-10-22/jevbench-both-fresh-gx10-results.md",
+      "sha256": "c72f44e0d5c6e2a6a2eea7c4a35835a50fe0fbbef47a62a26dd5a7be6e4ca6a4",
+      "size_bytes": 2292
+    },
+    "inherit_as_new_CPU_or_Decision3_result": false
+  },
+  "source_and_small_actual_evidence": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/source-freeze.json",
+      "sha256": "7a83281f3ce088e29c0c1fa833b617a0eecd9d26214cbda4ebf97314c3f8bdbb",
+      "size_bytes": 2573
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/independent-resource-source-review-01.json",
+      "sha256": "e22017ac53c0364e009f67d61e65cc799baef6909f3fd18d1e491774a273e891",
+      "size_bytes": 4487
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/freeze.json",
+      "sha256": "9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a",
+      "size_bytes": 3646
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/independent-source-review.json",
+      "sha256": "5bbed9b963b16ad9f0c4c9981a9b27f9e45dd49f971616d6261c8996f378e5d6",
+      "size_bytes": 13427
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/independent-root-selection-review.json",
+      "sha256": "f62ba6708a931d7381a276b532ea74fb7d373ef0f75bcccfbea3ea3ff887d28f",
+      "size_bytes": 17168
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/root-edge-smoke-command-spec.json",
+      "sha256": "168af260c93c9904640045f01c6c295d3eb9a50ccf4792f97de56db2d704856f",
+      "size_bytes": 10418
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/root-initial-gate-02.json",
+      "sha256": "6ffd2652fa1fcbf60c21d55904496d7a8236bddab9fdeeefb133fcc7fb7ac4b2",
+      "size_bytes": 5282
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/freeze.json",
+      "sha256": "e8b1813cee43bccf3363d3b040009bb90a85176d7bf7e99623134fe8263652f6",
+      "size_bytes": 4627
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-03/independent-source-review.json",
+      "sha256": "8bb442c2fcc14923ee48e6f42fda01ce58ecd4dc562b14b2b0e7bc767a33ce39",
+      "size_bytes": 18778
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/freeze.json",
+      "sha256": "ed29ffa8851231b7c9c87df1a33a98d555304739144e315e262996b6aa292215",
+      "size_bytes": 2926
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/independent-source-review.json",
+      "sha256": "eca7ae5942df13407417e2859c9304c29b08c3db3aa7cbe8a4d11fe2736eff7c",
+      "size_bytes": 6540
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/root-readonly-bus-comparison-01.json",
+      "sha256": "e8017d1f74c7e2d7d7ce4da4e5b2ebc599c97a615f2bb7c7da83f5b9902daefa",
+      "size_bytes": 1597
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/root-stdlib-supervisor-features-01.json",
+      "sha256": "12c7e4967969ff8d0527c3c7bba670682edf76bdd9da5a1a2d5b440633e2b4ba",
+      "size_bytes": 1342
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/independent-failed-actual04-review.json",
+      "sha256": "471d71621ad43a39d6df1f6a1369956928fcec0b7f36e960c9906dfe0ee2066a",
+      "size_bytes": 8098
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/root-catalog-wrapper-command-spec-01.json",
+      "sha256": "fa2eca8103d7acef63a1bb707d7ad10bdd3bbbffeb809f7a9b7503ac2d10149c",
+      "size_bytes": 12678
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/independent-wrapped-command-selection-review-01.json",
+      "sha256": "06d0db900a15e126de3d479656c03bb05b91418c314c2c55025976c0f223eb30",
+      "size_bytes": 11825
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/root-wrapped-initial-gate-01.json",
+      "sha256": "2f0e5b17fb363c85734038a0565d89f1afe3645feaa4c1da5efc72da22f7e13e",
+      "size_bytes": 5286
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/root-execution-catalog02-04.json",
+      "sha256": "992f719a48699099a18d99a3473bdcdf5cd1811056fb42967656b7fcbff00783",
+      "size_bytes": 1649
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-04/receipt.json",
+      "sha256": "228aa9336b26d80f132a5ac0bf6a181536c624190f7f78fa59dc5c39961de9f4",
+      "size_bytes": 42300
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-04/external-boundary-closure.json",
+      "sha256": "9bf1e80fd69c522ae6067951722cef0a1cf7f4965e2ad6913476af70db6bbda1",
+      "size_bytes": 8225
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/freeze.json",
+      "sha256": "2d1a0bb0a8140fa7bf58778f76568ae95595fac13b72405bbf77ff6b58bffb8b",
+      "size_bytes": 6702
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/independent-source-review.json",
+      "sha256": "a3522eb748c56a37c674636e485f73fa49e40f4d19761b6f83837dac397160a3",
+      "size_bytes": 29969
+    }
+  ],
+  "goal_complete_or_competitor_victory": false
+}

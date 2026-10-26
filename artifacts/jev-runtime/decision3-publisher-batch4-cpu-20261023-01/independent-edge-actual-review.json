@@ -1,0 +1,652 @@
+{
+  "schema": "independent-native-batch4-synthetic-result-audit-v1",
+  "review_kind": "closed_real_smoke_result",
+  "created_at_utc": "2026-10-23T11:30:35.330778+00:00",
+  "reviewer": "/root/cpu_followup_review",
+  "result": "PASS_WITH_LIMITS",
+  "model_key": "edge",
+  "profile": "decision3-edge-publisher-cpu-batch4-synthetic-20261023-v1",
+  "model_revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+  "model_identity_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+  "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+  "owner_unit": "jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+  "memory_max_bytes": 3221225472,
+  "batch_size": 4,
+  "qualification": {
+    "smoke_complete": true,
+    "external_authenticated_closure": true,
+    "one_actual_constructor": true,
+    "two_actual_four_row_events": true,
+    "durable_call_20s": true,
+    "whole_command_120s": true,
+    "final_full_model_and_sources_authenticated": true
+  },
+  "artifact_refs": {
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/edge-plan.json",
+      "sha256": "be0ce6e6c7fb3588218d51f884e182ec10b54b8547fd3840533b60b6ebb01ae7",
+      "size_bytes": 28338
+    },
+    "state": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/edge-probe/state.json",
+      "sha256": "b652295f165359725c14eb3433f22eaee8ebbbe07ab78a7b4ac079a7959c6247",
+      "size_bytes": 18913
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/receipt.json",
+      "sha256": "8dbb71102cbb65c283084d8546b523a18d6e65a6575b18246d841a1d315c1890",
+      "size_bytes": 70095
+    },
+    "root_execution": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/root-execution-batch4-edge-02.json",
+      "sha256": "43c25e8491541b131c8ce2ac288ec99f1271adb969758fd60da83d32b957be79",
+      "size_bytes": 959
+    },
+    "spec": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/root-edge-smoke-command-spec-02.json",
+      "sha256": "886e239da01dfb5d373be0d172058250553f7143f9638a89f2942b255143c362",
+      "size_bytes": 9949
+    },
+    "closure_observation": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/external-boundary-closure.json",
+      "sha256": "36aea8b425e344660d17c44731ad0a214b7953d97452f400d334d3541bd1b76e",
+      "size_bytes": 3790
+    },
+    "sealed_config": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/sealed-config.json",
+      "sha256": "fd5214521363ca2a8706e90bac7100aae96c6805d4b68a0d2d531a5d018eec5d",
+      "size_bytes": 12158
+    },
+    "command_output": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/command-01-output.json",
+      "sha256": "af03f9534c9e2f6ad9d7b20c50a485366ec5050c18abe6f5a877e5f5a79d3584",
+      "size_bytes": 3293
+    },
+    "actor_exit": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/actor-exit.json",
+      "sha256": "8e232fa9ed8b4a1addc4095a073a42446d0edbe617515b08cd8c278e15bbfefd",
+      "size_bytes": 3024
+    },
+    "admission": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/admission.json",
+      "sha256": "6ba70919485481b1aae00749d3e22d058837590ca577ffc43ce4bbe95ddf6608",
+      "size_bytes": 470
+    }
+  },
+  "scope": {
+    "closed_Edge_actual01_synthetic_evidence_only": true,
+    "active_Lite_actual02_or_other_active_outputs_read": false,
+    "benchmark_tasks_gold_or_prediction_cache_read": false,
+    "model_tokenizer_tensor_headers_or_payload_read": false,
+    "framework_native_runtime_model_or_tests_executed": false,
+    "observer_unit_process_cgroup_or_network_calls": false,
+    "git": false,
+    "source_or_existing_evidence_changes": false
+  },
+  "observed": {
+    "root_exit": 0,
+    "root_wall_seconds": 17.13310387900856,
+    "complete_command_wall_seconds": 15.683747766001034,
+    "actor_phase_seconds": 14.414825761996326,
+    "publisher_constructor_seconds": 3.1212554480007384,
+    "native_runtime_loaded_seconds_narrower_scope": 1.59,
+    "model_loads": 1,
+    "native_calls": 2,
+    "questions_per_call": 4,
+    "input_tokens_per_question": {
+      "color": 121,
+      "shape": 128,
+      "number": 135,
+      "direction": 121
+    },
+    "input_tokens_per_call": 505,
+    "actual_first_layer_events": [
+      {
+        "shape": [
+          4,
+          135,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "cpu",
+        "observed_monotonic": 103853.936839392,
+        "inputs_or_outputs_modified": false
+      },
+      {
+        "shape": [
+          4,
+          135,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "cpu",
+        "observed_monotonic": 103854.862262551,
+        "inputs_or_outputs_modified": false
+      }
+    ],
+    "both_calls_native_contract_recomputed_valid": true,
+    "repeated_identical_input_raw_responses_equal": true,
+    "CPU_counter_deltas": [
+      {
+        "call_index": 0,
+        "owned_counter_span_seconds": 0.9441371529974276,
+        "owned_CPU_seconds": 3.597523,
+        "mean_logical_CPU_cores": 3.8103817740660415,
+        "percent_of_four_core_quota": 95.25954435165104,
+        "durable_validation_seconds": 0.9441853939933935,
+        "scope": "Own unit counter span includes native inference and response validation, plus wrapper/evidence activity; not isolated native kernel profiling."
+      },
+      {
+        "call_index": 1,
+        "owned_counter_span_seconds": 0.9179145969974343,
+        "owned_CPU_seconds": 3.49738,
+        "mean_logical_CPU_cores": 3.8101365981543225,
+        "percent_of_four_core_quota": 95.25341495385806,
+        "durable_validation_seconds": 0.9183590909960913,
+        "scope": "Own unit counter span includes native inference and response validation, plus wrapper/evidence activity; not isolated native kernel profiling."
+      }
+    ],
+    "kernel_memory_peak_bytes": 1487900672,
+    "memory_cap_bytes": 3221225472,
+    "final_memory_events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "all_saved_own_memory_max_oom_kill_counters_zero": true,
+    "own_actor_counter_snapshots_checked": 6,
+    "owner_properties_snapshots_checked": 18,
+    "kernel_cpu_max": [
+      "400000",
+      "100000"
+    ],
+    "observed_main_thread_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "parent_postlaunch_host_summary": {
+      "runtime_host_gate_count": 19,
+      "phase_counts": {
+        "readiness": 2,
+        "preexec": 1,
+        "loop": 16
+      },
+      "min_MemAvailable_bytes": 28742537216,
+      "min_margin_vsR_bytes": 2623364300,
+      "scope": "All successful executed post-launch readiness/preexec/loop host-gate samples, including discarded raw samples; failing gates stay in primary evidence; initial/final separate; not a continuous-time minimum"
+    },
+    "retained_raw_loop_host_observations_checked": 16,
+    "closure_finished_before_hold_deadline_seconds": 3.9920670419960516,
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "nonce": "jev-d3-boundary-f1c7e84f1d351382dfe5800b010fa188",
+    "invocation_id": "d661f632dd874587a1290394da75310b",
+    "model_actor_pid_start": [
+      480525,
+      10384279
+    ],
+    "wrapper_pid_start": [
+      480518,
+      10384262
+    ],
+    "unit_closure": {
+      "authenticated_stop": true,
+      "two_empty_scans": true,
+      "cgroup_absent": true,
+      "no_escape_enforced": false,
+      "whole_tree_exit_confirmed": false,
+      "continuation_authorized": false,
+      "model_qualified": false
+    }
+  },
+  "authentication_evidence": {
+    "initial_and_final20_model_manifest_SHA_authentication_by_frozen_owned_actor": true,
+    "runtime_sources_and_owner_source_identities_authenticated_by_actor": true,
+    "all43_outer_selected_sources_rehashed_by_reviewer_and_owner_sources_unchanged": true,
+    "model20_stat_identities_checked_only_by_reviewer": [
+      {
+        "name": "chat_template.jinja",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "config.json",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "d3_engine.py",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "d3_fast.py",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "d3_format.py",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "d3_kernels.py",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "d3_runtime.py",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "d3_server.py",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "decision_config.json",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "merges.txt",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "model-00001-of-00001.safetensors",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "model.safetensors.index.json",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "modeling_d3.py",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "pipeline_d3.py",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "preprocessor_config.json",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "readout.safetensors",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "tokenizer.json",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "tokenizer_config.json",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "video_preprocessor_config.json",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      },
+      {
+        "name": "vocab.json",
+        "stat_matches": true,
+        "new_payload_hash_by_reviewer": false
+      }
+    ],
+    "actor_and_plan_source_policy_previously_independently_reviewed": true,
+    "AST_fingerprint_note": "Actual Python3.13 ast.dump fingerprints differ from preparation interpreter fingerprints; full publisher sourceSHA adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917 is identical and actual AST structural checks passed. Do not treat interpreter-dependent method AST hashes as cross-version source identity."
+  },
+  "preserved_pre_admission_failure": {
+    "artifact": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/root-execution-batch4-edge-01.json",
+      "sha256": "fa812f783e765cff9ef5098ff3b991b593d35ad150f307c7411c4e9d4c8b5fa9",
+      "size_bytes": 2283
+    },
+    "exit_code": 1,
+    "wall_seconds": 0.0722305669914931,
+    "reason": "Old spec duplicated mandatory controller source; generic selection refused before new unit/output/model. It is not counted as a native smoke request or successful qualification."
+  },
+  "limits": [
+    "Short developer-only four-question text requests, lengths121/128/135/121, establish genuine nativefour-row execution and this measured short-request budget only. No semantic-quality target, benchmarkscore, longcontext/255option/raggedtail/generalfit guarantee, browser20qualification or batch1parity is claimed.",
+    "CPU values are selected-unit usage deltas around call+validation/evidence; not isolated kernel timing or universal all-thread affinity proof. Peak and memory.events are own-unit retained cumulative evidence; sampled host observations are not continuous reserve proofs.",
+    "Final full payload SHA authentication is evidenced by reviewed frozen owned actor and successful finalchecks, not a second independent unowned payload hash; binaries remain stat identity scope.",
+    "External closure covers exact selected unit and observed cohort. Original noescape/whole-tree/continuation/modelqualified false flags remain unchanged.",
+    "Original batch1 incomplete/cancelled coherence receives no complete score or qualification from this Edge synthetic audit.",
+    "This independent result audit does not itself select or authorize a future campaign. A future root exact command/plan audit, this exact audit/stateSHA prerequisite, fresh admission and unchanged harness/scoring/cache rules remain necessary."
+  ],
+  "source_and_evidence_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/receipt.json",
+      "sha256": "8dbb71102cbb65c283084d8546b523a18d6e65a6575b18246d841a1d315c1890",
+      "size_bytes": 70095
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/sealed-config.json",
+      "sha256": "fd5214521363ca2a8706e90bac7100aae96c6805d4b68a0d2d531a5d018eec5d",
+      "size_bytes": 12158
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/actor-exit.json",
+      "sha256": "8e232fa9ed8b4a1addc4095a073a42446d0edbe617515b08cd8c278e15bbfefd",
+      "size_bytes": 3024
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/actor.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/actor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/admission.json",
+      "sha256": "6ba70919485481b1aae00749d3e22d058837590ca577ffc43ce4bbe95ddf6608",
+      "size_bytes": 470
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/bootstrap-identity.json",
+      "sha256": "06000706a3c5fd58362f366ef859ba493e9c6a51d4679772c182b4d1370178ed",
+      "size_bytes": 1914
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/command-01-intent.json",
+      "sha256": "d884d2d9ed50e78813c2b595682331cf732d8179ff3ea53a7b14f8624bae8599",
+      "size_bytes": 1213
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/command-01-output.json",
+      "sha256": "af03f9534c9e2f6ad9d7b20c50a485366ec5050c18abe6f5a877e5f5a79d3584",
+      "size_bytes": 3293
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/command-01-started.json",
+      "sha256": "57d4a7a9dd586e29d236107cd964fe0e73fe89005da6785cb7a3cf100d58b4db",
+      "size_bytes": 1271
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/command-01.stdout",
+      "sha256": "46ad96718b352d913ecbc81f1f0fbd255f937975e84a907b79ed3d843d320565",
+      "size_bytes": 215
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/command-01.stderr",
+      "sha256": "1219e76f97f0b8540c939b0cff30faa4b96abf2feeb3c2f7fa23a7188fc498e4",
+      "size_bytes": 601
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/external-boundary-closure.json",
+      "sha256": "36aea8b425e344660d17c44731ad0a214b7953d97452f400d334d3541bd1b76e",
+      "size_bytes": 3790
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/launch-intent.json",
+      "sha256": "45dee0c5df53aeee5d4f02cc2e258ca6661a9e4819e768e9e8ff675136b526ca",
+      "size_bytes": 2903
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/unit-readback.json",
+      "sha256": "d206dc2b9aeb0d91594527f02137421ea12b102099ef8323503df473abf9a384",
+      "size_bytes": 2552
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/edge-probe/state.json",
+      "sha256": "b652295f165359725c14eb3433f22eaee8ebbbe07ab78a7b4ac079a7959c6247",
+      "size_bytes": 18913
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/edge-probe/call-0-raw.json",
+      "sha256": "253d61329e27f58eff1c0d6613174a1e8deaef87a5416e76da76f3620711aa65",
+      "size_bytes": 1210
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01/edge-probe/call-1-raw.json",
+      "sha256": "253d61329e27f58eff1c0d6613174a1e8deaef87a5416e76da76f3620711aa65",
+      "size_bytes": 1210
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/root-execution-batch4-edge-02.json",
+      "sha256": "43c25e8491541b131c8ce2ac288ec99f1271adb969758fd60da83d32b957be79",
+      "size_bytes": 959
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/root-execution-batch4-edge-01.json",
+      "sha256": "fa812f783e765cff9ef5098ff3b991b593d35ad150f307c7411c4e9d4c8b5fa9",
+      "size_bytes": 2283
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/edge-plan.json",
+      "sha256": "be0ce6e6c7fb3588218d51f884e182ec10b54b8547fd3840533b60b6ebb01ae7",
+      "size_bytes": 28338
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/root-edge-smoke-command-spec-02.json",
+      "sha256": "886e239da01dfb5d373be0d172058250553f7143f9638a89f2942b255143c362",
+      "size_bytes": 9949
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+      "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e",
+      "size_bytes": 40319
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+      "size_bytes": 38483
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/MODEL_MANIFEST.json",
+      "sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+      "size_bytes": 11428
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/chat_template.jinja",
+      "sha256": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
+      "size_bytes": 7755
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/config.json",
+      "sha256": "5e529d9aea2f8d387750acf5b02cc32a47d7e87dc65d6d008fba98e5d15acc4d",
+      "size_bytes": 2572
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_engine.py",
+      "sha256": "086238942762df45047a32cd9a8e2bedd9b63167eb40be260c776de567979f53",
+      "size_bytes": 4413
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_fast.py",
+      "sha256": "68a1fb9a2c3bde9ac2763bf504decae592ca12722698fbde1b39a31262955535",
+      "size_bytes": 22331
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_format.py",
+      "sha256": "3badfbc70561bb3f5b8ec16a11d2c455b96ddb32caace0a8a54ca102eae1f3fa",
+      "size_bytes": 7008
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_kernels.py",
+      "sha256": "8f7534ca1e1846ebf7c4c73058002f3be4dbf0d5d426f0815150ae0cbe7677bd",
+      "size_bytes": 16129
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_runtime.py",
+      "sha256": "adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917",
+      "size_bytes": 95505
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_server.py",
+      "sha256": "766a20a69101e36ab0535a1ec683379db422380a83091f0eccd7e82edb6a02de",
+      "size_bytes": 17705
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/decision_config.json",
+      "sha256": "30b6095b945d5a93697868afdf9be9123ea892085fbaff3078112c48da20dc6b",
+      "size_bytes": 5504
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/model.safetensors.index.json",
+      "sha256": "7d3951baba643a2c4fe2263d8602ef37b1c1f804b58949a5469449da6a588b03",
+      "size_bytes": 25448
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/modeling_d3.py",
+      "sha256": "f8f8db23ff58f1a990ffa24977d744a50e1b4446d02a64c22070967705b6dbef",
+      "size_bytes": 12079
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/pipeline_d3.py",
+      "sha256": "4f9297c7c74e596e9b67df91a1e6823cfada48bf781336f141974ff6a2f1038e",
+      "size_bytes": 2936
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/preprocessor_config.json",
+      "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+      "size_bytes": 390
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/tokenizer_config.json",
+      "sha256": "49e2b6e395f959f077f1e992b338919c0d4a9732fc6e613995e06557f843500c",
+      "size_bytes": 16709
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/video_preprocessor_config.json",
+      "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+      "size_bytes": 385
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/actor.py",
+      "sha256": "ec38584ccfc08d26d74081161a206a9fd4ee544e8bf35351e91f18c0b6256344",
+      "size_bytes": 27032
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/freeze.json",
+      "sha256": "19e1224dcdce91a3b89893d1ebc6a1df423f1d31f765562838ea1dfb6a9b1d5c",
+      "size_bytes": 1932
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/publisher-source-audit.json",
+      "sha256": "d99ae49e7a2a5e9701497c67fe3ae179ee89a4a68446f68ea039e11ba112bc90",
+      "size_bytes": 3924
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/source_audit.py",
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3",
+      "size_bytes": 5079
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/validation.json",
+      "sha256": "15c8e25768e2bdafdfbae36f6d0c1f9403b50a59775dcd654a7d96d9ce8ea3d1",
+      "size_bytes": 3375
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01/actor.py",
+      "sha256": "33859d8b57bc906e477dce6ebf9d76ba4175ce775abb55cd9c42510f6de0bc9e",
+      "size_bytes": 24848
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/source-freeze-02.json",
+      "sha256": "b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe",
+      "size_bytes": 2351
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/accelerate-1.15.0.dist-info/METADATA",
+      "sha256": "64e744885238d853870093f1d4526eb93ac6ae8a5420a2b3f864fe5d16189d37",
+      "size_bytes": 19669
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/huggingface_hub-1.33.0.dist-info/METADATA",
+      "sha256": "bee565776d66f486d224f74024b656a69ed42e2639d80b18811fca4365adc42e",
+      "size_bytes": 16334
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/safetensors-0.8.0.dist-info/METADATA",
+      "sha256": "645be7b8d55e91534f991d144dc9e279581ea8dbea1a8c5b0be14e529d01e345",
+      "size_bytes": 4189
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/integrations/hub_kernels.py",
+      "sha256": "c1eafefe0cbdf7f0deaa21b1ef6cb6d7c6082b3f486651d069ff38fcf3e53c95",
+      "size_bytes": 44974
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/masking_utils.py",
+      "sha256": "50a737f63d8c778a5597fa34ac139049af921f44958205e3e1c29fe2bae77254",
+      "size_bytes": 80403
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/modeling_utils.py",
+      "sha256": "38c2bd02ed7af229f54e2f02dae65663be7af29ed2c9498bd1c460cf60fbb62d",
+      "size_bytes": 268806
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/models/qwen2/tokenization_qwen2.py",
+      "sha256": "fac4e6576bfe2369731be147a4e530f262bdf32f2ac50436f96f0d8bdd2fc628",
+      "size_bytes": 3323
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/models/qwen3_5/configuration_qwen3_5.py",
+      "sha256": "19966c3200cee92cc4bccaef5f94550c56d731dbf03858a9bd2ed6aebcc3f7da",
+      "size_bytes": 8395
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/models/qwen3_5/modeling_qwen3_5.py",
+      "sha256": "762feb6c7426a7f15b5bf830df54c07438bf9e7c27b8cdb23179045920412c3b",
+      "size_bytes": 95685
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/processing_utils.py",
+      "sha256": "53ffe4236eca38eea4142315c0b98bfebc18859812df620b136bac928723d6b5",
+      "size_bytes": 119367
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/tokenization_utils_base.py",
+      "sha256": "e7eb23b77be31b251570936ca74b2a3f2c04f1a44a13aa079ac4957535916a4b",
+      "size_bytes": 182553
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers-5.17.0.dist-info/METADATA",
+      "sha256": "cd295c5ad2c605e3c04456740df174e6a1bf5418eb2563788dc2163253f6d882",
+      "size_bytes": 32230
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers-5.17.0.dist-info/RECORD",
+      "sha256": "f61866605f910b9ed836194ee4007d0bc8c106498857b51a6d3dfce4d85a380f",
+      "size_bytes": 502625
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers-5.17.0.dist-info/licenses/LICENSE",
+      "sha256": "77fd4710def9ec3c0f6225800e0235f15a425abd4a8b03559127fcd782612049",
+      "size_bytes": 11418
+    }
+  ],
+  "all_read_refs_unchanged_before_after_audit": true,
+  "review_writing_status": "ALL STOPPED after this independent receipt; no active or saved evidence edits."
+}

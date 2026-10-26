@@ -6,6 +6,7 @@ import json
 from types import SimpleNamespace
 
 import pytest
+from local_evidence import require_local_evidence
 
 from s1 import browser_native_resources as r
 
@@ -420,8 +421,14 @@ def test_fixed_component_capture_is_separate_and_corruption_refuses(tmp_path):
         r.verify_components(destination, descriptor)
 
 
+@pytest.mark.local_evidence
 def test_optin_real_source_and_all179_capture_reaches_pre_model_sentinel(tmp_path, monkeypatch):
     """Real source/data/component capture; only unit/checkpoint/constructor are fakes."""
+    require_local_evidence(
+        r.ROOT
+        / "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01"
+        / "actual-admit-02/mixed-manifest-A.json"
+    )
     import importlib.metadata
 
     import jev_browser_fit_native_actions as fitter

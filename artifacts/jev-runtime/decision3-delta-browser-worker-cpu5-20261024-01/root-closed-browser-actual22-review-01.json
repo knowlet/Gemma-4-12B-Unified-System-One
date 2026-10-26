@@ -1,0 +1,164 @@
+{
+  "schema": "root-closed-frozen-delta-cpu5-browser-actual22-v1",
+  "status": "CANDIDATE_EXECUTION_PATH_VERIFIED_STRICT_BROWSER_DIAGNOSTIC_FAIL",
+  "authority": "root",
+  "root_exit_code": 1,
+  "owner_completed": false,
+  "original_positive_scoped_closure": true,
+  "independent_actual_review_claimed": false,
+  "separate_reviewer_actual_bytes_read": false,
+  "source_peer_review_scope": "source only",
+  "source_records_authenticated": 63,
+  "model_records_authenticated": 20,
+  "runtime_records_authenticated": 28,
+  "runtime_SHA_records": 22,
+  "runtime_stat_only_records": 6,
+  "model_loads": 1,
+  "candidate_alias": "d3-edge-dsl01-train-delta-cpu5-candidate",
+  "candidate_capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-frozen-delta-candidate-capability-01.json",
+    "sha256": "239165d486bad16963a6e5c94c1f9503fc145ea5b85b114e9fbf94d84eb1fd76",
+    "size_bytes": 2556
+  },
+  "numeric_acceptance": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-numeric-qualification-cpu5-20261024-01/root-accepted-delta-numeric-01.json",
+    "sha256": "91f80677a7956dbdee721661c3f20b8dfcbf5df8d7948b7221debdbd84d174d1",
+    "size_bytes": 12363
+  },
+  "calls": [
+    {
+      "index": 1,
+      "http_status": 200,
+      "client_seconds": 2.333650436019525,
+      "actual_shape": [
+        2,
+        578,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_native_logits_and_distributions_joined": true,
+      "root_FP64_softmax_max_probability_error": 7.396118120728268e-09
+    },
+    {
+      "index": 2,
+      "http_status": 200,
+      "client_seconds": 2.2242236489837524,
+      "actual_shape": [
+        2,
+        545,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_native_logits_and_distributions_joined": true,
+      "root_FP64_softmax_max_probability_error": 1.2444185404358876e-08
+    },
+    {
+      "index": 3,
+      "http_status": 200,
+      "client_seconds": 2.473302887985483,
+      "actual_shape": [
+        2,
+        569,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_native_logits_and_distributions_joined": true,
+      "root_FP64_softmax_max_probability_error": 7.2231710057657494e-09
+    },
+    {
+      "index": 4,
+      "http_status": 200,
+      "client_seconds": 2.5264509100234136,
+      "actual_shape": [
+        2,
+        595,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_native_logits_and_distributions_joined": true,
+      "root_FP64_softmax_max_probability_error": 8.3455644617203e-09
+    }
+  ],
+  "operation_sequence": [
+    "CLICK",
+    "CLICK",
+    "CLICK",
+    "BLOCKED"
+  ],
+  "trusted_clicks": 3,
+  "wrong_clicks": 1,
+  "completion_text_reached_next_model_inputs": [
+    false,
+    true,
+    false,
+    true
+  ],
+  "final_status": "blocked",
+  "strict_success": false,
+  "browser_score": null,
+  "benchmark_scores": null,
+  "training_eligible": false,
+  "exposed_diagnostic_may_not_enter_training": true,
+  "same_sequence_as_prior_original_d3_diagnostic": true,
+  "model_plus_browser_observed_unit_peak_bytes": 1367556096,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "worker_seconds_before_final_write": 23.56090176998987,
+  "root_seconds": 26.414619291987037,
+  "all_four_HTTP_candidate_joins_performed_by_root": true,
+  "independent_extra_encoder_or_FP32_execution": false,
+  "refs": {
+    "root_terminal": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/root-execution-delta-browser-22.json",
+      "size_bytes": 1718,
+      "sha256": "fa1089675b0670126cb92485cf97dd5ba40d6f52ab90590bfb090c4118506101"
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-22/receipt.json",
+      "size_bytes": 111835,
+      "sha256": "e059b3e0f984aa7847099e6c90c3a2022554dbea9bc6ecea55711385cda0b972"
+    },
+    "closure": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-22/external-boundary-closure.json",
+      "size_bytes": 10155,
+      "sha256": "40815dce6dc491510de97ecee0528561e5d6ef690b18786a0ac3dea1a7942106"
+    },
+    "worker": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-22/delta-browser-candidate/worker-receipt.json",
+      "size_bytes": 10427,
+      "sha256": "53a9e3786b37e62df884a9e9bb4d3973656bb2fd6bbbdd84f06f2253b0baa4e7"
+    },
+    "caller_report": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-22/delta-browser-candidate/browser/report.json",
+      "size_bytes": 386162,
+      "sha256": "8671dba68a64682e56972ca90c348538efa1856cf212618322c9db9fd9b6cd60"
+    },
+    "spec": {
+      "path": "artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/root-command-spec-02.json",
+      "size_bytes": 13244,
+      "sha256": "0ecf0256e3f9dd0c790df68326a9daf8fc41457305b3ebca3ec618ad72ee8381"
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/plan-01.json",
+      "size_bytes": 13001,
+      "sha256": "db62ad581f7556a70104117884603e2404477cbcfc9866e8807e8284374ea476"
+    },
+    "audit_source": {
+      "path": "artifacts/jev-runtime/decision3-delta-browser-worker-cpu5-20261024-01/root-closed-browser-actual22-audit-01.py",
+      "size_bytes": 25088,
+      "sha256": "ab974287cd9affacefceceae4b62492df5db34eb81cd43376232698765ff4b23"
+    }
+  },
+  "raw_states_responses_probabilities_features_or_model_bytes_included": false,
+  "scope": "Real HTTP/choose/Agent/Chromium wiring and strict exposed two-control task failure. Full same candidate artifact and original byte/source/model identities checked; root joins all four adapted logits, legal native distributions and unchanged wire values. Independent FP64 witness here is softmax of actual retained logits, not new h/matmul replay. Not an official/unseen/browser-quality or benchmark win."
+}

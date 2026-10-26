@@ -1,0 +1,123 @@
+{
+  "schema_id": "original-comfy-idle-gate-source-semantics-review-v1",
+  "status": "SOURCE_ONLY_NO_PROVEN_FALSE_POSITIVE_NO_GATE_CHANGE",
+  "reviewed_sources": [
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "size_bytes": 38483,
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45"
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "size_bytes": 2196,
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+      "size_bytes": 40319,
+      "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+    }
+  ],
+  "conclusion": "A successful http_busy observation with running1/pending0 means the HTTP200 JSON response contained one queue_running list item and zero queue_pending list items. It does not mean a Python process classifier guessed there was one Comfy job. Source inspection finds no count-arithmetic bug and cannot establish whether an actual reported item was current, stale, from a scheduled/old submission, or served by the intended application.",
+  "count_semantics": {
+    "source": "comfy_observer.py:88-106,888-897",
+    "initial_url": "http://127.0.0.1:8188/queue",
+    "method": "Bare urllib.request.urlopen URL call (normal GET path); no POST/mutation call in this branch.",
+    "successful_reply_requires": [
+      "reply.status == 200",
+      "response <= 1048576 bytes",
+      "JSON top level type exactly dict",
+      "queue_running and queue_pending values type exactly list",
+      "shared observation time budget still positive at subsequent checks",
+      "same expected boot and unchanged MemTotal across observation"
+    ],
+    "counts": {
+      "comfy_running": "len(value['queue_running'])",
+      "comfy_pending": "len(value['queue_pending'])"
+    },
+    "busy": "Either list length nonzero => http_busy; both zero => http_idle.",
+    "item_validation": "List items are not inspected or validated; lengths count items even if an item's own shape/content would not represent an active physical computation.",
+    "stored_evidence": [
+      "HTTP transport marker",
+      "http_status200",
+      "two list lengths",
+      "SHA256 of exact raw HTTP body"
+    ],
+    "not_stored_by_queue_helper": "Raw queue content, job identifiers, user/client identity, timestamps, prompts and scheduled/old-job origin are not returned by _queue."
+  },
+  "endpoint_identity": {
+    "established_by_source": "Fixed initial loopback address, port8188 and /queue path; successful response status200 and two typed list fields.",
+    "not_established": [
+      "No listener PID/executable/cgroup or Comfy source/version binding on successful HTTP path.",
+      "No authentication token, application-specific signature or server identity handshake.",
+      "No final response URL/geturl equality check in reviewed source.",
+      "No explicit custom opener/no-proxy/no-redirect policy in reviewed source; no claim that a redirect/proxy actually occurred.",
+      "No response freshness timestamp, job state, GPU activity or submitter/scheduler provenance is validated."
+    ],
+    "scope": "These are source limits, not evidence that the intended endpoint was impersonated, redirected, stale, cached or incorrect."
+  },
+  "system_services_authority": {
+    "source": "comfy_observer.py:266-423,822-883; system-services.json",
+    "role": "Exact root-owned Ubuntu Pro apt-news.service and esm-cache.service recognition when an otherwise uncertain Python cwd must be assessed during connection-refused absence scans.",
+    "selected_scripts": [
+      "/usr/lib/ubuntu-advantage/apt_news.py",
+      "/usr/lib/ubuntu-advantage/esm_cache.py"
+    ],
+    "not_role": "It neither changes HTTP queue counts nor authenticates the HTTP8188 server, filters queue items, or whitelists running Comfy jobs.",
+    "absence_branch": "Only proven ECONNREFUSED (not HTTPError/non200/malformed JSON/timeout) permits two fresh listener/process absence scans. That branch returns absent_confirmed with zero/zero or raises ambiguity; it does not create http_busy1/0."
+  },
+  "controller_policy": {
+    "source": "controller.py:111-158,896-899,946,980,1000-1021",
+    "required_idle": "comfy_state in {http_idle, absent_confirmed} AND running == pending == 0.",
+    "first_busy_sample": "One successful nonzero HTTP sample immediately fails Original read-only Comfy idle gate. No debounce, count trend, grace period or calendar reservation is evaluated.",
+    "memory_order": "Idle is checked before reserve/floor evaluation. A busy failure can retain required_available_bytes:null even though the observation includes current MemAvailable; that null is not evidence of memory shortage.",
+    "reserve": "R=max(24GiB,ceil(MemTotal/5)); initial floor adds entire fixed2GiB cap, runtime floor R. Gate unchanged.",
+    "runtime_sampling": "Preexec/readiness and runtime loop call same host gate. Runtime loop sleeps1s after work, so observations are sampled with work-dependent gaps, not continuous exclusion.",
+    "calendar_or_user_reservation": "Neither observer nor host gate accepts a reserved time window, user intent or asynchronous reservation confirmation as an input."
+  },
+  "false_positive_assessment": {
+    "proven_source_defect": false,
+    "actual_false_positive_established": false,
+    "actual_job_origin_established": false,
+    "possible_in_principle": [
+      "A different server able to return the same HTTP200/list schema at the selected path is not distinguished by this observer.",
+      "A server may retain/report a list item although physical computation has finished; the observer does not independently verify item lifecycle or GPU activity.",
+      "A positive but brief queue snapshot is sufficient by the declared admission contract, even if a later snapshot is idle."
+    ],
+    "distinction": "A genuine nonempty running list is busy according to this existing contract. Whether that corresponds to a real current compute job or the user's reserved window requires evidence outside these three sources; no such evidence was read.",
+    "actual03_actual04": "No actual03/04 files or raw/private queue response was opened for this review. Parent-provided aggregate busy1/0 reports were used only as the question, not re-audited.",
+    "current_corroboration": "The parent's current listener metadata supports the expected Comfy process; a different-server explanation remains only an unproven source-level possibility, not a supported diagnosis."
+  },
+  "actions": {
+    "small_source_metadata_reads_only": true,
+    "observer_imported_or_executed": false,
+    "actual_Comfy_API_or_queue_payload_read": false,
+    "host_or_proc_or_units_read": false,
+    "network_or_model_native_payload_or_Git": false,
+    "tests_or_formatter_run": false,
+    "source_or_gate_modified": false,
+    "created_file_only": "/tmp/jev_original_comfy_idle_gate_source_review-01.json",
+    "already_recorded_parent_metadata_read": true
+  },
+  "disposition": "Keep original observer/controller gate unchanged. Do not infer who submitted work, whether jobs were old/scheduled, or that the user's reservation was ignored from this source-only result.",
+  "root_current_listener_corroboration": {
+    "ref": {
+      "path": "/tmp/jev_comfy_listener_corroboration_20261023_01.json",
+      "size_bytes": 547,
+      "sha256": "3de0288f5b465b0191eb61cf65a0d044b5b8f7818eb060454ced137a5a69e655"
+    },
+    "recorded_at_utc": "2026-10-23T15:06:04.709180+00:00",
+    "listener": "127.0.0.1:8188",
+    "pid": 136400,
+    "starttime_ticks": 1982799,
+    "executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+    "cwd": "/media/albert_hsieh/MP44S/ComfyUI",
+    "python_script_argument": "main.py",
+    "interpretation": "Parent's separate already-recorded socket/process metadata supports a real ComfyUI-shaped listener at this current snapshot. No new socket/proc/API probe was performed by this reviewer.",
+    "limitations": [
+      "Does not map any queue list item to this process or establish actual03/04 historical listener identities.",
+      "No queue item, job ID, submitter, timestamp, scheduler, prompt or GPU activity was inspected.",
+      "The observer's source itself still does not perform this listener/process binding on successful HTTP observations."
+    ]
+  }
+}

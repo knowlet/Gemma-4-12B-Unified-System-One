@@ -1,0 +1,293 @@
+{
+  "schema_id": "jevbench-public231-historical-fresh-paired-difference-v1",
+  "UTC": "2026-10-22T08:08:02.271825+00:00",
+  "scope": "Read-only comparison of completed public231 artifacts while separate coherence inference continues. Aggregate metrics and hash references only; no requests, answers, probabilities or per-case outcomes published.",
+  "population": {
+    "name": "legacy_public231",
+    "paired_tasks": 231,
+    "ordered_ids_identical": true,
+    "same_request_sha256_count": 231,
+    "dataset_metadata_identical": true,
+    "canonical_dataset_sha256": "dc3995d8ae1e2fc8e81ce38431add509eb8bb39b85aadfd0c7c32079382dde51",
+    "ordered_ids_sha256": "42e90ca615c5eb43b8596e48f95f28d1f24c1551d68e153d64ca7a9dd0e9a0bd",
+    "task_file_pins_identical": true,
+    "official_source_pins_identical": true,
+    "scorer_revision": "bb05a335bc809e61b20c0f745d25499a82b326fc",
+    "requests_per_task": 1,
+    "retries": 0,
+    "warmup": 0,
+    "calibration_fitting": false
+  },
+  "paired_correctness": {
+    "both_correct": 195,
+    "historical_only_correct": 2,
+    "fresh_only_correct": 0,
+    "both_incorrect": 34,
+    "historical_correct": 197,
+    "fresh_correct": 195,
+    "historical_accuracy": 0.8528138528138528,
+    "fresh_accuracy": 0.8441558441558441,
+    "delta_correct": -2,
+    "delta_accuracy": -0.008658008658008658,
+    "delta_percentage_points": -0.8658008658008658,
+    "changed_correctness_count": 2,
+    "ordered_changed_task_ids_sha256": "520b7caf5af4a48990103f18105e3434022410bd9f9169fe84480a7a20cea243",
+    "changed_task_ids_disclosed": false,
+    "changed_family_counts": {
+      "probability": 2
+    },
+    "historical_probability_family": {
+      "correct": 7,
+      "planned": 10,
+      "accuracy": 0.7
+    },
+    "fresh_probability_family": {
+      "correct": 5,
+      "planned": 10,
+      "accuracy": 0.5
+    },
+    "same_result_when_comparing_historical_independent": true,
+    "predicted_label_change_count": 2,
+    "probability_dictionary_exact_change_count": 197,
+    "all_model_success_and_valid": true
+  },
+  "aggregate_metrics": {
+    "historical": {
+      "macro_accuracy": 0.8618254514281346,
+      "brier_mean": 0.22953568292717702,
+      "ordinal_mae": 0.22598817396081156,
+      "schema_validity": 1.0,
+      "schema_validity_strict": 1.0,
+      "n_renormalized": 0
+    },
+    "fresh": {
+      "macro_accuracy": 0.8507143403170235,
+      "brier_mean": 0.22862292231064194,
+      "ordinal_mae": 0.2288219343043036,
+      "schema_validity": 1.0,
+      "schema_validity_strict": 1.0,
+      "n_renormalized": 0
+    },
+    "historical_ece": 0.048495372636364664,
+    "fresh_ece": 0.055990034980433284
+  },
+  "fresh": {
+    "identity": {
+      "context": 16384,
+      "gpu": "NVIDIA GB10",
+      "head": {
+        "dtype": "torch.bfloat16",
+        "shape": [
+          262144,
+          3840
+        ],
+        "version": 0
+      },
+      "model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+      "precision": "bfloat16",
+      "profile": "released-gx10-bf16-causal-multislot-20261022-v1",
+      "quantization": "none",
+      "question_mode": "causal_multislot",
+      "revision": "a66f836b56605039fe040f330180e336d19b3362",
+      "source_manifest_sha256": "450ef9566f15b372703bab6ae4c2e25de54104c8a0404a11fec22e6d384d73ff",
+      "temperature": 2.7830344470383452,
+      "training_executed": false,
+      "versions": {
+        "httpx": "0.28.1",
+        "numpy": "2.5.2",
+        "safetensors": "0.8.0",
+        "torch": "2.13.0+cu130",
+        "transformers": "5.17.0"
+      }
+    },
+    "checkpoint": {
+      "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
+      "size_bytes": 23919549408
+    },
+    "loaded_head_dtype": "torch.bfloat16",
+    "head_shape": [
+      262144,
+      3840
+    ],
+    "summary": {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-01/public231/summary.json",
+      "sha256": "d280118bd52a4f798d1d193906a8ef85461405a9da9f37e3d2e05f33c144ffe4",
+      "size_bytes": 31737
+    },
+    "manifest": {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-01/public231/manifest.json",
+      "sha256": "6708062633e1615a20a7468cba44fb933bea772724c04c01ba3fca6f1ef9d0c5",
+      "size_bytes": 45756
+    },
+    "records_local_only": {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-01/public231/records.jsonl",
+      "sha256": "4a695b5a8ac9713701bc728b243f15bc0d4ddb3c4b3fa6ba669c6109e6373824",
+      "size_bytes": 332177
+    },
+    "model_loaded_metadata": {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-01/model-loaded.json",
+      "sha256": "34333635691d67207d6d318f2f5a93f1adb70736dde4b40d09e51b2281008477",
+      "size_bytes": 2563
+    },
+    "score_sources": {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-01/score-source-manifest.json",
+      "sha256": "1b8da8f9ab34372a90ae35d71bc91ac389e6d655742ea1a5a49b3d23f5e899aa",
+      "size_bytes": 19754
+    },
+    "model_sources": {
+      "path": "artifacts/jevbench/20261022-local-score-01/actual-01/sources/manifest.json",
+      "sha256": "2e5e8b3e1c8e6b32cc5c6cd69ca96fc8a6126b0697a825d6c9132e023e7def34",
+      "size_bytes": 18185
+    }
+  },
+  "historical": {
+    "released_default_causal": {
+      "identity": {
+        "model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+        "revision": "a66f836b56605039fe040f330180e336d19b3362",
+        "precision": "bfloat16",
+        "variant": "s1-bf16",
+        "execution": "causal_multislot; SDPA; no cache; selected 52 rows",
+        "versions": {
+          "huggingface-hub": "1.33.0",
+          "numpy": "2.5.3",
+          "safetensors": "0.8.0",
+          "torch": "2.10.0",
+          "transformers": "5.17.0"
+        },
+        "gpu": "NVIDIA A100-SXM4-80GB"
+      },
+      "head_dtype_observation": null,
+      "context_observation": null,
+      "temperature": 2.7830344470383452,
+      "checkpoint": {
+        "path": "model.safetensors",
+        "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
+        "size_bytes": 23919549408
+      },
+      "correct": 197,
+      "planned": 231,
+      "accuracy": 0.8528138528138528,
+      "source_proof_scope": "Historical causal run records only the public-runner source hash; independent records a package/campaign source inventory. Neither historical receipt separately records loaded head dtype or context.",
+      "summary": {
+        "path": "artifacts/jevbench/20261022-local-score-01/historical-archive-01/20261008-public-01/s1-bf16/public231/summary.json",
+        "sha256": "22d027867dbc8864c1585fd15f929fba8b2313ce1d9d3aec28a0f66ca4fb87e0",
+        "size_bytes": 31171
+      },
+      "manifest": {
+        "path": "artifacts/jevbench/20261022-local-score-01/historical-archive-01/20261008-public-01/s1-bf16/public231/manifest.json",
+        "sha256": "a7dfe2c535a604dee85dc92c9c6f91c21255845b4648c2fcb31ea08a3c2ae825",
+        "size_bytes": 45145
+      },
+      "records_local_only": {
+        "path": "artifacts/jevbench/20261022-local-score-01/historical-archive-01/20261008-public-01/s1-bf16/public231/records.jsonl",
+        "sha256": "d26f9ac683f5c49254dad968d2f6c52aca94483a0f7d4d673cabd1557d60bab0",
+        "size_bytes": 324411
+      }
+    },
+    "development_independent": {
+      "identity": {
+        "model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+        "revision": "a66f836b56605039fe040f330180e336d19b3362",
+        "precision": "bfloat16",
+        "variant": "s1-independent",
+        "execution": "Existing G4 independent question batching; separate per-question prompts with real right-padding masks; SDPA; shipped calibration",
+        "versions": {
+          "huggingface-hub": "1.33.0",
+          "numpy": "2.5.3",
+          "safetensors": "0.8.0",
+          "torch": "2.10.0",
+          "transformers": "5.17.0"
+        },
+        "gpu": "NVIDIA A100 80GB PCIe"
+      },
+      "head_dtype_observation": null,
+      "context_observation": null,
+      "temperature": 2.7830344470383452,
+      "checkpoint": {
+        "path": "model.safetensors",
+        "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
+        "size_bytes": 23919549408
+      },
+      "correct": 197,
+      "planned": 231,
+      "accuracy": 0.8528138528138528,
+      "source_proof_scope": "Historical causal run records only the public-runner source hash; independent records a package/campaign source inventory. Neither historical receipt separately records loaded head dtype or context.",
+      "summary": {
+        "path": "artifacts/jevbench/20261022-local-score-01/historical-archive-01/20261008-public-02/s1-independent/public231/summary.json",
+        "sha256": "d77332ffd65d3201f09b58d8b1f9101b3dd1f92f1c82e87e3973954a18734ff2",
+        "size_bytes": 37942
+      },
+      "manifest": {
+        "path": "artifacts/jevbench/20261022-local-score-01/historical-archive-01/20261008-public-02/s1-independent/public231/manifest.json",
+        "sha256": "59337546d495354012bee95fd2a472c1be0493f186ad2f8af3611c8825ab20eb",
+        "size_bytes": 51920
+      },
+      "records_local_only": {
+        "path": "artifacts/jevbench/20261022-local-score-01/historical-archive-01/20261008-public-02/s1-independent/public231/records.jsonl",
+        "sha256": "ed3fb58d5b15306f2e1583c05b802118e734cb2a44ac77ce1f5e637a5bdefdc3",
+        "size_bytes": 332265
+      }
+    }
+  },
+  "source_comparison": {
+    "fresh_public_runner_sha256": "cb476d16a6e89ee5223b928e3a550af18de8534934ae5431563503db9f909bd1",
+    "historical_causal_runner_sha256": "f303209795ac932e251c786642c434c2a561cfb1299e4065e96ff0247f436701",
+    "historical_independent_runner_sha256": "cb476d16a6e89ee5223b928e3a550af18de8534934ae5431563503db9f909bd1",
+    "fresh_captured_s1_sources_overlapping_historical_independent": 58,
+    "matching_source_hashes": 50,
+    "changed_source_names": [
+      "api.py",
+      "backends.py",
+      "cli.py",
+      "evaluation/adapters.py",
+      "evaluation/contracts.py",
+      "evaluation/gemma.py",
+      "evaluation/integrity.py",
+      "evaluation/planning.py"
+    ],
+    "unchanged_predictive_core": {
+      "s1/unified.py": "42ba5f076af164e0e54690a735e25a272bdd678279901946c2e5accefa385a6c",
+      "s1/runtime.py": "8f6103c600f73b64adc8186cf0c081475e69e891eb1d3d7e89c36c2e5417abda",
+      "s1/evaluation/registry.py": "1e996388fbd57f312b90446f429f0a104d6609be6d059085c640f4699c8130bc"
+    },
+    "archived_runtime_wheel_scope": "Archive manifest says current opt-in CLI/backend build, not older cloud model-cell package. It cannot strengthen unrecorded causal-run provenance.",
+    "same_checkpoint_sha256": true,
+    "same_model_revision": true,
+    "same_temperature": true
+  },
+  "causal_interpretation": {
+    "controlled_experiment": false,
+    "attribution": "Unresolved. Identical task/request/checkpoint/calibration identities do not isolate numerical execution effects. GPU family, Torch/CUDA stack and some wrapper sources differ; historical loaded head dtype/context are not separately observed. Do not attribute the two-case gap to hardware, Torch, head precision, training or a particular patch.",
+    "latency_comparison": "Descriptive cross-hardware measurements only; no speed regression or superiority conclusion.",
+    "coherence_score": "Separate active run; not read, changed or reinterpreted here."
+  },
+  "documentation_refs": [
+    {
+      "path": "docs/validation/2026-10-22/jevbench-two-suite-results.json",
+      "sha256": "7a5dbd4b5496f6d337a6eaee0dc446785e93a73fed81e59b96d0d8486fd87469",
+      "size_bytes": 4706
+    },
+    {
+      "path": "docs/validation/2026-10-22/jevbench-historical-official-rescore.json",
+      "sha256": "dad83300d033188db9647fa1eabe8c53222451f0493471e45a2954d3e56091f7",
+      "size_bytes": 12445
+    }
+  ],
+  "execution": {
+    "new_model_calls": 0,
+    "framework_imports": 0,
+    "source_mutations": 0,
+    "models_units_helper_or_Comfy_mutations": 0
+  },
+  "publication": {
+    "raw_requests": false,
+    "raw_answers": false,
+    "per_case_probability_vectors": false,
+    "per_case_correctness_rows": false,
+    "changed_task_ids": false,
+    "weights": false,
+    "official_rank": null,
+    "official_composite": null
+  }
+}

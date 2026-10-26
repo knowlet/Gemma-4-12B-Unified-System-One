@@ -1,0 +1,78 @@
+{
+  "schema": "operation-backend-held-source-validation-v1",
+  "status": "SOURCE_PASS_STILL_HELD",
+  "results": [
+    {
+      "name": "imports",
+      "returncode": 0,
+      "seconds": 0.016962423018412665,
+      "stdout": "Found 1 error (1 fixed, 0 remaining).\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format",
+      "returncode": 0,
+      "seconds": 0.017306867986917496,
+      "stdout": "2 files reformatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "held_fakes",
+      "returncode": 0,
+      "seconds": 12.582103277993156,
+      "stdout": "",
+      "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 12.391s\n\nOK\n",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": 536870912
+    },
+    {
+      "name": "ruff",
+      "returncode": 0,
+      "seconds": 0.0165991940011736,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format_check",
+      "returncode": 0,
+      "seconds": 0.011724573007086292,
+      "stdout": "2 files already formatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    }
+  ],
+  "files": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-head-backend-cpu5-20261024-01/backend_held.py",
+      "sha256": "451591912d05e9f2eab295544872ea02e72a24be3fcb96a4457216c08393cbcc",
+      "size_bytes": 19383
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-head-backend-cpu5-20261024-01/test_operation_backend_held.py",
+      "sha256": "e153383ed97bb0a80087210e8df4b867457f3f7cdd2841ea6c8422df324b9672",
+      "size_bytes": 11640
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-head-backend-cpu5-20261024-01/README.md",
+      "sha256": "38407a6ad405142b085df1435d04f9355da93ac5ab38371ea881691b8a823a52",
+      "size_bytes": 5275
+    }
+  ],
+  "NN_jobs_started": 0,
+  "source_peer_scope": "pure source only; no actual or training data read",
+  "dev_used_for_model_selection": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false
+}

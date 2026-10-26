@@ -1,0 +1,152 @@
+{
+  "schema": "decision3-operation-four-call-numeric-plan-v1",
+  "profile": "decision3-operation-four-call-numeric-cpu5-4g-nontraining-v1",
+  "executable": true,
+  "actor_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-numeric-qualification-cpu5-20261024-01/actor_released_v2.py",
+    "sha256": "daa58be24220cd6b222ee738c95b7c49f6142b8b9795ff1adabbe3b6fe481338",
+    "size_bytes": 41392
+  },
+  "dependencies": {
+    "native_actor": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py",
+      "sha256": "9a7e5af918c17f6824a720fb6d112ffa5fdac03493dde3efa176c7d50470a365",
+      "size_bytes": 31080
+    },
+    "native_plan": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/edge-plan.json",
+      "sha256": "095db88b78687d90fbed51aafd736c1b06fb1a582312de8dff97bf6109131e96",
+      "size_bytes": 31270
+    },
+    "native_helper": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/resource_helper.py",
+      "sha256": "4df54e06e8a795ebf5b300a3e2074319e781a278a2a870c21c2bd52897d7eb11",
+      "size_bytes": 7954
+    },
+    "np_actor": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/actor.py",
+      "sha256": "c8a439c794f5176564a29473c524d62f86218818b1f7fb66089c8e007dfd7f82",
+      "size_bytes": 19795
+    },
+    "observer": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/observer.py",
+      "sha256": "455e2c7bf20d1a96f99795566062db15dbe779dd5610e573277c382775bc4f37",
+      "size_bytes": 6417
+    },
+    "numpy_probe": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/numpy_probe.py",
+      "sha256": "22ed700ebc9ea49fd8cf4d1a532ca3a571290d349b69053c6bea082631582f7f",
+      "size_bytes": 16236
+    },
+    "backend": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-head-backend-cpu5-20261024-01/backend_released_v1.py",
+      "sha256": "8f356fac4e4291cd2dbb95efa0a5766cd695998a70d864b7d30e1555ae17c7b8",
+      "size_bytes": 19446
+    }
+  },
+  "owner": {
+    "unit": "jev-d3-llama-cpp-cpu5-fast-4g-coexist-20261024-09.service",
+    "profile": "llama-cpp-cpu5-fast-same-cluster-4g-coexist-command-owned-v1",
+    "cpu_affinity": [
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_quota_percent": 500,
+    "threads": 5,
+    "interop_threads": 1,
+    "memory_max_bytes": 4294967296,
+    "swap_max_bytes": 0,
+    "reserve_bytes": 26119172916,
+    "startup_available_bytes": 30414140212,
+    "owner_runtime_seconds": 10800
+  },
+  "call_order": [
+    [
+      "original",
+      4
+    ],
+    [
+      "candidate",
+      4
+    ],
+    [
+      "original",
+      2
+    ],
+    [
+      "candidate",
+      2
+    ]
+  ],
+  "wall_seconds": 120,
+  "call_seconds": 20,
+  "absolute_tolerance": 1e-06,
+  "relative_tolerance": 1e-05,
+  "training_eligible": false,
+  "labels": null,
+  "semantic_expected_answers": null,
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "capability_ref": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-readout-cpu5-20261024-01/root-frozen-operation-candidate-capability-01.json",
+    "sha256": "4dbbb9470d011931854f6473c0840ef7f0746c4194c719cde6ab454c3e79d463",
+    "size_bytes": 2875
+  },
+  "root_acceptance_ref": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-readout-cpu5-20261024-01/root-accepted-trained-readout-01.json",
+    "sha256": "551e5ae1dab335011b9eb410be28d00aa24d33e35dde4110921eecf2b474475f",
+    "size_bytes": 11542
+  },
+  "delta_ref": {
+    "dtype": "float32",
+    "format": "npy_no_pickle",
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-27/fit-operation-head/delta-pending.npy",
+    "sha256": "aaae4079d1c5bbe0f9b07d2618f029c681b565ccedf4d3d84540472fb704c566",
+    "shape": [
+      255,
+      1024
+    ],
+    "size_bytes": 1044608
+  },
+  "root_preselection_acceptance_scope": "Root previously audited actual27 original terminal0/currentclosure,34sources,all96 COMMITTED train states and132 supervised rows then96 trueoperation rows,finite exact delta and NumPy identity. New512operation policy chosen afterdev exposure; no dev/sealed optimizer inputs. This actor trusts exact selected root acceptance, not an independent re-audit.",
+  "numeric_output_status": "PENDING_NONTRAINING forever; no semantic labels or training reuse",
+  "quality_or_browser_or_benchmark_claim": false,
+  "ordered_head_ids": [
+    "click_target",
+    "operation",
+    "select_target",
+    "type_text_target"
+  ],
+  "legal_counts": [
+    1,
+    8,
+    2,
+    3
+  ],
+  "dev_used_for_model_selection": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "candidate_selection_before_dev_or_sealed": false
+}

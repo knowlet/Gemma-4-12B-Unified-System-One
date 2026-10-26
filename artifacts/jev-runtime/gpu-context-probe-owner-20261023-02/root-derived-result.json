@@ -1,0 +1,553 @@
+{
+  "schema": "gpu-context-probe-root-derived-result-v1",
+  "created_at_utc": "2026-10-23T01:13:45.815248+00:00",
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/receipt.json",
+      "sha256": "a0d3633c69d435fe888e56517ffa98741178eab09221343aa086d5c1fc4107a0",
+      "size_bytes": 6798
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/receipt.json",
+      "sha256": "c0b63280de9711402240a119f13c8cc0cb39b925d1c5e3afcb90d43783ac792e",
+      "size_bytes": 129137
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/root-execution-01.json",
+      "sha256": "c61ebd1fcda72d27801abb3483640b2788c48550a07ae6471f072854bd252892",
+      "size_bytes": 1154
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/root-postrun-nvml.json",
+      "sha256": "c26cbd7598d51549ff8e921e5f2f99e44e7e98b6140877f3da65395a5fba0b38",
+      "size_bytes": 1039
+    }
+  ],
+  "status": "ACTUAL_CONTEXT_AND_TINY_BF16_OPERATOR_COMPLETE_NO_MODEL_QUALIFICATION",
+  "root_wall_seconds": 5.041775138000958,
+  "actor_elapsed_seconds": 3.78706781299843,
+  "timings": {
+    "allocation_fill_enqueue_seconds": 0.029670945994439535,
+    "allocation_fill_sync_seconds": 5.2319999667815864e-05,
+    "allocator_cap_set_seconds": 2.3519998649135232e-05,
+    "cleanup_sync_seconds": 5.4607997299171984e-05,
+    "init_call_seconds": 0.01319582799624186,
+    "init_sync_seconds": 0.13289695199637208,
+    "matmul_enqueue_plus_sync_seconds": 0.8176939570112154,
+    "matmul_enqueue_seconds": 0.8176383730024099,
+    "matmul_sync_seconds": 4.5567998313345015e-05,
+    "own_empty_cache_seconds": 0.0005841270030941814,
+    "tiny_CPU_readback_seconds": 0.000577038008486852,
+    "torch_import_seconds": 2.5735603229986737
+  },
+  "CUDA_identity": {
+    "allocator_backend": "native",
+    "device_name": "NVIDIA GB10",
+    "device_total_memory_bytes": 130595864576,
+    "device_uuid_normalized": "e3429caa-b057-cbe0-917d-d3b85b313be7",
+    "device_uuid_raw": "e3429caa-b057-cbe0-917d-d3b85b313be7",
+    "identity_query_seconds": 0.0004312310047680512,
+    "initialized_after_init_call": true,
+    "initialized_final": true,
+    "is_integrated": 1,
+    "logical_device_index": 0,
+    "native_uuid_type": "_CUuuid",
+    "selected_uuid": "GPU-e3429caa-b057-cbe0-917d-d3b85b313be7"
+  },
+  "own_allocator_cap": {
+    "actual_fraction": 0.0005138666849664763,
+    "requested_bytes": 67108864,
+    "requested_fraction": 0.0005138666849664763,
+    "scope": "Own PyTorch caching allocator only. Not a context/driver/cuBLAS/physical UMA or cgroup hard cap. Never enlarged on failure."
+  },
+  "tiny_closed_form_oracle": {
+    "dtype": "bfloat16",
+    "shape": [
+      16,
+      16
+    ],
+    "all_values": 16,
+    "CPU_readback_bytes": 512,
+    "independent_expected_sha256": "1cb8e75fc462d0af48a69d1c2ecc3b67abdb9358db5a4d38a1c5b1dbbe6fa003",
+    "actual_sha256": "1cb8e75fc462d0af48a69d1c2ecc3b67abdb9358db5a4d38a1c5b1dbbe6fa003"
+  },
+  "actor_peak_RSS_bytes": 850948096,
+  "kernel_and_manager_unit_memory_peak_bytes": 586072064,
+  "postlaunch_accepted_host_gate_summary": {
+    "runtime_host_gate_count": 70,
+    "phase_counts": {
+      "readiness": 15,
+      "preexec": 2,
+      "loop": 53
+    },
+    "min_MemAvailable_bytes": 28649074688,
+    "min_margin_vsR_bytes": 2529901772,
+    "scope": "All successful executed post-launch readiness/preexec/loop host-gate samples, including discarded raw samples; failing gates stay in primary evidence; initial/final separate; not a continuous-time minimum"
+  },
+  "initial_host": {
+    "observation": {
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "mem_total_bytes": 130595864576,
+      "mem_available_bytes": 29485846528,
+      "comfy_running": 0,
+      "comfy_pending": 0,
+      "comfy_state": "http_idle",
+      "comfy_evidence": {
+        "transport": "HTTP",
+        "comfy_running": 0,
+        "comfy_pending": 0,
+        "http_status": 200,
+        "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+      }
+    },
+    "reserve_bytes": 26119172916,
+    "required_available_bytes": 28266656564,
+    "initial": true
+  },
+  "final_host": {
+    "observation": {
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "mem_total_bytes": 130595864576,
+      "mem_available_bytes": 29499117568,
+      "comfy_running": 0,
+      "comfy_pending": 0,
+      "comfy_state": "http_idle",
+      "comfy_evidence": {
+        "transport": "HTTP",
+        "comfy_running": 0,
+        "comfy_pending": 0,
+        "http_status": 200,
+        "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+      }
+    },
+    "reserve_bytes": 26119172916,
+    "required_available_bytes": 26119172916,
+    "initial": false
+  },
+  "raw_loop_observations_retained": 53,
+  "stage_count": 10,
+  "stages": [
+    {
+      "name": "stdlib-before-torch",
+      "elapsed_seconds": 0.0037582959921564907,
+      "host": {
+        "MemAvailable_bytes": 29465395200,
+        "MemTotal_bytes": 130595864576
+      },
+      "process": {
+        "RssAnon_bytes": 14233600,
+        "RssFile_bytes": 12660736,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 26894336,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 14532608,
+        "memory_peak_bytes": 15142912,
+        "memory_stat": {
+          "anon": 14233600,
+          "file": 12288,
+          "kernel": 233472,
+          "pgfault": 7916,
+          "pgmajfault": 0,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "CUDA": {
+        "allocated_bytes": null,
+        "free_bytes": null,
+        "initialized": null,
+        "max_allocated_bytes": null,
+        "max_reserved_bytes": null,
+        "metrics_seconds": 0.0,
+        "reserved_bytes": null,
+        "scope": "CUDA metrics unmeasured before first explicit synchronize; no lazy-initializing query invoked.",
+        "total_bytes": null
+      }
+    },
+    {
+      "name": "torch-imported-preinit",
+      "elapsed_seconds": 2.5816725619952194,
+      "host": {
+        "MemAvailable_bytes": 29165326336,
+        "MemTotal_bytes": 130595864576
+      },
+      "process": {
+        "RssAnon_bytes": 293629952,
+        "RssFile_bytes": 229093376,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 522723328,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 296042496,
+        "memory_peak_bytes": 296042496,
+        "memory_stat": {
+          "anon": 293634048,
+          "file": 16384,
+          "kernel": 2252800,
+          "pgfault": 80275,
+          "pgmajfault": 0,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "CUDA": {
+        "allocated_bytes": null,
+        "free_bytes": null,
+        "initialized": false,
+        "max_allocated_bytes": null,
+        "max_reserved_bytes": null,
+        "metrics_seconds": 0.0,
+        "reserved_bytes": null,
+        "scope": "CUDA metrics unmeasured before first explicit synchronize; no lazy-initializing query invoked.",
+        "total_bytes": null
+      }
+    },
+    {
+      "name": "cuda-init-returned",
+      "elapsed_seconds": 2.60165005599265,
+      "host": {
+        "MemAvailable_bytes": 29165338624,
+        "MemTotal_bytes": 130595864576
+      },
+      "process": {
+        "RssAnon_bytes": 294195200,
+        "RssFile_bytes": 232734720,
+        "RssShmem_bytes": 0,
+        "VmRSS_bytes": 526929920,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 296771584,
+        "memory_peak_bytes": 296771584,
+        "memory_stat": {
+          "anon": 293634048,
+          "file": 16384,
+          "kernel": 2252800,
+          "pgfault": 80275,
+          "pgmajfault": 0,
+          "shmem": 0
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "CUDA": {
+        "allocated_bytes": null,
+        "free_bytes": null,
+        "initialized": true,
+        "max_allocated_bytes": null,
+        "max_reserved_bytes": null,
+        "metrics_seconds": 0.0,
+        "reserved_bytes": null,
+        "scope": "CUDA metrics unmeasured before first explicit synchronize; no lazy-initializing query invoked.",
+        "total_bytes": null
+      }
+    },
+    {
+      "name": "cuda-init-synchronized",
+      "elapsed_seconds": 2.745220120996237,
+      "host": {
+        "MemAvailable_bytes": 28925390848,
+        "MemTotal_bytes": 130595864576
+      },
+      "process": {
+        "RssAnon_bytes": 311287808,
+        "RssFile_bytes": 264486912,
+        "RssShmem_bytes": 44236800,
+        "VmRSS_bytes": 620011520,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 358293504,
+        "memory_peak_bytes": 361091072,
+        "memory_stat": {
+          "anon": 310136832,
+          "file": 44261376,
+          "kernel": 2707456,
+          "pgfault": 97208,
+          "pgmajfault": 0,
+          "shmem": 44236800
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "CUDA": {
+        "allocated_bytes": 0,
+        "free_bytes": 955371520,
+        "initialized": true,
+        "max_allocated_bytes": 0,
+        "max_reserved_bytes": 0,
+        "metrics_seconds": 0.00651420999201946,
+        "reserved_bytes": 0,
+        "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+        "total_bytes": 130595864576
+      }
+    },
+    {
+      "name": "own-allocator-cap-set",
+      "elapsed_seconds": 2.7525966169923777,
+      "host": {
+        "MemAvailable_bytes": 28925091840,
+        "MemTotal_bytes": 130595864576
+      },
+      "process": {
+        "RssAnon_bytes": 311353344,
+        "RssFile_bytes": 264617984,
+        "RssShmem_bytes": 44236800,
+        "VmRSS_bytes": 620208128,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 358555648,
+        "memory_peak_bytes": 361091072,
+        "memory_stat": {
+          "anon": 310136832,
+          "file": 44261376,
+          "kernel": 2707456,
+          "pgfault": 97208,
+          "pgmajfault": 0,
+          "shmem": 44236800
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "CUDA": {
+        "allocated_bytes": 0,
+        "free_bytes": 955060224,
+        "initialized": true,
+        "max_allocated_bytes": 0,
+        "max_reserved_bytes": 0,
+        "metrics_seconds": 0.0011419970105635002,
+        "reserved_bytes": 0,
+        "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+        "total_bytes": 130595864576
+      }
+    },
+    {
+      "name": "tiny-allocation-fill-enqueued",
+      "elapsed_seconds": 2.7882074379886035,
+      "host": {
+        "MemAvailable_bytes": 28887859200,
+        "MemTotal_bytes": 130595864576
+      },
+      "process": {
+        "RssAnon_bytes": 320495616,
+        "RssFile_bytes": 266768384,
+        "RssShmem_bytes": 46333952,
+        "VmRSS_bytes": 633597952,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 369827840,
+        "memory_peak_bytes": 369827840,
+        "memory_stat": {
+          "anon": 320512000,
+          "file": 46366720,
+          "kernel": 2785280,
+          "pgfault": 100305,
+          "pgmajfault": 0,
+          "shmem": 46333952
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "CUDA": {
+        "allocated_bytes": 1024,
+        "free_bytes": 917794816,
+        "initialized": true,
+        "max_allocated_bytes": 1024,
+        "max_reserved_bytes": 2097152,
+        "metrics_seconds": 0.0011903970007551834,
+        "reserved_bytes": 2097152,
+        "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+        "total_bytes": 130595864576
+      }
+    },
+    {
+      "name": "tiny-fill-synchronized",
+      "elapsed_seconds": 2.7930780519964173,
+      "host": {
+        "MemAvailable_bytes": 28887859200,
+        "MemTotal_bytes": 130595864576
+      },
+      "process": {
+        "RssAnon_bytes": 320602112,
+        "RssFile_bytes": 266768384,
+        "RssShmem_bytes": 46333952,
+        "VmRSS_bytes": 633704448,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 369827840,
+        "memory_peak_bytes": 369827840,
+        "memory_stat": {
+          "anon": 320512000,
+          "file": 46366720,
+          "kernel": 2785280,
+          "pgfault": 100305,
+          "pgmajfault": 0,
+          "shmem": 46333952
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "CUDA": {
+        "allocated_bytes": 1024,
+        "free_bytes": 917794816,
+        "initialized": true,
+        "max_allocated_bytes": 1024,
+        "max_reserved_bytes": 2097152,
+        "metrics_seconds": 0.0011462050024420023,
+        "reserved_bytes": 2097152,
+        "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+        "total_bytes": 130595864576
+      }
+    },
+    {
+      "name": "tiny-matmul-synchronized",
+      "elapsed_seconds": 3.615708541998174,
+      "host": {
+        "MemAvailable_bytes": 28657324032,
+        "MemTotal_bytes": 130595864576
+      },
+      "process": {
+        "RssAnon_bytes": 524419072,
+        "RssFile_bytes": 275136512,
+        "RssShmem_bytes": 46333952,
+        "VmRSS_bytes": 845889536,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 582926336,
+        "memory_peak_bytes": 582991872,
+        "memory_stat": {
+          "anon": 524365824,
+          "file": 54755328,
+          "kernel": 3485696,
+          "pgfault": 157288,
+          "pgmajfault": 0,
+          "shmem": 46333952
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "CUDA": {
+        "allocated_bytes": 33555968,
+        "free_bytes": 994447360,
+        "initialized": true,
+        "max_allocated_bytes": 33555968,
+        "max_reserved_bytes": 35651584,
+        "metrics_seconds": 0.0012047170021105558,
+        "reserved_bytes": 35651584,
+        "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+        "total_bytes": 130595864576
+      }
+    },
+    {
+      "name": "tiny-readback-oracle",
+      "elapsed_seconds": 3.700502203995711,
+      "host": {
+        "MemAvailable_bytes": 28649144320,
+        "MemTotal_bytes": 130595864576
+      },
+      "process": {
+        "RssAnon_bytes": 526671872,
+        "RssFile_bytes": 277299200,
+        "RssShmem_bytes": 46333952,
+        "VmRSS_bytes": 850305024,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 585285632,
+        "memory_peak_bytes": 585285632,
+        "memory_stat": {
+          "anon": 526675968,
+          "file": 54824960,
+          "kernel": 3530752,
+          "pgfault": 157411,
+          "pgmajfault": 1,
+          "shmem": 46333952
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "CUDA": {
+        "allocated_bytes": 33555968,
+        "free_bytes": 986263552,
+        "initialized": true,
+        "max_allocated_bytes": 33555968,
+        "max_reserved_bytes": 35651584,
+        "metrics_seconds": 0.07681487800437026,
+        "reserved_bytes": 35651584,
+        "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+        "total_bytes": 130595864576
+      }
+    },
+    {
+      "name": "own-tensors-released-empty-cache",
+      "elapsed_seconds": 3.7790431100002024,
+      "host": {
+        "MemAvailable_bytes": 28650909696,
+        "MemTotal_bytes": 130595864576
+      },
+      "process": {
+        "RssAnon_bytes": 526716928,
+        "RssFile_bytes": 277299200,
+        "RssShmem_bytes": 46333952,
+        "VmRSS_bytes": 850350080,
+        "VmSwap_bytes": 0
+      },
+      "own_cgroup": {
+        "memory_current_bytes": 585285632,
+        "memory_peak_bytes": 585285632,
+        "memory_stat": {
+          "anon": 526675968,
+          "file": 54824960,
+          "kernel": 3530752,
+          "pgfault": 157411,
+          "pgmajfault": 1,
+          "shmem": 46333952
+        },
+        "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+      },
+      "CUDA": {
+        "allocated_bytes": 33554432,
+        "free_bytes": 988024832,
+        "initialized": true,
+        "max_allocated_bytes": 33555968,
+        "max_reserved_bytes": 35651584,
+        "metrics_seconds": 0.001228765002451837,
+        "reserved_bytes": 33554432,
+        "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+        "total_bytes": 130595864576
+      }
+    }
+  ],
+  "after_empty_cache": {
+    "allocated_bytes": 33554432,
+    "reserved_bytes": 33554432,
+    "context_initialized": true,
+    "all_GPU_allocations_released_in_process": false
+  },
+  "unit": "jev-d3-gpu-context-probe-20261023-02.service",
+  "invocation_id": "7d2ac46c112f42a98ca372dbc80b516b",
+  "actor": {
+    "pid": 328609,
+    "start_ticks": 6680815,
+    "pgid": 328609,
+    "sid": 328609,
+    "uid": 1001,
+    "state": "S",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+  },
+  "closure_before_fallback_margin_seconds": 4.395450618001632,
+  "authenticated_selected_unit_and_observed_cohort_closed": true,
+  "postclosure_NVML_own_PID_absent": true,
+  "total_driver_or_global_GPUfree_restoration_proved": false,
+  "model_header_payload_mmap_loaded": false,
+  "large_model_runtime_or_quality_qualified": false,
+  "limitations": [
+    "Native type hint said str but actual UUID was _CUuuid; v2 records its canonical str and native type, and physically matches the fixed UUID.",
+    "64MiB fraction limits only own caching allocator.2GiB memcg is not a proved bound on all GPU/driver/UMA memory.",
+    "Preinit GPUfree is unmeasured. Global CUDAfree and Linux MemAvailable are distinct overlapping observations, not additive pools or sole-process deltas.",
+    "Stage snapshots are sequential/non-atomic; metrics can synchronize and perturb timings. A single first matmul is not model throughput or a kernel-kind measurement.",
+    "All70 accepted parent gate samples contribute the aggregate minimum; only53 loop raw rows remain and cannot independently recompute17 setup rows or prove continuous minimum.",
+    "Toy tensor clearing/emptycache leaves32MiB allocated/reserved and initialized context. Own authenticated process closure plus NVML PID absence establishes lifetime scope, not every driver byte restored.",
+    "No real model/layer/8192/20s/N3/Q95/browser/score qualification; all original requirements remain."
+  ]
+}

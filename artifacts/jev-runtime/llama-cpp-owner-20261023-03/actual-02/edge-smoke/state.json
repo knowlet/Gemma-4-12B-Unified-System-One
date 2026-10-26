@@ -1,0 +1,311 @@
+{
+  "profile": "decision3-publisher-edge-cpu-batch1-smoke-v1",
+  "status": "publisher_cpu_single_request_complete_no_benchmark_claim",
+  "plan_sha256": "50f1d8f41b96e756baaa94ace3e338cd0a64d492f4f4d4a72b830be0fce15db9",
+  "process": {
+    "pid": 453709,
+    "starttime_ticks": 9990334,
+    "pgid": 453704,
+    "sid": 453704,
+    "cgroup": "0::/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service",
+    "affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "",
+      "HF_HUB_OFFLINE": "1",
+      "TRANSFORMERS_OFFLINE": "1",
+      "ACCELERATE_USE_CPU": "true",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": null,
+      "TOKENIZERS_PARALLELISM": null,
+      "HF_ENABLE_PARALLEL_LOADING": null,
+      "HF_PARALLEL_LOADING_WORKERS": null,
+      "USE_HUB_KERNELS": null,
+      "D3_FAST": null,
+      "D3_FUSED": null,
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1"
+    }
+  },
+  "owned_limits": {
+    "memory.max": "2147483648",
+    "memory.swap.max": "0",
+    "cpu.max": "400000 100000"
+  },
+  "host_startup_admission": {
+    "MemTotal": 130595864576,
+    "MemAvailable": 30060494848,
+    "reserve_bytes": 26119172916,
+    "required_available_bytes": 28266656564,
+    "swap_credit_bytes": 0,
+    "cache_credit_bytes": 0,
+    "already_loaded_credit_bytes": 0
+  },
+  "model_loads": 1,
+  "forward_calls": 1,
+  "warmup_calls": 0,
+  "benchmark_calls": 0,
+  "browser_calls": 0,
+  "helper_models": 0,
+  "no_quality_claim": true,
+  "host_before_authentication": {
+    "MemTotal": 130595864576,
+    "MemAvailable": 30060494848,
+    "reserve_bytes": 26119172916,
+    "required_available_bytes": 28266656564,
+    "swap_credit_bytes": 0,
+    "cache_credit_bytes": 0,
+    "already_loaded_credit_bytes": 0
+  },
+  "authenticated_model_files": [
+    {
+      "name": "chat_template.jinja",
+      "size": 7755,
+      "sha256": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80"
+    },
+    {
+      "name": "config.json",
+      "size": 2572,
+      "sha256": "5e529d9aea2f8d387750acf5b02cc32a47d7e87dc65d6d008fba98e5d15acc4d"
+    },
+    {
+      "name": "d3_engine.py",
+      "size": 4413,
+      "sha256": "086238942762df45047a32cd9a8e2bedd9b63167eb40be260c776de567979f53"
+    },
+    {
+      "name": "d3_fast.py",
+      "size": 22331,
+      "sha256": "68a1fb9a2c3bde9ac2763bf504decae592ca12722698fbde1b39a31262955535"
+    },
+    {
+      "name": "d3_format.py",
+      "size": 7008,
+      "sha256": "3badfbc70561bb3f5b8ec16a11d2c455b96ddb32caace0a8a54ca102eae1f3fa"
+    },
+    {
+      "name": "d3_kernels.py",
+      "size": 16129,
+      "sha256": "8f7534ca1e1846ebf7c4c73058002f3be4dbf0d5d426f0815150ae0cbe7677bd"
+    },
+    {
+      "name": "d3_runtime.py",
+      "size": 95505,
+      "sha256": "adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917"
+    },
+    {
+      "name": "d3_server.py",
+      "size": 17705,
+      "sha256": "766a20a69101e36ab0535a1ec683379db422380a83091f0eccd7e82edb6a02de"
+    },
+    {
+      "name": "decision_config.json",
+      "size": 5504,
+      "sha256": "30b6095b945d5a93697868afdf9be9123ea892085fbaff3078112c48da20dc6b"
+    },
+    {
+      "name": "merges.txt",
+      "size": 3353259,
+      "sha256": "a9d356d7bdf1ef4949e3e748e95b8e10ad9d4e2e838eddc38a0a7b6b94d1db8d"
+    },
+    {
+      "name": "model-00001-of-00001.safetensors",
+      "size": 1188677968,
+      "sha256": "91bb8618450a7f628f1432bbced76bc19ee7346c93d191a228fdd33c25a57a9d"
+    },
+    {
+      "name": "model.safetensors.index.json",
+      "size": 25448,
+      "sha256": "7d3951baba643a2c4fe2263d8602ef37b1c1f804b58949a5469449da6a588b03"
+    },
+    {
+      "name": "modeling_d3.py",
+      "size": 12079,
+      "sha256": "f8f8db23ff58f1a990ffa24977d744a50e1b4446d02a64c22070967705b6dbef"
+    },
+    {
+      "name": "pipeline_d3.py",
+      "size": 2936,
+      "sha256": "4f9297c7c74e596e9b67df91a1e6823cfada48bf781336f141974ff6a2f1038e"
+    },
+    {
+      "name": "preprocessor_config.json",
+      "size": 390,
+      "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+    },
+    {
+      "name": "readout.safetensors",
+      "size": 1044560,
+      "sha256": "de33d5dc795bbd77168e40bfadc340cca9b9f163b88744c10e1a788f4e166d3d"
+    },
+    {
+      "name": "tokenizer.json",
+      "size": 12807982,
+      "sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42"
+    },
+    {
+      "name": "tokenizer_config.json",
+      "size": 16709,
+      "sha256": "49e2b6e395f959f077f1e992b338919c0d4a9732fc6e613995e06557f843500c"
+    },
+    {
+      "name": "video_preprocessor_config.json",
+      "size": 385,
+      "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13"
+    },
+    {
+      "name": "vocab.json",
+      "size": 6722759,
+      "sha256": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003"
+    }
+  ],
+  "package_versions": {
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "safetensors": "0.8.0",
+    "huggingface_hub": "1.33.0",
+    "accelerate": "1.15.0"
+  },
+  "actual_environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "ACCELERATE_USE_CPU": "true",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "4",
+    "NUMEXPR_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false",
+    "HF_ENABLE_PARALLEL_LOADING": "false",
+    "HF_PARALLEL_LOADING_WORKERS": "1",
+    "USE_HUB_KERNELS": "0",
+    "D3_FAST": "0",
+    "D3_FUSED": "0",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "actual_bindings": {
+    "torch_chunk_gated_delta_rule": "torch-reference",
+    "torch_recurrent_gated_delta_rule": "torch-reference",
+    "causal_conv1d_fn": "torch-reference",
+    "causal_conv1d_update": "torch-reference"
+  },
+  "publisher_kernel_report_before_load": {
+    "torch_chunk_gated_delta_rule": "torch-reference",
+    "causal_conv1d_fn": "torch-reference",
+    "fla": "missing (ModuleNotFoundError)"
+  },
+  "model_load_seconds": 3.0733858780004084,
+  "native_provenance": {
+    "kind": "d3-code-readout",
+    "runtime": "d3-runtime/1",
+    "model_name": "d3-edge",
+    "repo_id": "vllm-sr/d3-edge",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "format_id": "d3-code-readout-v1",
+    "prompt": "d3",
+    "attention_mode": "noncausal_full_attention",
+    "pooling": "last",
+    "temperature": 1.0,
+    "max_length": null,
+    "readout_dtype": "float32",
+    "backbone_dtype": "bfloat16",
+    "attn_implementation": "sdpa",
+    "batch_size": 1,
+    "files_sha256": {
+      "decision_config.json": "30b6095b945d5a93697868afdf9be9123ea892085fbaff3078112c48da20dc6b",
+      "readout.safetensors": "de33d5dc795bbd77168e40bfadc340cca9b9f163b88744c10e1a788f4e166d3d",
+      "config.json": "5e529d9aea2f8d387750acf5b02cc32a47d7e87dc65d6d008fba98e5d15acc4d",
+      "MODEL_MANIFEST.json": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59"
+    },
+    "kernels": {
+      "torch_chunk_gated_delta_rule": "torch-reference",
+      "causal_conv1d_fn": "torch-reference",
+      "fla": "missing (ModuleNotFoundError)"
+    },
+    "policy": "One forward pass per question; options under single-token answer codes; last-token readout over the question's codes only; argmax choice; no truncation (over-limit questions are refused); no option filtering; one fixed prompt for every request.",
+    "images": {
+      "supported": true,
+      "min_pixels": 65536,
+      "max_pixels": 1638400,
+      "placement": "before the text of the user turn, one placeholder per image, request order",
+      "patch_embedding": "matrix product (equal to the Conv3d with kernel = stride)",
+      "image_processor": "Qwen2VLImageProcessor",
+      "torchvision": "0.28.0+cu130"
+    },
+    "videos": {
+      "supported": true,
+      "fps": 2.0,
+      "min_frames": 4,
+      "max_frames": 32,
+      "max_pixels_per_frame": 200704,
+      "max_tokens_per_request": 16384,
+      "placement": "after the images, before the text of the user turn, one placeholder per video, request order; every two frames are one token group after their timestamp",
+      "sampling": "source frames spread evenly over the whole video (frame arrays: frames at 2 per second)",
+      "video_processor": "Qwen3VLVideoProcessor",
+      "opencv": "5.0.0"
+    }
+  },
+  "native_runtime_info": {
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "device": "cpu",
+    "cuda": "13.0",
+    "hip": null,
+    "loaded_seconds": 1.58,
+    "fast_path": {
+      "active": false,
+      "reason": "D3_FAST=0"
+    }
+  },
+  "native_input_tokens": 103,
+  "full_synthetic_request": {
+    "state": "This is a synthetic CPU setup check. The requested color is red.",
+    "questions": {
+      "q": {
+        "type": "choice",
+        "instructions": "Select the requested color.",
+        "criteria": {
+          "first": "red",
+          "second": "blue"
+        }
+      }
+    }
+  },
+  "raw_response": {
+    "model": "d3-edge",
+    "answers": {
+      "q": {
+        "type": "choice",
+        "choice": "first",
+        "probabilities": {
+          "first": 0.997976268823122,
+          "second": 0.0020237311768780226
+        },
+        "confidence": 0.97897343132266
+      }
+    },
+    "usage": {
+      "input_tokens": 103,
+      "output_tokens": 0
+    }
+  },
+  "forward_seconds": 0.25288935100252274,
+  "validation": {
+    "contract_valid": true,
+    "quality_or_expected_answer_claim": false
+  },
+  "cuda_initialized_final": false,
+  "torch_threads": {
+    "intraop": 4,
+    "interop": 1
+  },
+  "elapsed_seconds": 11.490934405010194
+}

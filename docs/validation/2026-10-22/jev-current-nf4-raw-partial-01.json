@@ -1,0 +1,76 @@
+{
+  "schema_id": "jev-current-nf4-raw-partial-interrupted-v1",
+  "created_at_utc": "2026-10-22T09:07:06.513609+00:00",
+  "complete_ten_task_score": null,
+  "complete_ten_task_comparison_qualified": false,
+  "known4_recorded_attempts": 4,
+  "known4_recorded_successes": 1,
+  "count_scope": "Three outcomes completed before the fourth was infrastructure-interrupted. The recorded1/4 is not an uninterrupted quality success rate; no full10 denominator is assigned.",
+  "cases": [
+    {
+      "task_id": "public-arxiv-title-filter-results-v1",
+      "success": false,
+      "status": "done",
+      "premature_done": true,
+      "policy_calls": 9,
+      "text_calls": 1,
+      "infrastructure_interrupted": false
+    },
+    {
+      "task_id": "public-arxiv-original-paper-open-v1",
+      "success": false,
+      "status": "blocked",
+      "premature_done": false,
+      "policy_calls": 7,
+      "text_calls": 1,
+      "infrastructure_interrupted": false
+    },
+    {
+      "task_id": "public-python-counter-most-common-v1",
+      "success": true,
+      "status": "done",
+      "premature_done": false,
+      "policy_calls": 5,
+      "text_calls": 1,
+      "infrastructure_interrupted": false
+    },
+    {
+      "task_id": "public-nasa-mars-facts-moons-v1",
+      "success": false,
+      "status": "ready",
+      "premature_done": false,
+      "policy_calls": 14,
+      "text_calls": 1,
+      "infrastructure_interrupted": true
+    }
+  ],
+  "external_closure": {
+    "reason": "owner_error",
+    "primary_error_type": "ObservationError",
+    "uncertainty": "uncertain_python_cwd",
+    "precise_cwd_failure_type_retained": false,
+    "cgroup_absent": true,
+    "two_empty_process_scans": true,
+    "changed_sources": [],
+    "model_cache_aliases_unchanged": true
+  },
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/browser/known4/results/summary.json",
+      "sha256": "997d0148fb3552595e8e20e48417e6d0e8d0fc5ad41e00776abfaa3cd18e4d9a",
+      "size_bytes": 147758
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/raw-01/root-external-closure.json",
+      "sha256": "290573f81b7323613b880ea7b82b1218fab8751e61a69547a359b6630c504004",
+      "size_bytes": 436190
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-01/launch-plan-raw-01.json",
+      "sha256": "2eb18f4f5483c2de324ec97e5d8ffab0b772a3b81dbbdaecafdd0443e576e758",
+      "size_bytes": 172828
+    }
+  ],
+  "next_attempt": "Fresh raw02; same adapter/helper/tasks/judges; new independently reviewed observer103804 and fresh owner namespace.",
+  "raw_trace_published": false
+}

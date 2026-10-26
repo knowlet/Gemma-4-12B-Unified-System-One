@@ -1,0 +1,26 @@
+{
+  "authorship": "Independent archive fixture authored before any feature replay NN; no official task, diagnostic lantern cell, training split, or expected semantic answer.",
+  "request": {
+    "state": "A fictional archive page lists a sealed envelope beside a catalog drawer. The envelope label says Memo 27. The drawer has a brass pull and a printed index card. This is a static invented description, not a captured page.",
+    "questions": {
+      "envelope_record": {
+        "type": "choice",
+        "instructions": "Select a description of the envelope's visible label.",
+        "criteria": {"memo": "The label reads Memo 27.", "invoice": "The label reads Invoice 81."}
+      },
+      "drawer_record": {
+        "type": "choice",
+        "instructions": "Select a description of the drawer hardware.",
+        "criteria": {"pull": "There is a brass pull.", "dial": "There is a numbered dial.", "latch": "There is a rope latch."}
+      },
+      "catalog_record": {
+        "type": "choice",
+        "instructions": "Select a description of the object next to the drawer pull.",
+        "criteria": {"card": "A printed index card.", "receipt": "A crumpled receipt.", "key": "A steel key.", "stamp": "A postage stamp."}
+      }
+    }
+  },
+  "semantic_expected_answers": null,
+  "fixture_request_count": 1,
+  "original_head_counts": [2, 3, 4]
+}

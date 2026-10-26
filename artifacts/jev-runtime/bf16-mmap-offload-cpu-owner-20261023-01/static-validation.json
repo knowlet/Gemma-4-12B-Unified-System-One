@@ -1,0 +1,84 @@
+{
+  "manifest_read_and_hash_check": "PASS;23 selected small source bytes and5 binary stat-only identities, no binary payload reads",
+  "prior_tool_failure": {
+    "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/static-tool-attempt-01.json",
+    "sha256": "082bb0ea1e6cbd43be460b08942dbc84cb8e14cd3f8036dd550d19749e072f28",
+    "size_bytes": 793
+  },
+  "runs": [
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/controller.py",
+        "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/test_controller.py"
+      ],
+      "elapsed_seconds": 0.01564373300061561,
+      "limits": {
+        "AS": "inherited default; no new hard memory cap",
+        "wall_seconds": 45
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/controller.py",
+        "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/test_controller.py"
+      ],
+      "elapsed_seconds": 0.01412220399652142,
+      "limits": {
+        "AS": "inherited default; no new hard memory cap",
+        "wall_seconds": 45
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "2 files already formatted\n"
+    },
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/test_controller.py",
+        "-v"
+      ],
+      "elapsed_seconds": 0.12099149800633313,
+      "limits": {
+        "AS_bytes": 1073741824,
+        "CPU_seconds": 30,
+        "core_bytes": 0,
+        "wall_seconds": 45
+      },
+      "returncode": 0,
+      "stderr": "test_default_dry_imports_no_framework_and_calls_no_authority (__main__.ControllerTests.test_default_dry_imports_no_framework_and_calls_no_authority) ... ok\ntest_environment_has_only_selected_cpu_overlay (__main__.ControllerTests.test_environment_has_only_selected_cpu_overlay) ... ok\ntest_existing_cgroup_is_refused_even_if_unit_absent (__main__.ControllerTests.test_existing_cgroup_is_refused_even_if_unit_absent) ... ok\ntest_existing_unit_is_refused_without_command_or_stop (__main__.ControllerTests.test_existing_unit_is_refused_without_command_or_stop) ... ok\ntest_finalization_closes_before_final_source_or_host_failure (__main__.ControllerTests.test_finalization_closes_before_final_source_or_host_failure) ... ok\ntest_finalization_preserves_primary_and_receipt_when_final_checks_fail (__main__.ControllerTests.test_finalization_preserves_primary_and_receipt_when_final_checks_fail) ... ok\ntest_host_initial_and_runtime_floor_and_busy_evidence (__main__.ControllerTests.test_host_initial_and_runtime_floor_and_busy_evidence) ... ok\ntest_original_selection_has_exact_tiny_cap_without_modification (__main__.ControllerTests.test_original_selection_has_exact_tiny_cap_without_modification) ... ok\ntest_stable_identity_allows_R_S_but_rejects_changed_start (__main__.ControllerTests.test_stable_identity_allows_R_S_but_rejects_changed_start) ... ok\ntest_timeout_byte_output_remains_bounded_json_evidence (__main__.ControllerTests.test_timeout_byte_output_remains_bounded_json_evidence) ... ok\ntest_wrong_entry_sha_refuses_before_authorities_or_actor (__main__.ControllerTests.test_wrong_entry_sha_refuses_before_authorities_or_actor) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.011s\n\nOK\n",
+      "stdout": ""
+    }
+  ],
+  "schema": "bf16-mmap-cpu-owner-static-validation-v1",
+  "sources": {
+    "entry": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/controller.py",
+      "sha256": "66f8f04531ccbd7f191e56b7e9ea5f89aa4f2d12d05da49c32836fa4948767e1",
+      "size_bytes": 27915
+    },
+    "test": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/test_controller.py",
+      "sha256": "76c09a19cbb16b830763daacf2144e92945d4ef9781f8f501a2d18c36108c8c6",
+      "size_bytes": 8674
+    }
+  },
+  "torch_loaded": false,
+  "unexecuted": [
+    "systemd unit",
+    "observer HTTP",
+    "Torch or other ML framework import",
+    "mmap",
+    "model",
+    "Comfy operation"
+  ]
+}

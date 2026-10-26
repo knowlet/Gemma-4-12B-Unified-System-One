@@ -1,0 +1,78 @@
+{
+  "schema": "cpu-text-helper-source-verification-v1",
+  "status": "source_prepared_not_runtime_qualified",
+  "checks": [
+    {
+      "label": "stdlib_fake_boundary_tests",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s artifacts/jev-runtime/browser-cpu-text-helper-20261023-01 -p 'test_helper.py' -v",
+      "chunk_id": "710bef",
+      "wall_time_seconds": 0.04325117,
+      "exit_code": 0,
+      "original_token_count": 833,
+      "output": "test_cancellation_cannot_publish_candidate (test_helper.ApplicationTests.test_cancellation_cannot_publish_candidate) ... ok\ntest_evidence_failure_is_latched_across_requests (test_helper.ApplicationTests.test_evidence_failure_is_latched_across_requests) ... ok\ntest_late_body_send_is_unknown_and_cannot_be_retracted_or_replaced (test_helper.ApplicationTests.test_late_body_send_is_unknown_and_cannot_be_retracted_or_replaced) ... ok\ntest_late_response_start_never_sends_candidate_body (test_helper.ApplicationTests.test_late_response_start_never_sends_candidate_body) ... ok\ntest_queue_time_is_inside_original_deadline (test_helper.ApplicationTests.test_queue_time_is_inside_original_deadline) ... ok\ntest_retention_time_is_inside_original_deadline (test_helper.ApplicationTests.test_retention_time_is_inside_original_deadline) ... ok\ntest_success_uses_original_message_and_retains_before_publish (test_helper.ApplicationTests.test_success_uses_original_message_and_retains_before_publish) ... ok\ntest_wrong_auth_disconnected_and_invalid_output_refuse (test_helper.ApplicationTests.test_wrong_auth_disconnected_and_invalid_output_refuse) ... ok\ntest_forward_deadline_refuses_and_removes_hook (test_helper.NativeGenerationTests.test_forward_deadline_refuses_and_removes_hook) ... ok\ntest_missing_early_or_overlength_eos_refuses (test_helper.NativeGenerationTests.test_missing_early_or_overlength_eos_refuses) ... ok\ntest_native_contract_and_actual_eos_capture (test_helper.NativeGenerationTests.test_native_contract_and_actual_eos_capture) ... ok\ntest_over_context_refuses_without_generation_or_truncation (test_helper.NativeGenerationTests.test_over_context_refuses_without_generation_or_truncation) ... ok\ntest_all_runtime_origins_and_critical_sources_must_be_pinned (test_helper.ProtocolTests.test_all_runtime_origins_and_critical_sources_must_be_pinned) ... ok\ntest_duplicate_context_key_is_refused (test_helper.ProtocolTests.test_duplicate_context_key_is_refused) ... ok\ntest_journal_is_exclusive_and_hash_checks_drift (test_helper.ProtocolTests.test_journal_is_exclusive_and_hash_checks_drift) ... ok\ntest_json_rejects_duplicates_nonfinite_and_overflow (test_helper.ProtocolTests.test_json_rejects_duplicates_nonfinite_and_overflow) ... ok\ntest_original_messages_are_preserved (test_helper.ProtocolTests.test_original_messages_are_preserved) ... ok\ntest_output_requires_whole_exact_json_and_preserves_string (test_helper.ProtocolTests.test_output_requires_whole_exact_json_and_preserves_string) ... ok\ntest_pending_selection_refuses_before_payload_or_heavy_import (test_helper.ProtocolTests.test_pending_selection_refuses_before_payload_or_heavy_import) ... ok\ntest_production_factory_refuses_arbitrary_fake_runtime (test_helper.ProtocolTests.test_production_factory_refuses_arbitrary_fake_runtime) ... ok\ntest_publisher_native_file_identity_cannot_be_reselected (test_helper.ProtocolTests.test_publisher_native_file_identity_cannot_be_reselected) ... ok\ntest_request_rejects_prompt_or_reasoning_changes (test_helper.ProtocolTests.test_request_rejects_prompt_or_reasoning_changes) ... ok\ntest_wrong_import_origin_refuses_before_heavy_import (test_helper.ProtocolTests.test_wrong_import_origin_refuses_before_heavy_import) ... ok\n\n----------------------------------------------------------------------\nRan 23 tests in 0.025s\n\nOK\n"
+    },
+    {
+      "label": "ruff_check",
+      "command": "ruff check --no-cache artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/test_helper.py",
+      "chunk_id": "003e7f",
+      "wall_time_seconds": 0.000031216,
+      "exit_code": 0,
+      "original_token_count": 5,
+      "output": "All checks passed!\n"
+    },
+    {
+      "label": "ruff_format_check",
+      "command": "ruff format --check --no-cache artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/test_helper.py",
+      "chunk_id": "73d527",
+      "wall_time_seconds": 0.000030784,
+      "exit_code": 0,
+      "original_token_count": 7,
+      "output": "2 files already formatted\n"
+    },
+    {
+      "label": "dry_default",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
+      "chunk_id": "04d43c",
+      "wall_time_seconds": 0.000015456,
+      "exit_code": 0,
+      "original_token_count": 48,
+      "output": "{\"profile\": \"qwen25-05b-bf16-cpu4-field-text-v1\", \"status\": \"source_only_not_ready\", \"external_owner_and_completed_selection_required\": true, \"model_started\": false, \"server_started\": false}\n"
+    }
+  ],
+  "stdlib_fake_test_count": 23,
+  "stdlib_fake_test_elapsed_seconds": 0.025,
+  "original_TEXT_VALUE": "AST-extracted literal exactly matches pinned upstream1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "independent_review": {
+    "scope": "early source review; source changed after review",
+    "reviewed_source_sha256": "4ba863cb593ca3c74a18e7aba1b0e10e989006309d4b1f4ea3a319f2145830b2",
+    "findings_addressed": [
+      "pre-import runtime pin/origin/version coverage",
+      "precise cooperative publication boundary with late-body unknown-delivery regression"
+    ],
+    "final_independent_approval": false
+  },
+  "not_performed": [
+    "model/tokenizer payload read",
+    "download",
+    "dependency installation",
+    "Torch/native dependency import",
+    "model load or inference",
+    "HTTP network/server/socket",
+    "browser",
+    "active owner/current job action",
+    "ComfyUI state/source change",
+    "commit",
+    "push"
+  ],
+  "pending": [
+    "actual SHA256/local paths for7 non-LFS model files",
+    "root-selected native DSO/dependency closure",
+    "root-selected completed immutable runtime descriptor",
+    "live authenticated external owner verifier/ticket and real20s hard watchdog",
+    "fresh whole-host cap/admission and runtime reserve/swap/observer checks",
+    "genuine independent field quality/kernel/timing/memory qualification",
+    "matched ten-task browser evidence"
+  ],
+  "publication_limitation": "Python checks cannot retract bytes already queued by ASGI send or interrupt a blocking CPU forward; final owner/watchdog/runtime qualification remains pending.",
+  "source_scope": "only artifacts/jev-runtime/browser-cpu-text-helper-20261023-01"
+}

@@ -1,0 +1,186 @@
+{
+  "schema": "decision3-gx10-native-gpu-qualification-public-aggregate-v1",
+  "date": "2026-10-25",
+  "timezone": "Asia/Taipei",
+  "status": "native_invented_short_long_numerical_and_scoped_closure_verified",
+  "scope": "Two unchanged invented provider-only requests; no browser or new-delta evaluation",
+  "model": {
+    "id": "vllm-sr/d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "new_109_row_delta_loaded": false,
+    "constructor_calls": 1,
+    "constructor_seconds": 3.3445402499928605,
+    "backbone_precision": "bfloat16",
+    "readout_precision": "float32",
+    "readout_shape": [255, 1024],
+    "temperature": 1,
+    "publisher_native_batch_size": 8,
+    "actual_rows_per_forward": 4
+  },
+  "runtime": {
+    "device": "NVIDIA GB10",
+    "compute_capability": [12, 1],
+    "torch_version": "2.13.0+cu130",
+    "cuda_version": "13.0",
+    "transformers_version": "5.17.0",
+    "reference_cuda_profile": true,
+    "offline": true,
+    "extra_warmup_calls": 0,
+    "browser_adapter_exercised": false,
+    "http_calls": 0,
+    "helper_calls": 0,
+    "browser_calls": 0,
+    "optimizer_calls": 0
+  },
+  "calls": [
+    {
+      "phase": "short",
+      "completed": true,
+      "question_rows": 4,
+      "legal_candidate_counts": [7, 38, 36, 1],
+      "legal_probability_comparisons": 82,
+      "tokens_per_question": [156, 373, 359, 114],
+      "maximum_tokens": 373,
+      "elapsed_including_watchdog_cleanup_seconds": 1.8454018500051461,
+      "root_fp64_max_absolute_error": 1.7850157074672524e-7
+    },
+    {
+      "phase": "long",
+      "completed": true,
+      "question_rows": 4,
+      "legal_candidate_counts": [7, 38, 36, 1],
+      "legal_probability_comparisons": 82,
+      "tokens_per_question": [3117, 4196, 4579, 3126],
+      "maximum_tokens": 4579,
+      "elapsed_including_watchdog_cleanup_seconds": 1.3707883230235893,
+      "root_fp64_max_absolute_error": 1.202263575361684e-7
+    }
+  ],
+  "timing": {
+    "call_limit_seconds": 20,
+    "call_scope": "DTO validation, native preparation/forward, CUDA fences, complete replay, source checks, durable witnesses, hook and watchdog cleanup",
+    "whole_leaf_upper_bound_seconds": 120,
+    "owner_command_deadline_nominal_upper_bound_seconds": 113,
+    "owner_closure_reserve_seconds": 7,
+    "leaf_durable_record_before_watchdog_close_seconds": 16.67300398898078,
+    "owner_observed_child_command_seconds": 17.97991681500571,
+    "root_entire_owner_wall_seconds": 19.29833795299055,
+    "call_order": ["short", "long"],
+    "stable_latency_distribution_or_slo_established": false
+  },
+  "independent_numerical_audit": {
+    "completed": true,
+    "native_invented_diagnostic_qualified": true,
+    "method": "stdlib FP64 fsum dot over all255 readout codes per head, legal mask and softmax from same-call final-norm features",
+    "encoder_rerun": false,
+    "torch_imported": false,
+    "numpy_imported": false,
+    "framework_imported": false,
+    "call_count": 2,
+    "head_count": 8,
+    "legal_probability_comparisons": 164,
+    "legal_probabilities_within_tolerance": 164,
+    "ordered_argmax_matches": 8,
+    "publisher_entropy_confidence_matches": 8,
+    "absolute_tolerance": 1e-6,
+    "relative_tolerance": 1e-5,
+    "comparison": "abs(replay-native) <= 1e-6 + 1e-5*abs(native)",
+    "maximum_absolute_error": 1.7850157074672524e-7,
+    "same_baseline_FP32_bytes_across_calls": true,
+    "baseline_NPY_payload_exactly_matches_pinned_readout_safetensors_weight_body": true,
+    "cpu_gpu_backbone_equivalence_established": false,
+    "bounded_auditor": {
+      "cpu_core": 0,
+      "memory_max_bytes": 536870912,
+      "cpu_limit_seconds": 30,
+      "wall_limit_seconds": 35,
+      "actual_wall_seconds": 2.469
+    }
+  },
+  "source_and_owner_audit": {
+    "leaf_source_and_runtime_file_pins_verified": 127,
+    "complete_model_load_files_verified": 21,
+    "publisher_loaded_files": 20,
+    "publisher_manifest_files": 1,
+    "owner_source_refs_verified": 19,
+    "counts_are_separate_projections": true,
+    "full_transitive_DSO_closure_claimed": false,
+    "selected_command_identity_join_verified": true,
+    "identity_fields_joined": ["argv", "executable", "cwd", "PID", "start", "nonce", "cgroup"],
+    "matching_actual_process_observations": 2,
+    "original_command_exit_code": 0,
+    "original_owner_completed": true,
+    "scoped_unit_and_observed_cohort_exit_confirmed": true,
+    "current_unit_and_cgroup_absent": true,
+    "original_flags": {
+      "model_qualified": false,
+      "continuation_authorized": false,
+      "whole_tree_exit_confirmed": false,
+      "no_escape_enforced": false
+    }
+  },
+  "resource_contract": {
+    "memory_max_bytes": 8589934592,
+    "swap_max_bytes": 0,
+    "cpu_quota_percent": 500,
+    "cpu_affinity": [15, 16, 17, 18, 19],
+    "unit_runtime_seconds": 120,
+    "stop_seconds": 3,
+    "host_policy": "ComfyUI running and pending counts zero at each host gate",
+    "original_CPU_profiles_and_receipts_unchanged": true
+  },
+  "GPU_allocator_observations": {
+    "scope": "Same leaf process Torch allocator high-water marks across construction and both calls; not whole-host UMA or individual-call peaks",
+    "peak_allocated_bytes": 3428315136,
+    "peak_reserved_bytes": 3984588800,
+    "initial_tensor_bytes": 0,
+    "final_tensor_bytes": 0,
+    "current_process_cublas_workspaces_cleared": true
+  },
+  "prior_attempts": {
+    "model_free_owner_control_verified": true,
+    "model_free_control_is_model_qualification": false,
+    "first_full_model_attempt": {
+      "status": "failed_and_quarantined_before_encoder_forward",
+      "constructor_completed": true,
+      "observed_encoder_forwards": 0,
+      "failure_category": "Invented diagnostic heads routed through browser-only action schema",
+      "original_primary_and_cleanup_errors_preserved": true,
+      "scoped_owner_closure_positive": true,
+      "accepted_native_result": false
+    }
+  },
+  "public_protocol_regression": {
+    "commit": "9f4db55",
+    "test_file_passed": 47,
+    "target_widths": [38, 255],
+    "scope": "Browser refusal before backend call and exact ordered serialization through normal native DTO",
+    "model_calls": 0
+  },
+  "provenance_sha256": {
+    "root_independent_audit": "ca7516263a204f3be8674151daee87987b46e794c02c69819976080f201f32ae",
+    "root_audit_source": "cb2705e33c73422cd53cb5cf84fa82bc6b5d4c155a31c17e7d3a341e7300c71d",
+    "prospective_GPU_plan": "0f670a6135c9e3f7240e29b3d2aed1173c1b5e62f9bd9c1077dd739d37fa83c1",
+    "released_actor": "7090f9ceef2f09b87f22da44f2159a17f88eb5f1c405b765ebd495367aace74b",
+    "released_owner": "d3e498cf7d797f2f8b554680fe07eaa191ba0ce6e1f1411155b37d9d22387912",
+    "failed_first_model_attempt_audit": "c651fb0b269c026f09a3b56eaa47be0338f6e101236caabc735da7d7916d4b51"
+  },
+  "qualification": {
+    "native_invented_diagnostic_qualified": true,
+    "model_qualified": false,
+    "new_109_row_delta_numerical_deployment_qualified": false,
+    "browser_qualified": false,
+    "benchmark_qualified": false,
+    "competitor_win_established": false
+  },
+  "scores": {
+    "browser_10_cases": null,
+    "benchmark_heaven_public231": null,
+    "jevbench_coherenceMINI": null,
+    "historical_Edge_scores_inherited_by_new_candidate": false
+  },
+  "privacy": {
+    "raw_requests_responses_DOM_labels_weights_features_probabilities_or_predictions_public": false,
+    "GPU_UUID_boot_ID_or_PID_values_public": false
+  }
+}

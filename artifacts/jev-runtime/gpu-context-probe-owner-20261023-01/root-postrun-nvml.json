@@ -1,0 +1,30 @@
+{
+  "schema": "gpu-context-own-pid-postclosure-nvml-v1",
+  "observed_at_utc": "2026-10-23T01:01:00.594961+00:00",
+  "elapsed_seconds": 0.026806531997863203,
+  "argv": [
+    "nvidia-smi",
+    "--id=GPU-e3429caa-b057-cbe0-917d-d3b85b313be7",
+    "--query-compute-apps=pid,gpu_uuid,used_gpu_memory",
+    "--format=csv,noheader,nounits"
+  ],
+  "exit_code": 0,
+  "stdout": "2605, GPU-e3429caa-b057-cbe0-917d-d3b85b313be7, 176\n136400, GPU-e3429caa-b057-cbe0-917d-d3b85b313be7, 40879\n",
+  "stderr": "",
+  "rows": [
+    {
+      "pid": 2605,
+      "gpu_uuid": "GPU-e3429caa-b057-cbe0-917d-d3b85b313be7",
+      "used_gpu_memory_raw": "176"
+    },
+    {
+      "pid": 136400,
+      "gpu_uuid": "GPU-e3429caa-b057-cbe0-917d-d3b85b313be7",
+      "used_gpu_memory_raw": "40879"
+    }
+  ],
+  "pid_rows_parseable": true,
+  "own_actor_pid": 325722,
+  "own_actor_pid_present": false,
+  "scope": "Read-only postclosure NVML process list; not proof all driver memory returned or global GPUfree restored. Other processes are observed only, never modified."
+}

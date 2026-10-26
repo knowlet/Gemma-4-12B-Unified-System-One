@@ -2,6 +2,7 @@
 
 import importlib
 import json
+import os
 import sys
 from contextlib import contextmanager
 from pathlib import Path
@@ -9,6 +10,7 @@ from types import SimpleNamespace
 
 import jev_native_v2_browser as driver
 import pytest
+from local_evidence import require_local_evidence
 
 
 class FakeLM:
@@ -451,10 +453,50 @@ def test_prepare_helper_binds_current_wrapper_source_without_claiming_old_qualif
     assert seen["expected_helper_source_sha256"] == driver.pin(helper.__file__)["sha256"]
 
 
+@pytest.fixture
+def cleanup_composition_sources(tmp_path, monkeypatch):
+    """Explicit synthetic source inputs, not historical browser execution evidence.
+
+    Cleanup tests already replace the model, server and browser clients. Keep
+    their source inputs local too, while exercising real capture, hashing and
+    final source verification over the complete declared composition population.
+    """
+    sources = {}
+    for label in driver.composition_paths():
+        path = tmp_path / "composition-inputs" / label
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("# Synthetic cleanup unit-test source only.\n# " + label + "\n")
+        sources[label] = path
+
+    def paths(action_profile="standard"):
+        assert action_profile == "standard"
+        return dict(sources)
+
+    monkeypatch.setattr(driver, "composition_paths", paths)
+    return sources
+
+
+@pytest.mark.parametrize("change", ["source", "capture", "population"])
+def test_cleanup_composition_fixture_keeps_real_source_verification(
+    tmp_path, cleanup_composition_sources, change
+):
+    output = tmp_path / "captured"
+    expected = driver.capture_composition(output)
+    driver.verify_composition(output, expected)
+    label, source = next(iter(cleanup_composition_sources.items()))
+    if change == "population":
+        expected.pop(label)
+    else:
+        target = source if change == "source" else output / "composition-sources" / label
+        target.write_bytes(target.read_bytes() + b"# changed after capture\n")
+    with pytest.raises(ValueError, match="Composition source (population|bytes) changed"):
+        driver.verify_composition(output, expected)
+
+
 @pytest.mark.parametrize("interrupted", [False, True])
 @pytest.mark.parametrize("cleanup_failure", [None, "join", "receipt", "index"])
 def test_campaign_cleanup_preserves_primary_and_failure_receipt(
-    tmp_path, monkeypatch, interrupted, cleanup_failure
+    tmp_path, monkeypatch, cleanup_composition_sources, interrupted, cleanup_failure
 ):
     from s1 import browser_action_adapter
 
@@ -570,6 +612,12 @@ def test_campaign_cleanup_preserves_primary_and_failure_receipt(
             assert any(str(cleanup_error) in note for note in caught.value.__notes__)
     else:
         driver.run(plan, expected_boot_id="boot", chromium="unused")
+    captured_sources = json.loads((output / "composition-sources.json").read_bytes())
+    assert captured_sources == {
+        label: driver.pin(path) for label, path in cleanup_composition_sources.items()
+    }
+    for label, source in cleanup_composition_sources.items():
+        assert (output / "composition-sources" / label).read_bytes() == source.read_bytes()
     receipt = json.loads((output / "receipt.json").read_text())
     assert len(constructors) == 1 and removed == ([] if cleanup_failure == "join" else [True])
     assert receipt["completed_group_attempts"] == (4 if interrupted else 10)
@@ -610,7 +658,13 @@ def test_client_cleanup_and_publication_cannot_replace_browser_timeout(
     monkeypatch.setattr(
         driver,
         "matrix_common",
-        lambda: SimpleNamespace(extend_owned=lambda *_a: None, stop_owned=stop),
+        lambda: SimpleNamespace(
+            process_table=lambda: {
+                123: {"pid": 123, "ppid": os.getpid(), "pgid": 123, "sid": 123, "start_ticks": 1}
+            },
+            extend_owned=lambda *_a: None,
+            stop_owned=stop,
+        ),
     )
     monkeypatch.setattr(driver.subprocess, "Popen", lambda *_a, **_k: child)
     if failure in {"publication", "both"}:
@@ -632,6 +686,40 @@ def test_client_cleanup_and_publication_cannot_replace_browser_timeout(
         assert closure["confirmed"] is False
 
 
+@pytest.mark.local_evidence
+@pytest.mark.parametrize("code", ["pass", "import time; time.sleep(0.15)"])
+def test_actual_owned_client_is_seeded_before_poll_and_closes(tmp_path, code):
+    require_local_evidence(driver.MATRIX)
+    driver.run_client([sys.executable, "-I", "-B", "-c", code], dict(os.environ), tmp_path)
+    closure = json.loads((tmp_path / "owned-client-closure.json").read_bytes())
+    assert closure["confirmed"] is True and closure["remaining"] == []
+    assert len(closure["tracked_PID_start_ticks"]) == 1
+    pid, start = next(iter(closure["tracked_PID_start_ticks"].items()))
+    assert int(pid) > 0 and start > 0 and closure["tracked_groups"] == [int(pid)]
+
+
+@pytest.mark.parametrize("field", ["ppid", "pgid", "sid", "start_ticks"])
+def test_wrong_initial_client_identity_never_becomes_owned(tmp_path, monkeypatch, field):
+    row = {"pid": 123, "ppid": os.getpid(), "pgid": 123, "sid": 123, "start_ticks": 1}
+    row[field] = 0
+    child = SimpleNamespace(pid=123, returncode=None)
+    observed = []
+
+    def stop(_child, known, groups):
+        observed.append((dict(known), set(groups)))
+        return {"confirmed": False}
+
+    monkeypatch.setattr(driver.subprocess, "Popen", lambda *_a, **_k: child)
+    monkeypatch.setattr(
+        driver,
+        "matrix_common",
+        lambda: SimpleNamespace(process_table=lambda: {123: row}, stop_owned=stop),
+    )
+    with pytest.raises(ValueError, match="Actual owned browser child"):
+        driver.run_client(["fake-only"], {}, tmp_path)
+    assert observed == [({}, set())]
+
+
 @pytest.mark.parametrize(
     "timeout_phase", ["after_serial_lock", "before_dispatch", "after_candidate"]
 )
@@ -643,6 +731,7 @@ def test_whole_http_timeout_returns_504_and_never_authorizes_action(
     from s1 import jev_generated
     from s1.browser_server_evidence import ServerEvidenceJournal
 
+    clock = PublicationClock()
     model = model_fixture()
     driver.CurrentNF4HelperGuard(model)
     journal = ServerEvidenceJournal(tmp_path / "server")
@@ -670,11 +759,22 @@ def test_whole_http_timeout_returns_504_and_never_authorizes_action(
         checks.append(True)
         expires_at = {"after_serial_lock": 1, "before_dispatch": 2, "after_candidate": 3}
         expired = len(checks) >= expires_at[timeout_phase]
-        deadline(started, clock=lambda: started + (20 if expired else 0))
+        # Keep the boundary exact: adding 20 to a real monotonic origin can
+        # round so that (started + 20) - started is slightly less than 20.
+        clock.now = 20.0 if expired else 0.0
+        deadline(started, clock=clock)
 
     monkeypatch.setattr(driver, "http_deadline", measured)
     app = driver.make_application(
-        model, None, journal, gate, tmp_path, "private-test-token", "raw-json-v1", "original system"
+        model,
+        None,
+        journal,
+        gate,
+        tmp_path,
+        "private-test-token",
+        "raw-json-v1",
+        "original system",
+        clock=clock,
     )
     with TestClient(app) as client:
         response = client.post(

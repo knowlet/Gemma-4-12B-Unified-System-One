@@ -1,0 +1,911 @@
+{
+  "allocator_cap": {
+    "all_recorded_allocator_allocated_reserved_and_peaks_below_64MiB": true,
+    "fraction_exactly_matches_saved_request_and_API_readback": true,
+    "saved_result": {
+      "actual_fraction": 0.0005138666849664763,
+      "requested_bytes": 67108864,
+      "requested_fraction": 0.0005138666849664763,
+      "scope": "Own PyTorch caching allocator only. Not a context/driver/cuBLAS/physical UMA or cgroup hard cap. Never enlarged on failure."
+    },
+    "scope": "Only the current-process PyTorch caching allocator. Context, driver, library allocations, physical UMA and total GPU usage are not bounded by this fraction or proven covered by the 2GiB memcg.",
+    "stdlib_recomputed_fraction": 0.0005138666849664763
+  },
+  "cleanup": {
+    "closure_scope": "Saved selected unit and observed cohort evidence only; separate owner audit verifies nonce/invocation/PID-start and authenticated stop. This audit makes no new global driver/free restoration or whole-process-tree claim.",
+    "last_stage_context_destroyed": false,
+    "recorded_cleanup_errors": [],
+    "saved_closure_mode": "authenticated_stop",
+    "saved_observed_cohort_exit_confirmed": true,
+    "saved_owner_completed": true,
+    "source_order": "Best-effort own synchronize; clear own tensor list; gc.collect; empty_cache; save final stage; preserve any primary error and cleanup errors."
+  },
+  "conclusion": "The exact successor02 actor genuinely initialized the selected NVIDIA GB10 CUDA context, synchronized, set and read back the 64MiB own-allocator fraction, executed the 16x16 BF16 toy matmul and recorded the exact all-16 result. All ten staged records match their receipt hashes and sizes. This is a context and tiny-operator mechanism observation only.",
+  "evidence_inventory": [
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/root-execution-01.json",
+      "sha256": "c61ebd1fcda72d27801abb3483640b2788c48550a07ae6471f072854bd252892",
+      "size_bytes": 1154
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/independent-source-review.json",
+      "sha256": "6af3448b2d3777bae024ef510cc55330a96fa1a1a3e2f6f33a8e7d414a08dad2",
+      "size_bytes": 7953
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/source-freeze.json",
+      "sha256": "b6181a18bbb6575827de28188e6236c9e0bb5324f166ffadee5886a5580e895a",
+      "size_bytes": 9130
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/narrow-diff.json",
+      "sha256": "707c2de80ea7e1b90bb2cc20aaa2863be74758d12762c4af9b67314fb3abea35",
+      "size_bytes": 1454
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/static-validation.json",
+      "sha256": "6de798f8b6b1f2fad8800a868b566de5d564774161b8d84c5af7a979c73ad118",
+      "size_bytes": 6077
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/test_controller.py",
+      "sha256": "7547f5e12ee681a43ed05eaada631c119328d937fad44e4f103ff1bdf28eb99f",
+      "size_bytes": 28381
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/fixture.py",
+      "sha256": "01ed4cb4feb7c7221bd6a604fa98e1aac8f1b22f29659b688417b6eb128c5c2d",
+      "size_bytes": 23793
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/selection.json",
+      "sha256": "f7d7fe39df15666d53c05ba05c2d63e3ba6bb1a726f96dd979668e19edb74e1f",
+      "size_bytes": 4440
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/test_static.py",
+      "sha256": "cbde23e340df23d87a63948fe735ccf491c62e11757e1afdd9ece197a8dd1ee6",
+      "size_bytes": 14967
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/narrow-diff.json",
+      "sha256": "a0c6c1d606a83c61708bb7d3f2ff767772c009ea15a61e950c80488869ba8aa1",
+      "size_bytes": 2891
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/static-validation.json",
+      "sha256": "7fdef2a229adcf8104c148d0d80b514f4a8bf3ec49317307aa0837904093d63b",
+      "size_bytes": 3890
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/receipt.json",
+      "sha256": "a0d3633c69d435fe888e56517ffa98741178eab09221343aa086d5c1fc4107a0",
+      "size_bytes": 6798
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/receipt.json",
+      "sha256": "c0b63280de9711402240a119f13c8cc0cb39b925d1c5e3afcb90d43783ac792e",
+      "size_bytes": 129137
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/sealed-config.json",
+      "sha256": "5ea3de4f2a6165670ec05c07f6b580e4ab9f55029727b03593dffd160e306d8f",
+      "size_bytes": 2254
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/actor-exit.json",
+      "sha256": "5ed23766686bac4d241aa2eea829da8936e0933507a3651f59858acabeda4302",
+      "size_bytes": 625
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/exec-identity.json",
+      "sha256": "c1e5d806163015541bc1154e2570824ba83c0ef74312374af0c6cf445af3c3d1",
+      "size_bytes": 1375
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/exec-admission.json",
+      "sha256": "04382ed3b4b42fd8e939d1e950735836711975393e5ff43fb76edb3d338a2561",
+      "size_bytes": 464
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/launch-intent.json",
+      "sha256": "c1c2edb708cb10c6d1fbfe20868cf58c88b76a2cecc7459e41ffc47290929477",
+      "size_bytes": 2957
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/external-boundary-closure.json",
+      "sha256": "3ae4390e227d1f45aed242a29145693f5ae256b5a6475f643f8c952daa9ecbc7",
+      "size_bytes": 3490
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/independent-failure-audit.json",
+      "sha256": "6dcc58db8245143494f9b9c9f0894e7f24443addde5ec93b1b67ecc31b3fd086",
+      "size_bytes": 15348
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/actual-01/receipt.json",
+      "sha256": "85960d14ec8aab65cdacf29a0d6fbdb1eb79552f5732b6c3dce37228782808fe",
+      "size_bytes": 98910
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/actual-01/actor-exit.json",
+      "sha256": "eae098b1df62e59313c9c709951490b7172c79339a3df6dc557da154aa8b7b93",
+      "size_bytes": 800
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/root-execution-01.json",
+      "sha256": "8a9025e39518f563b8a0cc9da286b7032da3dc4d7918ff1c246bd4f04f471e0e",
+      "size_bytes": 1153
+    }
+  ],
+  "execution": {
+    "actor_elapsed_seconds": 3.78706781299843,
+    "actor_entry_exit_code": 0,
+    "actor_entry_sha256": "01ed4cb4feb7c7221bd6a604fa98e1aac8f1b22f29659b688417b6eb128c5c2d",
+    "actor_identity_after": {
+      "pgid": 328609,
+      "pid": 328609,
+      "sid": 328609,
+      "start_ticks": 6680815
+    },
+    "actor_identity_before": {
+      "pgid": 328609,
+      "pid": 328609,
+      "sid": 328609,
+      "start_ticks": 6680815
+    },
+    "actor_selection_sha256": "f7d7fe39df15666d53c05ba05c2d63e3ba6bb1a726f96dd979668e19edb74e1f",
+    "actor_status": "completed_mechanism_observations",
+    "actor_torch_version": {
+      "torch": "2.13.0+cu130"
+    },
+    "all_ten_planned_stages_completed_in_order": true,
+    "cleanup_errors": [],
+    "deadline_met": true,
+    "error": null,
+    "owner_entry_sha256": "63ad33776b9257bf8ccefff65458c64e49f28973a33f5b0740f107577ed25c9f",
+    "root_exit_code": 0,
+    "root_wall_seconds": 5.041775138000958,
+    "saved_exec_identity": {
+      "config_sha256": "5ea3de4f2a6165670ec05c07f6b580e4ab9f55029727b03593dffd160e306d8f",
+      "identity": {
+        "argv": [
+          "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+          "-B",
+          "-s",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/controller.py",
+          "--internal-stage",
+          "actor",
+          "--config",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/sealed-config.json",
+          "--config-sha256",
+          "5ea3de4f2a6165670ec05c07f6b580e4ab9f55029727b03593dffd160e306d8f"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+        "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+        "process": {
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service",
+          "pgid": 328609,
+          "pid": 328609,
+          "sid": 328609,
+          "start_ticks": 6680815,
+          "state": "R",
+          "uid": 1001
+        }
+      },
+      "nonce": "jev-d3-boundary-48ca7993f053d96559db351c035ee410",
+      "observed_main_thread_affinity": [
+        0
+      ],
+      "python_flags": {
+        "dont_write_bytecode": true,
+        "no_user_site": 1
+      },
+      "sys_executable": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+      "torch_not_imported": true
+    },
+    "sealed_config_sha256": "5ea3de4f2a6165670ec05c07f6b580e4ab9f55029727b03593dffd160e306d8f",
+    "stage_elapsed_and_monotonic_times_increasing": true
+  },
+  "initialization_and_identity": {
+    "allocator_backend": "native",
+    "first_metrics_stage_index": 3,
+    "init_returned_stage_initialized": true,
+    "is_integrated": 1,
+    "logical0_normalized_uuid_matches_controlled_physical_uuid": true,
+    "metrics_absent_first_three_stages": true,
+    "native_uuid_object_serialized_as_string": true,
+    "preinit_stage_initialized": false,
+    "qualification": "is_integrated=1 is an observed native property, not evidence that cgroup accounting covers all shared GPU allocations or capacities can be added.",
+    "saved_CUDA_result": {
+      "allocator_backend": "native",
+      "device_name": "NVIDIA GB10",
+      "device_total_memory_bytes": 130595864576,
+      "device_uuid_normalized": "e3429caa-b057-cbe0-917d-d3b85b313be7",
+      "device_uuid_raw": "e3429caa-b057-cbe0-917d-d3b85b313be7",
+      "identity_query_seconds": 0.0004312310047680512,
+      "initialized_after_init_call": true,
+      "initialized_final": true,
+      "is_integrated": 1,
+      "logical_device_index": 0,
+      "native_uuid_type": "_CUuuid",
+      "selected_uuid": "GPU-e3429caa-b057-cbe0-917d-d3b85b313be7"
+    },
+    "source_order": "Explicit torch.cuda.init; record initialized true without memory metrics; explicit synchronize(0); native device query and UUID normalization; first mem_get_info and allocator metrics. Source and saved stage order agree."
+  },
+  "memory_observations": {
+    "actor_receipt_peak_RSS_MiB": 811.52734375,
+    "actor_receipt_peak_RSS_bytes": 850948096,
+    "allocator_peak_allocated_bytes": 33555968,
+    "allocator_peak_reserved_bytes": 35651584,
+    "global_free_limitation": "CUDA global free is shared and can move due to unrelated activity, even opposite the own allocator trend. Never add it to host MemAvailable, infer exclusive context cost, or claim a total free-memory recovery.",
+    "largest_recorded_stage_cgroup_memory_peak_bytes": 585285632,
+    "owner_last_live_kernel_cgroup_peak_MiB": 558.921875,
+    "owner_last_live_kernel_cgroup_peak_bytes": 586072064,
+    "release_limitation": "Own tensor references were cleared and empty_cache returned, but 32MiB remains allocated/reserved and CUDA remains initialized. No attribution of this remaining allocation to a specific library is proven. Process closure is required; no all-GPU-memory or host/page-cache recovery claim.",
+    "release_stage_allocated_bytes": 33554432,
+    "release_stage_context_destroyed": false,
+    "release_stage_initialized": true,
+    "release_stage_reserved_bytes": 33554432,
+    "scope": "Every stage combines sequential non-atomic process RSS, unit cgroup accounting, host MemAvailable and global CUDA free/total. The four scopes overlap or omit different allocations and are not additive. Shmem is included in cgroup file and process RSS accounting; do not sum component and aggregate counters.",
+    "stage_host_MemAvailable_min_bytes": 28649144320,
+    "stage_host_min_scope": "Minimum of these ten saved actor stage samples only; neither a continuous host minimum nor the separate owner admission aggregate.",
+    "stage_table": [
+      {
+        "actor_stage_ru_maxrss_bytes": 27373568,
+        "elapsed_seconds": 0.0037582959921564907,
+        "global_CUDA_and_own_allocator": {
+          "allocated_bytes": null,
+          "free_bytes": null,
+          "initialized": null,
+          "max_allocated_bytes": null,
+          "max_reserved_bytes": null,
+          "metrics_seconds": 0.0,
+          "reserved_bytes": null,
+          "scope": "CUDA metrics unmeasured before first explicit synchronize; no lazy-initializing query invoked.",
+          "total_bytes": null
+        },
+        "host_MemAvailable_bytes": 29465395200,
+        "index": 0,
+        "own_cgroup": {
+          "memory_current_bytes": 14532608,
+          "memory_peak_bytes": 15142912,
+          "memory_stat": {
+            "anon": 14233600,
+            "file": 12288,
+            "kernel": 233472,
+            "pgfault": 7916,
+            "pgmajfault": 0,
+            "shmem": 0
+          },
+          "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        },
+        "process": {
+          "RssAnon_bytes": 14233600,
+          "RssFile_bytes": 12660736,
+          "RssShmem_bytes": 0,
+          "VmRSS_bytes": 26894336,
+          "VmSwap_bytes": 0
+        },
+        "stage": "stdlib-before-torch"
+      },
+      {
+        "actor_stage_ru_maxrss_bytes": 522510336,
+        "elapsed_seconds": 2.5816725619952194,
+        "global_CUDA_and_own_allocator": {
+          "allocated_bytes": null,
+          "free_bytes": null,
+          "initialized": false,
+          "max_allocated_bytes": null,
+          "max_reserved_bytes": null,
+          "metrics_seconds": 0.0,
+          "reserved_bytes": null,
+          "scope": "CUDA metrics unmeasured before first explicit synchronize; no lazy-initializing query invoked.",
+          "total_bytes": null
+        },
+        "host_MemAvailable_bytes": 29165326336,
+        "index": 1,
+        "own_cgroup": {
+          "memory_current_bytes": 296042496,
+          "memory_peak_bytes": 296042496,
+          "memory_stat": {
+            "anon": 293634048,
+            "file": 16384,
+            "kernel": 2252800,
+            "pgfault": 80275,
+            "pgmajfault": 0,
+            "shmem": 0
+          },
+          "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        },
+        "process": {
+          "RssAnon_bytes": 293629952,
+          "RssFile_bytes": 229093376,
+          "RssShmem_bytes": 0,
+          "VmRSS_bytes": 522723328,
+          "VmSwap_bytes": 0
+        },
+        "stage": "torch-imported-preinit"
+      },
+      {
+        "actor_stage_ru_maxrss_bytes": 526708736,
+        "elapsed_seconds": 2.60165005599265,
+        "global_CUDA_and_own_allocator": {
+          "allocated_bytes": null,
+          "free_bytes": null,
+          "initialized": true,
+          "max_allocated_bytes": null,
+          "max_reserved_bytes": null,
+          "metrics_seconds": 0.0,
+          "reserved_bytes": null,
+          "scope": "CUDA metrics unmeasured before first explicit synchronize; no lazy-initializing query invoked.",
+          "total_bytes": null
+        },
+        "host_MemAvailable_bytes": 29165338624,
+        "index": 2,
+        "own_cgroup": {
+          "memory_current_bytes": 296771584,
+          "memory_peak_bytes": 296771584,
+          "memory_stat": {
+            "anon": 293634048,
+            "file": 16384,
+            "kernel": 2252800,
+            "pgfault": 80275,
+            "pgmajfault": 0,
+            "shmem": 0
+          },
+          "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        },
+        "process": {
+          "RssAnon_bytes": 294195200,
+          "RssFile_bytes": 232734720,
+          "RssShmem_bytes": 0,
+          "VmRSS_bytes": 526929920,
+          "VmSwap_bytes": 0
+        },
+        "stage": "cuda-init-returned"
+      },
+      {
+        "actor_stage_ru_maxrss_bytes": 619900928,
+        "elapsed_seconds": 2.745220120996237,
+        "global_CUDA_and_own_allocator": {
+          "allocated_bytes": 0,
+          "free_bytes": 955371520,
+          "initialized": true,
+          "max_allocated_bytes": 0,
+          "max_reserved_bytes": 0,
+          "metrics_seconds": 0.00651420999201946,
+          "reserved_bytes": 0,
+          "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+          "total_bytes": 130595864576
+        },
+        "host_MemAvailable_bytes": 28925390848,
+        "index": 3,
+        "own_cgroup": {
+          "memory_current_bytes": 358293504,
+          "memory_peak_bytes": 361091072,
+          "memory_stat": {
+            "anon": 310136832,
+            "file": 44261376,
+            "kernel": 2707456,
+            "pgfault": 97208,
+            "pgmajfault": 0,
+            "shmem": 44236800
+          },
+          "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        },
+        "process": {
+          "RssAnon_bytes": 311287808,
+          "RssFile_bytes": 264486912,
+          "RssShmem_bytes": 44236800,
+          "VmRSS_bytes": 620011520,
+          "VmSwap_bytes": 0
+        },
+        "stage": "cuda-init-synchronized"
+      },
+      {
+        "actor_stage_ru_maxrss_bytes": 620064768,
+        "elapsed_seconds": 2.7525966169923777,
+        "global_CUDA_and_own_allocator": {
+          "allocated_bytes": 0,
+          "free_bytes": 955060224,
+          "initialized": true,
+          "max_allocated_bytes": 0,
+          "max_reserved_bytes": 0,
+          "metrics_seconds": 0.0011419970105635002,
+          "reserved_bytes": 0,
+          "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+          "total_bytes": 130595864576
+        },
+        "host_MemAvailable_bytes": 28925091840,
+        "index": 4,
+        "own_cgroup": {
+          "memory_current_bytes": 358555648,
+          "memory_peak_bytes": 361091072,
+          "memory_stat": {
+            "anon": 310136832,
+            "file": 44261376,
+            "kernel": 2707456,
+            "pgfault": 97208,
+            "pgmajfault": 0,
+            "shmem": 44236800
+          },
+          "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        },
+        "process": {
+          "RssAnon_bytes": 311353344,
+          "RssFile_bytes": 264617984,
+          "RssShmem_bytes": 44236800,
+          "VmRSS_bytes": 620208128,
+          "VmSwap_bytes": 0
+        },
+        "stage": "own-allocator-cap-set"
+      },
+      {
+        "actor_stage_ru_maxrss_bytes": 633192448,
+        "elapsed_seconds": 2.7882074379886035,
+        "global_CUDA_and_own_allocator": {
+          "allocated_bytes": 1024,
+          "free_bytes": 917794816,
+          "initialized": true,
+          "max_allocated_bytes": 1024,
+          "max_reserved_bytes": 2097152,
+          "metrics_seconds": 0.0011903970007551834,
+          "reserved_bytes": 2097152,
+          "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+          "total_bytes": 130595864576
+        },
+        "host_MemAvailable_bytes": 28887859200,
+        "index": 5,
+        "own_cgroup": {
+          "memory_current_bytes": 369827840,
+          "memory_peak_bytes": 369827840,
+          "memory_stat": {
+            "anon": 320512000,
+            "file": 46366720,
+            "kernel": 2785280,
+            "pgfault": 100305,
+            "pgmajfault": 0,
+            "shmem": 46333952
+          },
+          "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        },
+        "process": {
+          "RssAnon_bytes": 320495616,
+          "RssFile_bytes": 266768384,
+          "RssShmem_bytes": 46333952,
+          "VmRSS_bytes": 633597952,
+          "VmSwap_bytes": 0
+        },
+        "stage": "tiny-allocation-fill-enqueued"
+      },
+      {
+        "actor_stage_ru_maxrss_bytes": 633356288,
+        "elapsed_seconds": 2.7930780519964173,
+        "global_CUDA_and_own_allocator": {
+          "allocated_bytes": 1024,
+          "free_bytes": 917794816,
+          "initialized": true,
+          "max_allocated_bytes": 1024,
+          "max_reserved_bytes": 2097152,
+          "metrics_seconds": 0.0011462050024420023,
+          "reserved_bytes": 2097152,
+          "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+          "total_bytes": 130595864576
+        },
+        "host_MemAvailable_bytes": 28887859200,
+        "index": 6,
+        "own_cgroup": {
+          "memory_current_bytes": 369827840,
+          "memory_peak_bytes": 369827840,
+          "memory_stat": {
+            "anon": 320512000,
+            "file": 46366720,
+            "kernel": 2785280,
+            "pgfault": 100305,
+            "pgmajfault": 0,
+            "shmem": 46333952
+          },
+          "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        },
+        "process": {
+          "RssAnon_bytes": 320602112,
+          "RssFile_bytes": 266768384,
+          "RssShmem_bytes": 46333952,
+          "VmRSS_bytes": 633704448,
+          "VmSwap_bytes": 0
+        },
+        "stage": "tiny-fill-synchronized"
+      },
+      {
+        "actor_stage_ru_maxrss_bytes": 845619200,
+        "elapsed_seconds": 3.615708541998174,
+        "global_CUDA_and_own_allocator": {
+          "allocated_bytes": 33555968,
+          "free_bytes": 994447360,
+          "initialized": true,
+          "max_allocated_bytes": 33555968,
+          "max_reserved_bytes": 35651584,
+          "metrics_seconds": 0.0012047170021105558,
+          "reserved_bytes": 35651584,
+          "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+          "total_bytes": 130595864576
+        },
+        "host_MemAvailable_bytes": 28657324032,
+        "index": 7,
+        "own_cgroup": {
+          "memory_current_bytes": 582926336,
+          "memory_peak_bytes": 582991872,
+          "memory_stat": {
+            "anon": 524365824,
+            "file": 54755328,
+            "kernel": 3485696,
+            "pgfault": 157288,
+            "pgmajfault": 0,
+            "shmem": 46333952
+          },
+          "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        },
+        "process": {
+          "RssAnon_bytes": 524419072,
+          "RssFile_bytes": 275136512,
+          "RssShmem_bytes": 46333952,
+          "VmRSS_bytes": 845889536,
+          "VmSwap_bytes": 0
+        },
+        "stage": "tiny-matmul-synchronized"
+      },
+      {
+        "actor_stage_ru_maxrss_bytes": 850128896,
+        "elapsed_seconds": 3.700502203995711,
+        "global_CUDA_and_own_allocator": {
+          "allocated_bytes": 33555968,
+          "free_bytes": 986263552,
+          "initialized": true,
+          "max_allocated_bytes": 33555968,
+          "max_reserved_bytes": 35651584,
+          "metrics_seconds": 0.07681487800437026,
+          "reserved_bytes": 35651584,
+          "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+          "total_bytes": 130595864576
+        },
+        "host_MemAvailable_bytes": 28649144320,
+        "index": 8,
+        "own_cgroup": {
+          "memory_current_bytes": 585285632,
+          "memory_peak_bytes": 585285632,
+          "memory_stat": {
+            "anon": 526675968,
+            "file": 54824960,
+            "kernel": 3530752,
+            "pgfault": 157411,
+            "pgmajfault": 1,
+            "shmem": 46333952
+          },
+          "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        },
+        "process": {
+          "RssAnon_bytes": 526671872,
+          "RssFile_bytes": 277299200,
+          "RssShmem_bytes": 46333952,
+          "VmRSS_bytes": 850305024,
+          "VmSwap_bytes": 0
+        },
+        "stage": "tiny-readback-oracle"
+      },
+      {
+        "actor_stage_ru_maxrss_bytes": 850128896,
+        "elapsed_seconds": 3.7790431100002024,
+        "global_CUDA_and_own_allocator": {
+          "allocated_bytes": 33554432,
+          "free_bytes": 988024832,
+          "initialized": true,
+          "max_allocated_bytes": 33555968,
+          "max_reserved_bytes": 35651584,
+          "metrics_seconds": 0.001228765002451837,
+          "reserved_bytes": 33554432,
+          "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+          "total_bytes": 130595864576
+        },
+        "host_MemAvailable_bytes": 28650909696,
+        "index": 9,
+        "own_cgroup": {
+          "memory_current_bytes": 585285632,
+          "memory_peak_bytes": 585285632,
+          "memory_stat": {
+            "anon": 526675968,
+            "file": 54824960,
+            "kernel": 3530752,
+            "pgfault": 157411,
+            "pgmajfault": 1,
+            "shmem": 46333952
+          },
+          "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+        },
+        "process": {
+          "RssAnon_bytes": 526716928,
+          "RssFile_bytes": 277299200,
+          "RssShmem_bytes": 46333952,
+          "VmRSS_bytes": 850350080,
+          "VmSwap_bytes": 0
+        },
+        "stage": "own-tensors-released-empty-cache"
+      }
+    ]
+  },
+  "preserved_first_failure": {
+    "distinction": "Old01 remains a pre-tiny serialization failure with partial init observations. Actor02 profile-v2 converts the native _CUuuid to str and records its native type. Owner02 preserves child error type/message if receipt is missing. These are narrow source fixes, not a changed GPU mathematical oracle or score.",
+    "old01_actor_error": {
+      "evidence": null,
+      "message": "Object of type _CUuuid is not JSON serializable",
+      "returncode": null,
+      "stderr": null,
+      "stdout": null,
+      "type": "TypeError"
+    },
+    "old01_completed": false,
+    "old01_final_actor_receipt_absent": true,
+    "old01_independent_failure_audit": {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/independent-failure-audit.json",
+      "sha256": "6dcc58db8245143494f9b9c9f0894e7f24443addde5ec93b1b67ecc31b3fd086",
+      "size_bytes": 15348
+    },
+    "old01_root_exit_code": 1
+  },
+  "qualification_limits": [
+    "Actual CUDA initialization and 16x16 BF16 fill/matmul/512-byte CPU readback only; no model loaded, no header/payload/mmap or model transfer.",
+    "Native backend and integrated property are recorded; no CUDA kernel type, full numerical equivalence, Gemma decoder or full12B qualification.",
+    "2GiB unit memcg, swap0, CPUQuota100%/affinity0 and 30s boundary remain separate from shared GPU accounting; no shared physical GPU hardcap is established.",
+    "No 8192-context, 20-second full-model latency, N3/Q95/browser task or formal benchmark score claim; all existing scores remain unchanged.",
+    "No conclusion about restoring total driver/global GPU free memory after exit; saved process closure is a separate owned-cohort observation."
+  ],
+  "reviewed_at_utc": "2026-10-23T01:14:45.335212+00:00",
+  "reviewer": "/root/q95_owner05_review",
+  "schema": "gpu-context-probe-independent-saved-result-audit-v2",
+  "scope": "Read-only saved results and frozen small sources; only this new audit file is written. No Torch/CUDA/NVML/HTTP/service/probe/model/header/payload/native-library byte reads or execution. Closure is independently audited by the owner reviewer; this audit binds saved closure evidence without fresh service queries.",
+  "source_integrity": {
+    "limitation": "Six native binaries are pinned by filesystem stat metadata only; no independent binary-content integrity claim.",
+    "native_stat_only_count": 6,
+    "native_stat_only_refs": [
+      {
+        "bytes_read": false,
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/_C.cpython-313-aarch64-linux-gnu.so",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 11817757,
+          "st_mtime_ns": 1787038781025630092,
+          "st_size": 263073
+        }
+      },
+      {
+        "bytes_read": false,
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 11832793,
+          "st_mtime_ns": 1787038801693148324,
+          "st_size": 267181049
+        }
+      },
+      {
+        "bytes_read": false,
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/lib/libtorch_python.so",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 11832798,
+          "st_mtime_ns": 1787038828816151511,
+          "st_size": 30042377
+        }
+      },
+      {
+        "bytes_read": false,
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/lib/libc10.so",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 11832782,
+          "st_mtime_ns": 1787038793906062332,
+          "st_size": 1930761
+        }
+      },
+      {
+        "bytes_read": false,
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/lib/libtorch_cuda.so",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 11832794,
+          "st_mtime_ns": 1787038828021235365,
+          "st_size": 430140497
+        }
+      },
+      {
+        "bytes_read": false,
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/lib/libc10_cuda.so",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 11832783,
+          "st_mtime_ns": 1787038793926059949,
+          "st_size": 736705
+        }
+      }
+    ],
+    "runtime_owner_sources_unchanged": true,
+    "runtime_source_integrity_final": true,
+    "small_source_count": 16,
+    "small_sources_rehashed": [
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/_C/__init__.pyi",
+        "sha256": "deac43bc796dc9caad395f0166d979d5367a6481c5a27cdcef2cc6e32d7b14e8",
+        "size_bytes": 402717
+      },
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/__init__.py",
+        "sha256": "cf40c075c95864036e835795756d69b8cccfafa76f3bcde5eba9d06065ccd3d1",
+        "size_bytes": 111841
+      },
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/_tensor.py",
+        "sha256": "748523dec6b390aea5b82548067244a0e2ecba756ba1c35f1170741fba2a5cc5",
+        "size_bytes": 69726
+      },
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/_utils.py",
+        "sha256": "56b9c2263e223bd59b839b70a39923126ea297ff2fe9f47dca03b1ae3715a9d8",
+        "size_bytes": 51646
+      },
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/autograd/grad_mode.py",
+        "sha256": "ddc32c2cc2dfa5e2320f8c8e75b7d048c7661c58e1c9f7304914a22744e2177f",
+        "size_bytes": 16964
+      },
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/cuda/__init__.py",
+        "sha256": "0dd55462968d927ea2dc58da0401688b151354c448c097b12c6e4e0560a66541",
+        "size_bytes": 71905
+      },
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/cuda/memory.py",
+        "sha256": "7dc1d9d2a00b571977e6ecc6997d7ccfa4f13b620c11faf1f3f82317c548ec99",
+        "size_bytes": 58601
+      },
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/utils/_device.py",
+        "sha256": "571b8141af551c2d8a70ba5071723f725a99a4310b20aab098451062c420cb5c",
+        "size_bytes": 4491
+      },
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/version.py",
+        "sha256": "d7662da37d4b8b037c81e7ae20381a43893b379facf17988a6d4f17a93265140",
+        "size_bytes": 317
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+        "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+        "size_bytes": 21002
+      },
+      {
+        "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/fixture.py",
+        "sha256": "01ed4cb4feb7c7221bd6a604fa98e1aac8f1b22f29659b688417b6eb128c5c2d",
+        "size_bytes": 23793
+      },
+      {
+        "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/selection.json",
+        "sha256": "f7d7fe39df15666d53c05ba05c2d63e3ba6bb1a726f96dd979668e19edb74e1f",
+        "size_bytes": 4440
+      },
+      {
+        "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/controller.py",
+        "sha256": "63ad33776b9257bf8ccefff65458c64e49f28973a33f5b0740f107577ed25c9f",
+        "size_bytes": 36146
+      },
+      {
+        "path": "artifacts/jev-runtime/gpu-context-root-hardware-20261023-01.json",
+        "sha256": "6dbd1e1b15195c9909c40fbd5144a1c6bb355cf7d9f1b65b13828537a66584f4",
+        "size_bytes": 752
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+        "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+        "size_bytes": 38483
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+        "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+        "size_bytes": 2196
+      }
+    ]
+  },
+  "stage_inventory": [
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-00.json",
+      "sha256": "d2c0c12ff6418380f28c60ee237b4cc0719814c3677ca560e2ac411587b811a5",
+      "size_bytes": 1565
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-01.json",
+      "sha256": "d9a368d3c737e99436f45549ae4dbab6ff907028d2620bf135482f9f61697d1d",
+      "size_bytes": 1576
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-02.json",
+      "sha256": "629cdb643932375e5b3f659b2f33a094140504fe15e4746fd9c10d673d54d32a",
+      "size_bytes": 1677
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-03.json",
+      "sha256": "cd0fd1c16ce205b05ca0429086c157b5287d33ae331c2e06490138dc8f6c6aa9",
+      "size_bytes": 2285
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-04.json",
+      "sha256": "3aaf8f1598fba0fe80f9c5a34e385f8f37d84c20fe172b6eb3a8caa99ea9af3f",
+      "size_bytes": 1978
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-05.json",
+      "sha256": "8ffd8455ab86395977eadb5bdc1e139b436872d939a404bb8cc55c4b7d5d96b3",
+      "size_bytes": 1886
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-06.json",
+      "sha256": "b6d8cdbdb4a9e92478d23717ad1f9a9ea5b27c49ccb14a99fbf49db8b2ee3398",
+      "size_bytes": 1730
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-07.json",
+      "sha256": "1f3cd0296c24de910992134356b4faf62d9ce7b0f0fc1b40c81fe8f2bc1bf867",
+      "size_bytes": 1742
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-08.json",
+      "sha256": "413cadd80ac743b604bb2a9d609eb1673d5ccc02def246f44f90c31071eb31d0",
+      "size_bytes": 2194
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/actual-01/fixture/stage-09.json",
+      "sha256": "2c8129dfe8a9e8dbd1c1c09af55d9270599e390a74067001eb1528fddca20c19",
+      "size_bytes": 1895
+    }
+  ],
+  "timing_observations": {
+    "saved_timings_seconds": {
+      "allocation_fill_enqueue_seconds": 0.029670945994439535,
+      "allocation_fill_sync_seconds": 5.2319999667815864e-05,
+      "allocator_cap_set_seconds": 2.3519998649135232e-05,
+      "cleanup_sync_seconds": 5.4607997299171984e-05,
+      "init_call_seconds": 0.01319582799624186,
+      "init_sync_seconds": 0.13289695199637208,
+      "matmul_enqueue_plus_sync_seconds": 0.8176939570112154,
+      "matmul_enqueue_seconds": 0.8176383730024099,
+      "matmul_sync_seconds": 4.5567998313345015e-05,
+      "own_empty_cache_seconds": 0.0005841270030941814,
+      "tiny_CPU_readback_seconds": 0.000577038008486852,
+      "torch_import_seconds": 2.5735603229986737
+    },
+    "scope": "One actual attempt. Matmul enqueue-plus-sync includes lazy first-use/library costs; ones fills may run before matmul. Stage memory queries can synchronize or perturb timings. No kernel profiling, model tokens/sec or steady-state throughput qualification."
+  },
+  "toy_oracle": {
+    "BF16_16_bit_pattern_hex": "4180",
+    "element_count": 256,
+    "saved_output_and_expected_hash_both_match_independent_stdlib_hash": true,
+    "saved_result": {
+      "all_exact_16": true,
+      "closed_form_expected_sha256": "1cb8e75fc462d0af48a69d1c2ecc3b67abdb9358db5a4d38a1c5b1dbbe6fa003",
+      "completed": true,
+      "dtype": "bfloat16",
+      "output_sha256": "1cb8e75fc462d0af48a69d1c2ecc3b67abdb9358db5a4d38a1c5b1dbbe6fa003",
+      "readback_bytes": 512,
+      "scope": "Tiny fill/matmul and512B CPU readback only; no model transfer, layer, accuracy or throughput qualification.",
+      "shape": [
+        16,
+        16
+      ]
+    },
+    "scope": "Independently recomputes closed-form expected BF16 bytes and joins saved output SHA/flags to the exact actor source. No saved output tensor payload or independent GPU replay is available; does not independently prove model mathematics or kernel implementation.",
+    "stage8_details_match_final_toy_result": true,
+    "stdlib_byteorder": "little",
+    "stdlib_expected_bytes": 512,
+    "stdlib_expected_expression": "struct.pack(\"=H\", 0x4180) * 256",
+    "stdlib_expected_sha256": "1cb8e75fc462d0af48a69d1c2ecc3b67abdb9358db5a4d38a1c5b1dbbe6fa003"
+  },
+  "verdict": "PASS_WITH_LIMITS"
+}

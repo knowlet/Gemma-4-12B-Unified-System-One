@@ -1,0 +1,238 @@
+{
+  "schema": "independent-full05-closed-failure-aggregate-review-v2",
+  "result": "ACCEPTED_CLOSED_FAILURE_NO_QUALIFIED_STAGE_OR_FULL_SCORES",
+  "reviewer": "/root/cpu_text_helper_route/helper_boundary_review",
+  "root_exit_code": 1,
+  "overall_complete": false,
+  "qualified_scores": {
+    "legacy_public231": null,
+    "coherence_mini": null,
+    "browser": null
+  },
+  "host_observation_policy": "comfy-observed-cpu-coexist-v1",
+  "artifact_refs": {
+    "root_terminal": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/root-execution-full05-edge-both-02.json",
+      "sha256": "b7d19cb0e2b1c4e2c1e2d5f0c2d67437bf46b9c4270ea1f9da501c45796f301a",
+      "size_bytes": 1739
+    },
+    "root_intent": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/root-launch-full05-edge-both-02.json",
+      "sha256": "389cb39a2d7dfc8598ec5c3a7fb280304dda6348eb277cb273a37983ceaa6a96",
+      "size_bytes": 1933
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-02/receipt.json",
+      "sha256": "516adef7e19671121f66bfc1e87b6d2ef69cd4e988e8703a73ac3b837ed9715b",
+      "size_bytes": 217681
+    },
+    "original_closure": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-02/external-boundary-closure.json",
+      "sha256": "cf034eb1ae28c82e197bc305582319dcc38d681c10cf67644ad1d099ba445ad5",
+      "size_bytes": 9997
+    },
+    "campaign_state": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-02/edge-both/state.json",
+      "sha256": "2778358834352a69223c173284b56b8a3b29071c6bcc30fb1a2fc8b5a5bf6d1c",
+      "size_bytes": 13977
+    },
+    "actor_exit": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-02/actor-exit.json",
+      "sha256": "2b5fba1bb444497bc50422ab6b592621fa4e523430fc71a6ee104ad7ca7ed41b",
+      "size_bytes": 5562
+    },
+    "command_output_metadata": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-02/command-01-output.json",
+      "sha256": "8a398331937bf7621825d0019c0756120fe65b926bf7ce257d531e06cf7a8569",
+      "size_bytes": 4483
+    },
+    "selected_spec": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/root-edge-both-command-spec-01.json",
+      "sha256": "f8b077fa0b2a69fb92aec93061d0fefdd49c31b59f5aa865fa545e36b061ae09",
+      "size_bytes": 14132
+    },
+    "independent_selection_review": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/independent-root-selection-review-01.json",
+      "sha256": "ce593147d2235f9449c495fb5672d1788212ffb269e2170428fe012e5fe8e88e",
+      "size_bytes": 19891
+    },
+    "selected_campaign": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/campaign.py",
+      "sha256": "11d81a7e5e1010e23870667f936a29bb978e82ee0f5c5a264752ce3ae1cfd017",
+      "size_bytes": 51653
+    },
+    "selected_plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/edge-plan.json",
+      "sha256": "4bacfb19400f48425f334ab5f4f930a4063adfdab0ef4fe0276a1db2aa908b3e",
+      "size_bytes": 6981
+    },
+    "failed_public_stage_marker": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-02/edge-both/stage-completions/legacy-public231/completion.json",
+      "sha256": "de7770f4d3cfd97bee21d550aac0bb39a549124551fdf6d717ed52b4c7312e93",
+      "size_bytes": 292
+    }
+  },
+  "failure": {
+    "campaign_error": {
+      "type": "RuntimeError",
+      "message": "official metric must be finite numeric or absent"
+    },
+    "source_location": "campaign.py stage_metrics:486-555, numeric type guard542-552; StageCompletions.complete:677 invokes projector before stage authentication679-682",
+    "cause_scope": "Typed official aggregate projection failed after all public callbacks, before poststage authentication/publication. This audit does not infer which official field type caused the mismatch; separate source investigation owns that diagnosis.",
+    "controller_primary_type": "ValueError",
+    "controller_primary_message": "Selected child command failed; original error retained",
+    "nested_child_error_type": "CalledProcessError",
+    "command_returncode": 1,
+    "controller_secondary_errors": [],
+    "command_cleanup_errors": [],
+    "original_primary_retained_in_original_closure": true
+  },
+  "progress_not_score_qualification": {
+    "model_loads": 1,
+    "started_callbacks": 231,
+    "completed_callbacks": 231,
+    "raw_native_returns": 231,
+    "public_callback_population_complete": true,
+    "coherence_callbacks_started": 0,
+    "planned_full_callbacks": 1479,
+    "remaining_coherence_callbacks": 1248,
+    "initial_full_model_manifest_runtime_sources_authenticated": true,
+    "completed_stage_receipts": {},
+    "public_stage_full_post_authentication_completed": false,
+    "coherence_cache_present": false,
+    "final_full_model_runtime_source_authentication_completed": false,
+    "public_stage_independently_accepted": false,
+    "reason": "The metric projector throws before self.authenticate and before successful authenticated evidence/completion. The except path durably writes the explicit failed_no_stage_qualification marker. Complete callback counts and owner source closure do not supply missing poststage model/runtime authentication; no formal public or full score is accepted.",
+    "public_stage_failed_completion_marker_present": true,
+    "public_stage_failed_completion_marker_status": "failed_no_stage_qualification",
+    "public_stage_successful_evidence_or_completion_present": false
+  },
+  "timing": {
+    "root_wall_seconds": 372.28117288999783,
+    "owned_command_seconds": 370.3927519849967,
+    "saved_campaign_elapsed_seconds": 367.5332417689933,
+    "public_callback_latency": {
+      "count": 231,
+      "median_seconds": 0.47136830299859866,
+      "p95_seconds": 6.543600647011772,
+      "max_seconds": 10.001814269009628,
+      "quantile_method": "nearest_rank_p95; ordinary_median",
+      "startup_included": false,
+      "browser_20_second_qualification": false,
+      "unit": "one unchanged complete state/questions callback; native question chunks of up to4"
+    },
+    "original_deadlines": {
+      "callback_seconds": 180,
+      "whole_seconds": 10000,
+      "owner_seconds": 10800
+    },
+    "scope": "Closed failure timing and successful callback metadata only. Saved campaign elapsed is sampled before final watchdog cleanup; no whole/stage success or browser20 qualification follows."
+  },
+  "identity": {
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "unit": "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
+    "nonce": "jev-d3-boundary-6c6149aa2592e4e6a7e9c2029ff2957c",
+    "invocation_id": "e149c09fc3c8494788e62ba549e8b4a6",
+    "sealed_config_sha256": "694219e03deac4aa28aafbc2926376cfb943af3f83f123e5db13608f0c57cacf",
+    "root_controller": {
+      "pid": 670351,
+      "starttime_ticks": 12433858,
+      "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+    },
+    "owner_actor_pid_start": [
+      670359,
+      12433880
+    ],
+    "native_child_pid_start": [
+      670366,
+      12433902
+    ],
+    "pgid_sid": [
+      670359,
+      670359
+    ],
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
+    "state_process_and_exact_selected_command_joined": true,
+    "selected_source_records": 59,
+    "owner_sources_unchanged": true
+  },
+  "resource_observations": {
+    "own_memory_max_bytes": 2147483648,
+    "own_swap_max_bytes": 0,
+    "cpu_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_max": "400000 100000",
+    "initial_parent_MemAvailable_bytes": 93541335040,
+    "initial_full_R_plus_cap_bytes": 28266656564,
+    "reserve_bytes": 26119172916,
+    "authenticated_preclose_own_memory_peak_bytes": 1589760000,
+    "successful_postlaunch_gate_samples": 364,
+    "sampled_min_available_bytes": 35023142912,
+    "initial_Comfy_state": "http_idle",
+    "final_Comfy_state": "http_busy",
+    "final_Comfy_running_pending": [
+      1,
+      0
+    ],
+    "scope": "Only authenticated own peak and executed sampled gates; no continuous reserve, harmless coexistence or complete-suite performance claim."
+  },
+  "accepted_original_cleanup": {
+    "closure_mode": "authenticated_stop",
+    "authenticated_nonce_invocation_MainPID_cgroup_join": true,
+    "post_stop_terminal_verified": true,
+    "cgroup_absent": true,
+    "exact_two_empty_scans": true,
+    "sources_unchanged": true,
+    "whole_unit_exit_confirmed": true,
+    "observed_cgroup_cohort_exit_confirmed": true,
+    "closure_errors": [],
+    "primary_failure_preserved": true,
+    "false_flags_preserved": {
+      "no_escape_enforced": false,
+      "whole_tree_exit_confirmed": false,
+      "continuation_authorized": false,
+      "model_qualified": false
+    }
+  },
+  "retention": {
+    "stdout_sha256": "62fcdec8ee93db8f379f64cf471d615cc5445c33f3a171c680e2849fa566cac8",
+    "stderr_sha256": "6cb86429f2c447e05258f1270201190de7ad42ddea423bff8c565982065772ee",
+    "both_logs_complete_drained_hashes_match_retained_bytes": true,
+    "raw_tasks_gold_DOM_answers_responses_or_item_scores_in_review": false
+  },
+  "limits": [
+    "Failure remains failed despite accepted original cleanup. Unit wrapper systemd Result=success is not campaign success.",
+    "No retrospective score promotion from public raw aggregates, complete callback counts, log text, old profile results or future source fixes.",
+    "Missing poststage/full model authentication cannot be repaired by owner small-source closure or this metadata audit. A successor must run its unchanged official populations afresh under a separately reviewed exact selection.",
+    "All original false universal noescape/whole-tree/continuation/model flags remain false."
+  ],
+  "actions": {
+    "small_closed_aggregate_metadata_and_selected_source_read_only": true,
+    "new_review_receipt_only_written": true,
+    "official_tasks_gold_DOM_raw_responses_or_model_native_tokenizer_bytes_read": false,
+    "candidate_import_tests_formatter_live_host_unit_observer_network_Git": false
+  },
+  "status": "ALL_REVIEW_ACTIONS_STOPPED",
+  "supersedes": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-05/independent-failed-actual02-review-01.json",
+    "sha256": "1667e2e1bcef8200e068ce30bc4782dac63f1be3463ab443e1dfa54b1f523155",
+    "size_bytes": 9810
+  },
+  "correction": {
+    "reason": "Review01 checked the wrong expected stage path and incorrectly asserted that no completion file existed. The actual stage-completions/legacy-public231/completion.json exists and is an explicit failed marker. Review01 is preserved unchanged; no score or acceptance conclusion is promoted.",
+    "failed_marker_ref": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-02/edge-both/stage-completions/legacy-public231/completion.json",
+      "sha256": "de7770f4d3cfd97bee21d550aac0bb39a549124551fdf6d717ed52b4c7312e93",
+      "size_bytes": 292
+    },
+    "failed_marker_status": "failed_no_stage_qualification",
+    "correct_stage_directory": "actual-02/edge-both/stage-completions/legacy-public231",
+    "successful_stage_evidence_file_present": false,
+    "successful_stage_completion_present": false
+  }
+}

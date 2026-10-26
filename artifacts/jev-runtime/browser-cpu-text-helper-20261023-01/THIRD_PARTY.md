@@ -1,0 +1,5 @@
+This artifact follows the repository MIT license. The original `TEXT_VALUE` instruction literal is retained for interoperability with Browser Use Jev, upstream revision `1231850a0bf1a0c0341fe408ef1668dbbfdfac46`; the existing repository research records that upstream as MIT, copyright 2026 Browser Use. The surrounding browser executor and HTTP client are not copied here.
+
+The selected official model is Qwen/Qwen2.5-0.5B-Instruct at revision `7ae557604adf67be50417f59c2c2f167def9a775`. Its publisher supplies an [Apache-2.0 LICENSE](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct/blob/7ae557604adf67be50417f59c2c2f167def9a775/LICENSE). No model weights, tokenizer payload or model-license payload is redistributed in this source-only artifact. The future offline snapshot must include the selected original LICENSE file.
+
+Transformers is an existing Apache-2.0 dependency, not vendored source in this directory. Its local pinned Qwen/generation APIs were inspected and are called directly. Other existing Torch/tokenizers/safetensors/Accelerate dependencies retain their own upstream licenses. No dependency installation or redistribution is included.

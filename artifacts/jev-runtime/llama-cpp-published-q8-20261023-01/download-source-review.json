@@ -1,0 +1,194 @@
+{
+  "checks": [
+    {
+      "evidence": "Hardcoded public Hugging Face resolve URL at c418d37a; only four fixed basename candidates, full mode exactly Q8 and projector; HTTP200 required.",
+      "name": "Fixed public revision/HTTPS request origin",
+      "passed": true
+    },
+    {
+      "evidence": "Both exact size/SHA tuples independently match saved artifact manifest; manifest SHA and conversion-manifest join independently rehashed.",
+      "name": "Published immutable expected payload identity joins",
+      "passed": true
+    },
+    {
+      "evidence": "Conversion manifest records model.safetensors1114462112\u2026 /23919549408B; this is historical metadata, not a fresh payload hash or runtime claim.",
+      "name": "Historical source provenance distinguished",
+      "passed": true
+    },
+    {
+      "evidence": "read1MiB, count updated and limit checked before each write, stream SHA updates after successful write; no whole-file in-memory accumulation.",
+      "name": "Bounded one-pass stream and byte cap",
+      "passed": true
+    },
+    {
+      "evidence": "Flush/fsync complete .partial, require exact expected size and SHA after EOF, then same-directory rename; size cap32GiB exceeds both selected files.",
+      "name": "Verify before publish",
+      "passed": true
+    },
+    {
+      "evidence": "Fresh private repository output, reject .. and symlink paths; exclusive .partial creation; no deletion on failure; completed earlier files and failure.completed receipts remain.",
+      "name": "Fresh output and partial preservation",
+      "passed": true
+    },
+    {
+      "evidence": "Exception output stores type/code/reason type plus a fixed message; no str/repr(original error). Raises fixed RuntimeError fromNone, preventing chained urllib signed-redirect URL text.",
+      "name": "Failure URL redaction",
+      "passed": true
+    },
+    {
+      "evidence": "Per-file printed row is name/size/SHA/elapsed only. Saved headers only Content-Length/Content-Type/ETag; no Location, geturl or final response URL.",
+      "name": "Success output URL exclusion",
+      "passed": true
+    },
+    {
+      "evidence": "One repo .venv lexical Python3.12 -B -s script argv, fresh {OUTPUT}/package; canonical target stat independently verified. Generic env-i preserves only reviewed CPU/offline/overlay/thread variables; no inherited HTTP proxy/credential environment.",
+      "name": "Exact explicit download argv/environment compatibility",
+      "passed": true
+    },
+    {
+      "evidence": "Runtime7200/per-file32GiB spec matches frozen owner02; 9 small refs total including owner/spec/3 authorities/4 selected refs,1 tool stat. Owner admission/closure logic independently reviewed elsewhere; no runtime executed here.",
+      "name": "Owner budget/source joins",
+      "passed": true
+    },
+    {
+      "evidence": "Downloader uses stdlib and performs file transfer/hash only. Package receipt records Torch_imported observation, not inference/profile quality.",
+      "name": "No framework/native/model quality qualification",
+      "passed": true
+    },
+    {
+      "evidence": "Root-pinned source/spec and selected small sources rechecked before writing this new independent receipt.",
+      "name": "Frozen inputs unchanged at review completion",
+      "passed": true
+    }
+  ],
+  "command_spec": {
+    "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/root-download-spec.json",
+    "sha256": "6a375f195e88d2bdc24e4bd8a0319644899d5d313c31474078559b0ccb0dcd7c",
+    "size_bytes": 1707
+  },
+  "created_at_utc": "2026-10-23T01:52:21.588248+00:00",
+  "decision": "CLEAR_WITH_LIMITS",
+  "effective_small_source_count": 9,
+  "expected_payloads": [
+    {
+      "expected_sha256": "9d3bc61851e5b7ed8e595b84327b85271830778d0e62fa9c1349c61843f369ed",
+      "expected_size_bytes": 12669647264,
+      "manifest_join": true,
+      "name": "s1-boolq-Q8_0.gguf"
+    },
+    {
+      "expected_sha256": "cffbff05efd290fef28d084ebcb653de7594f5e26bae0eabbedf30d6c782c1d1",
+      "expected_size_bytes": 122031744,
+      "manifest_join": true,
+      "name": "mmproj-s1-boolq-f16.gguf"
+    }
+  ],
+  "fixed_authority_refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+      "size_bytes": 38483
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    }
+  ],
+  "limits": [
+    "No network request, script/owner invocation, Torch import, compiler/native execution, GPU probe, model header read, or large payload read performed by reviewer. Only this new review JSON is written.",
+    "Transport redirect/CDN details and network availability are not qualified by static review. Original timeout is per I/O operation; the selected own-unit runtime7200 and parent host/Comfy monitoring provide separate bounds.",
+    "The success SHA covers exact streamed received bytes before rename; no second full disk payload read/hash, subsequent mutability or arbitrary storage integrity proof.",
+    "Rename is atomic under the private fresh-directory ownership assumption, but Path.rename is not an exclusive no-clobber publish if another same-user actor races a new target; root-exclusive fresh output is required.",
+    "External termination/disk-full can leave a .partial or verified renamed file without a final per-file/package JSON. Partial evidence is preserved rather than treated as a completed package.",
+    "Header values are from the selected trusted HTTPS service; only the three listed metadata headers are saved. No signed response URL or Location is requested for output.",
+    "The2GiB memory cap32GiB file limit and streamed transfer establish neither model inference feasibility nor native S1/GPU/12B/8192/20s/N3/Q95/quality qualification.",
+    "Published manifest source checkpoint SHA is historical provenance only. No full model or published payload was rehashed during this source review."
+  ],
+  "logical_executable": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+  "metadata_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/metadata-01/artifact-manifest.json",
+      "sha256": "1646a81f062fa3fe5727c835de569b669f288bd646749b2c3b96426bff4bf8f0",
+      "size_bytes": 3723
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/metadata-01/conversion-manifest.json",
+      "sha256": "464874bc51e8ee21ab56f34a4bf7d22b1fb83299a277cbcf966b42c5fc7802b7",
+      "size_bytes": 4090
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/metadata-01/package-receipt.json",
+      "sha256": "899039da8a5a655a8523a56afd24d43d3504802e5f3b1e30d4c5b89b2170d81d",
+      "size_bytes": 1605
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/metadata-admission-01.json",
+      "sha256": "85d25397222ed3cc4982d78f9be1bf1e88c0c5ae8ee27dd2ddff10738c367f8a",
+      "size_bytes": 946
+    }
+  ],
+  "must_fix": [],
+  "public_revision": "c418d37a17689fae554f7fc7d78db05ff7d52cfb",
+  "resolved_executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+  "reviewer": "/root/q95_control03_prepare",
+  "runtime_operations": {
+    "GPU_probe": false,
+    "download": false,
+    "framework_or_model_import": false,
+    "large_payload_read": false,
+    "network": false,
+    "owner_or_unit": false
+  },
+  "schema": "public-q8-download-source-review-v1",
+  "scope": "Independent static downloader and exact spec review only; not a new review or execution of the reviewer-authored owner",
+  "selected_owner": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/controller.py",
+    "sha256": "2d250d1cbe79bdd179381b766c5b4c9499801f79a61c94d5a15adc16fefffb25",
+    "size_bytes": 38074
+  },
+  "selected_tool_stats": [
+    {
+      "path": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 11534385,
+        "st_mtime_ns": 1783328682303782212,
+        "st_size": 23319208
+      }
+    }
+  ],
+  "small_selected_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/fetch_package.py",
+      "sha256": "079f1664500185cd6056b6969e87aa8e2b0cc496dcd857ba9a52cef9a285c73a",
+      "size_bytes": 4225
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/metadata-01/artifact-manifest.json",
+      "sha256": "1646a81f062fa3fe5727c835de569b669f288bd646749b2c3b96426bff4bf8f0",
+      "size_bytes": 3723
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/metadata-01/conversion-manifest.json",
+      "sha256": "464874bc51e8ee21ab56f34a4bf7d22b1fb83299a277cbcf966b42c5fc7802b7",
+      "size_bytes": 4090
+    },
+    {
+      "path": "docs/validation/2026-10-04/gguf/conversion-manifest.json",
+      "sha256": "464874bc51e8ee21ab56f34a4bf7d22b1fb83299a277cbcf966b42c5fc7802b7",
+      "size_bytes": 4090
+    }
+  ],
+  "source": {
+    "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/fetch_package.py",
+    "sha256": "079f1664500185cd6056b6969e87aa8e2b0cc496dcd857ba9a52cef9a285c73a",
+    "size_bytes": 4225
+  },
+  "write_scope": "download-source-review.json only"
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "root-closed-browser-audit-execution-v1",
+  "results": [
+    {
+      "name": "format",
+      "exit_code": 0,
+      "elapsed_seconds": 0.015487933007534593,
+      "stdout": "1 file reformatted\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "ruff_check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.014532903005601838,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "closed_actual_root_audit",
+      "exit_code": 0,
+      "elapsed_seconds": 2.028759140986949,
+      "stdout": "{\"status\": \"EXECUTION_PATH_VERIFIED_STRICT_BROWSER_DIAGNOSTIC_FAIL\", \"operations\": [\"CLICK\", \"CLICK\", \"CLICK\", \"BLOCKED\"], \"calls\": [{\"index\": 0, \"http_status\": 200, \"client_seconds\": 1.7283497769967653, \"actual_shape\": [2, 578, 1024], \"native_question_rows\": 2, \"dummy_questions\": 0, \"all_wire_hashes_and_native_distributions_joined\": true}, {\"index\": 1, \"http_status\": 200, \"client_seconds\": 1.5283587859885301, \"actual_shape\": [2, 545, 1024], \"native_question_rows\": 2, \"dummy_questions\": 0, \"all_wire_hashes_and_native_distributions_joined\": true}, {\"index\": 2, \"http_status\": 200, \"client_seconds\": 1.6839434249850456, \"actual_shape\": [2, 569, 1024], \"native_question_rows\": 2, \"dummy_questions\": 0, \"all_wire_hashes_and_native_distributions_joined\": true}, {\"index\": 3, \"http_status\": 200, \"client_seconds\": 1.8865419040084817, \"actual_shape\": [2, 595, 1024], \"native_question_rows\": 2, \"dummy_questions\": 0, \"all_wire_hashes_and_native_distributions_joined\": true}], \"peak_bytes\": 1912430592}\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    }
+  ],
+  "separate_reviewer_actual_bytes_read": false
+}

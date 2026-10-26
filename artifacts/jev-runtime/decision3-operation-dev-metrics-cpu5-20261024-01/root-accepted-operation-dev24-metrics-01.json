@@ -1,0 +1,216 @@
+{
+  "schema": "root-accepted-operation-dev24-cached-metrics-nontraining-v1",
+  "status": "accepted",
+  "authority": "root",
+  "nontraining": true,
+  "training_eligible": false,
+  "separate_reviewer_actual_bytes_read": false,
+  "independent_actual_review_claimed": false,
+  "original_proof_refs": {
+    "root_execution": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/root-execution-operation-dev-metrics-28.json",
+      "sha256": "1f6d835ec63a3cd33a40acb163418159f4245ec63334b113694810864b561c6e",
+      "size_bytes": 1757
+    },
+    "owner_receipt": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-28/receipt.json",
+      "sha256": "0ed84f5970098bedf47169e28b275aececb75f0e895a5211c8d84d1921ebc7b6",
+      "size_bytes": 27615
+    },
+    "closure": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-28/external-boundary-closure.json",
+      "sha256": "46a721fc7690c71fe168f66d9efdea270e4db050c5f603085ffb6cae6eb94d05",
+      "size_bytes": 3567
+    },
+    "admission": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-28/admission.json",
+      "sha256": "307c504ca3fdfa13ca90633fb9307c7ee396d7eca7f1ae2e44d6f369c928e769",
+      "size_bytes": 481
+    },
+    "sealed_config": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-28/sealed-config.json",
+      "sha256": "e2a44a34e890f2524ce26bb97f15c1451428ac098fd06ef4a8fb2a010d9286f2",
+      "size_bytes": 8905
+    }
+  },
+  "command_spec": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-dev-metrics-cpu5-20261024-01/root-metrics-command-spec-01.json",
+    "sha256": "d1d1bcc9793f40fce93bb7b97ffec7225258d5291a2d8646d2980ee3b72c1fd9",
+    "size_bytes": 6397
+  },
+  "capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-dev-metrics-cpu5-20261024-01/root-selected-operation-dev24-metrics-capability-01.json",
+    "sha256": "c717035ec0b26b0ed5e8429b775910783d10cd327891a03d78b0db82d2784530",
+    "size_bytes": 23346
+  },
+  "summary": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-28/operation-dev-metrics/metrics-nontraining-pending.json",
+    "sha256": "6b33f9b499eb7fe0473a2cce9ddc87d384b38bac7f9c64e6f77550504ec58579",
+    "size_bytes": 7732
+  },
+  "source_union": 28,
+  "candidate_capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-readout-cpu5-20261024-01/root-frozen-operation-candidate-capability-01.json",
+    "sha256": "4dbbb9470d011931854f6473c0840ef7f0746c4194c719cde6ab454c3e79d463",
+    "size_bytes": 2875
+  },
+  "delta_ref": {
+    "dtype": "float32",
+    "format": "npy_no_pickle",
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-27/fit-operation-head/delta-pending.npy",
+    "sha256": "aaae4079d1c5bbe0f9b07d2618f029c681b565ccedf4d3d84540472fb704c566",
+    "shape": [
+      255,
+      1024
+    ],
+    "size_bytes": 1044608
+  },
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "complete_cases": 24,
+  "supervised_rows": 33,
+  "unused_heads_skipped": 63,
+  "metrics": {
+    "frozen_candidate": {
+      "all_supervised_heads_correct": {
+        "accuracy": 0.625,
+        "cases": 24,
+        "correct": 15
+      },
+      "by_head": {
+        "click_target": {
+          "accuracy": 0.6666666666666666,
+          "correct": 2,
+          "mean_soft_ce": 0.32228283677250147,
+          "rows": 3
+        },
+        "operation": {
+          "accuracy": 0.625,
+          "correct": 15,
+          "mean_soft_ce": 1.300224901176989,
+          "rows": 24
+        },
+        "select_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.647754485408465,
+          "rows": 3
+        },
+        "type_text_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.0010522009494403999,
+          "rows": 3
+        }
+      },
+      "full_mean_soft_ce": 1.0338990688323975,
+      "l2_applied": false,
+      "optimizer_steps": 0,
+      "supervised_rows": 33,
+      "valid_target_argmax_accuracy": 0.696969696969697,
+      "valid_target_argmax_correct": 23
+    },
+    "zero_delta": {
+      "all_supervised_heads_correct": {
+        "accuracy": 0.4166666666666667,
+        "cases": 24,
+        "correct": 10
+      },
+      "by_head": {
+        "click_target": {
+          "accuracy": 0.6666666666666666,
+          "correct": 2,
+          "mean_soft_ce": 0.32228283677250147,
+          "rows": 3
+        },
+        "operation": {
+          "accuracy": 0.4166666666666667,
+          "correct": 10,
+          "mean_soft_ce": 1.615516694340234,
+          "rows": 24
+        },
+        "select_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.647754485408465,
+          "rows": 3
+        },
+        "type_text_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.0010522009494403999,
+          "rows": 3
+        }
+      },
+      "full_mean_soft_ce": 1.2632020711898804,
+      "l2_applied": false,
+      "optimizer_steps": 0,
+      "supervised_rows": 33,
+      "valid_target_argmax_accuracy": 0.5454545454545454,
+      "valid_target_argmax_correct": 18
+    }
+  },
+  "additional_stdlib_FP64_witness": {
+    "zero_delta": {
+      "stdlib_FP64_full_mean_soft_ce": 1.263202014682637,
+      "published_FP32_full_mean_soft_ce": 1.2632020711898804,
+      "CE_absolute_tolerance": 1e-05,
+      "correct": 18,
+      "rows": 33,
+      "all_heads_correct_cases": 10
+    },
+    "frozen_candidate": {
+      "stdlib_FP64_full_mean_soft_ce": 1.033898904641167,
+      "published_FP32_full_mean_soft_ce": 1.0338990688323975,
+      "CE_absolute_tolerance": 1e-05,
+      "correct": 23,
+      "rows": 33,
+      "all_heads_correct_cases": 15
+    }
+  },
+  "all_bundle_values_independently_rederived": true,
+  "readonly_value_fingerprints": {
+    "features": "62d162af1f95cefa53da9bb1804346a39fd91076de8a3f4e775293321be40cf8",
+    "counts": "df10a3ef18a98cd3fc7b80715ba33947e11ad59dae1b8aa811f5aff8bc267a84",
+    "soft_targets": "41703b1f8700e92d8fa64fa11300cd2206913874f27f88b81db662a07a5bee63",
+    "W0": "d408d94a0ab2915fa85c511dd9b8d62af49903c4e4ca28e2e2d5aff9ef565e0f",
+    "delta": "81b6d6422eff33832845f9bab572440b6220601a8b9b101bcbb8d6d6b068979f",
+    "zero_delta": "f62e0f02a1fde7c69411b888b4054fa5bf465693a429cb9f283bd6a0ccdee290"
+  },
+  "optimizer_steps": 0,
+  "model_forwards": 0,
+  "only_head": "operation",
+  "model_selection_scope": "dev_model_selection_only_no_unseen_claim",
+  "dev_used_for_model_selection": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "candidate_selection_before_dev_or_sealed": false,
+  "browser_or_official_score": false,
+  "promotion_or_quality_win_claim": false,
+  "audit_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-dev-metrics-cpu5-20261024-01/root-closed-operation-dev-metrics-audit-01.py",
+    "sha256": "988673e24ff9d1785ea721590e73e3c9f3641cae1fc5f72cfe523565b7d201e5",
+    "size_bytes": 29145
+  },
+  "argmax_comparison_scope": "FP64 uses first ordered argmax per row; actual FP32 publishes aggregate hits only, not independently retained per-row choices",
+  "scope": "Complete operation-only dev24 cached-head model-selection metrics; no unseen holdout claim; root actual read with source-only peer review. Permanent NONTRAINING; no promotion, browser/official score or independent peer actual-read claim."
+}

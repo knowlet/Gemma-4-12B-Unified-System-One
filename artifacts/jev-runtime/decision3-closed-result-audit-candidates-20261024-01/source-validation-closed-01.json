@@ -1,0 +1,128 @@
+{
+  "status": "SOURCE_CHECKS_PASS_PUBLIC_ONLY_ACTUAL_AUDIT_PASS_WITH_LIMITS",
+  "format_preserved_entire_AST": true,
+  "manual_lint_corrections": [
+    "standard library import ordering",
+    "public nested argument lambda rewritten as equivalent def"
+  ],
+  "checks": [
+    {
+      "name": "ruff_format",
+      "exit_code": 0,
+      "elapsed_seconds": 0.027516873000422493,
+      "stdout": "2 files reformatted\n",
+      "stderr": "",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/complete_audit_v02.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/public_stage_audit.py"
+      ],
+      "as_limit_bytes": null,
+      "cpu_seconds": 30,
+      "affinity": [
+        0
+      ]
+    },
+    {
+      "name": "ruff_check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.02277172898175195,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/complete_audit_v02.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/public_stage_audit.py"
+      ],
+      "as_limit_bytes": null,
+      "cpu_seconds": 30,
+      "affinity": [
+        0
+      ]
+    },
+    {
+      "name": "ruff_format_check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.01247654398321174,
+      "stdout": "2 files already formatted\n",
+      "stderr": "",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "--check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/complete_audit_v02.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/public_stage_audit.py"
+      ],
+      "as_limit_bytes": null,
+      "cpu_seconds": 30,
+      "affinity": [
+        0
+      ]
+    },
+    {
+      "name": "complete_default",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1016007229918614,
+      "stdout": "{\"status\": \"HELD_SOURCE_ONLY_V02_NOT_EXECUTED_OR_CHECKED\", \"actual_evidence_read\": false, \"purpose\": \"Complete1479 current-closure typed aggregate audit only after root source review and original terminal\"}\n",
+      "stderr": "",
+      "argv": [
+        "/usr/bin/python3.12",
+        "-I",
+        "-S",
+        "-B",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/complete_audit_v02.py"
+      ],
+      "as_limit_bytes": 536870912,
+      "cpu_seconds": 30,
+      "affinity": [
+        0
+      ]
+    },
+    {
+      "name": "public_default",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0963397639861796,
+      "stdout": "{\"status\": \"HELD_SOURCE_ONLY_NOT_EXECUTED_OR_CHECKED\", \"actual_evidence_read\": false, \"purpose\": \"Closed public231-only fallback after exact original terminal/receipt/closure and root source review\"}\n",
+      "stderr": "",
+      "argv": [
+        "/usr/bin/python3.12",
+        "-I",
+        "-S",
+        "-B",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/public_stage_audit.py"
+      ],
+      "as_limit_bytes": 536870912,
+      "cpu_seconds": 30,
+      "affinity": [
+        0
+      ]
+    }
+  ],
+  "candidate_sources": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/complete_audit_v02.py",
+      "sha256": "e717b27960ea69fc677f2bbc39778719b2230929229b1fbb5ed902d3c2b4c2d6",
+      "size_bytes": 61196
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/public_stage_audit.py",
+      "sha256": "c2c9ae7c8cc89a447a448a0579ab06e1ad8314916e955c2a59c5a1f18f0fee99",
+      "size_bytes": 48493
+    }
+  ],
+  "checked_at_utc": "2026-10-24T02:10:46.424255+00:00",
+  "original_NN_and_controller_terminal_before_checks": true,
+  "actual_public_audit": {
+    "source_sha256": "c2c9ae7c8cc89a447a448a0579ab06e1ad8314916e955c2a59c5a1f18f0fee99",
+    "exit_code": 0,
+    "elapsed_seconds": 2.152551778999623,
+    "output": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261024-06/root-public-stage-only-actual04-result-review-01.json",
+      "sha256": "238f272bd5002853e61587f68c0defdf2f6fbe1932a3301b200666710dadaa79",
+      "size_bytes": 11105
+    }
+  },
+  "complete1479_audit_executed": false
+}

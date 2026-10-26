@@ -1,0 +1,30 @@
+{
+  "edits": [
+    [
+      "def controller_main(plan, digest, blob):",
+      "def continued_controller(plan, digest, blob):"
+    ],
+    [
+      "    output = ordinary(plan[\"output\"])",
+      "    output = ordinary(_continuation_output)"
+    ],
+    [
+      "    for group in GROUPS:\n",
+      "    for group in (\"public6\",):\n"
+    ],
+    [
+      "            require(result.get(\"actor_success\") is True, \"Actual selected group refused\")\n",
+      "            # Authoritative scoped completion is checked after external closure.\n"
+    ],
+    [
+      "        if (\n            primary is not None",
+      "        if primary is None:\n            try:\n                groups[group] = _scoped_completed(plan, group)\n            except BaseException as error:\n                primary = error_record(error)\n        if (\n            primary is not None"
+    ],
+    [
+      "    report = aggregate_result(plan, digest, groups, primary)",
+      "    report = _continued_aggregate(plan, digest, groups, primary)"
+    ]
+  ],
+  "inverse_bytes_equal": true,
+  "source_sha256": "b2a768081f2d2b51f8da6c492b02bf44505f211b68dec6a4c59d0485bced5e72"
+}

@@ -1,0 +1,95 @@
+{
+  "schema": "independent-closed-CPU-milestone-report-and-allowlist-review-v1",
+  "result": "PASS_REPORT_AND_EXACT_SMALL_METADATA_ALLOWLIST_WITH_SCOPE_LIMITS",
+  "scope": "Independent report/allowlist audit only. Reuses the separately authored native7a3b PASS_WITH_LIMITS and catalogf090 audits; does not redo their raw result/source audits, run tests/source, read raw NN state/responses/tasks/gold/DOM, open/stat model/native/interpreter payloads, probe a host/unit/session/observer or use Git.",
+  "artifact_refs": {
+    "report_markdown": {
+      "path": "docs/validation/2026-10-23/gx10-decision3-edge-2g-cpu-smoke.md",
+      "size_bytes": 3025,
+      "sha256": "3c59c64ba12297f01c085332e192dd773c9285a03bd086341cb2f9c324cb7557"
+    },
+    "report_metadata": {
+      "path": "docs/validation/2026-10-23/gx10-decision3-edge-2g-cpu-smoke.json",
+      "size_bytes": 14646,
+      "sha256": "d39ffc0fa7a9b9aadb17f0a7c515061aac29213f24e1d5902b3f1e242cb93e30"
+    },
+    "inventory": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-closed-cpu-milestone-inventory-01.json",
+      "size_bytes": 10554,
+      "sha256": "2c045c1c6bd1786643f86850598db89911f949aaa3963b02d23a471164156f77"
+    },
+    "native_independent_result_audit": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/independent-actual-edge-2g-review-01.json",
+      "size_bytes": 17560,
+      "sha256": "7a3bf73a6d75036c96ed4705e9e6358624757cf2d8f330084b6fdfc828789be8"
+    },
+    "catalog_independent_result_audit": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/independent-wrapped-actual05-review-01.json",
+      "size_bytes": 10986,
+      "sha256": "f090e09a1b5745a250ecba045c8e99b1f0138942ed31e04db9bd7b5711b698db"
+    },
+    "full_campaign_source_selection_review": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/independent-root-selection-review-01.json",
+      "size_bytes": 22951,
+      "sha256": "1730df03a1e79b2f0a8acb09b01f24e61be3036ed5df688e693eca72214ba6bb"
+    }
+  },
+  "inventory": {
+    "payload_files": 44,
+    "payload_bytes": 405786,
+    "inventory_file_bytes": 10554,
+    "selected_files_including_inventory": 45,
+    "selected_bytes_including_inventory": 416340,
+    "all45_SHA_size_UTF8_verified": true,
+    "maximum_selected_file_bytes": 70570,
+    "allowlisted_closed_actual_metadata_files": 23,
+    "final_expected_files_with_this_review": 46,
+    "temporary_staging_metadata_exactly_matches_44plus_inventory": true,
+    "no_raw_NN_state_or_per_response_or_binary_payload_selected": true,
+    "raw_state_SHA_reference_only_preserved": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-01/edge-probe/state.json",
+      "size_bytes": 18988,
+      "sha256": "9d4a288d0587b108b219113b7a9db58959e0e8e16d22f1dc1f23127070deaf30"
+    }
+  },
+  "checks": {
+    "native_report_observations_and_qualification_exactly_equal_independent_audit": true,
+    "native_source_authorship_not_self_approved_here": true,
+    "multicore_ratios_recomputed_from_saved_cgroup_CPUdelta_and_window_wall": true,
+    "counter_window_includes_framework_validation_and_is_not_pure_forward_or_fourfold_speedup": true,
+    "durable_call_latency_and_precleanup_actor_elapsed_and_complete_child_root_times_distinct": true,
+    "peak_units_scope_and_cap_headroom_correct": true,
+    "observed_OOM_and_throttle_scope_preserved_not_global_guarantee": true,
+    "same_four_questions_twice_not_eight_independent_quality_samples": true,
+    "catalog_identity_only_success_not_NN_HTTP_or_browser_quality": true,
+    "new_both_suites_full_scores_null_and_historical_Gemma_separate": true,
+    "future_per_suite_checkpoints_not_current_scores_or_all_suites_success": true,
+    "helper_and_full_saved_gate01_idle_refusal_with_memory_above_floor_not_new_admission": true,
+    "all_top_actual_JSON_paths_allowlisted_no_inner_NN_state_or_raw_answers": true
+  },
+  "measurement_scope": {
+    "native_actual_revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "batch_size": 4,
+    "questions_per_repeated_call": 4,
+    "real_calls": 2,
+    "durable_call_seconds": [
+      1.0770371519902255,
+      0.9480278350092703
+    ],
+    "observed_average_cores": [
+      3.6639188237809206,
+      3.745982819328632
+    ],
+    "whole_selected_cgroup_peak_bytes": 1386991616,
+    "catalog_only_peak_bytes": 559804416,
+    "model_or_Lite_longcontext_fit_generalization": false,
+    "quality_score_computed": false
+  },
+  "limits": [
+    "CPU16\u201319 is the selected service setting and observed affinity scope; the reused native audit explicitly limits evidence to saved own-cgroup counters and main-thread/actor samples. No all-thread lifetime cpuset, noescape or whole-tree claim is added.",
+    "The exact synthetic checkpoint/profile succeeds; long context, full1479-call fit, semantic quality, batch1 parity, Lite2GiB, HTTP/browser20 and matched model comparison remain unqualified.",
+    "The report is the immutable13:59:58 snapshot. Later admission waiters or fresh gates are outside this review; no waiter/session was probed and no requested source or report was changed.",
+    "This review adds one authorized receipt outside the44payload inventory; root must stage the exact45 listed files plus this review and perform its own index/diff/commit/push checks."
+  ],
+  "findings": []
+}

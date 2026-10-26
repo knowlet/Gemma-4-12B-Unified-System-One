@@ -1,0 +1,79 @@
+{
+  "manifest_read_and_hash_check": "PASS;23 selected small source bytes and5 binary stat-only identities, no binary payload reads",
+  "runs": [
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/controller.py",
+        "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/test_controller.py"
+      ],
+      "elapsed_seconds": 0.013791773999400903,
+      "limits": {
+        "AS": "inherited default; no new hard memory cap",
+        "wall_seconds": 45
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/controller.py",
+        "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/test_controller.py"
+      ],
+      "elapsed_seconds": 0.009597274001862388,
+      "limits": {
+        "AS": "inherited default; no new hard memory cap",
+        "wall_seconds": 45
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "2 files already formatted\n"
+    },
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/test_controller.py",
+        "-v"
+      ],
+      "elapsed_seconds": 0.12790790700091748,
+      "limits": {
+        "AS_bytes": 1073741824,
+        "CPU_seconds": 30,
+        "core_bytes": 0,
+        "wall_seconds": 45
+      },
+      "returncode": 0,
+      "stderr": "test_affinity_dual_read_accepts_cpu0_and_rejects_widening (__main__.ControllerTests.test_affinity_dual_read_accepts_cpu0_and_rejects_widening) ... ok\ntest_default_dry_imports_no_framework_and_calls_no_authority (__main__.ControllerTests.test_default_dry_imports_no_framework_and_calls_no_authority) ... ok\ntest_environment_has_only_selected_cpu_overlay (__main__.ControllerTests.test_environment_has_only_selected_cpu_overlay) ... ok\ntest_existing_cgroup_is_refused_even_if_unit_absent (__main__.ControllerTests.test_existing_cgroup_is_refused_even_if_unit_absent) ... ok\ntest_existing_unit_is_refused_without_command_or_stop (__main__.ControllerTests.test_existing_unit_is_refused_without_command_or_stop) ... ok\ntest_expired_postreceipt_hold_never_qualifies_as_completed (__main__.ControllerTests.test_expired_postreceipt_hold_never_qualifies_as_completed) ... ok\ntest_finalization_closes_before_final_source_or_host_failure (__main__.ControllerTests.test_finalization_closes_before_final_source_or_host_failure) ... ok\ntest_finalization_preserves_primary_and_receipt_when_final_checks_fail (__main__.ControllerTests.test_finalization_preserves_primary_and_receipt_when_final_checks_fail) ... ok\ntest_hold_success_requires_authenticated_live_close_before_deadline (__main__.ControllerTests.test_hold_success_requires_authenticated_live_close_before_deadline) ... ok\ntest_host_initial_and_runtime_floor_and_busy_evidence (__main__.ControllerTests.test_host_initial_and_runtime_floor_and_busy_evidence) ... ok\ntest_missing_cpuset_is_recorded_with_real_affinity_gate (__main__.ControllerTests.test_missing_cpuset_is_recorded_with_real_affinity_gate) ... ok\ntest_original_selection_has_exact_tiny_cap_without_modification (__main__.ControllerTests.test_original_selection_has_exact_tiny_cap_without_modification) ... ok\ntest_stable_identity_allows_R_S_but_rejects_changed_start (__main__.ControllerTests.test_stable_identity_allows_R_S_but_rejects_changed_start) ... ok\ntest_timeout_byte_output_remains_bounded_json_evidence (__main__.ControllerTests.test_timeout_byte_output_remains_bounded_json_evidence) ... ok\ntest_wrong_entry_sha_refuses_before_authorities_or_actor (__main__.ControllerTests.test_wrong_entry_sha_refuses_before_authorities_or_actor) ... ok\n\n----------------------------------------------------------------------\nRan 15 tests in 0.014s\n\nOK\n",
+      "stdout": ""
+    }
+  ],
+  "schema": "bf16-mmap-cpu-owner-static-validation-v2",
+  "sources": {
+    "entry": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/controller.py",
+      "sha256": "0f12798ddd700848db6699cc57a3f21c53e5e3459610768a373aa0634a99c687",
+      "size_bytes": 29935
+    },
+    "test": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/test_controller.py",
+      "sha256": "0941fb2bf83aa94a22897d56f7987be34faf1fad717a5b74819567ae0e95d566",
+      "size_bytes": 14321
+    }
+  },
+  "torch_loaded": false,
+  "unexecuted": [
+    "systemd unit",
+    "observer HTTP",
+    "Torch or other ML framework import",
+    "mmap",
+    "model",
+    "Comfy operation"
+  ]
+}

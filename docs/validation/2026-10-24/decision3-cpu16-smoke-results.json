@@ -1,0 +1,253 @@
+{
+  "schema": "decision3-cpu16-synthetic-smoke-observation-v1",
+  "created_at_utc": "2026-10-24T02:41:39.762891+00:00",
+  "status": "CLOSED_SYNTHETIC_SMOKE_PASS_SHORT_INPUT_NO_OBSERVED_SPEEDUP",
+  "scope": "two complete batch4 original native forwards with135 padded tokens only; no benchmark/browser score",
+  "model_revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+  "profile": {
+    "affinity": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "threads": 16,
+    "memory_max_bytes": 4294967296,
+    "swap_max_bytes": 0,
+    "original_call_seconds": 20,
+    "original_actor_seconds": 120
+  },
+  "observed": {
+    "calls": [
+      {
+        "index": 0,
+        "durable_seconds": 1.2048053710022941,
+        "shape": [
+          4,
+          135,
+          1024
+        ]
+      },
+      {
+        "index": 1,
+        "durable_seconds": 1.0944040610047523,
+        "shape": [
+          4,
+          135,
+          1024
+        ]
+      }
+    ],
+    "root_seconds": 17.296471427980578,
+    "actor_seconds": 14.319179950020043,
+    "command_seconds": 15.59842708898941,
+    "memory": {
+      "memory.current": 951558144,
+      "memory.peak": 1061474304,
+      "memory.events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "cpu.stat": {
+        "usage_usec": 39861208,
+        "user_usec": 35360147,
+        "system_usec": 4501060,
+        "nice_usec": 0,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 146,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  "previous_cpu4": {
+    "review": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/independent-actual-edge-2g-coexist-review-01.json",
+      "size_bytes": 12022,
+      "sha256": "d31ec9357d21e018d34b8a18c1b71d3b9557506ce7972ae03e918f313c7df412"
+    },
+    "affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "memory_max_bytes": 2147483648,
+    "durable_call_seconds": [
+      0.9179902079922613,
+      0.9008953110023867
+    ],
+    "root_seconds": 16.1461553429981
+  },
+  "interpretation": {
+    "short_input_speedup_observed": false,
+    "statistically_matched_speed_win_claim": false,
+    "causal_explanation_proven": false,
+    "mixed_capacity_and_cross_cluster_overhead_hypothesis": true,
+    "long_context_or_browser_qualified": false,
+    "full07_prerequisite_selected": false
+  },
+  "linux_capacity_topology_snapshot": [
+    {
+      "cpu": 0,
+      "capacity": 718,
+      "cluster_id": 56,
+      "max_frequency_khz": 2808000
+    },
+    {
+      "cpu": 1,
+      "capacity": 718,
+      "cluster_id": 56,
+      "max_frequency_khz": 2808000
+    },
+    {
+      "cpu": 2,
+      "capacity": 718,
+      "cluster_id": 56,
+      "max_frequency_khz": 2808000
+    },
+    {
+      "cpu": 3,
+      "capacity": 718,
+      "cluster_id": 56,
+      "max_frequency_khz": 2808000
+    },
+    {
+      "cpu": 4,
+      "capacity": 718,
+      "cluster_id": 56,
+      "max_frequency_khz": 2808000
+    },
+    {
+      "cpu": 5,
+      "capacity": 997,
+      "cluster_id": 56,
+      "max_frequency_khz": 3900000
+    },
+    {
+      "cpu": 6,
+      "capacity": 997,
+      "cluster_id": 56,
+      "max_frequency_khz": 3900000
+    },
+    {
+      "cpu": 7,
+      "capacity": 997,
+      "cluster_id": 56,
+      "max_frequency_khz": 3900000
+    },
+    {
+      "cpu": 8,
+      "capacity": 997,
+      "cluster_id": 56,
+      "max_frequency_khz": 3900000
+    },
+    {
+      "cpu": 9,
+      "capacity": 997,
+      "cluster_id": 56,
+      "max_frequency_khz": 3900000
+    },
+    {
+      "cpu": 10,
+      "capacity": 731,
+      "cluster_id": 1144,
+      "max_frequency_khz": 2808000
+    },
+    {
+      "cpu": 11,
+      "capacity": 731,
+      "cluster_id": 1144,
+      "max_frequency_khz": 2808000
+    },
+    {
+      "cpu": 12,
+      "capacity": 731,
+      "cluster_id": 1144,
+      "max_frequency_khz": 2808000
+    },
+    {
+      "cpu": 13,
+      "capacity": 731,
+      "cluster_id": 1144,
+      "max_frequency_khz": 2808000
+    },
+    {
+      "cpu": 14,
+      "capacity": 731,
+      "cluster_id": 1144,
+      "max_frequency_khz": 2808000
+    },
+    {
+      "cpu": 15,
+      "capacity": 1017,
+      "cluster_id": 1144,
+      "max_frequency_khz": 3900000
+    },
+    {
+      "cpu": 16,
+      "capacity": 1017,
+      "cluster_id": 1144,
+      "max_frequency_khz": 3900000
+    },
+    {
+      "cpu": 17,
+      "capacity": 1017,
+      "cluster_id": 1144,
+      "max_frequency_khz": 3900000
+    },
+    {
+      "cpu": 18,
+      "capacity": 1017,
+      "cluster_id": 1144,
+      "max_frequency_khz": 3900000
+    },
+    {
+      "cpu": 19,
+      "capacity": 1024,
+      "cluster_id": 1144,
+      "max_frequency_khz": 3900000
+    }
+  ],
+  "source_checks": {
+    "owner_stdlib_fakes": 48,
+    "native_stdlib_fakes": 24,
+    "owner_validation": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-08/validation.json",
+      "size_bytes": 11044,
+      "sha256": "0755bd4040f77ef7c5cec9bf857499c62d5c634d767528700c881fb412401bc0"
+    },
+    "native_validation": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/validation.json",
+      "size_bytes": 6533,
+      "sha256": "059908cf4224201a5793bee9a0831d3e35c69a7e5f77681ea03af2b6cdf4ec55"
+    }
+  },
+  "root_closed_review": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/root-closed-smoke-result-01.json",
+    "size_bytes": 4120,
+    "sha256": "368b754998f6b7ea3609f66a409bbcbcb3a8e70027a0001cf7072a12224cd83b"
+  },
+  "independent_actual_original_bytes_read": false,
+  "model_quality_browser_training_rank_or_win_qualified": false,
+  "raw_requests_answers_probabilities_features_or_model_bytes_included": false,
+  "next": "Qualify separately prepared CPU15–19 same-cluster five-thread profile and compare representative invented input lengths before choosing a full run."
+}

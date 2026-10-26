@@ -1,0 +1,20 @@
+I001 [*] Import block is un-sorted or un-formatted
+ --> artifacts/jev-runtime/llama-cpp-native-s1-20261023-03/test_source.py:3:1
+  |
+1 |   """Stdlib-only complete source inverse checks; never run a native executable."""
+2 |
+3 | / import difflib
+4 | | import hashlib
+5 | | import json
+6 | | import unittest
+7 | | from pathlib import Path
+  | |________________________^
+help: Organize imports
+  |
+8 |
+  -
+9 | HERE = Path(__file__).resolve().parent
+  |
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.

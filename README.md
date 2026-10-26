@@ -11,6 +11,59 @@ This project extends [system-one-open](https://github.com/mithalouni/system-one-
 The original E2B experiments and demos remain available; their historical results
 are not measurements of this Unified model. See [upstream notes](docs/upstream.md).
 
+## Fresh GX10 evaluation — October 22, 2026
+
+| Evaluation | Profile | Result |
+| --- | --- | ---: |
+| Benchmark Heaven public231 accuracy | Released BF16 causal multislot | **84.42%** (195/231) |
+| JevBench coherence mini | Same BF16 profile | **41.26/100** |
+| Real Chromium V7 tasks | Current NF4 + raw96 action adapter | **20%** (2/10) |
+| Same ten Chromium V7 tasks and NF4 helper | Current NF4 + native V2 adapter | **40%** (4/10) |
+| Same ten Chromium V7 tasks, Q95 helper | Decision3 Edge BF16, observed tasks | **0%** (0/10); finalization interrupted |
+| Same ten tasks, NF4 V2 plus stale-action feedback | Experimental agent protocol | **30%** (3/10); not promoted |
+
+Both JevBench suites completed with independently reproduced scores; the coherence
+95% case-bootstrap interval is 38.43–43.80. The browser run retained all ten tasks:
+three premature completion claims, four decision-budget failures and one blocked
+task account for the eight failures. Independent replay of the final DOM judges
+confirmed 2/10. The matched V2 run completed 4/10, gaining two tasks with no lost
+successes; independent DOM replay and process closure passed for both arms.
+V2 changes both the adapter and prompt serialization, so the comparison does not
+isolate either cause. Six browser tasks still fail. The separate BF16 JevBench
+and NF4 browser paths do not establish a precision ablation.
+
+See [both JevBench results](docs/validation/2026-10-22/jevbench-both-fresh-gx10-results.md),
+[complete browser baseline](docs/validation/2026-10-22/jev-current-nf4-raw-complete-results.md)
+and [matched V2 browser results](docs/validation/2026-10-22/jev-current-nf4-v2-complete-results.md).
+The [native V2 fit](docs/validation/2026-10-22/jev-native-v2-complete-training-results.md)
+completed 142 updates and 37 development examples without development updates.
+Decision3 Edge has an [observed 0/10 result](docs/validation/2026-10-22/decision3-edge-observed-browser-results.md),
+with finalization interrupted after the tasks and missing final worker receipts.
+Its Q95 helper differs from the Gemma NF4 helper; matched controls and the other
+Decision3 checkpoints remain pending.
+The [typed stale-action feedback experiment](docs/validation/2026-10-22/jev-native-v2-feedback-complete-results.md)
+completed 3/10 and is not promoted; the V2 control remains at 4/10.
+No official leaderboard rank or cross-model superiority is claimed for this run.
+
+The [shared-Q95 Gemma control](docs/validation/2026-10-22/jev-native-v2-q95-control-retry-partial-results.md)
+exited when ComfyUI became busy; its incomplete evaluation has no quality score.
+Experimental [FIND_TEXT navigation](docs/validation/2026-10-22/jev-find-text-cpu-browser-results.md)
+passed 26 CPU checks and seven real Chromium fixture scenarios. Its
+[explicit source integration](artifacts/jev-runtime/browser-find-text-integration-20261022-01/README.md)
+passed 19 checks, including a simulated native backend through the private API,
+wire and actual browser. The separate
+[completion-review client](artifacts/jev-runtime/browser-completion-review-profile-20261022-01/README.md)
+passed 20 CPU checks for bounded review of proposed DONE decisions.
+A [composed CPU browser fixture](artifacts/jev-runtime/browser-completion-review-cpu-browser-20261022-01/README.md)
+then verified veto, actual FIND_TEXT scrolling and completion approval in one flow
+using simulated policy/reviewer responses and current visible observations.
+The [current native V2 service integration](artifacts/jev-runtime/browser-find-text-s1-nativev2-integration-20261022-01/README.md)
+passed ten CPU checks through its original prompt, token grammar and HTTP journal.
+This browser policy uses N3 LoRA and generated JSON actions; its returned choice
+scores are deterministic decoded point masses. The JevBench rows above measure
+the released BF16 native decision profile.
+Complete model evaluations for these experimental agent profiles remain pending.
+
 ## Public JevBench screening — October 8, 2026
 
 The [October 10 research prerelease](https://github.com/knowlet/Gemma-4-12B-Unified-System-One/releases/tag/research-2026-10-10-jevbench)
@@ -241,6 +294,11 @@ The [October 7 runtime optimization](docs/runtime-optimization.md) reduces the
 GGUF Metal compute buffer by 6.09 GiB while retaining the 64-slot decision
 contract. Its bounded native equivalence checks and remaining MLX experiments
 are recorded separately from the published model-quality measurements.
+
+The [October 13 local Jev integration report](docs/local-jev-benchmark-20261013/README.md)
+records real Mac browser fixtures, fixed-input Q4/Q8 measurements and sanitized
+raw evidence. Goal success was 0/3 travel and 0/5 completion tasks; failed task
+times are retained separately from the model decision comparison.
 
 ## Layout
 

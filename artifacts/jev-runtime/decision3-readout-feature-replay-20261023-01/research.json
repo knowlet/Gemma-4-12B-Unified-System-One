@@ -1,0 +1,53 @@
+{
+  "schema": "decision3-readout-feature-replay-source-research-v1",
+  "status": "SOURCE_ONLY_NO_ACTUAL_FEATURE_OR_MODEL_QUALIFICATION",
+  "primary_source": {
+    "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_runtime.py",
+    "size_bytes": 95505,
+    "sha256": "adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917",
+    "verified_lines": {
+      "PromptEncoder_final_norm_return": [1013, 1072],
+      "BF16_backbone_FP32_readout_constructor": [1214, 1233],
+      "original_final_position_FP32_readout_and_legal_mask": [1673, 1701],
+      "temperature_softmax_and_legal_probability_cut": [1703, 1711],
+      "native_runnable_order_and_maximum_batch": [1996, 2023]
+    }
+  },
+  "observation": "Real language_model.norm forward hook returns None; only detached last-position features copied. First-layer pre-hook returns None; both exact one-event counts checked before and after replay. No backbone.forward monkeypatch or encoder call in observer.",
+  "equation": "p_i = softmax(mask_{j<N_i}(float32(h_i) W0^T) / 1)[:N_i], W0 shape255x1024 CPU FP32; h_i is original finalnorm last position",
+  "predeclared_comparison": {
+    "absolute_tolerance": 1e-6,
+    "relative_tolerance": 1e-5,
+    "formula": "abs(replay-native) <= abs_tol + rel_tol*abs(native)",
+    "all_legal_options_required": true,
+    "exact_ordered_argmax_required": true,
+    "adaptive_tolerance_or_semantic_labels": false
+  },
+  "controls": {
+    "constructor_count": 1,
+    "native_calls": 1,
+    "actual_partial_rows": 3,
+    "legal_option_counts": [2, 3, 4],
+    "extra_encoder_passes_required": 0,
+    "extra_final_norm_passes_required": 0,
+    "original_tensor_identity_pointer_versions_checked": true,
+    "live_tensor_value_hash_claim": false,
+    "full_disk_payload_manifest_runtime_source_prepost_auth": "unchanged native02 authenticate and loader"
+  },
+  "limits": [
+    "One simple invented publisher fixture; no browser builder/HTTP/full benchmark qualification",
+    "No real replay has run; source and fakes cannot prove actual hook endpoint shapes or numeric equality",
+    "Any difference outside the fixed tolerance or argmax mismatch fails closed",
+    "No semantic correctness judgment, learned delta, training/dev/holdout dataset or optimization",
+    "Local feature bytes remain PENDING and training_eligible=false; root/owner/closure acceptance cannot be inferred internally",
+    "Complete prediction20 seconds and execute-entry whole120 seconds; cold startup is not claimed within20",
+    "No claim about 2GiB memory fit, throughput improvement, causality or browser premature DONE repair"
+  ],
+  "authoring_scope": {
+    "reads": "small pinned source/JSON metadata only",
+    "writes": "fresh candidate directory and temporary author tools only",
+    "tests": "CPU0 stdlib fakes512MiB AS/30CPU seconds; Ruff no AS cap",
+    "model_payload_native_bytes_actual_host_units_network_git": false,
+    "baseline_source_edits": false
+  }
+}

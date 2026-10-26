@@ -1,0 +1,195 @@
+--- artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py
++++ artifacts/jev-runtime/llama-cpp-owner-20261023-04/controller.py
+@@ -17,8 +17,8 @@
+ 
+ HERE = Path(__file__).absolute().parent
+ ROOT = HERE.parents[2]
+-UNIT = "jev-d3-llama-cpp-cpu4-20261023-03.service"
+-PROFILE = "llama-cpp-cpu4-command-owned-v1"
++UNIT = "jev-d3-llama-cpp-cpu4-3g-20261023-04.service"
++PROFILE = "llama-cpp-cpu4-3g-command-owned-v1"
+ CPU_CORES = frozenset({16, 17, 18, 19})
+ CPU_ALLOWED_LIST = "16-19"
+ SPEC_PROFILE = "llama-cpp-command-spec-v1"
+@@ -26,6 +26,8 @@
+ LOG_LIMIT = 4 * 1024**2
+ REPO_PYTHON = ROOT / ".venv/bin/python"
+ GIB, MAX_SOURCE = 1024**3, 1024**2
++MEMORY_MAX_BYTES = 3 * GIB
++INITIAL_HOST_EXTRA_BYTES = 3 * GIB
+ FIXED = {
+     "boundary": (
+         "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+@@ -111,7 +113,18 @@
+     return max(24 * GIB, (total + 4) // 5)
+ 
+ 
++def fixed_memory():
++    need(
++        type(MEMORY_MAX_BYTES) is int
++        and type(INITIAL_HOST_EXTRA_BYTES) is int
++        and MEMORY_MAX_BYTES == INITIAL_HOST_EXTRA_BYTES == 3 * GIB,
++        "Exact fixed3GiB cap and full-cap initial host extra",
++    )
++    return MEMORY_MAX_BYTES
++
++
+ def host(observer, boot_id, total=None, *, initial=False):
++    fixed_memory()
+     row = observer.observe(boot_id)
+     required = None
+     try:
+@@ -124,10 +137,10 @@
+             and row["comfy_running"] == row["comfy_pending"] == 0,
+             "Original read-only Comfy idle gate",
+         )
+-        required = reserve(row["mem_total_bytes"]) + (2 * GIB if initial else 0)
++        required = reserve(row["mem_total_bytes"]) + (INITIAL_HOST_EXTRA_BYTES if initial else 0)
+         need(
+             type(row["mem_available_bytes"]) is int and row["mem_available_bytes"] >= required,
+-            "Original whole-host reserve" + (" plus selected2GiB" if initial else ""),
++            "Original whole-host reserve" + (" plus full selected3GiB" if initial else ""),
+         )
+     except BaseException as error:
+         error.evidence = {
+@@ -529,7 +542,9 @@
+ 
+ 
+ def selection(cfg, owner):
+-    return owner.Selection(UNIT, cfg["nonce"], cfg["boot_id"], 2 * GIB, cfg["runtime_seconds"], 3)
++    return owner.Selection(
++        UNIT, cfg["nonce"], cfg["boot_id"], fixed_memory(), cfg["runtime_seconds"], 3
++    )
+ 
+ 
+ def bootstrap_argv(cfg, digest):
+@@ -915,7 +930,8 @@
+                 "argv": command,
+                 "source_count": len(refs),
+                 "runtime_seconds": cfg["runtime_seconds"],
+-                "memory_max_bytes": 2 * GIB,
++                "memory_max_bytes": fixed_memory(),
++                "initial_host_extra_bytes": INITIAL_HOST_EXTRA_BYTES,
+                 "memory_swap_max_bytes": 0,
+                 "per_file_size_max_bytes": FILE_SIZE_MAX,
+                 "command_log_limit_bytes_per_stream": LOG_LIMIT,
+@@ -1050,7 +1066,8 @@
+                     "unit_started": False,
+                     "torch_imported": False,
+                     "unit": UNIT,
+-                    "memory_max_bytes": 2 * GIB,
++                    "memory_max_bytes": fixed_memory(),
++                    "initial_host_extra_bytes": INITIAL_HOST_EXTRA_BYTES,
+                     "runtime_choices_seconds": [30, 7200],
+                     "cpu_quota_percent": 400,
+                     "main_thread_cpu_affinity": sorted(CPU_CORES),
+--- artifacts/jev-runtime/llama-cpp-owner-20261023-03/test_controller.py
++++ artifacts/jev-runtime/llama-cpp-owner-20261023-04/test_controller.py
+@@ -75,7 +75,8 @@
+                 },
+                 owner,
+             )
+-            self.assertEqual(selected.memory_max_bytes, 2 * c.GIB)
++            self.assertEqual(selected.memory_max_bytes, 3 * c.GIB)
++            self.assertEqual(selected.properties()["MemoryMax"], str(3 * c.GIB))
+             self.assertEqual(selected.runtime_seconds, runtime)
+             self.assertEqual(selected.stop_seconds, 3)
+             self.assertEqual(selected.properties()["MemorySwapMax"], "0")
+@@ -108,7 +109,7 @@
+         ):
+             c.ensure_absent(owner, types.SimpleNamespace(cgroup="/FAKE"))
+ 
+-    def test_host_reserve_initial_plus2_and_busy_refusal(self):
++    def test_host_reserve_initial_full3_and_busy_refusal(self):
+         row = {
+             "boot_id": "FAKE",
+             "mem_total_bytes": 100 * c.GIB,
+@@ -119,9 +120,9 @@
+         }
+         observer = types.SimpleNamespace(observe=Mock(return_value=row))
+         self.assertEqual(c.host(observer, "FAKE")["reserve_bytes"], 24 * c.GIB)
+-        with self.assertRaisesRegex(ValueError, "plus selected2GiB") as captured:
++        with self.assertRaisesRegex(ValueError, "plus full selected3GiB") as captured:
+             c.host(observer, "FAKE", initial=True)
+-        self.assertEqual(captured.exception.evidence["required_available_bytes"], 26 * c.GIB)
++        self.assertEqual(captured.exception.evidence["required_available_bytes"], 27 * c.GIB)
+         row["comfy_running"] = 1
+         with self.assertRaisesRegex(ValueError, "Comfy idle"):
+             c.host(observer, "FAKE")
+@@ -654,9 +655,74 @@
+ 
+     def test_cpu4_successor_keeps_original_reserve_and_unique_unit(self):
+         self.assertEqual(c.reserve(130595864576), 26119172916)
+-        self.assertEqual(c.UNIT, "jev-d3-llama-cpp-cpu4-20261023-03.service")
+-        self.assertEqual(c.PROFILE, "llama-cpp-cpu4-command-owned-v1")
++        self.assertEqual(c.UNIT, "jev-d3-llama-cpp-cpu4-3g-20261023-04.service")
++        self.assertEqual(c.PROFILE, "llama-cpp-cpu4-3g-command-owned-v1")
+         self.assertEqual(c.SPEC_PROFILE, "llama-cpp-command-spec-v1")
++
++
++class FullCapAdmissionTests(unittest.TestCase):
++    def test_three_gib_cap_and_full_startup_extra_share_fixed_profile(self):
++        self.assertEqual(c.fixed_memory(), 3221225472)
++        self.assertEqual(c.INITIAL_HOST_EXTRA_BYTES, c.MEMORY_MAX_BYTES)
++        with (
++            patch.object(c, "run", side_effect=AssertionError("run")),
++            patch.object(c, "load_fixed", side_effect=AssertionError("authority")),
++            contextlib.redirect_stdout(io.StringIO()) as output,
++        ):
++            self.assertEqual(c.main([]), 0)
++        dry = json.loads(output.getvalue())
++        self.assertEqual(dry["memory_max_bytes"], 3221225472)
++        self.assertEqual(dry["initial_host_extra_bytes"], 3221225472)
++
++    def test_cap_floor_two_three_mismatch_refused_before_observer_or_unit_selection(self):
++        for cap, extra in ((2 * c.GIB, 3 * c.GIB), (3 * c.GIB, 2 * c.GIB), (2 * c.GIB, 2 * c.GIB)):
++            observer = types.SimpleNamespace(observe=Mock(side_effect=AssertionError("observer")))
++            owner = types.SimpleNamespace(
++                Selection=Mock(side_effect=AssertionError("unit selection"))
++            )
++            with (
++                self.subTest(cap=cap, extra=extra),
++                patch.object(c, "MEMORY_MAX_BYTES", cap),
++                patch.object(c, "INITIAL_HOST_EXTRA_BYTES", extra),
++            ):
++                with self.assertRaisesRegex(ValueError, "fixed3GiB cap and full-cap"):
++                    c.host(observer, "FAKE", initial=True)
++                with self.assertRaisesRegex(ValueError, "fixed3GiB cap and full-cap"):
++                    c.selection(
++                        {"nonce": "FAKE", "boot_id": "FAKE", "runtime_seconds": 7200}, owner
++                    )
++            observer.observe.assert_not_called()
++            owner.Selection.assert_not_called()
++
++    def test_initial_floor_is_entire_three_gib_above_same_runtime_reserve(self):
++        total = 130595864576
++        reserve = c.reserve(total)
++        self.assertEqual(reserve, 26119172916)
++        floor = reserve + 3 * c.GIB
++        self.assertEqual(floor, 29340398388)
++        row = {
++            "boot_id": "FAKE",
++            "mem_total_bytes": total,
++            "mem_available_bytes": floor,
++            "comfy_state": "http_idle",
++            "comfy_running": 0,
++            "comfy_pending": 0,
++        }
++        observer = types.SimpleNamespace(observe=Mock(return_value=row))
++        actual = c.host(observer, "FAKE", total, initial=True)
++        self.assertEqual(actual["required_available_bytes"], floor)
++        for available in (floor - 1, reserve + 2 * c.GIB, reserve):
++            row["mem_available_bytes"] = available
++            with (
++                self.subTest(available=available),
++                self.assertRaisesRegex(ValueError, "full selected3GiB"),
++            ):
++                c.host(observer, "FAKE", total, initial=True)
++        row["mem_available_bytes"] = reserve
++        self.assertEqual(c.host(observer, "FAKE", total)["required_available_bytes"], reserve)
++        row["mem_available_bytes"] = reserve - 1
++        with self.assertRaisesRegex(ValueError, "Original whole-host reserve"):
++            c.host(observer, "FAKE", total)
+ 
+ 
+ if __name__ == "__main__":

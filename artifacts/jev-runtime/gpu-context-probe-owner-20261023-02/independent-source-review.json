@@ -1,0 +1,125 @@
+{
+  "actor_delta": {
+    "changes": [
+      "New fixture-v2 profile only.",
+      "Convert native props.uuid with str before storing/normalizing,so result contains a JSON-safe string.",
+      "Record native_uuid_type as a type-name string for evidence."
+    ],
+    "exact_inverse_restores_old_source_sha256": "d2d08a697078aeb5955b01b77ddec52cf0cfd41721f05471d534ba06e45b09ad",
+    "inverse_independently_verified": true,
+    "new_regression": "Pure stdlib FakeUUID string conversion uses the actual four AST assignment statements from run_torch,then checks JSON serialization and normalization. No real native object or GPU is invoked."
+  },
+  "conclusion": "CLEAR_WITH_LIMITS for one attempt with exact frozen successor02 actor/owner. The patch addresses serialization and error preservation without changing the existing runtime,resource,identity,oracle or closure contracts.",
+  "frozen_references": [
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/controller.py",
+      "sha256": "63ad33776b9257bf8ccefff65458c64e49f28973a33f5b0740f107577ed25c9f",
+      "size_bytes": 36146
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/test_controller.py",
+      "sha256": "7547f5e12ee681a43ed05eaada631c119328d937fad44e4f103ff1bdf28eb99f",
+      "size_bytes": 28381
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/source-freeze.json",
+      "sha256": "b6181a18bbb6575827de28188e6236c9e0bb5324f166ffadee5886a5580e895a",
+      "size_bytes": 9130
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/static-validation.json",
+      "sha256": "6de798f8b6b1f2fad8800a868b566de5d564774161b8d84c5af7a979c73ad118",
+      "size_bytes": 6077
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-02/narrow-diff.json",
+      "sha256": "707c2de80ea7e1b90bb2cc20aaa2863be74758d12762c4af9b67314fb3abea35",
+      "size_bytes": 1454
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/fixture.py",
+      "sha256": "01ed4cb4feb7c7221bd6a604fa98e1aac8f1b22f29659b688417b6eb128c5c2d",
+      "size_bytes": 23793
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/selection.json",
+      "sha256": "f7d7fe39df15666d53c05ba05c2d63e3ba6bb1a726f96dd979668e19edb74e1f",
+      "size_bytes": 4440
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/test_static.py",
+      "sha256": "cbde23e340df23d87a63948fe735ccf491c62e11757e1afdd9ece197a8dd1ee6",
+      "size_bytes": 14967
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/static-validation.json",
+      "sha256": "7fdef2a229adcf8104c148d0d80b514f4a8bf3ec49317307aa0837904093d63b",
+      "size_bytes": 3890
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-20261023-02/narrow-diff.json",
+      "sha256": "a0c6c1d606a83c61708bb7d3f2ff767772c009ea15a61e950c80488869ba8aa1",
+      "size_bytes": 2891
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/independent-source-review.json",
+      "sha256": "aae95260eb42612ed5553dde1553674fbbf35561aa7d9dbac734183b9d22db4a",
+      "size_bytes": 9617
+    },
+    {
+      "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/independent-failure-audit.json",
+      "sha256": "6dcc58db8245143494f9b9c9f0894e7f24443addde5ec93b1b67ecc31b3fd086",
+      "size_bytes": 15348
+    }
+  ],
+  "integrity": {
+    "actor_small_refs_rehashed": 11,
+    "combined_distinct_small_refs_rehashed": 16,
+    "model_header_payload_or_mmap_access": false,
+    "native_binary_payload_read_or_hashed": false,
+    "native_stat_only_refs_checked": 6
+  },
+  "limitations": [
+    "All limitations in prior aae95260 source review remain. Actual v2 runtime compatibility and memory behavior are unmeasured by this review.",
+    "Installed pyi annotation uuid:str did not describe prior runtime _CUuuid;the successor deliberately accepts only the native object string representation that normalizes to the exact pinned UUID,with no ordinal fallback.",
+    "2GiB memcg and64MiB allocator cap do not prove accounting/caps for all shared GPU/context/driver/UMA pages. GlobalCUDAfree andhostMemAvailable are non-additive.",
+    "empty_cache does not destroy context;ownprocess/unit closure is still required and does not prove total global-free restoration or universal process-tree closure.",
+    "Earlier rawstage evidence/actual01 failure is not relabeled success. Neither source review nor preserved partial proves model,real-layer transfer,12B,8192context,20s,N3,Q95,browser quality or benchmark score."
+  ],
+  "must_fix": [],
+  "owner_delta": {
+    "all_other_function_AST_equal_to_prior_reviewed_owner": true,
+    "changed_function_AST_names": [
+      "failure",
+      "retain_and_validate_result"
+    ],
+    "changes": [
+      "New unit02/owned-v2/actor02 path and fixture-v2 profile.",
+      "Store authenticated actor_exit first;explicitly record missing receipt and retain parse/read error separately.",
+      "Nonzero child exit or child.error carries original serialized type/message/evidence through error.actor_error and failure(),preventing a missing receipt from masking the child failure.",
+      "Available partial receipt remains saved before exit2 refusal. A claimed successful child with a missing/unreadable receipt still fails."
+    ],
+    "regression": "Missing-receipt TypeError keeps child type/message and origin,evidence,entrycode;missing-receipt exit0 is refused;existing partial/success/gates remain exercised by saved tests."
+  },
+  "reviewed_at_utc": "2026-10-23T01:08:19.191288+00:00",
+  "reviewer": "independent peer /root/q95_owner05_review",
+  "saved_validation": {
+    "actor": "18 stdlib PASS0.088s and RuffPASS; saved evidence/test source read,not rerun.",
+    "owner": "22 stdlib PASS0.020s and Ruff check/formatPASS; saved evidence/test source read,not rerun.",
+    "qualification": "Fake API/metadata tests do not validate real CUDA capacity,operator execution or full model numerics."
+  },
+  "schema": "gpu-context-probe-independent-source-review-v2",
+  "scope": "Narrow immutable successor source-only review. No Torch,CUDA,NVML,HTTP,service,model,probe or test execution; no model data or native-library byte reads/hashes. Only this new review is written.",
+  "unchanged_contract": [
+    "Fixed physicalUUID GPU-e3429caa-b057-cbe0-917d-d3b85b313be7 under controlled visibility;actual native logical0 identity must still join after explicit init/sync.",
+    "Original7a50 boundary,fd97 observer,a244 authority and6db hardware metadata remain source-pinned;historical hardware metadata is not runtime memory admission.",
+    "No preinit lazy-initializing GPU metrics. Success requires initialized_final=true,no model/header/payload/mmap,all ten actual context/operator stages and512B BF16 exact16 readback oracle.",
+    "Own allocator fraction request64MiB with native API roundtrip,not increased on failure;no context/driver/cuBLAS/physical-UMA cap claim.",
+    "Original2GiB memcg/swap0,30s unit,3s stop,CPUquota100%,observedmainCPU0,core0,FD512,file8MiB,initialR+2GiB/runtimeR/finalR and original idle observer gates remain unchanged.",
+    "25s sealed cooperative deadline,stage persistence,partialexit2,primary-preserving cleanup synchronization/clear/ownemptycache and all source/stat final checks remain.",
+    "All successful sampled postlaunch readiness/preexec/loop host-gate aggregate plus raw64 retention remain;sampled aggregate is not continuous minimum.",
+    "Original exact PID/start/session/cgroup/nonce/Invocation dual admission and authenticated live-main close before fallbackdeadline remain required."
+  ],
+  "verdict": "CLEAR_WITH_LIMITS",
+  "write_lifetime": "Both authors explicitly confirmed all source,test and metadata FINAL ALLSTOPPED before review. Original attempt01 source and failed results are preserved."
+}

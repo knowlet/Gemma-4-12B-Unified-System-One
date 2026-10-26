@@ -1,0 +1,109 @@
+{
+  "schema_id": "observer-apport-interference-diagnosis-v1",
+  "read_only": true,
+  "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+  "identified_offender": {
+    "pid": 108351,
+    "start_ticks": 1634070,
+    "program": "/usr/share/apport/apport",
+    "interpreter_symlink_resolved": "/usr/bin/python3.12",
+    "observer_classification": "uncertain_python_cwd",
+    "proc_owner_uid": 1001,
+    "cwd_read_failures": [
+      "PermissionError",
+      "PermissionError"
+    ],
+    "observed_at_monotonic": 16341.072022033,
+    "resolution_finished_monotonic": 16341.667425706,
+    "resolution_failed_after_seconds": 0.5009759240001586,
+    "individual_cwd_access_mechanism_proven": false
+  },
+  "concrete_origin": {
+    "crashed_pid": 108343,
+    "signal": 6,
+    "core_limit": 0,
+    "dump_mode": 1,
+    "executable": "/home/albert_hsieh/.local/bin/ruff",
+    "selected_command": "ruff check artifacts/jev-runtime/decision3-edge-known4-semantic-audit-20261022-01/audit.py",
+    "agent": "/root/gx10_reboot_identity",
+    "command_started_under": {
+      "address_space_limit_bytes": 268435456,
+      "cpu_limit_seconds": 20,
+      "core_limit_bytes": 0,
+      "rayon_num_threads": "1"
+    },
+    "tool_result_exit_code": 134,
+    "tool_observation": "Rust failed to spawn scoped thread: EAGAIN/Resource temporarily unavailable, followed by allocation failure/abort. No OOM cause inferred.",
+    "apport_log_begin_local": "2026-10-22 19:07:43,662",
+    "apport_log_executable_local": "2026-10-22 19:07:44,664",
+    "apport_result": "Executable does not belong to a package; ignored.",
+    "repeat_attempt": {
+      "crashed_pid": 108429,
+      "apport_pid": 108439,
+      "apport_log_begin_local": "2026-10-22 19:07:58,394",
+      "command_change": "--no-cache and1MiB stack; same EAGAIN/abort134",
+      "not_claimed_as_recorded_benchmark_offender": true
+    }
+  },
+  "kernel": {
+    "core_pattern": "|/usr/share/apport/apport -p%p -s%s -c%c -d%d -P%P -u%u -g%g -F%F -- %E",
+    "core_pipe_limit": "10",
+    "suid_dumpable": "2",
+    "yama_ptrace_scope": "1"
+  },
+  "bounded_log_refs": [
+    {
+      "path": "/var/log/apport.log",
+      "one_based_lines": [
+        19,
+        21
+      ],
+      "sha256_of_exact_selected_lines": "dde20adb10737aee4d6e27d55b84bad3498e773b26c668ecd31e9bbc1f5d250f",
+      "size_bytes": 425,
+      "contains_only_this_ruff_crash": true
+    },
+    {
+      "path": "/var/log/apport.log",
+      "one_based_lines": [
+        22,
+        24
+      ],
+      "sha256_of_exact_selected_lines": "670085f348ad7c86907a6eee4d64640c49b6d84690779285b15a2b0fafb6c3fd",
+      "size_bytes": 436,
+      "contains_only_retry_ruff_crash": true
+    }
+  ],
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-02/owner-02/owner-final.json",
+      "sha256": "b21014fb38c7bc6e9da42ab228bb9e34476b53fbee4fa524416f46912f4520e2",
+      "size_bytes": 13016
+    },
+    {
+      "path": "artifacts/jev-runtime/comfy-observer-zombie-exit-20261022-01/comfy_observer.py",
+      "sha256": "2bd125f17db7739d19979565fcf8013c897f620caaa948d8ffe4de1559bf9fd6",
+      "size_bytes": 27795
+    },
+    {
+      "path": "/usr/share/apport/apport",
+      "sha256": "1b8b5e2c53e8970dd2f47c9a0892030d1ebad57cae1f7242c43a6252f1f6dff2",
+      "size_bytes": 44730
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-edge-known4-semantic-audit-20261022-01/validation.json",
+      "sha256": "2f426a547af5cdfcb81dd44bc6aab7f68783bcb9b8640a90ccdaa4b9f9a55684",
+      "size_bytes": 1370
+    }
+  ],
+  "interpretation": "Exact apport PID and timestamp correlate the observer offender with this agent's Ruff crash. RLIMIT_CORE0 did not suppress invocation of the host's piped core handler. The source has effective-UID/GID transitions and explains a credible proc access restriction, but the individual live dumpability/credentials were not captured; do not assert that unmeasured mechanism. The unknown classification remained correctly conservative.",
+  "remedy": {
+    "observer_patch_needed": false,
+    "unknown_process_exemption": false,
+    "during_actual_runs": "Pause constrained CPU fixtures and Ruff; ordinary read-only metadata scripts only. Coordinate a quiet interval for any abort-prone validation.",
+    "after_actual_runs": "Use a dedicated safe lint resource envelope/binary/thread configuration tested in isolation; do not repeatedly run this Ruff binary under the known failing256MiB envelope.",
+    "kernel_or_crashhandler_changes": false,
+    "foreign_process_signals": false,
+    "comfy_operations": false,
+    "numerical_or_score_gates_changed": false
+  }
+}

@@ -1,0 +1,182 @@
+"""Source-only safety regressions; no HTTP, browser, framework or model imports."""
+
+import importlib.util
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+HERE = Path(__file__).absolute().parent
+spec = importlib.util.spec_from_file_location(
+    "_current_stack_fixture_static", HERE / "run_fixture.py"
+)
+fixture = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(fixture)
+
+
+def test_default_is_source_only_dry_without_actor_outputs(capsys, tmp_path, monkeypatch):
+    monkeypatch.setattr(fixture, "HERE", tmp_path)
+    before = sorted(p.name for p in fixture.HERE.iterdir())
+    assert fixture.main([]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["actors_started"] is False and report["quality_score"] is None
+    assert sorted(p.name for p in fixture.HERE.iterdir()) == before
+    assert not any(p.name.startswith("actual-") for p in fixture.HERE.iterdir())
+    assert not any(
+        n in sys.modules for n in ("torch", "transformers", "numpy", "fastapi", "playwright")
+    )
+
+
+def test_execute_requires_independently_selected_source_before_any_actor(tmp_path, monkeypatch):
+    monkeypatch.setattr(fixture, "HERE", tmp_path)
+    with pytest.raises(ValueError, match="independently reviewed fixture source SHA"):
+        fixture.main(["--execute", "--source-sha256", "0" * 64])
+    assert not (fixture.HERE / "actual-01").exists()
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://127.0.0.1:1234/policy",
+        "http://localhost:1234/policy",
+        "http://127.0.0.1:1235/policy",
+        "http://user@127.0.0.1:1234/policy",
+        "http://127.0.0.1:1234/policy?x=1",
+        "http://127.0.0.1:1234/policy#frag",
+        "http://example.com/policy",
+    ],
+)
+def test_transport_refuses_every_unselected_destination(url):
+    with pytest.raises(ValueError):
+        fixture.loopback_url(url, {"http://127.0.0.1:1234/policy"})
+
+
+def test_exact_selected_loopback_route_accepted_without_network():
+    url = "http://127.0.0.1:1234/policy"
+    assert fixture.loopback_url(url, {url}) == url
+
+
+def test_source_definition_extraction_refuses_missing_selected_names():
+    with pytest.raises(ValueError, match="Exact selected CPU definitions"):
+        fixture.definitions(fixture.FAKE_SOURCE, {"must_not_exist"}, {})
+
+
+def test_ordinary_output_refuses_symlink(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+    link = tmp_path / "link"
+    link.symlink_to(target)
+    with pytest.raises(ValueError, match="Ordinary path"):
+        fixture.ordinary(link / "actual-01")
+
+
+@pytest.mark.parametrize("existing_primary", [False, True])
+def test_source_evidence_failure_preserves_final_receipt_and_primary(
+    tmp_path, monkeypatch, existing_primary
+):
+    original_save = fixture.save
+    primary = RuntimeError("original failure") if existing_primary else None
+
+    def source_failure(output, name, value):
+        if name == "source-evidence.json":
+            raise ValueError("source disappeared or exceeds bound")
+        return original_save(output, name, value)
+
+    monkeypatch.setattr(fixture, "save", source_failure)
+    result = {"completed": True}
+    # Initial selected ref and a failed final source read are plain retained
+    # metadata; persistence must not try reading the missing source again.
+    source = {"fixture_source": {"sha256": "a" * 64}, "final_fixture_source": None}
+    final_primary = fixture.persist_evidence(
+        tmp_path, result, {"partial": "retained"}, source, primary
+    )
+    receipt = json.loads((tmp_path / "receipt.json").read_bytes())
+    assert receipt["completed"] is False
+    assert receipt["persistence_errors"][0]["file"] == "source-evidence.json"
+    assert json.loads((tmp_path / "join-ledger.json").read_bytes()) == {"partial": "retained"}
+    if existing_primary:
+        assert final_primary is primary and receipt["error"]["message"] == "original failure"
+        assert receipt["error"]["notes"]
+    else:
+        assert isinstance(final_primary, ValueError)
+        assert receipt["error"]["message"] == "source disappeared or exceeds bound"
+
+
+def test_true_v7_load_and_original_adapter_use_successor_without_canonical_mutation(
+    tmp_path, monkeypatch
+):
+    import importlib
+    from types import SimpleNamespace
+
+    selector = fixture.source_module(fixture.CLIENT_SELECTOR, "_cpu_regression_real_v7_selector")
+    bundle, manifest = selector.prepare_bundle(tmp_path / "bundle", profile=selector.PROFILE)
+    monkeypatch.syspath_prepend(str(bundle))
+    before_modules = set(sys.modules)
+    name = "_cpu_regression_real_v7_runner"
+    runner_spec = importlib.util.spec_from_file_location(name, bundle / "runner.py")
+    runner = importlib.util.module_from_spec(runner_spec)
+    sys.modules[name] = runner
+    try:
+        exec(
+            compile((bundle / "runner.py").read_bytes(), str(bundle / "runner.py"), "exec"),
+            vars(runner),
+        )
+        profile = importlib.import_module("jev_observation_profile_v7")
+        materialized = profile.materialize_profile(
+            fixture.UPSTREAM,
+            tmp_path / "observation",
+            expected_source_sha256=selector.V7_SHA,
+            profile=selector.V7,
+        )
+        runtime = profile.verify_materialized_profile(
+            tmp_path / "observation",
+            expected_manifest_sha256=materialized["manifest_sha256"],
+            expected_source_sha256=selector.V7_SHA,
+            profile=selector.V7,
+        )
+
+        def no_cdp(*_args, **_kwargs):
+            pytest.fail("Pure import/constructor-factory regression must never contact a browser")
+
+        transport = SimpleNamespace(
+            cdp=no_cdp, observation_profile_expressions=None, observation_profile_errors=[]
+        )
+        with runner.load_upstream(fixture.UPSTREAM, transport, observation_runtime=runtime) as (
+            agent_module,
+            model_module,
+        ):
+            original_agent, original_choose = agent_module.Agent, agent_module.choose
+            try:
+                assert agent_module.MAX_STEPS == 60
+                with runner.model_adapter(
+                    agent_module,
+                    model_module,
+                    endpoint="http://127.0.0.1:1/v1/systemone",
+                    model="pure-no-network",
+                    api_key="pure-no-network",
+                    text_endpoint="http://127.0.0.1:1",
+                    text_model="generated-actions-none",
+                    text_api_key="pure-no-network",
+                ) as (records, _):
+                    cls = runner._selected_find_agent_class(agent_module, model_module)
+                    assert issubclass(cls, original_agent)
+                    assert (
+                        agent_module.Agent is original_agent
+                        and agent_module.choose is original_choose
+                    )
+                    assert agent_module.MAX_STEPS == 60
+                    assert records == []
+                assert not transport.observation_profile_errors
+            finally:
+                model_module.CLIENT.close()
+        selector.verify_bundle(bundle, manifest)
+    finally:
+        for module_name in set(sys.modules) - before_modules:
+            module_file = getattr(sys.modules[module_name], "__file__", None)
+            if (
+                module_name == name
+                or module_name == "find_client_selector"
+                or (module_file and Path(module_file).is_relative_to(bundle))
+            ):
+                sys.modules.pop(module_name, None)

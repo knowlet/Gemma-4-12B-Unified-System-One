@@ -1,0 +1,96 @@
+{
+  "assumptions": {
+    "LoRA": "none added by this change",
+    "SWA_KV_heads": 8,
+    "SWA_head_dim": 256,
+    "SWA_layers": 40,
+    "bytes_per_element": 2,
+    "full_attention_KV_heads": 1,
+    "full_attention_head_dim": 512,
+    "full_attention_layers": 8,
+    "kv_unified": false,
+    "layers": 48,
+    "n_seq_max": 1,
+    "separate_K_and_V_tensors": true,
+    "type_k": "F16 (native default)",
+    "type_v": "F16 (native default)",
+    "window": 1024
+  },
+  "cases": [
+    {
+      "SWA_K_and_V_bytes": 671088640,
+      "SWA_cells": 2048,
+      "context": 2048,
+      "full_attention_K_and_V_bytes": 33554432,
+      "microbatch": 512,
+      "swa_full": true,
+      "total_MiB": 672.0,
+      "total_cache_tensor_bytes_arithmetic": 704643072
+    },
+    {
+      "SWA_K_and_V_bytes": 503316480,
+      "SWA_cells": 1536,
+      "context": 2048,
+      "full_attention_K_and_V_bytes": 33554432,
+      "microbatch": 512,
+      "swa_full": false,
+      "total_MiB": 512.0,
+      "total_cache_tensor_bytes_arithmetic": 536870912
+    },
+    {
+      "SWA_K_and_V_bytes": 2684354560,
+      "SWA_cells": 8192,
+      "context": 8192,
+      "full_attention_K_and_V_bytes": 134217728,
+      "microbatch": 512,
+      "swa_full": true,
+      "total_MiB": 2688.0,
+      "total_cache_tensor_bytes_arithmetic": 2818572288
+    },
+    {
+      "SWA_K_and_V_bytes": 503316480,
+      "SWA_cells": 1536,
+      "context": 8192,
+      "full_attention_K_and_V_bytes": 134217728,
+      "microbatch": 512,
+      "swa_full": false,
+      "total_MiB": 608.0,
+      "total_cache_tensor_bytes_arithmetic": 637534208
+    }
+  ],
+  "limits": [
+    "Arithmetic payload only, not allocated/measured cache or memory",
+    "Excludes model pages, GPU context/driver, graph/workspace/output arenas, cache bookkeeping, alignment and charging differences",
+    "Original2GiB memcg and whole-host reserve gates unchanged; no fit claim",
+    "Compact cache changes eviction/reuse path; numerical/attention equivalence is unmeasured",
+    "SWA window and context unchanged; cache storage is the only selected parameter"
+  ],
+  "required_future_runs": [
+    "context2048 full and compact with identical actual token inputs crossing1024, compare all logits/answers and measured memory",
+    "context8192 compact independent actual memory/runtime proof, not inferred from2048"
+  ],
+  "schema_id": "llama-cpp-native-s1-swa-cache-arithmetic-v1",
+  "source_formula": "GGML_PAD(min(size_base, window*(unified ? n_seq_max : 1)+n_ubatch),256), then size_swa=size_base when swa_full",
+  "source_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/src/llama-kv-cache-iswa.cpp",
+      "sha256": "f24037a7f83675a67a63abcca1463d2071d3b8630b03c179ee5f0891c31b2917",
+      "size_bytes": 11361
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/src/llama-context.cpp",
+      "sha256": "07109d97009e8aae60c7a4b685246d9ffde3d9eadb1606364a1e5f6a56553502",
+      "size_bytes": 169797
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/common/arg.cpp",
+      "sha256": "bf4c58c189a774f2308acfe88e4ec5cebb0c43f60cf05cef4c5b2b9affd5822d",
+      "size_bytes": 224650
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/LICENSE",
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "size_bytes": 1078
+    }
+  ]
+}

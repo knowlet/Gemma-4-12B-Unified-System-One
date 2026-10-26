@@ -1,0 +1,151 @@
+{
+  "schema": "cpu-text-helper-independent-final-source-review-v1",
+  "reviewed_at_utc": "2026-10-23T11:07:16.008367+00:00",
+  "reviewer": "/root/cpu_text_helper_route/helper_boundary_review",
+  "scope": "Frozen source-only artifact; read-only source/metadata/hash/AST review; no execution, imports, unit tests, payload/native-DSO/network/browser/active-owner reads.",
+  "verdict": "SOURCE_ONLY_MILESTONE_NONBLOCKING_WITH_EXECUTION_BLOCKERS",
+  "runtime_ready": false,
+  "frozen_manifest": {
+    "path": "frozen-manifest.json",
+    "sha256": "b171c7cece01d96f7634cb75f08b8ba72c1fe94fb52043de91d6c49c44193d46",
+    "size_bytes": 1776,
+    "mode": "0o444"
+  },
+  "frozen_files_verified": [
+    {
+      "path": "LICENSE.browser-use",
+      "size_bytes": 1068,
+      "sha256": "5afa3d97bf1e6f998d587fa101e3fe0d0c416840b7fe77bcd6ae97690a334631",
+      "mode": "0o444"
+    },
+    {
+      "path": "PLAN.md",
+      "size_bytes": 3536,
+      "sha256": "c3c7fa6548fc15d32f13c75efce83e974c382f33f68a05c10c327b3acb694e39",
+      "mode": "0o444"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 8079,
+      "sha256": "274c55807320fc642edae1be27275ee2283e14e4653c494a4922682667be36c8",
+      "mode": "0o444"
+    },
+    {
+      "path": "THIRD_PARTY.md",
+      "size_bytes": 1158,
+      "sha256": "fd5e96cd499db011e35f9e763a1cfc2f5f8550f8921f4875eb780ae1c7f94c40",
+      "mode": "0o444"
+    },
+    {
+      "path": "helper.py",
+      "size_bytes": 31089,
+      "sha256": "a312dba1fabd173e1ce502f6896431a7cc3d6b4979a7eae49c2b1807d343b0fa",
+      "mode": "0o444"
+    },
+    {
+      "path": "runtime-selection.pending.json",
+      "size_bytes": 6582,
+      "sha256": "b5e0c09b60b2de3dadfb48d98febc8e61c236bb9e61a0d03ae9b126a26223e26",
+      "mode": "0o444"
+    },
+    {
+      "path": "source-selection.json",
+      "size_bytes": 7148,
+      "sha256": "a65d61c71ffef63447ae56c621c4c8348600611e894a778420d642f4fb5e4d3d",
+      "mode": "0o444"
+    },
+    {
+      "path": "test_helper.py",
+      "size_bytes": 17565,
+      "sha256": "b4b0b567dc30dd31c5418b1b704856a6195206141ee5ae044daf78513a438658",
+      "mode": "0o444"
+    },
+    {
+      "path": "verification.json",
+      "size_bytes": 6843,
+      "sha256": "c0633fc039810793f5b650fc8ee99a16cad7700df21c20dc932d5af86f19c479",
+      "mode": "0o444"
+    }
+  ],
+  "frozen_file_count_including_manifest": 10,
+  "early_review_resolution": [
+    {
+      "item": "Pre-import source pin/origin/version boundary",
+      "status": "TOP_LEVEL_FIXED_CRITICAL_ROOT_BINDING_REMAINS",
+      "evidence": [
+        "helper.py:297-305 validates exact module/version keys and nonempty version strings",
+        "helper.py:327-333 requires all declared top-level origins in runtime_files",
+        "helper.py:372-381 checks find_spec origins before heavy imports",
+        "helper.py:410-416 verifies source and selected binary hashes before heavy imports",
+        "helper.py:431-436 compares actual module.__version__ after import"
+      ],
+      "limit": "Critical implementation files are required only by suffix at helper.py:334-344; they are not bound to the declared transformers package root. Actual version equality is post-import; only the descriptor version shape is pre-import."
+    },
+    {
+      "item": "Late retention/publication and irrevocable send bytes",
+      "status": "LIMIT_EXPLICIT_AND_APPROPRIATE_FOR_SOURCE_STAGE",
+      "evidence": [
+        "helper.py:640-650 retains candidate and checks whole deadline before success publication",
+        "helper.py:662-672 checks immediately before body send, bounds await by remaining time and checks completion",
+        "helper.py:736-758 refuses a replacement after response start",
+        "README.md explicitly defines last cooperative boundary and unknown client delivery",
+        "test_helper.py:399-434 contains retention, late-start and irrevocable-late-body fake cases"
+      ],
+      "limit": "The source cannot retract bytes already queued by ASGI send or interrupt a blocked synchronous forward; no hard runtime20s guarantee is established."
+    }
+  ],
+  "confirmed_source_properties": [
+    "Root-provided frozen manifest and helper hashes match; nine listed files plus manifest remain mode0444.",
+    "Stdlib AST extraction exactly matches original upstream TEXT_VALUE; original messages/content are passed to native chat template without task/value derivation.",
+    "Pending null paths/hashes refuse in selection validation before payload verification/heavy import; owner profile/verifier/ticket and native binary pins remain unresolved.",
+    "Production factory requires the runtime type, private token and loader registration in WeakSet; arbitrary fake or manually constructed unregistered runtime is refused.",
+    "Native path selects CPU/BF16/4threads, SDPA, logits_to_keep1, greedy single sequence128newtokens, full8192 budget with no truncation, stream/return equality and actual final configured EOS.",
+    "Strict whole-output JSON rejects extra/duplicate keys, null, empty/overlong text, nonfinite/overflow numbers and repaired/fenced output; significant string whitespace remains.",
+    "Loopback transport, one bearer authorization header, exact original request schema and disabled reasoning are checked; evidence failures latch the service closed.",
+    "Author verification records23stdlibfake tests/Ruff/dry checks; their source and recorded results were inspected, not independently rerun."
+  ],
+  "findings": [
+    {
+      "id": "CPUHELPER-FINAL-01",
+      "priority": "P2",
+      "classification": "EXECUTION_BLOCKER_NOT_SOURCE_MILESTONE_BLOCKER",
+      "title": "Bind critical Transformer pins to the selected package root before real load",
+      "file": "helper.py",
+      "start_line": 334,
+      "end_line": 344,
+      "evidence": "The gate accepts any runtime_files entry ending in transformers/generation/utils.py (and the other required suffixes). It does not derive the expected path from module_origins[transformers]. Therefore an unrelated second package tree can satisfy the critical-source pin gate while the selected top-level package imports an unpinned critical file. The shipped pending descriptor currently uses one consistent overlay root, so this is an acceptance gap for future completed selections rather than evidence of a mismatched current file.",
+      "required_before_execution": "Root must explicitly verify every critical source pin belongs to the actual selected transformers package root, or a new separately frozen revision must require exact root-derived paths and test the mixed-root case. Do not claim the generic loader gate itself proves this binding."
+    }
+  ],
+  "nonblocking_source_stage_limits": [
+    "No runtime readiness or model/browser score is claimed.",
+    "Native DSO path markers are an admission floor; they do not prove the actual complete indirect DSO/import closure. README states root selection/review is pending.",
+    "An external verifier source hash and callable shape do not prove live PID/start/cgroup/cap/reserve/swap/observer/watchdog correctness; README correctly requires independent root review/live controller.",
+    "Module version strings are checked after import, not independently established from distribution metadata before heavy import.",
+    "Final ASGI delivery and terminal process closure remain external evidence obligations."
+  ],
+  "execution_blockers": [
+    "Acquire and stream-verify the exact eight ordinary offline model/tokenizer/license files; complete seven unknown actualSHA256 values and local paths without committing model payloads.",
+    "Root-select and verify complete native dependency/DSO/import closure and the exact completed immutable runtime selection.",
+    "Resolve CPUHELPER-FINAL-01 critical-source package-root binding by explicit completed-selection review or a new frozen source revision.",
+    "Root-select/review a real external owner verifier/ticket, fixed combined cap/admission, continuous reserve/swap/ComfyUI checks and live20s external hard watchdog.",
+    "Qualify genuine independent field generation, CPU kernel/numerics/whole timing/peak combined memory/partial failure evidence before any browser scoring.",
+    "Run matched fixed ten-task browser arms with one immutable helper and unchanged options/judges/seed16decisionloop; keep JevBench populations separate."
+  ],
+  "independent_checks_performed": {
+    "file_sha256_and_sizes": true,
+    "readonly_modes": true,
+    "stdlib_ast_parse": true,
+    "original_TEXT_VALUE_literal_comparison": true,
+    "unit_tests": false,
+    "helper_import": false,
+    "torch_or_model_import": false,
+    "payload_read": false,
+    "native_DSO_read": false,
+    "network_or_browser": false,
+    "active_owner_or_ComfyUI_reads_or_changes": false
+  },
+  "source_changes": false,
+  "only_new_file": "independent-final-review.json",
+  "status": "ALLREVIEWSTOPPED"
+}

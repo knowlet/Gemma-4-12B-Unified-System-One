@@ -1,0 +1,17 @@
+{
+  "schema_id": "decision3-current-selected-source-execution-research-v1",
+  "UTC": "2026-10-22T09:11:21.452868+00:00",
+  "finding": "-B and PYTHONDONTWRITEBYTECODE prevent cache writes, not reading valid timestamp/size pyc. Authenticating .py then SourceFileLoader can execute different cached code. Same issue applies already-loaded selected project modules.",
+  "primary_local_reference": {
+    "path": "/usr/lib/python3.12/importlib/_bootstrap_external.py",
+    "sha256": "97c6211750d63067712ad2cd74d50be33337f1fb1cd2c769022ced9b401edd92",
+    "size_bytes": 69197,
+    "functions": [
+      "SourceLoader.get_code",
+      "_validate_timestamp_pyc",
+      "_compile_bytecode"
+    ]
+  },
+  "scope": "Only new bootstrap/worker loader seams; historical source17/H15/live project code unchanged. Worker/CORE/wire execute directly compiled authenticated bytes; selected13 project imports use a temporary checked-byte loader and reject any already-loaded selected module. Ordinary library versions/source-byte/origin metadata retains its explicit documented scope; all indirect runtime execution/DSOs remain external owner obligations.",
+  "verification": "Actual valid timestamp/size stale pyc control demonstrably executes evil marker under -B; selected loaders must execute safe selected source, reject source drift/unselected project imports/already-loaded modules. No actors/models/frameworks."
+}

@@ -1,0 +1,165 @@
+{
+  "profile": "decision3-external-unit-boundary-v1",
+  "source_union": {
+    "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/source-union.json",
+    "sha256": "db69ce99cfd42295430de96e5f6a0a48ffa4a3f4a0c829e48a5691ea4c1290aa",
+    "size_bytes": 3195
+  },
+  "execution_sources_after": [
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/owner_boundary.py",
+      "sha256": "8dc8ce2788514d879c309ad4a374cb29b3111432e5516db307f34eea77292ede",
+      "size_bytes": 17077
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe_service.py",
+      "sha256": "7312b01e743face43284c9ffe729d9b043da51354e2aea83a44178ba72cc08b7",
+      "size_bytes": 6197
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/run_probe.py",
+      "sha256": "92dc074d407d81044b62c1aec85972fc2377cf1ebb739f172529bacce9a83b37",
+      "size_bytes": 10866
+    }
+  ],
+  "pure_tests": {
+    "receipt": {
+      "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/pure-tests-02.xml",
+      "sha256": "dcc21e91ce78e5a39ca566dcd021714d9ab19ff1a212ad98f7e67d1647c54fff",
+      "size_bytes": 8813
+    },
+    "tests": 47,
+    "passed": 47,
+    "elapsed_seconds": 0.69,
+    "limits": {
+      "address_space_bytes": 268435456,
+      "cpu_seconds": 30,
+      "wall_seconds": 45,
+      "blas_threads": 1,
+      "cpu_affinity": [
+        0
+      ]
+    }
+  },
+  "ruff": {
+    "format": "PASS",
+    "check": "PASS",
+    "limits": "AS256MiB CPU30 wall45 CPU0 BLAS1 RAYON1",
+    "earlier_attempt": "The first lint invocation lacked CPU0 affinity and exhausted its AS256MiB cap (exit134); no actor was running. Retried once with the same cap and CPU0 affinity, then passed."
+  },
+  "independent_review": {
+    "reviewer": "/root",
+    "result": "CLEAR",
+    "scope": "Read-only review of all three execution files before the exact tiny fixture; no blocking issue."
+  },
+  "actual_fixture": {
+    "unit": "jev-d3-boundary-probe-20261022-01.service",
+    "invocation_id": "f034be440e4a4a13ba0115a169fda6ac",
+    "controller_exit_code": 0,
+    "controller_wall_seconds": 0.578257027,
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-plan-01.json",
+      "sha256": "43744bce03679a4082bb650147bd9797fea2861464573554dd3a795e2f971015",
+      "size_bytes": 1348
+    },
+    "receipts": [
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/actor-intent.json",
+        "sha256": "f5a088b1a5662ddd8203fe15bf611623bc4fa9f00b49be1e933a92d17f49c97b",
+        "size_bytes": 568
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/admission.json",
+        "sha256": "64922d05a93fd558a12b18af43b0ef9a0ebe8387409370ba4049184cd17fe3a1",
+        "size_bytes": 180
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/external-boundary-closure.json",
+        "sha256": "923233de860b9779d1e03d17c883b9083e99db1fa1565159ef55e7b62d3ffbf5",
+        "size_bytes": 3546
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/grandchild-intent.json",
+        "sha256": "6d23d82969d59eb434aa0a2f9e794eda0576967f8e1eac90fc1deaf741aea322",
+        "size_bytes": 564
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/inheritance-proof.json",
+        "sha256": "e34257f417a1c8a137f87d56c2360e1423b14d64c2074ec5e2d89b37e8d0309f",
+        "size_bytes": 1626
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/intermediate-reaped.json",
+        "sha256": "3fe12fcb1ae8db5afa287aff5cb3b6402ffb8f56dd5adf1b8eaae42fb5b1154e",
+        "size_bytes": 37
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/launch-intent.json",
+        "sha256": "0b1b2ab8583532c7952a72a2d47ee812b6b4b4ad3ba250bb556f3c2a8256ed19",
+        "size_bytes": 1949
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/probe-result.json",
+        "sha256": "19ee463df4b4dda6b8498c3f865f15f81f891472b13ccf2f5a6773edb842f3a0",
+        "size_bytes": 284
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/sealed-plan.json",
+        "sha256": "43744bce03679a4082bb650147bd9797fea2861464573554dd3a795e2f971015",
+        "size_bytes": 1348
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/selected-plan.json",
+        "sha256": "43744bce03679a4082bb650147bd9797fea2861464573554dd3a795e2f971015",
+        "size_bytes": 1348
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/service.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-boundary-20261022-01/probe-01/unit-readback.json",
+        "sha256": "7eb8c789d459218e1fda7225d17f9e2167d696076447f02dea0d49a365527640",
+        "size_bytes": 2505
+      }
+    ],
+    "inheritance_verified": true,
+    "whole_unit_exit_confirmed": true,
+    "observed_cgroup_cohort_exit_confirmed": true,
+    "cgroup_absent": true,
+    "two_clean_final_process_scans": true,
+    "sources_unchanged": true,
+    "main": {
+      "pid": 54222,
+      "ppid": 2022,
+      "start_ticks": 805522,
+      "pgid": 54222,
+      "sid": 54222,
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-boundary-probe-20261022-01.service",
+      "environment_key_count": 57,
+      "initial_exec_environment_bytes": 2005
+    },
+    "detached_child": {
+      "pid": 54225,
+      "ppid": 2022,
+      "start_ticks": 805532,
+      "pgid": 54225,
+      "sid": 54225,
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-boundary-probe-20261022-01.service",
+      "environment_key_count": 1,
+      "initial_exec_environment_bytes": 0
+    },
+    "initial_environment_note": "execve received an empty environment and /proc confirms zero initial bytes. CPython added one LC_CTYPE key during interpreter startup."
+  },
+  "limitations": {
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "model_qualified": false,
+    "same_uid_delegated_migration_possible": true,
+    "source_scope": "Three repository-local execution files are sealed before import/launch and after close; full interpreter/stdlib/kernel/systemd bytes are not pinned.",
+    "containment_scope": "Audited fork/setsid/empty-exec-environment inheritance and selected-unit/observed-cohort closure only. No deliberate migration or user-manager attack was attempted."
+  },
+  "unchanged_existing_sources": "This task edited only this new directory. Existing transport, observers, src, scripts, benchmark/scorer/model sources remained untouched."
+}

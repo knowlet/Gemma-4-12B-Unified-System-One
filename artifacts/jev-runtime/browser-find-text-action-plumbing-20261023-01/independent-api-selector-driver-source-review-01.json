@@ -1,0 +1,180 @@
+{
+  "schema_id": "independent-find-text-api-selector-nativev2-source-review-v1",
+  "status": "CLEAR_SOURCE_WITH_LIMITS_PENDING_REAL_BROWSER_ACCEPTANCE",
+  "review_kind": "independent_applied_source_only",
+  "author_independence": {
+    "reviewed_authors": "Shared selector/API by helper_boundary_review; nativeV2 driver/test by root.",
+    "reviewer_authored_files_deliberately_excluded": [
+      "scripts/jev_decision3_browser_worker.py",
+      "scripts/jev_find_text_browser.py",
+      "tests/test_jev_decision3_action_profile.py",
+      "tests/test_jev_find_text_browser.py"
+    ]
+  },
+  "reviewed_refs": [
+    {
+      "path": "src/s1/jev_action_profiles.py",
+      "size_bytes": 12003,
+      "sha256": "fdf8873c5ebe68d7947a60b8c320f0fd118ae3918d0b87a870006e8678e7c747"
+    },
+    {
+      "path": "src/s1/api.py",
+      "size_bytes": 14989,
+      "sha256": "618b9172f58b00ad1530afc4bb67018f3f21b014c553a8fbffeba17e9491c436"
+    },
+    {
+      "path": "scripts/jev_native_v2_browser.py",
+      "size_bytes": 52685,
+      "sha256": "ec7954f3fff33c9ad2a32f1afe35f803292f2359f6294fbe4e688011f8cc23fb"
+    },
+    {
+      "path": "tests/test_jev_native_v2_action_profile.py",
+      "size_bytes": 9463,
+      "sha256": "60ab7606f867b408692be1fdfd22bbdb56874655fd886da48ab4cd4f759af5ca"
+    }
+  ],
+  "checks": [
+    {
+      "id": "selector_explicit_profiles",
+      "result": "PASS",
+      "source": "src/s1/jev_action_profiles.py:20,64,215",
+      "evidence": "Only standard and jev-find-text-experimental-v1 strings accepted. Protocol resolver returns originals for standard; opt-in returns paired checked native/generated classes and fresh copied provenance."
+    },
+    {
+      "id": "private_protocol_identity_and_inverse",
+      "result": "PASS",
+      "source": "src/s1/jev_action_profiles.py:128-207",
+      "evidence": "Original source/derived SHA pins are fixed; only two declared relative import bindings are changed into disjoint s1._action_profiles_find_* names and inverted exactly. Registry identity checked under RLock before reuse; exception removes only newly inserted owned modules. Original s1 module names and older artifact private names are not replaced."
+    },
+    {
+      "id": "deferred_grammar_lifetime_and_concurrency",
+      "result": "PASS",
+      "source": "src/s1/jev_action_profiles.py:48-51,137-145,158-184,225-253",
+      "evidence": "Private modules remain registered for deferred relative imports. One lock serializes resolver and wire cache construction; provenance returned to callers is deep-copied. Registry mismatch refuses reuse."
+    },
+    {
+      "id": "private16_preserves_canonical60",
+      "result": "PASS",
+      "source": "src/s1/jev_action_profiles.py:256-278",
+      "evidence": "Standard returns original Agent directly. Opt-in accepts only known integer16/60, copies vars into a new module, sets MAX_STEPS16 only there and passes the actual marker to the existing pinned component. Canonical Agent/module60 is not assigned. Existing factory compiles private original command globals from that namespace."
+    },
+    {
+      "id": "seven_dependency_projection",
+      "result": "PASS",
+      "source": "src/s1/jev_action_profiles.py:113-131,197-204",
+      "evidence": "Experimental projection contains exactly three originals, original named wire and three frozen FIND components; every declared source is checked before cached/private protocol is returned. Component helper compilation is source-bound; not a transitive/native closure claim."
+    },
+    {
+      "id": "API_fail_closed_explicit_single_adapter",
+      "result": "PASS",
+      "source": "src/s1/api.py:33-55,65-132",
+      "evidence": "Unknown/nonstring profiles reject. Experimental profile requires compatibility and exactly one native/generated boolean with no hierarchy/operation-first combination. Resolved classes replace only the explicitly selected adapter; standard imports its original adapter. Native still requires evidence sink; generated grammar/prompt checks remain."
+    },
+    {
+      "id": "API_default_response_and_health",
+      "result": "PASS",
+      "source": "src/s1/api.py:138-155,205-222,242-282",
+      "evidence": "Health remains status/model unless experimental protocol exists. Request evidence adds profile/provenance only for opt-in. Existing compute/normalization and typed error response paths remain; no converter adds, repairs or synthesizes answer values here."
+    },
+    {
+      "id": "driver_settings_validate_before_constructor",
+      "result": "PASS",
+      "source": "scripts/jev_native_v2_browser.py:165-243,258,1017-1025",
+      "evidence": "Default action_settings returns empty dict. Endpoint/model half configuration, unknown profile, absent external experimental helper, nonloopback/nonHTTP endpoint, credentials/query/fragment and invalid key env name reject before model construction. Metadata records only key environment name, not its value."
+    },
+    {
+      "id": "ten_reserved_key_environment_names",
+      "result": "PASS",
+      "source": "scripts/jev_native_v2_browser.py:212-229,1030-1037,968-979",
+      "evidence": "Rejects S1_POLICY_API_KEY, TEXT_MODEL_REASONING, PYTHONDONTWRITEBYTECODE, PYTHONNOUSERSITE, PYTHONPATH, HF_HUB_OFFLINE, TRANSFORMERS_OFFLINE, TOKENIZERS_PARALLELISM, HF_HOME and HF_HUB_CACHE. External branch inherits selected key unchanged; only original local branch assigns S1_TEXT_API_KEY to policy token."
+    },
+    {
+      "id": "external_helper_has_no_local_fallback",
+      "result": "PASS",
+      "source": "scripts/jev_native_v2_browser.py:518-522,698-704,1101-1108,1124-1131",
+      "evidence": "Direct experimental app construction rejects allow_local_helper=True. External branch skips prepare_helper and passesFalse; local chat route returns404 before generation in that mode. Runtime HTTP failure is retained as failure; no code selects local generation fallback."
+    },
+    {
+      "id": "same_experimental_server_and_client",
+      "result": "PASS",
+      "source": "scripts/jev_native_v2_browser.py:545-554,902-924,1124-1131,1161-1173",
+      "evidence": "Same action_profile from plan goes to create_app and run_groups. Experimental groups select new builder, standard groups select unchanged v7 builder. Shared text endpoint/model/key names are passed to both fixed groups; original reasoning=none and upstream original HTTP client remain."
+    },
+    {
+      "id": "original_population_and_declared_budgets",
+      "result": "PASS",
+      "source": "scripts/jev_native_v2_browser.py:284-300,926-966,989-998,1176-1179",
+      "evidence": "Original known4 then public6 groups, repeats1, seed20261014, steps16, original V7/helper SHA/Chromium args and ten-case denominator remain. Policy20, local helper20, context8192 and upstream HTTP25 metadata are unchanged; no benchmark/judge edits observed in reviewed scope."
+    },
+    {
+      "id": "pre_and_final_source_composition",
+      "result": "PASS",
+      "source": "scripts/jev_native_v2_browser.py:770-812,1056-1064,1230-1245",
+      "evidence": "Original seven composition sources retained; experimental adds all seven source_dependencies plus selector and new builder, deduplicated by path. Captured copies and current sources must match in final cleanup; package source capture separately covers API/selector, and own entrypoint pin is checked."
+    },
+    {
+      "id": "primary_failure_and_external_closure",
+      "result": "PASS",
+      "source": "scripts/jev_native_v2_browser.py:982-987,1181-1257,1299-1308",
+      "evidence": "Group final bundle verification keeps primary exception and adds secondary note. Global cleanup demotes stage on errors; source mismatch enters failed cleanup. Receipts remain complete_pending_external_closure with process_exit_confirmedFalse/outer_closure_requiredTrue until independent owned closure."
+    },
+    {
+      "id": "new_fake_test_source_covers_material_seams",
+      "result": "PASS_SOURCE_ONLY",
+      "source": "tests/test_jev_native_v2_action_profile.py",
+      "evidence": "Read tests for legacy defaults, malformed/half selections, loopback URL/key collisions, no secret value in metadata, shared helper args/inheritance, standard local branch, experimental health/404 local fallback, and copied composition tamper. Reviewer did not run these tests in this review."
+    },
+    {
+      "id": "external_helper_token_metadata_limit_clear",
+      "result": "PASS",
+      "source": "scripts/jev_native_v2_browser.py:230-241",
+      "evidence": "External original client1024 request is distinguished from unauthenticated remote native limit. No inherited128 cap claim in selected external metadata; no payload, budget or response transformation added."
+    }
+  ],
+  "blocking_findings": [],
+  "nonblocking_notes": [
+    {
+      "id": "raw_child_logs_remain_private_evidence",
+      "source": "scripts/jev_native_v2_browser.py:830-850",
+      "observation": "run_client retains existing raw stdout/stderr streams. New selection metadata contains only env variable names and no key values; arbitrary runtime diagnostics are not a public redaction guarantee.",
+      "effect": "No new raw stream content was read, published or qualified by this review."
+    }
+  ],
+  "prior_review_followup": {
+    "path": "/tmp/jev_native_v2_find_text_source_review-01.json",
+    "resolved": [
+      "Applied API now accepts and uses jev_action_profile.",
+      "Direct make_application now rejects experimental local-helper half selection.",
+      "All ten overwritten driver env keys are rejected.",
+      "New tests include actual fake API health/404 and composition-copy tamper cases."
+    ],
+    "not_carried_as_unverified": "Old draft API-pending and /tmp ROOT issues do not describe these installed applied bytes."
+  },
+  "review_actions": {
+    "read_small_source_and_metadata_only": true,
+    "source_or_tests_executed_for_this_review": false,
+    "source_edited": false,
+    "artifact_created_only": true,
+    "actual_or_host_or_unit_or_observer_read": false,
+    "model_native_payload_or_tasks_gold_DOM_responses_read": false,
+    "network_or_Git": false,
+    "own_builder_worker_review": false
+  },
+  "limits": [
+    "No actual model/helper/browser request, task score, speed or quality qualified.",
+    "No full transitive Python/native DSO closure or process no-escape claim.",
+    "Separate independent review of the reviewer-authored worker/builder remains necessary.",
+    "Fresh owned admission and genuine real-browser acceptance remain external requirements."
+  ],
+  "resolved_findings": [
+    {
+      "id": "external_helper_token_metadata_scope",
+      "status": "FIXED_BY_ROOT_BEFORE_REVIEW_FREEZE",
+      "source": "scripts/jev_native_v2_browser.py:230-241,298-307",
+      "evidence": "External settings override inherited helper_tokens128 with None, record original_request_max_tokens1024, native_limit_authenticatedFalse and external_runtime_receipt_requiredTrue. Default settings still return empty dict and therefore preserve original local128 metadata. Corresponding source test assertions present at lines110-112.",
+      "old_driver_sha256": "d6199769a58b039221cf7daf53110ddf5e0c4e48e61e94fe0957e441c1e282d6",
+      "current_driver_sha256": "ec7954f3fff33c9ad2a32f1afe35f803292f2359f6294fbe4e688011f8cc23fb",
+      "author_reported_followup_tests": "Root reported34 targeted tests PASS in1.99s; not rerun by this source reviewer."
+    }
+  ]
+}

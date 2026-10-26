@@ -1,0 +1,214 @@
+{
+  "schema": "decision3-goal-routed-two-head-gpu-browser-public-results-v1",
+  "date": "2026-10-26",
+  "status": "native_numerics_verified_matched_firstcase_both_failed",
+  "scope": "single_previously_seen_development_case_matched_candidate_then_NF4_baseline",
+  "model": {
+    "repository": "vllm-sr/d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "parameters": 594582720,
+    "adapted_heads": [
+      "operation",
+      "click_target"
+    ],
+    "encoder_changed": false,
+    "baseline_readout_changed": false,
+    "readout_shape": [
+      255,
+      1024
+    ],
+    "temperature": 1.0
+  },
+  "training_rows": {
+    "operation": 153,
+    "click_target": 14
+  },
+  "native_GPU": {
+    "model_loads": 1,
+    "native_calls": 37,
+    "distinct_real_train_wires": 34,
+    "structural_zero_wrapper_calls": 1,
+    "candidate_real_calls": 34,
+    "candidate_invented_calls": 2,
+    "heads_replayed_per_branch": 144,
+    "legal_probabilities_replayed_per_branch": 998,
+    "total_probability_comparisons": 1996,
+    "total_ordered_argmax_checks": 288,
+    "absolute_tolerance": 1e-06,
+    "relative_tolerance": 1e-05,
+    "whole_root_owner_wall_seconds": 70.01582123799017,
+    "owner_command_seconds": 67.9948379159905,
+    "all_ordered_argmaxes_matched": true,
+    "actual_per_head_feature_row_routing_verified": true,
+    "structural_zero_wrapper_entire_raw_response_byte_exact": true,
+    "original_scoped_unit_cohort_closure_verified": true,
+    "maximum_baseline_probability_absolute_error": 2.497324314010285e-07,
+    "maximum_composed_probability_absolute_error": 2.997878586485925e-07
+  },
+  "browser_pair": {
+    "candidate": {
+      "successes": 0,
+      "attempts": 1,
+      "policy_calls": 3,
+      "text_calls": 1,
+      "action_count": 1,
+      "terminal_status": "predicted",
+      "goal_satisfied": false,
+      "premature_done": false,
+      "error_stage": "execution"
+    },
+    "baseline": {
+      "successes": 0,
+      "attempts": 1,
+      "policy_calls": 6,
+      "text_calls": 1,
+      "action_count": 4,
+      "terminal_status": "done",
+      "goal_satisfied": false,
+      "premature_done": true,
+      "error_stage": null
+    },
+    "wall_seconds": 229.05789215298137,
+    "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+    "observation_profile": "composed-visible-text-settled-v7",
+    "profile_helper_sha256": "d9f4236d1d46c9472c3d6c1551342639ecb870e6c0dd419246927645410ea868",
+    "seed": 20261014,
+    "repeats": 1,
+    "max_steps": 16,
+    "original_actions_stop_and_DOM_judge_unchanged": true,
+    "full_choices_and_order_preserved": true
+  },
+  "browser_numerical_replay": {
+    "candidate_native_calls": 3,
+    "native_heads_verified": 10,
+    "native_probability_scalars_verified": 74,
+    "native_probability_comparisons_verified": 148,
+    "ordered_argmax_checks": 20,
+    "unadapted_raw_answer_rows_verified": 4,
+    "independent_FP64_dot_softmax_max_abs_error": 3.019622020206114e-07,
+    "numerical_tolerance": {
+      "absolute": 1e-06,
+      "relative": 1e-05
+    },
+    "api_probability_normalization_replayed": true,
+    "api_probability_normalization_heads_replayed": 10,
+    "api_probability_normalization_scalars_replayed": 74,
+    "api_probability_normalization_passes_per_head": 2,
+    "api_probability_normalization_changed_heads": 1,
+    "api_probability_normalization_changed_passes": 1,
+    "api_probability_normalization_max_abs_difference": 1.1102230246251565e-16,
+    "all_client_server_request_response_original_bytes_matched": true,
+    "W0_and_both_delta_raw_bytes_match_original_capability": true
+  },
+  "observed_navigation_failure": {
+    "candidate_native_HTTP200_calls": 3,
+    "actual_ordered_criteria_counts": [
+      {
+        "click_target": 13,
+        "operation": 7,
+        "select_target": 15,
+        "type_text_target": 1
+      },
+      {
+        "click_target": 11,
+        "operation": 6,
+        "type_text_target": 1
+      },
+      {
+        "click_target": 13,
+        "operation": 6,
+        "type_text_target": 1
+      }
+    ],
+    "candidate_actions_before_failure": 1,
+    "selected_CLICK_control_was_submission_link": true,
+    "same_helper_context_records_submission_action_and_login_page": true,
+    "helper_requested_login_identifier_textbox": true,
+    "helper_output_text_kind": "null",
+    "helper_HTTP_status": 502,
+    "helper_actual_EOS": true,
+    "helper_grammar_terminal_accepted": true,
+    "helper_authorized_field_value": false,
+    "helper_adapter_restored": true,
+    "helper_deadline_exceeded": false,
+    "helper_evidence_failed": false,
+    "helper_elapsed_seconds": 3.6580500510171987,
+    "trained_CLICK_target_rows": 14,
+    "trained_CLICK_target_K_counts": {
+      "4": 7,
+      "5": 7
+    },
+    "larger_click_menu_training_gap_is_hypothesis": true,
+    "encoder_or_generalization_failure_proven": false
+  },
+  "integrity": {
+    "source_files_reauthenticated": 881,
+    "full_source_inventory_files": 205,
+    "source_inventory_positive_files": 199,
+    "source_inventory_empty_package_files": 6,
+    "all_service_dependencies_reauthenticated": 8,
+    "both_original_scoped_closures_verified": true,
+    "current_owned_allocator_final_bytes": 0,
+    "original_outcome_errors_preserved": true
+  },
+  "preserved_launch_failure": {
+    "whole_owner_wall_seconds": 156.06869250402087,
+    "selected_sources_verified": 881,
+    "absolute_source_references": 5,
+    "semantic_duplicate_source_references": 3,
+    "candidate_controller_started": false,
+    "candidate_model_loaded": false,
+    "candidate_native_calls": 0,
+    "matched_pair_completed": false,
+    "current_units_and_cgroups_absent": true
+  },
+  "next_training_curriculum": {
+    "episodes_authored": 24,
+    "authored_clickable_node_counts": [
+      14,
+      18,
+      24
+    ],
+    "families_per_density": 8,
+    "helpful_commit_roles": [
+      "button",
+      "link"
+    ],
+    "teacher_CLICK_positions_vary": true,
+    "independent_local_TRAIN_goals": true,
+    "source_simulation_only_rows": {
+      "CLICK": 33,
+      "TYPE_TEXT": 9,
+      "SELECT": 6,
+      "DONE": 24
+    },
+    "actual_browser_episodes_collected": 0,
+    "actual_publisher_menu_counts": null,
+    "actual_train_wires_accepted": 0,
+    "model_or_browser_quality_proven_by_source_tests": false,
+    "related_controls_passed": 120,
+    "source_module_sha256": "16c60a00534447f1a09daf503a6db74f3dcb0b39bde7c2ec3dd855101689d91c",
+    "source_tests_sha256": "3232e96959854c0b650149190febe3ed226ba85bbc570135c6f285a62930980f"
+  },
+  "evidence_sha256": {
+    "native_GPU_audit": "dd686962371461a0f345487bb758c3f2e7ff7a3922ab976b5754a6451f5af20d",
+    "complete_browser_pair_audit": "409f214ce10f03de36d1283f6ff87555b31f90417cd14f6ff5baf876d7ec4403",
+    "navigation_and_null_helper_audit": "bef1eb8ae13d752056640fae0735f95fc80c278c7133542a598bc21d94fc7c9e",
+    "preserved_pre_GPU_launch_failure_audit": "7724e52ff5a1f199906df2aabd7ed7be31050b97c0e28d79669508a7061ad93b"
+  },
+  "full10_browser_score": null,
+  "jevbench_scores": {
+    "coherenceMINI": null,
+    "benchmark_heaven": null
+  },
+  "dev_used_for_model_selection": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "new_unseen_evaluation_claim": false,
+  "model_qualified": false,
+  "browser_qualified": false,
+  "benchmark_qualified": false,
+  "competitor_win": false,
+  "universal_containment_claim": false,
+  "raw_goals_wires_labels_predictions_tokens_or_weights_published": false
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "owned-decision3-cpu5-browser-worker-plan-v1",
+  "profile": "decision3-cpu5-fast-same-cluster-4g-owned-browser-worker-source-candidate-v1",
+  "status": "SOURCE_ONLY_UNEXECUTED_UNFROZEN_UNSELECTED",
+  "worker": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker.py",
+    "sha256": null
+  },
+  "bridge_successor": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/bridge_successor.py",
+    "sha256": null
+  },
+  "caller": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/tests/test_jev_native_http_browser.py",
+    "sha256": null
+  },
+  "native_actor": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py",
+    "sha256": null
+  },
+  "native_plan": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/edge-plan.json",
+    "sha256": null
+  },
+  "owner_profile": "llama-cpp-cpu5-fast-same-cluster-4g-coexist-command-owned-v1",
+  "owner_unit": "jev-d3-llama-cpp-cpu5-fast-4g-coexist-20261024-09.service",
+  "owner_controller_sha256": null,
+  "resources": {
+    "cpu_affinity": [15, 16, 17, 18, 19],
+    "cpu_quota_percent": 500,
+    "expected_threads": 5,
+    "expected_interop_threads": 1,
+    "memory_max_bytes": 4294967296,
+    "swap_max_bytes": 0,
+    "reserve_bytes": 26119172916,
+    "startup_available_bytes": 30414140212,
+    "native_batch_size": 4,
+    "context_limit": 16384
+  },
+  "model_alias": "d3-edge-cpu-toy",
+  "max_ticks": 16,
+  "http_caller_timeout_seconds": 25,
+  "http_cooperative_budget_seconds": 20,
+  "helper_model": null,
+  "import_sources": null,
+  "upstream_path": null,
+  "chromium_executable": null,
+  "validation": null,
+  "native05_owner09_actual_qualification": null,
+  "pending": [
+    "Root must qualify original owner09/native05 first and record their exact source/model-plan pins",
+    "Review all copied CPU5 port source deltas; no imports/AST/tests/format/build/dry/probes have run",
+    "Complete selected source/import/upstream/static inputs and actual binary/tool inventories within original owner limits",
+    "Review/fill new worker/bridge/caller pins and complete authorized fake/native-tail/browser checks",
+    "Keep worker SOURCE_ONLY true until a separately reviewed source release and exact original owner command selection",
+    "Generate final plan SHA before command-spec SHA; plan never embeds its command-spec SHA",
+    "No timing/fit/browser success/qualification transfers from CPU4 or CPU16"
+  ]
+}

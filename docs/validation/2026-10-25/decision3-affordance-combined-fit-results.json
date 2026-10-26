@@ -1,0 +1,157 @@
+{
+  "schema": "decision3-affordance-combined-fit-public-aggregate-v1",
+  "date": "2026-10-25",
+  "timezone": "Asia/Taipei",
+  "publication_base_commit": "ffc4dd429867fe97e2e600a3551f3ef0d6278659",
+  "candidate": {
+    "profile": "decision3-dsl01-affordance-operation-readout-cpu5-4g-candidate-v1",
+    "alias": "d3-edge-dsl01-affordance-operation-delta-cpu5-candidate",
+    "basis_model": "vllm-sr/d3-edge",
+    "basis_revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "training_complete": true,
+    "original_pending_summary_unchanged": true,
+    "model_qualified": false,
+    "numerical_deployment_qualified": false,
+    "browser_qualified": false,
+    "benchmark_qualified": false
+  },
+  "fit": {
+    "operation_rows": 109,
+    "old_operation_rows": 96,
+    "new_operation_rows": 13,
+    "operation_K_counts": {
+      "4": 4,
+      "7": 5,
+      "8": 100
+    },
+    "old_verified_supervised_heads": 132,
+    "old_supervised_target_heads_excluded": 36,
+    "new_verified_heads": 44,
+    "new_legal_probability_comparisons": 139,
+    "new_target_heads_excluded": 31,
+    "optimizer_steps": 512,
+    "hyperparameters": {
+      "batch_size": 64,
+      "l2": 0.0001,
+      "learning_rate": 0.003,
+      "seed": 20261023,
+      "steps": 512
+    },
+    "initial_delta": "zeros_like_baseline_fp32",
+    "old_selection_unchanged": true,
+    "same_baseline_FP32_bytes": true,
+    "dev_used_for_model_selection": true,
+    "optimizer_input_dev": false,
+    "optimizer_input_sealed": false,
+    "fit_wall_seconds": 3.7877536209998652,
+    "fit_budget_seconds": 120,
+    "fit_budget_type": "cooperative original fitter deadline including input authentication, optimizer and durable writes",
+    "delta_shape": [
+      255,
+      1024
+    ],
+    "delta_precision": "FP32",
+    "delta_l2_norm": 0.8280175898546096,
+    "delta_rows_8_through_254_exact_zero": true,
+    "loss_observation": {
+      "type": "optimizer mini-batch losses, not held-out quality",
+      "first": 1.7063870429992676,
+      "last": 0.949171781539917,
+      "minimum": 0.7753715515136719,
+      "maximum": 1.7063870429992676
+    }
+  },
+  "resource_contract": {
+    "cpu_affinity": [
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_quota_percent": 500,
+    "threads": 5,
+    "memory_max_bytes": 4294967296,
+    "swap_max_bytes": 0,
+    "outer_owner_runtime_seconds": 10800
+  },
+  "integrity_audit": {
+    "owner_completed": true,
+    "scoped_closure_positive": true,
+    "source_refs_checked": 34,
+    "original_flags": {
+      "model_qualified": false,
+      "continuation_authorized": false,
+      "whole_tree_exit_confirmed": false,
+      "no_escape_enforced": false
+    },
+    "root_audit_sha256": "8cdee5f2dd8c16ac94ce08b67186ff3cda11d47cbb356172b46c1fac47d6fd08",
+    "row_mapping_sha256": "0c5f98648f3d1dd85dab9d85c934791b37c30dcabc4d3a82a25c91ccd9879d89",
+    "delta_file_sha256": "25a7a9d8b48d0c3dd17cc732a6d50bf309a972528763815fa3031c132989d3d5",
+    "delta_raw_FP32_sha256": "7ca395c62d8936fa965c2152dbb1d1b278c02610bf4f458daeaf10fe269a55fa",
+    "proof_sha256": {
+      "root_execution": "0b3568915a7d9dac2690446bdaa8c6b5c213ff7e5a09847a13b3106f8c010ec9",
+      "owner_receipt": "384281ecb684c5ebabfe3012de8302241138d6237da00f514c11762ecf6045c9",
+      "closure": "9dcebbb755d8919ac7fbfc68c80c6f867a073f4d9b8e2977f7ffe57c23e62f5f",
+      "admission": "1e2e50774417fbb54e76065aac5409f5b31aadc6799e40fb360dd232f7786513",
+      "sealed_config": "68a9e9882975f3a38713d11774fb6456d2d0ed34cfa1af7c1345123f6082efde",
+      "capability": "89c9c5bff94099ce44bc71f5e2bf5f9d2af7d68e9a7b6b9c471259ee5a2656d2",
+      "summary": "a30587af6a0ae1307557a3fabb25c8605d4b4263d3e11751ec834f8844b93278",
+      "original_execution": "112fed95340c4533a76571db57fff79bf4363acab04c57044089df68af27f40c",
+      "selection": "6f29325d0893d5e7523417caa91b45a9cb378419553f6aee492f8b6a66346a0f"
+    }
+  },
+  "source_qualification": {
+    "stdlib_fake_tests_passed": 9,
+    "ruff": "passed",
+    "independent_source_review": "no definite blocker found; source only",
+    "root_review_sha256": "23c1bdfc7e72062350812cacf2bc431fa2d693d72bc669ea6a4301ad27d0ee8d",
+    "released_loader_sha256": "5b8eb9b2586511afdf8be177f0bfdf6c18495c4f699b23371adbe4be77a502e5",
+    "released_fitter_sha256": "3b113b12e07512a47d732331f891cc2a9139f68e23066e84a689af04be747ffe",
+    "release_diff": "SOURCE_ONLY True to False only in each main file"
+  },
+  "GPU_basic_preflight": {
+    "model_loaded": false,
+    "browser_started": false,
+    "model_qualified": false,
+    "device_name": "NVIDIA GB10",
+    "compute_capability": [
+      12,
+      1
+    ],
+    "torch_version": "2.13.0+cu130",
+    "cuda_version": "13.0",
+    "compiled_arch_list": [
+      "sm_80",
+      "sm_90",
+      "sm_100",
+      "sm_110",
+      "sm_120"
+    ],
+    "native_BF16_supported": true,
+    "invented_16x16_BF16_matmul_exact": true,
+    "current_process_cublas_workspaces_cleared": true,
+    "initial_tensor_bytes": 0,
+    "tensor_bytes_before_workspace_cleanup": 33554432,
+    "final_tensor_bytes": 0,
+    "memory_limit_bytes": 2147483648,
+    "CPU_quota_percent": 100,
+    "wall_limit_seconds": 30,
+    "original_probe_retained_failure": "zero-allocation cleanup check after successful invented computation; revised probe explicitly cleared current-process cuBLAS workspaces",
+    "unit_terminal_exit_code": 0,
+    "unit_absent_after_completion": true,
+    "root_terminal_sha256": "0f3ffe2f2a167736cf206b650d3044efc828dd162a0788ed9881a2694a086aa8",
+    "probe_stdout_sha256": "8f93aaba3b01608ba11ec1871565e5c8ac735367402d99c03c7e5d734f3c371a",
+    "probe_source_sha256": "fe61528af0bcc727353b129327281bf06b2c525004a5d649124af60e1e66357a",
+    "full_Decision3_GPU_runtime_or_kernel_qualified": false
+  },
+  "scores": {
+    "browser_10_cases": null,
+    "benchmark_heaven_public231": null,
+    "jevbench_coherenceMINI": null,
+    "competitor_win_established": false
+  },
+  "privacy": {
+    "raw_labels_features_weights_or_predictions_public": false
+  }
+}

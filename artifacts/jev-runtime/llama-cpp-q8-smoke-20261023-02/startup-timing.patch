@@ -1,0 +1,48 @@
+--- frozen-smoke01/run_smoke.py
++++ smoke02/run_smoke.py
+@@ -85,6 +85,7 @@
+         self.rows = []
+         try:
+             self.stderr = (self.directory / "native.stderr").open("xb")
++            self.launch_monotonic = time.monotonic()
+             self.process = subprocess.Popen(
+                 argv,
+                 stdin=subprocess.PIPE,
+@@ -132,7 +133,8 @@
+         need(len(wire) <= MAX_RESPONSE, "Bounded native request")
+         save(self.directory / (name + "-request.json"), payload)
+         submitted = time.monotonic()
+-        deadline = submitted + timeout
++        timing_started = self.launch_monotonic if name == "warm" else submitted
++        deadline = timing_started + timeout
+         sent, response, primary, response_wire = 0, None, None, None
+         response_valid = False
+         notes = []
+@@ -183,12 +185,17 @@
+                     self.drain_pending()
+                 except BaseException as error:
+                     notes.append({"phase": "failure_diagnostic_drain", **error_row(error)})
+-            elapsed = time.monotonic() - submitted
++            finished = time.monotonic()
++            elapsed = finished - timing_started
+             row = {
+                 "name": name,
+                 "request_sha256": sha(wire),
+                 "request_size_bytes": len(wire),
++                "launch_monotonic": self.launch_monotonic,
+                 "submitted_monotonic": submitted,
++                "timing_started_monotonic": timing_started,
++                "submission_elapsed_seconds": finished - submitted,
++                "pre_submission_elapsed_seconds": submitted - timing_started,
+                 "deadline_monotonic": deadline,
+                 "deadline_seconds": timeout,
+                 "elapsed_seconds": elapsed,
+@@ -207,7 +214,7 @@
+                 "partial_stdout_bytes": len(self.stdout),
+                 "primary_error": error_row(primary) if primary else None,
+                 "secondary_errors": notes,
+-                "startup_scope": "First short warm request includes model/context/projector initialization; startup time is not independently separated"
++                "startup_scope": "First short warm request measured from before Popen through response, including launch and identity observation; startup versus short scoring is not independently separated"
+                 if name == "warm"
+                 else "Post-warm request elapsed from payload submission including write/read/JSON overhead",
+             }

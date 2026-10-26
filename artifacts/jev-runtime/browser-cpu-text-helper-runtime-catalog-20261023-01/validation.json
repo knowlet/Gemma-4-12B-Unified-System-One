@@ -1,0 +1,99 @@
+{
+  "AST_parse": "Both sources parsed without runtime import",
+  "actual_full_DSO_closure": false,
+  "dry": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--as=536870912",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+      "-B",
+      "-s",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/catalog.py"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "{\"status\": \"dry_source_only_no_runtime_import\", \"model_loaded\": false, \"native_payload_read\": false, \"runtime_imported\": false}\n"
+  },
+  "future_runtime_imports": [
+    "torch",
+    "transformers",
+    "tokenizers",
+    "safetensors",
+    "accelerate"
+  ],
+  "interpreter_binary_preparation_scope": "stat-only; runtime version recorded only by future owned actor, no interpreter binary hash",
+  "native_model_tokenizer_inputs_during_preparation": "Stat-only; synthetic temporary files are the only native-hash test input. Historical SHA values come only from selected small metadata.",
+  "package_stat_only_files": 9,
+  "recorded_utc": "2026-10-23T12:07:09.959399+00:00",
+  "remaining": "Independent source/root exact plan+spec review; wait for other model work closure and original Comfy idle/freshR+full3GiB admission; owned actual catalog; closed result/root/owner/closure audit; separate completed helper descriptor/verifier/watchdog/model-generation/browser qualification.",
+  "ruff_check": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+      "check",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "All checks passed!\n"
+  },
+  "ruff_format_check": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+      "format",
+      "--check",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "2 files already formatted\n"
+  },
+  "runtime_python_receipt_fields": [
+    "path",
+    "resolved_path",
+    "stat",
+    "version"
+  ],
+  "runtime_source_files": 13,
+  "scope": "No actual catalog/unit/observer/model/Torch/native binary payload/network/git execution; no current or frozen owner/helper changes. CPU0/512MiB AS/30CPU tests/dry; Ruff CPU0/30CPU without smallAS.",
+  "selected_native_files": 9,
+  "selected_native_total_bytes": 312553103,
+  "source_pins": 27,
+  "status": "PASS_SOURCE_ONLY_NO_ACTUAL_EXECUTION",
+  "stdlib_tests": {
+    "argv": [
+      "taskset",
+      "-c",
+      "0",
+      "prlimit",
+      "--as=536870912",
+      "--cpu=30",
+      "--",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+      "-I",
+      "-B",
+      "-s",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/test_catalog.py"
+    ],
+    "exit_code": 0,
+    "stderr": "test_chunk_hash_counts_exact_bytes_and_checks_historical_sha (__main__.Tests.test_chunk_hash_counts_exact_bytes_and_checks_historical_sha) ... ok\ntest_dry_never_imports_runtime_or_opens_native (__main__.Tests.test_dry_never_imports_runtime_or_opens_native) ... ok\ntest_fake_runtime_records_all_five_versions_and_three_native_origins (__main__.Tests.test_fake_runtime_records_all_five_versions_and_three_native_origins) ... ok\ntest_hash_deadline_owner_refusal_and_midread_stat_change_refuse (__main__.Tests.test_hash_deadline_owner_refusal_and_midread_stat_change_refuse) ... ok\ntest_maps_observe_only_self_and_keep_stat_identity_without_binary_hash (__main__.Tests.test_maps_observe_only_self_and_keep_stat_identity_without_binary_hash) ... ok\ntest_owned_admission_refuses_before_native_hash_or_runtime_import (__main__.Tests.test_owned_admission_refuses_before_native_hash_or_runtime_import) ... ok\ntest_plan_metadata_is_exact_without_statting_or_reading_binary (__main__.Tests.test_plan_metadata_is_exact_without_statting_or_reading_binary) ... ok\ntest_preimport_origin_mismatch_refuses_without_runtime_import (__main__.Tests.test_preimport_origin_mismatch_refuses_without_runtime_import) ... ok\ntest_unchanged_owner_source_has_three_gib_cpu4_and_no_stop_call (__main__.Tests.test_unchanged_owner_source_has_three_gib_cpu4_and_no_stop_call) ... ok\ntest_wrong_plan_sha_precedes_owner_import_and_native_access (__main__.Tests.test_wrong_plan_sha_precedes_owner_import_and_native_access) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.069s\n\nOK\n",
+    "stdout": ""
+  },
+  "test_count": 10
+}

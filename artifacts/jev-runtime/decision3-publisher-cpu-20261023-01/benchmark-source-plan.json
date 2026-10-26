@@ -1,0 +1,917 @@
+{
+  "schema": "decision3-cpu-two-suite-source-plan-v1",
+  "status": "prepared_not_selected_not_executed",
+  "profile": "decision3-edge-gx10-publisher-cpu-batch1-20261023-v1",
+  "one_constructor": "actor.load_publisher_cpu",
+  "adapter": "benchmark_adapter.PublisherCPUAdapter",
+  "entry": "benchmark_adapter.run_unchanged_suites",
+  "public": {
+    "root": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven",
+    "repository": "https://github.com/fstandhartinger/jevbench",
+    "revision": "bb05a335bc809e61b20c0f745d25499a82b326fc",
+    "tasks": 231,
+    "entry": "scripts/run_jevbench_public.py:run_public"
+  },
+  "coherence": {
+    "root": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence",
+    "repository": "https://github.com/JevBench/jevbench",
+    "revision": "e18733694623aa93058e279c3534f8b8e2edefa3",
+    "entry": "jevbench.evaluate/jevbench.from_callable",
+    "suite": "jevbench-mini",
+    "concurrency": 1,
+    "requests": 1248,
+    "cases": 240,
+    "relations": 50,
+    "planned_tests": 1200,
+    "fresh_cache_required": true
+  },
+  "context_limit": 16384,
+  "context_policy": "reject_no_truncation",
+  "source_files": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts/run_jevbench_public.py",
+      "size": 14188,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 11034847,
+        "st_mtime_ns": 1791909186614485999,
+        "st_size": 14188
+      },
+      "sha256": "cb476d16a6e89ee5223b928e3a550af18de8534934ae5431563503db9f909bd1"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/configs/benchmarks/jevbench-public.json",
+      "size": 1681,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 11032989,
+        "st_mtime_ns": 1791909185610593108,
+        "st_size": 1681
+      },
+      "sha256": "206ca6745290cc4bc5c577d64addad7814381cdc6d336b5b7c09cb8992af8754"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/__init__.py",
+      "size": 433,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598377,
+        "st_mtime_ns": 1792647480381823745,
+        "st_size": 433
+      },
+      "sha256": "64c28dc1534502c429a3b67eee79ab7909fab995b7d116c9b089f0f3bb8652f7"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/__init__.py",
+      "size": 2264,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598379,
+        "st_mtime_ns": 1792647480382332655,
+        "st_size": 2264
+      },
+      "sha256": "ac77484db9bb2a7ece87a6176963fb28ceedb217a4daead4a8e542dfcf1e8693"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/base.py",
+      "size": 2894,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598380,
+        "st_mtime_ns": 1792647480382456846,
+        "st_size": 2894
+      },
+      "sha256": "fdddc42e4f71d774096f806c4ee844cc4c4b428385f01a017cb64153d7c089f4"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/certo_local.py",
+      "size": 3932,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598381,
+        "st_mtime_ns": 1792647480382456846,
+        "st_size": 3932
+      },
+      "sha256": "b112f302da1b3726590469bf2e925aa8374a5ccbeeeca81f0c155b7c8e4686d8"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/classifier_dev.py",
+      "size": 6419,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598382,
+        "st_mtime_ns": 1792647480382456846,
+        "st_size": 6419
+      },
+      "sha256": "547e2dda68990a49ced7bc373d9a5e494fd793c194d4bd4fe98ab00c2d8312de"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/djev.py",
+      "size": 8248,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598383,
+        "st_mtime_ns": 1792647480382456846,
+        "st_size": 8248
+      },
+      "sha256": "4e31997cb1a3f9308eed5d24a7ad59bf114688b55c9fbc725081ac24a2d350d3"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/gliner2_local.py",
+      "size": 5411,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598384,
+        "st_mtime_ns": 1792647480382456846,
+        "st_size": 5411
+      },
+      "sha256": "c7cdd480b941b6b39cf3e5deb761e585858bff9379662a5ea2bc09a06b9c553c"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/gradio_space.py",
+      "size": 6468,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598385,
+        "st_mtime_ns": 1792647480382456846,
+        "st_size": 6468
+      },
+      "sha256": "5c6748212c58fec6bb8728434aa0772de9e117faea4d651c839a3a6e65892c79"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/laya_local.py",
+      "size": 4287,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598386,
+        "st_mtime_ns": 1792647480382823740,
+        "st_size": 4287
+      },
+      "sha256": "7bb75b8e81fd423b0914a0c3cdf74108231ad5ce24f26f38714599f5cdcd7dec"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/local_openjev.py",
+      "size": 5478,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598387,
+        "st_mtime_ns": 1792647480382823740,
+        "st_size": 5478
+      },
+      "sha256": "9059a076e421c1aee58de9143e6fb4b8d2785d31aa7f33548466e784b78a1f93"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/needle_local.py",
+      "size": 7561,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598388,
+        "st_mtime_ns": 1792647480382823740,
+        "st_size": 7561
+      },
+      "sha256": "2e99720a58c050af8c052932091ca3746b3d085a17e0508b5615c360e09bd854"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/openai_compat.py",
+      "size": 7643,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598389,
+        "st_mtime_ns": 1792647480382823740,
+        "st_size": 7643
+      },
+      "sha256": "5f0450ef2db2743db05bdf756cd50db951654533e33cdfd23002709ca485c95e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/paw_local.py",
+      "size": 6452,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598390,
+        "st_mtime_ns": 1792647480382823740,
+        "st_size": 6452
+      },
+      "sha256": "c8743f8c4da7513bfb0120b402425b8fd1674460ff0374e12309b576b91f0156"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/qwen_flash_linear.py",
+      "size": 4881,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598391,
+        "st_mtime_ns": 1792647480382823740,
+        "st_size": 4881
+      },
+      "sha256": "3dd413ff4f4b8356a7a23a1714dc5d45f96351095ae767cfefc89a3d8ed027dd"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/remote_inproc.py",
+      "size": 2270,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598392,
+        "st_mtime_ns": 1792647480382823740,
+        "st_size": 2270
+      },
+      "sha256": "c2ef47cb5bfc8325aee56a3f8038e23b2a197fbbc18d5bcaa90185c4567d3d8c"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/reranker.py",
+      "size": 6762,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598393,
+        "st_mtime_ns": 1792647480382823740,
+        "st_size": 6762
+      },
+      "sha256": "25bddfd98b07a3b52d2f68d82e6df738d5ca630e92c84af877deebb81f2386e9"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/semif_direct.py",
+      "size": 4451,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598394,
+        "st_mtime_ns": 1792647480382823740,
+        "st_size": 4451
+      },
+      "sha256": "dbb46432e6be3f225f12a28363e44f717ec82fa9ada8dc4cf0fcf45ed2a2f17e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/sg_system_one.py",
+      "size": 3732,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598395,
+        "st_mtime_ns": 1792647480383823735,
+        "st_size": 3732
+      },
+      "sha256": "3688070e4aa93f11d87c69915b69271d71f51231b45885be4cf5c7fca329c516"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/smalljev_local.py",
+      "size": 6405,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598396,
+        "st_mtime_ns": 1792647480383823735,
+        "st_size": 6405
+      },
+      "sha256": "4a7d0b6cf85854d9fbc98fc4b738e7c03dcda0ef38cf7ccb4735791b61cff3f3"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/so1_decider.py",
+      "size": 4167,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598397,
+        "st_mtime_ns": 1792647480383823735,
+        "st_size": 4167
+      },
+      "sha256": "3e44ad0dad03ee78bf2a876a54b6e0b756eec2100d671b08cf68ce3528db7913"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/systemone_list.py",
+      "size": 4585,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598398,
+        "st_mtime_ns": 1792647480383823735,
+        "st_size": 4585
+      },
+      "sha256": "9837fc6d0ec56acbffb5ebbd94c98a165c7add55be0294ac6c9fa54818418740"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/typesafe.py",
+      "size": 5573,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598399,
+        "st_mtime_ns": 1792647480383823735,
+        "st_size": 5573
+      },
+      "sha256": "780f879416479b645ee519bb85d0cce722d0df7aa2b41a029de92b76f2593e51"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/adapters/verdict_local.py",
+      "size": 5686,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598400,
+        "st_mtime_ns": 1792647480383823735,
+        "st_size": 5686
+      },
+      "sha256": "2ad82354224687f434042a0bdbc1f0d713ea73f0d76040912441c0dc5a66e3e7"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/budget.py",
+      "size": 2936,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598401,
+        "st_mtime_ns": 1792647480383823735,
+        "st_size": 2936
+      },
+      "sha256": "f0a08b4884b4ff6f43e679c59b3f0bca8044bdb8e7b6eb5c16ff407e75b0bb15"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/cli.py",
+      "size": 10589,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598402,
+        "st_mtime_ns": 1792647480383823735,
+        "st_size": 10589
+      },
+      "sha256": "303c5de571c8532cd7493af0db4ffabaf2ebd3449d9bb1233535ba528892ffe0"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/composite.py",
+      "size": 2647,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598403,
+        "st_mtime_ns": 1792647480383823735,
+        "st_size": 2647
+      },
+      "sha256": "13be863cbbf637597c43129f08f7ba1a41ea93797fd4ac9fe8dbe3d2d978ba7d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/composite_v12.py",
+      "size": 4949,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598404,
+        "st_mtime_ns": 1792647480384823730,
+        "st_size": 4949
+      },
+      "sha256": "2c06af8f4c1ea1ab91756de42677daddd8a4d47f11e62c9b3fab06e520ff93cc"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/composite_v13.py",
+      "size": 4307,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598405,
+        "st_mtime_ns": 1792647480384823730,
+        "st_size": 4307
+      },
+      "sha256": "66562dffb9d6f70bcafe5a0d7a823e0f48195aa6cdfb12dfc7d32f064b433d33"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/composite_v14.py",
+      "size": 2782,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598406,
+        "st_mtime_ns": 1792647480384823730,
+        "st_size": 2782
+      },
+      "sha256": "33177d06eab9f78667972ec3b20997344f70a78e16b05326453a2c31200cac79"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/metrics.py",
+      "size": 5604,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598407,
+        "st_mtime_ns": 1792647480384823730,
+        "st_size": 5604
+      },
+      "sha256": "4038c8423ad1cf28601afb6babe777b71f08e379b9ca125b09b52c0ac7d60515"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/runner.py",
+      "size": 5287,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598408,
+        "st_mtime_ns": 1792647480384823730,
+        "st_size": 5287
+      },
+      "sha256": "15dd3ab9b3c111f3f4f47b9d9b657fa87d0f0d52d208c79c6ecf64cbf88cba7d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/scoring.py",
+      "size": 5743,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598409,
+        "st_mtime_ns": 1792647480384823730,
+        "st_size": 5743
+      },
+      "sha256": "6aa17d212ea20a3eeb6876149367842e8462c11dcb54d73df062fb406368331e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/summarize.py",
+      "size": 3940,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598410,
+        "st_mtime_ns": 1792647480384823730,
+        "st_size": 3940
+      },
+      "sha256": "aa5f24da407d004cd80bad1cd957b6987aba152591084c096d1de51dd9775cbe"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/tasks.py",
+      "size": 4339,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598411,
+        "st_mtime_ns": 1792647480384823730,
+        "st_size": 4339
+      },
+      "sha256": "b9c2f8ba9a7301519656d79d47c31b8ab0542a5545498ce3b339d5e93b976812"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/__init__.py",
+      "size": 1206,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598264,
+        "st_mtime_ns": 1792647459665182734,
+        "st_size": 1206
+      },
+      "sha256": "fe1fd7ad99433e9e03a6d35c17d48125680de86547e5f5d85a3590de440308d9"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/__main__.py",
+      "size": 38,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598265,
+        "st_mtime_ns": 1792647459665234318,
+        "st_size": 38
+      },
+      "sha256": "441f93c642719ef8128e231a444c426788f09315f2bd20d4d5dffa58d317f51c"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/api.py",
+      "size": 16571,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598266,
+        "st_mtime_ns": 1792647459665234318,
+        "st_size": 16571
+      },
+      "sha256": "06cc4c4a9badc87c2f81ca54d9b8cd0639faeca217f3d36c5ae3918571589cf0"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/backends.py",
+      "size": 18073,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598267,
+        "st_mtime_ns": 1792647459665234318,
+        "st_size": 18073
+      },
+      "sha256": "e6cfcb9a0a072d0f2dba103983259865a0663f1ace51f8a332bfc51c40d79b2b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/cli.py",
+      "size": 23889,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598268,
+        "st_mtime_ns": 1792647459665234318,
+        "st_size": 23889
+      },
+      "sha256": "ac9c8d3b76ad2c0f07d2303f01a5008e44d6ce18308e8c82e1e9b88eacb71d4a"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/__init__.py",
+      "size": 66,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598270,
+        "st_mtime_ns": 1792647459665234318,
+        "st_size": 66
+      },
+      "sha256": "bd87beb8648d9e07def86cd6f418df74693fddb18e00ab0f5acc4e2bea9fdd78"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/__init__.py",
+      "size": 763,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598272,
+        "st_mtime_ns": 1792647459665777083,
+        "st_size": 763
+      },
+      "sha256": "5c75b19e97e7a8a9630ba83451d5b23b478d5d098d1ffbc454056876d05143fa"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/_rules.py",
+      "size": 825,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598273,
+        "st_mtime_ns": 1792647459665825195,
+        "st_size": 825
+      },
+      "sha256": "5af14c7032a2ce75c81e9a8a3552c58674c6c6147f40359f8cd0866031abce7c"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/agent_logs.py",
+      "size": 9134,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598274,
+        "st_mtime_ns": 1792647459665825195,
+        "st_size": 9134
+      },
+      "sha256": "65d50b4212b6b77e3b5112ee0c74005ae9d06f379660c085f988cfcfa1e8a60f"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/content_moderation.py",
+      "size": 9267,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598275,
+        "st_mtime_ns": 1792647459665825195,
+        "st_size": 9267
+      },
+      "sha256": "28500a762877b4d0746ff02d2b35109dc6cb799fb6fd11bc2bb69be12ad29d39"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/customer_support.py",
+      "size": 11116,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598276,
+        "st_mtime_ns": 1792647459665825195,
+        "st_size": 11116
+      },
+      "sha256": "3a319f9de4300f79ef5bbba82e434337c1faea665e013b0f72a5e0b90fa0c37e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/ecommerce_returns.py",
+      "size": 8695,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598277,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 8695
+      },
+      "sha256": "b70d79f3cb7179d06416154128e28f823f7c459c0cb9072fb20cb83699dd4ed4"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/education_grading.py",
+      "size": 10844,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598278,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 10844
+      },
+      "sha256": "b704d9cb0743eadfb45340224076706784f53b199c7b9f341d1bf5089aa4d69c"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/finance_ops.py",
+      "size": 12799,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598279,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 12799
+      },
+      "sha256": "90960ca22cfa678b6186da236c1c5696153f2ee74953a6752a113bec01349215"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/healthcare_admin.py",
+      "size": 13083,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598280,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 13083
+      },
+      "sha256": "bd78722df0420d01e87ef58f1ee8b51e0598fc50827278e321c5763c2757bb84"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/hr_recruiting.py",
+      "size": 11055,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598281,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 11055
+      },
+      "sha256": "46ff897991adf49575c59b112bb22c2284f24d7c666095ce260e3bbdf48f3df4"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/it_incidents.py",
+      "size": 10274,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598282,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 10274
+      },
+      "sha256": "877b64330d8887f516334bc45d2e51bdb06ee91d18f933f69512d6616b27b541"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/legal_contracts.py",
+      "size": 11821,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598283,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 11821
+      },
+      "sha256": "30053b327c09b8085c53fda32d84d6b9c2dcc974328662ef86835186e4b71155"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/logistics.py",
+      "size": 9416,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598284,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 9416
+      },
+      "sha256": "71da79f31fd12fe8f0c57f08d71491af7ab9289ad3d70ccfa792b58c218e22ff"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/domains/security_ops.py",
+      "size": 12702,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598285,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 12702
+      },
+      "sha256": "fef39ceb121e22cec56baa387bc3604904e569d554240e44c3a84985c72531de"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/freeze.py",
+      "size": 7754,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598286,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 7754
+      },
+      "sha256": "4790d4c65c16169132d35719eef09e57cdb84b0dfce3f1ec96f2b9840ed2dfe9"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/sample.py",
+      "size": 7724,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598287,
+        "st_mtime_ns": 1792647459665927658,
+        "st_size": 7724
+      },
+      "sha256": "4a025cd0a4b4eda8681fa632f7c364dd2f6bbad9124c481d90ad34df17d93bd1"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/spec.py",
+      "size": 5410,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598288,
+        "st_mtime_ns": 1792647459666927653,
+        "st_size": 5410
+      },
+      "sha256": "569d8c2cd7cab241799121cc85fd6a2952c0126e67837eae3ffc2bc516a572c4"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/datagen/text.py",
+      "size": 8919,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598289,
+        "st_mtime_ns": 1792647459666927653,
+        "st_size": 8919
+      },
+      "sha256": "4e56af937f6bbd20ce17802a0402edb50d9a7e291a6586d86b81e26c4c3728c0"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/engine.py",
+      "size": 15106,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598290,
+        "st_mtime_ns": 1792647459666927653,
+        "st_size": 15106
+      },
+      "sha256": "d2f3d773eac0165ae178c3d9f8e543256679b8336edfa28a1a45b3a97c30924a"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/plan.py",
+      "size": 13454,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598291,
+        "st_mtime_ns": 1792647459666927653,
+        "st_size": 13454
+      },
+      "sha256": "5d3855b01e88dde2cdb691d85d7683c5e1f8fae4ec3e3b447f1102ca2446f078"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/__init__.py",
+      "size": 778,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598293,
+        "st_mtime_ns": 1792647459666927653,
+        "st_size": 778
+      },
+      "sha256": "186458fbf37148d295c814ae20077c235682b2690f9bded84e8fe8b1422eb135"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/_shared.py",
+      "size": 4643,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598294,
+        "st_mtime_ns": 1792647459667577554,
+        "st_size": 4643
+      },
+      "sha256": "128f5c67761f661a6951028b5fbfdc61f29cc75cdf1dfcaaadd29b5630773c06"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/base.py",
+      "size": 5141,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598295,
+        "st_mtime_ns": 1792647459667577554,
+        "st_size": 5141
+      },
+      "sha256": "832ebe8323d6f2d9fc198e4a75523a8042b755eef9e7a7431f6f81b8e2a87540"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/bat.py",
+      "size": 5984,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598296,
+        "st_mtime_ns": 1792647459667577554,
+        "st_size": 5984
+      },
+      "sha256": "c21f0925296abb60d2cb8ac3069a1a82488291ebf7028a86ceee8c8c2f19fd25"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/cho.py",
+      "size": 5188,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598297,
+        "st_mtime_ns": 1792647459667577554,
+        "st_size": 5188
+      },
+      "sha256": "92a49a99d6ad045d210509448eb8f1e9fedcbb77f87a3c1a46e8a86b47745627"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/diagnostics.py",
+      "size": 4916,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598298,
+        "st_mtime_ns": 1792647459667577554,
+        "st_size": 4916
+      },
+      "sha256": "6745b804d05548ca28f2c1963eaaa4449a6859025b5de0de34b8c09bb1c49e0b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/log.py",
+      "size": 10499,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598299,
+        "st_mtime_ns": 1792647459667577554,
+        "st_size": 10499
+      },
+      "sha256": "881bc4fbf34a39cc4b22124da808df0c7de2b1cc8f51a65542ca89c1f61dd635"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/mea.py",
+      "size": 26761,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598300,
+        "st_mtime_ns": 1792647459667577554,
+        "st_size": 26761
+      },
+      "sha256": "05771f625665e79ba571e5b9e0bd6a7e8c1af8fb3c9c963b301ebc9e6cb49388"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/rep.py",
+      "size": 19031,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598301,
+        "st_mtime_ns": 1792647459667927648,
+        "st_size": 19031
+      },
+      "sha256": "589105c9c59a83541877566bd878a8462d8f682579a04065f4dfc743b470b942"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/render.py",
+      "size": 10783,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598302,
+        "st_mtime_ns": 1792647459667927648,
+        "st_size": 10783
+      },
+      "sha256": "b457e5912974e819626b7d0fd55018965fe6a300761519ff210426a7da77d62e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/results.py",
+      "size": 9552,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598303,
+        "st_mtime_ns": 1792647459667927648,
+        "st_size": 9552
+      },
+      "sha256": "ca37bb203f1fac5e99d5ba21ceb6cf6a676f9a008aaa5463470887b4657c8a74"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/rewrite.py",
+      "size": 13441,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598304,
+        "st_mtime_ns": 1792647459667927648,
+        "st_size": 13441
+      },
+      "sha256": "99b5e79d136e4f7fc69b7ab376ded4e556e2c6faa4672823dee69f861304bde4"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/schema.py",
+      "size": 6845,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598305,
+        "st_mtime_ns": 1792647459667927648,
+        "st_size": 6845
+      },
+      "sha256": "d29b41cc0dd5a6b02cb0bf029f314e9021aef3bed127168efd12bf1b0563805a"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/score.py",
+      "size": 10611,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598306,
+        "st_mtime_ns": 1792647459667927648,
+        "st_size": 10611
+      },
+      "sha256": "74ad886d4f1e249b80096575f0e6b7674630e1331057926a2806f92d75100e07"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/suites/__init__.py",
+      "size": 10107,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598308,
+        "st_mtime_ns": 1792647459667927648,
+        "st_size": 10107
+      },
+      "sha256": "2a0ba6448fa60d38f5fc36e9b8f3931faeb96566bf47191acf0b6016354c6a32"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/taxonomy.py",
+      "size": 19646,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598322,
+        "st_mtime_ns": 1792647459683927568,
+        "st_size": 19646
+      },
+      "sha256": "b2ec01efc881c14a6c6d06d32c2f20dab58754651f1061bc31e1e758ba0487e8"
+    }
+  ],
+  "existing_dataset_metadata": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/suites/jevbench-mini/manifest.json",
+      "size": 1068,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598320,
+        "st_mtime_ns": 1792647459681927578,
+        "st_size": 1068
+      },
+      "sha256": "d2aa52e7a3210bd6c5fd86e8266791b6f398f840ef8e30bfeec6bcf6f9e59fd9"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jevbench/20261022-local-score-01/upstream/heaven/datasets/manifest.json",
+      "size": 2891,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12598339,
+        "st_mtime_ns": 1792647480371823795,
+        "st_size": 2891
+      },
+      "sha256": "0983ad3e73a34e7c55b02b5d09ed983aeccabef0253bb31be43a2e6230d58f7b"
+    }
+  ],
+  "benchmark_contents_copied": false,
+  "benchmark_gold_in_actor_or_adapter": false,
+  "next_selection_requires": "complete source/data identity checks, fresh reviewed worker/spec/deadline, exact same generic owner limits and observer, one actual runtime load, actual closure and peak receipt"
+}

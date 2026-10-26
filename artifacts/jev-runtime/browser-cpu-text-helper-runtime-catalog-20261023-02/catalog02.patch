@@ -1,0 +1,378 @@
+--- /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/catalog.py
++++ /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py
+@@ -19,11 +19,25 @@
+ 
+ HERE = Path(__file__).absolute().parent
+ ROOT = HERE.parents[2]
+-OWNER = ROOT / "artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py"
+-OWNER_SHA = "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e"
+-UNIT = "jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service"
+-OWNER_PROFILE = "llama-cpp-cpu4-3g-long-command-owned-v1"
+-PROFILE = "owned-helper-runtime-native-catalog-v1"
++OWNER = ROOT / "artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py"
++OWNER_SHA = "882ba1579b17b31dca0ee01fe2e89f46b1bc8c17b7635a0c4aa05042fc847ac0"
++UNIT = "jev-d3-llama-cpp-cpu4-20261023-03.service"
++OWNER_PROFILE = "llama-cpp-cpu4-command-owned-v1"
++PROFILE = "owned-helper-runtime-native-catalog-2g-v1"
++OWNER_POLICY = {
++    "unit": "jev-d3-llama-cpp-cpu4-20261023-03.service",
++    "profile": "llama-cpp-cpu4-command-owned-v1",
++    "memory_max_bytes": 2147483648,
++    "swap_max_bytes": 0,
++    "reserve_bytes": 26119172916,
++    "initial_available_bytes": 28266656564,
++    "runtime_available_bytes": 26119172916,
++    "cpu_affinity": [16, 17, 18, 19],
++    "cpu_quota_percent": 400,
++    "owner_runtime_seconds": 7200,
++    "same_unit_runtime_actor_only": True,
++    "fresh_root_admission_required": True,
++}
+ PYTHON = Path("/home/albert_hsieh/ComfyUI/.venv/bin/python")
+ TORCH = PYTHON.parent.parent / "lib/python3.13/site-packages/torch"
+ OVERLAY = ROOT / "artifacts/jev-runtime/overlay"
+@@ -149,9 +163,10 @@
+         "Fixed catalog/source policy",
+     )
+     need(
+-        plan["owner_source"] == {"path": str(OWNER), "sha256": OWNER_SHA, "size_bytes": 40319},
+-        "Exact unchanged owner05 source",
+-    )
++        plan["owner_source"] == {"path": str(OWNER), "sha256": OWNER_SHA, "size_bytes": 39721},
++        "Exact unchanged owner03 source",
++    )
++    need(plan["owner_policy"] == OWNER_POLICY, "Exact owner03 full2GiB resource policy")
+     need(
+         set(plan["module_origins"]) == set(MODULES) and set(plan["versions"]) == set(MODULES),
+         "Exactly selected five runtime modules",
+@@ -200,14 +215,14 @@
+ 
+ def load_guard(plan):
+     blob = check_ref(plan["owner_source"])
+-    module = types.ModuleType("_catalog_unchanged_owner05")
++    module = types.ModuleType("_catalog_unchanged_owner03")
+     module.__file__ = str(OWNER)
+     exec(compile(blob, str(OWNER), "exec"), module.__dict__)
+     need(
+         module.UNIT == UNIT
+         and module.PROFILE == OWNER_PROFILE
+-        and module.fixed_memory() == 3221225472,
+-        "Unchanged owner05 resource profile",
++        and module.CPU_CORES == frozenset(OWNER_POLICY["cpu_affinity"]),
++        "Unchanged owner03 resource profile",
+     )
+     return module
+ 
+@@ -221,7 +236,7 @@
+             {
+                 "nonce": os.environ.get("JEV_COMMAND_NONCE"),
+                 "boot_id": self.boot,
+-                "runtime_seconds": 10800,
++                "runtime_seconds": 7200,
+             },
+             self.owner,
+         )
+@@ -270,7 +285,12 @@
+         self.guard.main_affinity(self.owner, os.getpid())
+         resources = self.guard.properties(self.owner, self.selected, main["pid"])
+         host = self.guard.host(self.observer, self.boot, self.total, initial=initial)
+-        need(host["reserve_bytes"] == 26119172916, "Same original host reserve")
++        need(
++            host["reserve_bytes"] == OWNER_POLICY["reserve_bytes"]
++            and host["required_available_bytes"]
++            == OWNER_POLICY["initial_available_bytes" if initial else "runtime_available_bytes"],
++            "Same original reserve and full selected2GiB initial floor",
++        )
+         self.total = host["observation"]["mem_total_bytes"]
+         self.last = time.monotonic()
+         return {"identity": me, "unit": row, "resources": resources, "host": host}
+@@ -378,7 +398,7 @@
+     initial = admission.check(initial=True)
+     out = ordinary(args.output, output=True)
+     need(
+-        out.is_relative_to(OWNER.parent) and not out.exists(), "Fresh owner05 child catalog output"
++        out.is_relative_to(OWNER.parent) and not out.exists(), "Fresh owner03 child catalog output"
+     )
+     out.mkdir(mode=0o700)
+     state = {
+--- /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/test_catalog.py
++++ /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/test_catalog.py
+@@ -112,11 +112,15 @@
+ 
+     def test_owned_admission_refuses_before_native_hash_or_runtime_import(self):
+         plan = self.plan()
+-        plan["interpreter"] = self.row(c.PYTHON.resolve())
++        fake_python = Path("/FAKE/source-only/python")
++        plan["logical_interpreter"] = str(fake_python)
++        plan["interpreter"] = {"path": str(fake_python)}
+         with (
+             patch.object(c, "load_plan", return_value=plan),
+             patch.dict(os.environ, c.ENV),
+-            patch.object(sys, "executable", str(c.PYTHON)),
++            patch.object(c, "PYTHON", fake_python),
++            patch.object(sys, "executable", str(fake_python)),
++            patch.object(c, "check_stat", side_effect=lambda _row: None),
+             patch.object(c, "load_guard", return_value=types.SimpleNamespace()),
+             patch.object(
+                 c,
+@@ -203,9 +207,13 @@
+         observed.assert_called_once_with("/FAKE/libx.so")
+         self.assertEqual(row, [{"path": "/FAKE/libx.so", "stat": {"FAKE": "stat only"}}])
+ 
+-    def test_unchanged_owner_source_has_three_gib_cpu4_and_no_stop_call(self):
++    def test_unchanged_owner_source_has_two_gib_cpu4_and_no_stop_call(self):
+         guard = c.load_guard(self.plan())
+-        self.assertEqual(guard.fixed_memory(), 3221225472)
++        selected = guard.selection(
++            {"nonce": "FAKE", "boot_id": "FAKE", "runtime_seconds": 7200},
++            types.SimpleNamespace(Selection=lambda *args: args),
++        )
++        self.assertEqual(selected, (c.UNIT, "FAKE", "FAKE", 2147483648, 7200, 3))
+         self.assertEqual(guard.UNIT, c.UNIT)
+         self.assertEqual(guard.CPU_CORES, {16, 17, 18, 19})
+         tree = ast.parse((HERE / "catalog.py").read_bytes())
+@@ -217,6 +225,58 @@
+                 )
+         self.assertFalse(set(c.MODULES).intersection(sys.modules))
+ 
++    def test_plan_rejects_adjacent_cap_incomplete_floor_and_mixed_owner(self):
++        for mutate in (
++            lambda p: p["owner_policy"].update(memory_max_bytes=3 * 1024**3),
++            lambda p: p["owner_policy"].update(initial_available_bytes=26119172916 + 1024**3),
++            lambda p: p["owner_policy"].update(initial_available_bytes=26119172916 + 3 * 1024**3),
++            lambda p: p["owner_policy"].update(runtime_available_bytes=26119172915),
++            lambda p: p["owner_policy"].update(owner_runtime_seconds=10800),
++            lambda p: p["owner_policy"].update(profile="llama-cpp-cpu4-3g-long-command-owned-v1"),
++            lambda p: p["owner_policy"].update(
++                unit="jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service"
++            ),
++            lambda p: p["owner_source"].update(
++                sha256="81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e"
++            ),
++        ):
++            plan = self.plan()
++            mutate(plan)
++            with self.assertRaises(ValueError):
++                self.selected(plan)
++
++    def test_exact_owner03_fake_host_requires_entire_two_gib_initial_headroom(self):
++        guard = c.load_guard(self.plan())
++        reserve = 26119172916
++        row = {
++            "boot_id": "FAKE-boot",
++            "mem_total_bytes": reserve * 5 - 4,
++            "mem_available_bytes": reserve + 2 * 1024**3,
++            "comfy_state": "http_idle",
++            "comfy_running": 0,
++            "comfy_pending": 0,
++        }
++        observer = types.SimpleNamespace(observe=lambda _boot: row.copy())
++        admitted = guard.host(observer, "FAKE-boot", initial=True)
++        self.assertEqual(admitted["required_available_bytes"], 28266656564)
++        for available in (28266656563, reserve + 1024**3, reserve):
++            row["mem_available_bytes"] = available
++            with self.assertRaisesRegex(ValueError, "reserve"):
++                guard.host(observer, "FAKE-boot", initial=True)
++        row["mem_available_bytes"] = reserve
++        self.assertEqual(guard.host(observer, "FAKE-boot")["required_available_bytes"], reserve)
++        row["mem_available_bytes"] = reserve - 1
++        with self.assertRaisesRegex(ValueError, "reserve"):
++            guard.host(observer, "FAKE-boot")
++
++    def test_mixed_loaded_owner_identity_refuses_without_host_or_native_access(self):
++        fake = b'UNIT="jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service"\nPROFILE="llama-cpp-cpu4-3g-long-command-owned-v1"\nCPU_CORES=frozenset({16,17,18,19})\n'
++        with (
++            patch.object(c, "check_ref", return_value=fake),
++            self.assertRaisesRegex(ValueError, "owner03 resource profile"),
++        ):
++            c.load_guard(self.plan())
++
+ 
+ if __name__ == "__main__":
+     unittest.main(verbosity=2)
+--- /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/plan.json
++++ /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json
+@@ -1,76 +1,91 @@
+ {
+-  "profile": "owned-helper-runtime-native-catalog-v1",
+-  "actor_sha256": "7d0d837b451089a9c3d3974bd5a24dcdb51b59247d2f7be1d10316beb6109610",
++  "profile": "owned-helper-runtime-native-catalog-2g-v1",
++  "actor_sha256": "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a",
+   "owner_source": {
+-    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+-    "size_bytes": 40319,
+-    "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e"
++    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py",
++    "size_bytes": 39721,
++    "sha256": "882ba1579b17b31dca0ee01fe2e89f46b1bc8c17b7635a0c4aa05042fc847ac0"
+   },
+   "sources": [
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py",
++      "size_bytes": 20369,
++      "sha256": "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/source-freeze.json",
++      "size_bytes": 4405,
++      "sha256": "835d640dea20a2ddb6a98eb802c54e911ead93822d90a7bbff5cab49e9199326"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/runtime-selection.pending.json",
++      "size_bytes": 6582,
++      "sha256": "b5e0c09b60b2de3dadfb48d98febc8e61c236bb9e61a0d03ae9b126a26223e26"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
++      "size_bytes": 31089,
++      "sha256": "a312dba1fabd173e1ce502f6896431a7cc3d6b4979a7eae49c2b1807d343b0fa"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/frozen-manifest.json",
++      "size_bytes": 1776,
++      "sha256": "b171c7cece01d96f7634cb75f08b8ba72c1fe94fb52043de91d6c49c44193d46"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py",
++      "size_bytes": 4918,
++      "sha256": "38f4e346c47c4091b22f396e38aca583f33729bd357c04a3e5abeb329cf2b62d"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/frozen-manifest.json",
++      "size_bytes": 1494,
++      "sha256": "31b0d40c57d533aa97fa0cb31586607a8d72f8a9ab4c58a9c65bff969355a67b"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/package-receipt.json",
++      "size_bytes": 7663,
++      "sha256": "fce23ca9ae2e3aa00dc5e412c9c9a06eed3ee53083447cadbeb7a0d7e471638e"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/support/runtime348.json",
++      "size_bytes": 122151,
++      "sha256": "702f7ff3cf194d1db56f86474e48ffc88cdfa8c9c6d3930467e3c12ea6492016"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/helper-native-runtime/identity.json",
++      "size_bytes": 239,
++      "sha256": "d962fb5b65096ab31618efb43b56accf919420952742ddc129cf9bd035696f99"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
++      "size_bytes": 21002,
++      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
++      "size_bytes": 38483,
++      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
++      "size_bytes": 2196,
++      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727"
++    },
+     {
+       "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/catalog.py",
+       "size_bytes": 19543,
+       "sha256": "7d0d837b451089a9c3d3974bd5a24dcdb51b59247d2f7be1d10316beb6109610"
+     },
+     {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/source-freeze-02.json",
+-      "size_bytes": 2351,
+-      "sha256": "b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/runtime-selection.pending.json",
+-      "size_bytes": 6582,
+-      "sha256": "b5e0c09b60b2de3dadfb48d98febc8e61c236bb9e61a0d03ae9b126a26223e26"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
+-      "size_bytes": 31089,
+-      "sha256": "a312dba1fabd173e1ce502f6896431a7cc3d6b4979a7eae49c2b1807d343b0fa"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/frozen-manifest.json",
+-      "size_bytes": 1776,
+-      "sha256": "b171c7cece01d96f7634cb75f08b8ba72c1fe94fb52043de91d6c49c44193d46"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py",
+-      "size_bytes": 4918,
+-      "sha256": "38f4e346c47c4091b22f396e38aca583f33729bd357c04a3e5abeb329cf2b62d"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/frozen-manifest.json",
+-      "size_bytes": 1494,
+-      "sha256": "31b0d40c57d533aa97fa0cb31586607a8d72f8a9ab4c58a9c65bff969355a67b"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/package-receipt.json",
+-      "size_bytes": 7663,
+-      "sha256": "fce23ca9ae2e3aa00dc5e412c9c9a06eed3ee53083447cadbeb7a0d7e471638e"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/support/runtime348.json",
+-      "size_bytes": 122151,
+-      "sha256": "702f7ff3cf194d1db56f86474e48ffc88cdfa8c9c6d3930467e3c12ea6492016"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-03/helper-native-runtime/identity.json",
+-      "size_bytes": 239,
+-      "sha256": "d962fb5b65096ab31618efb43b56accf919420952742ddc129cf9bd035696f99"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+-      "size_bytes": 21002,
+-      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+-      "size_bytes": 38483,
+-      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+-      "size_bytes": 2196,
+-      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727"
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/freeze.json",
++      "size_bytes": 2903,
++      "sha256": "e8ed396d808458ef4f74d79857a1cbdcd8ee7dcf204b40e4803123228ae24915"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/independent-source-review.json",
++      "size_bytes": 16701,
++      "sha256": "a313b4a4085f6863246fd14294cb17e5fa043a34bfcae846bea930e15185b6cf"
+     }
+   ],
+   "pending_descriptor": {
+@@ -379,14 +394,14 @@
+       "sha256_from_download": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe"
+     }
+   ],
+-  "scope": "Candidate only. Future original owner05 must fresh-admit R+full3GiB; no model/generation/browser20/fullDSO closure qualification.",
++  "scope": "Distinct2GiB source candidate only. Future original owner03 must fresh-admit R+full2GiB. No prior3GiB performance/quality transfer; no model/generation/browser20/fullDSO closure qualification.",
+   "owner_policy": {
+-    "unit": "jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+-    "profile": "llama-cpp-cpu4-3g-long-command-owned-v1",
+-    "memory_max_bytes": 3221225472,
++    "unit": "jev-d3-llama-cpp-cpu4-20261023-03.service",
++    "profile": "llama-cpp-cpu4-command-owned-v1",
++    "memory_max_bytes": 2147483648,
+     "swap_max_bytes": 0,
+     "reserve_bytes": 26119172916,
+-    "initial_available_bytes": 29340398388,
++    "initial_available_bytes": 28266656564,
+     "runtime_available_bytes": 26119172916,
+     "cpu_affinity": [
+       16,
+@@ -395,7 +410,7 @@
+       19
+     ],
+     "cpu_quota_percent": 400,
+-    "owner_runtime_seconds": 10800,
++    "owner_runtime_seconds": 7200,
+     "same_unit_runtime_actor_only": true,
+     "fresh_root_admission_required": true
+   }

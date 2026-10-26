@@ -1,0 +1,149 @@
+{
+  "profile": "decision3-external-unit-terminal-boundary-v1",
+  "selection": {
+    "unit": "jev-d3-edge-public6-20261022-02.service",
+    "nonce": "jev-d3-boundary-2a2d244f75de18aaba40fb56dde9b242",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "memory_max_bytes": 85899345920,
+    "runtime_seconds": 7200,
+    "stop_seconds": 10
+  },
+  "invocation_id": "989f75c46b0f4d26ae64403fd0a42f5e",
+  "actor": {
+    "pid": 106915,
+    "start_ticks": 1623634,
+    "pgid": 106915,
+    "sid": 106915,
+    "uid": 1001,
+    "state": "S",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-edge-public6-20261022-02.service"
+  },
+  "tracked_cohort": [
+    {
+      "pid": 106915,
+      "start_ticks": 1623634,
+      "pgid": 106915,
+      "sid": 106915,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-edge-public6-20261022-02.service"
+    },
+    {
+      "pid": 106965,
+      "start_ticks": 1624209,
+      "pgid": 106965,
+      "sid": 106965,
+      "uid": 1001,
+      "state": "R",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-edge-public6-20261022-02.service"
+    }
+  ],
+  "before_stop": {
+    "Type": "exec",
+    "Restart": "no",
+    "TimeoutStopUSec": "10s",
+    "RuntimeMaxUSec": "2h",
+    "RemainAfterExit": "yes",
+    "MainPID": "106915",
+    "Result": "success",
+    "OOMPolicy": "kill",
+    "ExecMainPID": "106915",
+    "ExecMainCode": "0",
+    "ExecMainStatus": "0",
+    "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-edge-public6-20261022-02.service",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "85899345920",
+    "MemorySwapMax": "0",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-boundary-2a2d244f75de18aaba40fb56dde9b242",
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "SubState": "running",
+    "InvocationID": "989f75c46b0f4d26ae64403fd0a42f5e"
+  },
+  "closure_mode": "authenticated_stop",
+  "stop_required": true,
+  "already_terminal_identity_samples": [],
+  "already_terminal_identity_sandwich_verified": false,
+  "stop_result": "",
+  "after_stop": {
+    "Type": "exec",
+    "Restart": "no",
+    "TimeoutStopUSec": "10s",
+    "RuntimeMaxUSec": "2h",
+    "RemainAfterExit": "yes",
+    "MainPID": "0",
+    "Result": "success",
+    "OOMPolicy": "kill",
+    "ExecMainPID": "106915",
+    "ExecMainCode": "2",
+    "ExecMainStatus": "15",
+    "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-edge-public6-20261022-02.service",
+    "Delegate": "no",
+    "MemoryAccounting": "yes",
+    "MemoryHigh": "infinity",
+    "MemoryMax": "85899345920",
+    "MemorySwapMax": "0",
+    "KillMode": "control-group",
+    "KillSignal": "15",
+    "FinalKillSignal": "9",
+    "SendSIGKILL": "yes",
+    "Description": "jev-d3-boundary-2a2d244f75de18aaba40fb56dde9b242",
+    "LoadState": "loaded",
+    "ActiveState": "inactive",
+    "SubState": "dead",
+    "InvocationID": "989f75c46b0f4d26ae64403fd0a42f5e"
+  },
+  "primary_error": {
+    "type": "ObservationError",
+    "message": "Selected execution refused; see bounded stage evidence",
+    "observation_evidence_sha256": "905cd3d76e4592881a5dba37d247413326ceca964332c55a8a52ca7781411b1e",
+    "observation_evidence_bytes": 1418
+  },
+  "closure_errors": [],
+  "post_stop_terminal_verified": true,
+  "cgroup_absent": false,
+  "two_process_scans": [
+    {
+      "matches": [
+        {
+          "pid": 106965,
+          "start_ticks": 1624209,
+          "pgid": 106965,
+          "sid": 106965,
+          "uid": 1001,
+          "state": "Z",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-edge-public6-20261022-02.service"
+        }
+      ],
+      "unknown": []
+    },
+    {
+      "matches": [
+        {
+          "pid": 106965,
+          "start_ticks": 1624209,
+          "pgid": 106965,
+          "sid": 106965,
+          "uid": 1001,
+          "state": "Z",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-edge-public6-20261022-02.service"
+        }
+      ],
+      "unknown": []
+    }
+  ],
+  "sources_unchanged": true,
+  "whole_unit_exit_confirmed": false,
+  "observed_cgroup_cohort_exit_confirmed": false,
+  "no_escape_enforced": false,
+  "whole_tree_exit_confirmed": false,
+  "continuation_authorized": false,
+  "model_qualified": false,
+  "scope": "Authenticated selected unit and observed cgroup cohort only. The audited fork/setsid/empty-env case is covered; explicit delegated cgroup migration or user-manager requests are not prevented."
+}

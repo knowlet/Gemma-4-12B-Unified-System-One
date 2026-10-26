@@ -162,7 +162,104 @@ class ResourceJournal:
             return row
 
 
-def metadata_plan(adapter, output, upstream, prompt_format):
+def action_settings(
+    action_profile="standard",
+    text_endpoint=None,
+    text_model=None,
+    text_api_key_env="S1_TEXT_API_KEY",
+):
+    """Validate an explicit local shared helper before any model construction."""
+    import re
+    from urllib.parse import urlsplit
+
+    from s1.jev_action_profiles import ACTION_PROFILES, DEFAULT_ACTION_PROFILE
+
+    require(
+        type(action_profile) is str and action_profile in ACTION_PROFILES,
+        "Unknown explicit browser action profile",
+    )
+    require(
+        (text_endpoint is None) == (text_model is None),
+        "External helper requires both endpoint and model",
+    )
+    experimental = action_profile != DEFAULT_ACTION_PROFILE
+    require(
+        not experimental or text_endpoint is not None,
+        "FIND_TEXT requires an explicit shared external HTTP text helper",
+    )
+    if text_endpoint is None:
+        require(text_api_key_env == "S1_TEXT_API_KEY", "No external helper for this key setting")
+        return {}
+    require(
+        type(text_endpoint) is str and text_endpoint == text_endpoint.strip(),
+        "Explicit helper endpoint",
+    )
+    parsed = urlsplit(text_endpoint)
+    require(
+        parsed.scheme == "http"
+        and parsed.hostname in {"127.0.0.1", "localhost", "::1"}
+        and parsed.port is not None
+        and not parsed.username
+        and not parsed.password
+        and not parsed.query
+        and not parsed.fragment,
+        "Shared GX10 helper requires an explicit loopback HTTP endpoint",
+    )
+    require(
+        type(text_model) is str and bool(text_model.strip()) and text_model == text_model.strip(),
+        "Explicit shared helper model",
+    )
+    require(
+        type(text_api_key_env) is str
+        and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", text_api_key_env)
+        and text_api_key_env
+        not in {
+            "S1_POLICY_API_KEY",
+            "TEXT_MODEL_REASONING",
+            "PYTHONDONTWRITEBYTECODE",
+            "PYTHONNOUSERSITE",
+            "PYTHONPATH",
+            "HF_HUB_OFFLINE",
+            "TRANSFORMERS_OFFLINE",
+            "TOKENIZERS_PARALLELISM",
+            "HF_HOME",
+            "HF_HUB_CACHE",
+        },
+        "Distinct external helper key environment name",
+    )
+    result = {
+        "action_profile": action_profile,
+        "helper_tokens": None,
+        "text_helper": {
+            "endpoint": text_endpoint.rstrip("/"),
+            "model": text_model,
+            "api_key_env": text_api_key_env,
+            "transport": "original_httpx",
+            "original_request_max_tokens": 1024,
+            "native_limit_authenticated": False,
+            "external_runtime_receipt_required": True,
+        },
+    }
+    if experimental:
+        result["profile"] = "jev-current-nf4-v7-find-text-experimental-v1"
+        result["experimental_scope"] = (
+            "Nine operations; original ten cases, judges and sixteen decisions"
+        )
+    return result
+
+
+def metadata_plan(
+    adapter,
+    output,
+    upstream,
+    prompt_format,
+    *,
+    action_profile="standard",
+    text_endpoint=None,
+    text_model=None,
+    text_api_key_env="S1_TEXT_API_KEY",
+):
+    settings = action_settings(action_profile, text_endpoint, text_model, text_api_key_env)
     require(type(prompt_format) is str and prompt_format in FORMATS, "Explicit raw or V2 format")
     adapter, output, upstream = map(ordinary, (adapter, output, upstream))
     require(
@@ -204,6 +301,7 @@ def metadata_plan(adapter, output, upstream, prompt_format):
         "historical_reference": "Q95/BF16 V7 5/10; not a precision/helper matched control",
         "metadata_authenticated": False,
         "model_execution": False,
+        **settings,
     }
 
 
@@ -407,9 +505,25 @@ def _replace_http_evidence(directory, name, value, *, raw=False):
 
 
 def make_application(
-    model, prepared, journal, gate, output, token, prompt_format, system_prompt, *, clock=None
+    model,
+    prepared,
+    journal,
+    gate,
+    output,
+    token,
+    prompt_format,
+    system_prompt,
+    *,
+    clock=None,
+    action_profile="standard",
+    allow_local_helper=True,
 ):
     """One current NF4 model, serial policy/helper requests, no historical qualification."""
+    require(type(allow_local_helper) is bool, "Explicit local helper selection required")
+    require(
+        action_profile == "standard" or allow_local_helper is False,
+        "Experimental action profile requires a shared external helper",
+    )
     import jev_field_syntax_helper as helper
     from fastapi import Header, HTTPException
     from fastapi.responses import JSONResponse, Response
@@ -440,6 +554,7 @@ def make_application(
         jev_generated_prompt_format=prompt_format,
         model_identity=IDENTITY,
         request_evidence_sink=sink,
+        **({"jev_action_profile": action_profile} if action_profile != "standard" else {}),
     )
     serial = asyncio.Lock()
     sequence = 0
@@ -586,6 +701,8 @@ def make_application(
 
     @app.post("/chat/completions")
     def chat(payload: dict, authorization: str | None = Header(default=None)):
+        if not allow_local_helper:
+            raise HTTPException(status_code=404, detail="Shared external helper selected")
         if not secrets.compare_digest(authorization or "", "Bearer " + token):
             raise HTTPException(status_code=401, detail="Invalid bearer token")
         trace = TRACE.get()
@@ -654,7 +771,7 @@ def matrix_common():
     return module
 
 
-def composition_paths():
+def composition_paths(action_profile="standard"):
     labels = (
         "scripts/jev_native_v2_browser.py",
         "scripts/jev_browser_profile_v7_benchmark.py",
@@ -664,12 +781,21 @@ def composition_paths():
         "scripts/jev_field_json_grammar.py",
         str(MATRIX.relative_to(ROOT)),
     )
-    return {label: ROOT / label for label in labels}
+    result = {label: ROOT / label for label in labels}
+    if action_profile != "standard":
+        from s1.jev_action_profiles import resolve_protocol
+
+        protocol = resolve_protocol(action_profile)
+        for row in protocol.provenance["source_dependencies"]:
+            result[row["path"]] = ROOT / row["path"]
+        for label in ("src/s1/jev_action_profiles.py", "scripts/jev_find_text_browser.py"):
+            result[label] = ROOT / label
+    return result
 
 
-def capture_composition(output):
+def capture_composition(output, action_profile="standard"):
     result = {}
-    for label, path in composition_paths().items():
+    for label, path in composition_paths(action_profile).items():
         blob = path.read_bytes()
         write(Path(output) / "composition-sources" / label, blob, raw=True)
         result[label] = pin(path)
@@ -677,12 +803,15 @@ def capture_composition(output):
     return result
 
 
-def verify_composition(output, expected):
-    require(set(expected) == set(composition_paths()), "Composition source population changed")
+def verify_composition(output, expected, action_profile="standard"):
+    require(
+        set(expected) == set(composition_paths(action_profile)),
+        "Composition source population changed",
+    )
     require(
         all(
             pin(path) == expected[label] == pin(Path(output) / "composition-sources" / label)
-            for label, path in composition_paths().items()
+            for label, path in composition_paths(action_profile).items()
         ),
         "Composition source bytes changed",
     )
@@ -718,6 +847,19 @@ def run_client(argv, env, output):
             stderr=streams[1],
             start_new_session=True,
         )
+        identity = common.process_table().get(child.pid)
+        require(
+            identity is not None
+            and identity["ppid"] == os.getpid()
+            and identity["pid"] == identity["pgid"] == identity["sid"] == child.pid
+            and type(identity["start_ticks"]) is int
+            and identity["start_ticks"] > 0,
+            "Actual owned browser child PID/start/PGID/SID required",
+        )
+        # extend_owned expands authenticated seeds; an empty mapping never
+        # discovers even the main child. Seed before poll can reap a fast exit.
+        known[child.pid] = identity["start_ticks"]
+        groups.add(identity["pgid"])
         deadline = time.monotonic() + 7200
         while True:
             common.extend_owned(child.pid, known, groups)
@@ -761,8 +903,28 @@ def run_client(argv, env, output):
         raise primary
 
 
-def run_groups(output, upstream, endpoint, token, chromium, *, completed=None):
-    import jev_browser_profile_v7_benchmark as v7
+def run_groups(
+    output,
+    upstream,
+    endpoint,
+    token,
+    chromium,
+    *,
+    completed=None,
+    action_profile="standard",
+    text_helper=None,
+):
+    if action_profile == "standard":
+        import jev_browser_profile_v7_benchmark as v7
+    else:
+        import jev_find_text_browser as v7
+    helper_settings = action_settings(
+        action_profile,
+        None if text_helper is None else text_helper["endpoint"],
+        None if text_helper is None else text_helper["model"],
+        "S1_TEXT_API_KEY" if text_helper is None else text_helper["api_key_env"],
+    )
+    selected_helper = helper_settings.get("text_helper")
 
     groups = []
     for name, mode, ids in (("known4", "original", KNOWN4), ("public6", "heldout", PUBLIC6)):
@@ -783,13 +945,13 @@ def run_groups(output, upstream, endpoint, token, chromium, *, completed=None):
             "--output-dir",
             str(Path(output) / name / "results"),
             "--text-endpoint",
-            endpoint,
+            endpoint if selected_helper is None else selected_helper["endpoint"],
             "--text-model",
-            IDENTITY,
+            IDENTITY if selected_helper is None else selected_helper["model"],
             "--api-key-env",
             "S1_POLICY_API_KEY",
             "--text-api-key-env",
-            "S1_TEXT_API_KEY",
+            "S1_TEXT_API_KEY" if selected_helper is None else selected_helper["api_key_env"],
             "--repeats",
             "1",
             "--max-steps",
@@ -810,7 +972,7 @@ def run_groups(output, upstream, endpoint, token, chromium, *, completed=None):
         env = {
             **os.environ,
             "S1_POLICY_API_KEY": token,
-            "S1_TEXT_API_KEY": token,
+            **({"S1_TEXT_API_KEY": token} if selected_helper is None else {}),
             "TEXT_MODEL_REASONING": "none",
             "PYTHONDONTWRITEBYTECODE": "1",
             "PYTHONNOUSERSITE": "1",
@@ -856,6 +1018,14 @@ def run(plan, *, expected_boot_id, chromium):
     from s1.browser_server_evidence import ServerEvidenceJournal
 
     require(expected_boot_id, "Explicit expected boot ID required")
+    action_profile = plan.get("action_profile", "standard")
+    text_helper = plan.get("text_helper")
+    action_settings(
+        action_profile,
+        None if text_helper is None else text_helper["endpoint"],
+        None if text_helper is None else text_helper["model"],
+        "S1_TEXT_API_KEY" if text_helper is None else text_helper["api_key_env"],
+    )
     output = ordinary(plan["output"])
     require(not output.exists(), "Fresh execution output")
     os.environ.update(
@@ -889,7 +1059,11 @@ def run(plan, *, expected_boot_id, chromium):
         )
         receipt["metadata_authenticated"] = True
         sources = capture_runtime_sources(output)
-        composition = capture_composition(output)
+        composition = (
+            capture_composition(output)
+            if action_profile == "standard"
+            else capture_composition(output, action_profile)
+        )
         gate.check("immediately-before-model-constructor")
         receipt["model_load_started"] = True
         write(
@@ -928,9 +1102,13 @@ def run(plan, *, expected_boot_id, chromium):
             "coverage": "Original enabled/disabled PEFT contexts, frozen state, model/lm/head/version/temperature identities; no Q95 fullweight qualification",
         }
         hook = register_native_gate(model, gate)
-        gate.check("before-full-helper-preparation")
-        prepared = prepare_helper(model)
-        write(output / "helper-prepared.json", prepared.receipt())
+        if text_helper is None:
+            gate.check("before-full-helper-preparation")
+            prepared = prepare_helper(model)
+            write(output / "helper-prepared.json", prepared.receipt())
+        else:
+            prepared = None
+            write(output / "external-helper-selection.json", text_helper)
         questions = ast.parse((Path(plan["upstream"]) / "jev_ultrafast/questions.py").read_bytes())
         system_prompt = next(
             ast.literal_eval(node.value)
@@ -941,7 +1119,19 @@ def run(plan, *, expected_boot_id, chromium):
         journal = ServerEvidenceJournal(output / "server")
         token = secrets.token_urlsafe(32)
         app = make_application(
-            model, prepared, journal, gate, output, token, plan["prompt_format"], system_prompt
+            model,
+            prepared,
+            journal,
+            gate,
+            output,
+            token,
+            plan["prompt_format"],
+            system_prompt,
+            **(
+                {"action_profile": action_profile, "allow_local_helper": False}
+                if text_helper is not None
+                else {}
+            ),
         )
         import uvicorn
 
@@ -959,7 +1149,8 @@ def run(plan, *, expected_boot_id, chromium):
         write(
             output / "loopback-ready.json",
             {
-                "profile": PROFILE,
+                "profile": plan.get("profile", PROFILE),
+                **({"action_profile": action_profile} if action_profile != "standard" else {}),
                 "endpoint": endpoint,
                 "model": IDENTITY,
                 "prompt_format": plan["prompt_format"],
@@ -973,7 +1164,17 @@ def run(plan, *, expected_boot_id, chromium):
         )
         receipt["stage"] = "browser"
         run_groups(
-            output, plan["upstream"], endpoint, token, chromium, completed=receipt["groups"].append
+            output,
+            plan["upstream"],
+            endpoint,
+            token,
+            chromium,
+            completed=receipt["groups"].append,
+            **(
+                {"action_profile": action_profile, "text_helper": text_helper}
+                if text_helper is not None
+                else {}
+            ),
         )
         receipt["attempts"] = sum(group["summary"]["attempts"] for group in receipt["groups"])
         receipt["successes"] = sum(group["summary"]["successes"] for group in receipt["groups"])
@@ -1039,7 +1240,10 @@ def run(plan, *, expected_boot_id, chromium):
                 if not receipt["source_verification"]["success"]:
                     failed("Source closure", RuntimeError("Current execution sources changed"))
             if composition is not None:
-                verify_composition(output, composition)
+                if action_profile == "standard":
+                    verify_composition(output, composition)
+                else:
+                    verify_composition(output, composition, action_profile)
             if own_source != pin(__file__):
                 failed("Source closure", RuntimeError("Browser entrypoint changed"))
         except BaseException as exc:
@@ -1115,6 +1319,14 @@ def main(argv=None):
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--prompt-format", choices=FORMATS, default="shared-elements-v2")
     parser.add_argument(
+        "--action-profile",
+        choices=("standard", "jev-find-text-experimental-v1"),
+        default="standard",
+    )
+    parser.add_argument("--text-endpoint")
+    parser.add_argument("--text-model")
+    parser.add_argument("--text-api-key-env", default="S1_TEXT_API_KEY")
+    parser.add_argument(
         "--upstream-path", type=Path, default=ROOT / "artifacts/jev-runtime/upstream"
     )
     parser.add_argument("--chromium-executable", default=CHROMIUM)
@@ -1124,7 +1336,14 @@ def main(argv=None):
     if args.run and not args.expected_boot_id:
         parser.error("--run requires --expected-boot-id")
     plan = metadata_plan(
-        args.action_adapter, args.output_dir, args.upstream_path, args.prompt_format
+        args.action_adapter,
+        args.output_dir,
+        args.upstream_path,
+        args.prompt_format,
+        action_profile=args.action_profile,
+        text_endpoint=args.text_endpoint,
+        text_model=args.text_model,
+        text_api_key_env=args.text_api_key_env,
     )
     result = (
         run(plan, expected_boot_id=args.expected_boot_id, chromium=args.chromium_executable)

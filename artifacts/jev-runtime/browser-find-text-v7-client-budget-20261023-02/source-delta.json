@@ -1,0 +1,32 @@
+{
+  "schema_id": "v7-budget-successor-exact-source-delta-v1",
+  "parent": {
+    "path": "artifacts/jev-runtime/browser-find-text-v7-client-integration-20261023-01/find_client_selector.py",
+    "sha256": "0c663f03f9900c5b7c1d0d3e7c64ad51908133eedfea53bd2baf4b5ba3253150",
+    "size_bytes": 15765
+  },
+  "source": {
+    "path": "artifacts/jev-runtime/browser-find-text-v7-client-budget-20261023-02/find_client_selector.py",
+    "sha256": "f56f0800a981370f5a0e74d8722677721cb2043b03596c7779227502d4565ee1",
+    "size_bytes": 16262
+  },
+  "edits": [
+    {
+      "before": "Source-only opt-in FIND_TEXT client over the exact existing V7 runner.",
+      "after": "Source-only FIND_TEXT client with a private sixteen-action namespace."
+    },
+    {
+      "before": "PROFILE = \"jev-v7-find-text-client-source-v1\"",
+      "after": "PROFILE = \"jev-v7-find-text-client-budget-source-v2\""
+    },
+    {
+      "before": "    need(agent_module.MAX_STEPS == 16, \"Existing sixteen-action cap\")",
+      "after": "    need(\n        type(agent_module.MAX_STEPS) is int and agent_module.MAX_STEPS in {16, 60},\n        \"Known original sixty-action or selected sixteen-action namespace\",\n    )"
+    },
+    {
+      "before": "    return component.make_agent_class(agent_module, model_module, marker_expression=browser.MARKER)",
+      "after": "    # The original runner limits the outer loop to16, while canonical Agent\n    # imports60. Supply16 only to the already-private command/factory namespace;\n    # the canonical module, Agent class, choose wrappers and global60 stay intact.\n    private_agent = types.ModuleType(agent_module.__name__)\n    vars(private_agent).update(vars(agent_module))\n    private_agent.MAX_STEPS = 16\n    return component.make_agent_class(private_agent, model_module, marker_expression=browser.MARKER)"
+    }
+  ],
+  "full_inverse_bytes": true
+}

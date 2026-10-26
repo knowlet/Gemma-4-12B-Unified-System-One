@@ -1,0 +1,43 @@
+{
+  "schema_id": "v7-find-client-research-decision-v1",
+  "objective": "Bind the already tested optional FIND_TEXT Agent inside the actual V7 benchmark client while preserving original model_adapter instrumentation and full fixed ten-task scope",
+  "primary_sources": [
+    {
+      "path": "scripts/jev_browser_profile_v7_benchmark.py",
+      "sha256": "31450f9002ad216c32b77751997eb27748c491d7bc757c4410294d3704fdfb9e",
+      "size_bytes": 13506
+    },
+    {
+      "path": "scripts/jev_browser_benchmark.py",
+      "sha256": "fe1410675e4decb06a8491a5a83d2ec965629c99f8912b797446c4cb2c155f6c",
+      "size_bytes": 101360
+    },
+    {
+      "path": "scripts/jev_observation_profile_v7.py",
+      "sha256": "d9f4236d1d46c9472c3d6c1551342639ecb870e6c0dd419246927645410ea868",
+      "size_bytes": 30002
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-find-text-profile-20261022-01/find_profile.py",
+      "sha256": "98c7fa29265e2c0c25bdcae0825522cebcd35dc86c16ed53aa7609bd52e6a08d",
+      "size_bytes": 13344
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-find-text-s1-nativev2-integration-20261022-01/selection.py",
+      "sha256": "c3712f8d29851a521a3e9b5a1691d3fb8cf7ae9f82aeb1051c27aa8c64b04c1a",
+      "size_bytes": 6304
+    }
+  ],
+  "existing_OSS_context": "Pinned browser-use/jev-ultrafast1231850a0bf1a0c0341fe408ef1668dbbfdfac46 MIT source and existing repository V7 builder; original canonical Agent/model bytes remain the inherited contract",
+  "selected_seam": "One private runner Agent-constructor substitution; factory runs inside original model_adapter after its POST/CLIENT wrappers. A private adapter wrapper requires declared HTTP text helper. Private main validates unchanged fixed scope then delegates original main. Full inverse and original model_adapter/judge AST equality are verified. No original/upstream globals changed.",
+  "HTTP_helper_reason": "Existing FIND component compiles field_text from model.py, so callback-only agent.field_text would be bypassed. This profile explicitly refuses callbacks and requires text_endpoint/model before entering original adapter; actual selected Q95 authentication remains an external owner prerequisite.",
+  "test_scope": "Actual canonical Agent/choose/field_text/post_json retry and original V7 script model_adapter bodies, with explicit fake HTTP and fake Browser Runtime.evaluate; no actual network or browser. A503->200 retry and strictTEXT_VALUE helper exercise original record/transport/redaction/restoration paths.",
+  "limits": "16steps, seed20261014, one repeat/development split, exact current orderedknown4/public6, V7d9fhelper. Existing FIND20s helper action and original policy/HTTP constraints unchanged.",
+  "not_qualified": [
+    "Actual V7 Browser execution",
+    "Real policy/helper/model probabilities or N3 weights",
+    "Real server/worker/runtime/cache/device/geometry/text48",
+    "Fresh helper/owner/resource/source closure",
+    "Complete matched ten-task quality score"
+  ]
+}
