@@ -1,0 +1,36 @@
+{
+  "schema": "root-baseline-matched02-aggregate-failure-diagnostics-v1",
+  "scope": "Gemma NF4 completed originalV7 baseline; interrupted full comparison",
+  "input_bindings_ref": {
+    "path": "artifacts/jev-runtime/decision3-v7-matched-campaign-gx10-20261024-01/root-baseline-failure-diagnostic-input-bindings-01.json",
+    "sha256": "30ea9ea8f56b20d6cf11351946d7875e2dc021ec5f1400d3d2a6827ac460b8ae",
+    "size_bytes": 11675
+  },
+  "original_baseline_audit_ref": {
+    "path": "artifacts/jev-runtime/decision3-v7-matched-campaign-gx10-20261024-01/root-baseline-only-matched02-audit-01.json",
+    "sha256": "95f44b5e53453f77dd14ceafe203777081c1ade5c737a22525a968451f1ecae4",
+    "size_bytes": 694
+  },
+  "attempts": 10,
+  "successes": 3,
+  "failures": 7,
+  "outcomes": {
+    "done_without_verified_goal": 2,
+    "blocked_without_verified_goal": 3,
+    "goal_verified_success": 3,
+    "16_decision_budget_exhausted": 2
+  },
+  "model_calls": {
+    "policy_calls": 82,
+    "text_calls": 6
+  },
+  "captured_HTTP_status_counts": {
+    "200": 88
+  },
+  "HTTP_success_does_not_qualify_task_success": true,
+  "all_blocked_causes_established": false,
+  "new_Decision3_score": null,
+  "complete_matched_comparison_score": null,
+  "benchmark_or_task_protocol_changed": false,
+  "raw_states_gold_requests_probabilities_or_per_head_predictions_in_this_record": false
+}

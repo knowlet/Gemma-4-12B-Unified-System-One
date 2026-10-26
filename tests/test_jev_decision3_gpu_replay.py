@@ -1,5 +1,7 @@
 """Critical replay integrity checks; stdlib only, no Torch/model/network imports."""
 
+# Resolve only allocated roots, before fixtures exist; preserve child symlink checks.
+
 import copy
 import hashlib
 import importlib.util
@@ -124,7 +126,8 @@ class ReplayTests(unittest.TestCase):
             tempfile.TemporaryDirectory() as temporary,
             patch.object(m, "project", return_value=(request, original, original)),
         ):
-            directory = Path(temporary)
+            root = Path(temporary).resolve(strict=True)
+            directory = root
             result = m.replay_row(
                 case,
                 {"native_payload": original},
@@ -171,7 +174,8 @@ class ReplayTests(unittest.TestCase):
             path.write_bytes(struct.pack("<Q", len(blob)) + blob + bytes(offset))
 
         with tempfile.TemporaryDirectory() as temporary:
-            hub = Path(temporary) / "hub"
+            root = Path(temporary).resolve(strict=True)
+            hub = root / "hub"
             snapshot = hub / "models--vllm-sr--fake" / "snapshots" / ("a" * 40)
             snapshot.mkdir(parents=True)
             tensor(snapshot / "model-1.safetensors", {"first": ("BF16", [2, 3])})
@@ -207,7 +211,7 @@ class ReplayTests(unittest.TestCase):
                     pin["size_bytes"] for name, pin in pins.items() if name.endswith(".safetensors")
                 ),
             }
-            output = Path(temporary) / "output"
+            output = root / "output"
             output.mkdir()
             gates = SimpleNamespace(check=lambda stage: None)
             with patch.object(m, "HUB", hub):
@@ -233,7 +237,8 @@ class ReplayTests(unittest.TestCase):
     def test_single_backbone_full_sha_header_and_counts_without_invented_index(self):
         for fault in (None, "payload", "empty_backbone", "backbone_dtype", "parameters"):
             with self.subTest(fault=fault), tempfile.TemporaryDirectory() as temporary:
-                hub = Path(temporary) / "hub"
+                root = Path(temporary).resolve(strict=True)
+                hub = root / "hub"
                 snapshot = hub / "models--vllm-sr--fake" / "snapshots" / ("a" * 40)
                 snapshot.mkdir(parents=True)
 
@@ -280,7 +285,7 @@ class ReplayTests(unittest.TestCase):
                 if fault == "payload":
                     path = snapshot / "model.safetensors"
                     path.write_bytes(path.read_bytes()[:-1] + b"\1")
-                output = Path(temporary) / "output"
+                output = root / "output"
                 output.mkdir()
                 before = set(path.name for path in snapshot.iterdir())
                 with patch.object(m, "HUB", hub):
@@ -349,7 +354,8 @@ class ReplayTests(unittest.TestCase):
 
     def test_setup_failure_retains_receipt_before_framework_import(self):
         with tempfile.TemporaryDirectory() as temporary:
-            output = Path(temporary) / "d3"
+            root = Path(temporary).resolve(strict=True)
+            output = root / "d3"
             args = SimpleNamespace(
                 output_dir=output,
                 worker="d3",
@@ -471,7 +477,8 @@ class ReplayTests(unittest.TestCase):
                                 return_value=raw,
                             ),
                         ):
-                            directory = Path(temporary)
+                            root = Path(temporary).resolve(strict=True)
+                            directory = root
                             with self.assertRaises(fatal_type) as caught:
                                 m.replay_row(
                                     case,
@@ -511,6 +518,7 @@ class ReplayTests(unittest.TestCase):
                     tempfile.TemporaryDirectory() as temporary,
                     patch.object(m, "project", side_effect=primary),
                 ):
+                    root = Path(temporary).resolve(strict=True)
                     with self.assertRaises(first_type) as caught:
                         m.replay_row(
                             case,
@@ -518,7 +526,7 @@ class ReplayTests(unittest.TestCase):
                             "d3",
                             backend,
                             SimpleNamespace(cuda=SimpleNamespace(synchronize=synchronize)),
-                            Path(temporary),
+                            root,
                             None,
                             (None, None, None),
                         )
@@ -533,6 +541,7 @@ class ReplayTests(unittest.TestCase):
                     self.subTest(close=close_type.__name__, has_primary=has_primary),
                     tempfile.TemporaryDirectory() as temporary,
                 ):
+                    root = Path(temporary).resolve(strict=True)
                     primary = TimeoutError("original request error") if has_primary else None
                     close = Mock(side_effect=close_type("close failed"))
                     state = {
@@ -542,13 +551,13 @@ class ReplayTests(unittest.TestCase):
                     }
                     m.finish_worker(
                         state,
-                        Path(temporary),
+                        root,
                         SimpleNamespace(close=close),
                         None,
                         m.time.monotonic(),
                         primary=primary,
                     )
-                    saved = json.loads((Path(temporary) / "receipt.json").read_bytes())
+                    saved = json.loads((root / "receipt.json").read_bytes())
                     self.assertEqual(saved, state)
                     self.assertEqual(saved["stage"], "failed")
                     self.assertTrue(saved["campaign_stop"])
@@ -576,7 +585,8 @@ class ReplayTests(unittest.TestCase):
 
     def test_controller_stops_before_next_model_after_cleanup_failure(self):
         with tempfile.TemporaryDirectory() as temporary:
-            output_root = Path(temporary)
+            root = Path(temporary).resolve(strict=True)
+            output_root = root
             output = output_root / "new-run"
             child = SimpleNamespace(pid=123)
             identities = {name: {"resident_file_bytes": 1} for name in m.MODEL_ORDER}
@@ -634,7 +644,8 @@ class ReplayTests(unittest.TestCase):
 
     def test_durable_prelaunch_admission_refusal_allows_next_smaller_model(self):
         with tempfile.TemporaryDirectory() as temporary:
-            output_root = Path(temporary)
+            root = Path(temporary).resolve(strict=True)
+            output_root = root
             output = output_root / "new-run"
             child = SimpleNamespace(pid=123)
             identities = {name: {"resident_file_bytes": 1} for name in m.MODEL_ORDER}

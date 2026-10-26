@@ -295,6 +295,11 @@ GGUF Metal compute buffer by 6.09 GiB while retaining the 64-slot decision
 contract. Its bounded native equivalence checks and remaining MLX experiments
 are recorded separately from the published model-quality measurements.
 
+The [October 13 local Jev integration report](docs/local-jev-benchmark-20261013/README.md)
+records real Mac browser fixtures, fixed-input Q4/Q8 measurements and sanitized
+raw evidence. Goal success was 0/3 travel and 0/5 completion tasks; failed task
+times are retained separately from the model decision comparison.
+
 ## Layout
 
 | Path | Purpose |

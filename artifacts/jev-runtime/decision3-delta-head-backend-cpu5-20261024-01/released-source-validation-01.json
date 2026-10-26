@@ -1,0 +1,58 @@
+{
+  "schema": "delta-composition-source-validation-v1",
+  "status": "SOURCE_PASS_RELEASED_FOR_EXACT_NUMERIC_SELECTION_ONLY",
+  "AST_only_backend_change": "SOURCE_ONLY True to False",
+  "held_original_preserved": {
+    "path": "artifacts/jev-runtime/decision3-delta-head-backend-cpu5-20261024-01/backend.py",
+    "sha256": "148af7b144c85799fbe71529f1d307e7374498f3734f7fb38a865b8844daa738",
+    "size_bytes": 17219
+  },
+  "files": [
+    {
+      "path": "artifacts/jev-runtime/decision3-delta-head-backend-cpu5-20261024-01/backend_released_v1.py",
+      "sha256": "c8460c9d416fa1c784f86b5afb000fc2e6ddd31e757d4759904114a9ed40c1aa",
+      "size_bytes": 17220
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-delta-head-backend-cpu5-20261024-01/test_backend_released_v1.py",
+      "sha256": "0edf9f2c2630c4a95b991ed522b3d6c8ce1494553cb0da1beef7debfb3bb8b8c",
+      "size_bytes": 21403
+    }
+  ],
+  "results": [
+    {
+      "name": "released_composition_fakes",
+      "exit_code": 0,
+      "wall_seconds": 15.691174798004795,
+      "stdout": "",
+      "stderr": "............\n----------------------------------------------------------------------\nRan 12 tests in 15.481s\n\nOK\n",
+      "CPU0": true,
+      "cpu_seconds": 30,
+      "AS_bytes": 536870912
+    },
+    {
+      "name": "ruff",
+      "exit_code": 0,
+      "wall_seconds": 0.01817753998329863,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "CPU0": true,
+      "cpu_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "wall_seconds": 0.019100370991509408,
+      "stdout": "2 files already formatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "cpu_seconds": 30,
+      "AS_bytes": null
+    }
+  ],
+  "fakes": 12,
+  "genuine_model_inference_qualified": false,
+  "browser_qualified": false,
+  "publisher_native_candidate_claim": false
+}

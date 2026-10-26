@@ -8,6 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from local_evidence import require_local_evidence
 
 
 @pytest.fixture
@@ -19,6 +20,18 @@ def driver():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+@pytest.fixture
+def local_experimental_profile_sources():
+    from s1 import jev_action_profiles
+
+    require_local_evidence(
+        *(
+            jev_action_profiles._ROOT / label
+            for label, _digest in jev_action_profiles._COMPONENTS.values()
+        )
+    )
 
 
 def test_legacy_settings_remain_empty(driver):
@@ -199,8 +212,9 @@ def test_legacy_groups_still_use_original_local_helper(driver, monkeypatch, tmp_
         assert env["S1_TEXT_API_KEY"] == "policy"
 
 
+@pytest.mark.local_evidence
 def test_experimental_server_selects_profile_and_refuses_local_helper_fallback(
-    driver, monkeypatch, tmp_path
+    driver, monkeypatch, tmp_path, local_experimental_profile_sources
 ):
     import jev_field_syntax_helper
     from fastapi.testclient import TestClient
@@ -247,10 +261,14 @@ def test_experimental_server_selects_profile_and_refuses_local_helper_fallback(
     assert "answers" not in response.json()
 
 
-def test_experimental_composition_closes_all_selected_sources(driver, monkeypatch, tmp_path):
+@pytest.mark.local_evidence
+def test_experimental_composition_closes_all_selected_sources(
+    driver, monkeypatch, tmp_path, local_experimental_profile_sources
+):
     import jev_native_v2_browser as installed
 
     monkeypatch.setattr(driver, "ROOT", installed.ROOT)
+    require_local_evidence(driver.MATRIX)
     paths = driver.composition_paths("jev-find-text-experimental-v1")
     assert "scripts/jev_find_text_browser.py" in paths
     assert "src/s1/jev_action_profiles.py" in paths

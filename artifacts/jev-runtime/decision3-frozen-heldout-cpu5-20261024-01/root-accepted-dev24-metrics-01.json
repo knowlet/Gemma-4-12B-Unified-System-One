@@ -1,0 +1,210 @@
+{
+  "schema": "root-accepted-complete-dev24-cached-metrics-nontraining-v1",
+  "status": "accepted",
+  "authority": "root",
+  "nontraining": true,
+  "training_eligible": false,
+  "separate_reviewer_actual_bytes_read": false,
+  "independent_actual_review_claimed": false,
+  "original_proof_refs": {
+    "root_execution": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/root-execution-dev-metrics-26.json",
+      "sha256": "6f8650522e002b011516dc81504b93add3f68f24c994f49b5b09a54573b351bf",
+      "size_bytes": 1723
+    },
+    "owner_receipt": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-26/receipt.json",
+      "sha256": "727565c2a461878bd3ae7c383658f6644fcba2c4a489d70c8a68f285728ab53d",
+      "size_bytes": 26724
+    },
+    "closure": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-26/external-boundary-closure.json",
+      "sha256": "7a690bac684f818fda556d165b4d08014f9e91d702191bc9da0f4f6e59dfe319",
+      "size_bytes": 3559
+    },
+    "admission": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-26/admission.json",
+      "sha256": "49901538df27ec5d1f01e0c99fdfd37d0547b9a72a271157a0bb43ee2941628a",
+      "size_bytes": 478
+    },
+    "sealed_config": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-26/sealed-config.json",
+      "sha256": "2893a26a85a376f7a24c18a7c81ac2ecd7e9fc932f6d394b52d230295454edab",
+      "size_bytes": 8092
+    }
+  },
+  "command_spec": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/root-metrics-command-spec-01.json",
+    "sha256": "374b482a9c73e7e024640b01d82b01ec417c36405d8f7b53dacc980e417d0ba7",
+    "size_bytes": 5598
+  },
+  "capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/root-selected-dev24-metrics-capability-01.json",
+    "sha256": "374a60751cfec709644601315a07a516101c3160457c5b8d58f074b883acde27",
+    "size_bytes": 22043
+  },
+  "summary": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-26/dev-metrics/metrics-nontraining-pending.json",
+    "sha256": "d268df8ab0b0e92bc319aa171f56fc77df527768955b817a33d02d32310972cb",
+    "size_bytes": 7225
+  },
+  "source_union": 25,
+  "candidate_capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-frozen-delta-candidate-capability-01.json",
+    "sha256": "239165d486bad16963a6e5c94c1f9503fc145ea5b85b114e9fbf94d84eb1fd76",
+    "size_bytes": 2556
+  },
+  "delta_ref": {
+    "dtype": "float32",
+    "format": "npy_no_pickle",
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-19/fit-head/delta-pending.npy",
+    "sha256": "812256139b35429dc55f4f178af8c177d2a31c023414e668e9b39cdc217d14be",
+    "shape": [
+      255,
+      1024
+    ],
+    "size_bytes": 1044608
+  },
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "complete_cases": 24,
+  "supervised_rows": 33,
+  "unused_heads_skipped": 63,
+  "metrics": {
+    "frozen_candidate": {
+      "all_supervised_heads_correct": {
+        "accuracy": 0.4166666666666667,
+        "cases": 24,
+        "correct": 10
+      },
+      "by_head": {
+        "click_target": {
+          "accuracy": 0.6666666666666666,
+          "correct": 2,
+          "mean_soft_ce": 0.3026152776243786,
+          "rows": 3
+        },
+        "operation": {
+          "accuracy": 0.4166666666666667,
+          "correct": 10,
+          "mean_soft_ce": 1.5272561786696315,
+          "rows": 24
+        },
+        "select_target": {
+          "accuracy": 0.6666666666666666,
+          "correct": 2,
+          "mean_soft_ce": 0.6960232257843018,
+          "rows": 3
+        },
+        "type_text_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.0013108069348769884,
+          "rows": 3
+        }
+      },
+      "full_mean_soft_ce": 1.2016361951828003,
+      "l2_applied": false,
+      "optimizer_steps": 0,
+      "supervised_rows": 33,
+      "valid_target_argmax_accuracy": 0.5151515151515151,
+      "valid_target_argmax_correct": 17
+    },
+    "zero_delta": {
+      "all_supervised_heads_correct": {
+        "accuracy": 0.4166666666666667,
+        "cases": 24,
+        "correct": 10
+      },
+      "by_head": {
+        "click_target": {
+          "accuracy": 0.6666666666666666,
+          "correct": 2,
+          "mean_soft_ce": 0.32228283677250147,
+          "rows": 3
+        },
+        "operation": {
+          "accuracy": 0.4166666666666667,
+          "correct": 10,
+          "mean_soft_ce": 1.615516694340234,
+          "rows": 24
+        },
+        "select_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.647754485408465,
+          "rows": 3
+        },
+        "type_text_target": {
+          "accuracy": 1.0,
+          "correct": 3,
+          "mean_soft_ce": 0.0010522009494403999,
+          "rows": 3
+        }
+      },
+      "full_mean_soft_ce": 1.2632020711898804,
+      "l2_applied": false,
+      "optimizer_steps": 0,
+      "supervised_rows": 33,
+      "valid_target_argmax_accuracy": 0.5454545454545454,
+      "valid_target_argmax_correct": 18
+    }
+  },
+  "additional_stdlib_FP64_witness": {
+    "zero_delta": {
+      "stdlib_FP64_full_mean_soft_ce": 1.263202014682637,
+      "published_FP32_full_mean_soft_ce": 1.2632020711898804,
+      "CE_absolute_tolerance": 1e-05,
+      "correct": 18,
+      "rows": 33,
+      "all_heads_correct_cases": 10
+    },
+    "frozen_candidate": {
+      "stdlib_FP64_full_mean_soft_ce": 1.201636198443461,
+      "published_FP32_full_mean_soft_ce": 1.2016361951828003,
+      "CE_absolute_tolerance": 1e-05,
+      "correct": 17,
+      "rows": 33,
+      "all_heads_correct_cases": 10
+    }
+  },
+  "all_bundle_values_independently_rederived": true,
+  "readonly_value_fingerprints": {
+    "features": "62d162af1f95cefa53da9bb1804346a39fd91076de8a3f4e775293321be40cf8",
+    "counts": "df10a3ef18a98cd3fc7b80715ba33947e11ad59dae1b8aa811f5aff8bc267a84",
+    "soft_targets": "41703b1f8700e92d8fa64fa11300cd2206913874f27f88b81db662a07a5bee63",
+    "W0": "d408d94a0ab2915fa85c511dd9b8d62af49903c4e4ca28e2e2d5aff9ef565e0f",
+    "delta": "35bf5363485b4f30302329b64cf2beb6dc03d9968422d4eaa202f08127295e90",
+    "zero_delta": "f62e0f02a1fde7c69411b888b4054fa5bf465693a429cb9f283bd6a0ccdee290"
+  },
+  "optimizer_steps": 0,
+  "model_forwards": 0,
+  "browser_or_official_score": false,
+  "promotion_or_quality_win_claim": false,
+  "audit_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/root-closed-dev-metrics-audit-01.py",
+    "sha256": "a1db5ab00a11dfeecdbe688c6e7bd91934692585dda689458713c187c7a61f5c",
+    "size_bytes": 26048
+  },
+  "argmax_comparison_scope": "FP64 uses first ordered argmax per row; actual FP32 publishes aggregate hits only, not independently retained per-row choices",
+  "scope": "Complete frozen dev24 cached-head metrics only; root actual read with source-only peer review. Permanent NONTRAINING; no promotion, browser/official score or independent peer actual-read claim."
+}

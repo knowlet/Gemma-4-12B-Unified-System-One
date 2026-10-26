@@ -1,0 +1,114 @@
+{
+  "schema": "np5-selected-source-validation-v1",
+  "status": "SOURCE_CHECKS_PASS_NO_ACTUAL",
+  "held_fake_tests_pass": 26,
+  "released_fake_tests_pass": 26,
+  "results": [
+    {
+      "name": "format",
+      "exit_code": 0,
+      "elapsed_seconds": 0.019509896985255182,
+      "stdout": "4 files left unchanged\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "released_stdlib_fakes",
+      "exit_code": 0,
+      "elapsed_seconds": 0.8774142159963958,
+      "stdout": "",
+      "stderr": "..........................\n----------------------------------------------------------------------\nRan 26 tests in 0.613s\n\nOK\n",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "ruff_check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.018849098996724933,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "format_check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.012952527991728857,
+      "stdout": "4 files already formatted\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "dry_default",
+      "exit_code": 0,
+      "elapsed_seconds": 0.08978019902133383,
+      "stdout": "{\"status\": \"dry_default_no_model_or_job_execution\", \"source_only\": false, \"profile\": \"decision3-edge-numpy-zero-delta-nontraining-cpu5-fast-4g-coexist-20261024-v1\", \"requests\": 1, \"partial_rows\": 4, \"legal_counts\": [8, 1, 2, 3], \"whole_seconds_from_execute_entry\": 120, \"complete_prediction_seconds\": 20, \"owner_unit\": \"jev-d3-llama-cpp-cpu5-fast-4g-coexist-20261024-09.service\", \"cpu_affinity\": [15, 16, 17, 18, 19], \"cpu_quota_percent\": 500, \"threads\": 5, \"interop_threads\": 1, \"memory_max_bytes\": 4294967296, \"feature_commit_status\": \"PENDING_NONTRAINING\", \"labels\": null, \"training_eligible\": false}\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "selected_plan_contract",
+      "exit_code": 0,
+      "elapsed_seconds": 0.10246357502182946,
+      "stdout": "selected metadata plan contract PASS; no model or host observation\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    }
+  ],
+  "source_files": [
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-01/actor.py",
+      "size_bytes": 19795,
+      "sha256": "c8a439c794f5176564a29473c524d62f86218818b1f7fb66089c8e007dfd7f82"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-01/observer.py",
+      "size_bytes": 6417,
+      "sha256": "455e2c7bf20d1a96f99795566062db15dbe779dd5610e573277c382775bc4f37"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-01/numpy_probe.py",
+      "size_bytes": 14262,
+      "sha256": "fc5e77fd9d8e68588ac2c89072010a6d4c2b283d492862eb36cb23ff67c073f7"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-01/test_qualification.py",
+      "size_bytes": 24782,
+      "sha256": "66e50a4f0771e29e35bfc3ff75bbf56371860ed99c6dba9162c494b2154ea547"
+    }
+  ],
+  "deliberate_release_AST_delta": "SOURCE_ONLY True to False only",
+  "native05_prerequisite": {
+    "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-01/root-native05-prerequisite-01.json",
+    "size_bytes": 2232,
+    "sha256": "8e59d5f42c420f90ce15f673cb263e5c0d0a77a745f4a189170bb612cca0bb8f"
+  },
+  "selected_plan": {
+    "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-01/selected-plan-01.json",
+    "size_bytes": 7727,
+    "sha256": "1b7482ef34fdf083b1744dd0cf29026e79ee3d99ea400aec2c1f19b057e62890"
+  },
+  "actual_numeric_or_training_qualified": false
+}

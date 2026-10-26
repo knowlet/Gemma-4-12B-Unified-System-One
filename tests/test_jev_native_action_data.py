@@ -8,12 +8,17 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from local_evidence import require_local_evidence
 
 from s1 import browser_native_action_data as data
 from s1.browser_public_training import NativeWireRequest
 from s1.evaluation.datasets import request_fingerprint
 
 ROOT = Path(__file__).absolute().parents[1]
+HISTORICAL_MANIFEST = (
+    ROOT
+    / "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/actual-admit-02/mixed-manifest-A.json"
+)
 
 
 @pytest.fixture(autouse=True)
@@ -40,6 +45,7 @@ def no_heavy_import_or_actor(monkeypatch):
 
 @pytest.fixture
 def historical(no_heavy_import_or_actor):
+    require_local_evidence(ROOT / data.COMPONENT["path"], HISTORICAL_MANIFEST)
     return data.load_historical_data(ROOT)
 
 
@@ -73,6 +79,7 @@ def native_case(width=53):
     }
 
 
+@pytest.mark.local_evidence
 def test_real179_original_teacher_splits_refs_and_verification(historical):
     assert historical["root"] == ROOT
     assert historical["counts"] == {"train": 142, "development": 37, "total": 179}
@@ -89,6 +96,7 @@ def test_real179_original_teacher_splits_refs_and_verification(historical):
 
 
 @pytest.mark.parametrize("split,expected", [("train", 142), ("development", 37)])
+@pytest.mark.local_evidence
 def test_split_blobs_preserve_complete_case_gold_and_wire_projection(historical, split, expected):
     blobs = data.split_blobs(historical, split)
     assert set(blobs) == {"cases.jsonl", "wire_requests.jsonl"}
@@ -114,6 +122,7 @@ def test_split_blobs_preserve_complete_case_gold_and_wire_projection(historical,
     }
 
 
+@pytest.mark.local_evidence
 def test_exact45_freeze_relocate_reverify_without_original_root(historical, tmp_path):
     destination = tmp_path / "inputs/historical"
     descriptor = data.freeze_historical_data(historical, destination)
@@ -144,6 +153,7 @@ def test_exact45_freeze_relocate_reverify_without_original_root(historical, tmp_
 @pytest.mark.parametrize(
     "mutation", ["teacher", "gold", "group", "order", "counts", "refs", "request"]
 )
+@pytest.mark.local_evidence
 def test_in_memory_original_mutations_refuse_before_freeze(historical, tmp_path, mutation):
     changed = copy.deepcopy(historical)
     if mutation == "teacher":
@@ -166,6 +176,7 @@ def test_in_memory_original_mutations_refuse_before_freeze(historical, tmp_path,
     assert not (tmp_path / "never-created").exists()
 
 
+@pytest.mark.local_evidence
 def test_frozen_corruption_missing_extra_and_symlink_refuse(historical, tmp_path):
     frozen = tmp_path / "frozen"
     descriptor = data.freeze_historical_data(historical, frozen)
@@ -194,6 +205,7 @@ def test_frozen_corruption_missing_extra_and_symlink_refuse(historical, tmp_path
 @pytest.mark.parametrize(
     "key", ["component", "counts", "identity_sha256", "files", "artifact_path"]
 )
+@pytest.mark.local_evidence
 def test_descriptor_mutation_refuses(historical, tmp_path, key):
     frozen = tmp_path / "frozen"
     descriptor = data.freeze_historical_data(historical, frozen)
@@ -246,6 +258,7 @@ def test_inventory_rejects_invalid_native_case_without_pruning(mutation):
         data.inventory(blob, "train")
 
 
+@pytest.mark.local_evidence
 def test_component_source_must_match_exact_frozen_pin(historical, tmp_path, monkeypatch):
     target = tmp_path / data.COMPONENT["path"]
     target.parent.mkdir(parents=True)

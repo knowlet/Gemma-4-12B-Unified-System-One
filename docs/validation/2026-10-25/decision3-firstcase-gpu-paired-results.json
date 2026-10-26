@@ -1,0 +1,120 @@
+{
+  "schema": "public-decision3-firstcase-gpu-paired-results-v1",
+  "date": "2026-10-25",
+  "timezone": "Asia/Taipei",
+  "scope": "first_fixed_upstream_case_candidate_then_baseline_diagnostic",
+  "case_id": "public-arxiv-title-filter-results-v1",
+  "hardware": "GX10 / NVIDIA GB10",
+  "execution_git_head": "fb40dcbca12e691731eea87784305481ca7208c6",
+  "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "helper_revision": "V7",
+  "profile_helper_sha256": "d9f4236d1d46c9472c3d6c1551342639ecb870e6c0dd419246927645410ea868",
+  "settings": {
+    "seed": 20261014,
+    "repeats": 1,
+    "max_steps": 16,
+    "native_call_seconds": 20,
+    "HTTP_caller_seconds": 25,
+    "pair_order": [
+      "candidate",
+      "baseline"
+    ],
+    "shared_NF4_helper_model_loads": 1,
+    "D3_model_loads": 1,
+    "full_suite_denominator": 10
+  },
+  "candidate": {
+    "model": "vllm-sr/d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "adapted_head": "operation",
+    "training_rows": 109,
+    "precision": "bfloat16 encoder / float32 readout and delta",
+    "infrastructure_complete": true,
+    "successes": 0,
+    "attempts": 1,
+    "terminal_status": "blocked",
+    "premature_done": false,
+    "policy_calls": 4,
+    "text_calls": 0,
+    "executed_actions": 4
+  },
+  "baseline": {
+    "model": "Gemma-4-12B generated-actions-nf4",
+    "infrastructure_complete": true,
+    "successes": 0,
+    "attempts": 1,
+    "terminal_status": "done",
+    "premature_done": true,
+    "policy_calls": 6,
+    "text_calls": 1,
+    "executed_actions": 4
+  },
+  "measurement": {
+    "original_exit_code": 0,
+    "complete_launch_wall_seconds": 243.1005604180391,
+    "source_files_reauthenticated": 860,
+    "source_inventory_files": 189,
+    "positive_source_files": 183,
+    "empty_Python_source_files": 6,
+    "native_calls": 4,
+    "native_probability_scalars_verified": 144,
+    "independent_FP64_dot_softmax_max_abs_error": 1.4973786233163366e-07,
+    "numerical_tolerance": {
+      "absolute": 1e-06,
+      "relative": 1e-05
+    },
+    "HTTP200_candidate_calls": 4,
+    "all_client_server_request_response_bytes_matched": true,
+    "nonoperation_raw_answers_exactly_preserved": true,
+    "W0_and_delta_raw_bytes_match_original_capability": true,
+    "both_original_observed_scopes_closed": true,
+    "owned_worker_final_allocated_bytes": 0,
+    "OS_no_escape_claim": false
+  },
+  "local_operation_comparison": {
+    "same_recorded_features_only": true,
+    "W0_top1_BLOCKED_to_composed_top1_CLICK_count": 4,
+    "full_unmodified_Edge_browser_trajectory_established": false
+  },
+  "failure_cause": {
+    "source": "original_three_unchanged_nonwait_actions_stagnation_stop",
+    "native_observations_verified": 5,
+    "page_changed": [
+      true,
+      false,
+      false,
+      false
+    ],
+    "selected_control_role": "radio",
+    "initial_checked": "false",
+    "last_three_checked": "true",
+    "last_three_same_target": true,
+    "TYPE_TEXT_and_SELECT_available_all_steps": true,
+    "operation_BLOCKED_selected_by_candidate": false
+  },
+  "audit": {
+    "complete_pair_sha256": "285439ce3bf070d407008ba0fe509c3cfccd367af582456a869f16e3c242229d",
+    "stagnation_cause_sha256": "a2b60b2f6a1275a4ff9fd5159442b0eb2488f7d07c9ef3c29e7a1e986b326249",
+    "runtime_source_sha256": "86fccc740f8117e7c20442f600d95ca2f71655fea9c8d92378da6308f3b46607",
+    "worker_source_sha256": "5c6718fe302124a5e924e9bf23df28cca5f439f6215631e2c942f36cd6c5f5f4",
+    "complete_pair_auditor_version": 3,
+    "earlier_auditor_case_identity_and_token_count_schema_refusals_preserved": true
+  },
+  "limits": {
+    "full10_score": null,
+    "browser_qualified": false,
+    "benchmark_qualified": false,
+    "competitor_win": false,
+    "helper_runtime_qualification_claimed": false,
+    "new_unseen_evaluation_claim": false,
+    "dev_used_for_model_selection": true,
+    "optimizer_input_dev": false,
+    "optimizer_input_sealed": false,
+    "current_evaluation_inputs_used_for_new_training": false
+  },
+  "separate_original_model_benchmarks": {
+    "coherence": "decision3-native-coherence-gpu-results.json",
+    "heaven_public231": "decision3-native-heaven-gpu-results.json",
+    "scores_inherited_by_this_candidate": false
+  }
+}

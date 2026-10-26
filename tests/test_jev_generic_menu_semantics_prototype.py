@@ -12,6 +12,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
+from local_evidence import require_local_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "scripts/jev_generic_menu_semantics_prototype.py"
@@ -121,8 +122,13 @@ def test_target_kind_order_and_scroll_history_balance():
         ]
 
 
+@pytest.mark.local_evidence
 def test_reviewed_specification_and_goals_remain_exact():
+    require_local_evidence(SPEC)
     assert producer.specification() == json.loads(SPEC.read_bytes())
+
+
+def test_specification_goals_contract():
     spec = producer.specification()
     assert len(spec["per_goal_review"]) == 14
     for row in spec["per_goal_review"]:

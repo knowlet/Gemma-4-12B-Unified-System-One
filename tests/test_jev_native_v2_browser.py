@@ -10,6 +10,7 @@ from types import SimpleNamespace
 
 import jev_native_v2_browser as driver
 import pytest
+from local_evidence import require_local_evidence
 
 
 class FakeLM:
@@ -685,8 +686,10 @@ def test_client_cleanup_and_publication_cannot_replace_browser_timeout(
         assert closure["confirmed"] is False
 
 
+@pytest.mark.local_evidence
 @pytest.mark.parametrize("code", ["pass", "import time; time.sleep(0.15)"])
 def test_actual_owned_client_is_seeded_before_poll_and_closes(tmp_path, code):
+    require_local_evidence(driver.MATRIX)
     driver.run_client([sys.executable, "-I", "-B", "-c", code], dict(os.environ), tmp_path)
     closure = json.loads((tmp_path / "owned-client-closure.json").read_bytes())
     assert closure["confirmed"] is True and closure["remaining"] == []
@@ -728,6 +731,7 @@ def test_whole_http_timeout_returns_504_and_never_authorizes_action(
     from s1 import jev_generated
     from s1.browser_server_evidence import ServerEvidenceJournal
 
+    clock = PublicationClock()
     model = model_fixture()
     driver.CurrentNF4HelperGuard(model)
     journal = ServerEvidenceJournal(tmp_path / "server")
@@ -755,11 +759,22 @@ def test_whole_http_timeout_returns_504_and_never_authorizes_action(
         checks.append(True)
         expires_at = {"after_serial_lock": 1, "before_dispatch": 2, "after_candidate": 3}
         expired = len(checks) >= expires_at[timeout_phase]
-        deadline(started, clock=lambda: started + (20 if expired else 0))
+        # Keep the boundary exact: adding 20 to a real monotonic origin can
+        # round so that (started + 20) - started is slightly less than 20.
+        clock.now = 20.0 if expired else 0.0
+        deadline(started, clock=clock)
 
     monkeypatch.setattr(driver, "http_deadline", measured)
     app = driver.make_application(
-        model, None, journal, gate, tmp_path, "private-test-token", "raw-json-v1", "original system"
+        model,
+        None,
+        journal,
+        gate,
+        tmp_path,
+        "private-test-token",
+        "raw-json-v1",
+        "original system",
+        clock=clock,
     )
     with TestClient(app) as client:
         response = client.post(

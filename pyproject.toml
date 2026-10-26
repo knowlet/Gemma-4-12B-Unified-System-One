@@ -34,7 +34,7 @@ packages = ["src/s1"]
 testpaths = ["tests"]
 pythonpath = ["scripts"]
 addopts = "-ra"
-markers = ["inference: requires the inference extra; never downloads weights", "integration: explicitly invoked live model or cloud checks", "frozen_decoder: exact Linux ARM64 tokenizers oracle; mandatory dedicated CI job"]
+markers = ["inference: requires the inference extra; never downloads weights", "integration: explicitly invoked live model or cloud checks", "frozen_decoder: exact Linux ARM64 tokenizers oracle; mandatory dedicated CI job", "local_evidence: replays untracked local historical evidence; never a pure unit test"]
 
 [tool.ruff]
 target-version = "py311"

@@ -1,0 +1,13 @@
+# DSL01 train-only CPU5 collector
+
+Root source qualification passed 14 bounded stdlib regression tests, Ruff and AST/format checks. The original SOURCE_ONLY hold was released only for this collector. The separate loader/fit remain held. Actual eight-call fit within the original budgets is still unproven until a fresh original owner transaction succeeds.
+
+The collector reads only existing DSL01 train requests and summary. All96 train identities and4 families/12 ancestors are validated; one root-selected ancestor contributes all8 existing cases in original order. Every call contains all4 actual heads with original criteria order, including observed but unsupervised unused target heads. Labels, DSL authoring code/full manifest, dev/sealed exports, exposed Copper examples and diagnostic arrays are refused before open.
+
+The exact prerequisite is NP02 `root-accepted-np5-qualification-02.json`, accepted by root after actual05 terminal0, owner completion and current original scoped closure. Peers reviewed source only. Accepted critical CPU runtime hashes and separate GPU stat-only candidates are authenticated before explicit NumPy/core loading inside the first call20. Every actual post-call catalog must match that accepted limited projection; no complete DSO/symbol-binding claim is made.
+
+Native05 performs one full authenticated BF16 CPU model load. Each original batch4 forward yields independent FP32 h[4,1024] and common W0[255,1024]; Torch and NumPy zero-delta replay verify every legal original probability and ordered argmax using unchanged1e-6+1e-5 relative tolerance. Illegal columns remain zero. Baseline tensors/versions and W0 bytes remain unchanged. No optimizer runs.
+
+CPU15–19, quota500%, intra5/interop1, memory4GiB, swap0, startup30414140212B, original context16384, call20 and whole120 remain fixed. The complete boundaries include runtime/catalog/input authentication, all arrays/raw/evidence/manifest writes, directory fsync, hook cleanup and watchdog exit. No inference or resources from earlier runs substitute for a new transaction.
+
+Output is under a new owner09 actual-XX/train-chunk. `chunk.json` stays PENDING_TRAIN_ONLY/training_eligible=false, with baseline.npy and cases/<case_id>/{features.npy,raw-native-response.json,evidence.json}. Exact hashes, native payload/case/head/criteria order, same-forward shapes and complete post-watchdog call times are retained. Root must separately audit actual bytes and original terminal/owner/current closure and issue an independently selected COMMITTED sidecar before any feature enters fitting. No OS sealing or universal no-escape claim follows.

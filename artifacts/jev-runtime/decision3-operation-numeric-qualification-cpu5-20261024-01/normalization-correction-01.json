@@ -1,0 +1,58 @@
+{
+  "schema": "operation-numeric-original-respond-witness-correction-v1",
+  "status": "V2_SOURCE_AND_GENUINE_CALLS_ACCEPTED",
+  "previous_held": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-numeric-qualification-cpu5-20261024-01/actor_held.py",
+    "sha256": "e33f32ba66741e5f034444661d009deaf5086c4a91fd38cc7e9bc5237022555a",
+    "size_bytes": 39986
+  },
+  "corrected_held": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-numeric-qualification-cpu5-20261024-01/actor_held_v2.py",
+    "sha256": "db38543dbd54eb24025c2678a3352f401f76ecbbec510241126ccb5184a0ebcc",
+    "size_bytes": 41329
+  },
+  "released": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-numeric-qualification-cpu5-20261024-01/actor_released_v2.py",
+    "sha256": "daa58be24220cd6b222ee738c95b7c49f6142b8b9795ff1adabbe3b6fe481338",
+    "size_bytes": 41392
+  },
+  "primary_pinned_publisher_sources": {
+    "d3_format.py": {
+      "name": "d3_format.py",
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_format.py",
+      "size": 7008,
+      "sha256": "3badfbc70561bb3f5b8ec16a11d2c455b96ddb32caace0a8a54ca102eae1f3fa",
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 11286072,
+        "st_size": 7008,
+        "st_mtime_ns": 1792077951181610274
+      },
+      "preparation_check": "small_source_SHA256"
+    },
+    "d3_runtime.py": {
+      "name": "d3_runtime.py",
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_runtime.py",
+      "size": 95505,
+      "sha256": "adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917",
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 11286074,
+        "st_size": 95505,
+        "st_mtime_ns": 1792077951196008813
+      },
+      "preparation_check": "small_source_SHA256"
+    }
+  },
+  "source_evidence": "d3_format.normalized converts each float then divides by Python sum; D3.respond -> product_answer -> to_answer -> normalized. Direct comparison of pre-formatter Torch values to returned raw exact bits was unsupported.",
+  "correction": "Call same runtime.respond on same-forward original replay, retain native_response_control, compare exact target raw probabilities to this original-formatted control. No extra encoder forward, scoring/answer repair, parameter change or tolerance/deadline relaxation.",
+  "held_v1_never_executed_in_original_owner": true,
+  "held_v1_fakes": 12,
+  "held_v2_fakes": 13,
+  "root_audit_fakes": 3,
+  "root_numeric_acceptance": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-numeric-qualification-cpu5-20261024-01/root-accepted-operation-numeric-01.json",
+    "sha256": "404828850c2e3b3a46f8e20e712603c31b1d7156728b17bab740937207734c21",
+    "size_bytes": 14650
+  }
+}

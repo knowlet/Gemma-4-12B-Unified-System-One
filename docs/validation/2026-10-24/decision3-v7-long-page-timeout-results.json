@@ -1,0 +1,151 @@
+{
+  "schema": "decision3-matched-v7-native-deadline-aggregate-v1",
+  "campaign": "matched-03",
+  "scope": "completed Gemma baseline and interrupted Decision3 operation candidate in a public development comparison",
+  "measurement_source_commit": "cefdf318dcb34a80ac5f029dbc002b2f8ef25930",
+  "subsequent_CI_changes_attributed_to_measurement": false,
+  "aggregate_provenance": "Independently checked original outcomes; only aggregate metadata is published.",
+  "baseline": {
+    "model": "Gemma",
+    "fresh_browsers": true,
+    "complete": true,
+    "successful_tasks": 4,
+    "attempts": 10,
+    "known4": {
+      "successful_tasks": 1,
+      "attempts": 4
+    },
+    "public6": {
+      "successful_tasks": 3,
+      "attempts": 6
+    },
+    "verified_DONE_cases": 4,
+    "false_DONE_cases": 2,
+    "automatic_blocked_after_three_no_observable_page_changes_cases": 2,
+    "runner_16_decision_budget_exhausted_cases": 2,
+    "policy_calls": 78,
+    "helper_calls": 6,
+    "HTTP_responses": 84,
+    "HTTP_200_responses": 84
+  },
+  "previous_same_model_baseline": {
+    "campaign": "matched-02",
+    "successful_tasks": 3,
+    "attempts": 10,
+    "model_changed_between_runs": false,
+    "live_website_variation_controlled": false,
+    "model_improvement_established": false
+  },
+  "candidate": {
+    "model": "Decision3 operation adapted candidate",
+    "CPU_cores": 5,
+    "scheduled_cases": 10,
+    "completed_accepted_cases": 2,
+    "successful_completed_cases": 0,
+    "policy_selected_BLOCKED_completed_cases": 2,
+    "HTTP_200_completed_cases": 2,
+    "complete": false,
+    "complete_ten_case_score": null,
+    "complete_matched_comparison_score": null,
+    "third_case": {
+      "status": "native deadline failure after forward returned",
+      "batch_shape": [
+        4,
+        4579,
+        1024
+      ],
+      "token_lengths": [
+        3117,
+        4196,
+        4579,
+        3126
+      ],
+      "legal_option_counts": [
+        7,
+        38,
+        36,
+        1
+      ],
+      "logical_tokens": 15018,
+      "padded_tokens": 18316,
+      "native_forward_returned": true,
+      "native_forward_seconds": 30.438240485993447,
+      "original_cooperative_deadline_seconds": 20,
+      "deadline_checked_after_forward_return": true,
+      "client_HTTP_status": 504,
+      "browser_action_authorized": false,
+      "hard_cancellation_claimed": false
+    }
+  },
+  "campaign_execution": {
+    "wall_seconds": 615.4987163949991,
+    "exit_code": 1,
+    "error": "owner_error",
+    "trigger": "third candidate case native deadline failure",
+    "ComfyUI_abort": false,
+    "memory_admission_abort": false
+  },
+  "original_CPU_closure": {
+    "invocations": 3,
+    "positive_scoped_closures": 3,
+    "clear_scans_per_invocation": 2,
+    "selected_sources_unchanged_at_original_closure": true,
+    "retained_owned_model_or_browser_processes": false,
+    "actual32": {
+      "completed": true,
+      "service_success": true
+    },
+    "actual33": {
+      "completed": true,
+      "service_success": true
+    },
+    "actual34": {
+      "completed": false,
+      "service_success": false
+    },
+    "failed_service_requalified_by_cleanup": false
+  },
+  "separate_JevBench_results": {
+    "original_unadapted_Decision3_Edge": {
+      "Benchmark_Heaven_public231": {
+        "correct": 158,
+        "attempts": 231,
+        "accuracy_percent_rounded": 68.398268
+      },
+      "JevBench_coherence_MINI": {
+        "score_0_to_100": 70.58660130718954,
+        "complete_requests": 1248,
+        "scheduled_requests": 1248,
+        "complete": true
+      }
+    },
+    "adapted_operation_candidate": {
+      "Benchmark_Heaven_public231_score": null,
+      "JevBench_coherence_MINI_score": null,
+      "original_model_scores_inherited": false
+    }
+  },
+  "complete_browser_comparison_established": false,
+  "competitor_win_established": false,
+  "raw_requests_or_responses_published": false,
+  "DOM_gold_probabilities_or_model_files_published": false,
+  "next_measurement": {
+    "status": "planned, not measured by this report",
+    "target": "GX10 CPU5 versus CPU16 on identical invented long-context inputs",
+    "unchanged_requirements": [
+      "same precision and resource limits",
+      "original 20-second cooperative policy deadline",
+      "task failures retained in the denominator",
+      "fresh complete browser evaluation before a model comparison claim"
+    ]
+  },
+  "status": "INCOMPLETE_CANDIDATE_SINGLE_CALL_TIMEOUT",
+  "audit_provenance": {
+    "accepted_independent_review_sha256": "633fa457f1cc155b181e1226939c4603b1aa6dd4a0bc9979f23b0481f320a99b",
+    "root_plan_sha256": "7c0338fa66f600734b02510401d50ad126d9a6e7b3b756ffde0c94782e04b8e3",
+    "aggregate_audit_source_sha256": "accb3d80e0265465d36d085ecee3ddd9c2368c9f1ab360846149d67ddab01181",
+    "case_audit_source_sha256": "efe622c7ca1221a55ee8a15b9c2c2ee644b06fd0e9498f53cf150b5ec07a4f0b",
+    "source_integrity_scope": "Sources matched at the original execution closure; later CI changes are not attributed to this measurement.",
+    "full_output_inventory_qualification_claimed": false
+  }
+}

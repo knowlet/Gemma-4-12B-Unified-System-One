@@ -1,0 +1,71 @@
+{
+  "schema": "decision3-matched-v7-source-preparation-v1",
+  "created_at_utc": "2026-10-24T07:30:51.103876+00:00",
+  "status": "HELD_NO_EXECUTION_SELECTED",
+  "goal_status": "active",
+  "prior_real_browser_milestone_commit": "dd0cb6e36d5027ae290378bb0181135a399f827a",
+  "protocol": {
+    "suite": "original V7 known4+public6",
+    "cases_per_arm": 10,
+    "arms": [
+      "Gemma NF4 shared-elements-v2",
+      "d3-edge-dsl01-operation-delta-cpu5-candidate"
+    ],
+    "seed": 20261014,
+    "repeats": 1,
+    "max_steps": 16,
+    "observation_profile": "composed-visible-text-settled-v7",
+    "observation_helper_sha256": "d9f4236d1d46c9472c3d6c1551342639ecb870e6c0dd419246927645410ea868",
+    "helper_model": "generated-actions-nf4",
+    "helper_base_revision": "a66f836b56605039fe040f330180e336d19b3362",
+    "helper_action_adapter_disabled": true,
+    "helper_reasoning": "none",
+    "helper_generation_limit": 128,
+    "helper_context_limit": 8192,
+    "whole_model_seconds": 20,
+    "HTTP_seconds": 25,
+    "fresh_browser_each_case_both_arms": true,
+    "historical_grouped_4_of_10_is_not_fresh_matched_control": true
+  },
+  "tests": {
+    "caller": 11,
+    "forward_serialization": 9,
+    "outer_owner": 11,
+    "total": 31,
+    "NN": false,
+    "ruff_check_passed": true,
+    "ruff_format_passed": true,
+    "AST_without_execution_passed": true
+  },
+  "unimplemented_required_work": [
+    "Per-case HTTP-only CPU5 service preserving original native/operation backend, 4GiB boundary and per-call20 seconds",
+    "Externally owned pump, bounded handoff and authenticated independent CPU/GPU cleanup",
+    "Selected integrated campaign using original NF4 helper and exact original ten-case order for both fresh arms",
+    "Root closed HTTP/server/backend/browser/judge/source/resource comparison audit"
+  ],
+  "new_actual_or_NN_jobs": 0,
+  "next_fresh_CPU_owner_actual": 31,
+  "new_ten_case_score": null,
+  "new_candidate_jevbench_heaven_score": null,
+  "new_candidate_jevbench_coherence_score": null,
+  "competitor_win": false,
+  "real_HTTP_bodies_DOM_model_arrays_gold_or_weights_published": false,
+  "peer_scope": "Source only; no peer actual-byte read or execution",
+  "source_validations": [
+    {
+      "path": "artifacts/jev-runtime/decision3-v7-matched-browser-cpu5-20261024-01/root-source-validation-01.json",
+      "sha256": "fbe8be94676101668238ce64ce93b0ce1581cca8ea34006f3b7e817077f3a70e",
+      "size_bytes": 2890
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-v7-matched-campaign-gx10-20261024-01/root-source-validation-01.json",
+      "sha256": "e869d0e383ef95f320b12f61b0707507a918e7a7e64367d658d0ce876a33aa36",
+      "size_bytes": 2266
+    }
+  ],
+  "documentation": {
+    "path": "docs/validation/2026-10-24/decision3-matched-v7-preparation.md",
+    "sha256": "acc53c99b4207bf2a99ef6ac09ede7b5b671df47d1f20a6da09350a321a69173",
+    "size_bytes": 3774
+  }
+}

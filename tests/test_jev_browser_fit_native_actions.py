@@ -8,9 +8,29 @@ from types import SimpleNamespace
 
 import jev_browser_fit_native_actions as FIT
 import pytest
+from local_evidence import require_local_evidence
 from test_jev_browser_fit_actions import tiny as tiny
 
 ROOT = Path(__file__).resolve().parents[1]
+HISTORICAL_MANIFEST = (
+    ROOT
+    / "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/actual-admit-02/mixed-manifest-A.json"
+)
+
+
+@pytest.fixture
+def fake_boot_observation(monkeypatch):
+    boot_path = Path("/proc/sys/kernel/random/boot_id")
+    boot_id = "11111111-2222-4333-8444-555555555555"
+    original = Path.read_text
+
+    def read_text(path, *args, **kwargs):
+        if path == boot_path:
+            return boot_id + "\n"
+        return original(path, *args, **kwargs)
+
+    monkeypatch.setattr(FIT.Path, "read_text", read_text)
+    return boot_id
 
 
 @pytest.mark.parametrize(
@@ -80,14 +100,20 @@ def test_real_constructor_arguments_preserve_pinned_temperature_and_base(monkeyp
     }
 
 
-def test_initial_resource_failure_is_preserved_before_data_or_model(tmp_path, monkeypatch):
+def test_initial_resource_failure_is_preserved_before_data_or_model(
+    tmp_path, monkeypatch, fake_boot_observation
+):
     class Refuse:
         def check(self, phase, scope):
             assert phase == "before-any-project-framework-or-parent-payload" and scope == "cpu"
             raise ValueError("original resource admission refused")
 
+    def gate(_path, boot_id):
+        assert boot_id == fake_boot_observation
+        return Refuse()
+
     monkeypatch.setattr(FIT, "_environment", lambda: None)
-    monkeypatch.setattr(FIT, "_gate", lambda *_: Refuse())
+    monkeypatch.setattr(FIT, "_gate", gate)
     monkeypatch.setattr(FIT, "_construct_model", lambda *_: pytest.fail("must not load model"))
     output = tmp_path / "fit"
     with pytest.raises(ValueError, match="original resource admission"):
@@ -193,7 +219,12 @@ class NativeToyProcessor:
 
 
 @pytest.fixture
-def native_toy(tiny, monkeypatch):
+def native_toy(request, monkeypatch, fake_boot_observation):
+    from s1 import browser_native_action_data as data
+
+    require_local_evidence(ROOT / data.COMPONENT["path"], HISTORICAL_MANIFEST)
+    tiny = request.getfixturevalue("tiny")
+
     import jev_browser_fit_actions as kernel
     import torch
 
@@ -211,6 +242,10 @@ def native_toy(tiny, monkeypatch):
         def check(self, phase, scope):
             gates.append((phase, scope))
 
+    def gate(_path, boot_id):
+        assert boot_id == fake_boot_observation
+        return FakeCPUGate()
+
     def check(model, fitter):
         # Only these explicitly mocked base/shape/resource checks differ from
         # production. The unchanged trainer still checks frozen parameters/head,
@@ -219,7 +254,7 @@ def native_toy(tiny, monkeypatch):
         assert model.head.weight.dtype == torch.bfloat16 and not model.head.weight.requires_grad
 
     monkeypatch.setattr(FIT, "_environment", lambda: None)
-    monkeypatch.setattr(FIT, "_gate", lambda *_: FakeCPUGate())
+    monkeypatch.setattr(FIT, "_gate", gate)
 
     def checkpoint():
         assert gates[-1] == ("before-checkpoint-payload-hash-and-BF16-loader", "load")
@@ -241,6 +276,7 @@ def lines(path):
     return [json.loads(x) for x in path.read_bytes().splitlines() if x.strip()]
 
 
+@pytest.mark.local_evidence
 def test_genuine_tiny_one_pass_uses_all179_and_exports_matching_native_profile(
     tmp_path, native_toy
 ):
@@ -285,6 +321,7 @@ def test_genuine_tiny_one_pass_uses_all179_and_exports_matching_native_profile(
     assert not model.lm._forward_pre_hooks
 
 
+@pytest.mark.local_evidence
 def test_genuine_native_warm_start_loads_exact_parent_and_preserves_development(
     tmp_path, native_toy, monkeypatch
 ):
@@ -302,6 +339,7 @@ def test_genuine_native_warm_start_loads_exact_parent_and_preserves_development(
     assert receipt["training_updates"] == 1 and not model.lm._forward_pre_hooks
 
 
+@pytest.mark.local_evidence
 def test_native_partial_update_keeps_primary_and_has_no_valid_manifest(
     tmp_path, native_toy, monkeypatch
 ):

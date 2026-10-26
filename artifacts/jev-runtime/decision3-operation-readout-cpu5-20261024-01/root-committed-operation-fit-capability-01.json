@@ -1,0 +1,314 @@
+{
+  "schema": "root-committed-train-operation-fit-v1",
+  "status": "ROOT_COMMITTED_TRAIN_OPERATION_FIT",
+  "split": "train",
+  "fit_budget_seconds": 120,
+  "hyperparameters": {
+    "steps": 512,
+    "learning_rate": 0.003,
+    "l2": 0.0001,
+    "seed": 20261023,
+    "batch_size": 64
+  },
+  "projection": {
+    "id": "publisher-final-norm-last-position-fp32-255x1024-t1-v1",
+    "feature_width": 1024,
+    "codes": 255,
+    "temperature": 1.0,
+    "absolute_tolerance": 1e-06,
+    "relative_tolerance": 1e-05,
+    "legal_mask": "code_index_less_than_actual_criteria_count"
+  },
+  "train_inputs": {
+    "requests": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-decision-dsl-20261023-01/corpus/data/train/requests.jsonl",
+      "sha256": "9ca13562700032b5a0f613195cdd4767687e908c1a3a3f3bc9ea14338c3e5f60",
+      "size_bytes": 1129144
+    },
+    "summary": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-decision-dsl-20261023-01/corpus/data/train/summary.json",
+      "sha256": "bbb3ab5f31d856f09f0eb3e67440679198701bb2bae5f223e4dbebb2e8649660",
+      "size_bytes": 688
+    },
+    "labels": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-decision-dsl-20261023-01/corpus/data/train/labels.jsonl",
+      "sha256": "9ebfc67e1482ff178a157a8cbdf4bc7a18d3bcc8ff77abf13f2bb40c50b9819b",
+      "size_bytes": 57600
+    }
+  },
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "source_records": {
+    "native_actor": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py",
+      "sha256": "9a7e5af918c17f6824a720fb6d112ffa5fdac03493dde3efa176c7d50470a365",
+      "size_bytes": 31080
+    },
+    "native_plan": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/edge-plan.json",
+      "sha256": "095db88b78687d90fbed51aafd736c1b06fb1a582312de8dff97bf6109131e96",
+      "size_bytes": 31270
+    },
+    "native_helper": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/resource_helper.py",
+      "sha256": "4df54e06e8a795ebf5b300a3e2074319e781a278a2a870c21c2bd52897d7eb11",
+      "size_bytes": 7954
+    },
+    "np5_actor": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/actor.py",
+      "sha256": "c8a439c794f5176564a29473c524d62f86218818b1f7fb66089c8e007dfd7f82",
+      "size_bytes": 19795
+    },
+    "observer": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/observer.py",
+      "sha256": "455e2c7bf20d1a96f99795566062db15dbe779dd5610e573277c382775bc4f37",
+      "size_bytes": 6417
+    },
+    "numpy_probe": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/numpy_probe.py",
+      "sha256": "22ed700ebc9ea49fd8cf4d1a532ca3a571290d349b69053c6bea082631582f7f",
+      "size_bytes": 16236
+    },
+    "head_core": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cached-head-core-20261023-01/head_core.py",
+      "sha256": "6761dd654481424f4d6c908a7c9fd2d43e4762eeb5420af9f22612ffe77657ed",
+      "size_bytes": 6957
+    },
+    "owner_controller": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/controller.py",
+      "sha256": "81846efe2ee0357da07283c1a77a606283a920cbddef668c8f62def291057dee",
+      "size_bytes": 41886
+    }
+  },
+  "collector_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/collector.py",
+    "sha256": "d3b067d536e42c4f611a32b027f886ede96aaf487cb38c6bfe57ead52148c4d5",
+    "size_bytes": 33197
+  },
+  "root_np5_prerequisite_ref": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/root-accepted-np5-qualification-02.json",
+    "sha256": "81063db0b9044ebf1a5bba6d7c60575f0ec51d0510c5a1ffb840ba89fa3b6bc0",
+    "size_bytes": 5141
+  },
+  "baseline": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-06/train-chunk/baseline.npy",
+    "sha256": "5e740b32794672cc67346c8c4d0d9eae8b44b7c0d0a62612808799eaeeada655",
+    "size_bytes": 1044608,
+    "format": "npy_no_pickle",
+    "dtype": "float32",
+    "shape": [
+      255,
+      1024
+    ],
+    "FP32_bytes_sha256": "d408d94a0ab2915fa85c511dd9b8d62af49903c4e4ca28e2e2d5aff9ef565e0f"
+  },
+  "chunks": [
+    {
+      "ancestor_id": "admin_filters/workflow-1",
+      "family_id": "admin_filters",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-06/train-chunk/chunk.json",
+        "sha256": "8e15835358b3bd448c7753b0600c25227803b589371d80ef198eaf22f6542662",
+        "size_bytes": 34073
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-01.json",
+        "sha256": "3d551d0596b18d8e9cadce6f656baa5abcb6934f6eca0522fe17f049615d92f4",
+        "size_bytes": 43126
+      }
+    },
+    {
+      "ancestor_id": "admin_filters/workflow-2",
+      "family_id": "admin_filters",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-07/train-chunk/chunk.json",
+        "sha256": "703d8927f8cc3d83fabe6a6b12a196c6a7241236299550fafc15dc39b0962e7a",
+        "size_bytes": 34071
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-02.json",
+        "sha256": "6560edfba9a3cbd3964899aa2c149b4845c4ef6ae99b3245a1f268a1875c2eb6",
+        "size_bytes": 43119
+      }
+    },
+    {
+      "ancestor_id": "admin_filters/workflow-3",
+      "family_id": "admin_filters",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-08/train-chunk/chunk.json",
+        "sha256": "7551e196f877bc15daa2491bc37f3b65c7d3f59eaf42fa1f96e304d231317352",
+        "size_bytes": 34068
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-03.json",
+        "sha256": "cd3f09676e6551dfd10f4d618f502548b90f124a804155f66f1dd3106e0ad783",
+        "size_bytes": 43103
+      }
+    },
+    {
+      "ancestor_id": "appointment_edit/workflow-1",
+      "family_id": "appointment_edit",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-09/train-chunk/chunk.json",
+        "sha256": "5321eda9d115f4f346d8aaa8745d0c39cd1d908de5d70d623edddfccfa1b7c96",
+        "size_bytes": 34128
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-04.json",
+        "sha256": "e0f1600a86a14aed2c3abe3fb421e4238dc503e5315623cccb07ffbf45fb517b",
+        "size_bytes": 43107
+      }
+    },
+    {
+      "ancestor_id": "appointment_edit/workflow-2",
+      "family_id": "appointment_edit",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-10/train-chunk/chunk.json",
+        "sha256": "bdd0b861025f365b9c894f7b016da550fb7bbc5c57f0297e18609ebcad81a8f5",
+        "size_bytes": 34127
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-05.json",
+        "sha256": "5781d73a6076ad4dd7364380caf8a7fc359aaf27ece966aa1521e4dcb4782966",
+        "size_bytes": 43126
+      }
+    },
+    {
+      "ancestor_id": "appointment_edit/workflow-3",
+      "family_id": "appointment_edit",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-11/train-chunk/chunk.json",
+        "sha256": "e20d85f36143590b45f0600961657b16c8ecb612a64c15005f877b5333594397",
+        "size_bytes": 34126
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-06.json",
+        "sha256": "e4951aa16904cfafd0e5dba1a1c0d12163e232754aeadc9f942f283b77697b7d",
+        "size_bytes": 43132
+      }
+    },
+    {
+      "ancestor_id": "booking_inventory/workflow-1",
+      "family_id": "booking_inventory",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-12/train-chunk/chunk.json",
+        "sha256": "07a72f72884d4528ec52454ff063663f3038e638304e46fe8454eed1634aeacb",
+        "size_bytes": 34143
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-07.json",
+        "sha256": "d3891154f824f2f7a67db0c62c55553d93ff9beef96cd9336520027ea38c032f",
+        "size_bytes": 43133
+      }
+    },
+    {
+      "ancestor_id": "booking_inventory/workflow-2",
+      "family_id": "booking_inventory",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-13/train-chunk/chunk.json",
+        "sha256": "f11e09ff17de7a789e8db70bf7a5b8ab3e8446ed469039e79a72b10e9b8f3bc9",
+        "size_bytes": 34144
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-08.json",
+        "sha256": "72574ef2f1388ccd23f8cacd04ba05d0edafd3770ff43393c5633ab18fabfdb9",
+        "size_bytes": 43128
+      }
+    },
+    {
+      "ancestor_id": "booking_inventory/workflow-3",
+      "family_id": "booking_inventory",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-14/train-chunk/chunk.json",
+        "sha256": "c8575a5effc439b53ec8c4bdaf0680fc7a4d764ac8477eaafb90c5923011193c",
+        "size_bytes": 34146
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-09.json",
+        "sha256": "3c0888382d366901bd14dd5e2f720d86454abbb128ccfd355ce35645cc9a9ce2",
+        "size_bytes": 43117
+      }
+    },
+    {
+      "ancestor_id": "document_upload/workflow-1",
+      "family_id": "document_upload",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-15/train-chunk/chunk.json",
+        "sha256": "980600907273549331d5dcc769f903c9af89abe6916c15c5b095b7523f40cfef",
+        "size_bytes": 34109
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-10.json",
+        "sha256": "6772e782bd6ef19b4741d53551d2569e6fd9db2883cb24fe70f5e9713176b55a",
+        "size_bytes": 43134
+      }
+    },
+    {
+      "ancestor_id": "document_upload/workflow-2",
+      "family_id": "document_upload",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-16/train-chunk/chunk.json",
+        "sha256": "633e69a42b08faee9a96486dd1a3e07ec4d537bfaafc81fa8c0262d8516f4532",
+        "size_bytes": 34112
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-11.json",
+        "sha256": "54d9aa3546696fc28f1b1be34e2bf401e03970f1b74769f7704ca4faabd1730b",
+        "size_bytes": 43129
+      }
+    },
+    {
+      "ancestor_id": "document_upload/workflow-3",
+      "family_id": "document_upload",
+      "chunk": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-17/train-chunk/chunk.json",
+        "sha256": "3758f1703f655f6756c54d8f3572ca1c27e51f361b896f78c976af1a5e76ea57",
+        "size_bytes": 34110
+      },
+      "acceptance": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-chunk-12.json",
+        "sha256": "fe1ce564a41848b918beec3315096c8d7e2bc5908176a62252c04967558c29d8",
+        "size_bytes": 43136
+      }
+    }
+  ],
+  "candidate_selection_before_dev_or_sealed": false,
+  "train_states": 96,
+  "train_ancestors": 12,
+  "train_families": 4,
+  "dev_or_sealed_or_official_gold_allowed": false,
+  "OS_sealing_claim": false,
+  "training_strategy": "operation_only",
+  "only_head": "operation",
+  "profile": "decision3-dsl01-operation-readout-cpu5-4g-candidate-v1",
+  "alias": "d3-edge-dsl01-operation-delta-cpu5-candidate",
+  "dev_used_for_model_selection": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "source_train_capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-committed-train-fit-capability-01.json",
+    "sha256": "51d87342a04e1121e669da018591d62778cbc52cb4599f8763df97317d25a45b",
+    "size_bytes": 14175
+  },
+  "training_eligible": true,
+  "nontraining": false
+}

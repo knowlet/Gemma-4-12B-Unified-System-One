@@ -1,0 +1,9 @@
+# GPU service preparation: shared forward lease and longer resource owner
+
+The new [experimental serializer](../../../scripts/jev_gpu_forward_lease.py) holds one shared lease around a complete Decision3 composition call or the complete NF4 CausalLM forward. CUDA completion, the durable completed record and the deadline check precede unlock. Required failures before unlock retain the lease until process exit. The HTTP-entry deadline must wrap the serializer; the serializer does not cancel HTTP or authenticate framework origins.
+
+Root ran 22 invented stdlib controls. They cover contention, inode replacement, fence/journal/deadline failure, full-provider coverage and preservation of the original failure, including an exception that refuses supplemental notes. These controls use module doubles and establish no actual CUDA behavior.
+
+A fresh GX10 model-free owner control also completed with exit code 0 in 1.724675584 seconds. Independent root inspection joined its original selected sources, two stable child identity samples, live kernel/unit readbacks, original controller result, scoped closure and subsequent absence. The observed configuration was 8 GiB memory, swap 0, CPU 15–19 with quota 500%, a two-hour unit maximum and three-second stop timeout. This was a short control of the configured owner, not a two-hour endurance test. It made zero model/browser calls and created no GPU context.
+
+The earlier [trained operation-only GPU numerical witness](decision3-affordance-operation-gpu-numerical-results.md) remains a separate prerequisite. The full GPU HTTP service, matched ten-case completion rate and both fresh JevBench scores are pending. No score or model-quality qualification follows from these preparation checks. Raw control records, process identities and private paths remain local.
