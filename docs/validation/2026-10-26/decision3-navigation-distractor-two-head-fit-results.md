@@ -58,9 +58,10 @@ within its unchanged 64-entry limit. No source bound or process limit is raised.
 
 The [machine-readable report](decision3-navigation-distractor-two-head-fit-results.json)
 contains aggregate metrics and immutable evidence hashes. At this milestone,
-GPU composition and this candidate's browser behavior remain unverified. The
-next numerical check retains all 72 full wires in two fixed, consecutive groups
-of 36 within the existing per-owner deadline. Both JevBench scores and the full
+GPU composition and this candidate's browser behavior were unverified. The
+subsequent [GPU report](decision3-navigation-distractor-two-head-gpu-results.md)
+verifies all 72 full wires in two fixed, consecutive groups of 36 within the
+existing per-owner deadline; browser verification remains pending. Both JevBench scores and the full
 browser score remain unmeasured for this candidate. The previous candidate's
 [matched browser pair](decision3-goal-routed-two-head-gpu-browser-results.md)
 remains 0/1 versus 0/1; no ranking or win is claimed.
