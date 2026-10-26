@@ -74,7 +74,10 @@ model, browser and benchmark qualification false. These are TRAIN features and
 numerical checks, not a new prediction accuracy or browser success result.
 
 The [machine-readable report](decision3-navigation-distractor-collection-results.json)
-records aggregate evidence and immutable hashes. Training and matched browser
-verification remain subsequent steps. The latest
-candidate browser result remains 0/1; candidate full-browser, JevBench coherence
-and Benchmark Heaven scores remain unmeasured, and no win is claimed.
+records aggregate evidence and immutable hashes. This is the collection and
+feature milestone snapshot. The subsequent
+[two-head fit report](decision3-navigation-distractor-two-head-fit-results.md)
+records both TRAIN gains and the old-prefix operation regression. Matched browser
+verification remains pending for that new fit. The previous candidate browser
+result remains 0/1; candidate full-browser, JevBench coherence and Benchmark
+Heaven scores remain unmeasured, and no win is claimed.
