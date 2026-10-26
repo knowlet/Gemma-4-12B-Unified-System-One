@@ -1,0 +1,73 @@
+{
+  "profile": "cpu4-2GiB-original10800-owner-source-freeze-v1",
+  "created_at_utc": "2026-10-23T12:48:07.956298+00:00",
+  "status": "ALL_SOURCE_TEST_DOCS_VALIDATION_STOPPED_NO_ACTUAL",
+  "files": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/README.md",
+      "size_bytes": 3049,
+      "sha256": "23497f102b9d2540eff7354d7d7e74743cdd48b1133706f3fd5f251413770833"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+      "size_bytes": 40319,
+      "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/research-decision.json",
+      "size_bytes": 2531,
+      "sha256": "6276c66d36e904ba76b5320293d97225249742f178f06537a821cdeeb0bf55c6"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/test_controller.py",
+      "size_bytes": 34228,
+      "sha256": "04491f3e92c1883aa0c0d927d077190cf25a81f880eed60c3aef35788a303e9e"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/tests.log",
+      "size_bytes": 6243,
+      "sha256": "51341f93d82ebb8013f9278bbfe59eb86b14340a4a36b685f6023f5a3156d9f0"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/validation.json",
+      "size_bytes": 10913,
+      "sha256": "b3eb747bc88341d6b5f237ed81b5ac1e05aeccc464779d0990b7949ce315043f"
+    }
+  ],
+  "base_controller": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+    "size_bytes": 40319,
+    "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e"
+  },
+  "base_source_freeze": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/source-freeze-02.json",
+    "size_bytes": 2351,
+    "sha256": "b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe"
+  },
+  "resource_policy": {
+    "unit": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+    "profile": "llama-cpp-cpu4-2g-long-command-owned-v1",
+    "cap_bytes": 2147483648,
+    "startup_extra_bytes": 2147483648,
+    "reserve_bytes": 26119172916,
+    "initial_R_plus_actual_cap_bytes": 28266656564,
+    "runtime_choices_seconds": [
+      30,
+      7200,
+      10800
+    ],
+    "CPU_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "CPU_quota_percent": 400,
+    "swap_bytes": 0,
+    "file_bytes": 268435456
+  },
+  "actual_runtime": false,
+  "model_or_quality_qualified": false,
+  "independent_review_and_fresh_root_exact_selection_required": true,
+  "no_prior3GiB_results_inherited": true
+}

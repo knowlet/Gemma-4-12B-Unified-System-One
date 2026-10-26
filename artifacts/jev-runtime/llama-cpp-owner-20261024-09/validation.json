@@ -1,0 +1,98 @@
+{
+  "schema_id": "cpu5-fast-owner-source-validation-v1",
+  "status": "SOURCE_CHECKS_PASS_NO_ACTUAL",
+  "created_at_utc": "2026-10-24T02:49:02.887285+00:00",
+  "results": [
+    {
+      "name": "format",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/controller.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/test_controller.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.014718114980496466,
+      "stdout": "2 files left unchanged\n",
+      "stderr": ""
+    },
+    {
+      "name": "resource_fakes",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/test_controller.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.23614277900196612,
+      "stdout": "",
+      "stderr": "test_affinity_requires_exact_five_high_capacity_selected_cores_and_stable_process (__main__.CPU5Tests.test_affinity_requires_exact_five_high_capacity_selected_cores_and_stable_process) ... ok\ntest_exact_parent_source_changes_only_named_profile_and_cpu_resource_literals (__main__.CPU5Tests.test_exact_parent_source_changes_only_named_profile_and_cpu_resource_literals) ... ok\ntest_four_gib_floor_reserve_authorities_and_unknown_host_policy_not_weakened (__main__.CPU5Tests.test_four_gib_floor_reserve_authorities_and_unknown_host_policy_not_weakened) ... ok\ntest_quota_preserves_five_times_any_positive_period_and_rejects_old_profiles (__main__.CPU5Tests.test_quota_preserves_five_times_any_positive_period_and_rejects_old_profiles) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.026s\n\nOK\n"
+    },
+    {
+      "name": "ruff_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/controller.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/test_controller.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.014494194008875638,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "name": "format_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "--check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/controller.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/test_controller.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0119931609951891,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "dry_default",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/controller.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.11174793599639088,
+      "stdout": "{\"mode\": \"DRY_SOURCE_ONLY\", \"unit_started\": false, \"torch_imported\": false, \"unit\": \"jev-d3-llama-cpp-cpu5-fast-4g-coexist-20261024-09.service\", \"host_observation_policy\": \"comfy-observed-cpu-coexist-v1\", \"memory_max_bytes\": 4294967296, \"initial_host_extra_bytes\": 4294967296, \"runtime_choices_seconds\": [30, 7200, 10800], \"cpu_quota_percent\": 500, \"main_thread_cpu_affinity\": [15, 16, 17, 18, 19], \"model_or_quality_qualified\": false}\n",
+      "stderr": ""
+    }
+  ],
+  "new_resource_fake_test_count": 4,
+  "parent48_cases_not_reexecuted": "owner08 original source tests retained in prior validation; exact11-substitution controller-byte proof plus four tests cover all new resource deltas",
+  "format_preserved_entire_AST": true,
+  "limits": {
+    "affinity": [
+      0
+    ],
+    "AS_bytes_python": 536870912,
+    "AS_bytes_Ruff": null,
+    "CPU_seconds": 30,
+    "wall_timeout_seconds": 35
+  },
+  "sources": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/controller.py",
+      "size_bytes": 41886,
+      "sha256": "81846efe2ee0357da07283c1a77a606283a920cbddef668c8f62def291057dee"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/test_controller.py",
+      "size_bytes": 7872,
+      "sha256": "d3c95777b4c09ec20c3c38a3fac86e0dd3c32a7e5acabdffc0dbaf27506d91ca"
+    }
+  ],
+  "actual_model_resource_or_browser_qualified": false
+}

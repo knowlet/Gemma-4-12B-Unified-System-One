@@ -1,0 +1,110 @@
+{
+  "schema_id": "jev-revisit-adapter-and-external-observer-validation-v1",
+  "scope": "Pure protocol/argv/source preparation and two clean-environment CPU CLI children. No actual CPU processor, ML framework, GPU, model, HTTP benchmark or browser; external-parent fixtures are explicitly synthetic and do not create actual-01.",
+  "adapter": {
+    "source": {
+      "path": "artifacts/jev-runtime/public-revisit-browser-binding-20261020-01/launcher_adapter.py",
+      "sha256": "b8fc5033ea4a28d35875122565d0b817332ea2c23e2999340af8b2d1c8e72fd5",
+      "size_bytes": 9708
+    },
+    "tests": {
+      "path": "artifacts/jev-runtime/public-revisit-browser-binding-20261020-01/test_launcher_adapter.py",
+      "sha256": "37fa99ec51107b93ed624bf7a69b4e5be05703af0ea26f8896e7072d1975b6a7",
+      "size_bytes": 6683
+    },
+    "ruff": {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "e948b9",
+        "wall_time_seconds": 0.000031776,
+        "exit_code": 0,
+        "original_token_count": 5,
+        "output": "All checks passed!\n"
+      }
+    },
+    "pytest": {
+      "initial_tool_chunk": "f37802",
+      "session_id": 80993,
+      "final_tool_chunk": "1031c4",
+      "actual_exit_code": 0,
+      "summary": "14 passed in 0.97s"
+    },
+    "standalone_public6_dry": {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "5ba90f",
+        "wall_time_seconds": 0.00003184,
+        "exit_code": 0,
+        "original_token_count": 389,
+        "output": "{\n  \"arguments_template\": [\n    \"--upstream-path\",\n    \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream\",\n    \"--endpoint\",\n    \"<FIELD_SYNTAX_POLICY_ENDPOINT>\",\n    \"--model\",\n    \"generated-actions-none\",\n    \"--text-endpoint\",\n    \"<FIELD_SYNTAX_HELPER_BASE_ENDPOINT>\",\n    \"--text-model\",\n    \"generated-actions-none\",\n    \"--api-key-env\",\n    \"S1_POLICY_API_KEY\",\n    \"--text-api-key-env\",\n    \"S1_TEXT_API_KEY\",\n    \"--observation-profile\",\n    \"composed-visible-hover-entries-settled-revisit-v1\",\n    \"--observation-profile-helper-sha256\",\n    \"873abc6aa2a02272fd9b54d299d683598bdb3d5c0a848cc43a356daa5a36a0ca\",\n    \"--chromium-executable\",\n    \"/home/albert_hsieh/.cache/ms-playwright/chromium_headless_shell-1208/chrome-linux/headless_shell\",\n    \"--repeats\",\n    \"1\",\n    \"--max-steps\",\n    \"16\",\n    \"--seed\",\n    \"20261014\",\n    \"--output-dir\",\n    \"<REVISIT_GROUP_RESULTS>\",\n    \"--public-cases\",\n    \"heldout-public-000\",\n    \"heldout-public-001\",\n    \"heldout-public-002\",\n    \"heldout-public-003\",\n    \"heldout-public-004\",\n    \"heldout-public-005\"\n  ],\n  \"benchmark_ready\": false,\n  \"browser_model_HTTP_calls\": 0,\n  \"case_ids\": [\n    \"heldout-public-000\",\n    \"heldout-public-001\",\n    \"heldout-public-002\",\n    \"heldout-public-003\",\n    \"heldout-public-004\",\n    \"heldout-public-005\"\n  ],\n  \"denominator\": 6,\n  \"group\": \"public6\",\n  \"launcher_API_positional_arguments\": 2,\n  \"output_created\": false,\n  \"schema_id\": \"jev_revisit_two_argument_launcher_adapter_v1\",\n  \"status\": \"DRY_SOURCE_ARGUMENTS_ONLY\"\n}\n"
+      }
+    },
+    "corrected_real_CLI_failure": "A clean standalone public6 CLI initially raised ModuleNotFoundError for jev_public_web_cases. pytest's configured scripts path masked it. Final case_imports scopes transitive imports during _arguments/prepare calls; new clean-environment CLI fixtures cover both groups. Earlier12-pass output does not represent the final implementation."
+  },
+  "observer": {
+    "source": {
+      "path": "artifacts/jev-runtime/public-revisit-browser-binding-20261020-01/cpu_capacity_observer.py",
+      "sha256": "fb09383d002b1de4a0954907b746a98a2a3d6f1f1770453f71db0b001c81dfed",
+      "size_bytes": 15300
+    },
+    "tests": {
+      "path": "artifacts/jev-runtime/public-revisit-browser-binding-20261020-01/test_cpu_capacity_observer.py",
+      "sha256": "0b97ce798176c937829f2b1c20ce8d4262092db88a0ec3a0dd56a81ceaca5e4b",
+      "size_bytes": 9105
+    },
+    "actual_checks": [
+      {
+        "status": "fulfilled",
+        "value": {
+          "chunk_id": "5d6a5c",
+          "wall_time_seconds": 0.000018288,
+          "exit_code": 0,
+          "original_token_count": 5,
+          "output": "All checks passed!\n"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "chunk_id": "a04fed",
+          "wall_time_seconds": 0.591763639,
+          "exit_code": 0,
+          "original_token_count": 25,
+          "output": "..................                                                       [100%]\n18 passed in 0.40s\n"
+        }
+      }
+    ],
+    "default_dry": {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "edfe09",
+        "wall_time_seconds": 0.028048032,
+        "exit_code": 0,
+        "original_token_count": 137,
+        "output": "{\"schema_id\": \"jev_revisit_cpu_capacity_external_observer_v1\", \"status\": \"DRY_SOURCE_ONLY_NO_CHILD_PROCESSOR_OR_OUTPUT\", \"actual_output_exists\": false, \"output_created\": false, \"benchmark_ready\": false, \"pending_selection\": {\"schema_id\": \"jev_revisit_closed_cpu_capacity_selection_v1\", \"kind\": \"jev_revisit_closed_cpu_capacity_binding_v1\", \"profile\": \"composed-visible-hover-entries-settled-revisit-v1\", \"plan_sha256\": \"c0289c5ac7c11aa3b80c5c9c2b685eb09a907d01e5d2c57c4525286a151bc15b\", \"controller_terminal\": null, \"external_parent_exit\": null}}\n"
+      }
+    },
+    "coverage": "Exact14-key external receipt compatibility; PID/start reuse, live PG/SID/tracked-group members/source/argv/nonce/time refusal; defaultdry/no output; original floor-1 refuses before limits/child/output; explicit self source pin; composite original memory monitor plus disjoint combined1GiB output/terminal reserve/per-file bounds."
+  },
+  "final_format": {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "e65cb5",
+      "wall_time_seconds": 0.000025696,
+      "exit_code": 0,
+      "original_token_count": 7,
+      "output": "4 files already formatted\n"
+    }
+  },
+  "read_only_resource_observation": {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "e12d80",
+      "wall_time_seconds": 0.000014496,
+      "exit_code": 0,
+      "original_token_count": 56,
+      "output": "{\"observation\": {\"MemTotal\": 130595860480, \"MemAvailable\": 31246192640}, \"original_CPU75_floor\": 36856590336, \"admitted\": false, \"actual_CPU75_exists\": false, \"observer_actual_exists\": false, \"actual_run_attempted\": false}\n"
+    }
+  },
+  "model_quality_attested": false
+}

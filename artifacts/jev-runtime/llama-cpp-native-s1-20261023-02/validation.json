@@ -1,0 +1,131 @@
+{
+  "actual_math_equivalence_or_memory_fit_measured": false,
+  "artifact_inventory_excluding_this_validation": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/CMakeLists.txt",
+      "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+      "size_bytes": 2004
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/README.md",
+      "sha256": "7d86d8029ab024373dd5ba441b4f8dca8082c2139358e1165e3c6a34d8c66f7a",
+      "size_bytes": 3753
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/cpu-tests-01.txt",
+      "sha256": "46a280973263bdd7b40034119f8dc62a25615fd9c90d3aeaca74d8f0954031af",
+      "size_bytes": 455
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/cpu-tests-02.txt",
+      "sha256": "284318db5b986c0cbbafbd40799f73faee56282934a2d5c9db50fc3c94b05546",
+      "size_bytes": 455
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/kv-arithmetic.json",
+      "sha256": "e937aee1e5036bc83819fd134fc43432c37e1e20b189a50fcc9ae6b3ff6a5346",
+      "size_bytes": 3375
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/research-decision.md",
+      "sha256": "1c624e6ad92e6bcf4d72cc3cfd53a5410568fc35f014bd60a95274c1edf87974",
+      "size_bytes": 4297
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/ruff-01.txt",
+      "sha256": "a93854615ad5846430646cfc89ede3bd6c39d92f2c072880023117d675674f8e",
+      "size_bytes": 534
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/ruff-02.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "size_bytes": 19
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/s1_gguf.cpp",
+      "sha256": "b9205973d97145adff2ba5368d935597ab904245b701551d3148f94999cff19a",
+      "size_bytes": 16923
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/source-delta.json",
+      "sha256": "264f0ec86d8c992372e677bfaa1ef7991ff3ace151fe67e3d6b120ecad8ba1e2",
+      "size_bytes": 3590
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/source.patch",
+      "sha256": "98a5a4afb8b82f266125c6f9616de17f4accc554fd64f3a3fd8c15c855d3e0a0",
+      "size_bytes": 2565
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/test_source.py",
+      "sha256": "04bcd3f56c0b603d254a7c9b41403fc6d8a6b78999d309c650a7b0fb588bb48a",
+      "size_bytes": 3524
+    }
+  ],
+  "framework_or_Torch_imported": false,
+  "model_header_or_payload_read_hashed_mapped": false,
+  "required_followup": "Root-only compiled CLI checks, identical full/compact context2048 inputs crossing1024, then separate actual8192 compact",
+  "resource_gates_changed": false,
+  "schema_id": "llama-cpp-native-s1-swa-source-validation-v2",
+  "source_scope": "Exactly five C++ changes; CMake byte-identical to v1; all parent and pinned upstream source checks unchanged",
+  "status": "PASS_SOURCE_ONLY",
+  "tests": {
+    "actual_CLI_parser_execution": false,
+    "commands": [
+      "timeout45 taskset CPU0 prlimit AS1GiB CPU30 core0 python -S -B test_source.py -v",
+      "RAYON_NUM_THREADS=1 timeout45 taskset CPU0 prlimit CPU30 core0 ruff check test_source.py"
+    ],
+    "compiler_or_native_runtime_execution": false,
+    "final_lint": "ruff-02.txt",
+    "final_tests": "cpu-tests-02.txt",
+    "initial_lint": "ruff-01.txt (import ordering only, corrected; historical failure retained)",
+    "stdlib_source_regressions": 2
+  },
+  "verified_source_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/s1_gguf.cpp",
+      "sha256": "8dd7f74a3ba38fda24d305c2bcbb7793d23eb38011ccb58f4f0230f677caa70e",
+      "size_bytes": 16564
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/s1_gguf.cpp",
+      "sha256": "b9205973d97145adff2ba5368d935597ab904245b701551d3148f94999cff19a",
+      "size_bytes": 16923
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/CMakeLists.txt",
+      "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+      "size_bytes": 2004
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/CMakeLists.txt",
+      "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+      "size_bytes": 2004
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/source.patch",
+      "sha256": "98a5a4afb8b82f266125c6f9616de17f4accc554fd64f3a3fd8c15c855d3e0a0",
+      "size_bytes": 2565
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/src/llama-kv-cache-iswa.cpp",
+      "sha256": "f24037a7f83675a67a63abcca1463d2071d3b8630b03c179ee5f0891c31b2917",
+      "size_bytes": 11361
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/src/llama-context.cpp",
+      "sha256": "07109d97009e8aae60c7a4b685246d9ffde3d9eadb1606364a1e5f6a56553502",
+      "size_bytes": 169797
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/common/arg.cpp",
+      "sha256": "bf4c58c189a774f2308acfe88e4ec5cebb0c43f60cf05cef4c5b2b9affd5822d",
+      "size_bytes": 224650
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/LICENSE",
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "size_bytes": 1078
+    }
+  ]
+}

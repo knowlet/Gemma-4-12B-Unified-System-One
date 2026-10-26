@@ -1,0 +1,67 @@
+{
+  "schema_id": "jev-decision3-GX10-selected-local-runtime-results-v1",
+  "status": "SELECTED_SOURCE_AND_METADATA_VERIFIED_NO_FRAMEWORK_OR_MODEL_LOAD",
+  "source": {
+    "path": "artifacts/jev-runtime/decision3-GX10-local-runtime-20261020-01/select_local_runtime.py",
+    "sha256": "3b4acbad53cdf509a44da48d6a9bc25fc534cb27067f03da4d9b16c3e0b05786",
+    "size_bytes": 7401
+  },
+  "selection": {
+    "path": "artifacts/jev-runtime/decision3-GX10-local-runtime-20261020-01/runtime-selection-01.json",
+    "sha256": "e9ebda0433eb7ecaddac64f19f512b65c8685f67af99fa1d38f15c5197197377",
+    "size_bytes": 14204
+  },
+  "build": {
+    "path": "artifacts/jev-runtime/decision3-GX10-local-runtime-20261020-01/selection-build-01.json",
+    "sha256": "b3ae140fd4ba727fa8367933d466329a0428d92605f58b4a286d06c854043a55",
+    "size_bytes": 1422
+  },
+  "source_validation": {
+    "path": "artifacts/jev-runtime/decision3-GX10-local-runtime-20261020-01/source-validation-01.json",
+    "sha256": "3f2e57644823f01686d0f7ae39b70f0f4106bac22a52eea06d52be252132dde8",
+    "size_bytes": 979
+  },
+  "consumer": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-successor-20261020-01/gx10_warm_bootstrap.py",
+    "sha256": "4f383edd45dc4ce3d5e6be90a83bed0a431f42dcb115f92fcbb20be25e62f91a",
+    "size_bytes": 25273
+  },
+  "counts": {
+    "selected_byte_pinned_files": 35,
+    "selected_distribution_metadata": 11,
+    "selected_source_modules": 24,
+    "selected_native_module_origins": 4
+  },
+  "selected_byte_pinned_bytes": 1596692,
+  "execution_environment": {
+    "interpreter": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+    "flags": [
+      "-B",
+      "-s"
+    ],
+    "PYTHONPATH": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay"
+  },
+  "versions": {
+    "torch": "2.13.0+cu130",
+    "torchvision": "0.28.0+cu130",
+    "transformers": "5.17.0",
+    "tokenizers": "0.23.3",
+    "safetensors": "0.8.0",
+    "accelerate": "1.15.0",
+    "huggingface-hub": "1.33.0",
+    "numpy": "2.5.2",
+    "triton": "3.7.1",
+    "einops": "0.8.2",
+    "pydantic": "2.14.1"
+  },
+  "authority": "Selected Python source and distribution METADATA have exact SHA/size byte pins; native origins are path/size metadata only. Imported selected origins are checked only when present in the later owned worker. Not all indirect shared libraries are authenticated.",
+  "verification": "Actual Comfy Python -B -s generated the selection and called the unchanged bootstrap RuntimeSelection.verify() successfully in 0.183 seconds, without importing selected ML modules. Existing consumer pure tests already cover malformed selections; the new artifact is verified with its real consumer.",
+  "remaining": [
+    "Actual framework/native/model load and actual kernel identity",
+    "Complete owned warm diagnostic and whole-worker exit",
+    "Fresh Q95 helper and co-resident admission for matched browser comparisons",
+    "All six model comparisons; lite/edge are the only staged local weight candidates"
+  ],
+  "quality_or_superiority_claim": false,
+  "GPU_or_model_or_browser_execution": false
+}

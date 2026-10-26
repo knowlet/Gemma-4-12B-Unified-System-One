@@ -1,0 +1,48 @@
+{
+  "schema_id": "decision3-explicit-system-services-execution-source-v1",
+  "parent": {
+    "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/execution.py",
+    "sha256": "248687b7dddc5cf7697482e85b2ec909f1c04cbecc5e258d0f23478ecbf3745f",
+    "size_bytes": 57544
+  },
+  "execution": {
+    "path": "artifacts/jev-runtime/decision3-local-execution-system-services-20261022-01/execution.py",
+    "sha256": "b0028af23a6c496ceab5bebf24cc948a6c1e1fc05a5a68b37c6c553220d251a9",
+    "size_bytes": 57821
+  },
+  "entry": {
+    "path": "artifacts/jev-runtime/decision3-local-execution-system-services-20261022-01/launch_execution.py",
+    "sha256": "39f5e97564e26d42db54da0974c75e36ca8c1f42f046536b6762c4ea5ba21d94",
+    "size_bytes": 4069
+  },
+  "declared_edits": [
+    {
+      "before": "PROFILE = \"decision3-gx10-native-v7-local-execution-retry-v2\"",
+      "after": "PROFILE = \"decision3-gx10-native-v7-system-services-execution-v3\""
+    },
+    {
+      "before": "OBSERVER_SHA = \"2bd125f17db7739d19979565fcf8013c897f620caaa948d8ffe4de1559bf9fd6\"",
+      "after": "OBSERVER_SHA = \"fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45\"\nOBSERVER_MANIFEST_SHA = \"a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727\""
+    },
+    {
+      "before": "            \"observer\",\n",
+      "after": "            \"observer\",\n            \"observer_manifest\",\n"
+    },
+    {
+      "before": "        (\"observer\", OBSERVER_SHA),\n",
+      "after": "        (\"observer\", OBSERVER_SHA),\n        (\"observer_manifest\", OBSERVER_MANIFEST_SHA),\n"
+    },
+    {
+      "before": "        \"observer\": base / \"comfy-observer-zombie-exit-20261022-01/comfy_observer.py\",\n",
+      "after": "        \"observer\": base / \"observer-system-services-20261022-01/comfy_observer.py\",\n        \"observer_manifest\": base / \"observer-system-services-20261022-01/system-services.json\",\n"
+    }
+  ],
+  "full_inverse_bytes_and_AST": true,
+  "ModelService_RawIdentity_AST_unchanged": true,
+  "entry_byte_identical": true,
+  "model_geometry_warmup_numeric_memory_deadlines_transport_lifecycle_unchanged": true,
+  "source_union": "Original39 minusoldexecution/entry/observer plusnewexecution/entry/observer andnewexplicitauthority =40 actualrefs with2freshhelperdescriptors",
+  "actual_launch": false,
+  "tests": "Source inverse proof only; metadata static and selected-plan integration follows fresh helper04 seed.",
+  "peer_review_status": "CLEAR: independent complete inverse source/AST; observer fd977/authority a244, factory0d926 and Lite40-source static plan separately reviewed"
+}

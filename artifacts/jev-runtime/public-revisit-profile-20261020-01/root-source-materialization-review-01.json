@@ -1,0 +1,57 @@
+{
+  "schema_id": "root-revisit-profile-runner-source-review-v1",
+  "status": "CLEAR_FOR_SOURCE_PUBLICATION_NOT_CAPACITY_OR_BROWSER_QUALIFIED",
+  "reviewed": "Full 3 new source files, both full test files, source summary, derivation/materialization proof and raw 27-test/Ruff/format logs read. Root independently reverified existing materialized profile and both runner populations/pins; rebuilt the source-only profile and verified capture traversal bytes/AST and runner inverse bytes/AST. No pure tests repeated.",
+  "source_refs": [
+    {
+      "path": "scripts/jev_profile_tree_capture.py",
+      "sha256": "1cf4f46178ea7761209ba6abe87d708209d128b44e1fa41c658edcd7ff7c753d",
+      "size_bytes": 4137
+    },
+    {
+      "path": "scripts/jev_observation_profile_revisit.py",
+      "sha256": "873abc6aa2a02272fd9b54d299d683598bdb3d5c0a848cc43a356daa5a36a0ca",
+      "size_bytes": 13642
+    },
+    {
+      "path": "scripts/jev_browser_revisit_benchmark.py",
+      "sha256": "f7f0c4f708203e107563fa70656bbeb3e04afcba463a0a9cf9eb156fbd8e51b3",
+      "size_bytes": 13193
+    }
+  ],
+  "small_ref_count": 14,
+  "closures": [
+    {
+      "directory": "artifacts/jev-runtime/public-revisit-profile-20261020-01/profile-01",
+      "files_including_manifest": 59,
+      "bytes": 786602,
+      "exact_population_and_all_byte_pins": true
+    },
+    {
+      "directory": "artifacts/jev-runtime/public-revisit-profile-20261020-01/runner-known4-01",
+      "files_including_manifest": 19,
+      "bytes": 441285,
+      "exact_population_and_all_byte_pins": true
+    },
+    {
+      "directory": "artifacts/jev-runtime/public-revisit-profile-20261020-01/runner-public6-01",
+      "files_including_manifest": 20,
+      "bytes": 458190,
+      "exact_population_and_all_byte_pins": true
+    }
+  ],
+  "invariants": [
+    "Frozen V8/80249 core/081310 integration sources unchanged",
+    "59-file new profile, 8 runtime files; all original browser/question/fixture/DOM/head/guard/freshness behavior preserved except previously reviewed hint wiring and snapshot identity literal",
+    "Original 64 files /16 MiB /1 MiB source caps retained",
+    "Copied pure verifier and generic benchmark API compatible; fake actors do not establish real quality",
+    "No globals/FunctionType monkeypatch or whole old builder/launcher copy"
+  ],
+  "validation": {
+    "pure_tests": 27,
+    "Ruff": "PASS",
+    "format": "PASS",
+    "real_browser_model_framework_GPU_processor_calls": 0
+  },
+  "remaining": "Fresh full-request prompt capacity and actual helper/co-resident admission and real browser quality. Latest full Gemma score remains5/10, all six D3 matched warm comparisons remain unrun."
+}

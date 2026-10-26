@@ -1,0 +1,742 @@
+{
+  "CUDA": {
+    "blocked_own_work_attempts": 0,
+    "initialized_after_torch_import": false,
+    "initialized_final": false,
+    "observed_guarded_queries": 0,
+    "scope": "Guards begin after Torch import and do not monitor every native call. This is not a full-runtime zero-CUDA-calls claim."
+  },
+  "cases": [
+    {
+      "absolute_max": 15.875,
+      "attention_type": "sliding_attention",
+      "finite_BF16_CPU_output": true,
+      "input_sha256_independently_recomputed_stdlib": "34461699ffecc1ab023b50af193435c149eb86bd97880128849987ec85c56468",
+      "layer_index": 0,
+      "output_shape": [
+        1,
+        1,
+        3840
+      ],
+      "repeat_output_sha256": "048abb1debbf0488d78cb29f089e4a2754be10c7346cc440d72adf8a938cf607",
+      "tokens": 1,
+      "warm_forward_seconds": [
+        0.38799882600142155,
+        0.35632019400509307
+      ]
+    },
+    {
+      "absolute_max": 26.125,
+      "attention_type": "sliding_attention",
+      "finite_BF16_CPU_output": true,
+      "input_sha256_independently_recomputed_stdlib": "88e6a7d75eda545aa44b79e678c46caef37b9f1fd345ba50c77cfb8239cc4bb0",
+      "layer_index": 0,
+      "output_shape": [
+        1,
+        32,
+        3840
+      ],
+      "repeat_output_sha256": "4b07e9ce95c3d71a5764dcc83d1ff25da02f8487276ce926741780083d2ac763",
+      "tokens": 32,
+      "warm_forward_seconds": [
+        0.3633051290016738,
+        0.362044714995136
+      ]
+    },
+    {
+      "absolute_max": 10.75,
+      "attention_type": "full_attention",
+      "finite_BF16_CPU_output": true,
+      "input_sha256_independently_recomputed_stdlib": "34461699ffecc1ab023b50af193435c149eb86bd97880128849987ec85c56468",
+      "layer_index": 5,
+      "output_shape": [
+        1,
+        1,
+        3840
+      ],
+      "repeat_output_sha256": "5c5e15aee1cd9fb9ef273365eecd945b3e894d465d39587d7956254922c8115d",
+      "tokens": 1,
+      "warm_forward_seconds": [
+        0.4358123609999893,
+        0.42850304099556524
+      ]
+    },
+    {
+      "absolute_max": 16.875,
+      "attention_type": "full_attention",
+      "finite_BF16_CPU_output": true,
+      "input_sha256_independently_recomputed_stdlib": "88e6a7d75eda545aa44b79e678c46caef37b9f1fd345ba50c77cfb8239cc4bb0",
+      "layer_index": 5,
+      "output_shape": [
+        1,
+        32,
+        3840
+      ],
+      "repeat_output_sha256": "e805f87e96b2391c3b54e5085d61ce428d07a925f9e7f403a4869a82a2c0b86e",
+      "tokens": 32,
+      "warm_forward_seconds": [
+        0.4115860390011221,
+        0.4065121419989737
+      ]
+    }
+  ],
+  "checks": {
+    "all_21_stage_file_SHA_size_sequence_and_details_match_receipt": true,
+    "all_27_BF16_states_shapes_grad_version_identity_and_VMA_offsets_join": true,
+    "exact_four_cases_and_eight_repeats": true,
+    "native_attention_eight_trace_shapes_dtypes_devices_masks_and_arguments_match": true,
+    "per_selected_range_before_after_hashes_complete_and_equal": true,
+    "registry_cleanup_and_CUDA_flags_pass": true,
+    "stage_memory_RSS_anon_file_cgroup_scope_verified": true,
+    "successful_actor_and_root_exit_with_exact_source_bindings": true,
+    "synthetic_input_SHA_independently_recomputed_without_Torch": true,
+    "two_repeat_output_SHA_equal_per_case": true
+  },
+  "conclusion": "PASS_WITH_LIMITS: all27 selected BF16 states retain the saved original-file mapping and unchanged selected-range hashes,all four cases complete eight finite BF16 CPU forwards with matching repeat hashes,and all21 memory-stage records join. These are actual single-layer mechanism observations,not model-quality or full-runtime qualification.",
+  "evidence_inventory": [
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/__init__.py",
+      "sha256": "cf40c075c95864036e835795756d69b8cccfafa76f3bcde5eba9d06065ccd3d1",
+      "size_bytes": 111841
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/cuda/__init__.py",
+      "sha256": "0dd55462968d927ea2dc58da0401688b151354c448c097b12c6e4e0560a66541",
+      "size_bytes": 71905
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py",
+      "sha256": "341153e4099444f923f5b0766e8e41b45fbe909b87f4737cb28c828f297b7baa",
+      "size_bytes": 127918
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/nn/parameter.py",
+      "sha256": "01ce0e4a10c54b923388d015113b610289b89e7a8ff4809eab65e06b1bc753a2",
+      "size_bytes": 12322
+    },
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/utils/_device.py",
+      "sha256": "571b8141af551c2d8a70ba5071723f725a99a4310b20aab098451062c420cb5c",
+      "size_bytes": 4491
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--knowlet--Gemma-4-12B-Unified-System-One/blobs/aff4267938fae2ce2aa220040634c3a35185ed7c",
+      "sha256": "b50e760a9107b629e1a140ab7a4392e875c37baefee022f27c98b90b9d947cf0",
+      "size_bytes": 4953
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/fixture.py",
+      "sha256": "056e55bedd82bd9704f1c96df4ea63e9185e62533a7929a30647f7762e17f419",
+      "size_bytes": 34460
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/header-selection.json",
+      "sha256": "31201ff6d076838459d3abe1efd1d20df4d3f3a8d3a589495736949368385efa",
+      "size_bytes": 28508
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/selection.json",
+      "sha256": "a552b73a839483a521eedb8bcd5efefaaed3873fd8a77d6b971ee60197509bfe",
+      "size_bytes": 7832
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/actor-exit.json",
+      "sha256": "b76a1e3dce382a7853adbff190b8e858644af8171eff3d914ab949c663d626f9",
+      "size_bytes": 622
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/intent.json",
+      "sha256": "9cb12eb237c516833207bc35687a02fdec52210627a2b4e5fc04b33841bcce94",
+      "size_bytes": 1159
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/receipt.json",
+      "sha256": "7cf81ded5ed522343a4bc90a1ea29af7df258befebc1fb1d30829603e0f54175",
+      "size_bytes": 92481
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-00.json",
+      "sha256": "144ac9569964c89caf7554cdd5e3f48b79384188028fab0ed47e3316a35b7f0e",
+      "size_bytes": 1561
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-01.json",
+      "sha256": "a7f6436501957b9e99ba48a788b0b1ef9fa21a820f2fdf4c0a464a7c2aea4c71",
+      "size_bytes": 5998
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-02.json",
+      "sha256": "adbb99b99ea98ff871aaae9928437b718dd141aab3533843430caa44bf2054c1",
+      "size_bytes": 1370
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-03.json",
+      "sha256": "e6fdba993314d52604d6b42809979572c2462b1a24b9fa07721d8a97c3ceb850",
+      "size_bytes": 1402
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-04.json",
+      "sha256": "4a7aeb2ead531c360457a9f3309424c85fd51e2ff87ac47647ca9bc19bd97acb",
+      "size_bytes": 13028
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-05.json",
+      "sha256": "934443289f6a770c5afdcfe16ad11150ba089d7a77a69c24d455e77776f54a1c",
+      "size_bytes": 2152
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-06.json",
+      "sha256": "6e9d337ab2b62fade188dfbcf04cef4e05b73c04880455109bcc60822411af38",
+      "size_bytes": 2506
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-07.json",
+      "sha256": "f230f0ba801d3e756b450c5d29cc1705ddb2481f5a38f579f1fca1b4ad871fad",
+      "size_bytes": 2232
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-08.json",
+      "sha256": "31dd69bebea227197acfbb9f951e7795b54274e7c6ed4397bbe5f4095a99515e",
+      "size_bytes": 2586
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-09.json",
+      "sha256": "921fdd06114e59ee23911b02714352fe47527e1c78b26c41159575211f094d1e",
+      "size_bytes": 18967
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-10.json",
+      "sha256": "af105013be49afa29e8e07840739be6055ec3e3a27760013f2bd54ca325a65c6",
+      "size_bytes": 1683
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-11.json",
+      "sha256": "a628348eb8199b81223cb9e834594aa5d777fc47a03430feb065f58d07271735",
+      "size_bytes": 5860
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-12.json",
+      "sha256": "0e278968f840fa3511fd960056f11393fcb5a48c6dced16e04fda5774b4016e9",
+      "size_bytes": 1527
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-13.json",
+      "sha256": "02810181c427a23a5eb6548d3b9dfd8e83ae036a3636de2c537ee092accdd8c6",
+      "size_bytes": 1560
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-14.json",
+      "sha256": "0b26821faa31ab56e63de689bda54b377c5f9729837931b7622d6e67d0d72daf",
+      "size_bytes": 12351
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-15.json",
+      "sha256": "e7e87a14a6d67013bd3520ca6615a6749e8c6e899e8578dc49454712f1b846fa",
+      "size_bytes": 2286
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-16.json",
+      "sha256": "b1e1286bb0423ced733e28ed26699e173841c3ccdff2de6263492486cce21351",
+      "size_bytes": 2640
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-17.json",
+      "sha256": "d87d0195c3bfbb731309b0140749bbf0fb2ebdd0841e0caa327af33b00dab51d",
+      "size_bytes": 2368
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-18.json",
+      "sha256": "267d8f9119babd9771d027753a2832c5a8bb51506a6a2c16a981dd44829330f3",
+      "size_bytes": 2722
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-19.json",
+      "sha256": "1315db759bb15e41fd04d4ce0b210f3658ceb2c4d809f41963da85f74622a0ef",
+      "size_bytes": 17907
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/fixture/stage-20.json",
+      "sha256": "690ef1a731917766bb623a3fb576f4297231796a98a7420c85536f5c8568744b",
+      "size_bytes": 1834
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/receipt.json",
+      "sha256": "c887fbfdc144703fb8422ac11e4a21fd17afb893170349d5836bb8a2162a87cf",
+      "size_bytes": 245152
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/actual-01/sealed-config.json",
+      "sha256": "968863ff330151b2ed1029bd187d36c22ef26676db86d059afd87da7f33df942",
+      "size_bytes": 2060
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/controller.py",
+      "sha256": "a79503b1d12a5e061d3e4572147dd28cfcc905117183f5aee9351e7d4b120f29",
+      "size_bytes": 30395
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/independent-source-review.json",
+      "sha256": "05e1f6b0eec1968ccf35a9b390abc58e0d44f2f6e86d80f23b5fa62c1a5607dd",
+      "size_bytes": 9529
+    },
+    {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/root-execution-01.json",
+      "sha256": "8b35b2dae5a2b37fa6f41f108e5f682f70d0523bd134ca519d6f4098cd6a3a97",
+      "size_bytes": 1161
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+      "size_bytes": 38483
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/safetensors/__init__.py",
+      "sha256": "92c988289b8c225a92f25e487ad5d7a1eb7e326eec0fedfc6b75e6f04d85e32f",
+      "size_bytes": 210
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/safetensors/torch.py",
+      "sha256": "f3f476d1f8c04fe65fa3797426556a0b7afa43f8c4db9db6b799c7cf84748f3d",
+      "size_bytes": 20312
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/__init__.py",
+      "sha256": "2725cadd5afaa29b2a12faec1960cb7ac1df77dc76d655310efb33d4607b35f5",
+      "size_bytes": 42006
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/configuration_utils.py",
+      "sha256": "02826ac9e987487b645135d8f1d747f60a7e567d1b8f72327de8514d02b6f15d",
+      "size_bytes": 72086
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/integrations/heterogeneity/configuration_utils.py",
+      "sha256": "219b6bdda0fa44b28ad3ef4c77d271367996bc84b03365e467974a82fce4c5dd",
+      "size_bytes": 16590
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/integrations/sdpa_attention.py",
+      "sha256": "53c7229daca9ade4c5df874194448938c1edc925abbc71809f9750dd66381e6f",
+      "size_bytes": 8846
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/masking_utils.py",
+      "sha256": "50a737f63d8c778a5597fa34ac139049af921f44958205e3e1c29fe2bae77254",
+      "size_bytes": 80403
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/modeling_layers.py",
+      "sha256": "81469b99e3f933ad78eaf5c90d401a95a02a5f569732c6ed2b7020daaed31953",
+      "size_bytes": 30974
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/modeling_rope_utils.py",
+      "sha256": "fd7407b2dc3e16de2507e8619906ff9f84fdda65d49c67a41db4974fd6982a47",
+      "size_bytes": 60914
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/modeling_utils.py",
+      "sha256": "38c2bd02ed7af229f54e2f02dae65663be7af29ed2c9498bd1c460cf60fbb62d",
+      "size_bytes": 268806
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/models/gemma4_unified/configuration_gemma4_unified.py",
+      "sha256": "f484527a992041a950b86d433430739fdc0f6000c03af9d87ed8b122b4715119",
+      "size_bytes": 14186
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/models/gemma4_unified/modeling_gemma4_unified.py",
+      "sha256": "ae181490a16d2f36cd8f74d4d268757a5388dafc421be0ccc5dbefeff3ba9e57",
+      "size_bytes": 65357
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/utils/generic.py",
+      "sha256": "b60d9ecbbaeadb084134dda4a9b92419d35d22af6bc882e062fd530f4e47a4e1",
+      "size_bytes": 42839
+    },
+    {
+      "path": "docs/research/2026-10-23-bf16-mmap-layer-offload-feasibility.md",
+      "sha256": "205f4c655905634ff205d2805cf47f96cecf1072fd162b67807dda7afeb6b9a4",
+      "size_bytes": 12192
+    }
+  ],
+  "limits": [
+    "One process,one actual attempt,two selected real decoder layers and four synthetic prefill cases with no cache; no full-model or end-to-end inference test.",
+    "Repeated saved output SHA equality proves observed repeat determinism only. No clone arm,independently recomputed model math,external numerical reference or stored output payload replay was performed.",
+    "Maximum32 tokens does not cross the1024 sliding window; no long-context/window-boundary or cached decoding validation.",
+    "Original SDPA API route and expected causal rule are supported by exact source plus traces; actual native kernel kind was not profiled.",
+    "Selected-range prehash intentionally warms pages.37 process major faults were recorded after the initial stage; faults do not identify disk bytes or establish a cold/warm classification for every library/page.",
+    "Each assigned VMA is private writable rw-p,not an operating-system immutable-weight boundary. Saved state metadata/version and selected file-range hashes remained unchanged.",
+    "Deleting layer/weights/handle lowered RSS but left cgroup file-cache accounting present; immediate page-cache reclaim was not demonstrated.",
+    "Memory and timing cannot be multiplied into a full48-layer/12B/8192context/20s guarantee; no GPU,UMA,N3,Q95,browser success or JevBench score qualification.",
+    "Closure and host gate conclusions are outside this result-audit scope and must be read with the separate ownership audit."
+  ],
+  "mapped_state_count": 27,
+  "memory": {
+    "RSS_and_cgroup_are_different_metrics": true,
+    "actor_RUSAGE_peak_RSS_MiB": 1422.40625,
+    "actor_RUSAGE_peak_RSS_bytes": 1491501056,
+    "own_cgroup_cap_bytes": 2147483648,
+    "own_cgroup_peak_MiB": 1520.08203125,
+    "own_cgroup_peak_bytes": 1593921536,
+    "own_cgroup_peak_headroom_bytes": 553562112,
+    "release_observations": [
+      {
+        "cgroup_file_after_bytes": 453181440,
+        "cgroup_file_before_bytes": 453160960,
+        "interpretation": "RSS/file-mapping residency dropped; cgroup file cache persisted and its release is not established.",
+        "layer_index": 0,
+        "process_RSS_after_bytes": 1000980480,
+        "process_RSS_before_bytes": 1449291776,
+        "process_RssFile_after_bytes": 360263680,
+        "process_RssFile_before_bytes": 808574976
+      },
+      {
+        "cgroup_file_after_bytes": 937222144,
+        "cgroup_file_before_bytes": 937197568,
+        "interpretation": "RSS/file-mapping residency dropped; cgroup file cache persisted and its release is not established.",
+        "layer_index": 5,
+        "process_RSS_after_bytes": 1002622976,
+        "process_RSS_before_bytes": 1486327808,
+        "process_RssFile_after_bytes": 360591360,
+        "process_RssFile_before_bytes": 844296192
+      }
+    ],
+    "scope": "Own-process and own-cgroup sequential non-atomic samples. Memory peaks are historical maxima, not atomic anon+file breakdowns or continuous host accounting.",
+    "stage_records": [
+      {
+        "elapsed_seconds": 10.481837823004753,
+        "major_faults": 0,
+        "minor_faults": 136877,
+        "own_cgroup_anon_bytes": 511873024,
+        "own_cgroup_current_bytes": 516464640,
+        "own_cgroup_file_bytes": 630784,
+        "own_cgroup_peak_bytes": 516464640,
+        "process_RSS_bytes": 854102016,
+        "process_RssAnon_bytes": 511868928,
+        "process_RssFile_bytes": 342233088,
+        "stage": "imports-native-config-rotary-ready"
+      },
+      {
+        "elapsed_seconds": 11.355681717999687,
+        "major_faults": 0,
+        "minor_faults": 137513,
+        "own_cgroup_anon_bytes": 514469888,
+        "own_cgroup_current_bytes": 967614464,
+        "own_cgroup_file_bytes": 449273856,
+        "own_cgroup_peak_bytes": 967614464,
+        "process_RSS_bytes": 856702976,
+        "process_RssAnon_bytes": 514469888,
+        "process_RssFile_bytes": 342233088,
+        "stage": "layer-0-selected-range-prehash"
+      },
+      {
+        "elapsed_seconds": 11.359239665005589,
+        "major_faults": 0,
+        "minor_faults": 137513,
+        "own_cgroup_anon_bytes": 514469888,
+        "own_cgroup_current_bytes": 967614464,
+        "own_cgroup_file_bytes": 449273856,
+        "own_cgroup_peak_bytes": 967614464,
+        "process_RSS_bytes": 856702976,
+        "process_RssAnon_bytes": 514469888,
+        "process_RssFile_bytes": 342233088,
+        "stage": "layer-0-before-meta-construction"
+      },
+      {
+        "elapsed_seconds": 11.367536326004483,
+        "major_faults": 0,
+        "minor_faults": 137543,
+        "own_cgroup_anon_bytes": 514469888,
+        "own_cgroup_current_bytes": 967614464,
+        "own_cgroup_file_bytes": 449273856,
+        "own_cgroup_peak_bytes": 967614464,
+        "process_RSS_bytes": 857546752,
+        "process_RssAnon_bytes": 514527232,
+        "process_RssFile_bytes": 343019520,
+        "stage": "layer-0-meta-constructed"
+      },
+      {
+        "elapsed_seconds": 11.427909240002919,
+        "major_faults": 0,
+        "minor_faults": 137995,
+        "own_cgroup_anon_bytes": 516263936,
+        "own_cgroup_current_bytes": 969449472,
+        "own_cgroup_file_bytes": 449290240,
+        "own_cgroup_peak_bytes": 969449472,
+        "process_RSS_bytes": 860647424,
+        "process_RssAnon_bytes": 516272128,
+        "process_RssFile_bytes": 344375296,
+        "stage": "layer-0-meta-strict-assign-VMA"
+      },
+      {
+        "elapsed_seconds": 11.842428880001535,
+        "major_faults": 23,
+        "minor_faults": 145284,
+        "own_cgroup_anon_bytes": 634970112,
+        "own_cgroup_current_bytes": 1092972544,
+        "own_cgroup_file_bytes": 451518464,
+        "own_cgroup_peak_bytes": 1092972544,
+        "process_RSS_bytes": 1441406976,
+        "process_RssAnon_bytes": 634978304,
+        "process_RssFile_bytes": 806428672,
+        "stage": "layer-0-tokens-1-repeat-0"
+      },
+      {
+        "elapsed_seconds": 12.204392956002266,
+        "major_faults": 23,
+        "minor_faults": 145349,
+        "own_cgroup_anon_bytes": 635240448,
+        "own_cgroup_current_bytes": 1095065600,
+        "own_cgroup_file_bytes": 451522560,
+        "own_cgroup_peak_bytes": 1109749760,
+        "process_RSS_bytes": 1441669120,
+        "process_RssAnon_bytes": 635240448,
+        "process_RssFile_bytes": 806428672,
+        "stage": "layer-0-tokens-1-repeat-1"
+      },
+      {
+        "elapsed_seconds": 12.583594465002534,
+        "major_faults": 37,
+        "minor_faults": 146495,
+        "own_cgroup_anon_bytes": 518991872,
+        "own_cgroup_current_bytes": 981254144,
+        "own_cgroup_file_bytes": 453152768,
+        "own_cgroup_peak_bytes": 1109749760,
+        "process_RSS_bytes": 1327566848,
+        "process_RssAnon_bytes": 518991872,
+        "process_RssFile_bytes": 808574976,
+        "stage": "layer-0-tokens-32-repeat-0"
+      },
+      {
+        "elapsed_seconds": 12.952352129999781,
+        "major_faults": 37,
+        "minor_faults": 147667,
+        "own_cgroup_anon_bytes": 638771200,
+        "own_cgroup_current_bytes": 1101484032,
+        "own_cgroup_file_bytes": 453156864,
+        "own_cgroup_peak_bytes": 1109749760,
+        "process_RSS_bytes": 1447342080,
+        "process_RssAnon_bytes": 638767104,
+        "process_RssFile_bytes": 808574976,
+        "stage": "layer-0-tokens-32-repeat-1"
+      },
+      {
+        "elapsed_seconds": 13.673551626001426,
+        "major_faults": 37,
+        "minor_faults": 148143,
+        "own_cgroup_anon_bytes": 640716800,
+        "own_cgroup_current_bytes": 1103319040,
+        "own_cgroup_file_bytes": 453160960,
+        "own_cgroup_peak_bytes": 1109749760,
+        "process_RSS_bytes": 1449291776,
+        "process_RssAnon_bytes": 640716800,
+        "process_RssFile_bytes": 808574976,
+        "stage": "layer-0-after-repeat-state-and-range-integrity"
+      },
+      {
+        "elapsed_seconds": 13.944560298004944,
+        "major_faults": 37,
+        "minor_faults": 148143,
+        "own_cgroup_anon_bytes": 640716800,
+        "own_cgroup_current_bytes": 1102520320,
+        "own_cgroup_file_bytes": 453181440,
+        "own_cgroup_peak_bytes": 1109749760,
+        "process_RSS_bytes": 1000980480,
+        "process_RssAnon_bytes": 640716800,
+        "process_RssFile_bytes": 360263680,
+        "stage": "layer-0-model-and-handle-released-gc"
+      },
+      {
+        "elapsed_seconds": 14.896711938999943,
+        "major_faults": 37,
+        "minor_faults": 148143,
+        "own_cgroup_anon_bytes": 640716800,
+        "own_cgroup_current_bytes": 1586421760,
+        "own_cgroup_file_bytes": 935317504,
+        "own_cgroup_peak_bytes": 1586421760,
+        "process_RSS_bytes": 1000980480,
+        "process_RssAnon_bytes": 640716800,
+        "process_RssFile_bytes": 360263680,
+        "stage": "layer-5-selected-range-prehash"
+      },
+      {
+        "elapsed_seconds": 14.900940733001335,
+        "major_faults": 37,
+        "minor_faults": 148143,
+        "own_cgroup_anon_bytes": 640716800,
+        "own_cgroup_current_bytes": 1586421760,
+        "own_cgroup_file_bytes": 935317504,
+        "own_cgroup_peak_bytes": 1586421760,
+        "process_RSS_bytes": 1000980480,
+        "process_RssAnon_bytes": 640716800,
+        "process_RssFile_bytes": 360263680,
+        "stage": "layer-5-before-meta-construction"
+      },
+      {
+        "elapsed_seconds": 14.908964659000048,
+        "major_faults": 37,
+        "minor_faults": 148143,
+        "own_cgroup_anon_bytes": 640716800,
+        "own_cgroup_current_bytes": 1586421760,
+        "own_cgroup_file_bytes": 935317504,
+        "own_cgroup_peak_bytes": 1586421760,
+        "process_RSS_bytes": 1000980480,
+        "process_RssAnon_bytes": 640716800,
+        "process_RssFile_bytes": 360263680,
+        "stage": "layer-5-meta-constructed"
+      },
+      {
+        "elapsed_seconds": 14.966549192002276,
+        "major_faults": 37,
+        "minor_faults": 148154,
+        "own_cgroup_anon_bytes": 640716800,
+        "own_cgroup_current_bytes": 1586421760,
+        "own_cgroup_file_bytes": 935317504,
+        "own_cgroup_peak_bytes": 1586421760,
+        "process_RSS_bytes": 1001369600,
+        "process_RssAnon_bytes": 640729088,
+        "process_RssFile_bytes": 360640512,
+        "stage": "layer-5-meta-strict-assign-VMA"
+      },
+      {
+        "elapsed_seconds": 15.4092747110044,
+        "major_faults": 37,
+        "minor_faults": 155723,
+        "own_cgroup_anon_bytes": 645238784,
+        "own_cgroup_current_bytes": 1591918592,
+        "own_cgroup_file_bytes": 937185280,
+        "own_cgroup_peak_bytes": 1591918592,
+        "process_RSS_bytes": 1489272832,
+        "process_RssAnon_bytes": 645238784,
+        "process_RssFile_bytes": 844034048,
+        "stage": "layer-5-tokens-1-repeat-0"
+      },
+      {
+        "elapsed_seconds": 15.842955809006526,
+        "major_faults": 37,
+        "minor_faults": 155780,
+        "own_cgroup_anon_bytes": 645238784,
+        "own_cgroup_current_bytes": 1591914496,
+        "own_cgroup_file_bytes": 937189376,
+        "own_cgroup_peak_bytes": 1591918592,
+        "process_RSS_bytes": 1489272832,
+        "process_RssAnon_bytes": 645238784,
+        "process_RssFile_bytes": 844034048,
+        "stage": "layer-5-tokens-1-repeat-1"
+      },
+      {
+        "elapsed_seconds": 16.266160793005838,
+        "major_faults": 37,
+        "minor_faults": 156534,
+        "own_cgroup_anon_bytes": 641200128,
+        "own_cgroup_current_bytes": 1587892224,
+        "own_cgroup_file_bytes": 937193472,
+        "own_cgroup_peak_bytes": 1592709120,
+        "process_RSS_bytes": 1485496320,
+        "process_RssAnon_bytes": 641200128,
+        "process_RssFile_bytes": 844296192,
+        "stage": "layer-5-tokens-32-repeat-0"
+      },
+      {
+        "elapsed_seconds": 16.67967150100594,
+        "major_faults": 37,
+        "minor_faults": 157664,
+        "own_cgroup_anon_bytes": 641200128,
+        "own_cgroup_current_bytes": 1587961856,
+        "own_cgroup_file_bytes": 937197568,
+        "own_cgroup_peak_bytes": 1593921536,
+        "process_RSS_bytes": 1485496320,
+        "process_RssAnon_bytes": 641200128,
+        "process_RssFile_bytes": 844296192,
+        "stage": "layer-5-tokens-32-repeat-1"
+      },
+      {
+        "elapsed_seconds": 17.451995818002615,
+        "major_faults": 37,
+        "minor_faults": 157867,
+        "own_cgroup_anon_bytes": 641200128,
+        "own_cgroup_current_bytes": 1588748288,
+        "own_cgroup_file_bytes": 937197568,
+        "own_cgroup_peak_bytes": 1593921536,
+        "process_RSS_bytes": 1486327808,
+        "process_RssAnon_bytes": 642031616,
+        "process_RssFile_bytes": 844296192,
+        "stage": "layer-5-after-repeat-state-and-range-integrity"
+      },
+      {
+        "elapsed_seconds": 17.725669444000232,
+        "major_faults": 37,
+        "minor_faults": 157867,
+        "own_cgroup_anon_bytes": 642031616,
+        "own_cgroup_current_bytes": 1587945472,
+        "own_cgroup_file_bytes": 937222144,
+        "own_cgroup_peak_bytes": 1593921536,
+        "process_RSS_bytes": 1002622976,
+        "process_RssAnon_bytes": 642031616,
+        "process_RssFile_bytes": 360591360,
+        "stage": "layer-5-model-and-handle-released-gc"
+      }
+    ]
+  },
+  "reviewed_at_utc": "2026-10-23T00:30:25.774920+00:00",
+  "reviewer": "independent peer /root/q95_owner05_review",
+  "schema": "bf16-real-layer-independent-result-audit-v1",
+  "scope": "Saved-only selected-layer storage, repeat determinism, native attention trace and memory-stage audit. Closure/host ownership receives a separate independent audit. No Torch/model/probe/tests/HTTP/service operation, output tensor replay, model raw-header or payload read by reviewer.",
+  "selected_range_integrity": {
+    "before_plus_after_explicit_hash_bytes": 1863972872,
+    "large_pair_bounding_envelope_read": false,
+    "selected_ranges_count": 27,
+    "unique_selected_bytes": 931986436,
+    "verification_scope": "Saved execution hashes were compared with each other and pinned selected-range metadata; reviewer did not reread or rehash any model payload. Historical full-model SHA was not recomputed."
+  },
+  "source_integrity": {
+    "actor": {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/fixture.py",
+      "sha256": "056e55bedd82bd9704f1c96df4ea63e9185e62533a7929a30647f7762e17f419",
+      "size_bytes": 34460
+    },
+    "controller": {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/controller.py",
+      "sha256": "a79503b1d12a5e061d3e4572147dd28cfcc905117183f5aee9351e7d4b120f29",
+      "size_bytes": 30395
+    },
+    "current_binary_stats_checked_only": 6,
+    "current_distinct_small_refs_rehashed": 27,
+    "current_strict_blob_stat_checked": true,
+    "header_selection": {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/header-selection.json",
+      "sha256": "31201ff6d076838459d3abe1efd1d20df4d3f3a8d3a589495736949368385efa",
+      "size_bytes": 28508
+    },
+    "model_payload_or_raw_header_read": false,
+    "selection": {
+      "path": "artifacts/jev-runtime/bf16-real-layer-cpu-20261023-01/selection.json",
+      "sha256": "a552b73a839483a521eedb8bcd5efefaaed3873fd8a77d6b971ee60197509bfe",
+      "size_bytes": 7832
+    }
+  },
+  "source_review": {
+    "path": "artifacts/jev-runtime/bf16-real-layer-cpu-owner-20261023-01/independent-source-review.json",
+    "sha256": "05e1f6b0eec1968ccf35a9b390abc58e0d44f2f6e86d80f23b5fa62c1a5607dd",
+    "size_bytes": 9529
+  },
+  "timing": {
+    "actor_elapsed_seconds": 17.74222436600394,
+    "root_wall_seconds": 18.758682708998094,
+    "scope": "Warm prefetched selected-weight synthetic CPU forwards. Forward timing excludes import, selected-range prehash,construction/assign,input/RoPE/mask setup,output hashing and final range verification.",
+    "sum_before_after_selected_range_hash_seconds": 3.1974478760021157,
+    "sum_eight_forward_seconds": 3.1520824469989748
+  },
+  "verdict": "PASS_WITH_LIMITS"
+}

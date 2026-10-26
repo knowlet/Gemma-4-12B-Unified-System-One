@@ -1,0 +1,72 @@
+{
+  "schema_id": "generic-cpu4-coexist-owner-source-plan-v1",
+  "status": "SOURCE_CHECKS_PASS_NO_ACTUAL",
+  "owner_profile": "llama-cpp-cpu4-2g-coexist-command-owned-v1",
+  "unit": "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
+  "host_observation_policy": "comfy-observed-cpu-coexist-v1",
+  "generic_command_spec_profile_unchanged": "llama-cpp-command-spec-v1",
+  "base_controller": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+    "size_bytes": 40319,
+    "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+  },
+  "resources": {
+    "declared_host_total_bytes": 130595864576,
+    "runtime_reserve_bytes": 26119172916,
+    "memory_max_bytes": 2147483648,
+    "initial_full_cap_extra_bytes": 2147483648,
+    "initial_required_available_bytes": 28266656564,
+    "cpu_affinity": [16, 17, 18, 19],
+    "cpu_quota_percent": 400,
+    "memory_swap_max_bytes": 0,
+    "file_size_max_bytes": 268435456,
+    "command_output_limit_bytes_per_stream": 4194304,
+    "runtime_choices_seconds": [30, 7200, 10800],
+    "stop_seconds": 3,
+    "post_receipt_hold_seconds": 5
+  },
+  "source_budgets": {
+    "max_explicit_spec_sources": 58,
+    "max_combined_source_records": 64,
+    "mandatory_records": 5,
+    "mandatory_scope": "This controller, future exact command spec and unchanged boundary/observer/system-services authority",
+    "max_source_bytes_each": 1048576,
+    "future_exact_root_source_pool": null,
+    "future_exact_root_source_count": null,
+    "limit_change_permitted": false
+  },
+  "host_policy": {
+    "http_states": ["http_idle", "http_busy"],
+    "counts": "Exact int (not bool), nonnegative, top-level equals nested evidence",
+    "http_evidence": "HTTP transport, exact int200, lowercase64hex response SHA256",
+    "busy_consistency": "At least one positive count iff http_busy",
+    "absence": "Original absent_confirmed with counts0/0 and connection_refused provenance",
+    "unknown_unavailable_error_or_inconsistent": "REFUSE",
+    "observer_failure": "PROPAGATE; never reinterpret as busy",
+    "busy_memory_credit_bytes": 0,
+    "comfy_service_queue_cache_or_model_action": false
+  },
+  "unchanged_authorities": [
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5"
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45"
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727"
+    }
+  ],
+  "allowed_controller_delta": ["UNIT", "PROFILE", "new HOST_OBSERVATION_POLICY", "new comfy_observation", "host policy and evidence", "main dry policy field"],
+  "validation_release_received_from_root": true,
+  "tests_or_dry_run_completed": true,
+  "independent_review": null,
+  "actual_execution_or_admission_result": null,
+  "model_native_fit_or_quality_inherited": false,
+  "features_or_training_qualified": false,
+  "benchmark_or_browser_qualified": false,
+  "whole_tree_or_no_escape_qualified": false
+}

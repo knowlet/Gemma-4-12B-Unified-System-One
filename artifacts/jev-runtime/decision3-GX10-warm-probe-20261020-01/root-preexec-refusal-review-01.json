@@ -1,0 +1,43 @@
+{
+  "schema_id": "root-GX10-warm-diagnostic-preexec-refusal-review-v1",
+  "status": "CLOSED_RESOURCE_REFUSAL_BEFORE_POLICY_WORKER_OR_MODEL",
+  "source": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py",
+    "sha256": "f674f01dad902f8184fbf1be5af2b25f0ba366387080baff53e9e6032de01bac",
+    "size_bytes": 19406
+  },
+  "plan": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/diagnostic-edge-plan-01.json",
+    "sha256": "c58977f42b9436597411956d71190387507259ad7c471fc7cd113acecd0e6a76",
+    "size_bytes": 4812
+  },
+  "window": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/root-resource-window-01.json",
+    "sha256": "5595c61bcc7064e85cfe843b79d99c59a9ead3f2ad6674c66a8d929cad8c6d57",
+    "size_bytes": 3277
+  },
+  "launcher_parent_started": true,
+  "policy_worker_started": false,
+  "model_framework_GPU_processor_browser_started": false,
+  "parent": {
+    "pid": 1439556,
+    "state": "R",
+    "pgid": 1439556,
+    "sid": 1439556,
+    "start_ticks": 43484079
+  },
+  "parent_absent": true,
+  "same_PG_SID_members": [],
+  "output_and_module_cache_absent": true,
+  "fresh_refusal": {
+    "available_bytes": 30635520000,
+    "required_bytes": 30646100800,
+    "shortfall_bytes": 10580800,
+    "phase": "parent_main.initial=observe() before output/modulecache/worker creation"
+  },
+  "three_observer_samples_were_preliminary_only": true,
+  "quality_failure_counted": false,
+  "independent_readonly_review": "gx10_memory_diagnosis independently checked all source/plan/window pins, exact trace phase, same PID/start43484079 closure and both fresh namespace absences; facts returned read-only in agent message. No reviewer-written artifact is asserted.",
+  "runtime_model_payload_or_cache_reads": "Selected small source/METADATA only during parent preexec; no weight/cache payload authentication or model construction reached.",
+  "next": "Retain exact fresh plan; require additional scheduler memory margin before another attempt. Original model gates unchanged."
+}

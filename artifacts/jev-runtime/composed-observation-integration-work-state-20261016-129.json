@@ -1,0 +1,194 @@
+{
+  "schema_id": "composed-observation-integration-work-state-v1",
+  "sequence": 129,
+  "created_at_utc": "2026-10-23T00:01:01.407776+00:00",
+  "previous_state": {
+    "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-128.json",
+    "sha256": "e7414c2737be8559fd7c881016d2516c6d2f05a8c2a022ced721667f2f46e589",
+    "size_bytes": 4809
+  },
+  "goal_status": "active",
+  "precommit_head": "6ce3b3c154fbb301a17328057a7e01714eeb96f3",
+  "previous_goal_turn_classification": "progress: source-only mmap/offload research committed and pushed; this continuation completed real tiny CPU mechanism measurement and independent numerical/owner audits after two preserved pre-Torch runtime refusals",
+  "status": "Tiny_real_Torch_CPU_mmap_and_offload_measurement_complete_state_identity_and_exception_limits_observed_formal_quality_unchanged",
+  "results_unchanged": {
+    "Benchmark_Heaven": "195/231 =84.4155844155844%",
+    "coherence_mini": "41.26307189542484/100",
+    "best_browser": "4/10",
+    "other_models_beaten": false,
+    "all_six_Decision3_complete": false
+  },
+  "actual_GPU_models_or_Comfy_mutations_this_turn": false,
+  "tiny_real_CPU_measurement": {
+    "report": {
+      "path": "docs/validation/2026-10-23/bf16-mmap-offload-cpu-results.md",
+      "sha256": "8b471f241218d56f5adb34a58891a32f5ef8162cd17faac6aa07921509bfb988",
+      "size_bytes": 5101
+    },
+    "actor_receipt": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/fixture/receipt.json",
+      "sha256": "5cc515f84eece980631f4c06b2ddf0d7ddbac08c852f9b958ec3631f7da44240",
+      "size_bytes": 61149
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/actual-01/receipt.json",
+      "sha256": "dd012a37e66fa109e7ad901e11527d8744dc5c73903aa4cdab10b36f991dad1f",
+      "size_bytes": 212439
+    },
+    "independent_numerical_audit": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/independent-result-audit.json",
+      "sha256": "a81878f15e2b569f644ddf495f4090b7d230938d7263d7d3519512464f6ad6df",
+      "size_bytes": 9774
+    },
+    "independent_owner_audit": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/independent-owner-result-audit.json",
+      "sha256": "71372c46cb01e38edabd7b78d427a2d636f1a2f9a588b1fb6f858d2bd326e8dc",
+      "size_bytes": 10867
+    },
+    "root_execution": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/root-execution-01.json",
+      "sha256": "24da1218c6734280c91ac5a1ac1c7cc1c33b14292d747e33d33e672c1f9f9259",
+      "size_bytes": 1100
+    },
+    "actor_source": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/fixture.py",
+      "sha256": "d86ff0144a22e68f2399b1c0ed8c416ceab14ae892b7c27a9acba1f059844185",
+      "size_bytes": 26546
+    },
+    "controller_source": {
+      "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-03/controller.py",
+      "sha256": "5513239b655cfe7adf9b8f73181e853bf6e13c78eb0201622c08e841bfe7349b",
+      "size_bytes": 29938
+    },
+    "unit": "jev-d3-mmap-cpu-20261023-03.service",
+    "invocation_id": "97199c26d03c4ddfa28f4aa796aca62e",
+    "actor": {
+      "pid": 307373,
+      "start_ticks": 6229653,
+      "pgid": 307373,
+      "sid": 307373,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-mmap-cpu-20261023-03.service"
+    },
+    "elapsed_seconds_including_imports": 13.738226560002659,
+    "peak_RSS_bytes": 915947520,
+    "kernel_memcg_peak_bytes": 733605888,
+    "memory_max_bytes": 2147483648,
+    "memory_swap_max_bytes": 0,
+    "runtime_seconds": 30,
+    "observed_main_CPU_affinity": [
+      0
+    ],
+    "CPU_quota": "100000/100000; no cgroup cpuset interface",
+    "generated_tensor_bytes": 232,
+    "generated_tensor_local_only": true,
+    "base_and_LoRA_two_forward_assertions_equal": true,
+    "saved_base_and_enabled_reference_values_independently_recomputed_each": 24,
+    "raw_per_offload_output_vectors_persisted": false,
+    "offload_numeric_comparisons_evidence": "Pinned successful actor source asserts exact torch.equal; saved body trace and independent reference recomputation, not a replay of unpersisted per-call vectors",
+    "body_trace_count": 29,
+    "tied_parameter_object_preserved": false,
+    "CPU_storage_alias_preserved": true,
+    "automatic_post_forward_cleanup_after_body_error": false,
+    "explicit_detach_restored_all_CPU": true,
+    "full_state_identity_or_Q95_compatible": false,
+    "LoRA_grad_flag_limit": "Saved LoRA snapshots already have requires_grad=true; earlier false-to-true is source-backed inference without paired pre-context snapshot; no gradient computation inferred",
+    "CUDA_initialized_after_import_and_final": false,
+    "readonly_CUDA_queries": {
+      "is_available_false": 16,
+      "device_count_zero": 14
+    },
+    "CUDA_guard_scope": "After Torch import only; unwrapped native calls not monitored; no GPU transfer or full-runtime zero-CUDA guarantee",
+    "critical_small_ref_union_count": 28,
+    "native_binary_stat_only_count": 5,
+    "full_runtime_qualified": false,
+    "authenticated_unit_and_observed_cohort_closed": true,
+    "whole_tree_or_no_escape_enforced": false,
+    "runtime_host_checks": 192,
+    "retained_runtime_host_samples": 64,
+    "retained_including_initial_final": 66,
+    "minimum_retained_MemAvailable_bytes": 28244250624,
+    "minimum_all_192_or_continuous_memory_claimed": false,
+    "after_measurement_host": {
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "mem_total_bytes": 130595864576,
+        "mem_available_bytes": 28609630208,
+        "comfy_running": 0,
+        "comfy_pending": 0,
+        "comfy_state": "http_idle",
+        "comfy_evidence": {
+          "transport": "HTTP",
+          "comfy_running": 0,
+          "comfy_pending": 0,
+          "http_status": 200,
+          "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+        }
+      },
+      "reserve_bytes": 26119172916,
+      "required_available_bytes": 26119172916,
+      "initial": false
+    },
+    "large_model_12B_GPU_8192context_20second_or_quality_qualified": false
+  },
+  "preserved_pre_Torch_failures": [
+    {
+      "owner": "01",
+      "reason": "Missing cpuset.cpus.effective in user subtree; corrected using CPUAffinity and actual sched/proc readback",
+      "receipt": {
+        "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/actual-01/receipt.json",
+        "sha256": "69a5cb12d205e1f44b53673339b325813d739a47932c11a05e3e8535b26f0750",
+        "size_bytes": 8536
+      },
+      "audit": {
+        "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-01/root-audit-01.json",
+        "sha256": "7bf0166baa4826e08d8b0749baabb9f36e9d7b32a02538b51024590a969bf7f7",
+        "size_bytes": 1323
+      },
+      "closure_confirmed": true
+    },
+    {
+      "owner": "02",
+      "reason": "Linux proc limits trailing whitespace rejected by parser; successor preserves exact values/units and accepts trailing whitespace",
+      "receipt": {
+        "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/actual-01/receipt.json",
+        "sha256": "a07c0a77048f091c0a954707f127854c5b3d395de571bd37180cac0fdbe76f76",
+        "size_bytes": 8353
+      },
+      "audit": {
+        "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/root-audit-01.json",
+        "sha256": "0e891f69c28684c7c16ed9197ef60a278eea0db1890ce1f771a093866ba06487",
+        "size_bytes": 1349
+      },
+      "closure_confirmed": true
+    }
+  ],
+  "original_Q95_gate_unchanged": {
+    "required_host_bytes": 73958271732,
+    "latest_refusal": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261023-05/source-plan-preflight-02.json",
+      "sha256": "17dc9bdd00ccda49b33a468044e365b680dff78cdacc1f3fca510a114966ba6d",
+      "size_bytes": 2632
+    },
+    "observed_utc": "2026-10-22T23:24:52.440117+00:00",
+    "mem_available_bytes": 28758568960,
+    "unit_or_model_launched": false
+  },
+  "validation": {
+    "actor_stdlib_tests": 9,
+    "final_owner_stdlib_tests": 16,
+    "lint": "PASS",
+    "numerical_and_owner_saved_only_audits": "PASS with documented scope",
+    "additional_tests_unnecessary_after_source_freeze": true
+  },
+  "remaining_required": [
+    "Measure real single-layer memory/timing under a separately justified bounded profile; CPU toy results alone cannot admit full model or reduce original gates",
+    "Fresh Q95helper05 physical/resource/runtime admission, then full same-helper standardcontrol03 all10",
+    "Run explicitly source-selected FIND04 actual N3/NF4/GPU/runtime/helper/HTTP/DOM/judge/closure under unchanged10task contract",
+    "Independent numerical and per-case audit; do not infer model-quality gain from synthetic CPU evidence",
+    "Finish all6D3 matched campaigns without scoring resource refusals or interrupted campaign as quality failures",
+    "MeasuredfullD3 phase1 concreteowner/Comfyguard/RPC/sampler before actualconstructor+publisher48 and then8192qualification"
+  ],
+  "other_model_comparison_status": "Edge observed0/10 unqualifiedfinalization; all remainingmodels pending. No matched cross-model superiority demonstrated."
+}

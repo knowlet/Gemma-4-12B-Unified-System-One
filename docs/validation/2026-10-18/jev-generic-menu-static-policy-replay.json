@@ -1,0 +1,90 @@
+{
+  "schema_id": "jev-owned-generic-menu-policy-replay-v1",
+  "stage": "all14_original_initial_requests_completed_and_validated",
+  "source_HOLD": {
+    "path": "artifacts/jev-runtime/generic-menu-policy-replay-20261018-01/source-HOLD-01/HOLD.json",
+    "sha256": "f723c1172942f4e24667715a1c0d0208b942164bf70a38f1d17f6644593ec1e8",
+    "size_bytes": 5647
+  },
+  "original_plan": {
+    "path": "artifacts/jev-runtime/generic-menu-policy-replay-20261018-01/prepare-02/replay-plan.json",
+    "sha256": "107434aae1202515c3fe4b205e75bea30074429a6a24bf2549bfbfd551df4d96",
+    "size_bytes": 8320
+  },
+  "executor": {
+    "path": "artifacts/jev-runtime/generic-menu-policy-replay-20261018-01/replay.py",
+    "sha256": "e402ff3b5ffe47720f6b5a1d7ae85f5af14f1fdb8ec2b49f25f5109ff6b1dfcc",
+    "size_bytes": 30036
+  },
+  "result": {
+    "path": "artifacts/jev-runtime/generic-menu-policy-replay-20261018-01/actual-replay-01/result.json",
+    "sha256": "e02a695e7ecede702c81448f904240f59c0655b238dd75045eb271fa0636d29c",
+    "size_bytes": 9917
+  },
+  "sealed_raw": {
+    "path": "artifacts/jev-runtime/generic-menu-policy-replay-20261018-01/actual-replay-01/raw-sealed.json",
+    "sha256": "5212749f7e884177d4728baaec5c64a4862dec54442343ffe92f4ae61f5fd408",
+    "size_bytes": 20285
+  },
+  "closed_inventory": {
+    "path": "artifacts/jev-runtime/generic-menu-policy-replay-20261018-01/actual-replay-01-closed-index.json",
+    "sha256": "ae4ed16d4415105f68741bdf87d593d93a895b5f3b6f7d30214dfd0030f2d7d9",
+    "size_bytes": 19378
+  },
+  "closed_files": 131,
+  "closed_bytes": 2416642,
+  "qualification_sha256": "9bf5bff5f43d15e461c1f5002932419bf0623bb27ad4e15a8596d0a0f4b3fb1e",
+  "execution": {
+    "tool_session": 21543,
+    "exit_code": 0,
+    "policy_POSTs": 14,
+    "retry_POSTs": 0,
+    "warmup_POSTs": 0,
+    "helper_POSTs": 0,
+    "browser_actions_executed": 0,
+    "client_deadline_seconds": 25,
+    "worker_deadline_seconds": 20,
+    "policy_max_new_tokens": 32,
+    "reasoning": "none",
+    "raw_source_and_body_SHA_verified": true,
+    "delivered_response_and_server_raw_bound": true,
+    "complete_native_API_terminal_and_admitted_final_cpu_per_request": true
+  },
+  "metric": {
+    "fixed_denominator": 14,
+    "operation_teacher_agreement": 14,
+    "full_action_teacher_agreement": 14,
+    "expected_CLICK": 6,
+    "conditional_CLICK_target_denominator": 6,
+    "CLICK_target_teacher_agreement": 6,
+    "six_pairs_both_actions_match": 6,
+    "controls": [
+      12,
+      13
+    ],
+    "split_slices": {
+      "train": {
+        "count": 9,
+        "full_action_teacher_agreement": 9
+      },
+      "development": {
+        "count": 5,
+        "full_action_teacher_agreement": 5
+      }
+    },
+    "client_ms_min_max": [
+      5617.279892991064,
+      9063.92245501047
+    ],
+    "server_ms_min_max": [
+      3783.7543499772437,
+      7086.098847008543
+    ]
+  },
+  "interpretation": "The240 policy already matches every demonstrated choice on this cue-heavy prototype. This does not expose the real-menu decision failure or establish browser completion, unique optimality or generalization. Directory-versus-continue-down wording may explain agreement.",
+  "decision": "Do not fit these14rows. Continue a separate authored semantic/distractor prototype with full scene/template-family splits and native proofs before any local-data admission.",
+  "unused_heads": "Retained as not_evaluated; no invented click prediction after SCROLL_DOWN.",
+  "browser_task_score": null,
+  "public_registry_admitted": false,
+  "relative_model_victory_attested": false
+}

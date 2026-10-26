@@ -1,0 +1,84 @@
+{
+  "after": [
+    {
+      "path": "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/service_binding.py",
+      "sha256": "19e55e3dc8f71405281594d846e3f5aeb74060df2874bf7e3dd039f86dbb6dac",
+      "size_bytes": 9050
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/test_service_binding.py",
+      "sha256": "45aa3322a4d43528d241d355cea9011f965ca532cd0e17443f06c3879f2aaf09",
+      "size_bytes": 11678
+    }
+  ],
+  "before": [
+    {
+      "path": "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/service_binding.py",
+      "sha256": "19e55e3dc8f71405281594d846e3f5aeb74060df2874bf7e3dd039f86dbb6dac",
+      "size_bytes": 9050
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/test_service_binding.py",
+      "sha256": "45aa3322a4d43528d241d355cea9011f965ca532cd0e17443f06c3879f2aaf09",
+      "size_bytes": 11678
+    }
+  ],
+  "checks": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-B",
+        "-s",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/jev-revisit-service-binding-01",
+        "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/test_service_binding.py"
+      ],
+      "authoritative_exec_chunk_id": "aaa12d",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ".....................                                                    [100%]\n21 passed in 0.15s\n"
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/service_binding.py",
+        "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/test_service_binding.py"
+      ],
+      "authoritative_exec_chunk_id": "effbc3",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/service_binding.py",
+        "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/test_service_binding.py"
+      ],
+      "authoritative_exec_chunk_id": "effbc3",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "2 files already formatted\n"
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-B",
+        "-s",
+        "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/service_binding.py"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\"benchmark_ready\": false, \"expected_sources\": {\"capacity_binding_source\": {\"path\": \"artifacts/jev-runtime/public-revisit-browser-binding-20261020-01/revisit_capacity_binding.py\", \"sha256\": \"0ef8275bd2f4f57f50710ec70bde5ce3c809f743cf783405e8db2cbbbdeb29f7\", \"size_bytes\": 15758}, \"launcher_adapter\": {\"path\": \"artifacts/jev-runtime/public-revisit-browser-binding-20261020-01/launcher_adapter.py\", \"sha256\": \"b8fc5033ea4a28d35875122565d0b817332ea2c23e2999340af8b2d1c8e72fd5\", \"size_bytes\": 9708}, \"launcher_source\": {\"path\": \"scripts/jev_browser_revisit_benchmark.py\", \"sha256\": \"f7f0c4f708203e107563fa70656bbeb3e04afcba463a0a9cf9eb156fbd8e51b3\", \"size_bytes\": 13193}, \"profile\": \"composed-visible-hover-entries-settled-revisit-v1\", \"profile_helper\": {\"path\": \"scripts/jev_observation_profile_revisit.py\", \"sha256\": \"873abc6aa2a02272fd9b54d299d683598bdb3d5c0a848cc43a356daa5a36a0ca\", \"size_bytes\": 13642}, \"profile_manifest\": {\"path\": \"artifacts/jev-runtime/public-revisit-profile-20261020-01/profile-01/profile-manifest.json\", \"sha256\": \"f3e65535836518581deab8487f6c20c837bcecfa03173db85f953cc02975ce88\", \"size_bytes\": 12379}, \"schema_id\": \"jev_revisit_browser_service_binding_sources_v1\", \"technical_observer_source\": {\"path\": \"artifacts/jev-runtime/public-field-syntax-v8-browser-retest-20261019-01/browser_observer_runner.py\", \"sha256\": \"8e00743c7b3caa48a18692e652571f8e03b8cbb9906f7462f243e2ac062150f9\", \"size_bytes\": 32298}}, \"model_processor_browser_service_calls\": 0, \"schema_id\": \"jev_revisit_browser_service_binding_source_only_v1\", \"status\": \"DRY_SOURCE_ONLY_NOT_ADMITTED\"}\n"
+    }
+  ],
+  "fake_scope": "21 cases; explicit fake live service and capacity only. Real selected small source refs and real pending selector checked. No private config, model, processor, HTTP, browser or service actor.",
+  "schema_id": "jev_revisit_browser_service_binding_pure_validation_v1"
+}

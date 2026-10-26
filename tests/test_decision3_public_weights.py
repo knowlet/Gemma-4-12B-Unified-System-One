@@ -13,18 +13,19 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from decision3_test_support import frozen_source_root
 
 ROOT = Path(__file__).resolve().parents[1]
 PATH = ROOT / "apps/modal/decision3_public_weights.py"
 
 
 def checkout_paths(module, root):
-    # Modal copies each named source to its declared absolute destination. Pure
-    # tests use the same source bytes in a checkout, without creating that layout.
+    # Modal copies named sources to absolute destinations. Pure tests use the
+    # same bytes in this checkout, without changing those deployment sources.
     deployed_root = module.ROOT
-    for constant_name, value in list(vars(module).items()):
+    for name, value in list(vars(module).items()):
         if isinstance(value, Path) and value.is_relative_to(deployed_root):
-            setattr(module, constant_name, root / value.relative_to(deployed_root))
+            setattr(module, name, root / value.relative_to(deployed_root))
     return module
 
 
@@ -46,8 +47,8 @@ def prefix(path=PATH):
     original_load_service = module.load_service
 
     def load_service():
-        # Every call still reads and SHA-verifies the real service before only
-        # its test-module paths are relocated; never cache or bypass this load.
+        # Each call still reads and authenticates the real service before its
+        # in-memory paths are relocated. Do not cache or bypass the loader.
         return checkout_paths(original_load_service(), root)
 
     module.load_service = load_service
@@ -62,47 +63,71 @@ spec.loader.exec_module(CORE)
 
 
 @pytest.mark.parametrize("tampered", [None, "service", "core", "wrapper", "wire", "source12"])
-def test_relocated_checkout_retains_real_source_hash_guards(tmp_path, monkeypatch, tampered):
-    root = tmp_path / "arbitrary-checkout"
-    original = WEIGHTS.inventory()
-    for row in original["rows"]:
-        source = Path(row["path"])
+def test_relocated_prefix_preserves_real_source_hash_guards(tmp_path, monkeypatch, tampered):
+    root = tmp_path.resolve() / "arbitrary-checkout"
+    # Only the first frozen source is needed: its corruption must be rejected
+    # before inventory can reach the deliberately absent remaining sources.
+    first_frozen = next(iter(CORE.SOURCE_PINS))
+    sources = (
+        PATH,
+        WEIGHTS.SERVICE,
+        SERVICE.CORE,
+        SERVICE.WRAPPER,
+        SERVICE.WIRE,
+        ROOT / first_frozen,
+    )
+    for source in sources:
         target = root / source.relative_to(ROOT)
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, target)
     monkeypatch.chdir(tmp_path)
     before = set(sys.modules)
-    relocated = prefix(root / "apps/modal/decision3_public_weights.py")
+    relocated = prefix(root / PATH.relative_to(ROOT))
     service = relocated.load_service()
-    assert service.ROOT == root and service.CORE == root / SERVICE.CORE.relative_to(ROOT)
+    assert relocated.ROOT == service.ROOT == root
+    assert relocated.SCRIPT == root / PATH.relative_to(ROOT)
+    assert relocated.SERVICE == service.SCRIPT == root / WEIGHTS.SERVICE.relative_to(ROOT)
     assert relocated.SERVICE_SHA == WEIGHTS.SERVICE_SHA
     assert hashlib.sha256(relocated.SERVICE.read_bytes()).hexdigest() == WEIGHTS.SERVICE_SHA
+    for name in ("CORE", "WRAPPER", "WIRE", "WORKER"):
+        assert getattr(service, name) == root / getattr(SERVICE, name).relative_to(ROOT)
     for name in ("CORE", "WRAPPER", "WIRE"):
         assert getattr(service, name + "_SHA") == getattr(SERVICE, name + "_SHA")
         assert hashlib.sha256(getattr(service, name).read_bytes()).hexdigest() == getattr(
             service, name + "_SHA"
         )
+    assert service.literal(service.CORE, "SOURCE_PINS") == CORE.SOURCE_PINS
+    assert (
+        hashlib.sha256((root / first_frozen).read_bytes()).hexdigest()
+        == CORE.SOURCE_PINS[first_frozen]
+    )
     if tampered:
         target = {
             "service": relocated.SERVICE,
             "core": service.CORE,
             "wrapper": service.WRAPPER,
             "wire": service.WIRE,
-            "source12": root / "src/s1/contracts.py",
+            "source12": root / first_frozen,
         }[tampered]
         with target.open("ab") as stream:
             stream.write(b"\n# tampered test source\n")
         with pytest.raises(ValueError, match="source differs|source12 differs"):
             relocated.inventory()
-    else:
-        actual = relocated.inventory()
-        assert actual["files"] == 18
-        assert {str(Path(row["path"]).relative_to(root)): row["pin"] for row in actual["rows"]} == {
-            str(Path(row["path"]).relative_to(ROOT)): row["pin"] for row in original["rows"]
-        }
-        relocated.prepare(root / "prepared")
-        assert not json.loads((root / "prepared/plan.json").read_bytes())["GPU_requested"]
     assert not ({"torch", "modal"} & (set(sys.modules) - before))
+
+
+@pytest.fixture
+def frozen_weights(tmp_path_factory, monkeypatch):
+    root = frozen_source_root(tmp_path_factory.mktemp("frozen-source") / "checkout")
+    weights = prefix(root / PATH.relative_to(ROOT))
+    monkeypatch.setitem(globals(), "WEIGHTS", weights)
+    monkeypatch.setitem(globals(), "SERVICE", weights.load_service())
+    return weights
+
+
+def test_current_checkout_still_rejects_frozen_source_drift():
+    with pytest.raises(ValueError, match="Frozen source12 differs"):
+        WEIGHTS.inventory()
 
 
 def tiny_tensor(path, header, data):
@@ -151,13 +176,15 @@ def cache(tmp_path, *, single_file=False):
     return staging, identity, manifest, files
 
 
-def test_source18_is_service17_plus_only_downloader_and_preparation_is_stdlib(tmp_path):
+def test_source18_is_service17_plus_only_downloader_and_preparation_is_stdlib(
+    tmp_path, frozen_weights
+):
     before = set(sys.modules)
     actual = WEIGHTS.inventory()
     original = SERVICE.source_inventory()
     assert actual["files"] == len(actual["rows"]) == 18
     assert {row["path"] for row in actual["rows"]} - {row["path"] for row in original["rows"]} == {
-        str(PATH)
+        str(WEIGHTS.SCRIPT)
     }
     assert (
         actual["service_source_inventory_sha256"]
@@ -211,7 +238,9 @@ def test_real_stdlib_tensor_header_and_all_shard_geometry(tmp_path, fault, singl
 
 
 @pytest.mark.parametrize("corrupt", [False, True])
-def test_download_requests_only_exact_public_files_and_full_sha(tmp_path, monkeypatch, corrupt):
+def test_download_requests_only_exact_public_files_and_full_sha(
+    tmp_path, monkeypatch, corrupt, frozen_weights
+):
     staging, identity, manifest, files = cache(tmp_path)
     calls = []
     output = tmp_path / "output"
@@ -323,6 +352,14 @@ def test_profile_preserves_original_closed_export_bytes_and_refuses_failed_cpu(t
         assert (
             profile["closed_download"]["result_json"].encode() == originals["download-result.json"]
         )
+        # Warmed serving selects settings separately; it cannot rewrite the
+        # original CPU closure or require the new serving source in old bytes.
+        for workload in ("public-six", "known-four"):
+            setting = SERVICE.startup_configuration("publisher-text48-v1", workload)
+            assert setting["max_browser_envelopes"] in (64, 96)
+            assert SERVICE.validate_weight_profile(blob, sha, identities) == profile
+            assert hashlib.sha256(blob).hexdigest() == sha
+            assert "startup" not in SERVICE.parse(blob)
 
 
 def test_sdk_download_is_cpu_only_named_mounts_without_input_data_or_public_endpoint():

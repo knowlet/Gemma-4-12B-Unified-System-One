@@ -1,0 +1,107 @@
+{
+  "schema_id": "decision3-loading-primary-source-observation-v1",
+  "mode": "source_read_only_no_framework_import",
+  "model": "d3",
+  "revision": "225be8b1e2270becab69c5fe05b26f99cbbdd66b",
+  "boot_selected_memtotal_bytes": 130595864576,
+  "original_profile": {
+    "floor_bytes": 132618706804,
+    "physical_memtotal_bytes": 130595864576,
+    "excess_bytes": 2022842228,
+    "conservative_full_transient_bytes": 52176025120,
+    "immutable": true,
+    "hardware_impossibility_proven": false
+  },
+  "findings": [
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3/snapshots/225be8b1e2270becab69c5fe05b26f99cbbdd66b/modeling_d3.py",
+      "lines": [
+        134,
+        190
+      ],
+      "fact": "Decision publisher constructor delegates to D3.from_pretrained; low_cpu_mem_usage is consumed/ignored as a loader compatibility flag, not a project streaming implementation."
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3/snapshots/225be8b1e2270becab69c5fe05b26f99cbbdd66b/d3_runtime.py",
+      "lines": [
+        1217,
+        1229
+      ],
+      "fact": "Publisher asks Qwen3_5Model.from_pretrained for BF16, SDPA, one selected CUDA device. The FP32 readout is separately load_file then copied to the device. Largest and Edge runtime executable ASTs match; only a documentation paragraph differs."
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/modeling_utils.py",
+      "lines": [
+        3729,
+        3758,
+        4263,
+        4280
+      ],
+      "fact": "Selected Transformers5.17 normally instantiates model parameters under torch.device(meta), then loads checkpoint data; no ordinary full initialized CPU backbone is required by this branch."
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/modeling_utils.py",
+      "lines": [
+        4426,
+        4457
+      ],
+      "fact": "Local safetensors loading normally uses safe_open backend mmap/deviceCPU and stores lazy get_slice handles for all checkpoint files, before conversion and placement. Explicit disable_mmap or HF mount detection chooses full-byte loading instead."
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/core_model_loading.py",
+      "lines": [
+        1233,
+        1273,
+        1624,
+        1636,
+        1730,
+        1742
+      ],
+      "fact": "Per-tensor materialization performs tensor[...] then .to(selected device,dtype). Default path submits futures to at most4 workers. HF_DEACTIVATE_ASYNC_LOAD disables this async path and uses deferred callables. HF_ENABLE_PARALLEL_LOADING=false / HF_PARALLEL_LOADING_WORKERS=1 in current actor environment do not control this5.17 branch. Inherited HF_DEACTIVATE_ASYNC_LOAD was not separately recorded, so actual concurrency is not proven."
+    }
+  ],
+  "proposal": "A separately named measured serial mmap/meta loading profile can explicitly set HF_DEACTIVATE_ASYNC_LOAD=1 and measure constructor peak host MemAvailable, cgroup memory.current/peak/events, CUDA allocated/reserved peaks and preserved host reserve. This is a candidate resource optimization, not qualification or authorization to change the original conservative floors. Keep historical sources and current baseline profile frozen; preserve BF16/FP32/readout/code/prompt/attention/batch8/native255/text48 numerics and no-swap/owned limits. Actual fit and transient bound remain unmeasured; mmap mapping size alone does not prove physical residency or UMA credit.",
+  "evidence": [
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3/snapshots/225be8b1e2270becab69c5fe05b26f99cbbdd66b/modeling_d3.py",
+      "sha256": "f8f8db23ff58f1a990ffa24977d744a50e1b4446d02a64c22070967705b6dbef",
+      "size_bytes": 12079
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3/snapshots/225be8b1e2270becab69c5fe05b26f99cbbdd66b/d3_runtime.py",
+      "sha256": "2d90e93ac06b9ca4a84e0610ab9acfa2d6793ea4b40eec1b4a3da47577bdea37",
+      "size_bytes": 95611
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3/snapshots/225be8b1e2270becab69c5fe05b26f99cbbdd66b/config.json",
+      "sha256": "7e16284fafd2d54b73c10073c0391bfd6804886ceaf2cbe37fdb62d4c6813dea",
+      "size_bytes": 3949
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3/snapshots/225be8b1e2270becab69c5fe05b26f99cbbdd66b/decision_config.json",
+      "sha256": "6b80ca11bd6ba481df4b3c187db8a5d1983786563ca05e2edccb0bdac0d2fc4f",
+      "size_bytes": 5503
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_runtime.py",
+      "sha256": "adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917",
+      "size_bytes": 95505
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/modeling_utils.py",
+      "sha256": "38c2bd02ed7af229f54e2f02dae65663be7af29ed2c9498bd1c460cf60fbb62d",
+      "size_bytes": 268806
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/core_model_loading.py",
+      "sha256": "c5b6bcdb6401a3cfdf825bc979d41ac3e7e075e09459021363dce5e68c54de22",
+      "size_bytes": 84952
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-current-source-bootstrap-20261022-01/current_core.py",
+      "sha256": "13b77299787d77587de2253a5f953b101113fc8d694edd27ee651d709be0e435",
+      "size_bytes": 26252
+    }
+  ],
+  "selected_runtime_scope": "modeling_utils is an existing selected source pin; core_model_loading is a new read-only observed indirect source reference, not retroactively added to the executed plan."
+}

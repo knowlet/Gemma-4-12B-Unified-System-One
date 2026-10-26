@@ -1,0 +1,31 @@
+{
+  "schema_id": "decision3-local-runtime-source-validation-v1",
+  "checks": [
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-local-runtime-20261020-01/select_local_runtime.py"
+      ],
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-GX10-local-runtime-20261020-01/select_local_runtime.py"
+      ],
+      "returncode": 0,
+      "stdout": "1 file already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "meaningful_runtime_validation": {
+    "path": "artifacts/jev-runtime/decision3-GX10-local-runtime-20261020-01/selection-build-01.json",
+    "sha256": "b3ae140fd4ba727fa8367933d466329a0428d92605f58b4a286d06c854043a55",
+    "size_bytes": 1422
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "CUDA": {
+    "allocated_bytes": 1024,
+    "free_bytes": 917794816,
+    "initialized": true,
+    "max_allocated_bytes": 1024,
+    "max_reserved_bytes": 2097152,
+    "metrics_seconds": 0.0011903970007551834,
+    "reserved_bytes": 2097152,
+    "scope": "Global CUDA free is shared, not an owned-process delta; allocator counters omit context/driver allocations. Metrics may perturb timing or synchronize. Never add free bytes to host MemAvailable.",
+    "total_bytes": 130595864576
+  },
+  "details": {
+    "first_kernel_scope": "ones fill may execute before matmul; this is not a claim that matmul is the first CUDA kernel.",
+    "input_bytes": 1024
+  },
+  "elapsed_seconds": 2.7882074379886035,
+  "host": {
+    "MemAvailable_bytes": 28887859200,
+    "MemTotal_bytes": 130595864576
+  },
+  "memory": {
+    "monotonic_after": 66811.383952479,
+    "monotonic_before": 66811.382324419,
+    "own_cgroup": {
+      "memory_current_bytes": 369827840,
+      "memory_peak_bytes": 369827840,
+      "memory_stat": {
+        "anon": 320512000,
+        "file": 46366720,
+        "kernel": 2785280,
+        "pgfault": 100305,
+        "pgmajfault": 0,
+        "shmem": 46333952
+      },
+      "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-02.service"
+    },
+    "process": {
+      "RssAnon_bytes": 320495616,
+      "RssFile_bytes": 266768384,
+      "RssShmem_bytes": 46333952,
+      "VmRSS_bytes": 633597952,
+      "VmSwap_bytes": 0
+    },
+    "scope": "Sequential non-atomic own-process/own-cgroup snapshot; page cache release and disk IO bytes are not inferred."
+  },
+  "monotonic": 66811.38534206,
+  "peak_RSS_bytes": 633192448,
+  "ru_majflt": 0,
+  "ru_minflt": 100211,
+  "snapshot_scope": "Sequential non-atomic own process/cgroup, host and global CUDA samples; owner admission remains external.",
+  "stage": "tiny-allocation-fill-enqueued"
+}

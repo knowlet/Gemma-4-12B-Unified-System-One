@@ -125,6 +125,8 @@ def _bf16_evaluation_scope(args):
 
 
 def main(argv=None):
+    from s1.jev_prompt import PROMPT_FORMATS
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--upstream-path", required=True)
     parser.add_argument("--output-dir", required=True)
@@ -139,6 +141,7 @@ def main(argv=None):
     parser.add_argument("--analysis-style", choices=["detailed", "compact"], default="detailed")
     parser.add_argument("--generated-actions", action="store_true")
     parser.add_argument("--generated-action-grammar", action="store_true")
+    parser.add_argument("--generated-prompt-format", choices=PROMPT_FORMATS, default="raw-json-v1")
     parser.add_argument("--generated-action-adapter", type=Path)
     parser.add_argument("--generated-action-qualification", type=Path)
     parser.add_argument("--hierarchical-candidates", action="store_true")
@@ -186,6 +189,8 @@ def main(argv=None):
     parser.add_argument("--live-only", action="store_true")
     parser.add_argument("--public-cases", nargs="+", dest="public_case_ids")
     args = parser.parse_args(argv)
+    if args.generated_prompt_format != "raw-json-v1" and not args.generated_actions:
+        parser.error("generated-prompt-format requires --generated-actions")
     try:
         observation_bundle = prepare_observation_profile(
             args.upstream_path, args.observation_profile, args.observation_profile_helper_sha256
@@ -356,6 +361,9 @@ def main(argv=None):
                     revision=args.revision,
                     quantization=args.quantization,
                 )
+            from s1.browser_action_prompt import expected_format
+
+            expected_format(verified_action_adapter.telemetry(), args.generated_prompt_format)
         except (ValueError, OSError) as exc:
             parser.error(str(exc))
     upstream = upstream_manifest(args.upstream_path)
@@ -369,6 +377,7 @@ def main(argv=None):
         "analysis_style": args.analysis_style,
         "generated_actions": args.generated_actions,
         "generated_action_grammar": args.generated_action_grammar,
+        "generated_prompt_format": args.generated_prompt_format,
         "hierarchical_candidates": args.hierarchical_candidates,
         "batch_hierarchy_stages": args.batch_hierarchy_stages,
         "decision_readout_requested": args.decision_readout,
@@ -641,6 +650,7 @@ def main(argv=None):
                 cell = f"generated-actions-{args.quantization}"
                 receipt["decision_model"].update(
                     policy=POLICY,
+                    prompt_format=args.generated_prompt_format,
                     decoding_constraint=(
                         "legal_action_token_trie_v1" if args.generated_action_grammar else "none"
                     ),
@@ -659,6 +669,7 @@ def main(argv=None):
             jev_hierarchical_batch=args.batch_hierarchy_stages,
             jev_generated_actions=args.generated_actions,
             jev_generated_action_grammar=args.generated_action_grammar,
+            jev_generated_prompt_format=args.generated_prompt_format,
             model_identity=cell,
             request_evidence_sink=server_journal,
             **({"jev_browser_operation_first": True} if args.browser_operation_first else {}),

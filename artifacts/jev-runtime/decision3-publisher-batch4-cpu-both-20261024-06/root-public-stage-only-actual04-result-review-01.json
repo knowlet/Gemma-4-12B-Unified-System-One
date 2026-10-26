@@ -1,0 +1,289 @@
+{
+  "schema": "root-closed-full06-actual04-public-stage-only-review-v1",
+  "status": "PASS_WITH_LIMITS_PUBLIC231_ONLY_OVERALL_CAMPAIGN_FAILED_OR_INCOMPLETE",
+  "created_at_utc": "2026-10-24T02:07:22.507183+00:00",
+  "reviewer": "root closed aggregate/source/identity review; no item-level rescore or model execution",
+  "scope": "Exactly one authenticated complete public231 stage; later coherence continuation proved, coherence completion not qualified",
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ],
+    "profile": "decision3-edge-gx10-publisher-cpu2g-coexist-batch4-both-stage-completions-ece-schema-20261024-v1",
+    "device": "cpu",
+    "backbone_dtype": "bfloat16",
+    "readout_dtype": "float32",
+    "temperature": 1.0,
+    "batch_size": 4,
+    "context_limit": 16384,
+    "context_policy": "reject_no_truncation",
+    "permutation_average": false,
+    "constructor_count": 1,
+    "benchmark_heaven_revision": "bb05a335bc809e61b20c0f745d25499a82b326fc",
+    "coherence_revision": "e18733694623aa93058e279c3534f8b8e2edefa3",
+    "source_plan_sha256": "b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021"
+  },
+  "public231": {
+    "n_planned": 231,
+    "n_attempted": 231,
+    "n_scorable": 231,
+    "n_valid": 231,
+    "n_correct": 158,
+    "n_renormalized": 0,
+    "calibration_n": 231,
+    "accuracy": 0.683982683982684,
+    "macro_accuracy": 0.6800714340317023,
+    "coverage": 1.0,
+    "schema_validity": 1.0,
+    "schema_validity_strict": 1.0,
+    "operational_success": 1.0,
+    "brier_mean": 0.4402665217613875,
+    "ordinal_mae": 0.4504952208693158,
+    "price_per_1000_decisions_usd": null,
+    "ledger_charged_usd": null,
+    "ece": {
+      "bins": [
+        {
+          "accuracy": null,
+          "hi": 0.1,
+          "lo": 0.0,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "hi": 0.2,
+          "lo": 0.1,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": 0.25,
+          "hi": 0.3,
+          "lo": 0.2,
+          "mean_confidence": 0.26898711440980383,
+          "n": 4
+        },
+        {
+          "accuracy": 0.25,
+          "hi": 0.4,
+          "lo": 0.3,
+          "mean_confidence": 0.3467874825393653,
+          "n": 12
+        },
+        {
+          "accuracy": 0.42857142857142855,
+          "hi": 0.5,
+          "lo": 0.4,
+          "mean_confidence": 0.46096025798269574,
+          "n": 14
+        },
+        {
+          "accuracy": 0.5925925925925926,
+          "hi": 0.6,
+          "lo": 0.5,
+          "mean_confidence": 0.5621635408240441,
+          "n": 27
+        },
+        {
+          "accuracy": 0.42857142857142855,
+          "hi": 0.7,
+          "lo": 0.6,
+          "mean_confidence": 0.6489473427473992,
+          "n": 21
+        },
+        {
+          "accuracy": 0.68,
+          "hi": 0.8,
+          "lo": 0.7,
+          "mean_confidence": 0.7553461124973461,
+          "n": 25
+        },
+        {
+          "accuracy": 0.6875,
+          "hi": 0.9,
+          "lo": 0.8,
+          "mean_confidence": 0.8555390395564902,
+          "n": 32
+        },
+        {
+          "accuracy": 0.875,
+          "hi": 1.0,
+          "lo": 0.9,
+          "mean_confidence": 0.9751887443867447,
+          "n": 96
+        }
+      ],
+      "ece": 0.1039798354748241,
+      "n": 231
+    },
+    "complete": true
+  },
+  "public_latency": {
+    "count": 231,
+    "median_seconds": 0.32326001097681,
+    "p95_seconds": 5.028488195996033,
+    "max_seconds": 7.281688296992797,
+    "quantile_method": "nearest_rank_p95; ordinary_median",
+    "startup_included": false,
+    "browser_20_second_qualification": false,
+    "unit": "one unchanged complete state/questions callback; native question chunks of up to4"
+  },
+  "coherence_mini": null,
+  "coherence_complete_qualified": false,
+  "overall_campaign_complete": false,
+  "owner_completed": false,
+  "root_exit_code": 1,
+  "root_wall_seconds": 10001.967004113016,
+  "campaign_state_status": "running_original_public231_then_coherence_mini",
+  "full_campaign_final_authentication_claimed": false,
+  "failure_preservation": {
+    "original_owner_primary_and_secondary_errors_unchanged": true,
+    "primary_error_present": true,
+    "secondary_error_count": 0,
+    "exact_error_object_canonical_sha256": "a4e3063d129671ebc13ba6aee833d52ab12aae5f1780189dea948f27ba9abe75",
+    "original_errors_location": "artifact_refs.owner_receipt; errors remain there exactly, never replaced or cleared",
+    "raw_error_text_or_command_stdout_stderr_copied": false
+  },
+  "selected_source_records_authenticated": 59,
+  "postclosed_native_runtime_owner_and_benchmark_records_authenticated": 134,
+  "runtime_scope": "Original selected SHA when present plus original stat-only identities; no full native DSO closure",
+  "public_complete_callbacks": 231,
+  "whole_run_peak_bytes_observed": 2144661504,
+  "public_through_continuation_memory_snapshot": {
+    "observed_monotonic": 146871.362679829,
+    "memory.current": 1597190144,
+    "memory.peak": 2144661504,
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "configured_memory_max_bytes": 2147483648,
+    "observed_peak_within_configured_limit": true,
+    "pressure_or_oom_event_observed": false,
+    "role": "diagnostic only; no new zero-pressure public-score acceptance gate"
+  },
+  "whole_run_memory_fit_qualified": false,
+  "identity": {
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "unit": "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
+    "nonce": "jev-d3-boundary-26cc07b1b5f393948c954ab747ef7c0c",
+    "invocation_id": "7b5054ce0f7b419aa5e30b4833639b49",
+    "model_pid_start": [
+      809229,
+      14656502
+    ]
+  },
+  "artifact_refs": {
+    "root_terminal": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/root-execution-full06-edge-both-04.json",
+      "sha256": "2e78ee11aceec33b9d2e7288683af0f8281dafa1a218bf61147f1b6ce76f8a60",
+      "size_bytes": 1747
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/receipt.json",
+      "sha256": "fe15311559dbfa5a752249e31e44f9808e7b1ab56b7879e67bb3166a3f7b2045",
+      "size_bytes": 217790
+    },
+    "sealed_config": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/sealed-config.json",
+      "sha256": "64941dcb30937329df12bfcc4094fd0a4f52cd19e308e9db4b54b5896c946113",
+      "size_bytes": 15759
+    },
+    "state": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/edge-both/state.json",
+      "sha256": "b24138d5aa581017355ae097497f40ff5374fdb8715b81c0240f39e7b7f22890",
+      "size_bytes": 13768
+    },
+    "original_closure": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/external-boundary-closure.json",
+      "sha256": "5f62596a116123029ae53744c73f462b679ab768c7755b55bfd7944721464b6a",
+      "size_bytes": 10001
+    },
+    "original_readback": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/unit-readback.json",
+      "sha256": "6002196f8669337dd1122d4c2cce5ca216002ada81f6ba67be6f058e7d9cb3fa",
+      "size_bytes": 2564
+    },
+    "command_started": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/command-01-started.json",
+      "sha256": "25e7cf95442233078b53129dda8493d74968f0f677af277004f1d4c1b65346e4",
+      "size_bytes": 1859
+    },
+    "command_intent": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/command-01-intent.json",
+      "sha256": "854e4f862ee2eee6ef3ec8fece1e6eafbd5916645d3fad729cdb57f73c739d91",
+      "size_bytes": 1782
+    },
+    "public_completion": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/edge-both/stage-completions/legacy-public231/completion.json",
+      "sha256": "31199a5d8b973ab453bed410e1f0472f7015031acf5cd27aae5d46e1a7f29e7a",
+      "size_bytes": 937
+    },
+    "public_evidence": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/edge-both/stage-completions/legacy-public231/evidence.json",
+      "sha256": "180eca82fe7a2ade070d80d37cf4b55140c361596c14b0b6133578af88670619",
+      "size_bytes": 69621
+    },
+    "later_suite_continuation": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/edge-both/native-evidence/00231-validated.json",
+      "sha256": "e1d1352ccc955e57050396a63bcfefe38597de8c1c03888f476d4b04aa7ee9b7",
+      "size_bytes": 1988
+    },
+    "official_public_summary": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/edge-both/public231/summary.json",
+      "sha256": "b26b52f86698861776e6806485cee82cfe7a771e117b1536d7837f0d5e47bb9f",
+      "size_bytes": 30567
+    },
+    "official_public_manifest": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-07/actual-04/edge-both/public231/manifest.json",
+      "sha256": "373e43d6c8c6dae7cea09ba05bc15141f2a61163b5f9949cbd12cc008f072eaf",
+      "size_bytes": 44284
+    },
+    "audit_source": {
+      "path": "artifacts/jev-runtime/decision3-closed-result-audit-candidates-20261024-01/public_stage_audit.py",
+      "sha256": "c2c9ae7c8cc89a447a448a0579ab06e1ad8314916e955c2a59c5a1f18f0fee99",
+      "size_bytes": 48493
+    }
+  },
+  "closure": {
+    "closure_mode": "authenticated_stop",
+    "post_stop_terminal_verified": true,
+    "cgroup_absent": true,
+    "sources_unchanged": true,
+    "whole_unit_exit_confirmed": true,
+    "observed_cgroup_cohort_exit_confirmed": true,
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "model_qualified": false
+  },
+  "limits": [
+    "Original failed root/owner/campaign records are preserved; this does not convert them into a full success.",
+    "A positive same-invocation later callback proves public complete() returned after handoff; a marker alone is refused.",
+    "Original current closure must itself be positive. Later absence observations never repair false original flags.",
+    "All231 public tasks remain in the original official aggregate; no tasks, options, budgets or scores are repaired.",
+    "No qualified coherence/full1479 score, rank, sealed result, browser, training, speedup, fit or competitor win.",
+    "CPU4/2GiB D3Edge profile only; universal no-escape/whole-tree/continuation/model flags remain false."
+  ],
+  "raw_tasks_gold_answers_responses_features_or_model_bytes_included": false
+}

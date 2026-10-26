@@ -1,0 +1,456 @@
+{
+  "schema_id": "jev-native-v2-independent-readonly-evidence-audit-v1",
+  "UTC": "2026-10-22T10:07:14.268742+00:00",
+  "status": "complete_evaluation_external_closure_verified",
+  "evaluation_complete": true,
+  "fixed_denominator": 10,
+  "aggregate": {
+    "attempts": 10,
+    "successes": 4,
+    "goals_satisfied": 4,
+    "done": 6,
+    "premature_done": 2,
+    "execution_errors": 2,
+    "policy_calls": 85,
+    "text_calls": 5
+  },
+  "success_rate": 0.4,
+  "groups": [
+    {
+      "group": "known4",
+      "fixed_denominator": 4,
+      "completed": 4,
+      "aggregate": {
+        "attempts": 4,
+        "successes": 1,
+        "goals_satisfied": 1,
+        "done": 2,
+        "premature_done": 1,
+        "execution_errors": 0,
+        "policy_calls": 24,
+        "text_calls": 4
+      },
+      "summary": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/known4/results/summary.json",
+        "sha256": "9500f58a761b8453ca0d8db08f4e1b64db250d0d4fe4561e7a07f335d9c5c397",
+        "size_bytes": 209294
+      },
+      "client_closure": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/known4/owned-client-closure.json",
+        "sha256": "269ca3c23cfdf938a50fbb08dc72b709d635e090ab398027ac78d3cd2dc8e2ab",
+        "size_bytes": 282
+      },
+      "client_closure_confirmed": true,
+      "client_tracked_processes": 11
+    },
+    {
+      "group": "public6",
+      "fixed_denominator": 6,
+      "completed": 6,
+      "aggregate": {
+        "attempts": 6,
+        "successes": 3,
+        "goals_satisfied": 3,
+        "done": 4,
+        "premature_done": 1,
+        "execution_errors": 2,
+        "policy_calls": 61,
+        "text_calls": 1
+      },
+      "summary": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/results/summary.json",
+        "sha256": "a276498a1d500dbe509a902ac3d205bd2f78e503a57babff6ab1141ad1207c7e",
+        "size_bytes": 467399
+      },
+      "client_closure": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/public6/owned-client-closure.json",
+        "sha256": "fc7d3a6bca5de66f67d3a40d842cdf4072df6c4cbf3e04aed308952f31154d08",
+        "size_bytes": 346
+      },
+      "client_closure_confirmed": true,
+      "client_tracked_processes": 15
+    }
+  ],
+  "expected_attempt_id_count": 10,
+  "ordered_expected_attempt_ids_sha256": "7520029bec284ae19900affdb6dee65425afda7bec757e17063e7dfdfe68f61b",
+  "checks": {
+    "fixed10_IDS_and_recorded_DOM_replay": true,
+    "worker_complete_and_group_receipts": true,
+    "all_output_index_hashes_and_exact_population": true,
+    "sealed_server_journal_hashes_sequences_and_population": true,
+    "HTTP_body_hashes_and_server_journal_join": true,
+    "external_terminal_identity_unit_actor_cgroup_two_scans_and_host": true,
+    "small_selected_source_artifact_full_hashes": true,
+    "root_recorded_all785_source_closure_no_changes": true,
+    "cache_alias_before_after_current_targets_stats_and_small_payloads": true,
+    "paired_exact_ten_prior_pins_DOM_and_outcomes": true
+  },
+  "output_inventory": {
+    "files": 703,
+    "bytes": 57545201
+  },
+  "server_journals": {
+    "count": 90,
+    "all_sealed": true,
+    "all_hashes_sequences_verified": true
+  },
+  "HTTP_exchanges": {
+    "count": 90,
+    "statuses": {
+      "200": 90
+    },
+    "kinds": {
+      "/v1/systemone": 85,
+      "/chat/completions": 5
+    },
+    "scope": "Stored server publication/body hashes and sealed journal join only; server evidence alone does not prove client response delivery."
+  },
+  "selected_source_artifacts": {
+    "count": 785,
+    "logical_bytes": 24109068775,
+    "independent_small_file_full_sha256_count": 784,
+    "large_payload_full_sha256_independently_verified": false,
+    "large_payload_refs": [
+      {
+        "path": "artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+        "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
+        "size_bytes": 23919549408
+      }
+    ],
+    "large_payload_scope": "Root owner records full785 unchanged source/artifact refs and before/after payload alias equality. Independent audit hashes784 small files and rechecks current exact alias chains, resolved targets, weight sizes and stat identities. No independent full23.9GB base-weight payload rehash is attempted or credited."
+  },
+  "external_closure": {
+    "unit": "jev-current-nf4-v2-20261022-01.service",
+    "invocation_id": "162ea2fa15394651861a59462050d4d3",
+    "actor": {
+      "pid": 75166,
+      "pgid": 75166,
+      "sid": 75166,
+      "start_ticks": 1175624
+    },
+    "terminal_success": true,
+    "two_clean_proc_scans": true,
+    "independent_actor_and_cgroup_currently_absent": true,
+    "cache_alias_count": 11,
+    "final_host_same_boot_total_known": true
+  },
+  "refs": {
+    "plan": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/selected-plan.json",
+      "sha256": "73bff770e242b93d5b7b53d24ef933926bd63897a4707d6d2e2a0f06f4438b6d",
+      "size_bytes": 230019
+    },
+    "jev_public_web_cases": {
+      "path": "scripts/jev_public_web_cases.py",
+      "sha256": "0ec9826d334cb2fbed24ade8780fa785291017d904b18233419ced760750bca3",
+      "size_bytes": 23665
+    },
+    "jev_heldout_public_cases": {
+      "path": "scripts/jev_heldout_public_cases.py",
+      "sha256": "339cddf596a25ab433ca66e23924631b6261e62efc06f351878d4ef5c3f6f8f9",
+      "size_bytes": 16622
+    },
+    "worker_receipt": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/receipt.json",
+      "sha256": "d9eea1fb73abf381c086dc0c903d0428bc91fc5f52e864d925cceb8c44acb1ec",
+      "size_bytes": 713778
+    },
+    "external_closure": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/root-external-closure.json",
+      "sha256": "695d695e198114a7e75f55346dcdd6c5d1188ada1ba293cd8d5c1ba6d9f47c70",
+      "size_bytes": 867172
+    },
+    "output_index": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/output-index.json",
+      "sha256": "b1914dbaa59f71d82bb35224b9a0b0404c74ee1c9cf506329efab94dfddc89e9",
+      "size_bytes": 95857
+    },
+    "server_index": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/server-index.json",
+      "sha256": "0976289748be750fe93dee9fc40f8d87f9f4252ff0f1bd82da5d046e02e17f9d",
+      "size_bytes": 33042
+    }
+  },
+  "paired_raw03_comparison": {
+    "fixed_denominator": 10,
+    "raw03_successes": 2,
+    "v2_01_successes": 4,
+    "gains": [
+      "heldout-public-001",
+      "heldout-public-003"
+    ],
+    "losses": [],
+    "gains_count": 2,
+    "losses_count": 0,
+    "unchanged_success_task_ids": [
+      "public-python-counter-most-common-v1",
+      "heldout-public-000"
+    ],
+    "unchanged_failure_task_ids": [
+      "public-arxiv-title-filter-results-v1",
+      "public-arxiv-original-paper-open-v1",
+      "public-nasa-mars-facts-moons-v1",
+      "heldout-public-002",
+      "heldout-public-004",
+      "heldout-public-005"
+    ],
+    "task_outcomes": [
+      {
+        "task_id": "public-arxiv-title-filter-results-v1",
+        "attempt_id": "public-arxiv-title-filter-results-v1-000",
+        "raw03": {
+          "success": false,
+          "status": "done",
+          "goal_satisfied": false,
+          "premature_done": true,
+          "policy_calls": 9,
+          "text_calls": 1,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": false,
+          "status": "done",
+          "goal_satisfied": false,
+          "premature_done": true,
+          "policy_calls": 6,
+          "text_calls": 1,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "public-arxiv-original-paper-open-v1",
+        "attempt_id": "public-arxiv-original-paper-open-v1-000",
+        "raw03": {
+          "success": false,
+          "status": "blocked",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 7,
+          "text_calls": 1,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": false,
+          "status": "blocked",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 8,
+          "text_calls": 1,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "public-python-counter-most-common-v1",
+        "attempt_id": "public-python-counter-most-common-v1-000",
+        "raw03": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 5,
+          "text_calls": 1,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 6,
+          "text_calls": 1,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "public-nasa-mars-facts-moons-v1",
+        "attempt_id": "public-nasa-mars-facts-moons-v1-000",
+        "raw03": {
+          "success": false,
+          "status": "done",
+          "goal_satisfied": false,
+          "premature_done": true,
+          "policy_calls": 14,
+          "text_calls": 1,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": false,
+          "status": "blocked",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 4,
+          "text_calls": 1,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "heldout-public-000",
+        "attempt_id": "heldout-public-000-000",
+        "raw03": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 3,
+          "text_calls": 0,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 3,
+          "text_calls": 0,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "heldout-public-001",
+        "attempt_id": "heldout-public-001-000",
+        "raw03": {
+          "success": false,
+          "status": "done",
+          "goal_satisfied": false,
+          "premature_done": true,
+          "policy_calls": 4,
+          "text_calls": 0,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 3,
+          "text_calls": 0,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "heldout-public-002",
+        "attempt_id": "heldout-public-002-000",
+        "raw03": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 0,
+          "execution_error": true
+        },
+        "v2_01": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 0,
+          "execution_error": true
+        }
+      },
+      {
+        "task_id": "heldout-public-003",
+        "attempt_id": "heldout-public-003-000",
+        "raw03": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 0,
+          "execution_error": true
+        },
+        "v2_01": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 12,
+          "text_calls": 0,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "heldout-public-004",
+        "attempt_id": "heldout-public-004-000",
+        "raw03": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 0,
+          "execution_error": true
+        },
+        "v2_01": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 0,
+          "execution_error": true
+        }
+      },
+      {
+        "task_id": "heldout-public-005",
+        "attempt_id": "heldout-public-005-000",
+        "raw03": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 1,
+          "execution_error": true
+        },
+        "v2_01": {
+          "success": false,
+          "status": "done",
+          "goal_satisfied": false,
+          "premature_done": true,
+          "policy_calls": 11,
+          "text_calls": 1,
+          "execution_error": false
+        }
+      }
+    ],
+    "raw03_profile": {
+      "profile": null,
+      "prompt_format": "raw-json-v1",
+      "adapter": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01/adapter",
+      "adapter_manifest": null
+    },
+    "v2_01_profile": {
+      "profile": null,
+      "prompt_format": "shared-elements-v2",
+      "adapter": "artifacts/jev-runtime/native-v2-training-20261022-03/fit-01/adapter",
+      "adapter_manifest": null
+    },
+    "scope": "Descriptive paired outcomes only. Adapter and observation serialization both changed; no controlled attribution and no current cross-model win claim.",
+    "raw03_audit": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/independent-audit-raw03.json",
+      "sha256": "0edb616db1f8774b5353dd2114667f1d693189a8fadda6284f7ee8aeb590a6dd",
+      "size_bytes": 7466
+    },
+    "raw03_selected_plan": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/selected-plan.json",
+      "sha256": "e6aab745961255af77258d3cf6bcbbb516d3c8d9bc3507ab327fd99774d187d0",
+      "size_bytes": 175011
+    }
+  },
+  "comparison_scope": "Paired fixed-ten comparison with raw03 changes both adapter and serialized observation format. Observed differences do not isolate either cause and do not establish cross-model superiority or Decision3 performance.",
+  "audit_execution": {
+    "read_only": true,
+    "pinned_judges_compiled_from_verified_source": true,
+    "models_GPU_browser_units_or_Comfy_mutation": false,
+    "raw_DOM_requests_answers_or_questions_published": false,
+    "elapsed_seconds": 0.7363224269993225,
+    "auditor": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/independent-audit-v2-01.py",
+      "sha256": "e0b301d7ad173ba3b3d3d68d5d2ba471047285541b88fdddb25dc752299f7524",
+      "size_bytes": 23776
+    }
+  }
+}

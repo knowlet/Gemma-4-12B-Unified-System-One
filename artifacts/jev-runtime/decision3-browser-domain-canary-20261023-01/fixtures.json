@@ -1,0 +1,69 @@
+{
+  "schema": "independently-invented-browser-domain-cases-v1",
+  "provenance": "Self-authored for diagnosis; no official task/gold/DOM/judge or saved response used. Page observations are synthetic paired DTOs, not Chromium extraction.",
+  "goal": "Make the lantern green.",
+  "cases": {
+    "actionable": {
+      "invented_dom": "<main><h1>Lantern room</h1><p id=\"lamp\">Lantern is red.</p><button id=\"lantern-switch\">Turn lantern green</button></main>",
+      "page": {
+        "url": "https://lantern.invalid/room",
+        "title": "Lantern room",
+        "text": "Lantern is red. Turn lantern green",
+        "actions": [
+          {
+            "id": "click:lantern-switch",
+            "kind": "click",
+            "node": "lantern-switch",
+            "role": "button",
+            "label": "Turn lantern green",
+            "value": ""
+          },
+          {"id": "wait", "kind": "wait", "label": "Wait for the page to update"}
+        ]
+      },
+      "expected": {
+        "operation": "CLICK",
+        "target": "1"
+      }
+    },
+    "achieved": {
+      "invented_dom": "<main><h1>Lantern room</h1><p id=\"lamp\">Lantern is green.</p><button id=\"lantern-switch\">Turn lantern green</button></main>",
+      "page": {
+        "url": "https://lantern.invalid/room",
+        "title": "Lantern room",
+        "text": "Lantern is green. Turn lantern green",
+        "actions": [
+          {
+            "id": "click:lantern-switch",
+            "kind": "click",
+            "node": "lantern-switch",
+            "role": "button",
+            "label": "Turn lantern green",
+            "value": ""
+          },
+          {"id": "wait", "kind": "wait", "label": "Wait for the page to update"}
+        ]
+      },
+      "expected": {
+        "operation": "DONE",
+        "target": null
+      }
+    },
+    "unavailable": {
+      "invented_dom": "<main><h1>Lantern room</h1><p id=\"lamp\">Lantern is red.</p><p>No controls are available. This room is static and will not update.</p></main>",
+      "page": {
+        "url": "https://lantern.invalid/room",
+        "title": "Lantern room",
+        "text": "Lantern is red. No controls are available. This room is static and will not update.",
+        "actions": [{"id": "wait", "kind": "wait", "label": "Wait for the page to update"}]
+      },
+      "expected": {
+        "operation": "BLOCKED",
+        "target": null
+      }
+    }
+  },
+  "controls": [],
+  "adaptive_controls": false,
+  "expected_predicates_reach_model": false
+}

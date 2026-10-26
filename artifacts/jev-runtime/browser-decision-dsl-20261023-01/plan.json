@@ -1,0 +1,67 @@
+{
+  "schema": "independent-workflow-dsl-authoring-plan-v1",
+  "dsl_version": "independent-browser-workflow-dsl/1",
+  "seed": 271828,
+  "output": "corpus",
+  "expected_counts": {
+    "train": 96,
+    "dev": 24,
+    "sealed": 48
+  },
+  "expected_ancestors": {
+    "train": 12,
+    "dev": 3,
+    "sealed": 6
+  },
+  "expected_families": {
+    "train": 4,
+    "dev": 1,
+    "sealed": 2
+  },
+  "branch_states_per_ancestor": 8,
+  "selected_action_profile": "standard",
+  "operations": [
+    "CLICK",
+    "TYPE_TEXT",
+    "SELECT",
+    "SCROLL_DOWN",
+    "SCROLL_UP",
+    "WAIT",
+    "DONE",
+    "BLOCKED"
+  ],
+  "question_heads": [
+    "operation",
+    "click_target",
+    "type_text_target",
+    "select_target"
+  ],
+  "question_heads_are_schema_not_fixed_row_order": true,
+  "actual_row_order": "Preserve each actual upstream request ordered question IDs; target-head order varies with observed-control order. Join collector features/labels by IDs plus exact native projection hash, never zip against the schema list.",
+  "question_option_counts": [
+    8,
+    4,
+    4,
+    4
+  ],
+  "source_construction": "Exact pinned upstream action_space/choose AST, captured before original post_json transport; no response fabricated",
+  "label_semantics": "All valid semantic next actions under visible facts and explicit prerequisite order; uniform soft targets over actual permuted legal positions; unused heads unsupervised",
+  "split_unit": "Workflow family before all entity/phrasing/branch/control-order/criteria-permutation descendants",
+  "position_schedule": "Predeclared 8 cyclic operation permutations and 4 target positions, ordinal from family/ancestor assignment; labels bind exact final request SHA",
+  "optimizer_inputs": "Only authenticated train requests, train labels and train summary under role-policy.json; all source/full authoring cases/dev/sealed excluded",
+  "derived_feature_taint": "Exact DSL version, family IDs, ancestor IDs, split and artifact SHA are required; actual feature loader/collector remains absent",
+  "existing_canary_or_model_failure_reuse": false,
+  "official_tasks_gold_DOM_or_answer_cache_used": false,
+  "model_native_features_outputs_or_training_performed": false,
+  "real_browser_quality_or_heldout_improvement_claim": false,
+  "source_verification_required_before_freeze": [
+    "bounded stdlib tests",
+    "Ruff check/format",
+    "AST parse",
+    "dry default",
+    "deterministic corpus export and static audit",
+    "exact file freeze",
+    "independent peer review"
+  ],
+  "execution_status": "BOUNDED_SOURCE_CHECKS_AND_AUTHORED_CORPUS_EXPORT_COMPLETE_NO_NN"
+}

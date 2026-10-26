@@ -1,0 +1,129 @@
+{
+  "schema": "cpu5-browser-held-source-checks-v1",
+  "status": "SOURCE_CHECKS_PASS_HELD_NO_ACTUAL",
+  "results": [
+    {
+      "name": "import_order",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "--select",
+        "I",
+        "--fix",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/bridge_successor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.025320091983303428,
+      "stdout": "Found 2 errors (2 fixed, 0 remaining).\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/bridge_successor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.023874359001638368,
+      "stdout": "3 files reformatted\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "held_stdlib_fakes",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01",
+        "-p",
+        "test_worker_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.21995649798191153,
+      "stdout": "",
+      "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.005s\n\nOK\n",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "ruff_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/bridge_successor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.02071721400716342,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "format_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "--check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/bridge_successor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.012412693002261221,
+      "stdout": "3 files already formatted\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    }
+  ],
+  "files": [
+    {
+      "path": "artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker.py",
+      "size_bytes": 33357,
+      "sha256": "e15753425520581df9fd426b2ba41a3f447f91a7c2b3b09aca711b6c15f4a665"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/bridge_successor.py",
+      "size_bytes": 29861,
+      "sha256": "1c8f689bd40d5073f44f7e567c32c5944bf0df6a33957ba571760072e7632b00"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_source.py",
+      "size_bytes": 7822,
+      "sha256": "1aa154f04bcb14dee7c00592613e7cbab4e741c198251027e6627e09e34b5e2d"
+    }
+  ],
+  "source_only_still_true": true,
+  "actual_wiring_qualified": false
+}

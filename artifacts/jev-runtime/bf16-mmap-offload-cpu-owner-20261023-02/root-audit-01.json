@@ -1,0 +1,34 @@
+{
+  "scope": "Saved-only audit of pre-Torch limits-parser refusal, plus read-only kernel formatting and exact-unit terminal status",
+  "checks": {
+    "all6_original_selected_sources_match": true,
+    "no_first_parent_admission_created": true,
+    "no_true_interpreter_identity_created": true,
+    "no_fixture_output_created": true,
+    "bootstrap_not_Torch": true,
+    "authenticated_stop": true,
+    "unit_and_cohort_closed": true,
+    "two_final_scans_empty": true,
+    "current_unit_not_found": true
+  },
+  "completed": false,
+  "reason": {
+    "phase": "controller",
+    "type": "ValueError",
+    "message": "Actual process limit: Max core file size",
+    "evidence": null,
+    "returncode": null,
+    "stdout": null,
+    "stderr": null
+  },
+  "receipt_sha256": "a07c0a77048f091c0a954707f127854c5b3d395de571bd37180cac0fdbe76f76",
+  "controller_proc_limits_format_only": [
+    "Max file size             unlimited            unlimited            bytes     ",
+    "Max core file size        0                    unlimited            bytes     ",
+    "Max open files            500000               500000               files     "
+  ],
+  "controller_limits_are_not_actor_limits": true,
+  "current_selected_unit_raw": "MainPID=0\nLoadState=not-found\nActiveState=inactive\n",
+  "real_Torch_mechanism_measurement": false,
+  "quality_score": null
+}

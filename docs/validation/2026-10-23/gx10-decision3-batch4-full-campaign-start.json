@@ -1,0 +1,173 @@
+{
+  "profile": "gx10-native-batch4-full-campaign-start-20261023-v1",
+  "created_at_utc": "2026-10-23T12:00:16.156352+00:00",
+  "precommit_head": "2faa50fc0f10ca05f78bfdd3676819a554560a22",
+  "status": "new_Edge_native_batch4_both_suites_live_same6292",
+  "deadline_fix": {
+    "source": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/campaign.py",
+      "sha256": "945334a69824d10f45cbcf9dfa59e3df9449a8a597c27bb32a49987e7df2f695",
+      "size_bytes": 34629
+    },
+    "source_freeze": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/freeze.json",
+      "sha256": "3bfe305ec128c412b0a3192b85a54c5e01ace3375e90d1182f6c3449d763bf8a",
+      "size_bytes": 2427
+    },
+    "review": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/independent-source-selection-review.json",
+      "sha256": "2621c004e549b27e24ff8494c945e9176b63e8881993fb5d18de84cc62ae75f2",
+      "size_bytes": 57620
+    },
+    "source01_held_unchanged": true,
+    "change": "Successful callback and whole-campaign return now follow finally and Deadline context cleanup with explicit monotonic deadline checks. Late/cleanup errors revoke callback completion count or whole success scores; primary failures are retained.",
+    "validation": "18 stdlib fake tests, including5 new regression tests; regressions reproduce predecessor01 failures; Ruff/AST/dry passed. No fake test claims model generation."
+  },
+  "live": {
+    "profile": "new-native-batch4-Edge-both-live-counter-snapshot-v1",
+    "created_at_utc": "2026-10-23T11:59:09.630273+00:00",
+    "exec_session_id": 6292,
+    "owner_output": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-03",
+    "unit": "jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "nonce": "jev-d3-boundary-d0aef0f8e9eca7421f0e4c0eb113a88f",
+    "admission_config_sha256": "5075c737ce7913753ea63c64ca4ce4f77e65673c8b63391af9259541aa171119",
+    "actor_pid_start": {
+      "pid": 492322,
+      "start_ticks": 10575891
+    },
+    "current_status_sandwich": {
+      "before": {
+        "MainPID": "492322",
+        "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+        "MemoryCurrent": "1449852928",
+        "MemoryPeak": "1949376512",
+        "CPUUsageNSec": "222729457000",
+        "ActiveState": "active",
+        "SubState": "running",
+        "InvocationID": "697da6237268473e9be920fe404aaac2"
+      },
+      "after": {
+        "MainPID": "492322",
+        "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+        "MemoryCurrent": "1450377216",
+        "MemoryPeak": "1949376512",
+        "CPUUsageNSec": "222765125000",
+        "ActiveState": "active",
+        "SubState": "running",
+        "InvocationID": "697da6237268473e9be920fe404aaac2"
+      }
+    },
+    "progress": {
+      "stage": "legacy-public231",
+      "started_calls": 125,
+      "completed_calls": 124,
+      "raw_native_returns": 124,
+      "per_call_deadline_seconds": 180,
+      "latencies": {
+        "legacy-public231": {
+          "count": 124,
+          "median_seconds": 0.29135574900283245,
+          "p95_seconds": 0.33757469200645573,
+          "max_seconds": 7.981351795009687,
+          "quantile_method": "nearest_rank_p95; ordinary_median",
+          "startup_included": false,
+          "browser_20_second_qualification": false,
+          "unit": "one unchanged complete state/questions callback; native question chunks of up to4"
+        }
+      },
+      "active_call": {
+        "index": 124,
+        "stage": "legacy-public231",
+        "status": "running"
+      }
+    },
+    "root_launch": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/root-launch-batch4-edge-both-03.json",
+      "sha256": "5e99e940431f4b04ed5e99a736ec00909000c0a5fed8edbcd1cc0a78c8f6c673",
+      "size_bytes": 1826
+    },
+    "campaign_complete": false,
+    "new_score": null,
+    "same_handle_do_not_restart_or_resume": true,
+    "scope": "Historical live counters and exact unit/PID-start/invocation sandwich only; no task/gold/native raw/prediction/cache file read or copied. Memory/CPU readings are unit samples, not final peak/whole runtime qualification. Original authority flags unchanged."
+  },
+  "unchanged_campaign_contract": {
+    "model": "vllm-sr/d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "one_constructor": true,
+    "fresh_callbacks_required": 1479,
+    "Benchmark_Heaven_public231": 231,
+    "JevBench_coherence_MINI_callbacks": 1248,
+    "native_batch_upper_bound": 4,
+    "context": 16384,
+    "context_policy": "reject_no_truncation",
+    "per_complete_callback_seconds": 180,
+    "whole_campaign_seconds": 10000,
+    "original_owner_runtime_seconds": 10800,
+    "CPU_cores": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "memory_max_bytes": 3221225472,
+    "swap_max_bytes": 0,
+    "fresh_cache": true,
+    "original_tasks_judges_order_options_and_scoring": true,
+    "final_full_model_source_runtime_and_original_unit_closure_required": true
+  },
+  "scores_separate": {
+    "new_Edge_native_batch4": {
+      "Benchmark_Heaven_public231": null,
+      "JevBench_coherence_MINI": null,
+      "qualification": "live; no complete score yet"
+    },
+    "existing_Gemma_BF16_completed_distinct_profile": {
+      "Benchmark_Heaven_public231": "195/231 (84.4155844155844%)",
+      "JevBench_coherence_MINI": "41.26307189542484/100;95%CI38.43–43.80"
+    },
+    "interrupted_Edge_batch1": {
+      "Benchmark_Heaven_public231": "158/231 (68.3982683982684%) provisional aggregate; no final campaign qualification",
+      "JevBench_coherence_MINI": null
+    }
+  },
+  "closed_short_Edge_Lite_native_batch4_results": {
+    "path": "docs/validation/2026-10-23/gx10-decision3-native-batch4.json",
+    "sha256": "c29dfeaa6b77b21df2fe16c590516f9d5b988c704a88c5ed5a210d5bfddea65b",
+    "size_bytes": 7384
+  },
+  "helper": {
+    "download_model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "independent_closed_acquisition_audit": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/independent-actual-review.json",
+      "sha256": "afd7504e4ecc0f5434e169357c1515cee1aab28a87a6aad357b365db8e9e5bd4",
+      "size_bytes": 24331
+    },
+    "downloaded_files": 9,
+    "downloaded_bytes": 999602607,
+    "model_loaded_or_generation_qualified": false,
+    "source02_review": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-review-20261023-02/independent-final-review.json",
+      "sha256": "a8eb2647bbb6c3cc8eac6ef8be784362fb416a579be23301ce9b70b17d7a3338",
+      "size_bytes": 7208
+    },
+    "source02_freeze": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/frozen-manifest.json",
+      "sha256": "31b0d40c57d533aa97fa0cb31586607a8d72f8a9ab4c58a9c65bff969355a67b",
+      "size_bytes": 1494
+    },
+    "source_only_change": "Binds critical Transformer files to the exact selected package root; source01 retained unchanged.",
+    "source_tests": "23 inherited fake tests and8 new root-binding fake tests are separate populations, not real generations.",
+    "remaining": "Concrete owned runtime metadata and independent watchdog/synthetic generation integration under source preparation; execute after current authenticated closure and fresh admission. No live helper server/model."
+  },
+  "boundaries": [
+    "No current actual03 native evidence/tasks/gold/predictions/cache or any model/tokenizer/native binary payload is in Git. Only one static narrow live-counter snapshot is copied.",
+    "Native batch4 short smoke and live offline campaign do not qualify browser whole20s, batch1 parity, allsix models or fullsuite fit.",
+    "Original ComfyUI observer/controller/boundary source and authority flags unchanged; no Comfy unload/restart/cache/queue operation.",
+    "Lite full-suite fit and matched comparison pending; short Lite peak near3GiB is not a fullsuite guarantee."
+  ],
+  "real_browser_best_current_verified": "4/10 on separate historical N3/nativeV2/NF4 profile; no new browser score or competitor victory",
+  "goal_complete": false
+}

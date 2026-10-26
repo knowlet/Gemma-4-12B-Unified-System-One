@@ -1,0 +1,147 @@
+{
+  "schema_id": "jev_gx10_boot_bound_memory_results_v1",
+  "status": "CPU_SOURCE_FIX_VALIDATED_ACTUAL_NATIVE_TRAINING_RUNNING",
+  "at_utc": "2026-10-22T07:01:24.420016+00:00",
+  "diagnosis": {
+    "old_total_bytes": 130595860480,
+    "current_total_bytes": 130595864576,
+    "difference_bytes": 4096,
+    "same_selected_GB10_UUID": true,
+    "raw_metadata_receipt": {
+      "path": "artifacts/jev-runtime/gx10-boot-identity-20261022-01/metadata-01.json",
+      "sha256": "8f1ac15cb6b4d94fa71967dbb062728279f634b256ecc0e67e04fd417b63088b",
+      "size_bytes": 3425
+    },
+    "read_only_query_source": {
+      "path": "artifacts/jev-runtime/gx10-boot-identity-20261022-01/query_metadata_01.py",
+      "sha256": "0372d7486a9e087e846f350105407f88ea6199d96e065358cf1fe6ac268296bd",
+      "size_bytes": 6314
+    },
+    "driver_metadata_pins_unchanged": true,
+    "NVML_memory_query_status": "NOT_SUPPORTED; not used as capacity evidence."
+  },
+  "sources": [
+    {
+      "path": "src/s1/browser_native_resources.py",
+      "sha256": "677b6b1d7afcdf75a777091a01ed7691826b9fcd650b5bd5f6713e1ebd2e6bb7",
+      "size_bytes": 30005
+    },
+    {
+      "path": "tests/test_jev_native_resources.py",
+      "sha256": "1d1775d83db03b66bfa78f9813916d7c13665e87f17a1dc5c907cd68a4780751",
+      "size_bytes": 17296
+    }
+  ],
+  "invariants": [
+    "Bind one fresh rawMemTotal perboot/run in bothlivegate andofflineevidence; refusewithinrundrift.",
+    "Rawhost/Driver/Torchallocator/CUDAtotal equality plus selectedUUID/name/integrated required.",
+    "Native40GiB cap/39.5GiB stop/memcg40GiB/swap0 andactualhost startup/resident/reserve formulas unchanged.",
+    "HistoricalH15 component andoriginalmodel/data/ancestor references remain unchanged."
+  ],
+  "verification": {
+    "native_resource_tests": {
+      "passed": 36,
+      "elapsed_seconds": 17.916,
+      "junit": {
+        "path": "artifacts/jev-runtime/gx10-boot-identity-20261022-01/tests-01.xml",
+        "sha256": "c46b3d6a00df37b59aed7b9ddac3a72f96008f4c7be0b5fb9815eaeea0ddacf1",
+        "size_bytes": 5471
+      },
+      "AS_limit_bytes": 268435456,
+      "CPU_limit_seconds": 30,
+      "per_command_timeout_seconds": 45,
+      "no_Torch_or_model": true
+    },
+    "ruff": "check and format passed",
+    "independent_review": "CLEAR at exact source/test hashes.",
+    "jevbench_worker_composition_tests": {
+      "passed": 9,
+      "elapsed_seconds": 0.21,
+      "junit": {
+        "path": "artifacts/jevbench/20261022-local-score-01/worker-pure-tests-03.xml",
+        "sha256": "08bcfeaf5d2efc26f16dee8d088f8748b88a1e4e0489036e22867580b5ed82ba",
+        "size_bytes": 1733
+      },
+      "no_Torch_or_model": true
+    }
+  },
+  "native_launch_plan": {
+    "path": "artifacts/jev-runtime/native-v2-training-20261022-01/launch-plan-03.json",
+    "sha256": "97322ddffd022f7f2d7a9087cb2460f85d3f03726417c40f772a8e6a08c9b188",
+    "size_bytes": 21055
+  },
+  "jevbench_launch_plan_refreshed": {
+    "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-03.json",
+    "sha256": "48bf973dac71a29b5ac8ff2c7757b762d638975ea39b71f17a2d32d4d49ab7e3",
+    "size_bytes": 53299
+  },
+  "actual_native_execution_snapshot": {
+    "as_of_utc": "2026-10-22T07:01:24.420016+00:00",
+    "status": "RUNNING_NOT_COMPLETE",
+    "unit": "jev-native-v2-training-20261022-01.service",
+    "unit_snapshot": {
+      "MainPID": "12373",
+      "MemoryCurrent": "27308404736",
+      "MemoryPeak": "27309969408",
+      "MemorySwapPeak": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "InvocationID": "775e5c0d6e994990ba1a523012bc2768"
+    },
+    "actor_intent": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/actor-intent-01.json",
+      "sha256": "53b2bb2824021740cb6dca082c3ed0a8cec041e728140f9cf6ff825bdcf21500",
+      "size_bytes": 785
+    },
+    "root_launch": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/root-launch-01.json",
+      "sha256": "c5be3af458f360374c21f8b22144344365c8613e03f133309fe21b816c09ecce",
+      "size_bytes": 3159
+    },
+    "completed_updates": 99,
+    "planned_updates": 142,
+    "stage": "training",
+    "development_zero_update_population": 37,
+    "source_pins_unchanged": 103,
+    "resource_snapshot": {
+      "source": "fit-01/resource-gates.jsonl; individual append-only row hash, not a hash of a still-growing file",
+      "row_index": 285,
+      "row_sha256": "5046e6936cae74b9341f1a26902c834413428168de494f3ce602f70f92a9eb0b",
+      "admitted": true,
+      "MemTotal": 130595864576,
+      "MemAvailable": 95656755200,
+      "driver_total": 130595864576,
+      "allocator_total": 130595864576,
+      "cuda_total": 130595864576,
+      "allocator_allowed_bytes_upper": 42945478656,
+      "allocated_bytes": 24155437568,
+      "reserved_bytes": 24540872704,
+      "peak_reserved_bytes": 27739029504,
+      "startup_required_bytes": 116313486132,
+      "resident_required_bytes": 77658780468
+    },
+    "scope": "An observed real BF16 model load and updates; final142/37 result, artifact verification and external closure are pending."
+  },
+  "Comfy_mutations": 0,
+  "new_browser_score": null,
+  "new_jevbench_score": null,
+  "historical_browser_score": "5/10 unchanged.",
+  "remaining": [
+    "Finish actual142updates/37development, verify full artifact and independently close the owned unit.",
+    "Run precision/helper matched currentNF4raw96/nativeV2 fulltenbrowser comparison.",
+    "FreshBF16JevBenchpublic231+coherencemini aftertrainingcloses, no concurrent GPUbenchmark.",
+    "Complete allsixDecision3 executable local comparison and separately solve largestD3capacity under explicit reviewed bounds."
+  ],
+  "research": [
+    {
+      "path": "docs/research/jev-gx10-boot-bound-memory-identity.md",
+      "sha256": "c3ec4c2d58f56fa65698b3fdcd986f886c4721f2bb101cb112b88399fe6db976",
+      "size_bytes": 1901
+    },
+    {
+      "path": "docs/research/jev-decision3-gx10-execution-gap.md",
+      "sha256": "eb9ec52f4396321cf066b4b3bf94f8a65b56ebbf2e0bbec159bcfeb13371594e",
+      "size_bytes": 3992
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "status": "FIVE_FAKES_AST_RUFF_DEFAULT_PASS",
+  "checks": [
+    {
+      "name": "format",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-uniform-metric-control-20261024-01/runner.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-uniform-metric-control-20261024-01/test_runner.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.01699164998717606,
+      "stdout": "2 files left unchanged\n",
+      "stderr": ""
+    },
+    {
+      "name": "fakes",
+      "argv": [
+        "/usr/bin/python3.12",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-uniform-metric-control-20261024-01/test_runner.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.21018219998222776,
+      "stdout": "",
+      "stderr": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.005s\n\nOK\n"
+    },
+    {
+      "name": "ruff",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-uniform-metric-control-20261024-01/runner.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-uniform-metric-control-20261024-01/test_runner.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.015678050025599077,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "name": "format_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "--check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-uniform-metric-control-20261024-01/runner.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-uniform-metric-control-20261024-01/test_runner.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.011894241004483774,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "default",
+      "argv": [
+        "/usr/bin/python3.12",
+        "-I",
+        "-S",
+        "-B",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-uniform-metric-control-20261024-01/runner.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.08452548200148158,
+      "stdout": "{\"status\": \"not_executed\", \"source_only\": false, \"uses_model\": false, \"official_imported\": false, \"benchmark_read\": false, \"qualification\": false}\n",
+      "stderr": ""
+    }
+  ],
+  "format_preserved_entire_AST": true,
+  "selected_runner_sha256": "521406c07cb9a3e12737d666ce65dab7a932f5bca3455ad6e0d06cdac999b24d",
+  "root_release": "SOURCE_ONLY False selected after original NN scoped closure; unchanged official control/scorer settings",
+  "limits": {
+    "affinity": [
+      0
+    ],
+    "AS_bytes": 536870912,
+    "CPU_seconds": 30,
+    "wall_seconds": 45,
+    "isolated_no_site_no_bytecode": true
+  }
+}

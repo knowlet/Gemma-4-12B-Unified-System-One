@@ -1,0 +1,88 @@
+{
+  "schema_id": "jev-GX10-UMA-memory-probe-source-readiness-v1",
+  "date": "2026-10-20",
+  "status": "ROOT_AND_INDEPENDENT_SOURCE_REVIEW_CLEAR_ACTUAL_UNRUN",
+  "problem": "The historical GB10 native probe completed two A updates but refused C before its second backward because raw CUDA free fell below41GiB. It did not demonstrate CUDA OOM. A new explicitly verified UMA profile tests whether native work completes under the retained bounds.",
+  "profile_kind": "gb10-native-fixed-cache-uma-memavailable-capacity-v1",
+  "behavior": "Only for matching GB10 Driver/Torch/host identities, remove the old raw CUDAfree>=41GiB veto. Preserve exact raw counters and old would_refuse separately. Fresh host MemAvailable>=41GiB is redundant under the higher retained77,658,779,648B resident floor; no old gate or historical result becomes PASS.",
+  "preserved_limits_bytes": {
+    "startup_host_available": 116313485312,
+    "resident_host_available": 77658779648,
+    "host_reserve": 26119172096,
+    "native_allocator_and_owned_memcg_each": 42949672960,
+    "native_reserved_soft_stop": 42412802048,
+    "monitor_host_stop": 28266655744,
+    "owned_swap": 0,
+    "resident_credit": 0,
+    "swap_credit": 0
+  },
+  "unchanged_workload": "H13 default native allocator and six fixed successful cache-release boundaries per arm; fresh A then C, each two disposable updates and two development rows. Original full5055-token input,262144 vocabulary head,48 decoder layers,176 FP32 q/v LoRA tensors, original losses/CFG142, seed42/LR5e-5/AdamW and original ACK/owned cleanup remain. Updated weights are discarded.",
+  "identity_scope": "Exact inherited canonical libcuda path/dev/inode/size/mtime, RTLD_NOLOAD, executable mappings for all5 symbols, current-context device, integrated18=1 and matching Driver/Torch UUID/name/total/host boot/hugetlb0. This is metadata identity authority, not full libcuda payload SHA attestation. Identity object canonical SHA and newline-file SHA are distinct and joined by parse/reencode.",
+  "validation": {
+    "fake_only_tests_passed": 159,
+    "test_seconds": 5.06,
+    "Ruff_check_and_format": "PASS",
+    "default_dry": "PASS; exact95-source inventory; no GPU/unit/framework/model",
+    "root_inverse_proof": "10 literal blocks exactly restore frozen H13 bytes and AST; unified patch reconstructed.79 original functions/methods unchanged. Exact current95 sources and62 unique small references match SHA/size.",
+    "independent_review": "CLEAR; primary CUDA/query error survives secondary evidence-cap or write failure."
+  },
+  "evidence": {
+    "driver": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/native_uma_peak_probe_01.py",
+      "sha256": "2ed7cda3054da62e7440bf57e4bfae15e26ee6d22de8b80aede6c8f53973e3cb",
+      "size_bytes": 118654
+    },
+    "tests": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/test_native_uma_peak_probe_01.py",
+      "sha256": "5e62f7c46e2462090c27444dffe82a911c48e2f9f64639d610ef6eb94e14e608",
+      "size_bytes": 27776
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/plan-01.json",
+      "sha256": "1345523ea40c1e3586558beebc6403b505a6fdb72564740a50efa35ea8c42ad1",
+      "size_bytes": 32327
+    },
+    "HOLD": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/source-HOLD-H15-01/HOLD.json",
+      "sha256": "eb3d15567cbdb193b4c1fcd44c72cb88ffa4f836b6d39705713832b3983e4672",
+      "size_bytes": 21437
+    },
+    "root_review": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/root-H15-source-review-01.json",
+      "sha256": "e42ac73d0124d7ec87926cde2ee435267bfa8a10f951649f8b99b1a2f10e9c44",
+      "size_bytes": 3091
+    },
+    "independent_review": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/independent-H15-source-review-01.json",
+      "sha256": "f14a489df6b7ef9c298191b88083a9e10d33a972a284cec149aecbfe247d00af",
+      "size_bytes": 10418
+    },
+    "launch_argv": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/next-launch-proposal-01.json",
+      "sha256": "ff10cf00fadcfd64cf3fa569a30a3d0b3c7c35d209f6f9d8274cebd40ac3ab27",
+      "size_bytes": 5890
+    },
+    "test_argv": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/child-pure-test-04.argv.json",
+      "sha256": "b994a787c454e1aae6e81d932ebeda8973d437d026c99ee74aa51e6efc11502e",
+      "size_bytes": 2173
+    },
+    "test_stdout": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/child-pure-test-04.stdout",
+      "sha256": "1b1fb3ddec620e239151da4c2bc54afc55cf17807b3836090311359b3feefbf5",
+      "size_bytes": 260
+    },
+    "dry_stdout": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/default-dry-01.stdout",
+      "sha256": "c4effc2339250500ee08f746510ef7bc606941172a0395bb8dd5afab0a4c8524",
+      "size_bytes": 275
+    }
+  },
+  "actual_execution": {
+    "run": false,
+    "qualified": false,
+    "model_quality_gain_measured": false
+  },
+  "next_required": "Fresh original resource admission; actual Driver identity and allocator/unit readback; exact reviewed controller argv in a fresh output namespace. Preserve any genuine limit, OOM, refusal or unknown closure. Short capacity success remains separate from full saved-model qualification and matched Jev browser testing.",
+  "quality_context": "Latest complete Gemma real-browser result remains5/10. No new matched Decision3 superiority has been established."
+}

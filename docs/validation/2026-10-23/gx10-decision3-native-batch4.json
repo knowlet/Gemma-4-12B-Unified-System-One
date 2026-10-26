@@ -1,0 +1,192 @@
+{
+  "profile": "gx10-native-batch4-closed-results-20261023-v1",
+  "created_at_utc": "2026-10-23T11:46:58.388807+00:00",
+  "precommit_head": "1a6a2c6c50673238c79bb4d4cc2f440ed10a9de3",
+  "status": "Edge_and_Lite_short_native_batch4_complete_full_campaign_successor_timing_fix_pending",
+  "CPU_policy": {
+    "cores": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "core_type": "X925",
+    "quota_percent": 400,
+    "memory_max_bytes": 3221225472,
+    "swap_max_bytes": 0
+  },
+  "models": {
+    "edge": {
+      "profile": "decision3-edge-publisher-cpu-batch4-synthetic-20261023-v1",
+      "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+      "batch_size": 4,
+      "constructors": 1,
+      "native_requests": 2,
+      "actual_shapes": [
+        [
+          4,
+          135,
+          1024
+        ],
+        [
+          4,
+          135,
+          1024
+        ]
+      ],
+      "durable_call_seconds": [
+        0.9441853939933935,
+        0.9183590909960913
+      ],
+      "mean_selected_unit_CPU_cores": [
+        3.8103817740660415,
+        3.8101365981543225
+      ],
+      "selected_unit_memory_peak_bytes": 1487900672,
+      "selected_unit_memory_cap_bytes": 3221225472,
+      "root_wall_seconds": 17.13310387900856,
+      "qualification": {
+        "smoke_complete": true,
+        "external_authenticated_closure": true,
+        "one_actual_constructor": true,
+        "two_actual_four_row_events": true,
+        "durable_call_20s": true,
+        "whole_command_120s": true,
+        "final_full_model_and_sources_authenticated": true
+      },
+      "independent_review": {
+        "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/independent-edge-actual-review.json",
+        "sha256": "8c95ce973d1f634f73d58682f5ef4547137479ef4d2c7fb9e07cdeb093eb3691",
+        "size_bytes": 27533
+      },
+      "scope": "Two repeated developer-only four-question requests; no benchmark or browser score, batch1 parity, long-context or full-suite fit claim."
+    },
+    "lite": {
+      "profile": "decision3-lite-publisher-cpu-batch4-synthetic-20261023-v1",
+      "revision": "9c10703193afc7c7d28c88201c0364bfbbf58320",
+      "batch_size": 4,
+      "constructors": 1,
+      "native_requests": 2,
+      "actual_shapes": [
+        [
+          4,
+          135,
+          1024
+        ],
+        [
+          4,
+          135,
+          1024
+        ]
+      ],
+      "durable_call_seconds": [
+        2.219562466998468,
+        2.1867157259985106
+      ],
+      "mean_selected_unit_CPU_cores": [
+        3.763124942111551,
+        3.7512316124310363
+      ],
+      "selected_unit_memory_peak_bytes": 2849255424,
+      "selected_unit_memory_cap_bytes": 3221225472,
+      "root_wall_seconds": 22.281418926999322,
+      "qualification": {
+        "smoke_complete": true,
+        "external_authenticated_closure": true,
+        "one_actual_constructor": true,
+        "two_actual_four_row_events": true,
+        "durable_call_20s": true,
+        "whole_command_120s": true,
+        "final_full_model_and_sources_authenticated": true
+      },
+      "independent_review": {
+        "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/independent-lite-actual-review.json",
+        "sha256": "21f1bc822c86b35a5d8efd8a0f0f27a1f1b09088944dc7457a3c10fa375bc5fd",
+        "size_bytes": 24305
+      },
+      "scope": "Two repeated developer-only four-question requests; no benchmark or browser score, batch1 parity, long-context or full-suite fit claim."
+    }
+  },
+  "scores_separate": {
+    "Gemma_BF16_completed_distinct_profile": {
+      "Benchmark_Heaven_public231": {
+        "correct": 195,
+        "planned": 231,
+        "accuracy_percent": 84.4155844155844
+      },
+      "JevBench_coherence_MINI": {
+        "score_out_of_100": 41.26307189542484,
+        "confidence_interval_95": [
+          38.43,
+          43.8
+        ]
+      }
+    },
+    "Decision3_Edge_batch1_interrupted": {
+      "Benchmark_Heaven_public231": {
+        "correct": 158,
+        "valid": 231,
+        "planned": 231,
+        "accuracy_percent": 68.3982683982684,
+        "status": "provisional aggregate; campaign interrupted before final full authentication"
+      },
+      "JevBench_coherence_MINI": {
+        "score": null,
+        "complete": false
+      },
+      "final_callbacks_completed": 556,
+      "reason_for_adaptive_stop": "Original 6500s campaign budget: remaining trials required <=3.703s average while 61 measured trials averaged9.877s; source retains entire multi-question trial batches. Forecast only; no task/judge/input changes.",
+      "closure": "Original authenticated stop and cgroup absent; original transient zombie/false whole_unit flag preserved; later two read-only original-method scans empty."
+    },
+    "Decision3_native_batch4": {
+      "Benchmark_Heaven_public231": null,
+      "JevBench_coherence_MINI": null,
+      "status": "not run yet; no score inherited from synthetic smoke or interrupted batch1"
+    }
+  },
+  "text_helper_acquisition": {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "file_count": 9,
+    "total_bytes": 999602607,
+    "status": "download complete; publisher identities verified while streaming; closed owned unit",
+    "root_wall_seconds": 145.218828692,
+    "model_loaded": false,
+    "generation_tested": false,
+    "payload_in_git": false,
+    "receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/package-receipt.json",
+      "sha256": "fce23ca9ae2e3aa00dc5e412c9c9a06eed3ee53083447cadbeb7a0d7e471638e",
+      "size_bytes": 7663
+    }
+  },
+  "full_campaign_preparation": {
+    "status": "source01 held for literal postfinally success deadline check; successor02 under preparation; no full model campaign launched at this snapshot",
+    "held_review": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-01/independent-source-selection-review-held-01.json",
+      "sha256": "ec892dc96e945a5d0541964bc1bcbfd52d498fecfaf5549bae222962dfb62419",
+      "size_bytes": 5187
+    },
+    "unchanged_criteria": [
+      "Original Benchmark Heaven231 then original coherenceMINI1248 callbacks",
+      "One constructor; native batch4; original math and context16384 reject not truncate",
+      "Per complete callback180s; full campaign10000s including final authentication; owner10800s",
+      "Fresh cache, original source/task/judge/order/options; same model smoke receipt+independent audit prerequisites"
+    ]
+  },
+  "real_browser": {
+    "best_current_verified_successes": 4,
+    "tasks": 10,
+    "profile": "historical N3/nativeV2/NF4; distinct from current CPU Decision3",
+    "new_browser_score": null,
+    "matched_all_six_complete": false,
+    "other_models_beaten": false
+  },
+  "limits": [
+    "Synthetic native per-request timing excludes model cold load and browser/HTTP work. Lite root22.28s passed smoke120s, not browserwhole20s.",
+    "Model/runtime/source final authentication and original exact-unit closure passed both smoke jobs; original noescape/whole-tree/continuation/modelqualified flags remain unchanged.",
+    "No ComfyUI unload/restart/cache/queue action; observer authority unchanged.",
+    "No benchmark inputs/gold/per-response/cache, model/tokenizer/runtimebinary payload is included in this Git milestone."
+  ],
+  "goal_complete": false
+}

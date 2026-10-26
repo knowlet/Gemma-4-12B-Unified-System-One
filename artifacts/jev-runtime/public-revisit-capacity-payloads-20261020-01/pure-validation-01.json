@@ -1,0 +1,72 @@
+{
+  "schema": "revisit_prospective_payload_builder_pure_validation_v1",
+  "before": [
+    {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-payloads-20261020-01/revisit_payload_builder.py",
+      "sha256": "6bf24b2e17e407ba7db1d7c4e26e0a76fd83394c1a1444e231e8607be4147328",
+      "size_bytes": 15531
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-payloads-20261020-01/test_revisit_payload_builder.py",
+      "sha256": "b421fc514e32549c2c2ef033c1248b31c5ce77ab0006cf8dfe111687026167a6",
+      "size_bytes": 7576
+    }
+  ],
+  "checks": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-B",
+        "-s",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/jev-revisit-payload-builder-final-01",
+        "artifacts/jev-runtime/public-revisit-capacity-payloads-20261020-01/test_revisit_payload_builder.py"
+      ],
+      "returncode": 0,
+      "stdout": ".........                                                                [100%]\n9 passed in 0.64s\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "artifacts/jev-runtime/public-revisit-capacity-payloads-20261020-01/revisit_payload_builder.py",
+        "artifacts/jev-runtime/public-revisit-capacity-payloads-20261020-01/test_revisit_payload_builder.py"
+      ],
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "artifacts/jev-runtime/public-revisit-capacity-payloads-20261020-01/revisit_payload_builder.py",
+        "artifacts/jev-runtime/public-revisit-capacity-payloads-20261020-01/test_revisit_payload_builder.py"
+      ],
+      "returncode": 0,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "after": [
+    {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-payloads-20261020-01/revisit_payload_builder.py",
+      "sha256": "6bf24b2e17e407ba7db1d7c4e26e0a76fd83394c1a1444e231e8607be4147328",
+      "size_bytes": 15531
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-payloads-20261020-01/test_revisit_payload_builder.py",
+      "sha256": "b421fc514e32549c2c2ef033c1248b31c5ce77ab0006cf8dfe111687026167a6",
+      "size_bytes": 7576
+    }
+  ],
+  "unchanged": true,
+  "passed": true,
+  "processor_tokenizer_model_GPU_browser_calls": 0
+}

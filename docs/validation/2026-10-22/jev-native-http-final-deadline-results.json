@@ -1,0 +1,59 @@
+{
+  "schema_id": "jev_native_http_final_delivery_deadline_v1",
+  "status": "CPU_REGRESSION_PASS_INDEPENDENT_SOURCE_REVIEW_CLEAR",
+  "at_utc": "2026-10-22T06:42:49.703101+00:00",
+  "sources": [
+    {
+      "path": "scripts/jev_native_v2_browser.py",
+      "sha256": "1ba446a8718b98081f600298fb099c903ce855e1a7ac1a7aaa7f701444930fc1",
+      "size_bytes": 45164
+    },
+    {
+      "path": "tests/test_jev_native_v2_browser.py",
+      "sha256": "e9f020a7e25e33e8bbb68f57030e2a5504aba93484ba1fd3282ea6159d489d91",
+      "size_bytes": 41996
+    }
+  ],
+  "problem": "The final20s HTTP check preceded terminal response/exchange fsync, permitting a late200 candidate.",
+  "change": [
+    "Atomically bind task-owned finalresponse/exchange while preserving immutable candidate bytes.",
+    "At ASGIhttp.response.start reacquire the same seriallock, charge publication/headers/queue time, and gate the200 immediatelybefore send.",
+    "If expired, rewrite finalbody+ContentLength+exchange to504 without authorizing candidate.",
+    "Reset TRACE even when processing fails; retain primary exception if cleanup/publication also fails."
+  ],
+  "verification": {
+    "pytest": {
+      "passed": 59,
+      "elapsed_seconds": 2.01,
+      "junit": {
+        "path": "artifacts/jev-runtime/native-http-final-deadline-20261022-01/tests-01.xml",
+        "sha256": "819a4ba04421a3b8bd132d699a641cb9b9fbf91e1ea374c686602566e56d8722",
+        "size_bytes": 9110
+      },
+      "address_space_limit_bytes": 268435456,
+      "cpu_limit_seconds": 30,
+      "wall_alarm_seconds": 45,
+      "Torch_imported": false
+    },
+    "coverage": [
+      "Slow response/pin/exchange publication at19.999s,20s and26s.",
+      "Late header preparation and ASGI dispatch.",
+      "Existing502/504 retained after slow refusal publication.",
+      "Primary errors, TRACE reset/fallback, private atomic temp cleanup and symlink confinement.",
+      "Concurrent real ASGI request/body/request-ID/evidence joins."
+    ],
+    "independent_read_only_review": "CLEAR for these exact source hashes."
+  },
+  "timing_scope": "The gate charges terminal fsync. The recorded elapsed sample is after response binding and before its own terminal exchange fsync. The final ASGI authorization check does not attest network/client delivery after awaiting send.",
+  "new_actual_model_calls": 0,
+  "new_Chromium_trials": 0,
+  "new_training_updates": 0,
+  "Comfy_mutations": 0,
+  "historical_browser_score": "5/10 unchanged; this defect is not established as a cause of historical failures.",
+  "fresh_jevbench_plan": "Old plan02 source hash becomes stale; refresh after all current resource identity source changes finish, before any real scoring launch.",
+  "research": {
+    "path": "docs/research/jev-native-browser-final-delivery-deadline.md",
+    "sha256": "8f704990e56c13213a3b408f592884a2fd2666fab361a674d1ef2cda72e61c02",
+    "size_bytes": 2016
+  }
+}

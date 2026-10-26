@@ -1,0 +1,243 @@
+{
+  "schema_id": "jev-current-nf4-raw-v7-complete-results-v1",
+  "created_at_utc": "2026-10-22T09:34:35.572561+00:00",
+  "status": "COMPLETE_FIXED10_EXTERNAL_CLOSURE_AND_INDEPENDENT_DOM_REPLAY",
+  "profile": {
+    "base_model": "knowlet/Gemma-4-12B-Unified-System-One",
+    "revision": "a66f836b56605039fe040f330180e336d19b3362",
+    "quantization": "nf4",
+    "action_adapter": "raw96 with425-update ancestor; unchanged existing parent",
+    "prompt_format": "raw-json-v1",
+    "helper": "same current NF4 base with action adapter disabled",
+    "context": 8192,
+    "policy_seconds": 20,
+    "helper_seconds": 20,
+    "helper_tokens": 128,
+    "http_seconds": 25,
+    "steps": 16,
+    "seed": 20261014,
+    "repeats": 1,
+    "observation_profile": "composed-visible-text-settled-v7",
+    "gpu": "NVIDIA GB10"
+  },
+  "result": {
+    "attempts": 10,
+    "successes": 2,
+    "goals_satisfied": 2,
+    "done": 5,
+    "premature_done": 3,
+    "execution_errors": 4,
+    "policy_calls": 106,
+    "text_calls": 5,
+    "success_rate": 0.2,
+    "known4_successes": 1,
+    "known4_attempts": 4,
+    "public6_successes": 1,
+    "public6_attempts": 6,
+    "decision_budget_exhausted": 4,
+    "budget_and_public_scope_or_request_failure": 1,
+    "http_responses_200": 111,
+    "http_responses_total": 111
+  },
+  "cases": [
+    {
+      "group": "known4",
+      "task_id": "public-arxiv-title-filter-results-v1",
+      "success": false,
+      "goal_satisfied": false,
+      "status": "done",
+      "premature_done": true,
+      "policy_calls": 9,
+      "text_calls": 1,
+      "action_count": 8,
+      "decision_budget_exhausted": false,
+      "public_scope_or_request_observation_failed": false
+    },
+    {
+      "group": "known4",
+      "task_id": "public-arxiv-original-paper-open-v1",
+      "success": false,
+      "goal_satisfied": false,
+      "status": "blocked",
+      "premature_done": false,
+      "policy_calls": 7,
+      "text_calls": 1,
+      "action_count": 6,
+      "decision_budget_exhausted": false,
+      "public_scope_or_request_observation_failed": false
+    },
+    {
+      "group": "known4",
+      "task_id": "public-python-counter-most-common-v1",
+      "success": true,
+      "goal_satisfied": true,
+      "status": "done",
+      "premature_done": false,
+      "policy_calls": 5,
+      "text_calls": 1,
+      "action_count": 3,
+      "decision_budget_exhausted": false,
+      "public_scope_or_request_observation_failed": false
+    },
+    {
+      "group": "known4",
+      "task_id": "public-nasa-mars-facts-moons-v1",
+      "success": false,
+      "goal_satisfied": false,
+      "status": "done",
+      "premature_done": true,
+      "policy_calls": 14,
+      "text_calls": 1,
+      "action_count": 12,
+      "decision_budget_exhausted": false,
+      "public_scope_or_request_observation_failed": false
+    },
+    {
+      "group": "public6",
+      "task_id": "heldout-public-000",
+      "success": true,
+      "goal_satisfied": true,
+      "status": "done",
+      "premature_done": false,
+      "policy_calls": 3,
+      "text_calls": 0,
+      "action_count": 1,
+      "decision_budget_exhausted": false,
+      "public_scope_or_request_observation_failed": false
+    },
+    {
+      "group": "public6",
+      "task_id": "heldout-public-001",
+      "success": false,
+      "goal_satisfied": false,
+      "status": "done",
+      "premature_done": true,
+      "policy_calls": 4,
+      "text_calls": 0,
+      "action_count": 2,
+      "decision_budget_exhausted": false,
+      "public_scope_or_request_observation_failed": false
+    },
+    {
+      "group": "public6",
+      "task_id": "heldout-public-002",
+      "success": false,
+      "goal_satisfied": false,
+      "status": "ready",
+      "premature_done": false,
+      "policy_calls": 16,
+      "text_calls": 0,
+      "action_count": 16,
+      "decision_budget_exhausted": true,
+      "public_scope_or_request_observation_failed": false
+    },
+    {
+      "group": "public6",
+      "task_id": "heldout-public-003",
+      "success": false,
+      "goal_satisfied": false,
+      "status": "ready",
+      "premature_done": false,
+      "policy_calls": 16,
+      "text_calls": 0,
+      "action_count": 3,
+      "decision_budget_exhausted": true,
+      "public_scope_or_request_observation_failed": false
+    },
+    {
+      "group": "public6",
+      "task_id": "heldout-public-004",
+      "success": false,
+      "goal_satisfied": false,
+      "status": "ready",
+      "premature_done": false,
+      "policy_calls": 16,
+      "text_calls": 0,
+      "action_count": 16,
+      "decision_budget_exhausted": true,
+      "public_scope_or_request_observation_failed": false
+    },
+    {
+      "group": "public6",
+      "task_id": "heldout-public-005",
+      "success": false,
+      "goal_satisfied": false,
+      "status": "ready",
+      "premature_done": false,
+      "policy_calls": 16,
+      "text_calls": 1,
+      "action_count": 11,
+      "decision_budget_exhausted": true,
+      "public_scope_or_request_observation_failed": true
+    }
+  ],
+  "closure": {
+    "unit": "jev-current-nf4-raw-20261022-03.service",
+    "invocation_id": "b0cf4e01e9744738925799f8c4f84a76",
+    "actor": {
+      "pid": 62705,
+      "pgid": 62705,
+      "sid": 62705,
+      "start_ticks": 967366
+    },
+    "terminal_exit_status": 0,
+    "cgroup_absent": true,
+    "two_empty_process_scans": true,
+    "selected_sources_unchanged": 621,
+    "model_aliases_unchanged": 11,
+    "final_host_known": true,
+    "terminal_memcg_peak_bytes": 2628284416,
+    "native_cuda_peak_not_claimed": true,
+    "combined_host_cuda_hard_bound_not_claimed": true,
+    "final_zero_OOM_not_claimed": true
+  },
+  "independent_audit": {
+    "reference": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/independent-audit-raw03.json",
+      "sha256": "0edb616db1f8774b5353dd2114667f1d693189a8fadda6284f7ee8aeb590a6dd",
+      "size_bytes": 7466
+    },
+    "output_files": 808,
+    "output_bytes": 69258283,
+    "DOM_replay_exact": true,
+    "sealed_server_journals": 111,
+    "selected_small_payload_sha_checks": 620,
+    "weight_payload_independently_rehashed": false,
+    "weight_provenance": "Root authenticated full621 source payloads before/after, including23.919GBweight; independentaudit checks11 currentaliaschains/stats/size and620smallSHA. Independent fullweight attempt exited137 withunproven cause, not credited."
+  },
+  "evidence": {
+    "plan": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/selected-plan.json",
+      "sha256": "e6aab745961255af77258d3cf6bcbbb516d3c8d9bc3507ab327fd99774d187d0",
+      "size_bytes": 175011
+    },
+    "worker_receipt": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/browser/receipt.json",
+      "sha256": "57f71f1e61b4052099c0ea5dcf1cc4459ee768839276641befaad7d55f7c9e36",
+      "size_bytes": 715519
+    },
+    "external_closure": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/root-external-closure.json",
+      "sha256": "ea4ee555f782cdbb28f7cd64b31d6f9d183001556377a89919477c4bc88099c9",
+      "size_bytes": 1014890
+    },
+    "output_index": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/browser/output-index.json",
+      "sha256": "2274e810d05b9273cf9858ec94a12a8180ea382b3e9bf0f1e930194e93f7755a",
+      "size_bytes": 109302
+    },
+    "server_index": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/browser/server-index.json",
+      "sha256": "5a94e468eb579d420d1fc75d5949e84c432bdbc02b408867365a7f1e43b91811",
+      "size_bytes": 40661
+    }
+  },
+  "comparability": {
+    "BF16_default_JevBench_scores": "Separate classification/probability path; different precision and action-adapter regime. No causal ablation inferred.",
+    "historical_Q95_BF16_browser_5_of_10": "Different precision/helper profile; not matched to this newNF4control.",
+    "next_matched_arm": "Fresh nativeV2 action adapter with same NF4 helper/full10/tasks/judges/budgets.",
+    "Decision3_baselines_complete": false,
+    "cross_model_superiority_claimed": false
+  },
+  "raw_DOM_requests_questions_answers_or_weights_published": false
+}

@@ -1,0 +1,343 @@
+{
+  "helper": [
+    {
+      "context_sha256": "a19ab06a2fbb02914ec7f4fe5cd86b365501923a80afd72fe3467df8626b7d33",
+      "query_sha256": "af476e8d201326a5a9217fafa81ca746d9fe0354e1f748fdde81159ceb23559e",
+      "request_sha256": "b71e34491aeb72213e566041e582dc9e3cc1e76c2b9cb588a29eac91f7c404fc",
+      "schema_valid": true
+    }
+  ],
+  "policy": [
+    {
+      "answers": {
+        "click_target": {
+          "choice": "1",
+          "confidence": 1.0,
+          "id": "click_target",
+          "margin": 1.0,
+          "probabilities": {
+            "1": 1.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "type": "choice"
+        },
+        "operation": {
+          "choice": "DONE",
+          "confidence": 1.0,
+          "id": "operation",
+          "margin": 1.0,
+          "probabilities": {
+            "BLOCKED": 0.0,
+            "CLICK": 0.0,
+            "DONE": 1.0,
+            "FIND_TEXT": 0.0,
+            "SCROLL_DOWN": 0.0,
+            "TYPE_TEXT": 0.0,
+            "WAIT": 0.0
+          },
+          "type": "choice"
+        },
+        "type_text_target": {
+          "choice": "3",
+          "confidence": 1.0,
+          "id": "type_text_target",
+          "margin": 1.0,
+          "probabilities": {
+            "3": 1.0
+          },
+          "type": "choice"
+        }
+      },
+      "head_ids": [
+        "operation",
+        "click_target",
+        "type_text_target"
+      ],
+      "native_raw_sha256": "152d4d69c33bef6ca77e6d87f1b697086053f8b6f3ee033446a9e092a4086cb6",
+      "request_sha256": "1b35d0696dae59fbf482beca614c78bb0aed41bec7087b230d29668f582e0a8e",
+      "wire": {
+        "answer_count": 3,
+        "answer_values_changed": false,
+        "conversion": "ordered_list_to_named_object",
+        "original_request_sha256": "1b35d0696dae59fbf482beca614c78bb0aed41bec7087b230d29668f582e0a8e",
+        "profile": "jev_decision3_browser_find_text_experimental_v1",
+        "question_ids": [
+          "operation",
+          "click_target",
+          "type_text_target"
+        ],
+        "scope": "Wire container only; no policy, probability or action changes",
+        "source_profile": "jev_decision3_native_find_text_experimental_v1"
+      }
+    },
+    {
+      "answers": {
+        "click_target": {
+          "choice": "1",
+          "confidence": 1.0,
+          "id": "click_target",
+          "margin": 1.0,
+          "probabilities": {
+            "1": 1.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "type": "choice"
+        },
+        "operation": {
+          "choice": "FIND_TEXT",
+          "confidence": 1.0,
+          "id": "operation",
+          "margin": 1.0,
+          "probabilities": {
+            "BLOCKED": 0.0,
+            "CLICK": 0.0,
+            "DONE": 0.0,
+            "FIND_TEXT": 1.0,
+            "SCROLL_DOWN": 0.0,
+            "TYPE_TEXT": 0.0,
+            "WAIT": 0.0
+          },
+          "type": "choice"
+        },
+        "type_text_target": {
+          "choice": "3",
+          "confidence": 1.0,
+          "id": "type_text_target",
+          "margin": 1.0,
+          "probabilities": {
+            "3": 1.0
+          },
+          "type": "choice"
+        }
+      },
+      "head_ids": [
+        "operation",
+        "click_target",
+        "type_text_target"
+      ],
+      "native_raw_sha256": "bbf2b83ae12d2d37fb617850e9674dce413a48d22d810f6ef03677408fd068da",
+      "request_sha256": "b758d31f1e0c4feaff293029c225e0dd370eae2f7d4b17778901203d258ebe16",
+      "wire": {
+        "answer_count": 3,
+        "answer_values_changed": false,
+        "conversion": "ordered_list_to_named_object",
+        "original_request_sha256": "b758d31f1e0c4feaff293029c225e0dd370eae2f7d4b17778901203d258ebe16",
+        "profile": "jev_decision3_browser_find_text_experimental_v1",
+        "question_ids": [
+          "operation",
+          "click_target",
+          "type_text_target"
+        ],
+        "scope": "Wire container only; no policy, probability or action changes",
+        "source_profile": "jev_decision3_native_find_text_experimental_v1"
+      }
+    },
+    {
+      "answers": {
+        "operation": {
+          "choice": "DONE",
+          "confidence": 1.0,
+          "id": "operation",
+          "margin": 1.0,
+          "probabilities": {
+            "BLOCKED": 0.0,
+            "DONE": 1.0,
+            "FIND_TEXT": 0.0,
+            "SCROLL_DOWN": 0.0,
+            "SCROLL_UP": 0.0,
+            "WAIT": 0.0
+          },
+          "type": "choice"
+        }
+      },
+      "head_ids": [
+        "operation"
+      ],
+      "native_raw_sha256": "d91f87d39e018ab229b22e1d1fe05cac8475093883a91e72a933414c4a596a25",
+      "request_sha256": "0781cca4702fab5dda6ad49b659be3347054c29373b7f2c9912b5412da89f6c8",
+      "wire": {
+        "answer_count": 1,
+        "answer_values_changed": false,
+        "conversion": "ordered_list_to_named_object",
+        "original_request_sha256": "0781cca4702fab5dda6ad49b659be3347054c29373b7f2c9912b5412da89f6c8",
+        "profile": "jev_decision3_browser_find_text_experimental_v1",
+        "question_ids": [
+          "operation"
+        ],
+        "scope": "Wire container only; no policy, probability or action changes",
+        "source_profile": "jev_decision3_native_find_text_experimental_v1"
+      }
+    }
+  ],
+  "review": [
+    {
+      "answer": {
+        "choice": "INCOMPLETE",
+        "confidence": 1.0,
+        "id": "visible_completion",
+        "margin": 1.0,
+        "probabilities": {
+          "COMPLETE": 0.0,
+          "INCOMPLETE": 1.0
+        },
+        "type": "choice"
+      },
+      "candidate_labels": {
+        "visible_completion": [
+          "COMPLETE",
+          "INCOMPLETE"
+        ]
+      },
+      "dto_roundtrip_sha256": "fb05bda0643e7aba56b88230c5066e6067344d24f0d4cb72edcd1faa0ad5b21a",
+      "generic_real_server_route_used": false,
+      "head_ids": [
+        "visible_completion"
+      ],
+      "native_payload_sha256": "cc7df635749a6b82f04cdf7ac19b3f4479f968e9a923bb4000ab4311853b82f7",
+      "remaining_seconds_at_return": 19.962645163999696,
+      "request_sha256": "a95984d45f62da60dfb687a5f7e174c2187119b4dfd3667681f64d93bd701b6b",
+      "visible_goal_text_in_request": false
+    },
+    {
+      "answer": {
+        "choice": "COMPLETE",
+        "confidence": 1.0,
+        "id": "visible_completion",
+        "margin": 1.0,
+        "probabilities": {
+          "COMPLETE": 1.0,
+          "INCOMPLETE": 0.0
+        },
+        "type": "choice"
+      },
+      "candidate_labels": {
+        "visible_completion": [
+          "COMPLETE",
+          "INCOMPLETE"
+        ]
+      },
+      "dto_roundtrip_sha256": "825c8bcb3018ef47efc5b7a92198463d727fbe3cc7c7cbf401a67b6c93105b7d",
+      "generic_real_server_route_used": false,
+      "head_ids": [
+        "visible_completion"
+      ],
+      "native_payload_sha256": "2df0c579b9d128aa12f219e536c3a3862edd6cd01c15a130244920039befd827",
+      "remaining_seconds_at_return": 19.976777399999264,
+      "request_sha256": "095d97566bfcd8953abb127dd34e953dbceb0027cc7a36e266e5c74f76e91b99",
+      "visible_goal_text_in_request": true
+    }
+  ],
+  "simulated_native_calls": [
+    {
+      "candidate_labels": {
+        "click_target": [
+          "1",
+          "2",
+          "3"
+        ],
+        "operation": [
+          "CLICK",
+          "TYPE_TEXT",
+          "SCROLL_DOWN",
+          "WAIT",
+          "FIND_TEXT",
+          "DONE",
+          "BLOCKED"
+        ],
+        "type_text_target": [
+          "3"
+        ]
+      },
+      "chosen": "DONE",
+      "fixture_numbers_only": true,
+      "head_ids": [
+        "operation",
+        "click_target",
+        "type_text_target"
+      ],
+      "native_payload_sha256": "3ac673feab3f52de31246d413663ae03b252c98208533624ffbd66dead175064",
+      "scope": "policy"
+    },
+    {
+      "candidate_labels": {
+        "visible_completion": [
+          "COMPLETE",
+          "INCOMPLETE"
+        ]
+      },
+      "chosen": "INCOMPLETE",
+      "fixture_numbers_only": true,
+      "head_ids": [
+        "visible_completion"
+      ],
+      "native_payload_sha256": "cc7df635749a6b82f04cdf7ac19b3f4479f968e9a923bb4000ab4311853b82f7",
+      "scope": "review"
+    },
+    {
+      "candidate_labels": {
+        "click_target": [
+          "1",
+          "2",
+          "3"
+        ],
+        "operation": [
+          "CLICK",
+          "TYPE_TEXT",
+          "SCROLL_DOWN",
+          "WAIT",
+          "FIND_TEXT",
+          "DONE",
+          "BLOCKED"
+        ],
+        "type_text_target": [
+          "3"
+        ]
+      },
+      "chosen": "FIND_TEXT",
+      "fixture_numbers_only": true,
+      "head_ids": [
+        "operation",
+        "click_target",
+        "type_text_target"
+      ],
+      "native_payload_sha256": "0240551e64015e4dc83f5058462051b8b232a4ab000b75b39d53a1b82f833bcf",
+      "scope": "policy"
+    },
+    {
+      "candidate_labels": {
+        "operation": [
+          "SCROLL_DOWN",
+          "SCROLL_UP",
+          "WAIT",
+          "FIND_TEXT",
+          "DONE",
+          "BLOCKED"
+        ]
+      },
+      "chosen": "DONE",
+      "fixture_numbers_only": true,
+      "head_ids": [
+        "operation"
+      ],
+      "native_payload_sha256": "ab842a93f43a4909e19de66223c8e75737abce42da49bc3a5e9c72617b37d8f2",
+      "scope": "policy"
+    },
+    {
+      "candidate_labels": {
+        "visible_completion": [
+          "COMPLETE",
+          "INCOMPLETE"
+        ]
+      },
+      "chosen": "COMPLETE",
+      "fixture_numbers_only": true,
+      "head_ids": [
+        "visible_completion"
+      ],
+      "native_payload_sha256": "2df0c579b9d128aa12f219e536c3a3862edd6cd01c15a130244920039befd827",
+      "scope": "review"
+    }
+  ]
+}

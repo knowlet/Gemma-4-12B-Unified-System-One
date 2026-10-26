@@ -1,0 +1,95 @@
+{
+  "actual_cpu_browser_proof": {
+    "path": "artifacts/jev-runtime/browser-find-text-integration-20261022-01/actual-cpu-integration.json",
+    "sha256": "705350c97d4ad5f43923720f5a453670cbd675e277fa18675976603bf439457d",
+    "size_bytes": 810
+  },
+  "comfy_operations": 0,
+  "cpu_runtime_versions": {
+    "fastapi": "0.141.1",
+    "httpx": "0.28.1",
+    "playwright": "1.58.0",
+    "pydantic": "2.13.5",
+    "starlette": "1.7.0"
+  },
+  "descriptor": {
+    "path": "artifacts/jev-runtime/browser-find-text-integration-20261022-01/selection.json",
+    "sha256": "063e5afde12bc408f18be446abedac3e66ff064a6e81858c6b7ce4c995719cb0",
+    "size_bytes": 3941
+  },
+  "independent_review": {
+    "actor_or_test_calls_by_reviewer": 0,
+    "limitations": "No model/S1 generation/server-runtime or quality qualification",
+    "reviewer": "nf4_browser_owner",
+    "source_refs": [
+      {
+        "path": "artifacts/jev-runtime/browser-find-text-integration-20261022-01/integration.py",
+        "sha256": "6a8fba79c121ddb24858dce455b7b25fdd74df9de08a804aa452738704edcbef",
+        "size_bytes": 11112
+      },
+      {
+        "path": "artifacts/jev-runtime/browser-find-text-integration-20261022-01/selection.json",
+        "sha256": "063e5afde12bc408f18be446abedac3e66ff064a6e81858c6b7ce4c995719cb0",
+        "size_bytes": 3941
+      }
+    ],
+    "verdict": "CLEAR source-integration scope"
+  },
+  "integration_source": {
+    "path": "artifacts/jev-runtime/browser-find-text-integration-20261022-01/integration.py",
+    "sha256": "6a8fba79c121ddb24858dce455b7b25fdd74df9de08a804aa452738704edcbef",
+    "size_bytes": 11112
+  },
+  "junit": {
+    "path": "artifacts/jev-runtime/browser-find-text-integration-20261022-01/cpu-tests.xml",
+    "sha256": "7c88833e8bf86668c4c5abb9d559a87ace80b0208ea96a3c0aba20dfd9a40bcb",
+    "size_bytes": 3783
+  },
+  "model_constructors_called": 0,
+  "model_qualified": false,
+  "pytest": {
+    "actual_gpu_disabled_chromium_cases": 1,
+    "address_space_limit": null,
+    "blas_threads": 1,
+    "core_limit": 0,
+    "cpu_affinity": 0,
+    "cpu_limit_seconds": 60,
+    "failed": 0,
+    "passed": 19,
+    "plugins_disabled": true,
+    "reported_seconds": 7.09,
+    "wall_limit_seconds": 100
+  },
+  "quality_score": null,
+  "real_helper_http_calls": 0,
+  "real_model_calls": 0,
+  "remaining": [
+    "Explicit actual worker/owner/runtime and V7 constructor source selection",
+    "Actual CUDA/kernel/geometry/cache/text48/helper-co-residency qualification",
+    "Whole-request deadline/publication and scoped external lifecycle proof",
+    "Matched complete benchmark evaluation"
+  ],
+  "ruff": {
+    "address_space_limit": null,
+    "check": "passed on final source",
+    "format": "passed before final suite",
+    "threads": 1
+  },
+  "s1_numerical_generation_exercised": false,
+  "schema_id": "jev-find-text-source-integration-validation-v1",
+  "server_runtime_qualified": false,
+  "source_integration_validated": true,
+  "source_parity": {
+    "path": "artifacts/jev-runtime/browser-find-text-integration-20261022-01/source-parity.json",
+    "sha256": "26438d63fde3ab1fe5e65046db6c3e0c9cfcbe29d8c6b1536ca4a954095d6f4e",
+    "size_bytes": 715
+  },
+  "test_warning": "Installed Starlette/httpx TestClient deprecation; no dependency changes",
+  "tests": {
+    "path": "artifacts/jev-runtime/browser-find-text-integration-20261022-01/test_integration.py",
+    "sha256": "5676bcd2e9bb40c0a1274fe9bb6a6f1d96003e6e6b0753a3544825409e915650",
+    "size_bytes": 15705
+  },
+  "unit_operations": 0,
+  "validated_provider": "Decision3 native with simulated numerical backend"
+}

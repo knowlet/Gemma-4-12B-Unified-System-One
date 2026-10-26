@@ -1,0 +1,593 @@
+{
+  "profile": "decision3-lite-publisher-cpu-batch4-synthetic-20261023-v1",
+  "plan_sha256": "72b4a083d10fafa494fb83fe3a7c6b690439597cdaeb180e1c8b2e3a93862e14",
+  "model_key": "lite",
+  "status": "native_batch4_two_call_synthetic_probe_complete_no_benchmark_claim",
+  "process": {
+    "pid": 481029,
+    "starttime_ticks": 10394920,
+    "pgid": 481020,
+    "sid": 481020,
+    "cgroup": "0::/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+    "affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "",
+      "HF_HUB_OFFLINE": "1",
+      "TRANSFORMERS_OFFLINE": "1",
+      "ACCELERATE_USE_CPU": "true",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": null,
+      "TOKENIZERS_PARALLELISM": null,
+      "HF_ENABLE_PARALLEL_LOADING": null,
+      "HF_PARALLEL_LOADING_WORKERS": null,
+      "USE_HUB_KERNELS": null,
+      "D3_FAST": null,
+      "D3_FUSED": null,
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1"
+    }
+  },
+  "owned_limits": {
+    "memory.max": "3221225472",
+    "memory.swap.max": "0",
+    "cpu.max": "400000 100000"
+  },
+  "host_startup_admission": {
+    "MemTotal": 130595864576,
+    "MemAvailable": 29868470272,
+    "reserve_bytes": 26119172916,
+    "required_available_bytes": 29340398388,
+    "swap_credit_bytes": 0,
+    "cache_credit_bytes": 0,
+    "already_loaded_credit_bytes": 0
+  },
+  "model_loads": 1,
+  "native_request_calls": 2,
+  "benchmark_calls": 0,
+  "browser_calls": 0,
+  "quality_or_batch1_parity_claim": false,
+  "calls": [
+    {
+      "index": 0,
+      "status": "validated",
+      "before_owned_counters": {
+        "cgroup": "0::/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+        "observed_monotonic": 103962.233359968,
+        "counters": {
+          "memory.current": 2706153472,
+          "memory.peak": 2706153472,
+          "memory.events": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0
+          },
+          "cpu.stat": {
+            "usage_usec": 12719065,
+            "user_usec": 11205700,
+            "system_usec": 1513364,
+            "nice_usec": 0,
+            "core_sched.force_idle_usec": 0,
+            "nr_periods": 132,
+            "nr_throttled": 0,
+            "throttled_usec": 0,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        "scope": "Only this selected owned unit; includes actor/framework/cache/wrapper activity, not native-only peak or external closure"
+      },
+      "raw_response": {
+        "model": "d3-lite",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "c1",
+            "probabilities": {
+              "c1": 0.9999112025968135,
+              "c2": 8.879740318651293e-05
+            },
+            "confidence": 0.9986767629442747
+          },
+          "shape": {
+            "type": "choice",
+            "choice": "s2",
+            "probabilities": {
+              "s1": 5.136107994661478e-05,
+              "s2": 0.9999227632952834,
+              "s3": 2.5875624769977773e-05
+            },
+            "confidence": 0.999219185996576
+          },
+          "number": {
+            "type": "choice",
+            "choice": "n2",
+            "probabilities": {
+              "n1": 0.12595779096669144,
+              "n2": 0.5889683549575879,
+              "n3": 0.2810331968726703,
+              "n4": 0.004040657203050345
+            },
+            "confidence": 0.313471835674101
+          },
+          "direction": {
+            "type": "choice",
+            "choice": "d2",
+            "probabilities": {
+              "d1": 0.000190323290385484,
+              "d2": 0.9998096767096145
+            },
+            "confidence": 0.99737319258427
+          }
+        },
+        "usage": {
+          "input_tokens": 505,
+          "output_tokens": 0
+        }
+      },
+      "validation": {
+        "contract_valid": true,
+        "semantic_expected_answer_or_quality_claim": false
+      },
+      "actual_first_layer_event": {
+        "shape": [
+          4,
+          135,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "cpu",
+        "observed_monotonic": 103962.271845817,
+        "inputs_or_outputs_modified": false
+      },
+      "after_owned_counters": {
+        "cgroup": "0::/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+        "observed_monotonic": 103964.45158156,
+        "counters": {
+          "memory.current": 2844000256,
+          "memory.peak": 2849255424,
+          "memory.events": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0
+          },
+          "cpu.stat": {
+            "usage_usec": 21066510,
+            "user_usec": 18992081,
+            "system_usec": 2074428,
+            "nice_usec": 0,
+            "core_sched.force_idle_usec": 0,
+            "nr_periods": 155,
+            "nr_throttled": 0,
+            "throttled_usec": 0,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        "scope": "Only this selected owned unit; includes actor/framework/cache/wrapper activity, not native-only peak or external closure"
+      },
+      "validation_seconds": 2.2166745729919057,
+      "durable_validation_seconds": 2.219562466998468
+    },
+    {
+      "index": 1,
+      "status": "validated",
+      "before_owned_counters": {
+        "cgroup": "0::/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+        "observed_monotonic": 103964.454740061,
+        "counters": {
+          "memory.current": 2843987968,
+          "memory.peak": 2849255424,
+          "memory.events": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0
+          },
+          "cpu.stat": {
+            "usage_usec": 21067721,
+            "user_usec": 18993173,
+            "system_usec": 2074548,
+            "nice_usec": 0,
+            "core_sched.force_idle_usec": 0,
+            "nr_periods": 155,
+            "nr_throttled": 0,
+            "throttled_usec": 0,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        "scope": "Only this selected owned unit; includes actor/framework/cache/wrapper activity, not native-only peak or external closure"
+      },
+      "raw_response": {
+        "model": "d3-lite",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "c1",
+            "probabilities": {
+              "c1": 0.9999112025968135,
+              "c2": 8.879740318651293e-05
+            },
+            "confidence": 0.9986767629442747
+          },
+          "shape": {
+            "type": "choice",
+            "choice": "s2",
+            "probabilities": {
+              "s1": 5.136107994661478e-05,
+              "s2": 0.9999227632952834,
+              "s3": 2.5875624769977773e-05
+            },
+            "confidence": 0.999219185996576
+          },
+          "number": {
+            "type": "choice",
+            "choice": "n2",
+            "probabilities": {
+              "n1": 0.12595779096669144,
+              "n2": 0.5889683549575879,
+              "n3": 0.2810331968726703,
+              "n4": 0.004040657203050345
+            },
+            "confidence": 0.313471835674101
+          },
+          "direction": {
+            "type": "choice",
+            "choice": "d2",
+            "probabilities": {
+              "d1": 0.000190323290385484,
+              "d2": 0.9998096767096145
+            },
+            "confidence": 0.99737319258427
+          }
+        },
+        "usage": {
+          "input_tokens": 505,
+          "output_tokens": 0
+        }
+      },
+      "validation": {
+        "contract_valid": true,
+        "semantic_expected_answer_or_quality_claim": false
+      },
+      "actual_first_layer_event": {
+        "shape": [
+          4,
+          135,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "cpu",
+        "observed_monotonic": 103964.460794647,
+        "inputs_or_outputs_modified": false
+      },
+      "after_owned_counters": {
+        "cgroup": "0::/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+        "observed_monotonic": 103966.641719658,
+        "counters": {
+          "memory.current": 2816225280,
+          "memory.peak": 2849255424,
+          "memory.events": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0
+          },
+          "cpu.stat": {
+            "usage_usec": 29271588,
+            "user_usec": 26621160,
+            "system_usec": 2650428,
+            "nice_usec": 0,
+            "core_sched.force_idle_usec": 0,
+            "nr_periods": 177,
+            "nr_throttled": 0,
+            "throttled_usec": 0,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        "scope": "Only this selected owned unit; includes actor/framework/cache/wrapper activity, not native-only peak or external closure"
+      },
+      "validation_seconds": 2.1851017640001373,
+      "durable_validation_seconds": 2.1867157259985106
+    }
+  ],
+  "before_load_owned_counters": {
+    "cgroup": "0::/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+    "observed_monotonic": 103949.263176113,
+    "counters": {
+      "memory.current": 24281088,
+      "memory.peak": 24281088,
+      "memory.events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "cpu.stat": {
+        "usage_usec": 176577,
+        "user_usec": 142465,
+        "system_usec": 34111,
+        "nice_usec": 0,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 3,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    },
+    "scope": "Only this selected owned unit; includes actor/framework/cache/wrapper activity, not native-only peak or external closure"
+  },
+  "host_before_full_authentication": {
+    "MemTotal": 130595864576,
+    "MemAvailable": 29868470272,
+    "reserve_bytes": 26119172916,
+    "required_available_bytes": 29340398388,
+    "swap_credit_bytes": 0,
+    "cache_credit_bytes": 0,
+    "already_loaded_credit_bytes": 0
+  },
+  "initial_full_model_manifest_runtime_sources_authenticated": true,
+  "publisher_source_AST_contract": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub/models--vllm-sr--d3-lite/snapshots/9c10703193afc7c7d28c88201c0364bfbbf58320/d3_runtime.py",
+    "sha256": "adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917",
+    "size": 95505,
+    "one_constructor": true,
+    "one_backbone_loader": true,
+    "native_batch_argument": true,
+    "shipped_default_batch_unchanged": 8,
+    "original_request_question_order": true,
+    "original_sequences_context_options": true,
+    "left_padding_and_original_masks": true,
+    "BF16_backbone_FP32_readout_temperature_softmax_unchanged": true,
+    "symbols": {
+      "__init__": {
+        "line": 1109,
+        "ast_sha256": "d018a3426717854c038c276982a953b9b3463b4d9cd65e98c9a0e38318a94449"
+      },
+      "from_pretrained": {
+        "line": 1279,
+        "ast_sha256": "7b56b80a9b2b6946389baf95116b7f72937ffd7f98fcfc8f14dc22ebc73fa94d"
+      },
+      "logits": {
+        "line": 1673,
+        "ast_sha256": "a61d9edcddc6cd31bf1504cf65726246b16d84df8bad56ab74192b5a68b224c9"
+      },
+      "probabilities": {
+        "line": 1703,
+        "ast_sha256": "5ecdc08923a83d1dacb5d34e8becab7aeeb222c2db362682a2c8c81199c3aecc"
+      },
+      "run": {
+        "line": 1996,
+        "ast_sha256": "d4c5262f7279bc6cac0ee74de9c713e274d4202bbfad70fdace36f3824e9d750"
+      },
+      "respond": {
+        "line": 2025,
+        "ast_sha256": "5244bd692522b3cc14e33f317f76319ed2b2490afa6ed31b781d072d278a5fe7"
+      }
+    },
+    "runtime_executed": false
+  },
+  "package_versions": {
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "safetensors": "0.8.0",
+    "huggingface_hub": "1.33.0",
+    "accelerate": "1.15.0"
+  },
+  "actual_environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "ACCELERATE_USE_CPU": "true",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "4",
+    "NUMEXPR_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false",
+    "HF_ENABLE_PARALLEL_LOADING": "false",
+    "HF_PARALLEL_LOADING_WORKERS": "1",
+    "USE_HUB_KERNELS": "0",
+    "D3_FAST": "0",
+    "D3_FUSED": "0",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "actual_kernel_bindings": {
+    "torch_chunk_gated_delta_rule": "torch-reference",
+    "torch_recurrent_gated_delta_rule": "torch-reference",
+    "causal_conv1d_fn": "torch-reference",
+    "causal_conv1d_update": "torch-reference"
+  },
+  "model_load_seconds": 3.8493901519977953,
+  "native_provenance": {
+    "kind": "d3-code-readout",
+    "runtime": "d3-runtime/1",
+    "model_name": "d3-lite",
+    "repo_id": "vllm-sr/d3-lite",
+    "model_sha256": "fda5cfc7bc9063fbb7cd40b50fa9a0963d83a4790a3d6a11a356833fd1171992",
+    "format_id": "d3-code-readout-v1",
+    "prompt": "d3",
+    "attention_mode": "noncausal_full_attention",
+    "pooling": "last",
+    "temperature": 1.0,
+    "max_length": null,
+    "readout_dtype": "float32",
+    "backbone_dtype": "bfloat16",
+    "attn_implementation": "sdpa",
+    "batch_size": 4,
+    "files_sha256": {
+      "decision_config.json": "30b6095b945d5a93697868afdf9be9123ea892085fbaff3078112c48da20dc6b",
+      "readout.safetensors": "fe11cfac5c79b6a83e35b707581b1260214279bb22b003c215c62719186ef629",
+      "config.json": "a9071195384e1fc2c68f9fe0fae007a22182ab77eb14fe8228a1a24b37d3cee9",
+      "MODEL_MANIFEST.json": "31f0ff94ff26619c0a063ccac803edcfe34c56c92e5c9c50b703b62893f125dd"
+    },
+    "kernels": {
+      "torch_chunk_gated_delta_rule": "torch-reference",
+      "causal_conv1d_fn": "torch-reference",
+      "fla": "missing (ModuleNotFoundError)"
+    },
+    "policy": "One forward pass per question; options under single-token answer codes; last-token readout over the question's codes only; argmax choice; no truncation (over-limit questions are refused); no option filtering; one fixed prompt for every request.",
+    "images": {
+      "supported": true,
+      "min_pixels": 65536,
+      "max_pixels": 1638400,
+      "placement": "before the text of the user turn, one placeholder per image, request order",
+      "patch_embedding": "matrix product (equal to the Conv3d with kernel = stride)",
+      "image_processor": "Qwen2VLImageProcessor",
+      "torchvision": "0.28.0+cu130"
+    },
+    "videos": {
+      "supported": true,
+      "fps": 2.0,
+      "min_frames": 4,
+      "max_frames": 32,
+      "max_pixels_per_frame": 200704,
+      "max_tokens_per_request": 16384,
+      "placement": "after the images, before the text of the user turn, one placeholder per video, request order; every two frames are one token group after their timestamp",
+      "sampling": "source frames spread evenly over the whole video (frame arrays: frames at 2 per second)",
+      "video_processor": "Qwen3VLVideoProcessor",
+      "opencv": "5.0.0"
+    }
+  },
+  "native_runtime_info": {
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "device": "cpu",
+    "cuda": "13.0",
+    "hip": null,
+    "loaded_seconds": 1.65,
+    "fast_path": {
+      "active": false,
+      "reason": "D3_FAST=0"
+    }
+  },
+  "input_tokens_per_question": {
+    "color": 121,
+    "shape": 128,
+    "number": 135,
+    "direction": 121
+  },
+  "padded_shape_expected": [
+    4,
+    135,
+    1024
+  ],
+  "full_developer_request": {
+    "state": "Developer synthetic batch check: color is red, shape is triangle, number is five, direction is west. These are four independent questions.",
+    "questions": {
+      "color": {
+        "type": "choice",
+        "instructions": "Choose the color named in the state.",
+        "criteria": {
+          "c1": "red",
+          "c2": "blue"
+        }
+      },
+      "shape": {
+        "type": "choice",
+        "instructions": "Choose the shape named in the state.",
+        "criteria": {
+          "s1": "circle",
+          "s2": "triangle",
+          "s3": "square"
+        }
+      },
+      "number": {
+        "type": "choice",
+        "instructions": "Choose the number named in the state.",
+        "criteria": {
+          "n1": "one",
+          "n2": "three",
+          "n3": "five",
+          "n4": "seven"
+        }
+      },
+      "direction": {
+        "type": "choice",
+        "instructions": "Choose the direction named in the state.",
+        "criteria": {
+          "d1": "east",
+          "d2": "west"
+        }
+      }
+    }
+  },
+  "actual_first_layer_events": [
+    {
+      "shape": [
+        4,
+        135,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "cpu",
+      "observed_monotonic": 103962.271845817,
+      "inputs_or_outputs_modified": false
+    },
+    {
+      "shape": [
+        4,
+        135,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "cpu",
+      "observed_monotonic": 103964.460794647,
+      "inputs_or_outputs_modified": false
+    }
+  ],
+  "final_full_model_manifest_runtime_source_identities_unchanged": true,
+  "after_final_auth_owned_counters": {
+    "cgroup": "0::/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service",
+    "observed_monotonic": 103968.761946344,
+    "counters": {
+      "memory.current": 2816155648,
+      "memory.peak": 2849255424,
+      "memory.events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "cpu.stat": {
+        "usage_usec": 31390792,
+        "user_usec": 28604390,
+        "system_usec": 2786401,
+        "nice_usec": 0,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 198,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    },
+    "scope": "Only this selected owned unit; includes actor/framework/cache/wrapper activity, not native-only peak or external closure"
+  },
+  "cuda_initialized_final": false,
+  "elapsed_seconds": 19.525125130996457
+}

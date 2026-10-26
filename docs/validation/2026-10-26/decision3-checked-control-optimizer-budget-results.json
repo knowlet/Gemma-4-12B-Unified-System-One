@@ -1,0 +1,41 @@
+{
+  "schema": "decision3-checked-control-optimizer-budget-public-results-v1",
+  "date": "2026-10-26",
+  "status": "integrity_and_scoped_closure_accepted_independent_ten_train_readout_replay",
+  "scope": "ten_added_training_examples_only_cached_CPU_GPU_features_FP64_readout_no_new_encoder_calls",
+  "training_operation_rows": 119,
+  "fixed_optimizer_parameters": {"learning_rate": 0.003, "l2": 0.0001, "seed": 20261023, "batch_size": 64, "initial_delta": "zeros_like_baseline_fp32"},
+  "train_replays": [
+    {"steps": 512, "rows": 10, "CPU_correct": 6, "GPU_correct": 6, "CPU_TYPE_TEXT_correct": 0, "GPU_TYPE_TEXT_correct": 0, "TYPE_TEXT_rows": 2, "CPU_cross_entropy_FP64": 1.338620842176933, "GPU_cross_entropy_FP64": 1.3441959411752968},
+    {"steps": 2048, "rows": 10, "CPU_correct": 8, "GPU_correct": 7, "CPU_TYPE_TEXT_correct": 0, "GPU_TYPE_TEXT_correct": 0, "TYPE_TEXT_rows": 2, "CPU_cross_entropy_FP64": 1.0682365176041226, "GPU_cross_entropy_FP64": 1.0851793799057146},
+    {"steps": 10000, "rows": 10, "CPU_correct": 10, "GPU_correct": 10, "CPU_TYPE_TEXT_correct": 2, "GPU_TYPE_TEXT_correct": 2, "TYPE_TEXT_rows": 2, "CPU_cross_entropy_FP64": 0.566605332046927, "GPU_cross_entropy_FP64": 0.5996668506915753}
+  ],
+  "new_fits": [
+    {"steps": 2048, "whole_original_launch_seconds": 7.01041297899792, "elapsed_before_final_write_seconds": 5.0531295200344175, "delta_l2_norm": 1.8959907750087122, "selected_sources_verified": 51},
+    {"steps": 10000, "whole_original_launch_seconds": 21.012695601966698, "elapsed_before_final_write_seconds": 18.997982117987704, "delta_l2_norm": 4.646902266142284, "selected_sources_verified": 51}
+  ],
+  "CPU_GPU_bitwise_identical_feature_rows": 0,
+  "CPU_exact_identical_feature_pairs_with_conflicting_training_labels": 0,
+  "original119_row_mapping_verified": true,
+  "unused_delta_rows_exact_zero": true,
+  "full119_train_metrics_independently_verified": false,
+  "whole119_features_targets_counts_byte_identity_independently_replayed": false,
+  "new_encoder_calls_for_replay_table": 0,
+  "new_candidate_native_GPU_qualified": false,
+  "new_candidate_browser_scores": null,
+  "new_candidate_full10_scores": null,
+  "new_candidate_benchmark_heaven_scores": null,
+  "new_candidate_jevbench_coherence_scores": null,
+  "heldout_accuracy": null,
+  "competitor_win": false,
+  "OS_containment_claim": false,
+  "evidence_sha256": {
+    "original512_data_authority": "10c41db107260abb17b44ab540ae6f1f9f76ad1ce907a07c116b6c9efd8f2432",
+    "original119_integrity": "542a62e4e79fc26a924af2aa1d70d642daa25ba882779ce407ec0edfb8e087b5",
+    "fit2048_integrity_and_closure": "bf204d1604bf8cd2eed93bc5baaa2c9a67286df857bb8a36c4c331710984325f",
+    "fit10000_integrity_and_closure": "c1556492ec16fee641a0aabb5352500504cb96a1c1a6c7bd11f752770592e685",
+    "fit2048_ten_train_replay": "e27ef4220aec74b129cebbf8fc6ed876e203797c9503c389518f5fc561f554e7",
+    "fit10000_ten_train_replay": "3935722b3a96c62b442b499a3cfef075a7e77c9401fcb132ede91809651b5373"
+  },
+  "next": "genuine_native_GPU_qualification_then_unchanged_firstcase_browser_pair_for10000step_candidate"
+}

@@ -1,0 +1,105 @@
+{
+  "completed_cases": [],
+  "details": {
+    "RoPE_shapes": [
+      [
+        1,
+        1,
+        256
+      ],
+      [
+        1,
+        1,
+        256
+      ]
+    ],
+    "input_object_id": 255992459311728,
+    "input_sha256": "34461699ffecc1ab023b50af193435c149eb86bd97880128849987ec85c56468",
+    "layer_index": 0,
+    "mask": null,
+    "mask_builder": "create_sliding_window_causal_mask",
+    "prefetched_warm_pages": true,
+    "repeats": [
+      {
+        "absolute_max": 15.875,
+        "finite": true,
+        "forward_seconds": 0.38799882600142155,
+        "output_dtype": "torch.bfloat16",
+        "output_sha256": "048abb1debbf0488d78cb29f089e4a2754be10c7346cc440d72adf8a938cf607",
+        "output_shape": [
+          1,
+          1,
+          3840
+        ],
+        "repeat": 0
+      },
+      {
+        "absolute_max": 15.875,
+        "finite": true,
+        "forward_seconds": 0.35632019400509307,
+        "output_dtype": "torch.bfloat16",
+        "output_sha256": "048abb1debbf0488d78cb29f089e4a2754be10c7346cc440d72adf8a938cf607",
+        "output_shape": [
+          1,
+          1,
+          3840
+        ],
+        "repeat": 1
+      }
+    ],
+    "tokens": 1
+  },
+  "elapsed_seconds": 12.204392956002266,
+  "memory": {
+    "monotonic_after": 64157.787403804,
+    "monotonic_before": 64157.785781615,
+    "own_cgroup": {
+      "memory_current_bytes": 1095065600,
+      "memory_peak_bytes": 1109749760,
+      "memory_stat": {
+        "anon": 635240448,
+        "file": 451522560,
+        "kernel": 4993024,
+        "pgfault": 145458,
+        "pgmajfault": 23,
+        "shmem": 0
+      },
+      "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-real-layer-cpu-20261023-01.service"
+    },
+    "process": {
+      "RssAnon_bytes": 635240448,
+      "RssFile_bytes": 806428672,
+      "RssShmem_bytes": 0,
+      "VmRSS_bytes": 1441669120,
+      "VmSwap_bytes": 0
+    },
+    "scope": "Sequential non-atomic own-process/own-cgroup snapshot; page cache release and disk IO bytes are not inferred."
+  },
+  "monotonic": 64157.785778639,
+  "peak_RSS_bytes": 1458184192,
+  "planned_cases": [
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 0,
+      "repeats": 2,
+      "tokens": 32
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 1
+    },
+    {
+      "layer_index": 5,
+      "repeats": 2,
+      "tokens": 32
+    }
+  ],
+  "ru_majflt": 23,
+  "ru_minflt": 145349,
+  "stage": "layer-0-tokens-1-repeat-1"
+}

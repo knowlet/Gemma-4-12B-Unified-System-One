@@ -1,0 +1,209 @@
+{
+  "schema": "cpu5-fast-native-batch4-source-validation-v1",
+  "status": "SOURCE_CHECKS_PASS_NO_ACTUAL",
+  "created_at_utc": "2026-10-24T02:56:07.824716+00:00",
+  "results": [
+    {
+      "name": "import_order_only",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "--select",
+        "I",
+        "--fix",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/resource_helper.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/source_audit.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/build_plan.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/test_actor.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.04141819299547933,
+      "stdout": "Found 1 error (1 fixed, 0 remaining).\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/resource_helper.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/source_audit.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/build_plan.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/test_actor.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.02904818599927239,
+      "stdout": "2 files reformatted, 3 files left unchanged\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "format_final_pins",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.018865850986912847,
+      "stdout": "1 file reformatted\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "build_edge_plan",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/build_plan.py",
+        "--output",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/edge-plan.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.14053323701955378,
+      "stdout": "",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "stdlib_fakes",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/test_actor.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.3768266160041094,
+      "stdout": "",
+      "stderr": "..............................\n----------------------------------------------------------------------\nRan 30 tests in 2.144s\n\nOK\n",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "ruff_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/resource_helper.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/source_audit.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/build_plan.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/test_actor.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.025800016010180116,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "format_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "--check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/resource_helper.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/source_audit.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/build_plan.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/test_actor.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.013745019008638337,
+      "stdout": "5 files already formatted\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "dry_default",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0963228760228958,
+      "stdout": "{\"status\": \"dry_default_no_model_or_job_execution\", \"models\": [\"edge\"], \"batch_size\": 4, \"ordered_independent_questions\": 4, \"native_calls\": 2, \"constructor_count\": 1, \"owner_unit\": \"jev-d3-llama-cpp-cpu5-fast-4g-coexist-20261024-09.service\", \"owner_profile\": \"llama-cpp-cpu5-fast-same-cluster-4g-coexist-command-owned-v1\", \"host_observation_policy\": \"comfy-observed-cpu-coexist-v1\", \"memory_max_bytes\": 4294967296, \"startup_available_bytes\": 30414140212, \"whole_seconds\": 120, \"durable_call_seconds\": 20, \"benchmark_or_batch1_score_inherited\": false}\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    }
+  ],
+  "format_preserved_entire_AST_before_pin_finalization": true,
+  "final_pins_match_actual_helper_and_owner_sources": true,
+  "fake_test_count": 30,
+  "source_files": [
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py",
+      "size_bytes": 31080,
+      "sha256": "9a7e5af918c17f6824a720fb6d112ffa5fdac03493dde3efa176c7d50470a365"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/resource_helper.py",
+      "size_bytes": 7954,
+      "sha256": "4df54e06e8a795ebf5b300a3e2074319e781a278a2a870c21c2bd52897d7eb11"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/source_audit.py",
+      "size_bytes": 5079,
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/build_plan.py",
+      "size_bytes": 11298,
+      "sha256": "a0bb61a1313e3e51664aa8e63bcee305f5c53c6a0a90f61fe3a9634a58f1ab0c"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/test_actor.py",
+      "size_bytes": 48789,
+      "sha256": "fb3cdbefe164baa73783dd1e1954355c3b46bfda0a35bb6c5a36b1ad1a5e37f0"
+    }
+  ],
+  "edge_plan": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/edge-plan.json",
+    "size_bytes": 31270,
+    "sha256": "095db88b78687d90fbed51aafd736c1b06fb1a582312de8dff97bf6109131e96"
+  },
+  "owner_freeze": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/freeze.json",
+    "size_bytes": 2059,
+    "sha256": "52ac647a80ca1ef0c05acc45bf90c990f3b753b66df216c87cfb2bdf495020ef"
+  },
+  "actual_model_resource_or_browser_qualified": false
+}

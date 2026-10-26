@@ -1,0 +1,18 @@
+{
+  "parent_actual_evidence_policy": "All owner01 source,metadata andactual01 files immutable. No retroactive correction of recordedfailedreceipt.",
+  "parent_entry": {
+    "path": "artifacts/jev-runtime/gpu-context-probe-owner-20261023-01/controller.py",
+    "sha256": "8435685d33e868ff3b79706e8736c7d391461fc880e4365c04ad5b5679db4604",
+    "size_bytes": 34559
+  },
+  "production_changes": [
+    "Fixed new unit02/owned-v2/fixture-v2/actor02 path.",
+    "Authenticated actor_exit stored first;receipt presence explicit,body saved onlywhenavailable;read/parse error retained separately.",
+    "Nonzero entry or child.error carries original serialized childtype/message/evidence into parentfailure report,so missingreceipt cannot replace childfailure.",
+    "Successful entry withmissing/unreadable receipt stillrefused;partialreceipt retained beforeexit2 refusal."
+  ],
+  "regression": "One new purestdlib test covers childTypeError withoutreceipt preserving originalreportedtype/message andsuccessfulentrywithoutreceipt refused;existingfakeGPUreceiptfixture marksreceiptpresent.",
+  "schema": "gpu-context-owner02-narrow-diff-v1",
+  "unchanged": "GPU UUID/env/cache/deadline,alloriginal2GiB/30s/R/CPU0/quota/limits,sourcepins,hostgateaggregates/rawretention,identity/bootstrap/authclosure5s unchanged.",
+  "verification_scope": "22 purestdlib tests/Ruff/sourcebytes+native stat-only;no runtime/Torch/GPU/NVML/HTTP/model/blob work bypreparationagent."
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "at_utc": "2026-10-22T06:07:08.794041+00:00",
+  "status": "NOT_LAUNCHED_RESOURCE_ADMISSION_REFUSED",
+  "host": {
+    "MemTotal": 130595860480,
+    "MemAvailable": 26525024256,
+    "comfy_running": 1,
+    "comfy_pending": 0
+  },
+  "startup_minimum_mem_available_bytes": 74025379776,
+  "forward_floor_bytes": 73958270912,
+  "unit": "jevbench-gx10-20261022-01.service",
+  "unit_state": {
+    "MainPID": "0",
+    "ControlGroup": "",
+    "LoadState": "not-found",
+    "ActiveState": "inactive",
+    "SubState": "dead"
+  },
+  "source_pins_unchanged": 202,
+  "sealed_plan": {
+    "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-02.json",
+    "sha256": "4bde64f2b26cc50440f2615b5bc65e5a91f45fc7803e592b31c36f6ea817db78",
+    "size_bytes": 51862
+  },
+  "owner": {
+    "path": "artifacts/jevbench/20261022-local-score-01/launch_score.py",
+    "sha256": "cc00f7737c329c4e5696d79e3c1b6a5d0033ce6fbcd4f22088bd64cf7fb07825",
+    "size_bytes": 14077
+  },
+  "worker": {
+    "path": "artifacts/jevbench/20261022-local-score-01/score_worker.py",
+    "sha256": "c2ff8a5353099ede3d465098b4f77b512aa801dd8bda80857625d8cb1b709edc",
+    "size_bytes": 21511
+  },
+  "expected_outputs_absent": [
+    "artifacts/jevbench/20261022-local-score-01/root-launch-01.json",
+    "artifacts/jevbench/20261022-local-score-01/root-unit-readback-01.json",
+    "artifacts/jevbench/20261022-local-score-01/actor-intent-01.json",
+    "artifacts/jevbench/20261022-local-score-01/actual-01",
+    "artifacts/jevbench/20261022-local-score-01/score-service-01.log"
+  ],
+  "actual_new_gpu_model_loads": 0,
+  "actual_new_public_predictions": 0,
+  "actual_new_coherence_predictions": 0,
+  "comfy_interrupt_unload_free_or_queue_mutations": 0,
+  "observer": {
+    "path": "artifacts/jevbench/20261022-local-score-01/specific-job-resource-window-01.json",
+    "sha256": "6cc79691904bcd384510ab12c5e4695d9d114e9bffca02f3571d1549488cf4e4",
+    "size_bytes": 16758
+  },
+  "observer_reason": "initial_confirmed_job_finished_no_admission",
+  "observer_scope": "Read-only observation of one already-confirmed ComfyUI job; owner was never invoked because that job completed without sufficient available RAM. No generic background retry is active.",
+  "scope": "Historical CPU rescore succeeded and is reported separately; no new GPU score or cleanup of an actor that never existed is claimed."
+}

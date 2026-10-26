@@ -1,0 +1,169 @@
+{
+  "ancestor": {
+    "completed_updates": 425,
+    "development_cases": 66,
+    "manifest": {
+      "path": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01/inputs/initial_action_adapter/adapter/manifest.json",
+      "sha256": "97053843aea7c2820793f6f46b10df73b81b7d77151094df63c5ed13aec634e1",
+      "size_bytes": 74995
+    },
+    "receipt": {
+      "path": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01/inputs/initial_action_adapter/receipt.json",
+      "sha256": "15cf18f70e775e8d6dc7cff7c6738ede4fdb4d9875198b387260e8fa73ae63c5",
+      "size_bytes": 436658
+    },
+    "train_cases": 425,
+    "weights_sha256": "a3eb2c03e40459818a5ce059fc30c0de0fd6ef0b89580f53cc380de0fd73ea8d"
+  },
+  "current_native_data": {
+    "all179_preserved": true,
+    "counts": {
+      "development": {
+        "groups": 7,
+        "ids": 37,
+        "request_fingerprints": 37
+      },
+      "train": {
+        "groups": 11,
+        "ids": 142,
+        "request_fingerprints": 140
+      }
+    },
+    "ordered_inventory_sha256": "08b501f5e7476e334570e5f7d05c24daab9c6eebf5eb910ead91f6a4f33e7eb7",
+    "saved_cpu_terminal": {
+      "path": "artifacts/jev-runtime/native-v2-fit-integration-20261021-01/prepare-actual-01/terminal.json",
+      "sha256": "cd58bd974da1d60f65a11a36ab47a9a01f4c82ba635835030bc0232ba551abee",
+      "size_bytes": 61553
+    },
+    "verified_row_refs": 179
+  },
+  "limitations": [
+    "No parent tensor injection into a12B model was executed by this preflight.",
+    "No new training, NF4 deployment, resource capacity or browser task result is attested.",
+    "The exact public240 V7 adapter remains an unsupported distinct artifact kind."
+  ],
+  "lineage": {
+    "all_ancestor_cross_split_overlap_counts": {
+      "ancestor425": {
+        "child_development_vs_ancestor_train": {
+          "groups": 0,
+          "ids": 0,
+          "request_fingerprints": 0
+        },
+        "child_train_vs_ancestor_development": {
+          "groups": 0,
+          "ids": 0,
+          "request_fingerprints": 0
+        }
+      },
+      "parent96": {
+        "child_development_vs_ancestor_train": {
+          "groups": 0,
+          "ids": 0,
+          "request_fingerprints": 0
+        },
+        "child_train_vs_ancestor_development": {
+          "groups": 0,
+          "ids": 0,
+          "request_fingerprints": 0
+        }
+      }
+    },
+    "all_ancestor_full_head_checks_passed": true,
+    "copied_parent_depth": 1,
+    "full_head_sha256": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+    "historical_completed_updates": 425,
+    "historical_training_cases": 425,
+    "parent_plus_ancestor_completed_updates": 521
+  },
+  "parent": {
+    "adapter_path": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01/adapter",
+    "all_tensors_finite_qv_rank8_pairs": true,
+    "completed_updates": 96,
+    "config": {
+      "path": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01/adapter/adapter_config.json",
+      "sha256": "87af46b9586d7b10f303a1673d9cebee409f034363806d6e2f805ae9efe382e6",
+      "size_bytes": 1193
+    },
+    "development_cases": 66,
+    "development_updates": 0,
+    "kind": "jev_action_lora_v1",
+    "manifest": {
+      "path": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01/adapter/manifest.json",
+      "sha256": "7edcf9cd1af3d3d7cb04c9eca14e2b2c67847bc2caeef25c32eebfce6de8ddc3",
+      "size_bytes": 26970
+    },
+    "parameters": 5193728,
+    "receipt": {
+      "path": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01/receipt.json",
+      "sha256": "6d04b5ba6301f0d9cf4d38bd4f335e1447250d556939779ab6a986d2bd4a504a",
+      "size_bytes": 659346
+    },
+    "source_identity_sha256": "1705729abbb644724359d7eb2b73e197584fdcb2698c2c09c3cb0b7399cc6921",
+    "stored_dtypes": [
+      "torch.float32"
+    ],
+    "tensor_count": 176,
+    "train_cases": 96,
+    "weights": {
+      "path": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01/adapter/adapter_model.safetensors",
+      "sha256": "165fbd1db402692ec06f4264a16026eb76abbed711d9ff56aef37f44a442f178",
+      "size_bytes": 20800952
+    }
+  },
+  "recorded_at_utc": "2026-10-22T04:30:19.812709+00:00",
+  "schema_id": "jev-native-v2-supported-parent-cpu-preflight-v1",
+  "scope": "Strict offline CPU adapter/ancestor and all179 native cross-split/full-head verification; no backbone, inference or training qualification",
+  "selected_next_run": {
+    "development_cases": 37,
+    "exact_public_V7_5_of_10_adapter": false,
+    "inference_model_identity": "generated-actions-nf4",
+    "initial_action_adapter": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01/adapter",
+    "learning_rate": 5e-05,
+    "seed": 42,
+    "steps": 142,
+    "train_cases": 142
+  },
+  "success": true,
+  "verification_process": {
+    "backbone_modules_checked": [
+      "peft",
+      "transformers",
+      "s1.model"
+    ],
+    "backbone_modules_loaded": [],
+    "calls": [
+      "s1.browser_action_adapter.verify_action_adapter(parent_adapter)",
+      "s1.browser_action_adapter._record(each179_saved_native_row)",
+      "s1.browser_action_adapter.verify_initial_action_adapter_splits(parent_fit,current179_provenance,head_sha256=expected_head)"
+    ],
+    "cuda_initialized": false,
+    "entrypoint": "inline Python through stdin",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "",
+      "HF_HUB_OFFLINE": "1",
+      "PYTHONPATH": "src",
+      "TRANSFORMERS_OFFLINE": "1"
+    },
+    "executable": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+    "exit_code": 0,
+    "result_object_type": "VerifiedActionAdapter"
+  },
+  "verifier_sources": {
+    "scripts/jev_browser_fit_native_actions.py": {
+      "path": "scripts/jev_browser_fit_native_actions.py",
+      "sha256": "2abfb967c005289e10dd0c1d3fe9f1cb3562a1d5ac6bf965068c4d2e597a581c",
+      "size_bytes": 24002
+    },
+    "src/s1/browser_action_adapter.py": {
+      "path": "src/s1/browser_action_adapter.py",
+      "sha256": "933d97245ad57d4f9a92b09fa1f4051e189be8803bafd164a1418b24a0610564",
+      "size_bytes": 55126
+    },
+    "src/s1/browser_action_prompt.py": {
+      "path": "src/s1/browser_action_prompt.py",
+      "sha256": "c33feef970e38f9718203aa0cb83a0de14c290820da88a4f6bb7a138b5da9607",
+      "size_bytes": 4157
+    }
+  }
+}

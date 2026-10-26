@@ -1,0 +1,85 @@
+{
+  "config_sha256": "706ead7d86846e6727268ff462eff5beb27befab48d958bf7c6be985ff6bd0de",
+  "actor": {
+    "pid": 532426,
+    "start_ticks": 10976850,
+    "pgid": 532426,
+    "sid": 532426,
+    "uid": 1001,
+    "state": "R",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+  },
+  "entry_exit_code": 1,
+  "error": {
+    "type": "CalledProcessError",
+    "message": "Command '['/home/albert_hsieh/ComfyUI/.venv/bin/python', '-B', '-s', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py', '--execute', '--expected-entry-sha256', '350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a', '--plan', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json', '--plan-sha256', 'c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef', '--output', '/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-04/runtime-catalog']' returned non-zero exit status 1.",
+    "evidence": null,
+    "returncode": 1,
+    "stdout": null,
+    "stderr": null,
+    "command_cleanup_errors": null
+  },
+  "command_results": [
+    {
+      "argv": [
+        "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py",
+        "--execute",
+        "--expected-entry-sha256",
+        "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a",
+        "--plan",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json",
+        "--plan-sha256",
+        "c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef",
+        "--output",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-04/runtime-catalog"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+      "resolved_executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+      "pid": 532433,
+      "observed_identity": {
+        "process": {
+          "pid": 532433,
+          "start_ticks": 10976868,
+          "pgid": 532426,
+          "sid": 532426,
+          "uid": 1001,
+          "state": "R",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-cpu4-20261023-03.service"
+        },
+        "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+        "argv": [
+          "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+          "-B",
+          "-s",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py",
+          "--execute",
+          "--expected-entry-sha256",
+          "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a",
+          "--plan",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json",
+          "--plan-sha256",
+          "c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef",
+          "--output",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-04/runtime-catalog"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      },
+      "executable_stat_at_start": {
+        "st_dev": 66306,
+        "st_ino": 17956884,
+        "st_size": 22257464,
+        "st_mtime_ns": 1784109750677901111
+      },
+      "returncode": 1,
+      "elapsed_seconds": 0.13873888899979647
+    }
+  ],
+  "planned_command_count": 1,
+  "postreceipt_hold_seconds": 5,
+  "hold_started_monotonic": 109768.820035546,
+  "hold_deadline_monotonic": 109773.820035546,
+  "reason": "Keep admitted wrapper live for original authenticated unit close"
+}

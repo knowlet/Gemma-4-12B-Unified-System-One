@@ -1,0 +1,131 @@
+{
+  "config_sha256": "343422c6bba63a3916c9561b68c4e3d8f96b3202a03154ee4d48b03577c71ad0",
+  "actor": {
+    "pid": 360851,
+    "start_ticks": 7224081,
+    "pgid": 360851,
+    "sid": 360851,
+    "uid": 1001,
+    "state": "R",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service"
+  },
+  "entry_exit_code": 0,
+  "error": null,
+  "command_results": [
+    {
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-native-s1-20261023-03",
+        "-B",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-03/s1-build",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DLLAMA_CPP_DIR=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-source-184f653",
+        "-DLLAMA_CPP_BUILD_DIR=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+      "resolved_executable": "/usr/bin/cmake",
+      "pid": 360856,
+      "observed_identity": {
+        "process": {
+          "pid": 360856,
+          "start_ticks": 7224103,
+          "pgid": 360851,
+          "sid": 360851,
+          "uid": 1001,
+          "state": "R",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service"
+        },
+        "exe": "/usr/bin/cmake",
+        "argv": [],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      },
+      "executable_stat_at_start": {
+        "st_dev": 66306,
+        "st_ino": 48002409,
+        "st_size": 10489912,
+        "st_mtime_ns": 1713179337000000000
+      },
+      "returncode": 0,
+      "elapsed_seconds": 0.4684650959970895
+    },
+    {
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-03/s1-build",
+        "--config",
+        "Release",
+        "-j",
+        "1"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+      "resolved_executable": "/usr/bin/cmake",
+      "pid": 360898,
+      "observed_identity": {
+        "process": {
+          "pid": 360898,
+          "start_ticks": 7224150,
+          "pgid": 360851,
+          "sid": 360851,
+          "uid": 1001,
+          "state": "R",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service"
+        },
+        "exe": "/usr/bin/cmake",
+        "argv": [],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      },
+      "executable_stat_at_start": {
+        "st_dev": 66306,
+        "st_ino": 48002409,
+        "st_size": 10489912,
+        "st_mtime_ns": 1713179337000000000
+      },
+      "returncode": 0,
+      "elapsed_seconds": 16.19203543801268
+    },
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-native-s1-20261023-03/test_compiled_cli.py",
+        "--runner",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-03/s1-build/bin/s1-gguf",
+        "--output",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-03/compiled-cli-results.json"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+      "resolved_executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+      "pid": 361049,
+      "observed_identity": {
+        "process": {
+          "pid": 361049,
+          "start_ticks": 7225770,
+          "pgid": 360851,
+          "sid": 360851,
+          "uid": 1001,
+          "state": "R",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-01.service"
+        },
+        "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+        "argv": [],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      },
+      "executable_stat_at_start": {
+        "st_dev": 66306,
+        "st_ino": 11534385,
+        "st_size": 23319208,
+        "st_mtime_ns": 1783328682303782212
+      },
+      "returncode": 0,
+      "elapsed_seconds": 0.24237537001317833
+    }
+  ],
+  "planned_command_count": 3,
+  "postreceipt_hold_seconds": 5,
+  "hold_started_monotonic": 72257.963589019,
+  "hold_deadline_monotonic": 72262.963589019,
+  "reason": "Keep admitted wrapper live for original authenticated unit close"
+}

@@ -1,0 +1,107 @@
+{
+  "status": "CLOSED_PRE_RUNTIME_FAILURE_SOURCE_DIAGNOSIS_WITH_ROOT_READONLY_ENV_CONTRAST",
+  "artifact_refs": {
+    "stderr": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-04/command-01.stderr",
+      "sha256": "6a5f45291bdc669fdd18ccf0e005ed802f06e030d82138ff388918d20e77c6ad",
+      "size_bytes": 2561
+    },
+    "receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/actual-04/receipt.json",
+      "sha256": "228aa9336b26d80f132a5ac0bf6a181536c624190f7f78fa59dc5c39961de9f4",
+      "size_bytes": 42300
+    },
+    "root_execution": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/root-execution-catalog02-04.json",
+      "sha256": "992f719a48699099a18d99a3473bdcdf5cd1811056fb42967656b7fcbff00783",
+      "size_bytes": 1649
+    },
+    "root_bus_comparison": {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/root-readonly-bus-comparison-01.json",
+      "sha256": "e8017d1f74c7e2d7d7ce4da4e5b2ebc599c97a615f2bb7c7da83f5b9902daefa",
+      "size_bytes": 1597
+    },
+    "root_bus_mode": {
+      "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/root-bus-mode-metadata-01.json",
+      "sha256": "2b9d6e50ccb0284e233cf730c11892e0a763774954366c03b502f85111d2dcd5",
+      "size_bytes": 628
+    },
+    "controller_source": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py",
+      "sha256": "882ba1579b17b31dca0ee01fe2e89f46b1bc8c17b7635a0c4aa05042fc847ac0",
+      "size_bytes": 39721
+    },
+    "catalog_entry": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py",
+      "sha256": "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a",
+      "size_bytes": 20369
+    },
+    "original_boundary_source": {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    "helper_parent_source": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/actor.py",
+      "sha256": "5a1cf29db2218b00c4349f20151a22b021ec01c265e798866b5ff278986abc76",
+      "size_bytes": 35316
+    }
+  },
+  "saved_actual": {
+    "root_exit_code": 1,
+    "root_wall_seconds": 1.7452771209937055,
+    "child_exit_code": 1,
+    "child_elapsed_seconds": 0.13873888899979647,
+    "sources_unchanged": true,
+    "whole_unit_exit_confirmed": true,
+    "two_empty_scans": true,
+    "cgroup_absent": true,
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "model_qualified": false,
+    "admission_failed_before_catalog_output_native_hashing_and_runtime_import": true
+  },
+  "source_chain": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py",
+      "lines": [
+        507,
+        529
+      ],
+      "verified_fact": "Fresh selected child environment omits XDG_RUNTIME_DIR and DBUS_SESSION_BUS_ADDRESS."
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py",
+      "lines": [
+        397,
+        398,
+        399,
+        443,
+        450
+      ],
+      "verified_fact": "Admission.check invokes original boundary.status before mkdir, native hashes or runtime imports."
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "lines": [
+        192,
+        206
+      ],
+      "verified_fact": "Original status invokes systemctl --user show using the child environment."
+    }
+  ],
+  "root_saved_contrast": {
+    "clean_env_exit": 1,
+    "clean_env_stderr": "Failed to connect to bus: No medium found",
+    "only_added_environment": [
+      "XDG_RUNTIME_DIR",
+      "DBUS_SESSION_BUS_ADDRESS"
+    ],
+    "local_bus_env_exit": 0,
+    "closed_unit_result": "MainPID=0; LoadState=not-found",
+    "root_service_actions": false,
+    "this_agent_service_or_host_probes": false
+  },
+  "fix_scope": "Separate same-Python verified local user-bus bootstrap; original controller, catalog, helper, authority and boundary bytes unchanged.",
+  "no_model_oom_math_latency_quality_or_browser_conclusion": true
+}

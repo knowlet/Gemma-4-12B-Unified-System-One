@@ -1,0 +1,42 @@
+{
+  "schema_id": "native-batch4-cpu5-fast-same-cluster-source-only-pending-v1",
+  "status": "SOURCE_ONLY_UNEXECUTED_UNFROZEN_UNSELECTED",
+  "execution_authorized": false,
+  "freeze_created": false,
+  "model_plan_created": false,
+  "runnable_command_spec_created": false,
+  "full_benchmark_campaign_created": false,
+  "profile": "decision3-edge-publisher-cpu5-fast-same-cluster-batch4-4g-coexist-synthetic-20261024-v1",
+  "owner_unit": "jev-d3-llama-cpp-cpu5-fast-4g-coexist-20261024-09.service",
+  "owner_profile": "llama-cpp-cpu5-fast-same-cluster-4g-coexist-command-owned-v1",
+  "host_observation_policy": "comfy-observed-cpu-coexist-v1",
+  "parent_pins_recorded_not_rehashed": {
+    "actor": {"path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/actor.py", "sha256": "7e1028e63d347c906358e5aa7a21d989611a9d43096d07ca3f585d4b6a6c5916"},
+    "helper": {"path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/resource_helper.py", "sha256": "e34f254a40dd2346cf94bbc140a92d999a1f696a719b19acfe038d2dc79115c1"},
+    "source_audit": {"path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/source_audit.py", "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"},
+    "pin_source": "native04 freeze.json; no independent hash verification during authoring"
+  },
+  "resources": {
+    "cpu_affinity": [15, 16, 17, 18, 19],
+    "cpu_quota_percent": 500,
+    "cpu_quota_kernel_ratio": 5,
+    "threads": 5,
+    "interop_threads": 1,
+    "native_batch_size": 4,
+    "memory_max_bytes": 4294967296,
+    "swap_max_bytes": 0,
+    "reserve_bytes": 26119172916,
+    "startup_available_bytes": 30414140212,
+    "whole_smoke_seconds": 120,
+    "native_call_seconds": 20,
+    "smoke_calls": 2,
+    "owner_runtime_seconds": 10800,
+    "context_limit": 16384
+  },
+  "new_source_pins_pending": {"actor.py": null, "resource_helper.py": null, "source_audit.py": null, "test_actor.py": null, "owner09_controller": null},
+  "validation": null,
+  "independent_review": null,
+  "fresh_original_admission_and_closure": null,
+  "timing_fit_browser_quality_or_competitor_qualification": null,
+  "required_next_step": "Root source review, then separately authorized checks/reseal/input selection/actual; never inherit CPU16 or CPU4 qualification"
+}

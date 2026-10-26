@@ -1,0 +1,11 @@
+# V7 FIND client: private sixteen-action namespace
+
+The first real localhost composition exposed a compatibility defect in the previous selector. Canonical `questions.py` sets the Agent's internal limit to 60; the benchmark imposes its 16-decision limit in the outer runner loop. It does not assign the canonical global. The old selector required an internal value of 16, and prior unit fixtures had already set it to 16. Actual attempt01 therefore refused before any policy/helper request.
+
+This separately selected successor accepts the pinned canonical value60 or the earlier fixture value16. It copies the supplied Agent module namespace into an unregistered private module, sets only that copy to16, and passes it to the unchanged FIND factory. The factory's cloned command and FIND guards use16; the canonical module, Agent, choose and command globals retain60. The original outer16 loop, model_adapter instrumentation, tasks, judges, V7 helper, timeouts and helper protocol remain unchanged. Other internal values are refused.
+
+The explicit profile is `jev-v7-find-text-client-budget-source-v2`. The parent0c selector is historical and unchanged. Four declared substitutions invert exactly to it; only `agent_class` changes among module function ASTs. The generated runner still proves its complete inverse to the original V7 parent.
+
+Nineteen bounded CPU tests passed (XML6.216s, pytest6.42s), plus Ruff checking/formatting. The new regression executes genuine load_upstream with canonical60, the original model_adapter and the selected constructor hook. It demonstrates the old selector's refusal and the successor's success, then exercises the private16-FIND history and32-logical-predict guards without CDP or HTTP requests. It verifies canonical globals and wrappers remain/restored. An independent source review is CLEAR.
+
+The earlier actual01 remains a retained failed attempt with zero model/helper requests and verified closure of its observed processes and three owned listeners/accept threads. This source correction has no browser score, model score, GPU/N3 qualification or cross-model win. A new actual attempt must select the successor directly without an extra harness override of canonical globals.

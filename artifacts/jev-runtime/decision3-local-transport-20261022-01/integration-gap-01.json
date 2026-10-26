@@ -1,0 +1,30 @@
+{
+  "schema_id": "decision3-local-current-source17-integration-gap-v1",
+  "UTC": "2026-10-22T08:00:40.753691+00:00",
+  "source17_manifest": {
+    "path": "artifacts/jev-runtime/decision3-matched-v7-warm-readiness-20261018-01/source-inventory17.json",
+    "sha256": "d8c886416bfc54192a3f861a8cb386e25754606a42410317056d2eef2f638985",
+    "size_bytes": 4392
+  },
+  "historical_manifest_and_projection_preserved": true,
+  "current_files_checked": 17,
+  "current_pin_matches": 16,
+  "current_pin_mismatches": [
+    {
+      "path": "src/s1/jev_generated.py",
+      "expected_historical_pin": {
+        "sha256": "582b520615cf123367436622f4e5ca6f5d94abb227449d866ec64cbb8adc9b3c",
+        "size_bytes": 18825
+      },
+      "current_pin": {
+        "sha256": "c356e0eb3c046cb0787d7be0c5960803006231e8bdb414de644ae2167e72d849",
+        "size_bytes": 23569
+      }
+    }
+  ],
+  "old_bootstrap_current_tree_admitted": false,
+  "cause": "The old bootstrap calls original source17/CORE authentication, which requires all historical project source pins even if transport itself uses no project modules.",
+  "required_successor": "Explicit new source-authentication composition for the complete current execution union and declared generated-helper delta; retain old source17 projection, no manifest rewrite/monkeypatch.",
+  "transport_scope": "Transport runtime and CPU fixtures import stdlib only and do not import these project files.",
+  "actual_model_execution": false
+}

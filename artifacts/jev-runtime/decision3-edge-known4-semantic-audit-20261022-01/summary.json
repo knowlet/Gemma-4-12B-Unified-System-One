@@ -1,0 +1,345 @@
+{
+  "schema_id": "decision3-edge-known4-saved-semantic-audit-v1",
+  "audit_passed": true,
+  "plan_sha256": "852b162a5d2a9b7c5f5516ce2ac913be5510491e6c85dd1603baaeb31d6db6ca",
+  "selected_sources_checked": 39,
+  "model": "d3-edge",
+  "model_revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+  "known4_attempts": 4,
+  "known4_successes": 0,
+  "full_ten_score": null,
+  "conversion_or_label_mapping_discrepancy_found": false,
+  "rows": [
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1-000",
+      "request_id": "54fa01a612aa1c63028f4fdecd473fbd",
+      "http_sha256": "8559e1b6b17b33412ec85e2e3ad3ea19aac911716fb651482195933154eaf7ac",
+      "raw_operation_choice": "BLOCKED",
+      "raw_operation_max_probability": 0.3248761521680023,
+      "raw_operation_entropy_confidence": 0.11946264573988119,
+      "wire_operation_confidence": 0.3248761521680023,
+      "heads": [
+        {
+          "id": "operation",
+          "candidate_count": 6,
+          "candidate_labels_sha256": "edfc9a9de58f4aa500f17a75e8a0157d22b0e7b657deb95c12473a5bb043e369",
+          "code_to_label_sha256": "b9524c8824cf7d9104311d306da658eadcd56ac44b65aade0b971bffc58efa13",
+          "expected_publisher_messages_sha256": "f5e1015ee9b2ae226bd65207e29150bf71a1f030ba5b5218e71f0d97994546d3",
+          "observed_tokens": 915,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "click_target",
+          "candidate_count": 12,
+          "candidate_labels_sha256": "08a5ce6c4e443a7ced986becbc13c1c86d991dc4224bff8f00157803be34c44e",
+          "code_to_label_sha256": "ab226c4ebeb1f07f291bdf0f904e46542779fbef571e79896afadcdf640c76cc",
+          "expected_publisher_messages_sha256": "51549995720d99b7d06dccd1b1e4ab1bd6de2d8ece3b77c81d3e335889de6d27",
+          "observed_tokens": 1281,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "type_text_target",
+          "candidate_count": 1,
+          "candidate_labels_sha256": "68a90152c04505f5f2f397b31c13447056085e8176be9daa43b182b9d731b2e4",
+          "code_to_label_sha256": "ab1ef5c7d5798205793cf3906d31751ecdb939557d7abc37c7c9ce46e98f47f4",
+          "expected_publisher_messages_sha256": "db5b8a58d92fc36de4374be7ad1ea5e1e80ffc03605ec701a2f9f2e77f741afa",
+          "observed_tokens": 933,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        }
+      ],
+      "native_calls": {
+        "backend_predict_entries": 1,
+        "system_one_entries": 1,
+        "probabilities_entries": 1,
+        "sequence_rows": 3,
+        "input_tokens": 3129,
+        "scope": "actual publisher API entries; not GPU kernel launch counts"
+      },
+      "wire_answer_container_only_replay_equal": true
+    },
+    {
+      "case_id": "public-arxiv-title-filter-results-v1-000",
+      "request_id": "7b4c52ce05e4f81cf7b7d3d336b133ba",
+      "http_sha256": "1e18751747de64490a608339b59f73076b63fd5393c1a883ad66ffec7d322bfe",
+      "raw_operation_choice": "BLOCKED",
+      "raw_operation_max_probability": 0.45082797970397426,
+      "raw_operation_entropy_confidence": 0.21472768237285111,
+      "wire_operation_confidence": 0.45082797970397426,
+      "heads": [
+        {
+          "id": "operation",
+          "candidate_count": 7,
+          "candidate_labels_sha256": "1a95fdf5c5c602f0bf121eacfaa3c9bece48b6b8be12732ae608eed7fee04e19",
+          "code_to_label_sha256": "aa04ea8ef7194cb8f16d2f23aeb2937ac807eb56a54596bb22cc388f875389ae",
+          "expected_publisher_messages_sha256": "84bf117d5f7ef100ca5a5f905ac10faee9553cb86d206a64675bf72545f16113",
+          "observed_tokens": 1593,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "click_target",
+          "candidate_count": 13,
+          "candidate_labels_sha256": "9197bc80131e06257402f6c7861ebaf9949196a9b2980f50f4c551f1af609b30",
+          "code_to_label_sha256": "fffae223d0f2aec3531dcee8e9c955acbf7356c230d90bfc5870d3ce0d02a93f",
+          "expected_publisher_messages_sha256": "08a277f2a4ce18918b6f27029c70f3f6961842bce5447fc05fbb92f01a24ad0f",
+          "observed_tokens": 1962,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "type_text_target",
+          "candidate_count": 1,
+          "candidate_labels_sha256": "8d81fb9d8d154c5e6d6840b806b2c52e6285fb84c30152a00a09619f41b70523",
+          "code_to_label_sha256": "dcbd1bff462d8070314f912eef59cb623ad928f082eac9d6009ad507e47e4c95",
+          "expected_publisher_messages_sha256": "26554703940eee342fe33da88aa8b4e8e331765adbb6a4737b391e68d3591a7d",
+          "observed_tokens": 1601,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "select_target",
+          "candidate_count": 15,
+          "candidate_labels_sha256": "6169566873c99d7d0af8024758d90c02f992555c8a4d323ff4babf99f952b763",
+          "code_to_label_sha256": "edb2788557bc5d66b07c007ec8aa83f35bb3dc10d663e489a3155cf859612ecf",
+          "expected_publisher_messages_sha256": "4819d4011c1571613161c76e2f652f34968737c7b738fc915d9261ba3d2130e5",
+          "observed_tokens": 2156,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        }
+      ],
+      "native_calls": {
+        "backend_predict_entries": 1,
+        "system_one_entries": 1,
+        "probabilities_entries": 1,
+        "sequence_rows": 4,
+        "input_tokens": 7312,
+        "scope": "actual publisher API entries; not GPU kernel launch counts"
+      },
+      "wire_answer_container_only_replay_equal": true
+    },
+    {
+      "case_id": "public-python-counter-most-common-v1-000",
+      "request_id": "af09c6b4a0ffe522d4c138897fa73160",
+      "http_sha256": "7fb7ea3ba4cf23f9ce529b26e84509aaa08028761dc06c70dde31b75bcc4657e",
+      "raw_operation_choice": "BLOCKED",
+      "raw_operation_max_probability": 0.8029323437111806,
+      "raw_operation_entropy_confidence": 0.6151962990230069,
+      "wire_operation_confidence": 0.8029323437111806,
+      "heads": [
+        {
+          "id": "operation",
+          "candidate_count": 7,
+          "candidate_labels_sha256": "97bb003f02e4e5c64feebd61be416bf20990e71b80739af8c5d955d770cda955",
+          "code_to_label_sha256": "a1921add002ec7b12950ca59f3ca37174bae245c723b5cb511a426536e7df4b9",
+          "expected_publisher_messages_sha256": "68ea4b04adb96a486375023c01d1191d2789d39f0ebe9791c4bb3b73c37d68d3",
+          "observed_tokens": 3086,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "click_target",
+          "candidate_count": 38,
+          "candidate_labels_sha256": "2a4f56deeb234c2e633d093335a54e9bdb04fa7757db21d7e4762076e821949f",
+          "code_to_label_sha256": "60658ff73979ad783eb552a1459b075264e27c831c34819eca213c9fb55f0e76",
+          "expected_publisher_messages_sha256": "182c1911b297b2ae5b2b9727dd6dc9903fd0e90acfb24e0708ce3427d288314f",
+          "observed_tokens": 4165,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "select_target",
+          "candidate_count": 35,
+          "candidate_labels_sha256": "8913b6aa399f7d1ec2a1f92752fc8df44643c1cb19b2a4ad8b43bf763f2a2afe",
+          "code_to_label_sha256": "02b701762f1aba61b79743e32cdebf03fa87c4b5f67e54337851e7dc7cb0aaf0",
+          "expected_publisher_messages_sha256": "cc211e25d967de23e2bea517e9a0c3c4716c96f9b31b3822688327f9e3ba7084",
+          "observed_tokens": 4504,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "type_text_target",
+          "candidate_count": 1,
+          "candidate_labels_sha256": "71447c96d68bdc65906c5092de19f2d27634b0fb59a86baac726a961b4de4228",
+          "code_to_label_sha256": "76025ae3fc94db96cf57dc63a7eb645f04f514a63db8ad0bf882115cb015548c",
+          "expected_publisher_messages_sha256": "e9052997eaf9153a298d02a4761b9effefe487e5675d41d2664547c4a262916b",
+          "observed_tokens": 3095,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        }
+      ],
+      "native_calls": {
+        "backend_predict_entries": 1,
+        "system_one_entries": 1,
+        "probabilities_entries": 1,
+        "sequence_rows": 4,
+        "input_tokens": 14850,
+        "scope": "actual publisher API entries; not GPU kernel launch counts"
+      },
+      "wire_answer_container_only_replay_equal": true
+    },
+    {
+      "case_id": "public-arxiv-original-paper-open-v1-000",
+      "request_id": "f631cb1170d47a27f3c4a341c110aab7",
+      "http_sha256": "dc69395a149def41638764b2813244309cf6bde35529760b160b88cfc738b48d",
+      "raw_operation_choice": "BLOCKED",
+      "raw_operation_max_probability": 0.5363703250206189,
+      "raw_operation_entropy_confidence": 0.29093722178859804,
+      "wire_operation_confidence": 0.5363703250206189,
+      "heads": [
+        {
+          "id": "operation",
+          "candidate_count": 7,
+          "candidate_labels_sha256": "1a95fdf5c5c602f0bf121eacfaa3c9bece48b6b8be12732ae608eed7fee04e19",
+          "code_to_label_sha256": "aa04ea8ef7194cb8f16d2f23aeb2937ac807eb56a54596bb22cc388f875389ae",
+          "expected_publisher_messages_sha256": "5e28cc45605d072e015c484200ff63122eff43630553c612e250ebe3cc416688",
+          "observed_tokens": 1600,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "click_target",
+          "candidate_count": 13,
+          "candidate_labels_sha256": "9197bc80131e06257402f6c7861ebaf9949196a9b2980f50f4c551f1af609b30",
+          "code_to_label_sha256": "fffae223d0f2aec3531dcee8e9c955acbf7356c230d90bfc5870d3ce0d02a93f",
+          "expected_publisher_messages_sha256": "8039b01710f524b208be306631aeec6eaed53a69d5e163679316fa38720c745f",
+          "observed_tokens": 1969,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "type_text_target",
+          "candidate_count": 1,
+          "candidate_labels_sha256": "8d81fb9d8d154c5e6d6840b806b2c52e6285fb84c30152a00a09619f41b70523",
+          "code_to_label_sha256": "dcbd1bff462d8070314f912eef59cb623ad928f082eac9d6009ad507e47e4c95",
+          "expected_publisher_messages_sha256": "e82f8761df1af8a3d237799e8590bdc123583f8f1c0411579bc05241a568474c",
+          "observed_tokens": 1608,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        },
+        {
+          "id": "select_target",
+          "candidate_count": 15,
+          "candidate_labels_sha256": "6169566873c99d7d0af8024758d90c02f992555c8a4d323ff4babf99f952b763",
+          "code_to_label_sha256": "edb2788557bc5d66b07c007ec8aa83f35bb3dc10d663e489a3155cf859612ecf",
+          "expected_publisher_messages_sha256": "3e0b35705bfd8e98decdd21e0d5b076342cb647a262a0c418233b608a61c2583",
+          "observed_tokens": 2163,
+          "original_criteria_and_instructions_preserved": true,
+          "raw_argmax_choice_preserved": true
+        }
+      ],
+      "native_calls": {
+        "backend_predict_entries": 1,
+        "system_one_entries": 1,
+        "probabilities_entries": 1,
+        "sequence_rows": 4,
+        "input_tokens": 7340,
+        "scope": "actual publisher API entries; not GPU kernel launch counts"
+      },
+      "wire_answer_container_only_replay_equal": true
+    }
+  ],
+  "inner_transport_success_preserved": false,
+  "inner_observed_process_exit_confirmed_preserved": false,
+  "inference_rerun": false,
+  "tokenizer_rerun": false,
+  "limitations": [
+    "Actual task prompt/token streams and readout logits were not independently saved; reconstructed publisher message hashes are expected-source replay only.",
+    "No tensor numerical replay, causal model-quality attribution, or cross-model comparison is claimed.",
+    "Publisher entropy confidence is intentionally replaced with project max-probability confidence; choices and label probabilities are preserved within floating-point normalization tolerance."
+  ],
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/decision3-edge-browser-retry-plan-20261022-01/plan-02.json",
+      "sha256": "852b162a5d2a9b7c5f5516ce2ac913be5510491e6c85dd1603baaeb31d6db6ca",
+      "size_bytes": 11096
+    },
+    {
+      "path": "artifacts/jev-d3-native/20261022-edge-known4-02/requests/54fa01a612aa1c63028f4fdecd473fbd.json",
+      "sha256": "9e303a39130b0a756326451a75ca3db7ddbf24676c3823bff1a22840b76d656d",
+      "size_bytes": 196557
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/transport/request-54fa01a612aa1c63028f4fdecd473fbd.json",
+      "sha256": "43297dcec231a97197ba662f1a5d212bc2f73e47a677ba2b9ad49de1c0c98f6b",
+      "size_bytes": 262659
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/results/attempts/public-nasa-mars-facts-moons-v1-000/model_calls.json",
+      "sha256": "e2eec4da978e69647d9ccd7f7f79646d52769655955bda531c98c81096d3dd13",
+      "size_bytes": 183875
+    },
+    {
+      "path": "artifacts/jev-d3-native/20261022-edge-known4-02/requests/7b4c52ce05e4f81cf7b7d3d336b133ba.json",
+      "sha256": "8a2837b9a9efb5e160591c903f56fbc648d0447185fa6c63acbe75a6274be9c5",
+      "size_bytes": 325168
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/transport/request-7b4c52ce05e4f81cf7b7d3d336b133ba.json",
+      "sha256": "c3ae5e9454c86e671626621600f99720fbf484c0535cda5baed3a17df560271e",
+      "size_bytes": 434882
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/results/attempts/public-arxiv-title-filter-results-v1-000/model_calls.json",
+      "sha256": "5f6caf8cf7512e8435a5f737eef7a1a14226ebf53d582a3bed9048e9569bcf20",
+      "size_bytes": 310326
+    },
+    {
+      "path": "artifacts/jev-d3-native/20261022-edge-known4-02/requests/af09c6b4a0ffe522d4c138897fa73160.json",
+      "sha256": "664ec66dd376938912bef9393547a967511f112ba6dcef4b15506d8c0874823a",
+      "size_bytes": 524747
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/transport/request-af09c6b4a0ffe522d4c138897fa73160.json",
+      "sha256": "6a02872465c59643aedc54ab63a1aa05deb854eb72cd35f28f66ab61fc9d24e8",
+      "size_bytes": 703294
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/results/attempts/public-python-counter-most-common-v1-000/model_calls.json",
+      "sha256": "11fe9c0d192e1d59d4fe877cfd20c28d8bc4033a6e4d56514f0a0a946858e010",
+      "size_bytes": 581391
+    },
+    {
+      "path": "artifacts/jev-d3-native/20261022-edge-known4-02/requests/f631cb1170d47a27f3c4a341c110aab7.json",
+      "sha256": "db9d5bdb566b0335733bc1582536101f102fb78565717017bbfd562775a9ae45",
+      "size_bytes": 326539
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/transport/request-f631cb1170d47a27f3c4a341c110aab7.json",
+      "sha256": "0979deda13f978b492f4d45627a5feef6d162b409d5918e1eec8992697b87bc4",
+      "size_bytes": 436678
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/results/attempts/public-arxiv-original-paper-open-v1-000/model_calls.json",
+      "sha256": "f1ff0845547a5955f3693f5cfd50475914ee7960a465b632900a78a205eced76",
+      "size_bytes": 311193
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/results/summary.json",
+      "sha256": "af64146587659d6e9e8d0709ee8dd7ceff71017218c908f175ca24bae8b2cc8f",
+      "size_bytes": 135880
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/transport/closure.json",
+      "sha256": "40f1adba5e4a271d008c104614f90e5a1e47c30b3e2abfe1df2bbaacc16e8626",
+      "size_bytes": 6965
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/d3_format.py",
+      "sha256": "3badfbc70561bb3f5b8ec16a11d2c455b96ddb32caace0a8a54ca102eae1f3fa",
+      "size_bytes": 7008
+    },
+    {
+      "path": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b/decision_config.json",
+      "sha256": "30b6095b945d5a93697868afdf9be9123ea892085fbaff3078112c48da20dc6b",
+      "size_bytes": 5504
+    }
+  ],
+  "audit_source": {
+    "path": "artifacts/jev-runtime/decision3-edge-known4-semantic-audit-20261022-01/audit.py",
+    "sha256": "d1710c38d56036df8026bceda967443c3a4b17fff1b8918fd1f31fb2ad980eb9",
+    "size_bytes": 10795
+  }
+}

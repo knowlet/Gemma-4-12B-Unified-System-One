@@ -1,0 +1,171 @@
+{
+  "actual_validation": {
+    "completed": true,
+    "gpu_use": false,
+    "method": "Using repository .venv/bin/python -B, import scripts/run_jevbench_public.py and call load_public(current_checkout) with unchanged configs/benchmarks/jevbench-public.json. This imports verified official bytes, loads all three original JSONL files in declared order, verifies per-file source/data hashes, exact full count and unique IDs, public-only split, canonical dataset hash, and ordered-ID hash. Count types, source groups, missing expected values and exclude_reason on loaded Task objects.",
+    "model_invocations": 0,
+    "returned_task_count": 231,
+    "runner_changes_required": false,
+    "scope": "Source and dataset validation, not model inference or a new benchmark score.",
+    "source_schema_compatible": true
+  },
+  "created_at_utc": "2026-10-22T05:43:43.971241+00:00",
+  "current_checkout": "artifacts/jevbench/20261022-local-score-01/upstream/heaven-current",
+  "current_checkout_scope": "Independent filtered clone with detached HEAD; legacy checkout and config not modified.",
+  "current_official_website_assessment": {
+    "access_date": "2026-10-22",
+    "availability_assessment": "The inspected current official benchmark repository exposes the same 231 typed public cases. No downloadable release-draw P300 task population was located in the inspected repository or the official data-card, manifest and Hugging Face result links.",
+    "data_download_scope": "Official data card and Hugging Face dataset distribute system-level aggregate measurements; they do not provide the current release-draw public task inputs or sealed inputs.",
+    "headline_scoring_scope": "Current official Capability/Composite require versioned official populations, calibration/serving/cost evidence and admission. The public score_task screening does not produce those official axes or a leaderboard rank.",
+    "headline_scoring_sources_named_in_manifest": [
+      "noul_method_v16.py",
+      "score_v15.py",
+      "score_v15_headlineA.py",
+      "score_v16.py"
+    ],
+    "named_release": "v1.6.1",
+    "official_capability": null,
+    "official_composite": null,
+    "official_rank": null,
+    "published_results_source_sha256": "5cd8c1332226ea9c179883d2285c0d8b8cc593ae38f2645197364a7ddd9c83c1",
+    "release_draw": {
+      "public": 300,
+      "sealed": 1200,
+      "selfhosted_input": 1500
+    },
+    "report_label": "Current-repository legacy public231 screening; not the P300+S1200 release draw.",
+    "sealed_evaluation": "not_run",
+    "separate_benchmark": "JevBench/JevBench metamorphic coherence mini must be scored and reported separately.",
+    "urls": [
+      "https://benchmarkheaven.com/jev-models/methodology",
+      "https://benchmarkheaven.com/jev-models/data",
+      "https://benchmarkheaven.com/api/jevbench/manifest",
+      "https://huggingface.co/datasets/benchmarkheaven/jevbench"
+    ]
+  },
+  "current_revision": "609a664e81f46e03731600bd7bd9f1b7a61257c5",
+  "historical_archive_integrity_observation": {
+    "archive_path": "docs/validation/2026-10-08/jevbench/raw-evidence.zip",
+    "checks": [
+      "exact ordered member set",
+      "every member SHA256",
+      "every member size",
+      "ZIP CRC"
+    ],
+    "manifest_path": "docs/validation/2026-10-08/jevbench/raw-evidence.manifest.json",
+    "manifest_sha256": "5cea21069490c69b59f8b9f12fd76062aeb2ed3b395a0ba3fe6a86d5d8d7b44d",
+    "manifest_size_bytes": 2127644,
+    "members_verified": 8219,
+    "scope": "This turn independently re-read the existing historical ZIP; integrity validation only, not a new official scoring pass.",
+    "sha256": "b85b4471d655a05e5fc682d2d22c157ae86af9b42a05a926e2bd78655223f53b",
+    "size_bytes": 10932994,
+    "status": "PASS",
+    "uncompressed_size_bytes": 28970101
+  },
+  "kind": "current_heaven_public_source_equivalence",
+  "legacy_checkout": "artifacts/jevbench/20261022-local-score-01/upstream/heaven",
+  "legacy_revision": "bb05a335bc809e61b20c0f745d25499a82b326fc",
+  "public_population": {
+    "canonical_dataset_sha256": "dc3995d8ae1e2fc8e81ce38431add509eb8bb39b85aadfd0c7c32079382dde51",
+    "count": 231,
+    "dataset_label": "legacy_public231",
+    "excluded": 0,
+    "missing_gold": 0,
+    "ordered_id_type_labels_gold_inventory_sha256": "2b86aa778068626e2e194045b5f642c3c0a01c32caaa6f4242ba8c12b7304229",
+    "ordered_ids_sha256": "42e90ca615c5eb43b8596e48f95f28d1f24c1551d68e153d64ca7a9dd0e9a0bd",
+    "ordered_inventory_encoding": "UTF-8 JSON array of {index,id,type,labels,expected}; ensure_ascii=False, sort_keys=True, separators=(comma,colon). Only digest retained here.",
+    "ordered_task_files": [
+      "datasets/public/original.jsonl",
+      "datasets/public/easy.jsonl",
+      "datasets/public/hard.jsonl"
+    ],
+    "question_types": {
+      "choice": 139,
+      "noul": 74,
+      "score": 18
+    },
+    "source_groups": 195,
+    "splits": {
+      "public": 231
+    }
+  },
+  "raw_questions_included": false,
+  "repository": "https://github.com/fstandhartinger/jevbench",
+  "schema_version": 1,
+  "separate_image_box_track": {
+    "count": 300,
+    "included_in_typed_public_screening": false,
+    "path": "datasets/imagejev-box-v0.1/items.jsonl",
+    "scope": "New image bounding-box track is separate from typed text and ImageJevBench core; it cannot be merged to fill the text P300 population.",
+    "sha256": "be3b782a6fac9d414e64dd50adc1d5a3353d408cfc45bf06f6536c9be181954e"
+  },
+  "source_and_task_files": [
+    {
+      "matches_legacy_pin": true,
+      "path": "jevbench/__init__.py",
+      "role": "official_scoring_source",
+      "sha256": "64c28dc1534502c429a3b67eee79ab7909fab995b7d116c9b089f0f3bb8652f7",
+      "size_bytes": 433
+    },
+    {
+      "matches_legacy_pin": true,
+      "path": "jevbench/tasks.py",
+      "role": "official_scoring_source",
+      "sha256": "b9c2f8ba9a7301519656d79d47c31b8ab0542a5545498ce3b339d5e93b976812",
+      "size_bytes": 4339
+    },
+    {
+      "matches_legacy_pin": true,
+      "path": "jevbench/scoring.py",
+      "role": "official_scoring_source",
+      "sha256": "6aa17d212ea20a3eeb6876149367842e8462c11dcb54d73df062fb406368331e",
+      "size_bytes": 5743
+    },
+    {
+      "matches_legacy_pin": true,
+      "path": "jevbench/metrics.py",
+      "role": "official_scoring_source",
+      "sha256": "4038c8423ad1cf28601afb6babe777b71f08e379b9ca125b09b52c0ac7d60515",
+      "size_bytes": 5604
+    },
+    {
+      "matches_legacy_pin": true,
+      "path": "jevbench/summarize.py",
+      "role": "official_scoring_source",
+      "sha256": "aa5f24da407d004cd80bad1cd957b6987aba152591084c096d1de51dd9775cbe",
+      "size_bytes": 3940
+    },
+    {
+      "matches_legacy_pin": true,
+      "path": "jevbench/adapters/base.py",
+      "role": "official_scoring_source",
+      "sha256": "fdddc42e4f71d774096f806c4ee844cc4c4b428385f01a017cb64153d7c089f4",
+      "size_bytes": 2894
+    },
+    {
+      "count": 72,
+      "matches_legacy_pin": true,
+      "path": "datasets/public/original.jsonl",
+      "role": "public_tasks",
+      "sha256": "5c2414edb3006b8bfcb70fda433f0f9ca015759433849f8d3104328a1f7c4180",
+      "size_bytes": 57237
+    },
+    {
+      "count": 48,
+      "matches_legacy_pin": true,
+      "path": "datasets/public/easy.jsonl",
+      "role": "public_tasks",
+      "sha256": "231df3c2c8e88a1a8c137ebe85de96ba70fabd330849098ac7b3c52c70b7172b",
+      "size_bytes": 37220
+    },
+    {
+      "count": 111,
+      "matches_legacy_pin": true,
+      "path": "datasets/public/hard.jsonl",
+      "role": "public_tasks",
+      "sha256": "89e9e6becb33ed88c1de7d42dcc87531b2fb64cfaef4e1986faf7c37b3f80ebb",
+      "size_bytes": 651848
+    }
+  ],
+  "status": "CURRENT_PUBLIC_SOURCE_AND_TASK_BYTES_MATCH_EXISTING_LEGACY_231_PINS"
+}

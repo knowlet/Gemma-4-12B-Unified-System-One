@@ -1,0 +1,67 @@
+{
+  "schema_id": "jev-native-gx10-uma-resource-focused-tests-v1",
+  "tests": {
+    "passed": 29,
+    "failed": 0,
+    "seconds": 23.37,
+    "exit_code": 0,
+    "tool_session_id": 51940,
+    "completion_chunk_id": "96c344",
+    "argv": [
+      ".venv/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/test_jev_native_resources.py"
+    ]
+  },
+  "lint": {
+    "ruff_check_exit_code": 0,
+    "ruff_format_check_exit_code": 0,
+    "check_chunk_id": "972de2",
+    "format_chunk_id": "8af58b"
+  },
+  "sources": {
+    "src/s1/browser_native_resources.py": {
+      "sha256": "237534f554044ef39e1c81e21190dd881873adbf318bd5d2e8e465a7b3e08fec",
+      "size_bytes": 27512
+    },
+    "scripts/jev_browser_fit_native_actions.py": {
+      "sha256": "8f127b338d32b079e814090a828fd3a608271fac5a711216d131c52b509988d5",
+      "size_bytes": 25307
+    },
+    "tests/test_jev_native_resources.py": {
+      "sha256": "95a27afb70b667a9c007fa912c400a729f471b321f184701076de83a240854e6",
+      "size_bytes": 14094
+    }
+  },
+  "post_test_change": "One blank line separating stdlib and local imports in test file for Ruff I001; no semantic change; unchanged tests were not repeated.",
+  "fake_scope": {
+    "CUDA_and_OS_unit_interfaces": "Explicit fixtures; no actual GPU/unit actor",
+    "forbidden_imports": [
+      "torch",
+      "transformers",
+      "tokenizers",
+      "peft",
+      "playwright"
+    ],
+    "pre_model_integration": {
+      "real_current_source_capture": true,
+      "real_historical_cases": 179,
+      "real_historical_original_files": 45,
+      "real_resource_component_files": 3,
+      "fake_interfaces": [
+        "unit ResourceGate",
+        "checkpoint hash",
+        "sentinel model constructor"
+      ],
+      "sentinel_reached": true,
+      "model_loads": 0,
+      "training_updates": 0
+    }
+  },
+  "qualification_scope": "Source, fake boundary/adversarial checks and real pre-model data/source capture only; no full12B capacity, native allocator execution, training or browser-quality attestation."
+}

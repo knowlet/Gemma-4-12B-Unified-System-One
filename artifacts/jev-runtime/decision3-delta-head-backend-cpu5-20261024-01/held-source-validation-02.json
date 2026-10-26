@@ -1,0 +1,77 @@
+{
+  "schema": "held-delta-composition-source-validation-v1",
+  "status": "SOURCE_PASS_STILL_HELD_NO_ACTUAL_INFERENCE",
+  "fakes": 12,
+  "results": [
+    {
+      "name": "imports",
+      "exit_code": 0,
+      "seconds": 0.018203999003162608,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 0.01944614198873751,
+      "stdout": "2 files reformatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "held_fakes",
+      "exit_code": 0,
+      "seconds": 15.601750258996617,
+      "stdout": "",
+      "stderr": "............\n----------------------------------------------------------------------\nRan 12 tests in 15.390s\n\nOK\n",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": 536870912
+    },
+    {
+      "name": "ruff",
+      "exit_code": 0,
+      "seconds": 0.018456378020346165,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format_check",
+      "exit_code": 0,
+      "seconds": 0.01247832298395224,
+      "stdout": "2 files already formatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    }
+  ],
+  "files": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-head-backend-cpu5-20261024-01/backend.py",
+      "sha256": "148af7b144c85799fbe71529f1d307e7374498f3734f7fb38a865b8844daa738",
+      "size_bytes": 17219
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-head-backend-cpu5-20261024-01/test_backend.py",
+      "sha256": "0fbbd7e40f6002400f5946256e019d6cd09376655dadc978be43db9025e4101d",
+      "size_bytes": 21391
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-head-backend-cpu5-20261024-01/README.md",
+      "sha256": "cc770c3462666541b8e29bcbd7afda13f9990327d5a9da24cbe58e49a02c3c31",
+      "size_bytes": 8517
+    }
+  ],
+  "source_only": true,
+  "required_retention_failure_rejects_result": true,
+  "publisher_native_or_inference_qualified": false
+}

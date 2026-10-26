@@ -1,0 +1,15 @@
+{
+  "schema_id": "decision3-local-transport-closure-research-decision-v1",
+  "UTC": "2026-10-22T08:11:09.566813+00:00",
+  "review_finding": "A worker can double-fork, setsid and exec with an empty environment; after the intermediate exits, the grandchild has neither current worker lineage nor an inherited owner marker. Observed PID absence cannot prove whole-tree exit.",
+  "source_before_fix": {
+    "sha256": "1d47c3e1ae751e7733c780953d7550c4a7c91e2568961f640657aa1a4734ab17",
+    "size_bytes": 35008
+  },
+  "decision": "Always refuse whole-tree continuation and owned_exit_confirmed until a separately owned, enforced kernel boundary is integrated. Preserve direct-child exit, observed-process closure and transport success as explicitly limited facts. Do not accept caller booleans or add a trusted verifier callback.",
+  "escape_regression": "CPU-only worker double-fork/setsid/exec with empty env; test parent temporarily becomes a subreaper so the escaped fake process can be independently identified, signaled via pidfd and reaped without leaking a process. Show live escaped process coexists with clean observed transport closure, while continuation remains false.",
+  "kernel_reference": "https://man7.org/linux/man-pages/man2/PR_SET_CHILD_SUBREAPER.2const.html",
+  "kernel_constants_verified": "/usr/include/linux/prctl.h: PR_SET_CHILD_SUBREAPER36, PR_GET_CHILD_SUBREAPER37",
+  "constraints": "New transport directory only; no real models, GPU/Q95/Comfy/unit/cloud operations. Existing pidfd cleanup identity checks and process scans remain unchanged.",
+  "verification": "Focused transport suite under AS256MiB CPU30 wall45 BLAS1, sequential single-worker Ruff. Historical34-test evidence retained separately."
+}

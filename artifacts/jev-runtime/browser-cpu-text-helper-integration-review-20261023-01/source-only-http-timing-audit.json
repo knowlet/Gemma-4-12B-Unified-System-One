@@ -1,0 +1,268 @@
+{
+  "schema": "browser-helper-integration-source-only-timing-protocol-audit-v1",
+  "created_at_utc": "2026-10-23T12:39:27.865042+00:00",
+  "reviewer": "/root/cpu_followup_review",
+  "result": "SOURCE_BOUNDARIES_VERIFIED_HTTP_INTEGRATION_NOT_EXECUTED",
+  "source_refs": [
+    {
+      "path": "scripts/jev_browser_benchmark.py",
+      "size_bytes": 101360,
+      "sha256": "fe1410675e4decb06a8491a5a83d2ec965629c99f8912b797446c4cb2c155f6c"
+    },
+    {
+      "path": "scripts/jev_native_v2_browser.py",
+      "size_bytes": 45824,
+      "sha256": "c513dc5bcb091de4fd0d4bd7a0776078e82be16106328b6de9d8424e32f2ee11"
+    },
+    {
+      "path": "scripts/jev_browser_profile_v7_benchmark.py",
+      "size_bytes": 13506,
+      "sha256": "31450f9002ad216c32b77751997eb27748c491d7bc757c4410294d3704fdfb9e"
+    },
+    {
+      "path": "artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+      "size_bytes": 8469,
+      "sha256": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
+      "size_bytes": 31089,
+      "sha256": "a312dba1fabd173e1ce502f6896431a7cc3d6b4979a7eae49c2b1807d343b0fa"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py",
+      "size_bytes": 4918,
+      "sha256": "38f4e346c47c4091b22f396e38aca583f33729bd357c04a3e5abeb329cf2b62d"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/actor.py",
+      "size_bytes": 34108,
+      "sha256": "8a008cec2ec6e4ecd9f3c8c8481641ff6a3c77f52b9a4234bf48487ebcd451f2"
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/authority.py",
+      "size_bytes": 7020,
+      "sha256": "b13236ef540378e2ba685d950bba296c89a49a93f4b02d50c7d3ea9ad4b6cbec"
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/uvicorn-0.34.3.dist-info/METADATA",
+      "size_bytes": 6531,
+      "sha256": "442d4eaebbb15807c2c562d73fec5452893c187f4f7b3e22218145ba6e5d0670"
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/httpx-0.28.1.dist-info/METADATA",
+      "size_bytes": 7052,
+      "sha256": "febb9b0f8f3e80d57c8199c304f35c4336e8581d1d18d7983c92766b82793b25"
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/httpcore-1.0.9.dist-info/METADATA",
+      "size_bytes": 21529,
+      "sha256": "fe2d4fda6199128978779e0cf27f3c045c531863fcdd987eacc74f3a18d41c21"
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/h11-0.16.0.dist-info/METADATA",
+      "size_bytes": 8348,
+      "sha256": "28f326098ac09fcba79b8f180f96087c841fe2456215cb7b872a9c7d5cd19d64"
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/uvicorn/config.py",
+      "size_bytes": 20887,
+      "sha256": "27ab5d061c1e70d8142475f409b2181c9f36f1297758ac9eadc7fa4214b31a63"
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/uvicorn/protocols/http/h11_impl.py",
+      "size_bytes": 20694,
+      "sha256": "e1bf8ab302b9ec505a44f7875e52bfa32f2928ceaf1b585a00b0887911fed5b0"
+    }
+  ],
+  "verified_points": [
+    {
+      "path": "scripts/jev_browser_benchmark.py",
+      "lines": [
+        1265,
+        1285,
+        2173,
+        2176,
+        2215,
+        2219
+      ],
+      "claim": "Existing runner selects policy endpoint/model/key separately from text endpoint/model/key through --text-endpoint, --text-model and --text-api-key-env. One unchanged common helper selection can be supplied to all policy arms; no runner edit is needed for those knobs."
+    },
+    {
+      "path": "artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+      "lines": [
+        160,
+        185
+      ],
+      "claim": "Original field_text posts to TEXT_MODEL_BASE_URL.rstrip slash + /chat/completions with bearer key, explicit model, max_tokens1024, JSON response format and original two messages. TEXT_MODEL_REASONING=none is required for the frozen helper reasoning.enabled=false contract."
+    },
+    {
+      "path": "artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+      "lines": [
+        12,
+        26
+      ],
+      "claim": "Existing HTTP client timeout25s and up to3 attempts for429/529/503 with original backoff are separate from model/helper20s; preserve these semantics."
+    },
+    {
+      "path": "scripts/jev_browser_benchmark.py",
+      "lines": [
+        1514,
+        1515,
+        1819,
+        1823,
+        1865,
+        1874
+      ],
+      "claim": "max_steps16 is each-task decision count. Per-task started records elapsed, not an entire-task20s gate. This source does not restrict the whole ten-task evaluation to20s."
+    },
+    {
+      "path": "scripts/jev_native_v2_browser.py",
+      "lines": [
+        198,
+        203,
+        375,
+        377,
+        448,
+        452,
+        543,
+        576,
+        734,
+        740
+      ],
+      "claim": "Original profile separately declares model20/helper20/native helper128/HTTP25. Middleware starts each request before serial queue and gates20s through evidence/final ASGI response-start authorization. Browser group process has a7200s ceiling, not20s."
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
+      "lines": [
+        29,
+        94,
+        97,
+        514,
+        521,
+        559,
+        585
+      ],
+      "claim": "Frozen helper accepts the original max_tokens1024 payload unchanged. Internal native max_new_tokens is fixed128, prompt+128 must fit8192 without truncation, and actual final EOS is required. No token-contract repair is needed."
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
+      "lines": [
+        622,
+        625,
+        634,
+        638,
+        649,
+        672,
+        674,
+        724
+      ],
+      "claim": "Helper20s starts at ASGI entry and includes serial queue, body read, validation, native generation, evidence and cooperative publication. Cold model/runtime load, pre-ASGI TCP/header work and client receipt completion are separate intervals. Queued bytes cannot be retracted; server completion is not proof of whole client delivery20s."
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
+      "lines": [
+        687,
+        707,
+        729,
+        757
+      ],
+      "claim": "Production app requires actual loopback scope and bearer secret, accepts POST /chat/completions or /v1/chat/completions, and returns OpenAI-shaped choices.message.content plus actual model/usage. Existing refusal statuses502/504 remain."
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py",
+      "lines": [
+        89,
+        117
+      ],
+      "claim": "Use frozen successor public load_runtime and make_application so exact critical package-root authentication and accepted-runtime registry remain enforced."
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/actor.py",
+      "lines": [
+        316,
+        368,
+        738,
+        796
+      ],
+      "claim": "Existing smoke uses original1024 payload and fresh opaque synthetic context through native public factory, but is one in-process ASGI request. Its parent permits one irreversible request deadline/arm; it is not a reusable multi-request HTTP server."
+    },
+    {
+      "path": "scripts/jev_native_v2_browser.py",
+      "lines": [
+        777,
+        833,
+        954,
+        971
+      ],
+      "claim": "Existing known4/public6 runner construction preserves two original groups, repeat1,seed20261014,max_steps16 and V7 profile. It currently binds helper to old model identity, so reuse the generic CLI construction with common helper knobs rather than invoking the old whole NF4 actor. Its random127.0.0.1 listener and uvicorn startup pattern can be reused."
+    },
+    {
+      "path": "scripts/jev_browser_profile_v7_benchmark.py",
+      "lines": [
+        19,
+        24,
+        47,
+        62,
+        93,
+        117
+      ],
+      "claim": "Existing bundle pins benchmark/helper/profile/tracker bytes, verifies inverse bytes and AST, and permits only explicit original/heldout composition; preserve these pins and task populations. No task definitions or gold were read for this audit."
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/uvicorn/config.py",
+      "lines": [
+        27,
+        31,
+        41,
+        61,
+        184,
+        205
+      ],
+      "claim": "Existing0.34.3 supports explicit http=h11,loop=asyncio,ws=none,lifespan=off,proxy_headers=false, reducing auto-selected optional transport backends. These are candidate wrapper settings, not exercised configuration."
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/uvicorn/protocols/http/h11_impl.py",
+      "lines": [
+        195,
+        215,
+        400,
+        425,
+        447,
+        454
+      ],
+      "claim": "HTTP server supplies actual server/client scope to ASGI. Application send and transport/client completion remain distinct; a successful in-process ASGI test alone does not establish real socket delivery."
+    }
+  ],
+  "upstream_revision_from_runner_source": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "upstream_worktree_or_Git_checked": false,
+  "local_transport_versions_from_small_metadata": {
+    "uvicorn": "0.34.3",
+    "httpx": "0.28.1",
+    "httpcore": "1.0.9",
+    "h11": "0.16.0"
+  },
+  "minimal_next_single_HTTP_probe": [
+    "Wait for genuinely closed catalog acceptance and successful separately reviewed native smoke under the selected unchanged owner profile and fresh original idle/fullR+cap admission.",
+    "Create a new isolated transport actor; keep frozen helper02/owned-smoke02 and original owner/observer bytes unchanged. Reuse public loader/factory, exact external parent authority and bounded loopback startup pattern.",
+    "Permit one real HTTP request, then close worker/server and retain original authenticated closure. Call pinned upstream field_text with Qwen/Qwen2.5-0.5B-Instruct, common fresh bearer, base http://127.0.0.1:<port>/v1 and TEXT_MODEL_REASONING=none; use a novel synthetic context, never benchmark task/gold/DOM or fallback text.",
+    "Join raw HTTP body/status and client start/full-read timing with actual native token/EOS/strict JSON and server original-start deadline evidence, source/model/runtime identity and root/owner exit/closure. Record cold load/READY separately.",
+    "Only after the one-shot HTTP boundary is verified, prepare a distinct multi-request supervisor with immutable per-request identity/deadline transitions for the unchanged ten-task/16-decision-per-task runner. Keep one helper fingerprint/endpoint/model/auth across all policy arms; policy endpoints may differ."
+  ],
+  "pin_requirements": [
+    "Freeze new transport source/plan plus reused helper, authority, runner and upstream source pins; preserve exact group/task/judge/options/seed/profile sources without reading or rewriting their contents during source-only preparation.",
+    "Pin actual HTTP server/client module origins, versions and relevant Python source SHA including explicit selected protocol/loop branches, then authenticate interpreter and observed native mappings under the future owned actor. Existing catalog is selected identity evidence, not full transport/DSO closure.",
+    "Root exact selection and fresh admission remain separate. No current host observation or runtime qualification is inferred from this source audit."
+  ],
+  "qualification": {
+    "source_protocol_and_timing_scope": true,
+    "actual_HTTP_probe": false,
+    "actual_NN_or_ASGI_execution_in_this_audit": false,
+    "cold_start_or_client_whole20s": false,
+    "multi_request_helper": false,
+    "full_native_DSO_closure": false,
+    "browser_score_or_matched_six": false
+  },
+  "review_scope": "Only source and small package metadata read/hashed; no task/gold/DOM/response/cache/model/tokenizer/native/interpreter binary bytes or actual/terminal observations. No code edits, target imports/tests, HTTP/network/host/observer/unit/process/Git execution. This new metadata audit is the only mutation.",
+  "all_review_writes_stopped": true
+}

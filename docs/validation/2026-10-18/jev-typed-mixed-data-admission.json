@@ -1,0 +1,208 @@
+{
+  "status": "complete_typed_mixed_data_admission_not_fit",
+  "result": "Two separately typed component admissions were composed under explicitly reviewed external A/C manifest hashes. This establishes a data-plan boundary only; no training or policy performance improvement is claimed.",
+  "phases": [
+    {
+      "phase": 1,
+      "fresh_process": true,
+      "root_exec_session": 73016,
+      "exit_code": 0,
+      "seconds": 38.33787991499412,
+      "status": "prepared-not-mixed-admitted",
+      "mixed_admission_attempts": 0,
+      "mixed_admissions": 0,
+      "external_manifest_pins": null,
+      "closed_output": {
+        "files": 9,
+        "bytes": 648212
+      }
+    },
+    {
+      "phase": 2,
+      "fresh_process": true,
+      "root_exec_session": 2541,
+      "exit_code": 0,
+      "seconds": 53.79004601002089,
+      "status": "complete-typed-mixed-admission-not-fit",
+      "mixed_admission_attempts": 2,
+      "mixed_admissions": 2,
+      "external_manifest_pins": {
+        "A": "624b631a0a89dd9265970ef5602e509aa07b7d0d4ab7b72a2e4219210cb81912",
+        "C": "805585db266037f1235f3bacfee5fd32ada6a6d2c9982865d593ec0ec97f331c"
+      },
+      "closed_output": {
+        "files": 9,
+        "bytes": 648361
+      }
+    }
+  ],
+  "external_authority": "Root reviewed both phase1 proposal bytes and independently rederived all rows, schedule, weights, source union and objective-only differences before supplying both hashes to phase2. Phase2 checked both external hashes before admitting either A or C.",
+  "components": {
+    "public": {
+      "origin": "Original independently typed public registry admission; owned rows were never coerced into this type.",
+      "original_files": 701,
+      "original_bytes": 105415940,
+      "train": 120,
+      "development": 22,
+      "source_handoff_files": 94,
+      "source_handoff_sha256": "b4d256c64490c4a9668e6ba6a38f8a8227ef46eef628dd091e9ea13aaa127d1e",
+      "observation_profile": "composed-visible-text-v3",
+      "original_native_plans": 142,
+      "original_plan_bytes": 141419,
+      "original_plan_sha256": "38a863ee8c0234c40fc690688ebd8cba1d7bdcb9e5963bd0e50bbf7d6f8f247e",
+      "plan_verification": "All142 full request/target/position/allowed-mask evidence bytes are unchanged from the sealed original public plans.",
+      "processor_runtime_source_files": 51,
+      "tokenizer_class": "GemmaTokenizer",
+      "tokenizer_origin": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/models/gemma/tokenization_gemma.py",
+      "actual_origin_and_all_original_distribution_versions_verified": true
+    },
+    "owned": {
+      "origin": "owned_local; public_registry_admitted=false",
+      "original_proof_files": 1079,
+      "original_proof_bytes": 56923332,
+      "episodes": 129,
+      "native_captures": 236,
+      "native_Input_calls": 659,
+      "primary_initial_supervision": 14,
+      "train": 9,
+      "development": 5,
+      "proof_only_captures": {
+        "primary_followup": 6,
+        "auxiliary": 192,
+        "wheel_reference": 24
+      },
+      "source_files": 97,
+      "source_identity_sha256": "a516a9ab37c7c09bccc2c3358a2b119247ee0f4e54a9adff753d6d9c0138a6ed",
+      "original_closed_proof_index_sha256": "e36ab82e0bc4ce205a09b0f8d78975de9160dbc51401b555892dc1be59b80f14",
+      "observation_profile": "composed-visible-hover-entries-v5",
+      "teacher_scope": "A useful demonstrated route, not a unique action or global shortest path.",
+      "full_proof_readmission": "Both fresh processes rechecked complete saved native proof, private effects and original closed-index authority."
+    }
+  },
+  "mixed_data_plan": {
+    "train_row_references": 129,
+    "development_row_references": 27,
+    "public_train_references": 120,
+    "owned_train_references": 9,
+    "scheduled_update_references": 129,
+    "actual_optimizer_updates": 0,
+    "sampler_version": "sha256-sort-row-references-v1",
+    "seed": 42,
+    "per_row_weight": {
+      "numerator": 1,
+      "denominator": 1
+    },
+    "component_exposure": {
+      "public": [
+        120,
+        129
+      ],
+      "owned": [
+        9,
+        129
+      ]
+    },
+    "schedule_sha256": "fa3bf744b1f9849cf4b98f2a3eb8224f36e22ee56f5b9ffd904ee3d9067f87dd",
+    "source_union_files": 102,
+    "source_union_identity_sha256": "55fde4fd82d98bc7ec69d83e95c32069d5b5684994e6a47548fefff9c8cdca4d",
+    "source_union": "Exact public94 plus owned97 plus mixed module; conflicting duplicate source pins are refused.",
+    "parent": "Original521-update parent descriptor; same original base, seed42, LR5e-5, AdamW0 and clip1 parameters recorded in both manifests.",
+    "A_objective": "Full-vocabulary mean over all target positions.",
+    "C_objective": "Mean over positions with more than one actual CFG-allowed token, normalized over that exact allowed set; singleton loss is zero.",
+    "comparison_scope": "C versus A changes positions and normalization, and includes numeric-prefix branches; it is not whole-action NLL or a claim that every branch is high-level semantics.",
+    "only_A_C_differences": [
+      "objective.mode",
+      "objective.loss",
+      "objective.singleton_loss",
+      "objective.normalizer"
+    ],
+    "all_other_manifest_fields_typed_exact": true,
+    "six_payload_files_byte_identical_between_phases": true
+  },
+  "validation": {
+    "root_driver_fullread_lines": 384,
+    "root_pure_test_lines": 207,
+    "root_pure_tests": 13,
+    "root_pure_seconds": 0.14,
+    "Ruff_check": "PASS",
+    "Ruff_format": "PASS",
+    "independent_phase1_proposal_review": "All original public/owned request digests, exact129/27 row order, complete129 schedule and both source authorities independently rederived.",
+    "independent_phase2_review": "All leaf SHA/size/population, manifests, metadata, source102, stdout/receipt equality and original three CPU gates verified.",
+    "phase2_resource_gates": 3,
+    "original_CPU_reserve_bytes": 26119172096,
+    "required_CPU_bytes": 30414139392,
+    "minimum_observed_MemAvailable": 121778839552,
+    "same_boot_and_zero_resident_swap_credit": true,
+    "read_only_subprocess_exception": "Only the prior exact /sbin/ldconfig -p native library discovery.",
+    "private_output_modes": "All nine leaves remain0600; independent closed index and review are0600.",
+    "model_loads": 0,
+    "GPU_inference_calls": 0,
+    "new_owned_target_reference_compilation": false,
+    "fitter_or_optimizer_invocations": 0,
+    "HTTP_or_network_calls": 0
+  },
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/source-HOLD-01/HOLD.json",
+      "sha256": "664025e8db7c8830078dcf9a99e188ab3f58cc4ee91a6ce8296b62ff5b0e351c",
+      "size_bytes": 1277
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/run_mixed_admission_01.py",
+      "sha256": "44ddb31463368428d28c65521dba7cd6d57c6273fb109a444a1a696af56da6fa",
+      "size_bytes": 14596
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/mixed-composition-plan-01.json",
+      "sha256": "bcfcc97445ef7e16a509c62521fb73165413dd33c25672aac52c086614a9ffdd",
+      "size_bytes": 18094
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/root-phase1-review-01.json",
+      "sha256": "5c7a555fc6a539f3d85fcfcb2d2918a394c300a88b90023e10a22f3fd17af8ad",
+      "size_bytes": 1063
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/root-phase2-manifest-review-01.json",
+      "sha256": "388fcfcd86e7845ecc0b0c2e92a51e8d43293f846def1c5cb64df13bbf344fa9",
+      "size_bytes": 2731
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/independent-proposal-review-01.json",
+      "sha256": "1b977c4a07a74e3ceb6d71a19405ad33750b8cdcdfe5e59bb31806f47a0fde8b",
+      "size_bytes": 2407
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/actual-admit-02-independent-closed-index.json",
+      "sha256": "c82a974e1ee837a51adb50c5bd822eb11ec1d5560a77de29453cb2ccd46b633b",
+      "size_bytes": 2350
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/independent-phase2-review-01.json",
+      "sha256": "d87a39434242a3b7231f7d85bcf9d0ad7da00e7b5fa43bd0a38178fe6f62a612",
+      "size_bytes": 2729
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/actual-admit-02/receipt.json",
+      "sha256": "1d5796c0a3c4aff2da69fe0d12b7d18e8549f820e65e86bddd8f887ebe4f5cc7",
+      "size_bytes": 65727
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/actual-admit-02/mixed-manifest-A.json",
+      "sha256": "624b631a0a89dd9265970ef5602e509aa07b7d0d4ab7b72a2e4219210cb81912",
+      "size_bytes": 190787
+    },
+    {
+      "path": "artifacts/jev-runtime/owned-public-mixed-composition-20261018-01/actual-admit-02/mixed-manifest-C.json",
+      "sha256": "805585db266037f1235f3bacfee5fd32ada6a6d2c9982865d593ec0ec97f331c",
+      "size_bytes": 190797
+    }
+  ],
+  "limits": [
+    "This changes no model, generation, browser score or deployment state.",
+    "Publicv3 and ownedv5 remain distinct observation authorities; this is not a common-profile policy comparison.",
+    "No owned target/reference compiler, mixed fitter/artifact contract or fresh mixed qualification is implemented. Existing94/95 cannot consume owned rows.",
+    "Public-only129-update control with nine declared repeats is still a descriptor and remains unimplemented.",
+    "Old cue-heavy14 examples,192 auxiliary captures,24 wheel-reference captures, model rollout outputs and public evaluation traces are not added as supervision."
+  ]
+}

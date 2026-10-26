@@ -1,0 +1,163 @@
+{
+  "schema": "decision3-owned-numpy-zero-delta-nontraining-plan-v1",
+  "profile": "decision3-edge-numpy-zero-delta-nontraining-cpu5-fast-4g-coexist-20261024-v1",
+  "actor_sha256": "c8a439c794f5176564a29473c524d62f86218818b1f7fb66089c8e007dfd7f82",
+  "observer_sha256": "455e2c7bf20d1a96f99795566062db15dbe779dd5610e573277c382775bc4f37",
+  "fixture_sha256": "b1110b97ac4f816f8c562e964ce909b700c87c6fbaf1eb419f7b390e973e90a7",
+  "numpy_probe_sha256": "22ed700ebc9ea49fd8cf4d1a532ca3a571290d349b69053c6bea082631582f7f",
+  "head_core_sha256": "6761dd654481424f4d6c908a7c9fd2d43e4762eeb5420af9f22612ffe77657ed",
+  "catalog_mode": "owned_actual_discovery_not_preselected",
+  "preselected_numpy_or_BLAS_binary_pins": null,
+  "future_optimizer_requires_independently_accepted_closed_catalog_first": true,
+  "native_actor_sha256": "9a7e5af918c17f6824a720fb6d112ffa5fdac03493dde3efa176c7d50470a365",
+  "native_plan_path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/edge-plan.json",
+  "native_plan_sha256": "095db88b78687d90fbed51aafd736c1b06fb1a582312de8dff97bf6109131e96",
+  "source_records": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/actor.py",
+      "size": 19795,
+      "sha256": "c8a439c794f5176564a29473c524d62f86218818b1f7fb66089c8e007dfd7f82"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/observer.py",
+      "size": 6417,
+      "sha256": "455e2c7bf20d1a96f99795566062db15dbe779dd5610e573277c382775bc4f37"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/fixture.json",
+      "size": 1301,
+      "sha256": "b1110b97ac4f816f8c562e964ce909b700c87c6fbaf1eb419f7b390e973e90a7"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/numpy_probe.py",
+      "size": 16236,
+      "sha256": "22ed700ebc9ea49fd8cf4d1a532ca3a571290d349b69053c6bea082631582f7f"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cached-head-core-20261023-01/head_core.py",
+      "size": 6957,
+      "sha256": "6761dd654481424f4d6c908a7c9fd2d43e4762eeb5420af9f22612ffe77657ed"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py",
+      "size": 31080,
+      "sha256": "9a7e5af918c17f6824a720fb6d112ffa5fdac03493dde3efa176c7d50470a365"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/resource_helper.py",
+      "size": 7954,
+      "sha256": "4df54e06e8a795ebf5b300a3e2074319e781a278a2a870c21c2bd52897d7eb11"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/source_audit.py",
+      "size": 5079,
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/edge-plan.json",
+      "size": 31270,
+      "sha256": "095db88b78687d90fbed51aafd736c1b06fb1a582312de8dff97bf6109131e96"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/freeze.json",
+      "size": 3371,
+      "sha256": "dc7c419aa8e3f5188e35708574746d1f2f628ab320a4966ba069a0b3f22f9378"
+    }
+  ],
+  "model_key": "edge",
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "owner_unit": "jev-d3-llama-cpp-cpu5-fast-4g-coexist-20261024-09.service",
+  "owner_profile": "llama-cpp-cpu5-fast-same-cluster-4g-coexist-command-owned-v1",
+  "owner_runtime_seconds": 10800,
+  "reserve_bytes": 26119172916,
+  "memory_max_bytes": 4294967296,
+  "startup_available_bytes": 30414140212,
+  "swap_max_bytes": 0,
+  "cpu_affinity": [
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "cpu_quota_percent": 500,
+  "runtime_python": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+  "host_observation_policy": "comfy-observed-cpu-coexist-v1",
+  "requests": 1,
+  "head_counts": [
+    8,
+    1,
+    2,
+    3
+  ],
+  "batch_size_maximum": 4,
+  "actual_partial_rows_required": 4,
+  "temperature": 1.0,
+  "wall_seconds": 120,
+  "call_seconds": 20,
+  "absolute_tolerance": 1e-06,
+  "relative_tolerance": 1e-05,
+  "comparison": "abs(replay-native) <= 1e-6 + 1e-5*abs(native); exact ordered argmax",
+  "timing_scope": {
+    "whole": "execute entry through final state write and watchdog cleanup, followed by a literal monotonic refusal",
+    "prediction": "NumPy import after native loader, critical catalog pre/post hashes, prepare/hooks, original one native call, Torch replay, exactFP32 h/W0 copies, zeroDelta NumPy math, raw/array/catalog/state retention, full final native authentication, hook/watchdog cleanup; literal monotonic refusal",
+    "startup_is_not_a_20_second_claim": true
+  },
+  "payload_authentication": "Unchanged native05 loader fully authenticates all20 model files+manifest+runtime/owner sources before constructor and after qualification; no payload opened by this builder. Native05 request/call metadata is loader configuration only, not this actor's fixture/request count.",
+  "feature_commit_status": "PENDING_NONTRAINING",
+  "training_eligible": false,
+  "external_acceptance_required": [
+    "root exit0",
+    "accepted exact new owner09 successful receipt",
+    "current original authenticated closure",
+    "pre/post full model/manifest/runtime/source auth",
+    "closed actual root numerical proof audit; separate reviewer scope disclosed"
+  ],
+  "semantic_expected_answers": null,
+  "corpus_collector_optimizer_or_calibration": false,
+  "benchmark_scores": null,
+  "http_browser_or_training_qualification": false,
+  "native_helper_sha256": "4df54e06e8a795ebf5b300a3e2074319e781a278a2a870c21c2bd52897d7eb11",
+  "owner_controller_sha256": "81846efe2ee0357da07283c1a77a606283a920cbddef668c8f62def291057dee",
+  "owner_freeze_sha256": "52ac647a80ca1ef0c05acc45bf90c990f3b753b66df216c87cfb2bdf495020ef",
+  "threads": 5,
+  "interop_threads": 1,
+  "executable": true,
+  "labels": null,
+  "source_only": false,
+  "prior_native05_root_review": {
+    "authority": "root",
+    "is_independent_review": false,
+    "reference": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/root-closed-smoke-result-01.json",
+      "size_bytes": 4044,
+      "sha256": "ae81d2bf38fa4b4bc3b26194e239f26ae31121992ccee594768dfb33b2beab9a"
+    },
+    "preflight": {
+      "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/root-native05-prerequisite-01.json",
+      "size_bytes": 2232,
+      "sha256": "8e59d5f42c420f90ce15f673cb263e5c0d0a77a745f4a189170bb612cca0bb8f"
+    }
+  },
+  "catalog_projection": "Critical NumPy modules and mapped CPU BLAS/LAPACK/OpenMP identities; exact CUDA BLAS basename maps retained as separate stat-only candidates with execution/symbol binding unproven. Original512MiB/256MiB/24/20s bounds unchanged."
+}

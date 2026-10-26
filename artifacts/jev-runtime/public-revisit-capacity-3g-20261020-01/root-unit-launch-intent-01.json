@@ -1,0 +1,235 @@
+{
+  "schema_id": "jev_full75_cpu3g_external_launch_intent_v1",
+  "proposal_sha256": "1ccf1f7d2af2c01d6fdc816cb2c4372a0abd29567f5ff49a89568b5cd3b3ad72",
+  "argv": [
+    "systemd-run",
+    "--user",
+    "--slice=app.slice",
+    "--unit=jev-cpu3g-20261020-01.service",
+    "--property=Type=exec",
+    "--property=MemoryAccounting=yes",
+    "--property=MemoryMax=3221225472",
+    "--property=MemorySwapMax=0",
+    "--property=MemoryHigh=infinity",
+    "--property=OOMPolicy=kill",
+    "--property=KillMode=control-group",
+    "--property=TimeoutStopSec=10s",
+    "--property=RuntimeMaxSec=660s",
+    "--property=RemainAfterExit=yes",
+    "--property=WorkingDirectory=/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+    "--property=StandardOutput=append:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/unit-service-01.log",
+    "--property=StandardError=append:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/unit-service-01.log",
+    "--setenv=HF_HUB_OFFLINE=1",
+    "--setenv=TRANSFORMERS_OFFLINE=1",
+    "--setenv=PYTHONDONTWRITEBYTECODE=1",
+    "--setenv=TOKENIZERS_PARALLELISM=false",
+    "--setenv=OMP_NUM_THREADS=2",
+    "--setenv=MKL_NUM_THREADS=2",
+    "--setenv=OPENBLAS_NUM_THREADS=2",
+    "--setenv=HF_HUB_CACHE=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-local-hf/hub",
+    "--setenv=PYTHONPATH=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/src:/home/albert_hsieh/Gemma-4-12B-Unified-System-One/scripts",
+    "--setenv=CUDA_VISIBLE_DEVICES=",
+    "--setenv=JEV_CPU3G_BOOT=9d508fa8-c124-402c-9769-7fa83afcbef0",
+    "--setenv=JEV_CPU3G_CGROUP=/user.slice/user-1001.slice/user@1001.service/app.slice/jev-cpu3g-20261020-01.service",
+    "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+    "-B",
+    "-s",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/unit_runner.py",
+    "--plan",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/unit-plan-02.json",
+    "--plan-sha256",
+    "5aa80caba521499c9e975f21fb4d49d8ebb1bbe9a34d29f8cafac2692b002872",
+    "--run"
+  ],
+  "waiting_started_unix": 1792508522.5441232,
+  "final_prelaunch_unix": 1792508558.6370778,
+  "final_available_bytes": 31048802304,
+  "final_Comfy_queue_counts": [
+    0,
+    0
+  ],
+  "observations": [
+    {
+      "at_unix": 1792508522.5515633,
+      "MemTotal": 130595860480,
+      "MemAvailable": 28095676416,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 22429696
+    },
+    {
+      "at_unix": 1792508524.5553794,
+      "MemTotal": 130595860480,
+      "MemAvailable": 28104413184,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23769088
+    },
+    {
+      "at_unix": 1792508526.558303,
+      "MemTotal": 130595860480,
+      "MemAvailable": 28076711936,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23773184
+    },
+    {
+      "at_unix": 1792508528.5654461,
+      "MemTotal": 130595860480,
+      "MemAvailable": 31396425728,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23773184
+    },
+    {
+      "at_unix": 1792508530.5676634,
+      "MemTotal": 130595860480,
+      "MemAvailable": 31466635264,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23773184
+    },
+    {
+      "at_unix": 1792508532.5702913,
+      "MemTotal": 130595860480,
+      "MemAvailable": 31425220608,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23773184
+    },
+    {
+      "at_unix": 1792508534.5803769,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30941245440,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23773184
+    },
+    {
+      "at_unix": 1792508536.5832965,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30918852608,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23773184
+    },
+    {
+      "at_unix": 1792508538.5863824,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30904549376,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23773184
+    },
+    {
+      "at_unix": 1792508540.5897155,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30852149248,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23773184
+    },
+    {
+      "at_unix": 1792508542.5928566,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30903373824,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23773184
+    },
+    {
+      "at_unix": 1792508544.5965617,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30411816960,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23773184
+    },
+    {
+      "at_unix": 1792508546.6012838,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30437199872,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23777280
+    },
+    {
+      "at_unix": 1792508548.604529,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30469111808,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23777280
+    },
+    {
+      "at_unix": 1792508550.607644,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30421721088,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23777280
+    },
+    {
+      "at_unix": 1792508552.610656,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30375641088,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23777280
+    },
+    {
+      "at_unix": 1792508554.6129105,
+      "MemTotal": 130595860480,
+      "MemAvailable": 31037202432,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23777280
+    },
+    {
+      "at_unix": 1792508556.6153,
+      "MemTotal": 130595860480,
+      "MemAvailable": 30614704128,
+      "queue_running": 1,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23777280
+    },
+    {
+      "at_unix": 1792508558.6171982,
+      "MemTotal": 130595860480,
+      "MemAvailable": 31048802304,
+      "queue_running": 0,
+      "queue_pending": 0,
+      "external_operator_RSS_bytes": 23785472
+    }
+  ],
+  "shared_ancestors": [
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice",
+      "memory.max": "max",
+      "memory.current": 58537021440
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service",
+      "memory.max": "max",
+      "memory.current": 59155353600
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1001.slice",
+      "memory.max": "max",
+      "memory.current": 68944412672
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice",
+      "memory.max": "max",
+      "memory.current": 69021294592
+    }
+  ],
+  "source_union_verified_before": {
+    "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/source-authority-union-02.json",
+    "sha256": "9d54f27d440281d301850626d134658e5e8623c8b4fc5798d740958fff4bfa9c",
+    "size_bytes": 20907
+  },
+  "external_operator_RSS_budget_bytes": 67108864,
+  "external_operator_AS_cap_bytes": 536870912,
+  "actual_unit_includes_supervisor_controller_worker": true
+}

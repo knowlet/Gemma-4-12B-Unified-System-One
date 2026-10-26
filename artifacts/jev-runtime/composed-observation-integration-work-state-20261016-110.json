@@ -1,0 +1,81 @@
+{
+  "schema_id": "composed-observation-integration-work-state-v1",
+  "sequence": 110,
+  "created_at_utc": "2026-10-22T10:56:58.858713+00:00",
+  "previous_state": {
+    "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-109.json",
+    "sha256": "bc6a6e0951aa59984d8db2e7ee7d036f5e777e1ca174775fd3333a4738bbb099",
+    "size_bytes": 2301
+  },
+  "goal_status": "active",
+  "status": "Edge_actual_known4_0of4_closed_full10_pending_scoped_continuation",
+  "Gemma_current_NF4_V2_browser": "4/10 with in-process NF4 helper; independently replayed and pushed c18b3c8",
+  "fresh_jevbench": {
+    "Benchmark_Heaven": "195/231 =84.42%",
+    "coherence_mini": "41.2630718954/100"
+  },
+  "Q95_helper02": {
+    "owner_session": 5416,
+    "unit": "jev-d3-q95-helper-20261022-02.service",
+    "actor_pid": 95101,
+    "helper_pid": 95179,
+    "invocation_id": "97130a697d5c40c3aac4f4413e029c9e",
+    "snapshot_active": true,
+    "live_status_must_be_requeried": true,
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-02/launch-plan-01.json",
+      "sha256": "88a59cd473e0a69123d3f314f6269bda6e7ddf5d11a006d91959d9db1ac7b43e",
+      "size_bytes": 3193
+    },
+    "seed": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-02/owner-02/helper-selection-seed.json",
+      "sha256": "66d3b91d07ed6c8d245d35d6b48cb1740b56ef9843f9e1a5905143b26a78c32d",
+      "size_bytes": 2801
+    }
+  },
+  "Decision3_Edge_retry02": {
+    "controller_session": 95048,
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-edge-browser-retry-plan-20261022-01/plan-02.json",
+      "sha256": "852b162a5d2a9b7c5f5516ce2ac913be5510491e6c85dd1603baaeb31d6db6ca",
+      "size_bytes": 11096
+    },
+    "observed_known4_successes": 0,
+    "known4_attempts": 4,
+    "policy_HTTP200": 4,
+    "all_first_decisions_BLOCKED": true,
+    "public6_complete": false,
+    "full10_score": null,
+    "inner_worker_CLOSED_success": true,
+    "inner_worker_returncode": 0,
+    "inner_transport_success_flag": false,
+    "inner_observation_unknown": [
+      98254
+    ],
+    "outer_unit_and_cohort_closed": true,
+    "source39_unchanged": true,
+    "actual_actor_result": {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/actor-result.json",
+      "sha256": "f64e8f94e4208a12a4fab5bbb2a1b4756a44d28718066632d8568919159faf5e",
+      "size_bytes": 511
+    },
+    "transport_closure": {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/transport/closure.json",
+      "sha256": "40f1adba5e4a271d008c104614f90e5a1e47c30b3e2abfe1df2bbaacc16e8626",
+      "size_bytes": 6965
+    },
+    "external_controller_closure": {
+      "path": "artifacts/jev-runtime/decision3-local-execution-retry-20261022-01/edge-02/known4/controller-final.json",
+      "sha256": "bb19e568a04f095bebc7bfd8c775e943c37844d51a8b1a136fc236bc9c7a5e07",
+      "size_bytes": 4737
+    },
+    "scope": "Observed partial run; unchanged public6 arm will continue from exact same sealed plan after scoped closure reconciliation; no known4 rerun or changed task outcomes."
+  },
+  "all_six_Decision3_complete": false,
+  "other_models_beaten": false,
+  "next": [
+    "Thin scoped continuation of unused public6 arm preserving actual0/4",
+    "All remaining admissible Decision3 and exactsameQ95 Gemma control",
+    "Separate feedback arm and request-time candidate reachability improvements"
+  ]
+}

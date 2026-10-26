@@ -1,0 +1,211 @@
+{
+  "schema_id": "jev_full75_cpu3g_actual_worker_complete_monitor_refusal_results_v1",
+  "at_utc": "2026-10-20T15:09:15.903698+00:00",
+  "status": "ACTUAL_WORKER_FULL75_COMPLETE_BUT_UNIT_FAILED_NO_CAPACITY_ADMISSION",
+  "sources": {
+    "helper": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/cpu_prepare_form_3g.py",
+      "sha256": "82c7add649276785b64c4fbe24e945e918f555cb2b6bcf96dd61997734bd5334",
+      "size_bytes": 67179
+    },
+    "worker": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/revisit_capacity_worker.py",
+      "sha256": "07dc1a41a6417fac16df1530c15a10bf672b246396766aa25ad59f7deea0384f",
+      "size_bytes": 28322
+    },
+    "controller": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/revisit_capacity_controller.py",
+      "sha256": "d12d8f539779596bea88bb4e79e0fdcc713b53e42b25d1a4155c15f0892fdfcc",
+      "size_bytes": 21598
+    },
+    "supervisor": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/unit_runner.py",
+      "sha256": "e9e617abb37425d5479172dc4afdeb616a8b2902f863d440fdbec6b00e9ca5fe",
+      "size_bytes": 14087
+    },
+    "source_union122": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/source-authority-union-02.json",
+      "sha256": "9d54f27d440281d301850626d134658e5e8623c8b4fc5798d740958fff4bfa9c",
+      "size_bytes": 20907
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/plan-01.json",
+      "sha256": "e8c0818e2c0dcfde09f5151d4b23dd6681a88472748920c4a3233e7c195e030f",
+      "size_bytes": 2605
+    },
+    "unit_plan": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/unit-plan-02.json",
+      "sha256": "5aa80caba521499c9e975f21fb4d49d8ebb1bbe9a34d29f8cafac2692b002872",
+      "size_bytes": 1022
+    },
+    "launch_proposal": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/launch-proposal-02.json",
+      "sha256": "1ccf1f7d2af2c01d6fdc816cb2c4372a0abd29567f5ff49a89568b5cd3b3ad72",
+      "size_bytes": 3720
+    }
+  },
+  "why_new_resource_profile": "Processor-only full75 retains original AutoProcessor/tokenizer,58references,348runtime files,original95source authority,8192 context,allheads and fullIDs/masks. It tightens the own budget10GiB to kernel-enforced whole-unit3GiB/swap0 while retaining the same26,119,172,096Bhostreserve and zero resident/swap credit. Original10GiB programs/results/selectors remain unchanged; this does not inherit their qualification.",
+  "resource_contract": {
+    "profile": "CPU_REFERENCE_ONLY_3G_V1",
+    "host_reserve_bytes": 26119172096,
+    "per_phase_prospective_floor_bytes": 29340397568,
+    "own_unit_memory_max_bytes": 3221225472,
+    "external_launch_extra_allowance_bytes": 67108864,
+    "parent_AS_soft_hard": [
+      2147483648,
+      8589934592
+    ],
+    "worker_AS_soft_hard": [
+      8589934592,
+      8589934592
+    ],
+    "worker_wall_seconds": 600,
+    "supervisor_wall_seconds": 630,
+    "systemd_runtime_seconds": 660,
+    "sample_interval_seconds": 0.05,
+    "sampled_disk_scope": "two disjoint1GiB trees;2GiB aggregate;64MiBfile;1MiBchildlogs",
+    "native_model_forward_HTTP_browser_calls_requested": 0
+  },
+  "actual": {
+    "worker_complete": true,
+    "worker75_counts": {
+      "ACCEPTED": 71,
+      "REFUSED_CONTEXT": 3,
+      "REFUSED_SCHEMA": 1,
+      "UNKNOWN": 0
+    },
+    "policy68_counts": {
+      "ACCEPTED": 67,
+      "REFUSED_SCHEMA": 0,
+      "REFUSED_CONTEXT": 1,
+      "UNKNOWN": 0
+    },
+    "all75_expectations_met": true,
+    "native400_401_and_all7_edges_retained": true,
+    "worker_terminal": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/actual-01/worker/terminal.json",
+      "sha256": "a4928c37d135393c003145b0458cc55cd9ee9a9588407bb402569585b1b09aa0",
+      "size_bytes": 1744782
+    },
+    "unit_terminal": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/unit-actual-01/unit-terminal.json",
+      "sha256": "52c4f9012885e8e31942a0efb46b7b0da724e53d01dfb50010d25010814ba04a",
+      "size_bytes": 1206
+    },
+    "external_closure": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/root-actual-01-external-closure.json",
+      "sha256": "6c0315e9f6d2ed5f8e8a709ded64b7f86deae565e1d57261f13bb6287912b781",
+      "size_bytes": 24236
+    },
+    "evidence_index": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/actual-01-evidence-index.json",
+      "sha256": "b1007af77471b341be0c9f29bfb35c458d670ee65125d4529fcc306d04c78147",
+      "size_bytes": 187610
+    },
+    "unit_exit_code": 2,
+    "unit_result": "exit-code",
+    "unit_memory_peak_bytes": 1502908416,
+    "unit_swap_peak_bytes": 0,
+    "monitor_observations": {
+      "unit-actual-01/owned-memory-monitor.jsonl": {
+        "samples": 698,
+        "admitted_samples": 697,
+        "final_error": {
+          "type": "ValueError",
+          "message": "Unknown/reused tracked RSS identity",
+          "phase": "owned-memory-monitor"
+        },
+        "min_admitted_host_available_bytes": 29886341120,
+        "max_tracked_RSS_bytes": 1394524160,
+        "observed_unit_memory_peak_bytes": 1502908416,
+        "all_observed_swap_and_oom_zero": true
+      },
+      "actual-01/owned-memory-monitor.jsonl": {
+        "samples": 621,
+        "admitted_samples": 620,
+        "final_error": {
+          "type": "ValueError",
+          "message": "Unknown/reused tracked RSS identity",
+          "phase": "owned-memory-monitor"
+        },
+        "min_admitted_host_available_bytes": 29886328832,
+        "max_tracked_RSS_bytes": 1367064576,
+        "observed_unit_memory_peak_bytes": 1502908416,
+        "all_observed_swap_and_oom_zero": true
+      }
+    },
+    "controller_terminal_present": false,
+    "sources122_unchanged_before_after": true,
+    "all3_owned_actor_PIDs_absent_after_exit": true,
+    "failed_service_cgroup_removed_by_systemd": true,
+    "final_cgroup_memory_events_unavailable": true,
+    "Comfy_queue_or_cache_mutations_requested_by_this_run": false,
+    "cohort_provenance": {
+      "genuine_V8_cell_phase_replays": 16,
+      "explicit_counterfactual_V7_saved_snapshots": 51,
+      "technical_repetition": 1,
+      "technical_edges": 7
+    }
+  },
+  "findings": [
+    {
+      "kind": "declared_saved_snapshot_replay_context_refusal",
+      "row": 51,
+      "id": "trace-curl-01",
+      "full_prompt_tokens": 15495,
+      "context_limit": 8192,
+      "outcome": "REFUSED_CONTEXT",
+      "new_observation_revisit_hint_present": false,
+      "implication": "67of68 declared policy cohort inputs accepted; this CPU capacity selector cannot call all68 ready. This is a real processor-measured failure on the declared counterfactual workload, not an explanation of the previous live curl failure.",
+      "provenance": "An explicitly declared V7 saved-postaction-snapshot counterfactual; not proven to have been an actual subsequent policy request.",
+      "old_V7_actual_wire_calibration": {
+        "actual_curl_requests": 16,
+        "all_HTTP200": true,
+        "input_tokens_range": [
+          889,
+          2543
+        ],
+        "snapshot1_sent_as_next_policy_request": false,
+        "actual_call1_request_bytes": 7981,
+        "actual_call1_elements_and_click_criteria": 18,
+        "actual_call1_input_tokens": 2166,
+        "saved_snapshot1_click_targets": 250,
+        "no_goal_specific_or_candidate_pruning_fix_applied": true
+      }
+    },
+    {
+      "kind": "resource_monitor_lifecycle_bug",
+      "observed_error": "Unknown/reused tracked RSS identity",
+      "observed_in": "both parent and supervisor RSS journals near worker exit; outercleanup TERMcontroller/worker",
+      "source_cause_supported": "Original process_table includes zombie states but process_rss requires VmRSS, which is legitimately absent for a same-identity zombie. Current failed sample omits its PID/state, so a zombie versus reuse cannot be proven for this specific sample.",
+      "next_fix": "Separately typed successor must distinguish stable same-identity live/zombie and double-confirmed absent snapshots, reject changed identity and arbitrary read errors, keep kernel3GiB/swap0/hostreserve/full75 unchanged, and still require independent whole closure."
+    }
+  ],
+  "verification": {
+    "pure_tests": "24resource+12full75fake/source+10unitproperty tests passed; combined46 in7.83s before final crossjoin-only addition, then10unit tests passed onfinalrunner in0.10s",
+    "final_Ruff_check": "PASS all7source/testfiles",
+    "clean_environment_selected_Comfy_python_dry02": {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-01/root-dry-cli-02.json",
+      "sha256": "5b0430a1c1d6421b651047ad4c281a07bc691bb7802768022de8d8429e26c8ed",
+      "size_bytes": 775
+    },
+    "independent_source_reviews": "gx10_memory_diagnosis,revisit_browser_review,action_lora_final_audit; no model/browser score from pure tests",
+    "independent_actual_receipt_review": "action_lora_final_audit CLEAR:75uniqueordered/savedrowjoins/promptSHA, exact counts/curl15495, failedmonitor scope+closure/InvocationID agree; no finalOOM-counter assertion."
+  },
+  "research_reuse": {
+    "decision": "Reuse existing owned H15 systemd lifecycle pattern and frozenCPU75 math; fork resource components only. Do not introduce cloud dependencies or alter shared app.slice.",
+    "local_reference": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/native_uma_peak_probe_01.py:324,528,541,563",
+    "official_sources": [
+      "https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html",
+      "https://docs.kernel.org/admin-guide/cgroup-v2.html"
+    ],
+    "license": "Existing repository derivatives retain its MIT license. Official systemd/kernel documentation informed the design; no upstream implementation copied."
+  },
+  "limits": [
+    "Worker completion is not admitted controller/unit closure.",
+    "No training,model warm-readiness,browser result,task-quality gain or superiority is established.",
+    "The previous complete GemmaV7 real10 result remains5/10; all6matchedwarm Decision3 comparison remains incomplete.",
+    "D3 full checkpoint storage transfer remains on its original process/session; no restart performed.",
+    "The measured curl15,495-token input is a saved-snapshot counterfactual; do not attribute the old live curl failure to context overflow. Its16actualrequests were889\u20132,543inputtokens andHTTP200."
+  ]
+}

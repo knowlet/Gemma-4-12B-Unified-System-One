@@ -1,0 +1,149 @@
+{
+  "schema_id": "independent-bounded-observation-revisit-source-and-closed-replay-review-v1",
+  "status": "CLEAR_SOURCE_AND_CLOSED_REPLAY_ONLY_NOT_WIRED",
+  "reviewer": "/root/affordance_closed_audit",
+  "refs": [
+    {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/observation_revisit.py",
+      "sha256": "80249cdd386619b9121160c94d3a071f586cfa40d75977a7e751138175a6b5d0",
+      "size_bytes": 10461
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/test_observation_revisit.py",
+      "sha256": "417a0c6956204bd06f502a68c70f67ed7097d39764948c0ea110d8d355bbc277",
+      "size_bytes": 11209
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/source-summary-01.json",
+      "sha256": "6a1eeb0c876835eee76b98d13aabbb76547308a708719380af7ca9049a14ccf8",
+      "size_bytes": 7018
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/closed-state-replay-01.json",
+      "sha256": "e8603635f57d0b401e4414ccc408226e0249a8b8116bb8567573c8f258e01e6b",
+      "size_bytes": 9524
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/pure-validation-summary-01.json",
+      "sha256": "88015f68f145d1465a53789576be2f6e99ed93aa081483b3c85c563041e47e70",
+      "size_bytes": 1897
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/pure-validation-01.json",
+      "sha256": "8d08c2b61efca8eabeb899ae87c614625317945602863f48877dc3c26cf056b0",
+      "size_bytes": 428
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/pure-validation-02.json",
+      "sha256": "77ce62de92e6c691b48e379c1668e9a016ef14463ee07426097ca6bd021d98d9",
+      "size_bytes": 320
+    },
+    {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/pure-validation-03.json",
+      "sha256": "985760e29939781521546dbbc1e6d686667432a79d2276ede35b52a77a2f214d",
+      "size_bytes": 343
+    }
+  ],
+  "closed_raw_authorities": [
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/states.json",
+      "sha256": "2925106f5e5063ca2193d143efdcfe3017edd02f06dfccfbeaa6a4734c56c12e",
+      "size_bytes": 5785465
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-arxiv-original-paper-open-v1-000/outcome.json",
+      "sha256": "be3ec4b463cc9a5ef50e94a1d7c104f3a62fbf4a361000381025fee869f984ba",
+      "size_bytes": 37215
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-nasa-mars-facts-moons-v1-000/states.json",
+      "sha256": "f9ae5191b3887120059ccfdda8048ed09c08ccca2b4e9f1210d69b4c701f9d7b",
+      "size_bytes": 2703154
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/known4-v7-01/results/attempts/public-nasa-mars-facts-moons-v1-000/outcome.json",
+      "sha256": "304d7528b125079949a2b88a21271ffb1aafdfe2da234ec43a6d4bec378127bc",
+      "size_bytes": 93344
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-002-000/states.json",
+      "sha256": "37f9e1bc1e348c32255036abf2185951fc55160f0379fc212f342f723e0537b7",
+      "size_bytes": 3084784
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-v7-browser-retest-20261018-01/public6-v7-02/results/attempts/heldout-public-002-000/outcome.json",
+      "sha256": "360976a77493f33b7c58b447b9482a9c7a44cd61b974fb3502661588163189c8",
+      "size_bytes": 288220
+    }
+  ],
+  "checks": {
+    "full_source_tests_summary_replay_and_saved_logs_read": true,
+    "saved51_pure_tests_passed_no_independent_unit_rerun": true,
+    "all51_original_states_SHA_and_outcome_SHA_match": true,
+    "independent_json_digest_and_projection_rederived_all51": true,
+    "all_prior_sequence_arrays_and_cross_document_joins_exact": true,
+    "all51_input_nonmutation_and_idempotent_last_sequence": true,
+    "original_action_counters_recomputed_from_history": true,
+    "no_runtime_or_model_source_modified": true
+  },
+  "results": [
+    {
+      "case": "arxiv",
+      "observations": 17,
+      "exact_events": 0,
+      "projection_events": 1,
+      "cross_document_projection_events": 1,
+      "max_metadata_bytes": 819,
+      "original_decisions": 16,
+      "original_page_changed_true": 16,
+      "original_success": false,
+      "error_stage": "decision_budget"
+    },
+    {
+      "case": "nasa",
+      "observations": 17,
+      "exact_events": 12,
+      "projection_events": 12,
+      "cross_document_projection_events": 0,
+      "max_metadata_bytes": 939,
+      "original_decisions": 16,
+      "original_page_changed_true": 14,
+      "original_success": false,
+      "error_stage": "decision_budget"
+    },
+    {
+      "case": "curl",
+      "observations": 17,
+      "exact_events": 0,
+      "projection_events": 0,
+      "cross_document_projection_events": 0,
+      "max_metadata_bytes": 701,
+      "original_decisions": 16,
+      "original_page_changed_true": 16,
+      "original_success": false,
+      "error_stage": "decision_budget"
+    }
+  ],
+  "bounded_source_contract": {
+    "window_max": 32,
+    "raw_observations_or_action_text_retained": false,
+    "JSON_depth_max": 64,
+    "metadata_bytes_max": 4096,
+    "observation_sequence_max": 9007199254740991,
+    "same_sequence_idempotent": true,
+    "backwards_or_conflicting_same_sequence_refused_before_append": true,
+    "exact_exclusions": [
+      "screenshot",
+      "supplied fingerprint"
+    ],
+    "projection": "Optional weaker explicitly selected content identity, not full state/guard/action authority. Only recognized e{position} native bindings and known proxy/hover/control bindings excluded; semantic id/name/value/check/select/scroll/order/unknown action fields retained."
+  },
+  "limitations": [
+    "Unknown top-level page fields are retained by exact but omitted from the fixed-field projection; unknown action/scroll/observed-editable fields are retained. Do not generalize unknown-field preservation to every top-level field in the projection.",
+    "The genuine arxiv example is newer Q95 pagination content5->7, one cross-document projection revisit. It is not the older11Go trace.",
+    "NASA12exact/projection events; curl0 because observed scrolling changes. This does not diagnose ineffective scrolling or every failure.",
+    "All three original tasks remain decision-budget failures. Library is not integrated into Model.choose; no new prompt capacity, model/decoder qualification, browser rerun or quality improvement attested.",
+    "Independent audit used only stdlib saved data/source; no framework/tokenizer/model/GPU/browser/HTTP/systemd unit or weight/cache payload operation."
+  ],
+  "blockers": []
+}

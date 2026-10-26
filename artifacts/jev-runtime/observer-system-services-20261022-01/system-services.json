@@ -1,0 +1,65 @@
+{
+  "interpreter": {
+    "path": "/usr/bin/python3.12",
+    "sha256": "c86f21d0da9290ece2d7d49a3f7ed52aed59cb029abdf0ea25c79634f6cbe960",
+    "size_bytes": 7845048
+  },
+  "interpreter_alias": "/usr/bin/python3",
+  "interpreter_link": "python3.12",
+  "package": "ubuntu-pro-client",
+  "package_files": {
+    "path": "/var/lib/dpkg/info/ubuntu-pro-client.md5sums",
+    "sha256": "47681f62e0018134300e70d7440a13b2fdbf0c23095f58858c2b21c66c5c7b64",
+    "size_bytes": 20246
+  },
+  "package_version": "37.2ubuntu~24.04.1",
+  "schema_id": "comfy-observer-selected-system-python-services-v1",
+  "services": [
+    {
+      "apparmor": {
+        "path": "/etc/apparmor.d/ubuntu_pro_apt_news",
+        "sha256": "26f064962906681651f813d55de4993c79d50fb1b4225a535db454ae07f4f33c",
+        "size_bytes": 2064
+      },
+      "apparmor_profile": "ubuntu_pro_apt_news",
+      "argv": [
+        "/usr/bin/python3",
+        "/usr/lib/ubuntu-advantage/apt_news.py"
+      ],
+      "script": {
+        "path": "/usr/lib/ubuntu-advantage/apt_news.py",
+        "sha256": "426f3a6451d642c7004a0f5a2cb8b3f1d94581bd0721995f5e926bb875f1663d",
+        "size_bytes": 565
+      },
+      "unit": "apt-news.service",
+      "unit_file": {
+        "path": "/usr/lib/systemd/system/apt-news.service",
+        "sha256": "57c1b59ffbddd658505855043c694074226ee08c289202fdc6da872d0b064905",
+        "size_bytes": 1626
+      }
+    },
+    {
+      "apparmor": {
+        "path": "/etc/apparmor.d/ubuntu_pro_esm_cache",
+        "sha256": "1309fffb6320d9fedeff0d575630acea39a38f402da69398b29b69b4547ca951",
+        "size_bytes": 7217
+      },
+      "apparmor_profile": "ubuntu_pro_esm_cache",
+      "argv": [
+        "/usr/bin/python3",
+        "/usr/lib/ubuntu-advantage/esm_cache.py"
+      ],
+      "script": {
+        "path": "/usr/lib/ubuntu-advantage/esm_cache.py",
+        "sha256": "8d41355d9b50d75a61c738369b1a4dfe4be17f0f7d073c4f6bddfb77d091b223",
+        "size_bytes": 491
+      },
+      "unit": "esm-cache.service",
+      "unit_file": {
+        "path": "/usr/lib/systemd/system/esm-cache.service",
+        "sha256": "d3def98a9bfb5ac2f9b50d9a601b757b247293e19628ab02be72825d4e2d7ebd",
+        "size_bytes": 1005
+      }
+    }
+  ]
+}

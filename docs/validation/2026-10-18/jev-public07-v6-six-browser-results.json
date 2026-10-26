@@ -1,0 +1,152 @@
+{
+  "schema_id": "jev-public07-v6-six-browser-results-v1",
+  "stage": "all_six_completed_original_failures_preserved",
+  "summary": {
+    "path": "artifacts/jev-runtime/public07-six-v6-browser-20261018-01/results/summary.json",
+    "sha256": "c0309c138ae441cc7d4cb5a73e2cd2d075151e1b7f621c7c5f9067cbdb6e0bef",
+    "size_bytes": 464015
+  },
+  "closed_evidence_index": {
+    "path": "artifacts/jev-runtime/public07-six-v6-browser-20261018-01/closed-index-01.json",
+    "sha256": "99c4c3bbf2642a53076e14f19e1f36e031d799aeaed72e4d61def6f04a76d10a",
+    "size_bytes": 14364
+  },
+  "closed_files_excluding_index": 79,
+  "closed_bytes_excluding_index": 26479427,
+  "profile": "composed-visible-controls-settled-v6",
+  "parent": "v4; navigation-only ablation, no v5 CSS menu discovery",
+  "qualification_sha256": "c1fea3d45a7841c410f9c9c20eba32d3794025611ded8a68eeb9422baab50125",
+  "protocol": "Same120 adapter/fixed base helper,all6,repeats1,max16,seed20261014,TEXT_MODEL_REASONING=none,1120x780,strictDONE+freshDOMjudge; interfaces exposed.",
+  "score": {
+    "successes": 3,
+    "attempts": 6,
+    "policy_calls": 44,
+    "text_calls": 1,
+    "premature_done_count": 1,
+    "observation_profile_failed": false
+  },
+  "tasks": [
+    {
+      "case_id": "heldout-public-000-000",
+      "success": true,
+      "goal_satisfied": true,
+      "error": null,
+      "policy_calls": 3,
+      "text_calls": 0,
+      "premature_done": false
+    },
+    {
+      "case_id": "heldout-public-001-000",
+      "success": true,
+      "goal_satisfied": true,
+      "error": null,
+      "policy_calls": 3,
+      "text_calls": 0,
+      "premature_done": false
+    },
+    {
+      "case_id": "heldout-public-002-000",
+      "success": false,
+      "goal_satisfied": false,
+      "error": "Runner stopped at the 16-decision budget",
+      "policy_calls": 16,
+      "text_calls": 0,
+      "premature_done": false
+    },
+    {
+      "case_id": "heldout-public-003-000",
+      "success": true,
+      "goal_satisfied": true,
+      "error": null,
+      "policy_calls": 12,
+      "text_calls": 0,
+      "premature_done": false
+    },
+    {
+      "case_id": "heldout-public-004-000",
+      "success": false,
+      "goal_satisfied": false,
+      "error": null,
+      "policy_calls": 1,
+      "text_calls": 0,
+      "premature_done": false
+    },
+    {
+      "case_id": "heldout-public-005-000",
+      "success": false,
+      "goal_satisfied": false,
+      "error": null,
+      "policy_calls": 9,
+      "text_calls": 1,
+      "premature_done": true
+    }
+  ],
+  "native_observation_raw_counts": [
+    {
+      "case_id": "heldout-public-000-000",
+      "observations": 7,
+      "null_values": 4,
+      "max_consecutive_null_values": 4
+    },
+    {
+      "case_id": "heldout-public-001-000",
+      "observations": 17,
+      "null_values": 13,
+      "max_consecutive_null_values": 13
+    },
+    {
+      "case_id": "heldout-public-002-000",
+      "observations": 18,
+      "null_values": 0,
+      "max_consecutive_null_values": 0
+    },
+    {
+      "case_id": "heldout-public-003-000",
+      "observations": 27,
+      "null_values": 14,
+      "max_consecutive_null_values": 14
+    },
+    {
+      "case_id": "heldout-public-004-000",
+      "observations": 1,
+      "null_values": 0,
+      "max_consecutive_null_values": 0
+    },
+    {
+      "case_id": "heldout-public-005-000",
+      "observations": 29,
+      "null_values": 17,
+      "max_consecutive_null_values": 11
+    }
+  ],
+  "observation_interpretation": "Raw nulls retained. Counts/streaks can span observe calls and are not individual settle duration measurements. Independent native streaming fixtures establish bounded read-only recovery; benchmark does not separately serialize Browser.observation_settling.",
+  "pubmed_search_failure": {
+    "case_id": "heldout-public-005-000",
+    "helper_HTTP_status": 200,
+    "raw_output": "```json\n{\"text\": \"migraine\"}\n```",
+    "usage": {
+      "input_tokens": 626,
+      "output_tokens": 13
+    },
+    "adapter_state": "disabled_for_pinned_base_helper",
+    "helper_format_failure": false,
+    "native_action_history": [
+      "Clear all",
+      "TYPE search=migraine",
+      "CLICK Search",
+      "CLICK Display options"
+    ],
+    "final_status": "DONE",
+    "final_url": "https://pubmed.ncbi.nlm.nih.gov/?term=migraine",
+    "final_ready_state": "complete",
+    "failure": "Required Free full text filter absent in fresh URL/form/banner verification; premature DONE. A helper grammar fix alone cannot establish success."
+  },
+  "comparison": {
+    "v3": "3/6",
+    "corrected_v4": "2/6",
+    "v5": "3/6",
+    "v6": "3/6",
+    "interpretation": "No gain over v3; pandas passed. The actual run and independent navigation fixtures support the settling mechanism, but single runs with live timing changes do not establish comparative success-rate improvement or a CSS causal effect."
+  },
+  "relative_model_victory_attested": false
+}

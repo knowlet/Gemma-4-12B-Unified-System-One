@@ -1,0 +1,95 @@
+{
+  "schema": "train-collector-source-validation-v1",
+  "status": "SOURCE_CHECKS_PASS_NO_ACTUAL",
+  "results": [
+    {
+      "name": "import_order",
+      "exit_code": 0,
+      "seconds": 0.018572970991954207,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 0.015394437999930233,
+      "stdout": "2 files left unchanged\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "held_collector_fakes",
+      "exit_code": 0,
+      "seconds": 0.31614283501403406,
+      "stdout": "",
+      "stderr": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.113s\n\nOK\n",
+      "affinity": [
+        0
+      ],
+      "CPU_seconds": 30,
+      "AS_bytes": 536870912
+    },
+    {
+      "name": "ruff_check",
+      "exit_code": 0,
+      "seconds": 0.015602998988470063,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "released_collector_fakes",
+      "exit_code": 0,
+      "seconds": 0.3157875209872145,
+      "stdout": "",
+      "stderr": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.112s\n\nOK\n",
+      "affinity": [
+        0
+      ],
+      "CPU_seconds": 30,
+      "AS_bytes": 536870912
+    },
+    {
+      "name": "final_format_check",
+      "exit_code": 0,
+      "seconds": 0.018473755015293136,
+      "stdout": "2 files already formatted\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    }
+  ],
+  "sources": [
+    {
+      "path": "artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/collector.py",
+      "sha256": "d5ee5888c108bad4243d3f958d3e0e3eafc3e8d523be4047cf4ce2f1f7c0b68a",
+      "size_bytes": 33197
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/test_collector.py",
+      "sha256": "9205e4a0eda5ef2f9bc74f6fbe7269a73b216bf7f85e7e4944b75d8b49d50e3f",
+      "size_bytes": 12541
+    }
+  ],
+  "held_to_released_only_change": [
+    "SOURCE_ONLY"
+  ],
+  "training_or_browser_quality_qualified": false,
+  "peer_scope": "Two peers source-only; root fixed identified blockers. No peer actual reads."
+}

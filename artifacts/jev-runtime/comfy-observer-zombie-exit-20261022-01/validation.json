@@ -1,0 +1,53 @@
+{
+  "schema_id": "jev-comfy-zombie-exit-validation-v1",
+  "created_at_utc": "2026-10-22T10:44:36.652519+00:00",
+  "baseline": {
+    "path": "artifacts/jev-runtime/comfy-observer-resolved-context-20261022-01/comfy_observer.py",
+    "sha256": "103804b05e3047011aa5daf099c04ee71a60b3e1435c0690dc7b0377bd486df7",
+    "size_bytes": 26395
+  },
+  "source": {
+    "path": "artifacts/jev-runtime/comfy-observer-zombie-exit-20261022-01/comfy_observer.py",
+    "sha256": "2bd125f17db7739d19979565fcf8013c897f620caaa948d8ffe4de1559bf9fd6",
+    "size_bytes": 27795
+  },
+  "changed_AST_functions_only": [
+    "_wait_disappeared"
+  ],
+  "tests": {
+    "passed": 109,
+    "suite_seconds": 1.7,
+    "baseline_pure_regressions": 106,
+    "actual_owned_child_controls": 3,
+    "junit": {
+      "path": "artifacts/jev-runtime/comfy-observer-zombie-exit-20261022-01/tests-01.xml",
+      "sha256": "07371ba6dcacdaa16c27dad08feb70ce351b391717df7f63abacc567e0b3e97f",
+      "size_bytes": 21859
+    }
+  },
+  "fresh_host_observation": {
+    "read_only_calls": 10,
+    "all_absent_confirmed": true,
+    "max_seconds": 0.18530137100060529,
+    "receipt": {
+      "path": "artifacts/jev-runtime/comfy-observer-zombie-exit-20261022-01/fresh-readonly-observations-01.json",
+      "sha256": "3df7005329ad428e93cff482cce5d1f258d1588de309da35ff039aa98258c31f",
+      "size_bytes": 1170
+    }
+  },
+  "guard_budgets_unchanged": {
+    "natural_exit_seconds": 0.5,
+    "complete_observation_seconds": 2.0
+  },
+  "live_unknown_or_intrinsic_Comfy_acceptance": false,
+  "Comfy_foreign_process_unit_model_or_GPU_mutation": false,
+  "own_test_child_cleanup_only": true,
+  "individual_actual_PID91598_cause_proven": false,
+  "ruff_check_and_format": "PASS",
+  "primary_reference": "https://man7.org/linux/man-pages/man2/pidfd_open.2.html",
+  "independent_review_pending": false,
+  "independent_reviews": [
+    "HTTP CLEAR exact2bd125",
+    "GX CLEAR exact2bd125"
+  ]
+}

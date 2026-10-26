@@ -1,0 +1,41 @@
+{
+  "actual01_result": "REFUSED_BEFORE_AGENT_ACTIONS; originalattemptunchanged; seefailed-attempt-01-audit",
+  "actual_attempts_created": false,
+  "expected_launch_contract": {
+    "address_space_limit": null,
+    "affinity_cpu": 0,
+    "blas_threads": 1,
+    "core_bytes": 0,
+    "cpu_limit_seconds": 60,
+    "file_bytes": 8388608,
+    "nofile": 512,
+    "outer_term_kill_grace_seconds": 10,
+    "outer_wall_seconds": 110
+  },
+  "lint_and_format": "Ruff check PASS and three formatted frozen files",
+  "narrow_fix": "Retain initial reviewed self ref and captured final self ref/error; evidence persistence must preserve receipt + primary on source-evidence failure. Two pure CPU regression cases pass.",
+  "review_receipt": {
+    "path": "artifacts/jev-runtime/browser-find-text-current-stack-cpu-20261023-01/independent-review.json",
+    "sha256": "2aa80437eb97f15761e0a58c6edd80696c38eb60d8cd1dea55adf0e638e9c324",
+    "size_bytes": 15592
+  },
+  "review_status": "CLEAR_FOR_E17_SOURCE_AND_SINGLE_ACTUAL01",
+  "schema_id": "find-current-stack-cpu-source-freeze-v1",
+  "scope": "SOURCE_ONLY_BEFORE_ANY_ACTOR_RUN",
+  "sources": {
+    "audit_saved.py": {
+      "sha256": "0ad4999de57b75177d83590152c18323a60ebb44342efa556cb40df53d473a9b",
+      "size_bytes": 11212
+    },
+    "run_fixture.py": {
+      "sha256": "e17a1235c2cb0b7bbd67603eaf450c6919fc634340dca5ea870fb0533b91fb84",
+      "size_bytes": 53300
+    },
+    "test_static.py": {
+      "sha256": "784724bada726ef860b8eb2c85f9220de85edf4d23f70731c220f1e2c2a5a653",
+      "size_bytes": 4085
+    }
+  },
+  "static_test_stdout": "14 passed in 0.17s",
+  "static_tests_passed": 14
+}

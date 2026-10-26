@@ -1,0 +1,76 @@
+{
+  "schema_id": "GX10-standalone-warm-diagnostic-source-validation-v1",
+  "sources": {
+    "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py": {
+      "sha256": "f674f01dad902f8184fbf1be5af2b25f0ba366387080baff53e9e6032de01bac",
+      "size_bytes": 19406
+    },
+    "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/test_gx10_warm_probe.py": {
+      "sha256": "ac3af9a928bee1f80d0fd860b9e73f0bbb02a7618dc06ab9ef15d6ea2aadf59e",
+      "size_bytes": 7121
+    }
+  },
+  "checks": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-B",
+        "-s",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/test_gx10_warm_probe.py"
+      ],
+      "started_unix": 1792496502.381249,
+      "finished_unix": 1792496506.7782207,
+      "returncode": 0,
+      "stdout": ".........                                                                [100%]\n9 passed in 4.02s\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py",
+        "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/test_gx10_warm_probe.py"
+      ],
+      "started_unix": 1792496506.7782257,
+      "finished_unix": 1792496506.7897334,
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py",
+        "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/test_gx10_warm_probe.py"
+      ],
+      "started_unix": 1792496506.7897363,
+      "finished_unix": 1792496506.801298,
+      "returncode": 0,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-B",
+        "-s",
+        "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/gx10_warm_probe.py"
+      ],
+      "started_unix": 1792496506.8013003,
+      "finished_unix": 1792496506.8880131,
+      "returncode": 0,
+      "stdout": "{\"profile\": \"decision3-gx10-publisher-text48-standalone-diagnostic-v1\", \"mode\": \"DRY\", \"actual_started\": false, \"warmup_calls\": 48, \"helper_used\": false, \"browser_tasks\": 0, \"wall_seconds\": 1800, \"matched_quality_qualified\": false}\n",
+      "stderr": ""
+    }
+  ],
+  "tiny_children_are_real": true,
+  "ML_components": "explicit synthetic fakes only",
+  "GPU_model_framework_browser_calls": 0
+}

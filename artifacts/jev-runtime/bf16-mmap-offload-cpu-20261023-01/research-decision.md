@@ -1,0 +1,15 @@
+# Decision recorded before real execution
+
+Reuse the committed read-only study `docs/research/2026-10-23-bf16-mmap-layer-offload-feasibility.md` (SHA-256 `205f4c655905634ff205d2805cf47f96cecf1072fd162b67807dda7afeb6b9a4`). It found a source-level route for external mmap-backed BF16 tensors, but no evidence that the real model fits the available RAM or meets the original context/latency budgets. A tiny mechanism observation is the next useful bounded question; a new large-model loader is outside this change.
+
+Primary local implementation evidence was read before preparation:
+
+- `overlay/accelerate/big_modeling.py:179`: `cpu_offload` keeps the caller's external dictionary, installs real hooks and does not pass a tied-parameter map or retie. The documented execution device should be a GPU; using CPU is explicitly a same-device mechanism experiment.
+- `overlay/accelerate/hooks.py:186`: replaced forward calls pre → original body → post without `try/finally`. Thus body failure can leave weights materialized; the fixture records that state and explicitly detaches, preserving the primary exception.
+- `overlay/accelerate/utils/modeling.py`: parameter materialization can replace Parameter objects. CPU string execution avoids treating a `torch.device('cpu')` as a non-CPU cache-clear branch. Pointer alias is measured separately from object identity.
+- `overlay/safetensors/torch.py` and package API: actual `safe_open(...backend='mmap', device='cpu')`; never read a real model shard. The small generated file is read only after creation and chmod, and its hash is rechecked even after later actor failures.
+- `overlay/peft/tuners/lora/model.py:419`, `peft/import_utils.py`, and bitsandbytes `__init__` / `cextension` / `cuda_specs`: installed bnb dispatch may genuinely query CUDA availability. The fixture calls the original queries, records each actual False/0 result and never substitutes a dependency or invented return value.
+
+The source selection records these small Python files and the Torch module/parameter/linear/embedding implementations; it records large native libraries by stat only. This limited selection cannot substantiate a complete Python/native runtime closure. Official API/source references from the preceding study remain applicable: [Accelerate 1.15 API](https://huggingface.co/docs/accelerate/v1.15.0/en/package_reference/big_modeling), [Accelerate CPU offload implementation](https://github.com/huggingface/accelerate/blob/v1.15.0/src/accelerate/big_modeling.py), [safetensors 0.8 storage source](https://github.com/safetensors/safetensors/blob/v0.8.0/bindings/python/src/lib.rs).
+
+Do not repair ties, force a passing dependency path, change precision, merge the LoRA, relax original Q95 gates or describe CPU same-device parity as GPU transfer parity. Observed incompatibilities remain evidence for whether further independent profiling is worthwhile. Only the root-owned reviewed controller may launch the real fixture; preparation runs stdlib tests and static lint alone.

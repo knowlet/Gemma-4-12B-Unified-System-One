@@ -1,0 +1,63 @@
+{
+  "schema_id": "jev-decision3-local-cache-staging-results-v1",
+  "date": "2026-10-20",
+  "status": "STAGED_METADATA_ONLY_FULL_WEIGHT_VERIFICATION_PENDING",
+  "problem": "The existing local Decision3 files were outside the exact HF snapshot paths required by the unchanged cache authenticator and backend.",
+  "result": {
+    "models": [
+      "d3-lite",
+      "d3-edge"
+    ],
+    "hardlinks_created": 42,
+    "files_per_snapshot": {
+      "d3-lite": 21,
+      "d3-edge": 21
+    },
+    "source_and_target_same_inode": true,
+    "all_target_populations_and_metadata_rechecked": true,
+    "tensor_payloads_copied_or_read": false,
+    "weight_headers_read": false,
+    "model_or_tokenizer_loaded": false,
+    "ready": false,
+    "qualified": false
+  },
+  "method": "Derive exact20 runtime names from each authenticated publisher manifest using the existing CORE exclusions, then include MODEL_MANIFEST.json:21 files each. Create ordinary fresh canonical snapshot directories and hardlink the existing files without copy fallback. Verify source/target dev/inode/size/mtime, expected nlink1-to2 and ctime change. No chmod, utime or linked-content writes.",
+  "validation": "Root rechecked all42 current source/target metadata and exact21 populations, intent SHA, exit0 and owner PID absence. Only non-safetensor files<=1MiB were content-hashed; tensors, tokenizer.json, merges.txt and vocab.json remain metadata-only. Independent closed review confirms all42 links and original manifest/source authority; payload remains unverified.",
+  "paths": [
+    {
+      "model": "d3-lite",
+      "source": "artifacts/jev-d3-native/offline-cache/d3-lite-9c10703193afc7c7d28c88201c0364bfbbf58320",
+      "canonical_snapshot": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-lite/snapshots/9c10703193afc7c7d28c88201c0364bfbbf58320",
+      "revision": "9c10703193afc7c7d28c88201c0364bfbbf58320"
+    },
+    {
+      "model": "d3-edge",
+      "source": "artifacts/jev-d3-native/offline-cache/d3-edge-cab71e6ad3461b8086d51ddb572c656babd63b0b",
+      "canonical_snapshot": "artifacts/jev-local-hf/hub/models--vllm-sr--d3-edge/snapshots/cab71e6ad3461b8086d51ddb572c656babd63b0b",
+      "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b"
+    }
+  ],
+  "evidence": {
+    "intent": {
+      "path": "artifacts/jev-runtime/decision3-GX10-cache-staging-20261020-01/intent.json",
+      "sha256": "d9bd2a667c2c86fc5706c84f9aeb8e4cb0c7abdbbae31bd4e576b0b51a11a353",
+      "size_bytes": 20465
+    },
+    "receipt": {
+      "path": "artifacts/jev-runtime/decision3-GX10-cache-staging-20261020-01/receipt.json",
+      "sha256": "be3ff46a5b1797e9963ce338479cbde86f5eacacfa72ad9c15cba41111ff745f",
+      "size_bytes": 36780
+    },
+    "independent_review": {
+      "path": "artifacts/jev-runtime/decision3-GX10-cache-staging-20261020-01/independent-cache-staging-review-01.json",
+      "sha256": "cdc66ebac74e7ca4ebb4059aa626088fb85bc3fb613021b46bb007c101b9916c",
+      "size_bytes": 4524
+    }
+  },
+  "limitations": [
+    "Canonical cache presence and inode equality establish staging; they do not establish trusted weight contents, BF16/readout geometry, runtime compatibility or memory capacity.",
+    "Original CORE full runtime SHA/header checks and fresh unchanged memory admission still must complete before any model load.",
+    "The GX10 warm worker/gateway, shared Q95 helper freshness, simultaneous resources and full process closure remain separate work. The four other Decision3 models remain in the six-model comparison scope; this staging supplies no task score or superiority."
+  ],
+  "latest_quality": "Existing complete exposed10-task Gemma browser result remains5/10; no new Decision3 warm result."
+}

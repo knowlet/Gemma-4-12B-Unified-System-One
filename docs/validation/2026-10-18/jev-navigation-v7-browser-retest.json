@@ -1,0 +1,293 @@
+{
+  "schema_id": "jev-v7-full10-browser-retest-validation-v1",
+  "status": "COMPLETE_CLOSED_4_OF_10_NO_MODEL_SUPERIORITY",
+  "result": {
+    "known4": {
+      "successes": 1,
+      "denominator": 4
+    },
+    "public6": {
+      "successes": 3,
+      "denominator": 6
+    },
+    "combined": {
+      "successes": 4,
+      "denominator": 10
+    }
+  },
+  "comparison": {
+    "same_Q93_v3": {
+      "successes": 3,
+      "denominator": 10
+    },
+    "current_Q93_v7": {
+      "successes": 4,
+      "denominator": 10
+    },
+    "older_pre_Q93_best_on_same_sets": {
+      "successes": 4,
+      "denominator": 10
+    },
+    "only_new_passing_case": "heldout-public-003",
+    "new_overall_record": false,
+    "matched_causal_experiment": false,
+    "model_superiority_attested": false
+  },
+  "conditions": {
+    "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+    "profile": "composed-visible-text-settled-v7",
+    "profile_source_sha256": "d9f4236d1d46c9472c3d6c1551342639ecb870e6c0dd419246927645410ea868",
+    "Q93_qualification_sha256": "1dfc2c7ab91bf0144f0547b5b144de969310d84944097ac60ec82b1a8d49012c",
+    "public240_manifest_sha256": "1b56f7697b551ca1869eda098fb4a82941ee0c5ab19259b1c8c9ea44cbcba78c",
+    "weights_or_helper_changed": false,
+    "group_order": [
+      "known4",
+      "public6"
+    ],
+    "fixed_denominator": 10,
+    "repeats": 1,
+    "seed": 20261014,
+    "max_decisions_per_case": 16,
+    "model_seconds": 20,
+    "helper_seconds": 20,
+    "SDK_seconds": 25,
+    "context_tokens": 8192,
+    "policy_tokens": 32,
+    "helper_EOS_tokens": 128,
+    "reasoning": "none",
+    "precision": "BF16 base, original176 FP32 q/v LoRA tensors, full262144 head",
+    "viewport": [
+      1120,
+      780
+    ],
+    "screenshots": false,
+    "judge": "Original strict final DONE plus fresh independent DOM success and no error; all403/blocked/timeouts/decision-budget failures retained."
+  },
+  "cases": [
+    {
+      "case_id": "public-arxiv-title-filter-results-v1",
+      "success": false,
+      "final_status": "done",
+      "policy_calls": 5,
+      "helper_calls": 1,
+      "error_stage": null,
+      "premature_done": true,
+      "final_url": "https://arxiv.org/search/?query=Attention+Is+All+You+Need&searchtype=title&abstracts=hide&order=-announced_date_first&size=50"
+    },
+    {
+      "case_id": "public-arxiv-original-paper-open-v1",
+      "success": false,
+      "final_status": "ready",
+      "policy_calls": 16,
+      "helper_calls": 2,
+      "error_stage": "decision_budget",
+      "premature_done": false,
+      "final_url": "https://arxiv.org/search/advanced?advanced=&terms-0-operator=AND&terms-0-term=Attention+Is+All+You+Need&terms-0-field=title&classification-physics_archives=all&classification-include_cross_list=include&date-filter_by=all_dates&date-year=&date-from_date=&date-to_date=&date-date_type=submitted_date&abstracts=show&size=50&order=-announced_date_first&start=50"
+    },
+    {
+      "case_id": "public-python-counter-most-common-v1",
+      "success": true,
+      "final_status": "done",
+      "policy_calls": 6,
+      "helper_calls": 0,
+      "error_stage": null,
+      "premature_done": false,
+      "final_url": "https://docs.python.org/3.14/library/collections.html#collections.Counter"
+    },
+    {
+      "case_id": "public-nasa-mars-facts-moons-v1",
+      "success": false,
+      "final_status": "ready",
+      "policy_calls": 16,
+      "helper_calls": 1,
+      "error_stage": "decision_budget",
+      "premature_done": false,
+      "final_url": "https://science.nasa.gov/solar-system/"
+    },
+    {
+      "case_id": "heldout-public-000",
+      "success": true,
+      "final_status": "done",
+      "policy_calls": 3,
+      "helper_calls": 0,
+      "error_stage": null,
+      "premature_done": false,
+      "final_url": "https://www.sqlite.org/windowfunctions.html#biwinfunc"
+    },
+    {
+      "case_id": "heldout-public-001",
+      "success": true,
+      "final_status": "done",
+      "policy_calls": 3,
+      "helper_calls": 0,
+      "error_stage": null,
+      "premature_done": false,
+      "final_url": "https://numpy.org/doc/2.3/reference/generated/numpy.reshape.html"
+    },
+    {
+      "case_id": "heldout-public-002",
+      "success": false,
+      "final_status": "ready",
+      "policy_calls": 16,
+      "helper_calls": 0,
+      "error_stage": "decision_budget",
+      "premature_done": false,
+      "final_url": "https://curl.se/docs/manpage.html"
+    },
+    {
+      "case_id": "heldout-public-003",
+      "success": true,
+      "final_status": "done",
+      "policy_calls": 12,
+      "helper_calls": 0,
+      "error_stage": null,
+      "premature_done": false,
+      "final_url": "https://pandas.pydata.org/pandas-docs/version/2.3/reference/api/pandas.Series.map.html#pandas.Series.map"
+    },
+    {
+      "case_id": "heldout-public-004",
+      "success": false,
+      "final_status": "blocked",
+      "policy_calls": 1,
+      "helper_calls": 0,
+      "error_stage": null,
+      "premature_done": false,
+      "final_url": "https://pubmed.ncbi.nlm.nih.gov/"
+    },
+    {
+      "case_id": "heldout-public-005",
+      "success": false,
+      "final_status": "blocked",
+      "policy_calls": 8,
+      "helper_calls": 1,
+      "error_stage": null,
+      "premature_done": false,
+      "final_url": "https://pubmed.ncbi.nlm.nih.gov/advanced/"
+    }
+  ],
+  "transport": {
+    "attempts": 91,
+    "distinct_request_ids": 91,
+    "policy": 86,
+    "helper": 5,
+    "http_200": 91,
+    "unknown_deliveries": 0,
+    "original_gate_rows": 1410,
+    "native_forward_records": 1046,
+    "all_original_gates_admitted": true,
+    "exact_SDK_body_status_RID_and_server_raw_outer_join": true
+  },
+  "helper_validation": {
+    "positive_intrinsic_EOS_decoder_full_masks_and_restoration": 5,
+    "authorized_actual_HTTP200_deliveries": 5,
+    "whole_helper_ms_min": 9571.463760978077,
+    "whole_helper_ms_max": 10683.167395007331,
+    "semantic_task_correctness_implied": false
+  },
+  "navigation": {
+    "accepted_native_snapshot_SHA_joins": 106,
+    "null_navigation_operations": 92,
+    "timeouts": 0,
+    "terminal_unknown_records": 0,
+    "max_observe_seconds": 2.9459020160138607,
+    "pandas": {
+      "observe_call_id": 38,
+      "elapsed_seconds": 1.5632555289776064,
+      "attempts_in_one_observe": 23,
+      "preceding_null_navigation_operations": 22,
+      "accepted_snapshot_SHA": "8c3c0288e3586fbaff1c4359c3fd57ab76b3f08a70825ab8225307ebebfbe0fa",
+      "saved_Agent_state_indices": [
+        10
+      ],
+      "strict_DONE_fresh_judge_success": true
+    },
+    "mechanism": "Pandas step9 clicked the offered Series.map once. One v7 observe handled22 native Document is navigating responses and accepted the23rd snapshot in1.563255529s; its SHA joins raw native reply and saved Agent state10. Inherited Browser.observe has10 tries per call, and Agent can invoke a second call. The retry itself neither replays input nor invokes a model; the case used12 policy calls in this run.",
+    "timing_limit": "Cooperative5s per-observe target; synchronous CDP can overshoot. Timings cover native observe operations, not individual CDP calls. This run had no timeouts; sealed fixtures separately cover timeout history."
+  },
+  "remaining_failures": [
+    "arXiv title: helper generated an unquoted query and policy prematurely chose DONE despite exact-phrase goal; validJSON and delivery did not establish semantic correctness.",
+    "arXiv paper, NASA, curl: original16-decision budget exhausted.",
+    "PubMed004: initialpage403 Forbidden and BLOCKED. PubMed005: valid migraine text delivered, policy cleared filters and clicked Advanced, then page403 Forbidden and BLOCKED. This is not proof that the intended search was submitted correctly and denied."
+  ],
+  "closure": {
+    "both_browser_groups_closed": true,
+    "owned_model_service_exit": 0,
+    "model_loads": 1,
+    "all176_exact_frozen_eval_and_full_head_final_checks": true,
+    "private_service_tree_files": 4314,
+    "private_service_tree_bytes": 756431129,
+    "private_config_contents_published": false
+  },
+  "limits": [
+    "These10cases are exposed development tasks, not blind heldout generalization. Live pages/network timing and trajectories differ between runs; the score delta is not an isolated causal estimate.",
+    "4/10 improves the immediately preceding sameQ93/v3 run by one and only ties the older4/10 result. It is not overall superiority or completion of the continuous goal.",
+    "Observation diagnostics and transparent SDK hashing are part of this measured condition. No model/helper/step/token/time/judge relaxation or failure exclusion."
+  ],
+  "evidence": [
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/plan-01.json",
+      "sha256": "4b88ad1fd587210e46d4ce51d7d4de93ae8dde4ec90f83068fb769ead6b55ae9",
+      "size_bytes": 22925
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/source-HOLD-01/HOLD.json",
+      "sha256": "f0b25dbe1c9e58cefb6d89954e955510dba333b669dc002aeb24b47fa769e53d",
+      "size_bytes": 15233
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/independent-source-review-01.json",
+      "sha256": "b526d6e22ce9d01fa3838a313bb57e7d6a70adf16069c8840e76c54c031d24b2",
+      "size_bytes": 4453
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/independent-known4-join-review-01/review.json",
+      "sha256": "46d0eb8073f6f1a7928fc8155f472ac4cd49e379ee447c8628a7e9f06b65739b",
+      "size_bytes": 74913
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/independent-public6-join-review-01/review.json",
+      "sha256": "57b7810ece82597dc9129b8fb20ae41965ffb73195c869cb461df7c7b70064b4",
+      "size_bytes": 69483
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/independent-campaign-projection-01.json",
+      "sha256": "baf0dcd2966d615a76d3b83cee69648556e28841ceecd96843c1567f56aa1fff",
+      "size_bytes": 12455
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/root-91-wire-join-review-01.json",
+      "sha256": "eb63c077b2ca6178822aada2412b4b4cd67b4f4518174f146499bc31e06f86c3",
+      "size_bytes": 1201
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/root-known4-closed-index-01.json",
+      "sha256": "e93d07bf331fb608ba1fb27f74fa2bc29b123a8a175ece05a429f08b0f299f24",
+      "size_bytes": 40712
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/root-public6-closed-index-01.json",
+      "sha256": "d517b8debd042c9aa0faaf3ef0c259cb3ee5ce2aa11895fc079ae83d70df0079",
+      "size_bytes": 41980
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/root-service-closed-index-01.json",
+      "sha256": "d25ea8681eceb10e38dd2e458e2069a6568533858b26d4b3567f83d3efaaa22c",
+      "size_bytes": 977795
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/serve-01/owned-exit.json",
+      "sha256": "9df497a090f5fe7c8cad64fe5e5da32dc666ee5c71e1780935a0b60176ae44e3",
+      "size_bytes": 245
+    },
+    {
+      "path": "artifacts/jev-runtime/navigation-v7-qualified-browser-retest-20261018-01/serve-01/run/result.json",
+      "sha256": "f785f6f32b355c46e4b14dd913603ee1dd0ffabd0d2242d18dc8e6110c9e6440",
+      "size_bytes": 487
+    }
+  ],
+  "prior_record": {
+    "path": "docs/validation/2026-10-18/jev-field-json-browser-retest.json",
+    "sha256": "fa3a46cd2bada663f75033433229286e30815324a207813c851395907077d535",
+    "size_bytes": 13667
+  }
+}

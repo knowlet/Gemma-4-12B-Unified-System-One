@@ -1,0 +1,132 @@
+{
+  "schema_id": "observer-system-service-postmortem-diagnosis-v1",
+  "read_at_UTC": "2026-10-22T11:52:59.420658+00:00",
+  "read_monotonic": 19056.637073261,
+  "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+  "recorded_initial_unknowns": [
+    {
+      "pid": 120154,
+      "start_ticks": 1800891,
+      "classification": "uncertain_python_cwd",
+      "context_diagnostics": [
+        {
+          "cwd_failure_type": "PermissionError",
+          "cwd_sha256": null
+        },
+        {
+          "cwd_failure_type": "PermissionError",
+          "cwd_sha256": null
+        }
+      ],
+      "proc_owner_uid": 0,
+      "disappearance_resolution_eligible": true
+    },
+    {
+      "pid": 120155,
+      "start_ticks": 1800893,
+      "classification": "uncertain_python_cwd",
+      "context_diagnostics": [
+        {
+          "cwd_failure_type": "PermissionError",
+          "cwd_sha256": null
+        },
+        {
+          "cwd_failure_type": "PermissionError",
+          "cwd_sha256": null
+        }
+      ],
+      "proc_owner_uid": 0,
+      "disappearance_resolution_eligible": true
+    }
+  ],
+  "recorded_resolution": {
+    "started_monotonic": 18009.049074753,
+    "offenders": [
+      {
+        "pid": 120154,
+        "start_ticks": 1800891,
+        "classification": "uncertain_python_cwd",
+        "context_diagnostics": [
+          {
+            "cwd_failure_type": "PermissionError",
+            "cwd_sha256": null
+          },
+          {
+            "cwd_failure_type": "PermissionError",
+            "cwd_sha256": null
+          }
+        ],
+        "proc_owner_uid": 0,
+        "disappearance_resolution_eligible": true
+      },
+      {
+        "pid": 120155,
+        "start_ticks": 1800893,
+        "classification": "uncertain_python_cwd",
+        "context_diagnostics": [
+          {
+            "cwd_failure_type": "PermissionError",
+            "cwd_sha256": null
+          },
+          {
+            "cwd_failure_type": "PermissionError",
+            "cwd_sha256": null
+          }
+        ],
+        "proc_owner_uid": 0,
+        "disappearance_resolution_eligible": true
+      }
+    ],
+    "disappeared": [],
+    "exited_zombies": [],
+    "finished_monotonic": 18009.124204844,
+    "failure_reason": "Intrinsic/Comfy context observed during natural-exit check"
+  },
+  "both_recorded_PIDs_absent_at_postmortem": true,
+  "correlation": {
+    "apt_news_unit_start_monotonic": 18008.934407,
+    "esm_cache_unit_start_monotonic": 18008.938152,
+    "recorded_PID_start_monotonic": [
+      18008.91,
+      18008.93
+    ],
+    "apt_invocation": "d500a1c18a47477492696a4d13f1440a",
+    "esm_invocation": "dc2ffb9f630240a49be04a510c7d8eb6",
+    "exact_individual_PID_to_unit_mapping_proven": false,
+    "reason": "The PIDs were already absent. Both postmortem ExecStart pid values, ExecMainPID/timestamps and InvocationID were cleared. No exact-PID journal line or apport entry identified either PID. Unit birth/death timing is strong correlation only."
+  },
+  "historical_wait_refusal_cause": {
+    "actual_new_classification_saved": false,
+    "only_recorded_reason": "Intrinsic/Comfy context observed during natural-exit check",
+    "not_inferred": "No assertion that actual Comfy, empty command, or a specific maintenance program caused the historical wait failure."
+  },
+  "known_installed_authorities": {
+    "package": "ubuntu-pro-client",
+    "version": "37.2ubuntu~24.04.1",
+    "python3.12_version": "3.12.3-1ubuntu0.17",
+    "ownership_verified_read_only": "dpkg-query -S identifies both scripts and both AppArmor definitions as ubuntu-pro-client; selected SHA256 pins are exact current installed bytes, not a claim of universal runtime code authentication."
+  },
+  "successor_scope": "Future observer can recognize only the exact selected live OS command/service/security sandwiches. Historical observations and qualification claims are untouched; no root process or Comfy action was performed.",
+  "refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-03/owner-03/owner-final.json",
+      "sha256": "173612f6f936a2598f99c1298ddebc6faf769a06688e5afea21893533ddee67d",
+      "size_bytes": 15481
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/selected-system-journal.json",
+      "sha256": "fb72ec7fca568d2bf15f64237d4ce88fecc294dd3c352c3eced7bbf9b6f8cc7d",
+      "size_bytes": 3536
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/postmortem-unit-readback.txt",
+      "sha256": "7ff69c14f0f0ca067bb430359e65f1d69be48c34ba84da1887575bd6f1bd60e1",
+      "size_bytes": 615
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    }
+  ]
+}

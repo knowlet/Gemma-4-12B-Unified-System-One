@@ -1,0 +1,39 @@
+{
+  "schema_id": "generic-cpu5-fast-same-cluster-4g-owner-source-only-pending-v1",
+  "status": "SOURCE_ONLY_UNEXECUTED_UNFROZEN_UNSELECTED",
+  "execution_authorized": false,
+  "freeze_created": false,
+  "runnable_command_spec_created": false,
+  "owner_profile": "llama-cpp-cpu5-fast-same-cluster-4g-coexist-command-owned-v1",
+  "unit": "jev-d3-llama-cpp-cpu5-fast-4g-coexist-20261024-09.service",
+  "host_observation_policy": "comfy-observed-cpu-coexist-v1",
+  "parent_source_recorded_not_rehashed": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-08/controller.py",
+    "sha256": "ba91e1cbf66f9d1a0f4e16e610a1fe8952c2efde81e2a28f39a111a98ca10c9b",
+    "pin_source": "parent freeze.json; not independently verified by this author"
+  },
+  "resources": {
+    "runtime_reserve_bytes": 26119172916,
+    "memory_max_bytes": 4294967296,
+    "initial_full_cap_extra_bytes": 4294967296,
+    "initial_required_available_bytes": 30414140212,
+    "memory_swap_max_bytes": 0,
+    "cpu_affinity": [15, 16, 17, 18, 19],
+    "cpu_quota_percent": 500,
+    "cpu_quota_manager_readback": "5s",
+    "cpu_quota_kernel_ratio": 5,
+    "runtime_choices_seconds": [30, 7200, 10800],
+    "stop_seconds": 3,
+    "postreceipt_hold_seconds": 5,
+    "file_size_max_bytes": 268435456,
+    "command_stream_log_limit_bytes": 4194304
+  },
+  "selection_basis": "Root-supplied sysfs observation only:15-19 share cluster1144 and capacity1017-1024/max3.9GHz. Not reobserved; fast is a hypothesis, not a performance claim.",
+  "source_pins_pending": {"controller.py": null, "test_controller.py": null, "README.md": null},
+  "validation": null,
+  "independent_review": null,
+  "future_selected_command_spec_sha256": null,
+  "fresh_actual_admission_and_closure": null,
+  "fit_timing_quality_browser_or_competitor_qualification": null,
+  "no_escape_or_whole_tree_qualification": false
+}

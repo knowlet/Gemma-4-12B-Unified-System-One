@@ -1,0 +1,539 @@
+{
+  "closure": {
+    "cgroup_absent": true,
+    "closure_errors": [],
+    "closure_mode": "authenticated_stop",
+    "continuation_authorized": false,
+    "hold_deadline_margin_seconds": 4.295527944996138,
+    "model_qualified": false,
+    "no_escape_enforced": false,
+    "observed_cgroup_cohort_exit_confirmed": true,
+    "saved_after_stop_LoadState": "not-found",
+    "saved_after_stop_MainPID": "0",
+    "scope": "Exact saved unit invocation and observed cgroup cohort closed by original authenticated boundary. No fresh live query was performed; no universal process-tree or adversarial containment claim.",
+    "tracked_PID_starts": [
+      {
+        "pid": 362072,
+        "start_ticks": 7251380
+      },
+      {
+        "pid": 362077,
+        "start_ticks": 7251403
+      },
+      {
+        "pid": 362168,
+        "start_ticks": 7253144
+      },
+      {
+        "pid": 362169,
+        "start_ticks": 7253156
+      }
+    ],
+    "tracked_unique_PID_start_count": 4,
+    "two_process_scans": [
+      {
+        "matches": [],
+        "unknown": []
+      },
+      {
+        "matches": [],
+        "unknown": []
+      }
+    ],
+    "whole_tree_exit_confirmed": false,
+    "whole_unit_exit_confirmed": true
+  },
+  "created_at_UTC": "2026-10-23T02:49:50.644640+00:00",
+  "frozen_sources": {
+    "all22_spec_source_refs_rehashed_exact": true,
+    "controller": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/controller.py",
+      "sha256": "5672bc297869cee138726301f8c7d607adda138169b204747b9e8a2766546326",
+      "size_bytes": 38075
+    },
+    "runtime_selection_review": {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/independent-runtime-selection-review.json",
+      "sha256": "8046487140c3237eb3cc9119dc43843b0ffad08ef43a70e8e611357594324ca9",
+      "size_bytes": 16491
+    },
+    "selection": {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/root-smoke-selection.json",
+      "sha256": "58a4084ed100198dcf4b6be9b37f8d3991b5c0d5d09d57426e188b28de704c78",
+      "size_bytes": 5991
+    },
+    "source_review": {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/independent-source-review.json",
+      "sha256": "37228846ccc87b39bb5d2b8f9a7b24e80d8b3c0981184cd64573d5cb472378f2",
+      "size_bytes": 11723
+    },
+    "spec": {
+      "path": "artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-03/root-smoke-command-spec.json",
+      "sha256": "25f117466c695be423b918068b9bd1e717e501e023dd328ca32178ac6271ae84",
+      "size_bytes": 8488
+    }
+  },
+  "modifications": "Only this independent-result-audit.json was created; frozen actors/spec/selection and all actual-04 evidence were unchanged.",
+  "native_result": {
+    "argmax_or_numerical_agreement": "NOT_EVALUATED",
+    "attempted_arm": "full2048",
+    "cache_comparisons": [],
+    "compact2048_started": false,
+    "compact8192_started": false,
+    "completed": false,
+    "cpu_mmap_only_requested": true,
+    "gpu_layers_requested": 0,
+    "initial_VMA_scope": "This initial observation contained0 selected-model VMAs before later loader progress. No postwarm/postscore maps were taken because the warm call did not succeed;0 initially does not prove the model was never mmap-backed.",
+    "initial_selected_model_VMA_observation": {
+      "observed_VMA_count": 0,
+      "observed_virtual_bytes": 0,
+      "retained_VMAs": [],
+      "scope": "Selected model path VMAs in this bounded maps observation only; virtual mappings are not resident memory, all-weight backing, absence of anonymous buffers, or a universal mmap proof",
+      "selected_path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-01/package/s1-boolq-Q8_0.gguf",
+      "truncated": false
+    },
+    "logit_rows_observed": false,
+    "long_request_executed": false,
+    "meets20s_observed": false,
+    "milestone_limit": "Loader logs show mmap policy/CPU_Mapped buffers, context2048, KV32+640MiB, compute131.53MiB and projector tensor/dummy-batch initialization messages. These are not finite-logit, completed warm, text-forward timing or model-quality proof. Source sets projector warmup=false; dummy-batch messages alone are not a completed projector inference measurement.",
+    "native_PID_start": {
+      "pid": 362169,
+      "start_ticks": 7253156
+    },
+    "native_poll_at_timeout": null,
+    "native_stderr": {
+      "CPU_Mapped_buffer_log_rows": 49,
+      "last_line": "set_causal_attn: value = 1",
+      "observed_and_retained_bytes": 350243,
+      "proven_logged_milestones": [
+        {
+          "line": 1,
+          "text": "llama_model_loader: loaded meta data with 54 key-value pairs and 667 tensors from /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-01/package/s1-boolq-Q8_0.gguf (version GGUF V3 (latest))"
+        },
+        {
+          "line": 152,
+          "text": "load_tensors: loading model tensors, this can take a while... (load_mode = mmap)"
+        },
+        {
+          "line": 1688,
+          "text": "llama_context: constructing llama_context"
+        },
+        {
+          "line": 1690,
+          "text": "llama_context: n_ctx                 = 2048"
+        },
+        {
+          "line": 1692,
+          "text": "llama_context: n_batch               = 512"
+        },
+        {
+          "line": 1693,
+          "text": "llama_context: n_ubatch              = 512"
+        },
+        {
+          "line": 1704,
+          "text": "llama_context:        CPU  output buffer size =     1.00 MiB"
+        },
+        {
+          "line": 1804,
+          "text": "llama_kv_cache:        CPU KV buffer size =    32.00 MiB"
+        },
+        {
+          "line": 1906,
+          "text": "llama_kv_cache:        CPU KV buffer size =   640.00 MiB"
+        },
+        {
+          "line": 3408,
+          "text": "sched_reserve:        CPU compute buffer size =   131.53 MiB"
+        },
+        {
+          "line": 3452,
+          "text": "load_tensors: loaded 10 tensors from /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-01/package/mmproj-s1-boolq-f16.gguf"
+        },
+        {
+          "line": 3474,
+          "text": "load_tensors: loaded 3 tensors from /home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-01/package/mmproj-s1-boolq-f16.gguf"
+        },
+        {
+          "line": 3453,
+          "text": "get_dummy_batch: warmup with image size = 768 x 768"
+        },
+        {
+          "line": 3475,
+          "text": "get_dummy_batch: warmup with audio size = 3000"
+        },
+        {
+          "line": 3478,
+          "text": "set_causal_attn: value = 1"
+        }
+      ],
+      "reference": {
+        "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/scored/full2048/native.stderr",
+        "sha256": "664e24941306b92ddefc33d3d417b55fff081cc8dfa8c3f51a194960d1947887",
+        "size_bytes": 350243
+      },
+      "scope": "First4MiB retained; hash/count cover bytes drained before detach, not unread bytes after failure",
+      "truncated": false
+    },
+    "observed_response_bytes": 0,
+    "quality_N3_Q95_or_20s_qualified": false,
+    "requested_context": 2048,
+    "selected_libraries_present_in_initial_maps": true,
+    "swa_full_requested": true,
+    "threads_requested": 1,
+    "warm_deadline_outcome": "TimeoutError Native research RPC deadline; no complete or valid native response within startup-inclusive60 seconds.",
+    "warm_exchange": {
+      "child_returncode_at_exchange_final": null,
+      "complete_response": false,
+      "deadline_monotonic": 72591.566231667,
+      "deadline_seconds": 60,
+      "elapsed_le20s": false,
+      "elapsed_seconds": 60.00089347499306,
+      "finalization_monotonic": 72591.567125142,
+      "launch_monotonic": 72531.566231667,
+      "local_finalization_seconds": 0.0,
+      "meets20s_observed": false,
+      "name": "warm",
+      "partial_stdout_bytes": 0,
+      "partial_stdout_hex": "",
+      "pre_submission_elapsed_seconds": 0.01486410599318333,
+      "primary_error": {
+        "evidence": null,
+        "message": "Native research RPC deadline",
+        "type": "TimeoutError"
+      },
+      "request_sha256": "1b2110b8956cbc7721cae4f4acf3d9fdb13b7c5f606650c61a51cd050f7e70e2",
+      "request_size_bytes": 900,
+      "response": null,
+      "response_contract_validated": false,
+      "response_wire_sha256": null,
+      "response_wire_size_bytes": null,
+      "rpc_finished_monotonic": 72591.567125142,
+      "secondary_errors": [],
+      "startup_scope": "First short warm request measured from before Popen through response, including launch and identity observation; startup versus short scoring is not independently separated",
+      "stdin_bytes_sent": 900,
+      "submission_elapsed_seconds": 59.98602936899988,
+      "submitted_monotonic": 72531.581095773,
+      "timing_started_monotonic": 72531.566231667,
+      "validated_response_monotonic": null
+    },
+    "warm_payload_bytes_sent": 900
+  },
+  "owner_and_resources": {
+    "CPU_quota": [
+      "100000",
+      "100000"
+    ],
+    "OOM_conclusion": "UNDETERMINED: no saved memory.events counters were found.2GiB peak and native pollNone at timeout prove neither an OOM nor absence of OOM, and do not identify exact CPU, file-cache reclaim or other bottleneck.",
+    "OOM_events_saved": false,
+    "affinity_scope": "Observed main-thread affinity only; no delegated cpuset prevention of later widening or all-thread lifetime claim",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "command_returncodes": [
+      0,
+      1
+    ],
+    "completed": false,
+    "config_sha256": "048baca6fdbe6b1480bcc0c31ab961a24cf75a7a6d31190949ae3850207f2e82",
+    "file_size_cap_bytes": 268435456,
+    "host_final": {
+      "initial": false,
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "comfy_evidence": {
+          "comfy_pending": 0,
+          "comfy_running": 0,
+          "http_status": 200,
+          "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0",
+          "transport": "HTTP"
+        },
+        "comfy_pending": 0,
+        "comfy_running": 0,
+        "comfy_state": "http_idle",
+        "mem_available_bytes": 29747613696,
+        "mem_total_bytes": 130595864576
+      },
+      "required_available_bytes": 26119172916,
+      "reserve_bytes": 26119172916
+    },
+    "host_initial": {
+      "initial": true,
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "comfy_evidence": {
+          "comfy_pending": 0,
+          "comfy_running": 0,
+          "http_status": 200,
+          "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0",
+          "transport": "HTTP"
+        },
+        "comfy_pending": 0,
+        "comfy_running": 0,
+        "comfy_state": "http_idle",
+        "mem_available_bytes": 29751021568,
+        "mem_total_bytes": 130595864576
+      },
+      "required_available_bytes": 28266656564,
+      "reserve_bytes": 26119172916
+    },
+    "host_scope": "80 successful postlaunch gates comprise3readiness+1preexec+76loop.64 loop rows retained; summary min includes successful discarded samples and cannot be independently reconstructed from only retained raw rows. Sampling is not continuous-time.",
+    "host_successful_postlaunch_summary": {
+      "min_MemAvailable_bytes": 28587499520,
+      "min_margin_vsR_bytes": 2468326604,
+      "phase_counts": {
+        "loop": 76,
+        "preexec": 1,
+        "readiness": 3
+      },
+      "runtime_host_gate_count": 80,
+      "scope": "All successful executed post-launch readiness/preexec/loop host-gate samples, including discarded raw samples; failing gates stay in primary evidence; initial/final separate; not a continuous-time minimum"
+    },
+    "independently_recomputed_retained_loop_min_MemAvailable_bytes": 28587499520,
+    "invocation_id": "22851223dcab48cc852da2e7d27db077",
+    "kernel_memory_peak_bytes": 2147483648,
+    "loop_count": 76,
+    "memory_max_bytes": 2147483648,
+    "memory_peak_scope": "Observed whole owned memcg peak, not native RSS, anonymous-only usage or a continuous host-memory bound.",
+    "nonce": "jev-d3-boundary-8bcba638008b73ae76c57d78807bdd2a",
+    "observed_wrapper_main_thread_affinity": [
+      0
+    ],
+    "primary_message": "Selected child command failed; original error retained",
+    "primary_type": "ValueError",
+    "retained_child_error_type": "CalledProcessError",
+    "retained_loop_count": 64,
+    "runtime_max_seconds": 7200,
+    "sources_unchanged": true,
+    "swap_max_bytes": 0,
+    "unit": "jev-d3-llama-cpp-20261023-01.service"
+  },
+  "preparation": {
+    "CUDA_initialized_final": false,
+    "LM_loader_called": false,
+    "Torch_version": "2.13.0+cu130",
+    "completed": true,
+    "elapsed_seconds": 15.559329194991733,
+    "generated": [
+      {
+        "input_ids_sha256": "d3aff8a1229a528e4708aac82a26623edd9f346b1074c687730de55bfd1721c1",
+        "input_token_count": 68,
+        "name": "warm",
+        "payload": {
+          "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/prepared/warm-native.json",
+          "sha256": "1b2110b8956cbc7721cae4f4acf3d9fdb13b7c5f606650c61a51cd050f7e70e2",
+          "size_bytes": 900
+        },
+        "request": {
+          "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/prepared/warm-request.json",
+          "sha256": "7c4a7bbbf0158e3556bfa0d2f986cb71b439ac6d9ff198a9378a017eda82b64d",
+          "size_bytes": 320
+        },
+        "selected_padding_records": 0,
+        "slots": [
+          67
+        ]
+      },
+      {
+        "input_ids_sha256": "52f1e3c46f7b5ff49ac7e855f57183a037b6930cb61927f0e10e4f470071d6e2",
+        "input_token_count": 1667,
+        "name": "long",
+        "payload": {
+          "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/prepared/long-native.json",
+          "sha256": "88e187283775f0d1f5e43547c8fd93336a9f62639172d4baea4b27b8259ab4b6",
+          "size_bytes": 10968
+        },
+        "request": {
+          "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/prepared/long-request.json",
+          "sha256": "5b83340d3685d9751821eefba865e74ca57575246e358b2dbfe55699bf2fe2f8",
+          "size_bytes": 5342
+        },
+        "selected_padding_records": 119,
+        "slots": [
+          67,
+          1666
+        ]
+      }
+    ],
+    "original_CPU_processor_and_S1_prepare_used": true,
+    "outer_command_elapsed_seconds": 17.413662147009745,
+    "processor_before_after_equal": true,
+    "scope": "Actual CPU preprocessing and exact synthetic payload generation passed. Recomputed saved input token counts/IDs hashes/slots and payload/request refs; no independent tokenizer or model-math oracle was executed."
+  },
+  "profile": "llama-cpp-q8-smoke03-independent-saved-result-audit-v1",
+  "qualification_limits": [
+    "This actual run failed. CPU preprocessing success, loader progress and authenticated cleanup do not turn it into a successful smoke or cache-math result.",
+    "Only the first full2048 warm exchange was attempted. Long<=2048 input scoring and both compact-context arms were not executed; no finite logits, argmax agreement, threshold comparison or allocated8192 runtime response exists.",
+    "Failure is established only for this CPU1/2GiB profile and startup-inclusive60-second first-call contract. It does not establish general hardware/model infeasibility, a CPU4 result or performance under a changed resource profile.",
+    "No independent math, Q8/BF16 equivalence, training/LoRA, N3/Q95, JevBench, browser20-second, full8192-token or model-win qualification follows.",
+    "Continuation/model qualification flags remain false; a future experiment requires its own exact source/profile/spec and admission review rather than silently extending this failed result."
+  ],
+  "reviewer": "/root/q95_owner05_review",
+  "root_execution": {
+    "exit_code": 1,
+    "finished_at_UTC": "2026-10-23T02:45:15.211763+00:00",
+    "reference": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/root-execution-smoke-04.json",
+      "sha256": "2ceab64a78ff1229c92e2b6b6d00eb62d6d674a535133dcfbca5491bfccb12f7",
+      "size_bytes": 939
+    },
+    "started_at_UTC": "2026-10-23T02:43:56.375649+00:00",
+    "wall_seconds": 78.83611941499112
+  },
+  "saved_result_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/actor-exit.json",
+      "sha256": "cb82238747da018a27b1746a254eb5a9fe4e7da5c6786571dc9f2eab86358daf",
+      "size_bytes": 5408
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/actor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/actor.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/admission.json",
+      "sha256": "533eea4e033bc5582760b96f7de3b7e1dde9b033f310b157b148164780a6de80",
+      "size_bytes": 456
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/bootstrap-identity.json",
+      "sha256": "2d0b3a0de5dae51054de080b65683a7e3c8bcd406e1bc64da8d2970514d8f3d2",
+      "size_bytes": 1397
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/command-01-intent.json",
+      "sha256": "982dda9ceb48e90418ccadf03dfbe3722118cab25e9524a295b06c38b1bd7e8a",
+      "size_bytes": 1315
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/command-01-output.json",
+      "sha256": "e1b053a5fea944c59a76f92461f27800eddfafba3e7d65387c8eb80841ccda90",
+      "size_bytes": 2720
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/command-01-started.json",
+      "sha256": "43a6cfbfac6435b66b7326cd53175d12463ec1459e039c4b7fb0f9faece32fc3",
+      "size_bytes": 623
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/command-01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/command-01.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/command-02-intent.json",
+      "sha256": "d14c77d4c8bb24bf4931b879df4145faa5952275a32c13e72d9a6a4c564da3b9",
+      "size_bytes": 1503
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/command-02-output.json",
+      "sha256": "a84ef4bc75900f09e772a7c3b01950459c49bbd6eaf0bdeca6f5a6c5f740430c",
+      "size_bytes": 2889
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/command-02-started.json",
+      "sha256": "14c1952a8deccd84f0a439637b75dbc1dcc01586b3c18389385f79866b1f601e",
+      "size_bytes": 623
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/command-02.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/command-02.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/external-boundary-closure.json",
+      "sha256": "b568ebe87ebb3f15e38c51c1a02f917224be1390e96d4c055409c202b8a70170",
+      "size_bytes": 10329
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/launch-intent.json",
+      "sha256": "dfa500154ef971071be11f86f5497a7599e6c5a8b23d6ccffdbc6c4fcfda3ae4",
+      "size_bytes": 2842
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/prepared/long-native.json",
+      "sha256": "88e187283775f0d1f5e43547c8fd93336a9f62639172d4baea4b27b8259ab4b6",
+      "size_bytes": 10968
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/prepared/long-request.json",
+      "sha256": "5b83340d3685d9751821eefba865e74ca57575246e358b2dbfe55699bf2fe2f8",
+      "size_bytes": 5342
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/prepared/prepare-receipt.json",
+      "sha256": "95ee37b66ca4b6d7c2fe34a96a2cc63e00149a95b86b4eaea5476283c4e18b27",
+      "size_bytes": 8190
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/prepared/warm-native.json",
+      "sha256": "1b2110b8956cbc7721cae4f4acf3d9fdb13b7c5f606650c61a51cd050f7e70e2",
+      "size_bytes": 900
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/prepared/warm-request.json",
+      "sha256": "7c4a7bbbf0158e3556bfa0d2f986cb71b439ac6d9ff198a9378a017eda82b64d",
+      "size_bytes": 320
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/receipt.json",
+      "sha256": "75a3f79b5e030e92d2de30d23426d0b2aa8c5101f4b67070e72a3b8ca5d964ad",
+      "size_bytes": 165469
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/scored/full2048/intent.json",
+      "sha256": "f8cefe0773d4b72b1af19cd1b7724f931dc47b89c518b320ff6822186b41617f",
+      "size_bytes": 671
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/scored/full2048/native.stderr",
+      "sha256": "664e24941306b92ddefc33d3d417b55fff081cc8dfa8c3f51a194960d1947887",
+      "size_bytes": 350243
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/scored/full2048/warm-exchange.json",
+      "sha256": "e79fe2ec29f290111faf4523caf6815b616dbf03d5136c6a132933445ed84ea6",
+      "size_bytes": 1197
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/scored/full2048/warm-request.json",
+      "sha256": "1b2110b8956cbc7721cae4f4acf3d9fdb13b7c5f606650c61a51cd050f7e70e2",
+      "size_bytes": 900
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/scored/full2048/warm-response.partial",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/scored/smoke-receipt.json",
+      "sha256": "8060829065776e69f4a3951d6a6b7ce4f85dfd865c360bd975a1b62dc448d03c",
+      "size_bytes": 7515
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/sealed-config.json",
+      "sha256": "048baca6fdbe6b1480bcc0c31ab961a24cf75a7a6d31190949ae3850207f2e82",
+      "size_bytes": 9666
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-04/unit-readback.json",
+      "sha256": "92dd923842a72ca3bcdeba84e3e310bb14133adc894094dfded617d447777685",
+      "size_bytes": 2498
+    }
+  ],
+  "scope": "Saved-only independent audit of owner01 actual-04. No execution, framework import, native loading, model payload read, live process/cgroup/service or hardware probe.",
+  "verdict": "CONFIRMED_FAILURE_WITH_LIMITS"
+}

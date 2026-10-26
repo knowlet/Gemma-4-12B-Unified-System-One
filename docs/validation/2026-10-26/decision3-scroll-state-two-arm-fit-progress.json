@@ -1,0 +1,244 @@
+{
+  "schema": "decision3-scroll-state-two-arm-fit-progress-v1",
+  "status": "TWO_TRAINING_ARMS_COMPLETED_NUMERICAL_ACCEPTANCE_PENDING_SOURCE_SELECTION_CORRECTION",
+  "date": "2026-10-26",
+  "model_profile": "d3-edge frozen encoder and common W0; separate operation and CLICK delta heads",
+  "data_split": "TRAIN",
+  "operation_rows": 273,
+  "click_target_rows": 65,
+  "immutable_prefix_rows": {
+    "operation": 225,
+    "click_target": 47
+  },
+  "new_rows": {
+    "operation": 48,
+    "click_target": 18
+  },
+  "source_inventory_count": 135,
+  "parent_source_union_count": 51,
+  "parent_source_union_limit": 64,
+  "hyperparameters": {
+    "steps_per_head": 10000,
+    "learning_rate": 0.003,
+    "l2": 0.0001,
+    "seed": 20261023,
+    "configured_batch_size": 64,
+    "effective_batch_size": {
+      "operation": 64,
+      "click_target": 64
+    },
+    "initial_delta": "zeros_fp32",
+    "numerical_profile": "numpy-fp32-sample-weighted-masked-delta-sgd-v1",
+    "weight_normalization": "batch_row_count_not_sum_weights"
+  },
+  "weight_policy": {
+    "equal": "all operation273 and CLICK65 weights are one",
+    "balanced": {
+      "original153_operation": "1",
+      "new120_operation": {
+        "CLICK": "10/17",
+        "TYPE_TEXT": "5/3",
+        "SELECT": "2",
+        "DONE": "5/6"
+      },
+      "CLICK65": "1",
+      "new120_teacher_counts": {
+        "CLICK": 51,
+        "TYPE_TEXT": 18,
+        "SELECT": 15,
+        "DONE": 36
+      },
+      "operation_FP64_sum_of_FP32_weights": 272.99999982118607
+    }
+  },
+  "training_observations": {
+    "equal": {
+      "status": "UNACCEPTED_FIT_OBSERVATIONS_PENDING_INDEPENDENT_REPLAY",
+      "original_exit_code": 0,
+      "outer_seconds": 44.008104367007036,
+      "operation": {
+        "all": {
+          "rows": 273,
+          "valid_set_correct": 233,
+          "cross_entropy": 0.5884180068969727
+        },
+        "accepted119": {
+          "rows": 119,
+          "valid_set_correct": 105,
+          "cross_entropy": 0.5117488503456116
+        },
+        "goal_routed34": {
+          "rows": 34,
+          "valid_set_correct": 29,
+          "cross_entropy": 0.5698172450065613
+        },
+        "navigation_distractor72": {
+          "rows": 72,
+          "valid_set_correct": 65,
+          "cross_entropy": 0.5312115550041199
+        },
+        "scroll_state48": {
+          "rows": 48,
+          "valid_set_correct": 34,
+          "cross_entropy": 0.8774792551994324
+        },
+        "new120": {
+          "rows": 120,
+          "valid_set_correct": 99,
+          "cross_entropy": 0.6697186231613159
+        },
+        "new120_CLICK": {
+          "rows": 51,
+          "valid_set_correct": 50,
+          "cross_entropy": 0.5202245712280273
+        },
+        "new120_TYPE_TEXT": {
+          "rows": 18,
+          "valid_set_correct": 12,
+          "cross_entropy": 0.9123682379722595
+        },
+        "new120_SELECT": {
+          "rows": 15,
+          "valid_set_correct": 4,
+          "cross_entropy": 1.3709417581558228
+        },
+        "new120_DONE": {
+          "rows": 36,
+          "valid_set_correct": 33,
+          "cross_entropy": 0.46800073981285095
+        }
+      },
+      "click_target": {
+        "all": {
+          "rows": 65,
+          "valid_set_correct": 65,
+          "cross_entropy": 0.02742844820022583
+        },
+        "accepted47": {
+          "rows": 47,
+          "valid_set_correct": 47,
+          "cross_entropy": 0.031086796894669533
+        },
+        "scroll_state18": {
+          "rows": 18,
+          "valid_set_correct": 18,
+          "cross_entropy": 0.01787608489394188
+        }
+      },
+      "operation_delta_npy_sha256": "238c907a6c57e881ec727072f4d80c548c0c01b43e513c4434e8d275c03bee1e",
+      "click_target_delta_npy_sha256": "ea1656f9b3e80f58beb216a17a5223fbdd34c19b8d6603a3166b77cffe61473c"
+    },
+    "balanced": {
+      "status": "UNACCEPTED_FIT_OBSERVATIONS_PENDING_INDEPENDENT_REPLAY",
+      "original_exit_code": 0,
+      "outer_seconds": 43.0133167639724,
+      "operation": {
+        "all": {
+          "rows": 273,
+          "valid_set_correct": 224,
+          "cross_entropy": 0.6229853630065918
+        },
+        "accepted119": {
+          "rows": 119,
+          "valid_set_correct": 105,
+          "cross_entropy": 0.5187495350837708
+        },
+        "goal_routed34": {
+          "rows": 34,
+          "valid_set_correct": 29,
+          "cross_entropy": 0.5943334698677063
+        },
+        "navigation_distractor72": {
+          "rows": 72,
+          "valid_set_correct": 64,
+          "cross_entropy": 0.5921181440353394
+        },
+        "scroll_state48": {
+          "rows": 48,
+          "valid_set_correct": 26,
+          "cross_entropy": 0.9479991793632507
+        },
+        "new120": {
+          "rows": 120,
+          "valid_set_correct": 90,
+          "cross_entropy": 0.734470546245575
+        },
+        "new120_CLICK": {
+          "rows": 51,
+          "valid_set_correct": 33,
+          "cross_entropy": 0.8912742733955383
+        },
+        "new120_TYPE_TEXT": {
+          "rows": 18,
+          "valid_set_correct": 13,
+          "cross_entropy": 0.6426758766174316
+        },
+        "new120_SELECT": {
+          "rows": 15,
+          "valid_set_correct": 11,
+          "cross_entropy": 0.8012715578079224
+        },
+        "new120_DONE": {
+          "rows": 36,
+          "valid_set_correct": 33,
+          "cross_entropy": 0.5303957462310791
+        }
+      },
+      "click_target": {
+        "all": {
+          "rows": 65,
+          "valid_set_correct": 65,
+          "cross_entropy": 0.02742844820022583
+        },
+        "accepted47": {
+          "rows": 47,
+          "valid_set_correct": 47,
+          "cross_entropy": 0.031086796894669533
+        },
+        "scroll_state18": {
+          "rows": 18,
+          "valid_set_correct": 18,
+          "cross_entropy": 0.01787608489394188
+        }
+      },
+      "operation_delta_npy_sha256": "4d9b856e25c5f6d88a26ea75d7b73775d9e766b73eced7e1c14631e3f5d41842",
+      "click_target_delta_npy_sha256": "ea1656f9b3e80f58beb216a17a5223fbdd34c19b8d6603a3166b77cffe61473c"
+    }
+  },
+  "independent_numerical_replay": {
+    "accepted": false,
+    "original_process_terminal": true,
+    "original_exit_code": 1,
+    "failure_stage": "final imported-source direct-selection guard",
+    "cause": "An authenticated transitive original119 loader actually executes and must also be directly selected by the parent.",
+    "numerical_outputs_published": false,
+    "source_selection_guard_relaxed": false,
+    "original_training_sources_and_outputs_preserved": true,
+    "next_action": "Add the explicit original119 executing-source role and rerun both arms with fresh sealed capabilities and owner outputs."
+  },
+  "source_controls_passed": {
+    "loader_contracts": 19,
+    "source_graph_projection": 13,
+    "fit_launch": 19,
+    "fp64_audit_launch": 13
+  },
+  "model_qualified": false,
+  "browser_qualified": false,
+  "benchmark_qualified": false,
+  "full10_score": null,
+  "jevbench_coherence_score": null,
+  "benchmark_heaven_score": null,
+  "ranking_or_win_claim": false,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "dev_used_for_model_selection": true,
+  "scope": "Observed TRAIN metrics only; no new browser or JevBench score. Neither arm has passed the complete independent acceptance process.",
+  "CLICK65_delta_files_bitwise_identical": true,
+  "source_fingerprints": {
+    "data_loader_release": "3556adf1fcff2a9bcd04318aa6a7298d74eb34207ef37ecab9dd837969f422ae",
+    "fitter_release": "b6e761611af8cbbfcce532eab7d58d650090d1a93ac8e5d065656d0dcab1a596",
+    "weighted_optimizer_release": "224cb83dce7e368a6de238ca50d1bdfdffb2b143a1d4a69f11532b52675d0111",
+    "common_data_capability": "1276109f92c8f0618709ad63b58d0b5fa6866c901c15dc80ce92efceb5489134",
+    "independent_auditor_release": "9657f6c11617acd517519c058a229883c3257870b605c53583c7216c24b0a5d1"
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "schema": "root-closed-np5-actual05-numeric-audit-v1",
+  "status": "passed",
+  "authority": "root",
+  "separate_reviewer_actual_bytes_read": false,
+  "independent_actual_review_claimed": false,
+  "checks": {
+    "root_exit0": true,
+    "owner_completed": true,
+    "sources_unchanged": true,
+    "current_closure_positive": true,
+    "full_authentication": true,
+    "all_legal_probabilities_matched": true,
+    "all_ordered_argmaxes_matched": true,
+    "FP32_copy_exact": true
+  },
+  "source_union": 58,
+  "model_files_authenticated": 20,
+  "runtime_files_authenticated": 28,
+  "runtime_sha256_files": 22,
+  "runtime_stat_only_files": 6,
+  "root_execution": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/root-execution-np5-05.json",
+    "size_bytes": 1734,
+    "sha256": "e6cadd1ff4a08e0989b31aa019d09665997fd8fbfcfd57359a12e6db97334f8f"
+  },
+  "owner_receipt": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-05/receipt.json",
+    "size_bytes": 75925,
+    "sha256": "d9267f801cc838154a536f0226cc16cc9af437af82148b247b09e9b48cc748cd"
+  },
+  "current_closure": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-05/external-boundary-closure.json",
+    "size_bytes": 3838,
+    "sha256": "10d10a675c4482ce0ed7b431ac337a5b679b9bacc8e21cc11fd640848cc9db66"
+  },
+  "selected_plan": {
+    "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/selected-plan-01.json",
+    "size_bytes": 7982,
+    "sha256": "39fb916a3adeb093d8900d3d6efa56a772147e65b35ae8edc4260a34759a27b2"
+  },
+  "command_spec": {
+    "path": "artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/root-command-spec-01.json",
+    "size_bytes": 13385,
+    "sha256": "e0982d1489e8b4d6778c32a964c5c0b61490d9b9a64860582e448f483007b7ab"
+  },
+  "actor_state": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-05/np5-qualification/state.json",
+    "size_bytes": 14018,
+    "sha256": "0769cafb1f4bfe61f77b36cb6c02666a2b1e96c07b47d62e049e7fd055e1f4df"
+  },
+  "catalog": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-05/np5-qualification/catalog-actual-pending.json",
+    "size_bytes": 37302,
+    "sha256": "c7cdd09ebf3d51170af2e47f4e41755dc68033b5cd6467216f24f42f11cf94ad"
+  },
+  "raw_native_response": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-05/np5-qualification/raw-native-response.json",
+    "size_bytes": 1438,
+    "sha256": "d997e839433b6ebc34cf98af71464483c0112ec637132ba81998f2fe2ee00657"
+  },
+  "payload_manifest": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-05/np5-qualification/payloads-pending.json",
+    "size_bytes": 2029,
+    "sha256": "d971d07ef79288a8c3e94aacdf2c5ed5569aa4c23b1d496869e051fc7f58b336"
+  },
+  "diagnostic_payload_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-05/np5-qualification/features-pending.npy",
+      "size_bytes": 16512,
+      "sha256": "6b9f9c5cf070d22432391b2f85d3eed61a5b1bf0a8ee32cfa3ee46229543be8c"
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-05/np5-qualification/W0-pending.npy",
+      "size_bytes": 1044608,
+      "sha256": "5e740b32794672cc67346c8c4d0d9eae8b44b7c0d0a62612808799eaeeada655"
+    }
+  ],
+  "model_loads": 1,
+  "native_request_calls": 1,
+  "first_layer_events": [
+    [
+      4,
+      188,
+      1024
+    ]
+  ],
+  "final_norm_events": [
+    [
+      4,
+      188,
+      1024
+    ]
+  ],
+  "legal_counts": [
+    8,
+    1,
+    2,
+    3
+  ],
+  "replay": [
+    {
+      "kind": "replay",
+      "all_legal_probabilities_matched": true,
+      "all_ordered_argmaxes_matched": true,
+      "max_absolute_errors": [
+        6.019310017091328e-08,
+        0.0,
+        2.6725210156008927e-08,
+        4.881116133503838e-08
+      ]
+    },
+    {
+      "kind": "numpy_zero_delta",
+      "all_legal_probabilities_matched": true,
+      "all_ordered_argmaxes_matched": true,
+      "max_absolute_errors": [
+        4.774256135986477e-07,
+        0.0,
+        2.6725210156008927e-08,
+        1.0024854777412884e-06
+      ]
+    }
+  ],
+  "additional_stdlib_float64_accumulation_witness": [
+    {
+      "head": "operation",
+      "legal_count": 8,
+      "max_absolute_error": 4.819792025489988e-07
+    },
+    {
+      "head": "click_target",
+      "legal_count": 1,
+      "max_absolute_error": 0.0
+    },
+    {
+      "head": "type_text_target",
+      "legal_count": 2,
+      "max_absolute_error": 5.369038769131862e-09
+    },
+    {
+      "head": "select_target",
+      "legal_count": 3,
+      "max_absolute_error": 8.706673408909182e-07
+    }
+  ],
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-05,
+    "comparison": "abs(replay-native) <= 1e-6 + 1e-5*abs(native)"
+  },
+  "call_seconds": 3.2209280890238006,
+  "actor_seconds": 15.150610098993639,
+  "root_seconds": 17.160414864018094,
+  "owned_peak_bytes": 1094119424,
+  "memory_events_diagnostic": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "numpy_version": "2.5.2",
+  "critical_files": 22,
+  "critical_bytes": 94612175,
+  "excluded_GPU_stat_only_count": 2,
+  "diagnostic_arrays_permanently_nontraining": true,
+  "training_eligible": false,
+  "semantic_correctness_evaluated": false,
+  "benchmark_scores": null,
+  "full_DSO_or_transitive_closure_qualified": false,
+  "scope": "Root checked original terminal/owner/current scoped closure, all selected source/model hashes and original28 runtime identities (22 hashes and6 stat-only), raw ordered distributions, copied finite FP32 files and a separate legal-slot stdlib replay. Producer pinned-source actual FP32 replay retained. No separate actual reader, fit or semantic/browser/benchmark pass."
+}

@@ -1,0 +1,293 @@
+{
+  "schema": "independent-source-only-deadline-shape-and-terminal-audit-plan-v1",
+  "created_utc": "2026-10-23T10:58:23.170040+00:00",
+  "reviewer": "/root/cpu_followup_review",
+  "finding_status": "SOURCE_ONLY_FINDING_CONFIRMED_CONDITIONAL_ESTIMATOR_NO_RUNTIME_RESULT",
+  "scope": {
+    "read_only_frozen_small_source_and_existing_docs_only": true,
+    "active_actual03_read_or_written": false,
+    "active_process_cgroup_or_services_probed": false,
+    "runtime_model_framework_native_actor_harness_or_tests_executed": false,
+    "task_gold_plan_payload_cache_predictions_or_tensor_bytes_read": false,
+    "network_used": false,
+    "git_used": false,
+    "frozen_or_active_sources_modified": false,
+    "source_files_ast_parsed_without_import": 21,
+    "output_is_new_independent_receipt_only": true
+  },
+  "inputs_reported_by_root_not_independently_observed": {
+    "same_active_root_execution_session": 78352,
+    "started_calls": 337,
+    "completed_calls": 336,
+    "completed_public_calls": 231,
+    "completed_coherence_base_calls": 105,
+    "early_coherence_request_question_count_range": [
+      9,
+      12
+    ],
+    "approximate_early_complete_callable_seconds": 10,
+    "report_source": "Parent agent message; no active actual03 file or process was read",
+    "elapsed_campaign_seconds": null
+  },
+  "source_findings": [
+    {
+      "id": "suite_order",
+      "source": "benchmark_adapter.py:85-105; campaign.py:237-243",
+      "finding": "Public231 runs and finishes first. The unchanged coherence engine schedules and awaits all 240 base batches before scheduling trial requests (engine.py:162-180)."
+    },
+    {
+      "id": "trial_shape",
+      "source": "relations/base.py:118-126; plan.py:93-103,155-165,205-229; relations/{cho,rep,mea,bat}.py",
+      "finding": "Changing one target usually preserves the entire case batch: batch_copy deep-copies all questions and replace_question keeps companion questions. CHO/REP examples replace one in the full batch; MEA examples preserve the batch and add a probe. BAT order/content preserve the batch, duplicate adds one. batch_solo and batch_size_sweep can shrink. Frozen standard/sample selection retains each chosen parent row; no automatic single-question reduction follows the base phase. Exact later shape proportions were not counted because task/plan payloads were not read."
+    },
+    {
+      "id": "batch1_recomputes_companions",
+      "source": "d3_runtime.py:1996-2023; backends.py:291-324",
+      "finding": "With native batch_size=1, run loops over every runnable question separately on every complete request. Whole-request cache keys include backend, ordered state/questions and repeat; there is no per-question reuse across transformed requests. Legitimate duplicate whole requests may hit cache inside a fresh run."
+    },
+    {
+      "id": "deadlines",
+      "source": "campaign.py:19-21,210-215,242-259; actor.py:184-202; plan.json:11-29",
+      "finding": "Selected batch1 campaign starts a separate threading.Timer for the 6500-second whole phase, covering authentication/load, all suites, final full hashes, runtime checks and result writing. Each call has its own 180-second Timer plus an explicit late-return check. Generic owner runtime is7200s. Separate Timers do not overwrite one another, but Python timer scheduling is not a continuous real-time enforcement proof. Current campaign source has no final explicit elapsed<=6500 success check; terminal review must compare saved elapsed/deadline evidence and not silently certify an over-budget return."
+    },
+    {
+      "id": "batch4_native_support",
+      "source": "d3_runtime.py:1172-1174,1279-1323,1673-1711,1996-2023",
+      "finding": "from_pretrained accepts batch_size=4 and invokes one cls constructor, which loads the same BF16 CPU backbone once and FP32 readout. run chunks the same request’s runnable keys in original order, up to4 per native probabilities/logits call. This is original publisher batching, not an alternative scoring algorithm or cross-request merge."
+    },
+    {
+      "id": "batch_independence_and_limits",
+      "source": "d3_runtime.py:1016-1072,1673-1711",
+      "finding": "Each row is its own complete prompt; tensors are left-padded to the longest row, full-attention key masks/recurrent masks remain per row, no KV cache, final-token readout and per-row option mask/softmax are unchanged. Different padding, tensor/kernel shape and BF16 rounding can alter probabilities and peak memory. Exact batch1 equivalence, resource fit or speedup is not established by source."
+    },
+    {
+      "id": "longer_owner_option_exists",
+      "source": "owner_boundary.py:158,181",
+      "finding": "Original immutable Selection already permits runtime_seconds10800 mapped to3h. A separate new owner/profile can select that supported bound without changing original boundary/observer/authority bytes. Existing owner03/04 controller runtime allowlists and every actor/campaign plan/guard must be reviewed for a fresh10800 selection; current job must not be changed."
+    }
+  ],
+  "conditional_estimator": {
+    "basis": "Nominal successful full-campaign population enforced by frozen source; assumes unchanged selected plan succeeds without missing/extra calls. Population values are source expectations, not a payload recount or achieved completion.",
+    "total_expected_callable_returns": 1479,
+    "expected_public_returns": 231,
+    "expected_coherence_returns": 1248,
+    "expected_coherence_bases": 240,
+    "expected_trial_uncached_returns_after_bases": 1008,
+    "remaining_successful_callable_returns_at_reported_progress": 1143,
+    "remaining_base_returns_including_one_reported_inflight": 135,
+    "remaining_expected_trial_returns": 1008,
+    "one_current_call_already_started": true,
+    "formula_general": "Required residual_mean_seconds <= (6500 - actual_elapsed_seconds - remaining_noncall_overhead_seconds) / 1143. Actual elapsed and overhead were not read or estimated from active files.",
+    "zero_elapsed_zero_overhead_upper_bound_residual_mean_seconds": 5.686789151356081,
+    "formula_by_phase": "135*b + 1008*v - u + r <= 6500 - t; t=actual elapsed, b=mean full duration of remaining base calls, v=mean full trial duration, u=elapsed work credit for current inflight call, r=remaining authentication/harness/evidence overhead. No value of t,u,r was measured by this reviewer.",
+    "ten_second_uniform_nominal_remaining_full_call_equivalents_seconds": 11430,
+    "ten_second_example_qualification": "11430 seconds before inflight credit and noncall overhead is a conditional full-call extrapolation of root-reported early latency, not a predicted terminal status. Trial lengths/performance can vary; no future timeout is asserted as certain.",
+    "scenarios_assumptions_only": [
+      {
+        "assumed_elapsed_seconds": 0,
+        "assumed_final_authentication_and_other_overhead_reserve_seconds": 60,
+        "allowed_mean_residual_seconds_per_uncompleted_callable_return": 5.63429571303587,
+        "assumed_mean_uncompleted_base_full_call_seconds": 10,
+        "allowed_trial_mean_full_call_seconds_with_zero_inflight_credit": 5.049603174603175
+      },
+      {
+        "assumed_elapsed_seconds": 1800,
+        "assumed_final_authentication_and_other_overhead_reserve_seconds": 60,
+        "allowed_mean_residual_seconds_per_uncompleted_callable_return": 4.059492563429571,
+        "assumed_mean_uncompleted_base_full_call_seconds": 10,
+        "allowed_trial_mean_full_call_seconds_with_zero_inflight_credit": 3.263888888888889
+      },
+      {
+        "assumed_elapsed_seconds": 2400,
+        "assumed_final_authentication_and_other_overhead_reserve_seconds": 60,
+        "allowed_mean_residual_seconds_per_uncompleted_callable_return": 3.5345581802274717,
+        "assumed_mean_uncompleted_base_full_call_seconds": 10,
+        "allowed_trial_mean_full_call_seconds_with_zero_inflight_credit": 2.6686507936507935
+      },
+      {
+        "assumed_elapsed_seconds": 3000,
+        "assumed_final_authentication_and_other_overhead_reserve_seconds": 60,
+        "allowed_mean_residual_seconds_per_uncompleted_callable_return": 3.009623797025372,
+        "assumed_mean_uncompleted_base_full_call_seconds": 10,
+        "allowed_trial_mean_full_call_seconds_with_zero_inflight_credit": 2.0734126984126986
+      }
+    ],
+    "interpretation": "The selected6500 budget is not supported by an assumption that remaining trials automatically shrink to single questions. Substantial future mean latency reduction would be needed at reported progress. Preserve the running job and let saved terminal evidence establish its actual outcome."
+  },
+  "minimum_fresh_batch4_proposal_not_executed": {
+    "identity": "New Edge batch4 profile first; Lite batch4 requires its own model identity, smoke and campaign result. Never relabel or continue partial batch1 scores.",
+    "native_constructor": "Exactly one D3.from_pretrained(same pinned package,device=cpu,batch_size=4,verify=full,local_files_only=True,permutation_average=False), same BF16 backbone/FP32 readout/temp1/noncausal_full_attention/max_lengthNone/noFast/noHubKernels/noCUDA.",
+    "benchmark_integrity": "Keep all official request boundaries, states, question/option order and full context. Only native per-request question chunk size changes. No dropping companions, sorting by length, cross-request merging, new per-question cache, truncation, changed suite plan or scoring. Full fresh231+1248 calls and original source hashes remain required.",
+    "smoke_prerequisite": "Fresh guarded owner only after current job authenticated closure. Synthetic mixed-length request with at least5 runnable questions explicitly exercises4+1 chunks, finite normalized probabilities/legal args, exact token usage and noCUDA; record batch sizes/shapes and final full file authentication. A one-question smoke cannot exercise batch4.",
+    "math_comparison": "If desired, preselect a separate comparison under one constructor by switching batch_size1 and4 only for the same synthetic request, retaining actual distributions/max absolute differences/choice changes; label any extra forwards separately. No bitwise or score equivalence assumption, no benchmark gold used.",
+    "resources": "CPU16-19/4threads/400%, swap0, runtime reserveR26119172916 unchanged. Distinct fixed3GiB owner candidate requires initialR+full3GiB29340398388 and fresh admission; memory fit is unproven, actual memory.events/peak and authenticated closure required. No overlap model jobs, no active2GiB actor reinterpretation.",
+    "deadline_candidate": "Fresh owner selected10800s and campaign whole10000s is one concrete bounded candidate; retain180s per complete request, add final explicit late-success rejection, reserve nominal800s service margin. This is a candidate to independently freeze/review, not proof1479calls fit10000s. Select before execution; never alter active deadlines.",
+    "fresh_outputs_and_cache": true,
+    "no_reset_restart_or_signal_of_current_job": true
+  },
+  "closed_result_audit_entry_after_parent_declares_terminal": [
+    {
+      "id": "terminal_binding",
+      "check": "Before/after hash exact closed small metadata/source refs. Bind root execution exit/wall, exact selected spec/configSHA, controller PID/start/nonce/boot/invocation, command argv, actor profile and result paths. No live job or process probing by reviewer."
+    },
+    {
+      "id": "source_model_identity",
+      "check": "Check initial/final78official sources+2dataset manifests, actor/shared pins and worker’s final20full model files+manifest authentication. Auditor rehashes selected small source and compares model stat identities only; do not claim a new independent payload hash. Constructor count1, exact checkpoint/batch1/math/runtime/CPU/noCUDA identity; no headSHA qualification."
+    },
+    {
+      "id": "call_journals",
+      "check": "Reconcile contiguous started/prepared/returned call index, raw response files and native evidence: total1479 successful actual returns, public231 and coherence1248, no hidden retry/warmup, full native prompt token totals/context<=16384, no truncation. No score from an incomplete campaign state alone."
+    },
+    {
+      "id": "public231",
+      "check": "Authenticate original public task source/dataset/order hashes and all231unique ordered task IDs. Reconstruct native probabilities from each retained raw response and original request, replay official score_task and summarize, compare every record and summary count/valid/strict/renormalized/correct/error/family/split/calibration/ordinal/consistency field. Public argmax ties use lexicographic label; ordinal scoring uses official expected-value path. Invalid distributions never get synthetic repair. Official rounding normalization, if any, must be reported accurately."
+    },
+    {
+      "id": "public_latency_convention",
+      "check": "Official public summary interpolates percentile index(len-1)*q over all nonnull attempt latencies (metrics.py:102-120). Preserve that separate measurement scope; do not substitute campaign nearest-rank p95 into official public summary."
+    },
+    {
+      "id": "coherence_population",
+      "check": "Check exact original mini source/suite/manifest/plan identity;240case_domains,50relations,sum planned_tests1200, requests1248, concurrency1, seed0/repeats1/trials1/minimizeFalse; no errors/backend_down/truncated budget for a full successful score claim."
+    },
+    {
+      "id": "coherence_aggregate",
+      "check": "Recompute score.py from saved outcomes. Fixed noise tolerance.05, own tolerances preserved, nonfinite violation/graded0. Collapse every relation/check/case/target test using any violation and min graded; target extracted from trial_id. Perrelation1-violation_rate; group and dimension mean relation scores, overall equal mean of five dimensions. Exclude diagnostics/nonprimary/exploratory/n<5; coverage threshold.95; incomplete relation suppresses group/dimension/overall. Compare all checks, coverage, exclusions, binary and graded aggregates. Fractions0..1, multiply100 only for presentation."
+    },
+    {
+      "id": "coherence_ci",
+      "check": "Exactly1000 bootstrap draws with random.Random(0) over sorted included case IDs sampled with replacement at case granularity. Recompute included relation test cells on each draw and same dimension/overall aggregation. Sort draws and select int(.025*(n-1)) and int(.975*(n-1)) for overall and graded_overall. Official source supplies overall CIs, not invented relation/pillar CIs."
+    },
+    {
+      "id": "cache_integrity_optional_full_outcome_replay",
+      "check": "Verify fresh cache creation and key formula SHA256 of insertion-order compact JSON {b:backend.name,s:state,q:questions,r:repeat}; each populated answer linked to actual call journal/raw response. Legitimate withinrun identical whole-request cache hits are allowed. Strong replay may run unchanged stdlib coherence engine against a read-only cache-only backend with exact backend name, failclosed on any miss and no framework/model imports; compare recomputed base/outcomes/report. No cached previous profile scores or raw datasets exported."
+    },
+    {
+      "id": "campaign_latency_budget",
+      "check": "Recompute231/1248 actual complete-call latency populations from native journal; ordinary median, nearest_rank_p95 ceil(.95*n)-1 and max. Validate percall<=180 and saved actor elapsed<=6500 including startup/finalauth for selected profile. Treat delayed timer/overbudget success as a limitation/failure, startup remains excluded from suite latency; no browser20 qualification."
+    },
+    {
+      "id": "external_auth_closure",
+      "check": "Original authority exact boot/unit/invocation/source identity, stop path before hold expiry, two empty final scans and absent cgroup/manager sandwiches. If original close recorded failure, preserve it and separately report any authenticated supplemental observation. Inspect retained own-cgroup peak/events CPUquota/mask and sampled hostR only; no continuous hardcap/noescape claim and no original authority falseflag promotion."
+    },
+    {
+      "id": "publication_limits",
+      "check": "Save only aggregate/hash/limitations independent audit. No raw questions/gold/answers/predictions/cache/model payloads committed. Separate actualCPU profile scores from earlier browser scores; no allsix matched comparison or victory claim."
+    }
+  ],
+  "cross_review": "Author /root/decision3_cpu_prepare independently confirmed nativebatch4 oneconstructor/perrequest order/masks/math path and BF16/padding/memory caveats via source-only message; author is independently preparing newprofile, not modifying active source.",
+  "source_refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-cpu-both-20261023-01/campaign.py",
+      "bytes": 18393,
+      "sha256": "b7273b7d193c1457f031f361a9d2599c38a34a8dd01c81bdb6ce0219d91435be"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-cpu-both-20261023-01/plan.json",
+      "bytes": 2808,
+      "sha256": "f7de4e32c71860d7ca562ce2adf7a0fd3d0d6fb7a1f9bbeecb6c81f0a7701f16"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-cpu-20261023-01/actor.py",
+      "bytes": 18616,
+      "sha256": "770a9790837161daf4570b5d15f02b318ddb24e454fe3aa6756363c809ecfda7"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-cpu-20261023-01/benchmark_adapter.py",
+      "bytes": 5813,
+      "sha256": "f5d28801d0e25b9d637102cbace5211cb7b0a1119e567a451def711700707961"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/engine.py",
+      "bytes": 15106,
+      "sha256": "d2f3d773eac0165ae178c3d9f8e543256679b8336edfa28a1a45b3a97c30924a"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/plan.py",
+      "bytes": 13454,
+      "sha256": "5d3855b01e88dde2cdb691d85d7683c5e1f8fae4ec3e3b447f1102ca2446f078"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/backends.py",
+      "bytes": 18073,
+      "sha256": "e6cfcb9a0a072d0f2dba103983259865a0663f1ace51f8a332bfc51c40d79b2b"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/score.py",
+      "bytes": 10611,
+      "sha256": "74ad886d4f1e249b80096575f0e6b7674630e1331057926a2806f92d75100e07"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/results.py",
+      "bytes": 9552,
+      "sha256": "ca37bb203f1fac5e99d5ba21ceb6cf6a676f9a008aaa5463470887b4657c8a74"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/api.py",
+      "bytes": 16571,
+      "sha256": "06cc4c4a9badc87c2f81ca54d9b8cd0639faeca217f3d36c5ae3918571589cf0"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/taxonomy.py",
+      "bytes": 19646,
+      "sha256": "b2ec01efc881c14a6c6d06d32c2f20dab58754651f1061bc31e1e758ba0487e8"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/base.py",
+      "bytes": 5141,
+      "sha256": "832ebe8323d6f2d9fc198e4a75523a8042b755eef9e7a7431f6f81b8e2a87540"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/bat.py",
+      "bytes": 5984,
+      "sha256": "c21f0925296abb60d2cb8ac3069a1a82488291ebf7028a86ceee8c8c2f19fd25"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/cho.py",
+      "bytes": 5188,
+      "sha256": "92a49a99d6ad045d210509448eb8f1e9fedcbb77f87a3c1a46e8a86b47745627"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/mea.py",
+      "bytes": 26761,
+      "sha256": "05771f625665e79ba571e5b9e0bd6a7e8c1af8fb3c9c963b301ebc9e6cb49388"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/coherence/src/jevbench/relations/rep.py",
+      "bytes": 19031,
+      "sha256": "589105c9c59a83541877566bd878a8462d8f682579a04065f4dfc743b470b942"
+    },
+    {
+      "path": "scripts/run_jevbench_public.py",
+      "bytes": 14188,
+      "sha256": "cb476d16a6e89ee5223b928e3a550af18de8534934ae5431563503db9f909bd1"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/scoring.py",
+      "bytes": 5743,
+      "sha256": "6aa17d212ea20a3eeb6876149367842e8462c11dcb54d73df062fb406368331e"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/summarize.py",
+      "bytes": 3940,
+      "sha256": "aa5f24da407d004cd80bad1cd957b6987aba152591084c096d1de51dd9775cbe"
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/upstream/heaven/jevbench/metrics.py",
+      "bytes": 5604,
+      "sha256": "4038c8423ad1cf28601afb6babe777b71f08e379b9ca125b09b52c0ac7d60515"
+    },
+    {
+      "path": "artifacts/jev-d3-native/20261015-native-source-01/d3-edge/d3_runtime.py",
+      "bytes": 95505,
+      "sha256": "adf7f7aa085674b5682e492d8b2e3cc4f11c67b0d153515c742e907e9b550917"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "bytes": 21002,
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5"
+    }
+  ],
+  "source_refs_unchanged_after_review": true,
+  "closure_of_this_review": "ALL REVIEW WRITING STOPPED after this receipt; frozen selected sources remain unchanged; no experiment execution or authenticated runtime closure is claimed."
+}

@@ -1,0 +1,226 @@
+{
+  "schema": "decision3-goal-routed-native-collection-public-results-v1",
+  "date": "2026-10-26",
+  "status": "independently_accepted_collection_and_gpu_features_with_train_diagnosis",
+  "collection": {
+    "scenario_profile": "goal-routed-control-v1",
+    "split": "train",
+    "scope": "new_authored_owned_loopback_training_scenes",
+    "episodes": 12,
+    "native_rows": 34,
+    "naturally_observed_operation_menu_counts": {
+      "6": 34
+    },
+    "question_heads_per_wire_counts": {
+      "4": 34
+    },
+    "native_question_heads": 136,
+    "legal_criterion_positions": 467,
+    "initial_operation_counts": {
+      "CLICK": 4,
+      "TYPE_TEXT": 4,
+      "SELECT": 4
+    },
+    "all_step_operation_counts": {
+      "CLICK": 14,
+      "TYPE_TEXT": 4,
+      "SELECT": 4,
+      "DONE": 12
+    },
+    "model_calls": 0,
+    "model_score": null,
+    "original_owned_collection_seconds": 9.002997181960382,
+    "browser_closed": true,
+    "context_closed": true,
+    "original_scoped_closure_verified": true,
+    "complete_native_admission_passed": true,
+    "complete_wire_projection_passed": true,
+    "full_original_wire_order_preserved": true,
+    "all_original_offered_choices_preserved": true,
+    "native_operation_ids_preserved": true,
+    "request_counts_are_model_predictions": false
+  },
+  "independent_authentication": {
+    "frozen_snapshot_files": 194,
+    "captured_source_files": 93,
+    "owner_source_files": 19,
+    "reauthenticated_file_identities": 356,
+    "original_retained_terminal_verified": true,
+    "same_child_two_live_os_observations_verified": true,
+    "original_authenticated_scoped_stop_verified": true,
+    "current_unit_and_cgroup_absent": true,
+    "browser_started_by_independent_auditor": false,
+    "model_imported_by_independent_auditor": false
+  },
+  "gpu_feature_capture": {
+    "status": "independently_accepted_train_only_gpu_features",
+    "model": "unmodified_d3_edge_base_encoder_and_W0",
+    "model_repository": "vllm-sr/d3-edge",
+    "model_revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "encoder_precision": "bfloat16",
+    "readout_precision": "float32",
+    "baseline_FP32_sha256": "d408d94a0ab2915fa85c511dd9b8d62af49903c4e4ca28e2e2d5aff9ef565e0f",
+    "native_calls": 34,
+    "model_loads": 1,
+    "native_heads": 136,
+    "legal_probability_positions": 467,
+    "all255_logits_independently_replayed_per_head": true,
+    "absolute_tolerance": 1e-6,
+    "relative_tolerance": 1e-5,
+    "maximum_absolute_probability_error": 2.497324314010285e-7,
+    "ordered_argmax_matches": 136,
+    "all_native_entropy_confidences_matched": true,
+    "original_owner_wall_seconds": 30.00828582298709,
+    "original_command_seconds": 28.222825987031683,
+    "model_load_seconds": 3.332943815039471,
+    "complete_call_seconds_min": 0.33219152997480705,
+    "complete_call_seconds_max": 1.816344574035611,
+    "peak_cuda_tensor_bytes": 1803854336,
+    "peak_cuda_reserved_bytes": 2680160256,
+    "final_cuda_tensor_bytes": 0,
+    "owner_source_files": 32,
+    "leaf_source_files": 130,
+    "publisher_load_files": 21,
+    "rechecked_file_identities": 286,
+    "original_scoped_closure_verified": true,
+    "trained_delta_loaded": false,
+    "fit_authorized": false
+  },
+  "posthoc_base_train_diagnosis": {
+    "scope": "same34_goal_routed_TRAIN_wires_only",
+    "new_model_calls": 0,
+    "operation": {
+      "correct": 10,
+      "rows": 34
+    },
+    "target": {
+      "correct": 14,
+      "target_bearing_rows": 22
+    },
+    "joint_operation_and_required_target": {
+      "correct": 10,
+      "rows": 34
+    },
+    "by_teacher_operation": {
+      "CLICK": {
+        "rows": 14,
+        "operation_correct": 0,
+        "target_correct": 6,
+        "joint_correct": 0
+      },
+      "TYPE_TEXT": {
+        "rows": 4,
+        "operation_correct": 3,
+        "target_correct": 4,
+        "joint_correct": 3
+      },
+      "SELECT": {
+        "rows": 4,
+        "operation_correct": 4,
+        "target_correct": 4,
+        "joint_correct": 4
+      },
+      "DONE": {
+        "rows": 12,
+        "operation_correct": 3,
+        "target_correct": null,
+        "joint_correct": 3
+      }
+    },
+    "predicted_DONE": 7,
+    "correct_DONE": 3,
+    "premature_DONE": 4,
+    "missed_teacher_DONE": 9,
+    "incorrect_teacher_active_CLICK_targets": 8,
+    "in_sample_counterfactual": {
+      "assumption": "perfect_operations_on_same34_wires_with_current_target_answers_fixed",
+      "maximum_joint_correct": 26,
+      "rows": 34,
+      "browser_rollout_or_heldout_prediction": false
+    },
+    "heldout_accuracy": null
+  },
+  "feature_input_view": {
+    "status": "accepted_feature_capture",
+    "role": "feature_capture_only",
+    "rows": 34,
+    "request_fields": [
+      "case_id",
+      "wire_sha256",
+      "payload"
+    ],
+    "feature_only_inputs_have_teacher_labels": false,
+    "teacher_annotations_separate_from_original_payload": true,
+    "teacher_annotations_exported_separately": true,
+    "operation_only_positive_loss_mask": true,
+    "target_and_text_annotations_are_execution_evidence": true,
+    "fit_authorized": false,
+    "fit_eligible": false
+  },
+  "quarantined_attempt": {
+    "native_rows": 0,
+    "cause": "incompatible_dependency_ABI_from_Python_environment",
+    "fresh_attempt_correction": "isolated_Python_startup_with_-I",
+    "package_installations": 0,
+    "failed_evidence_preserved": true
+  },
+  "unchanged_previous_model_result": {
+    "training_operation_rows": 119,
+    "optimizer_steps": 10000,
+    "scope_of_training_correctness": "ten_added_TRAIN_examples_only",
+    "training_correct_operations": 10,
+    "training_examples": 10,
+    "candidate_first_browser_case_successes": 0,
+    "baseline_first_browser_case_successes": 0,
+    "browser_cases_per_arm": 1,
+    "repeated_radio_failure_fixed": false,
+    "result_updated_by_this_collection": false
+  },
+  "next_stages": {
+    "new_34_row_gpu_feature_acceptance": "accepted",
+    "proposed_combined_training_rows": 153,
+    "proposed_operation_rows": {
+      "unchanged_prior_rows": 119,
+      "new_goal_routed_rows": 34,
+      "total": 153
+    },
+    "proposed_separate_teacher_active_CLICK_target_rows": 14,
+    "original_raw_loss_masks_preserved": true,
+    "original_target_ids_preserved": true,
+    "independent_dataset_acceptance": "pending",
+    "new_fit_capability": "pending",
+    "new_fit": "pending_implementation_and_validation",
+    "new_weights": null,
+    "new_model_browser_evaluation": "pending",
+    "full10_browser_score": null
+  },
+  "jevbench_scores": {
+    "benchmark_heaven": null,
+    "coherence": null
+  },
+  "evidence_sha256": {
+    "accepted_collection_audit": "8fd363a31ce7dadd02a4fefb544b44c1d2870136c9b504cb60ab340c0e245b88",
+    "accepted_gpu_feature_audit": "33073929941205aa8cd2fefd48a0fd32cc40b65a5c233b16d0fd7248da75663f",
+    "posthoc_base_train_diagnosis": "4d37872e86d457b2a64ef10e82bba6446a0ea98dd091ac5bff919112873c6791",
+    "feature_input_acceptance": "a1a1186d73171ba6aca1581fb05d4ad3c8e6b58d6fa7a58ac4e20e64656ec033",
+    "admitted_wire_projection": "086dde889539cfd1ef2a4db861e0623fc2fd5be0225cd374aa8449216e5e8c45",
+    "collection_receipt": "3018192ea89da2770664884290e7407a9f80e6692f45e14935fc7396a7fafda0",
+    "collection_plan": "13819ca1b659fc834cd2efb6262421799e8413c81e57b103344772f01f06f721",
+    "released_independent_auditor_source": "6730ac72c3930ea11bfc707f8d4b6c8d7477ee253d62de7c4f57196eef48e1c0",
+    "scenario_source": "bc9fe1e073bb9350101dff1cc726116b43bdfad20c37331f70dc85428c9309df",
+    "collector_source": "021f44346530d359ea8a41ae9f4ddc50ff8730c7793c162c0d40eda1acadceea"
+  },
+  "model_evaluation_performed": true,
+  "model_evaluation_scope": "in_sample_TRAIN_diagnosis_only",
+  "heldout_model_evaluation_performed": false,
+  "new_candidate_browser_evaluation_performed": false,
+  "new_training_performed": false,
+  "model_qualified": false,
+  "browser_qualified": false,
+  "benchmark_qualified": false,
+  "competitor_win": false,
+  "new_unseen_evaluation_claim": false,
+  "continuation_authorized": false,
+  "whole_tree_exit_confirmed": false,
+  "no_escape_enforced": false
+}

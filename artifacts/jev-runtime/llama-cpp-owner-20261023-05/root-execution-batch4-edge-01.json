@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+    "-B",
+    "-s",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+    "--run",
+    "--expected-entry-sha256",
+    "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e",
+    "--selection",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/root-edge-smoke-command-spec.json",
+    "--selection-sha256",
+    "a9338f782685b8960ef055d047848dffea53e2da1554016b5819628baaacf3d2",
+    "--output",
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-01"
+  ],
+  "started_at_utc": "2026-10-23T11:23:28.450424+00:00",
+  "finished_at_utc": "2026-10-23T11:23:28.522640+00:00",
+  "wall_seconds": 0.0722305669914931,
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py\", line 1083, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py\", line 1079, in main\n    return run(args)\n           ^^^^^^^^^\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py\", line 866, in run\n    spec = command_selection(path, args.selection_sha256, base_refs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py\", line 494, in command_selection\n    sources_match([*local_sources, *value[\"sources\"]])\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py\", line 99, in sources_match\n    need(\n  File \"/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py\", line 49, in need\n    raise ValueError(message)\nValueError: Distinct typed small source references\n"
+}

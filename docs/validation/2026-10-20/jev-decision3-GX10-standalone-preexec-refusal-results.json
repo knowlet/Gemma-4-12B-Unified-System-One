@@ -1,0 +1,19 @@
+{
+  "schema_id": "jev-decision3-GX10-standalone-preexec-refusal-results-v1",
+  "result": "CLOSED_RESOURCE_REFUSAL_BEFORE_POLICY_WORKER_OR_MODEL",
+  "review": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/root-preexec-refusal-review-01.json",
+    "sha256": "7977da6797f37546bd3f1e6f10c67b18a2c4360b20f2d0b885f286e48a96604b",
+    "size_bytes": 2063
+  },
+  "raw_window": {
+    "path": "artifacts/jev-runtime/decision3-GX10-warm-probe-20261020-01/root-resource-window-01.json",
+    "sha256": "5595c61bcc7064e85cfe843b79d99c59a9ead3f2ad6674c66a8d929cad8c6d57",
+    "size_bytes": 3277
+  },
+  "what_happened": "Three preliminary samples passed, but the actual launcher freshly checked again and refused10,580,800B below the unchanged30,646,100,800B floor. The launcher exited before creating worker evidence/module cache or loading any framework/model.",
+  "model_task_or_quality_failure": false,
+  "actual_warmup_calls": 0,
+  "owned_launcher_parent_closed": true,
+  "fresh_actual_namespace_still_available": true
+}

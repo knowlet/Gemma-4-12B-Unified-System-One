@@ -1,0 +1,58 @@
+{
+  "schema_id": "observer-system-services-validation-v1",
+  "source": {
+    "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+    "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+    "size_bytes": 38483
+  },
+  "required_manifest": {
+    "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+    "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+    "size_bytes": 2196
+  },
+  "tests": {
+    "existing_parent_cases": 109,
+    "new_cases": 42,
+    "total": 151,
+    "result": "PASS",
+    "pytest_report": {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/cpu-tests.xml",
+      "sha256": "b80063a83d4abc7442b9fb1d26bee9821f19b7e4bac89d6bf16c2d26186534a1",
+      "size_bytes": 30250
+    },
+    "elapsed_seconds": 0.82,
+    "address_space_bytes": 268435456,
+    "cpu_seconds": 30,
+    "wall_seconds": 45,
+    "BLAS_threads": 1
+  },
+  "ruff": {
+    "result": "PASS",
+    "safe_invocation": "RAYON_NUM_THREADS=1 taskset -c0 prlimit --cpu=30 --core=0 timeout45 ruff check; NOaddress-space limit",
+    "abort_or_crash_observed": false
+  },
+  "authority_test_scope": "Real installed root/nonwritable file pins; synthetic liveunit/proc/AppArmor identity fields. No foreign system service was started or signalled. Three existing tiny owned children exercise natural-exit/zombie behavior; no GPU/model/Comfy writes.",
+  "historical_hypothesis_only": true,
+  "diagnosis": {
+    "path": "artifacts/jev-runtime/observer-system-services-20261022-01/diagnosis.json",
+    "sha256": "c4fc29224a9aec53a23b612989d078b1cd9b4367443921acf1a52aa4408598da",
+    "size_bytes": 4828
+  },
+  "source_union": {
+    "path": "artifacts/jev-runtime/observer-system-services-20261022-01/source-union.json",
+    "sha256": "d032548548b4a91a3f14cda4978cd2ccdecfab60d27d19b83279ce1f03a347fe",
+    "size_bytes": 3285
+  },
+  "peer_review": {
+    "result": "CLEAR",
+    "reviewer": "/root/http_final_review",
+    "source_sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+    "manifest_sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+    "scope": "Read-only finalsource/ringdelta review; no tests/actors/actualobserver calls byreviewer."
+  },
+  "source_delta": {
+    "path": "artifacts/jev-runtime/observer-system-services-20261022-01/source-delta.json",
+    "sha256": "0321a6073903c6cc9f5246826fcbdf543f7fff3168948584d4f9f232b6cb839c",
+    "size_bytes": 1560
+  }
+}

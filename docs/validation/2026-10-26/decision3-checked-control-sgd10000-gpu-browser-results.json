@@ -1,0 +1,128 @@
+{
+  "schema": "decision3-checked-control-sgd10000-gpu-browser-public-results-v1",
+  "date": "2026-10-26",
+  "status": "independently_audited_native_training_improvement_without_browser_improvement",
+  "model": {
+    "repository": "vllm-sr/d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "candidate_alias": "d3-edge-checked-control-operation-delta-sgd10000-gpu-candidate",
+    "training_operation_rows": 119,
+    "encoder_precision": "bfloat16",
+    "readout_precision": "float32",
+    "only_modified_head": "operation",
+    "optimizer_steps": 10000
+  },
+  "browser_pair": {
+    "scope": "first_fixed_upstream_case_exposed_development_diagnostic",
+    "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+    "observation_profile": "composed-visible-text-settled-v7",
+    "seed": 20261014,
+    "repeats": 1,
+    "max_steps": 16,
+    "pair_arm_order": [
+      "candidate",
+      "baseline"
+    ],
+    "whole_original_launch_seconds": 223.12007703998825,
+    "source_files_reauthenticated": 870,
+    "service_source_inventory_files": 190,
+    "empty_python_package_sources": 6,
+    "native_heads_verified": 16,
+    "native_probability_positions_verified": 144,
+    "native_maximum_absolute_probability_error": 1.4973786233163366e-07,
+    "non_operation_raw_answer_rows_preserved": 12,
+    "both_original_scoped_closures_verified": true,
+    "native_page_changed": [
+      true,
+      false,
+      false,
+      false
+    ],
+    "last_three_clicks_on_same_checked_radio": true,
+    "candidate": {
+      "successes": 0,
+      "attempts": 1,
+      "policy_calls": 4,
+      "text_calls": 0,
+      "actions": 4,
+      "terminal": "blocked",
+      "premature_done": false
+    },
+    "baseline": {
+      "successes": 0,
+      "attempts": 1,
+      "policy_calls": 6,
+      "text_calls": 1,
+      "actions": 4,
+      "terminal": "done",
+      "premature_done": true
+    },
+    "full10_score": null,
+    "competitor_win": false
+  },
+  "prior_gpu_numerical_qualification": {
+    "native_calls": 13,
+    "heads_per_branch": 48,
+    "legal_probability_positions_per_branch": 673,
+    "total_probability_comparisons": 1346,
+    "absolute_tolerance": 1e-06,
+    "relative_tolerance": 1e-05,
+    "maximum_absolute_probability_error": 2.3731090803558175e-07,
+    "all_ordered_argmaxes_matched": true,
+    "raw_non_operation_answers_preserved": 36,
+    "whole_original_owner_seconds": 30.010252251988277,
+    "accuracy_evaluated": false,
+    "peak_cuda_tensor_bytes": 2602280960,
+    "peak_cuda_reserved_bytes": 3825205248,
+    "complete_real_call_seconds_min": 0.936782569042407,
+    "complete_real_call_seconds_max": 0.9767610710114241
+  },
+  "posthoc_training_diagnosis": {
+    "scope": "in_sample_ten_new_checked_control_training_wires_only",
+    "rows": 10,
+    "baseline_correct": 2,
+    "candidate_correct": 10,
+    "candidate_by_operation": {
+      "CLICK": {
+        "correct": 4,
+        "rows": 4
+      },
+      "DONE": {
+        "correct": 2,
+        "rows": 2
+      },
+      "SELECT": {
+        "correct": 2,
+        "rows": 2
+      },
+      "TYPE_TEXT": {
+        "correct": 2,
+        "rows": 2
+      }
+    },
+    "new_model_calls": 0,
+    "heldout_accuracy": null,
+    "genuine_new_native_GPU_responses": true
+  },
+  "candidate_jevbench_scores": {
+    "benchmark_heaven": null,
+    "coherence": null
+  },
+  "evidence_sha256": {
+    "accepted10000_fit_integrity": "c1556492ec16fee641a0aabb5352500504cb96a1c1a6c7bd11f752770592e685",
+    "accepted_gpu_numerical_audit": "6f77c1df61101df7203934b81953867911a9dd28ce04933955f30d047c87d095",
+    "posthoc_training_audit": "957ca124fcd269f78ca7c627155d65f076f2e2c0104cedb5e398f94586f71147",
+    "browser_pair_audit": "ced21c703da53df3f5ee1d564d3efcf7316ff4bd6e1b3233f362c5fb4f39247c",
+    "stagnation_cause_audit": "5e3bda8f60510b1fd1d0aec0329ed544b3edced5f2fc21465eaa8b02c7becb37"
+  },
+  "model_qualified": false,
+  "browser_qualified": false,
+  "benchmark_qualified": false,
+  "new_unseen_evaluation_claim": false,
+  "next_experiment": "independent_TRAIN_scene_coverage_for_goal_relevant_operations_and_unchanged_checked_control_distractors_preserving_native_choices_and_judge",
+  "full119_train_metrics_independently_verified": false,
+  "full119_train_metric_replay_pending": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "dev_used_for_model_selection": true
+}

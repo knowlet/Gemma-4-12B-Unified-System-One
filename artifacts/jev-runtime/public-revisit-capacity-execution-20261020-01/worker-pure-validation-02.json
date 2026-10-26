@@ -1,0 +1,72 @@
+{
+  "schema_id": "revisit_capacity_worker_fake_validation_v2",
+  "before": [
+    {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-execution-20261020-01/revisit_capacity_worker.py",
+      "sha256": "5ee6f5d15a492bb95b3b21d932a12ca919b3a3f83fa0fdc23264b982b9ece288",
+      "size_bytes": 27546
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-execution-20261020-01/test_revisit_capacity_worker.py",
+      "sha256": "d61e5269c4c10e079ce21766eae459265357456be1cb3ebae5fcc943a1ab68de",
+      "size_bytes": 20988
+    }
+  ],
+  "checks": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-B",
+        "-s",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/jev-revisit-cpu-worker-final-02",
+        "artifacts/jev-runtime/public-revisit-capacity-execution-20261020-01/test_revisit_capacity_worker.py"
+      ],
+      "returncode": 0,
+      "stdout": "...............................                                          [100%]\n31 passed in 8.86s\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "artifacts/jev-runtime/public-revisit-capacity-execution-20261020-01/revisit_capacity_worker.py",
+        "artifacts/jev-runtime/public-revisit-capacity-execution-20261020-01/test_revisit_capacity_worker.py"
+      ],
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "artifacts/jev-runtime/public-revisit-capacity-execution-20261020-01/revisit_capacity_worker.py",
+        "artifacts/jev-runtime/public-revisit-capacity-execution-20261020-01/test_revisit_capacity_worker.py"
+      ],
+      "returncode": 0,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "after": [
+    {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-execution-20261020-01/revisit_capacity_worker.py",
+      "sha256": "5ee6f5d15a492bb95b3b21d932a12ca919b3a3f83fa0fdc23264b982b9ece288",
+      "size_bytes": 27546
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-capacity-execution-20261020-01/test_revisit_capacity_worker.py",
+      "sha256": "d61e5269c4c10e079ce21766eae459265357456be1cb3ebae5fcc943a1ab68de",
+      "size_bytes": 20988
+    }
+  ],
+  "source_and_tests_unchanged": true,
+  "passed": true,
+  "real_processor_framework_model_GPU_browser_calls": 0
+}

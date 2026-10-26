@@ -1,0 +1,74 @@
+{
+  "authorized_empty_object": {
+    "expected_error_type": "helper_schema",
+    "expected_status": 422,
+    "handler_request_id": "fresh 32hex X-Public-Request-ID joined to requests/<id>/raw.json",
+    "ordering": "parse_helper_request schema refusal occurs before _prefix and call_next; final guard/source checks and durable raw precede HTTP return.",
+    "raw_artifact_copy_in_checker_receipt": false,
+    "receipt_contains_raw_ref_only": true,
+    "request_body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "required_raw_fields": {
+      "api_request_id": null,
+      "error": null,
+      "forward_events": [],
+      "generation": {},
+      "guard_restored": true,
+      "helper_phases": [],
+      "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "prefix": null,
+      "prepared_prompt": null,
+      "schema_id": "jev-public-field-syntax-raw-candidate-v1",
+      "server_terminal": true
+    }
+  },
+  "credentials_in_artifact": false,
+  "primary_refs": [
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/qualify-01/sources/scripts/jev_qualify_public_field_syntax_bf16.py",
+      "sha256": "cbfb7bdd8301174a97ac18389a998ff3256ac32d6f7a770978f2f9b722c3b43b",
+      "size_bytes": 204384
+    },
+    {
+      "path": "artifacts/jev-runtime/public-field-syntax-helper-20261018-01/qualify-01/sources/src/s1/api.py",
+      "sha256": "a9f7e0297a2e52f5d6ec46fa332987957ab8533d61f58fd0287b0b40e66d76e1",
+      "size_bytes": 12666
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/starlette/middleware/errors.py",
+      "sha256": "6e899351f408a3b088c27650f1f173e0108363989d427aecae1192a593621feb",
+      "size_bytes": 8066
+    }
+  ],
+  "qualification_claim": false,
+  "real_auth_probe_performed": false,
+  "runtime_scope": {
+    "default_handler_in_historical_runtime348": false,
+    "default_handler_separate_source_ref": {
+      "path": "artifacts/jev-runtime/overlay/starlette/middleware/errors.py",
+      "sha256": "6e899351f408a3b088c27650f1f173e0108363989d427aecae1192a593621feb",
+      "size_bytes": 8066
+    },
+    "historical_runtime_count_unchanged": 348,
+    "real_owner_must_pin_extra_handler": true
+  },
+  "schema_id": "decision3-q95-source-derived-auth-protocol-v1",
+  "scope": "Read-only pinned source reasoning and synthetic CPU fake validation; no real Q95 HTTP/model/service probe.",
+  "unauthorized": {
+    "arbitrary_500_is_authentication_proof": false,
+    "default_non_debug_handler_lines": [
+      168,
+      260
+    ],
+    "expected_body_bytes": 21,
+    "expected_body_sha256": "e41656eb2ba6c6293bf6dd928e5a88cdbc50535cab661c1969e0f598e497ed62",
+    "expected_status": 500,
+    "ordering": "Bearer require precedes request budget, handler request_id allocation, trace construction and try block; require raises ValueError.",
+    "qualifier_auth_line": 1658,
+    "qualifier_symbol": "_field_request_boundary",
+    "require_definition_line": 123,
+    "required_negative_evidence": [
+      "no X-Public-Request-ID",
+      "no new handler request directory"
+    ]
+  }
+}

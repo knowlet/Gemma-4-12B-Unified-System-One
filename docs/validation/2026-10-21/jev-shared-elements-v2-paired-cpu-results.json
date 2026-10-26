@@ -1,0 +1,182 @@
+{
+  "schema_id": "jev_shared_elements_v2_actual_paired_cpu_results_v1",
+  "status": "COMPLETE_CLOSED_CPU_CAPACITY_IMPROVEMENT_NOT_MODEL_TASK_QUALIFIED",
+  "at_utc": "2026-10-20T16:23:26.254946+00:00",
+  "implementation_git": "05b4d4e09591998da84e888daaefca025f39d758",
+  "previous_v1_results": {
+    "path": "docs/validation/2026-10-20/jev-shared-elements-v1-paired-cpu-results.json",
+    "sha256": "786cfcd2dea66551ab1336e132d7e526cabe0ce757ca97cbb399e4a970a48de3",
+    "size_bytes": 8783
+  },
+  "implementation_report": {
+    "path": "docs/validation/2026-10-21/jev-shared-elements-v2-implementation-results.json",
+    "sha256": "e024b580568119291fcb4e6a7d09b44e25cb4a3710936d49d30988af9aa736d3",
+    "size_bytes": 3876
+  },
+  "plan": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261021-01/plan-01.json",
+    "sha256": "fbc3e96859f14422852fe28f3e7a0b3aa1bd7ddfd75d8f4441b2a71f4192ce47",
+    "size_bytes": 1948
+  },
+  "source_authority": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261021-01/source-authority-union-01.json",
+    "sha256": "ff0d004b621d097c03682922ca668bbd2603ff27c3793467aa5fdd84cc05bb24",
+    "size_bytes": 22787
+  },
+  "evidence_index": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261021-01/evidence-index-01.json",
+    "sha256": "917e98e857de21f09fc375904dddc4a98bc5da8d6b6b9e29504a85a9cc79a9d8",
+    "size_bytes": 239470
+  },
+  "external_closure": {
+    "path": "artifacts/jev-runtime/shared-elements-capacity-20261021-01/root-external-closure-01.json",
+    "sha256": "1c2909722a94cb340ccafed4adad79014bc2b290f56185957086f2a5fc0e4601",
+    "size_bytes": 2101
+  },
+  "results": {
+    "paired_original_rows": 75,
+    "raw_full_ids_masks_prompt_hashes_outcomes_exact_frozen75": true,
+    "counts": {
+      "raw-json-v1": {
+        "ACCEPTED": 71,
+        "REFUSED_CONTEXT": 3,
+        "REFUSED_SCHEMA": 1
+      },
+      "shared-elements-v2": {
+        "ACCEPTED": 72,
+        "REFUSED_SCHEMA": 1,
+        "REFUSED_CONTEXT": 2
+      }
+    },
+    "policy68_input_admission": {
+      "raw-json-v1": 67,
+      "shared-elements-v2": 68,
+      "denominator": 68,
+      "meaning": "Complete input capacity only; these are not68 successful browser tasks."
+    },
+    "changed_outcomes": [
+      {
+        "ordinal": 51,
+        "id": "trace-curl-01",
+        "raw_outcome": "REFUSED_CONTEXT",
+        "v2_outcome": "ACCEPTED",
+        "raw_tokens": 15495,
+        "v2_tokens": 7610
+      }
+    ],
+    "effective_formats": {
+      "raw-json-v1": 35,
+      "shared-elements-v2": 37,
+      "schema-refused-before-format": 1,
+      "unchanged-helper-v1": 2
+    },
+    "fallback_and_helper_full_prefix_matches_raw": 37,
+    "original_accept_to_refusal_regressions": 0,
+    "curl_saved_snapshot_counterfactual": {
+      "id": "trace-curl-01",
+      "original_bytes": 49334,
+      "v1_bytes": 20741,
+      "v2_bytes": 18371,
+      "raw_tokens": 15495,
+      "v1_tokens": 9220,
+      "v2_tokens": 7610,
+      "v2_input_plus_32_output_tokens": 7642,
+      "context_limit": 8192,
+      "v2_outcome": "ACCEPTED",
+      "elements": 250,
+      "candidate_refs": 250,
+      "default_shape_refs": 249,
+      "nondefault_shape_refs": 1,
+      "ordered_UTF8_wire_roundtrip": "exact",
+      "scope": "Declared saved-postaction snapshot. It was not delivered as the next policy request in the original live curl run.",
+      "click_target_candidate_keys": 250,
+      "operation_candidate_keys": 5,
+      "total_offered_keys_across_heads": 255
+    },
+    "original_near_positive": {
+      "raw_tokens": 8151,
+      "v2_tokens": 8151,
+      "outcome": "ACCEPTED",
+      "effective_format": "raw-json-v1",
+      "full_ids_mask_prompt_equal": true
+    },
+    "original_negative_controls": "Original policy-over-context remains8183/REFUSED_CONTEXT; original helper over-context remains refused;401 candidate schema boundary remains refused before processor. All original75 retained.",
+    "regenerated_controls": [
+      {
+        "id": "compact-band-8128",
+        "kind": "policy",
+        "outcome": "ACCEPTED",
+        "tokens": 8151,
+        "effective_format": "raw-json-v1"
+      },
+      {
+        "id": "compact-band-8161",
+        "kind": "policy",
+        "outcome": "REFUSED_CONTEXT",
+        "tokens": 8183,
+        "effective_format": "raw-json-v1"
+      },
+      {
+        "id": "compact-band-8065",
+        "kind": "helper",
+        "outcome": "REFUSED_CONTEXT",
+        "tokens": 8085,
+        "effective_format": "unchanged-helper-v1"
+      }
+    ],
+    "control_scope": "Three controls regenerated through productionV2. Byte fallback selected raw text for policy controls, so resulting recipe payloads/prefixes coincide with the old controls. They are not independent statistical samples."
+  },
+  "resources": {
+    "unit": "jev-cpu3g-20261020-03.service",
+    "fresh_InvocationID": "7203e43831d54372a972e0de4ebb3ee2",
+    "previous_InvocationID": "dc7c154de8f743eabf02e11f43f8b8d2",
+    "same_resource_component": "Frozen03helper and lifecycle functions reused without copied helper or global mutations. Prior exited owned service was stopped only after its external closure.",
+    "current_source_union": 128,
+    "original95_unchanged": 93,
+    "original95_replaced": 2,
+    "old95_qualification_attested": false,
+    "runtime_files_unchanged": 348,
+    "processor_reference_files_unchanged": 58,
+    "host_reserve_bytes": 26119172096,
+    "unit_memory_max_bytes": 3221225472,
+    "unit_swap_max_bytes": 0,
+    "unit_MemoryPeak_observed_bytes": 1053515776,
+    "unit_MemorySwapPeak_observed_bytes": 0,
+    "worker_gates": 1798,
+    "all_worker_gates_admitted": true,
+    "minimum_worker_MemAvailable_bytes": 30224203776,
+    "worker_exit_code": 0,
+    "unit_exit_code": 0,
+    "whole_owned_PID_PGID_SID_absent": true,
+    "sources_before_after_unchanged": true,
+    "postexit_cgroup_counters": null,
+    "counter_scope": "Cgroup removed after successful exit; final counters unavailable. Last pre-exit parent/gate evidence remains local. No final zero-OOM claim.",
+    "memory_comparison": "Observed peak only. Different cache states and representations prevent a model performance or universal memory improvement claim."
+  },
+  "validation": {
+    "production_codec_generated_API_pinned_upstream_tests": "258 passed,2 inference tests deselected,2.84s; includes1 optional local archivedcurl codec regression. PortableCI may skip that1 local test.",
+    "repeat_driver_tests": "9 focused fake-processor tests passed11.73s; no actors or heavy imports",
+    "ruff": "check/format passed",
+    "independent_review": "Wrapper,codec and repeat wiring reviewed; separate readonly audit confirmed raw75 full-prefix equality, effective-format counts, curl7610 and nearpositive8151 after worker terminal. Final field-name correction distinguishes250 click-target keys from5 operation keys; all255 original offered keys retained."
+  },
+  "scope": {
+    "actual_native_processor": "Pinned AutoProcessor/native chat template, complete IDs/masks retained",
+    "native_model": false,
+    "model_forward_calls": 0,
+    "CUDA_initialized": false,
+    "model_HTTP_calls": 0,
+    "browser_calls": 0,
+    "training": false,
+    "task_quality_attested": false,
+    "all68_benchmark_ready": false,
+    "original_publicV7_browser_score": "5/10 unchanged; not rerun withV2",
+    "Decision3": "All6 checkpoints stored locally; matched warm/native browser comparison unfinished.",
+    "causality": "This capacity improvement does not explain or repair the original live curl failure; original live curl requests fit889..2543 tokens. arXiv missed-apply policy failure remains separately documented."
+  },
+  "evidence_distribution": {
+    "public_export": "Source/test entry, plan, SHA-only source and evidence indices, own-unit stop/closure metadata, and aggregate report.",
+    "raw_evidence": "955 local evidence files/~48MB: full raw payloads/prompts/token IDs/masks/resource journals/runtime reference copies are kept locally and excluded from this narrowed push.",
+    "rationale": "Automatic approval rejected the earlier broad raw export; the safe public milestone uses aggregate evidence and code only."
+  },
+  "decision": "KeepV2 explicit and experimental, default raw unchanged. Capacity issue for this declared saved snapshot is resolved without dropping keys or weakening limits. Native generation, training and actual matched browser success must be qualified separately before adopting or claiming superiority."
+}

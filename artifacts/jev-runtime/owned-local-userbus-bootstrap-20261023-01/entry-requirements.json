@@ -1,0 +1,140 @@
+{
+  "schema": "owned-local-userbus-bootstrap-entry-requirements-v1",
+  "status": "SOURCE_CANDIDATE_REQUIRES_INDEPENDENT_REVIEW_NEW_EXACT_ROOT_SPEC_AND_FRESH_ADMISSION",
+  "bootstrap": {
+    "path": "artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/bootstrap.py",
+    "sha256": "e6a97860ff4fe7a36e8fc7900c514593d4f17b8836c1cc308c48a52e4f7f644d",
+    "size_bytes": 7599
+  },
+  "catalog_entry": {
+    "entry": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py",
+      "sha256": "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a",
+      "size_bytes": 20369
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json",
+      "sha256": "c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef",
+      "size_bytes": 17773
+    },
+    "arguments_before_fresh_output": [
+      "--execute",
+      "--expected-entry-sha256",
+      "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a",
+      "--plan",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json",
+      "--plan-sha256",
+      "c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef",
+      "--output"
+    ],
+    "entry_timer_seconds": 600,
+    "future_output_and_actual_id": null,
+    "logical_interpreter": "/home/albert_hsieh/ComfyUI/.venv/bin/python"
+  },
+  "helper_parent_entry": {
+    "entry": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/actor.py",
+      "sha256": "5a1cf29db2218b00c4349f20151a22b021ec01c265e798866b5ff278986abc76",
+      "size_bytes": 35316
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/plan.json",
+      "sha256": "0582ff6944755cd5dbfec47cbb0a0dc86a6aa78513fe73149a2a73ad36d0be72",
+      "size_bytes": 10039
+    },
+    "accepted_closed_catalog_references": null,
+    "entry_whole_seconds": 180,
+    "request_seconds": 20,
+    "requires_separate_exact_root_selection": true,
+    "logical_interpreter": "/usr/bin/python3.12",
+    "worker_interpreter_unchanged": "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+    "entry_own_pidfd_requirements_unchanged": true
+  },
+  "command_layout": "prefix + --entry ABSOLUTE_PYTHON_SOURCE --entry-sha256 SHA -- ORIGINAL_ENTRY_ARGUMENTS",
+  "local_bus_policy": {
+    "derived_runtime_dir": "/run/user/<same real/effective nonzero uid>",
+    "runtime_dir_mode": "0700",
+    "bus_name": "bus",
+    "socket_mode_allowlist": [
+      "0600",
+      "0660",
+      "0666"
+    ],
+    "same_uid_directory_and_socket": true,
+    "canonical_no_symlink_directory": true,
+    "socket_is_not_regular_file_or_symlink": true,
+    "no_network_bus_address": true,
+    "no_service_or_connect_calls_in_bootstrap": true
+  },
+  "environment_mutation_by_bootstrap": [
+    "XDG_RUNTIME_DIR",
+    "DBUS_SESSION_BUS_ADDRESS"
+  ],
+  "environment_source": "Computed local paths only. Original controller clean environment remains the source of all other values; no parent/session environment or credentials are copied.",
+  "unchanged_authority_requirements": {
+    "owner_profile": "llama-cpp-cpu4-command-owned-v1",
+    "owner_unit": "jev-d3-llama-cpp-cpu4-20261023-03.service",
+    "memory_max_bytes": 2147483648,
+    "reserve_bytes": 26119172916,
+    "initial_floor_bytes": 28266656564,
+    "swap_max_bytes": 0,
+    "runtime_seconds": 7200,
+    "cpu_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_quota_percent": 400,
+    "full_original_authentication_and_original_observer": true
+  },
+  "timing_scope": "Original entry timers start at their unchanged entry boundaries. Bootstrap source/bus preflight and final reauthentication add overhead outside those timers; any complete-command600/180 claim also requires root command wall time no greater than the same fixed budget plus final owner closure. The wrapper supplies no new latency qualification.",
+  "qualification": {
+    "actual_bootstrap_success": false,
+    "runtime_catalog_complete": false,
+    "NN_helper_or_HTTP": false,
+    "hard20_or_browser": false,
+    "no_escape": false
+  },
+  "failed_actual04_reused_or_resumed": false,
+  "invocation_prefixes": {
+    "catalog": [
+      "/home/albert_hsieh/ComfyUI/.venv/bin/python",
+      "-B",
+      "-s",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/bootstrap.py",
+      "--run",
+      "--expected-wrapper-sha256",
+      "e6a97860ff4fe7a36e8fc7900c514593d4f17b8836c1cc308c48a52e4f7f644d"
+    ],
+    "helper_parent": [
+      "/usr/bin/python3.12",
+      "-B",
+      "-s",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/owned-local-userbus-bootstrap-20261023-01/bootstrap.py",
+      "--run",
+      "--expected-wrapper-sha256",
+      "e6a97860ff4fe7a36e8fc7900c514593d4f17b8836c1cc308c48a52e4f7f644d"
+    ]
+  },
+  "interpreter_allowlist": {
+    "/home/albert_hsieh/ComfyUI/.venv/bin/python": {
+      "canonical": "/home/albert_hsieh/.local/share/uv/python/cpython-3.13.14-linux-aarch64-gnu/bin/python3.13",
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 17956884,
+        "st_size": 22257464,
+        "st_mtime_ns": 1784109750677901111
+      }
+    },
+    "/usr/bin/python3.12": {
+      "canonical": "/usr/bin/python3.12",
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 47972942,
+        "st_size": 7845048,
+        "st_mtime_ns": 1788171506000000000
+      }
+    }
+  }
+}

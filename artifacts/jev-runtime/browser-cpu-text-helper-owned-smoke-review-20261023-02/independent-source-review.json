@@ -1,0 +1,309 @@
+{
+  "schema": "owned-helper-smoke-independent-source-successor-review-v1",
+  "recorded_utc": "2026-10-23T12:26:25.719731+00:00",
+  "reviewer": "/root/cpu4_owner_smoke",
+  "author": "/root/cpu_text_helper_route/helper_boundary_review",
+  "scope": "Narrow source-only successor02 review: changed authority.Channel.receive, added fake regressions, necessary source refs/docs/freeze and unchanged actor/pending/policy composition. Original01 baseline review is retained. No target source/tests/runtime execution or import, actual socket/unit/observer/host/payload/network/Git operations.",
+  "verdict": "PASS_NARROW_SOURCE_SUCCESSOR_PENDING_CLOSED_CATALOG_EXACT_ROOT_SELECTION_AND_FRESH_ADMISSION",
+  "blocking_findings": [],
+  "actionable_source_findings": [],
+  "resolved_finding": {
+    "predecessor": "authority.py:120-126 used a per-recv relative timeout repeatedly",
+    "impact": "Fragment progress could postpone the parent watchdog loop beyond the requested whole-frame timeout",
+    "successor": "One monotonic frame deadline with refreshed remaining recv time and late checks before consuming complete frame and after JSON decode",
+    "status": "FIXED_BY_SOURCE_INSPECTION_AND_MEANINGFUL_RECORDED_FAKE_REGRESSIONS"
+  },
+  "input_freeze": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/freeze.json",
+    "size_bytes": 3589,
+    "sha256": "01c42cddc2e7b994cc82cae0675f1c6dc0ece964f2898d8331a062053fc06bfd"
+  },
+  "verified_freeze_count": 8,
+  "verified_freeze_bytes": 95152,
+  "verified_plan_pin_count": 19,
+  "unique_freeze_and_plan_paths": 22,
+  "frozen_source_entries": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/README.md",
+      "size_bytes": 10531,
+      "sha256": "4ff23b5f552897be717419158668a8056f5feb86801bfc3a4204db10acc9bc37"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/actor.py",
+      "size_bytes": 34108,
+      "sha256": "8a008cec2ec6e4ecd9f3c8c8481641ff6a3c77f52b9a4234bf48487ebcd451f2"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/authority.py",
+      "size_bytes": 7020,
+      "sha256": "b13236ef540378e2ba685d950bba296c89a49a93f4b02d50c7d3ea9ad4b6cbec"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/catalog-acceptance.pending.json",
+      "size_bytes": 854,
+      "sha256": "c674642c9aec99ed03c37d0e75ac9d7e759dd31579e41d52c9f4de22330446ab"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/plan.json",
+      "size_bytes": 8538,
+      "sha256": "df756f2016bc9c0b8b69b3983a7397ac52484690ba63ee8b841d4e2f815945f8"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/test_smoke.py",
+      "size_bytes": 21327,
+      "sha256": "501244ef87f139af1b6e19afe243905c96442763f8cd19ddbce46a84bef8f9e8"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/tests.log",
+      "size_bytes": 1066,
+      "sha256": "116d49b084fffbaf5728d6cdce280a9333be5562325f629e8904220f144aebbf"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/validation.json",
+      "size_bytes": 11708,
+      "sha256": "f815d1646a66e148892f0270264b2bbf614658d35f32aa07b1354520da106c0a"
+    }
+  ],
+  "selected_small_source_pins": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/actor.py",
+      "size_bytes": 34108,
+      "sha256": "8a008cec2ec6e4ecd9f3c8c8481641ff6a3c77f52b9a4234bf48487ebcd451f2"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/authority.py",
+      "size_bytes": 7020,
+      "sha256": "b13236ef540378e2ba685d950bba296c89a49a93f4b02d50c7d3ea9ad4b6cbec"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/test_smoke.py",
+      "size_bytes": 21327,
+      "sha256": "501244ef87f139af1b6e19afe243905c96442763f8cd19ddbce46a84bef8f9e8"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/catalog-acceptance.pending.json",
+      "size_bytes": 854,
+      "sha256": "c674642c9aec99ed03c37d0e75ac9d7e759dd31579e41d52c9f4de22330446ab"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+      "size_bytes": 40319,
+      "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-05/source-freeze-02.json",
+      "size_bytes": 2351,
+      "sha256": "b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
+      "size_bytes": 31089,
+      "sha256": "a312dba1fabd173e1ce502f6896431a7cc3d6b4979a7eae49c2b1807d343b0fa"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/frozen-manifest.json",
+      "size_bytes": 1776,
+      "sha256": "b171c7cece01d96f7634cb75f08b8ba72c1fe94fb52043de91d6c49c44193d46"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/runtime-selection.pending.json",
+      "size_bytes": 6582,
+      "sha256": "b5e0c09b60b2de3dadfb48d98febc8e61c236bb9e61a0d03ae9b126a26223e26"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py",
+      "size_bytes": 4918,
+      "sha256": "38f4e346c47c4091b22f396e38aca583f33729bd357c04a3e5abeb329cf2b62d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/frozen-manifest.json",
+      "size_bytes": 1494,
+      "sha256": "31b0d40c57d533aa97fa0cb31586607a8d72f8a9ab4c58a9c65bff969355a67b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/catalog.py",
+      "size_bytes": 19543,
+      "sha256": "7d0d837b451089a9c3d3974bd5a24dcdb51b59247d2f7be1d10316beb6109610"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/plan.json",
+      "size_bytes": 16882,
+      "sha256": "67c646e5fd921b4ee86f6ee73096e4afab09efe6cdbf29c9fe4765777b073911"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-01/freeze.json",
+      "size_bytes": 2903,
+      "sha256": "e8ed396d808458ef4f74d79857a1cbdcd8ee7dcf204b40e4803123228ae24915"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/package-receipt.json",
+      "size_bytes": 7663,
+      "sha256": "fce23ca9ae2e3aa00dc5e412c9c9a06eed3ee53083447cadbeb7a0d7e471638e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/independent-actual-review.json",
+      "size_bytes": 24331,
+      "sha256": "afd7504e4ecc0f5434e169357c1515cee1aab28a87a6aad357b365db8e9e5bd4"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-02/README.md",
+      "size_bytes": 10531,
+      "sha256": "4ff23b5f552897be717419158668a8056f5feb86801bfc3a4204db10acc9bc37"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-01/authority.py",
+      "size_bytes": 6590,
+      "sha256": "4a636a05e5093087c7105f6c8f728203330d1e81862f93f719659ce14a75e549"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-01/freeze.json",
+      "size_bytes": 2737,
+      "sha256": "e318783624c11706fb8a35b1d39555b783e14e43cb2f56b118d38bc863b10ff4"
+    }
+  ],
+  "predecessor_freeze": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-01/freeze.json",
+    "size_bytes": 2737,
+    "sha256": "e318783624c11706fb8a35b1d39555b783e14e43cb2f56b118d38bc863b10ff4"
+  },
+  "predecessor_all_eight_entries_unchanged": true,
+  "predecessor_independent_review": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-review-20261023-01/independent-source-review.json",
+    "size_bytes": 23161,
+    "sha256": "7089e4127029f69a30d2ad4d815e054c774523347952f13c83c3214a982ce0a8"
+  },
+  "checks": [
+    {
+      "id": "frozen-composition",
+      "result": "PASS",
+      "evidence": "All eight02 freeze entries match SHA/size (95,152B), as do all19 plan source pins;22 unique paths in their composition.02 freeze itself matches01c42cddc2e7b994cc82cae0675f1c6dc0ece964f2898d8331a062053fc06bfd.",
+      "locations": [
+        "freeze.json",
+        "plan.json"
+      ]
+    },
+    {
+      "id": "historical01-and-review-preserved",
+      "result": "PASS",
+      "evidence": "All eight01 freeze entries remain exact;01 freeze and prior independent review7089e412... remain exact. Prior review is retained as historical source-only evidence. Its original Channel timeout observation is supplemented by this confirmed finding and successor review; no old bytes were edited.",
+      "locations": [
+        "browser-cpu-text-helper-owned-smoke-20261023-01/freeze.json",
+        "browser-cpu-text-helper-owned-smoke-review-20261023-01/independent-source-review.json"
+      ]
+    },
+    {
+      "id": "finding-independently-confirmed",
+      "result": "CONFIRMED_IN01_FIXED_IN02",
+      "evidence": "01 authority115-129 set one relative socket timeout outside its recv loop; each fragmented recv could consume that full allowance anew, delaying parent watchdog re-entry beyond receive(timeout).02 fixes that specific whole-frame waiting gap.",
+      "locations": [
+        "browser-cpu-text-helper-owned-smoke-20261023-01/authority.py:115-129",
+        "authority.py:115-141",
+        "actor.py:603"
+      ]
+    },
+    {
+      "id": "single-monotonic-frame-deadline",
+      "result": "PASS",
+      "evidence": "Channel adds only an optional clock defaulting to time.monotonic. receive validates finite positive numeric timeout, computes one finite absolute deadline at entry, and uses the same closure for remaining time without refreshing the original deadline.",
+      "locations": [
+        "authority.py:106-127"
+      ]
+    },
+    {
+      "id": "remaining-time-per-fragment",
+      "result": "PASS",
+      "evidence": "Every recv gets deadline-current_clock as its socket timeout. A remaining value<=0 raises TimeoutError, so fragment progress cannot grant a new full allowance. The existing bounded pending bytes and EOF failure behavior remain.",
+      "locations": [
+        "authority.py:123-135"
+      ]
+    },
+    {
+      "id": "late-complete-buffered-or-decoded-frame-refused",
+      "result": "PASS",
+      "evidence": "The shared remaining check runs after assembling or finding a complete buffered frame, before consuming it, and after json.loads. A frame returned late by a socket or whose JSON parsing reaches/exceeds the original frame deadline cannot return a successful result. No success I/O follows the final check.",
+      "locations": [
+        "authority.py:136-141"
+      ]
+    },
+    {
+      "id": "meaningful-before-after-fragment-regression",
+      "result": "PASS_SOURCE_REVIEW_OF_RECORDED_FAKE",
+      "evidence": "New regression hashes exact01 authority before loading it as stdlib test source and uses a fake socket/fake clock. Five40ms fragments under a50ms per-recv allowance produce200ms accepted completion in01, while02 rejects at the fixed50ms budget and retains the partial frame. This would fail against the old implementation. Reviewer did not execute it.",
+      "locations": [
+        "test_smoke.py:37-87"
+      ]
+    },
+    {
+      "id": "additional-fake-regressions",
+      "result": "PASS_SOURCE_REVIEW_OF_RECORDED_FAKES",
+      "evidence": "Other new fakes check short fragments plus buffered next frame, shrinking timeouts/no unnecessary recv, late final fragment even when the fake socket returns it, parse completion past deadline, partial EOF retention, and invalid timeout rejection before socket access. These are component fakes, not an actual socket/owner/model execution.",
+      "locations": [
+        "test_smoke.py:89-131"
+      ]
+    },
+    {
+      "id": "actor-and-policy-invariance",
+      "result": "PASS",
+      "evidence": "actor.py is byte-identical01/02 with SHA8a008cec2ec6e4ecd9f3c8c8481641ff6a3c77f52b9a4234bf48487ebcd451f2. Pending catalog acceptance is byte-identical c674642c... . All plan fields outside sources/predecessor/successor_scope are exactly unchanged. Original started+20, request20/whole180, NN math/loader/factory, five closed catalog refs, owner05 profile/resource/authentication policy and qualification limits are unchanged. Source outside Channel in authority.py is byte-identical.",
+      "locations": [
+        "actor.py",
+        "authority.py:1-105",
+        "authority.py:144-196",
+        "plan.json",
+        "catalog-acceptance.pending.json"
+      ]
+    },
+    {
+      "id": "necessary-source-path-and-digest-update",
+      "result": "PASS",
+      "evidence": "Five own source/doc paths now select02; authority/test/README size and SHA update exactly. Original frozen01 authority and freeze are added as explicit regression/provenance pins, for19 total. All shared owner/helper/catalog/acquisition refs retain their exact values. Catalog implementation is not self-reviewed; its already independent source/exactselection review basis is inherited.",
+      "locations": [
+        "plan.json:sources",
+        "freeze.json"
+      ]
+    },
+    {
+      "id": "saved-validation-not-rerun",
+      "result": "PASS_RECORDED_SOURCE_FAKES_ONLY",
+      "evidence": "Saved log records22 stdlib fakes passing in0.026s plus Ruff/format/dry checks; validation metadata includes AST/pin checks. Reviewer only read/hash-checked small source/metadata and did not run/import any target source or tests.16 prior fakes+6 new frame regressions confer no real generation/scheduling qualification.",
+      "locations": [
+        "tests.log",
+        "validation.json",
+        "test_smoke.py:1-524"
+      ]
+    },
+    {
+      "id": "unchanged-execution-gates-and-limits",
+      "result": "PASS_SOURCE_ONLY_CANDIDATE",
+      "evidence": "Actual closed catalog evidence and five-ref acceptance, a concrete root spec with compatible pidfd parent interpreter, and fresh original owner admission are still required. No catalog/helper actual has been accepted here. In-process ASGI only; no HTTP/browser score/general quality/fullDSO/absolute real-time20 qualification. The fix bounds whole control-frame success in its monotonic accounting and does not promise real-time OS scheduling.",
+      "locations": [
+        "README.md",
+        "plan.json",
+        "freeze.json"
+      ]
+    }
+  ],
+  "check_count": 12,
+  "remaining_requirements_and_limits": [
+    "Root must independently accept closed actual catalog receipt/root exit/owner receipt/authenticated closure, then construct and review the five exact acceptance refs and exact helper root command spec.",
+    "Root must select and pin a parent interpreter with os.pidfd_open and signal.pidfd_send_signal; repository Py3.12 is not assumed compatible. The fixed worker interpreter must still match the closed catalog canonical stat/version metadata.",
+    "Fresh original owner05 admission remains mandatory: Comfy idle, R26,119,172,916 runtime reserve, initialR+full3GiB29,340,398,388, memory3GiB/swap0, affinity16-19/quota400%, original observer/authenticated closure unchanged.",
+    "22 recorded fakes are source component evidence only; no actual IPC/pidfd scheduling, NN import/load/generation, EOS/strictJSON result, ASGI timing or HTTP/browser20 outcome is qualified.",
+    "Parent receipt is a candidate until actual root/parent/owner success and authenticated closure are independently accepted. Candidate elapsed still precedes final cleanup; real command timing is needed.",
+    "Absolute real-time kill, hostile-worker OS isolation, full native DSO closure and benchmark/general helper/browser quality remain outside this review."
+  ],
+  "reviewer_actions": {
+    "read_hash_parse_bounded_small_source_metadata": true,
+    "write_only_new_review_artifact": true,
+    "execute_or_import_target_source": false,
+    "run_tests": false,
+    "runtime_import": false,
+    "payload_reads_or_hashes": false,
+    "unit_or_observer": false,
+    "host_or_live_runtime_inspection": false,
+    "network": false,
+    "git": false,
+    "modify_frozen01_or02": false
+  },
+  "all_review_actions_stopped_after_artifact": true
+}

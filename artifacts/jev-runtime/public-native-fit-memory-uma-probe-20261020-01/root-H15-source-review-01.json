@@ -1,0 +1,59 @@
+{
+  "schema": "root-H15-minimal-source-review-v1",
+  "status": "CLEAR_SOURCE_ONLY_NOT_EXECUTED",
+  "time_unix": 1792492507.614976,
+  "reviewed": {
+    "patch_and_all_new_helpers": true,
+    "changed_worker_controller_and_host_cuda_guard": true,
+    "complete_fake_tests": true,
+    "complete_plan_HOLD_and_launch_argv": true,
+    "independent_review_and_raw_test_dry_static_logs": true
+  },
+  "refs": {
+    "driver": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/native_uma_peak_probe_01.py",
+      "sha256": "2ed7cda3054da62e7440bf57e4bfae15e26ee6d22de8b80aede6c8f53973e3cb",
+      "size_bytes": 118654
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/plan-01.json",
+      "sha256": "1345523ea40c1e3586558beebc6403b505a6fdb72564740a50efa35ea8c42ad1",
+      "size_bytes": 32327
+    },
+    "HOLD": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/source-HOLD-H15-01/HOLD.json",
+      "sha256": "eb3d15567cbdb193b4c1fcd44c72cb88ffa4f836b6d39705713832b3983e4672",
+      "size_bytes": 21437
+    },
+    "independent": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/independent-H15-source-review-01.json",
+      "sha256": "f14a489df6b7ef9c298191b88083a9e10d33a972a284cec149aecbfe247d00af",
+      "size_bytes": 10418
+    },
+    "patch": {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-uma-probe-20261020-01/H13-to-H15-driver.patch",
+      "sha256": "d09a52936dbcbcb65937d5a569cad5d7e4d837e29c6abf31c7181cae3f0246c8",
+      "size_bytes": 19022
+    }
+  },
+  "verification": {
+    "unique_small_refs_SHA_size": 62,
+    "source95_exact_original94_plus_one_driver": true,
+    "source95_current_hashes": 95,
+    "inverse_entire_bytes_AST_and_diff_exact": true,
+    "reversible_blocks": 10,
+    "unchanged_methods_functions": 79,
+    "compiled_payload_refs_not_read": {
+      "artifacts/jev-runtime/public-native-action-epoch-ablation-20261018-01/actual-fit-240-02-parallel-cli/public07-h200-240-20261018-01-fit/fit/compiled-train.jsonl": {
+        "size_bytes": 9051953,
+        "reason": "compiled payload or >2MiB metadata only"
+      },
+      "artifacts/jev-runtime/public-native-action-epoch-ablation-20261018-01/actual-fit-240-02-parallel-cli/public07-h200-240-20261018-01-fit/fit/compiled-development.jsonl": {
+        "size_bytes": 1638024,
+        "reason": "compiled payload or >2MiB metadata only"
+      }
+    }
+  },
+  "policy": "New explicitly verified GB10 UMA policy removes the old raw CUDAfree veto. Preserve actual counters and old would_refuse. Host41GiB predicate is redundant under the unchanged77.66GB resident host floor; this is not an old gate PASS. Metadata-only libcuda authority and distinct canonical/file identity digest domains are accepted as documented.",
+  "execution": "No framework/GPU/processor/model import or actual launch by this root review. Need fresh original resources, real identity/cap readback and closed actual result. No host/cache control or user-job interference."
+}

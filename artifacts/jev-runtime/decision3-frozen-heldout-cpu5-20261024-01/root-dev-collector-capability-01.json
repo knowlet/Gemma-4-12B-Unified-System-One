@@ -1,0 +1,54 @@
+{
+  "schema": "root-selected-dsl01-dev-collector-capability-v1",
+  "status": "ROOT_SELECTED_FROZEN_DEV_COLLECTION",
+  "role": "dev_feature_collector",
+  "parent_role": "dev_evaluator restricted to requests+summary",
+  "split": "dev",
+  "dsl_version": "independent-browser-workflow-dsl/1",
+  "case_count": 24,
+  "family_ids": [
+    "expense_claim"
+  ],
+  "ancestor_ids": [
+    "expense_claim/workflow-1",
+    "expense_claim/workflow-2",
+    "expense_claim/workflow-3"
+  ],
+  "dev_inputs": {
+    "requests": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-decision-dsl-20261023-01/corpus/data/dev/requests.jsonl",
+      "sha256": "4937fbc27a2cabf2aeca5a85efbc31cf01cb66f2a419f26e48ccbfb4b5a8c93f",
+      "size_bytes": 280512
+    },
+    "summary": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-decision-dsl-20261023-01/corpus/data/dev/summary.json",
+      "sha256": "5393c426040fb3582b6237b8ee64029a16323225a824253d0f6e43583a36c4fe",
+      "size_bytes": 299
+    }
+  },
+  "frozen_candidate_ref": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-frozen-delta-candidate-capability-01.json",
+    "sha256": "239165d486bad16963a6e5c94c1f9503fc145ea5b85b114e9fbf94d84eb1fd76",
+    "size_bytes": 2556
+  },
+  "numeric_root_acceptance_ref": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-numeric-qualification-cpu5-20261024-01/root-accepted-delta-numeric-01.json",
+    "sha256": "91f80677a7956dbdee721661c3f20b8dfcbf5df8d7948b7221debdbd84d174d1",
+    "size_bytes": 12363
+  },
+  "training_eligible": false,
+  "labels_allowed": false,
+  "sealed_reveal_authorized": false,
+  "OS_access_sealing_claim": false,
+  "root_policy_ref": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-decision-dsl-20261023-01/role-policy.json",
+    "sha256": "6cb5884c575479c05b4fa03d74787eb9cf6329bb261e44861780f1685ae05e52",
+    "size_bytes": 1600
+  },
+  "corpus_manifest_ref": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-decision-dsl-20261023-01/corpus-manifest.json",
+    "sha256": "858ead813ec95d9737e5820d1fee198e498ae881e3ec050afd4bfdd8b93368df",
+    "size_bytes": 5646
+  },
+  "scope": "Exact dev24 only, no labels/authoring/train/sealed selected for feature collection. Frozen candidate selected before opening dev requests; outputs permanently nontraining."
+}

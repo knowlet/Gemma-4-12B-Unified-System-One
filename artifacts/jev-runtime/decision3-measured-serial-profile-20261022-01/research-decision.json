@@ -1,0 +1,17 @@
+{
+  "schema_id": "decision3-measured-serial-research-decision-v1",
+  "decision": "Prepare a separate measured resource policy; retain all original conservative profiles unchanged. No actual launch authorized by this artifact.",
+  "primary_source_basis": {
+    "path": "artifacts/jev-runtime/decision3-edge-known4-semantic-audit-20261022-01/loader-source-observation.json",
+    "sha256": "42e8495d483ea2a80de3e0290189b6b66a87f76b454d3426e29618c1f2106450",
+    "size_bytes": 5599
+  },
+  "rejected_inferences": [
+    "Original floor132618706804 exceeds host130595864576, therefore hardware impossible.",
+    "mmap/meta makes all source tensors free or permits adding driver free bytes to host available.",
+    "HF_ENABLE_PARALLEL_LOADING=false proves selected Transformers5.17 conversion is serial."
+  ],
+  "selected_approach": "Keep publisher code/numerics and full BF16 checkpoint. Explicit HF_DEACTIVATE_ASYNC_LOAD=1; separately bounded nativeCPU/cgroup and CUDAallocator budgets, conservatively add both budgets without UMA overlap credit, require fresh host reserve and measured full-load/warmup peaks. CPU-only pure policy implementation may follow review; actual model constructor remains unlaunched.",
+  "historical_mutation": false,
+  "actual_model_framework_GPU_or_unit_started": false
+}

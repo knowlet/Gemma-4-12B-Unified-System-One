@@ -159,6 +159,7 @@ def test_typed_answers_apply_temperature_once_to_already_softcapped_logits(adapt
         "status": "ok",
         "raw_logits": [[0, 2], [0, 2], [0, 2]],
         "latency_ms": 12,
+        "native_latency_ms": 9,
         "runtime": {},
         "runtime_slots": [10, 20, 30],
         "native_token_count": 31,
@@ -170,6 +171,14 @@ def test_typed_answers_apply_temperature_once_to_already_softcapped_logits(adapt
     assert result["answers"]["n"]["noul"] == pytest.approx(probability)
     assert result["answers"]["s"]["score"] == pytest.approx(10 * probability)
     assert result["passes"] == 1
+    assert result["latency_ms"] == 12
+    assert result["native_latency_ms"] == 9
+    # Missing native telemetry cannot silently become a native compute claim.
+    legacy = {key: value for key, value in response.items() if key != "native_latency_ms"}
+    assert (
+        adapter["prediction_from_logits"](request, legacy, 2.0, "model.gguf")["native_latency_ms"]
+        is None
+    )
 
 
 @pytest.mark.parametrize("temperature", [None, True, 0, -1, float("inf"), "1.0"])

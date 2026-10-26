@@ -1,0 +1,116 @@
+{
+  "schema_id": "jev_full75_cpu3g_v2_external_successful_unit_closure_v1",
+  "at_unix": 1792509448.0382955,
+  "properties": {
+    "MainPID": "0",
+    "Result": "success",
+    "ExecMainPID": "1533030",
+    "ExecMainCode": "1",
+    "ExecMainStatus": "0",
+    "ControlGroup": "",
+    "MemoryPeak": "1436393472",
+    "MemorySwapPeak": "0",
+    "MemoryMax": "3221225472",
+    "MemorySwapMax": "0",
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "SubState": "exited",
+    "InvocationID": "f8e8e646a5fe4b4990d8043a15e9031a"
+  },
+  "closed_actor_identities": [
+    {
+      "pid": 1533030,
+      "start_ticks": 44732511,
+      "pgid": 1533030,
+      "sid": 1533030
+    },
+    {
+      "pid": 1533043,
+      "start_ticks": 44732536,
+      "pgid": 1533043,
+      "sid": 1533043
+    },
+    {
+      "pgid": 1533044,
+      "pid": 1533044,
+      "sid": 1533044,
+      "start_ticks": 44732556
+    }
+  ],
+  "all_actor_PIDs_absent": true,
+  "same_invocation_and_exact_unit_path_before_exit": true,
+  "exact_unit_cgroup_path_absent_after_exit": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/jev-cpu3g-20261020-02.service",
+  "source_union122_unchanged_before_after": true,
+  "supervisor_exit0_controller_exit0_worker_exit0": true,
+  "full75_rows_payload_prompt_ids_masks_outcomes_exactly_equal_attempt01": true,
+  "worker_counts": {
+    "ACCEPTED": 71,
+    "REFUSED_CONTEXT": 3,
+    "REFUSED_SCHEMA": 1,
+    "UNKNOWN": 0
+  },
+  "policy68_counts": {
+    "ACCEPTED": 67,
+    "REFUSED_SCHEMA": 0,
+    "REFUSED_CONTEXT": 1,
+    "UNKNOWN": 0
+  },
+  "cpu3g_v2_full75_completed_and_whole_closed": true,
+  "all68_policy_rows_accepted": false,
+  "benchmark_ready": false,
+  "original10GiB_qualification_attested": false,
+  "task_quality_attested": false,
+  "unit_memory_peak_bytes": 1436393472,
+  "unit_swap_peak_bytes": 0,
+  "all_observed_unit_max_oom_oomkill_events0_including_last_preexit_readback": true,
+  "final_postexit_cgroup_memory_events_unavailable": true,
+  "final_postexit_zero_OOM_events_attested": false,
+  "final_counter_scope": "systemd removed the empty cgroup on successful service exit too. Postexit service Result/exitstatus/MemoryPeak/SwapPeak and actor/unit absence are attested; no fresh postexit cgroup event-counter value is invented.",
+  "monitors": {
+    "unit-actual-01/owned-memory-monitor.jsonl": {
+      "samples": 648,
+      "all_admitted": true,
+      "rss_states": {
+        "live": 1927,
+        "zombie": 2
+      },
+      "max_tracked_RSS_bytes": 1393958912,
+      "min_host_available_bytes": 30093672448,
+      "journal": {
+        "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/unit-actual-01/owned-memory-monitor.jsonl",
+        "sha256": "89921b60831169cf98eb662741d12ebdc13667d37d773f7aaa6e641903fcb94f",
+        "size_bytes": 1180585
+      }
+    },
+    "actual-01/owned-memory-monitor.jsonl": {
+      "samples": 490,
+      "all_admitted": true,
+      "rss_states": {
+        "live": 977,
+        "zombie": 1
+      },
+      "max_tracked_RSS_bytes": 1366306816,
+      "min_host_available_bytes": 30094323712,
+      "journal": {
+        "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/actual-01/owned-memory-monitor.jsonl",
+        "sha256": "85165f25f0810c3ba4c9ade49bbf09b0fb6d66c6c04d2258ca2f00d2f12677a9",
+        "size_bytes": 818194
+      }
+    }
+  },
+  "unit_terminal": {
+    "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/unit-actual-01/unit-terminal.json",
+    "sha256": "613d4caece7a6b0f8416d68fb59f1d1c80f9bcf60cfb154d434dd86649ff384b",
+    "size_bytes": 1917
+  },
+  "controller_terminal": {
+    "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/actual-01/controller-terminal.json",
+    "sha256": "8b85fa1991ae77a5284d1082ae73a36c8b8714bb9cada58e11411b8b6bc75387",
+    "size_bytes": 1745316
+  },
+  "worker_terminal": {
+    "path": "artifacts/jev-runtime/public-revisit-capacity-3g-20261020-02/actual-01/worker/terminal.json",
+    "sha256": "5ee726d2ec8707e22075d94451fbc46c1f990ced017f291e3802c40ce208ddfc",
+    "size_bytes": 1744782
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "status": "PASS_ASSERTIONS_FROM_20_STDLIB_FAKE_TEST_RUN",
+  "test_source": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/test_actor.py",
+    "sha256": "86ccd2c86ec4263ce6afbae9144b81da1975e14245bc8d4b4acf6ce3790c0cc3",
+    "size_bytes": 26270
+  },
+  "method": "Frozen native01 and new native02 execute receive fake runtime, fake clock, fake deadline, fake source/owner/auth functions; no model or host access. Assertions run in the saved 20-test verification.",
+  "comparisons": [
+    {
+      "test": "test_late_call_after_context_cleanup_demotes_candidate",
+      "fake_change": "call-0 __exit__ advances monotonic by21s",
+      "native01": "returns native synthetic success",
+      "native02": "raises RuntimeError; state and call completed false"
+    },
+    {
+      "test": "test_late_whole_after_context_cleanup_demotes_candidate",
+      "fake_change": "actor __exit__ advances monotonic by121s",
+      "native01": "returns native synthetic success",
+      "native02": "raises RuntimeError; state completed false"
+    },
+    {
+      "test": "test_final_finally_state_write_expiry_demotes_success",
+      "fake_change": "second success-state write advances monotonic by121s",
+      "native01": "returns native synthetic success",
+      "native02": "raises RuntimeError; state completed false"
+    },
+    {
+      "test": "test_original_primary_preserved_across_cleanup_and_failure_writer",
+      "fake_change": "original KeyboardInterrupt plus cleanup OSError and failed-state writer OSError",
+      "native01": "call cleanup masks original primary",
+      "native02": "original exception identity retained; cleanup and writer failures attached as notes"
+    }
+  ],
+  "other_new_regressions": [
+    "test_call_and_whole_cleanup_raise_cannot_return_success",
+    "test_preflight_consumes_original_whole120_without_reset",
+    "test_success_durable_call_latency_includes_cleanup"
+  ],
+  "real_timing_or_NN_measurement": false
+}

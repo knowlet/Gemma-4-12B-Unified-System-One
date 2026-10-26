@@ -1,0 +1,156 @@
+{
+  "schema_id": "decision3-local-transport-cpu-verification-v1",
+  "UTC": "2026-10-22T08:21:24.709536+00:00",
+  "profile": "decision3-gx10-local-owned-transport-v1",
+  "source_union": {
+    "path": "artifacts/jev-runtime/decision3-local-transport-20261022-01/source-union.json",
+    "sha256": "986f4276168902c92abc5ca83226d9b788ba5b4cfdc97f1ab966d69b476c61da",
+    "size_bytes": 11856
+  },
+  "tested_sources": [
+    {
+      "path": "artifacts/jev-runtime/decision3-local-transport-20261022-01/local_transport.py",
+      "sha256": "0490fe27872265662d7008a97876d42e81f35585f37f177928e802649445b5d8",
+      "size_bytes": 36466
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-transport-20261022-01/fake_worker.py",
+      "sha256": "97fcef42969f54db8df88117b340516dd5b36dbd5d1ddc0e04ef792f86e10d5e",
+      "size_bytes": 5103
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-transport-20261022-01/test_local_transport.py",
+      "sha256": "53e1f08cca9a18b7e4bf30617d8821c99d35deeb2fddc50ca7cbe35176cefc15",
+      "size_bytes": 18916
+    }
+  ],
+  "test_runtime": {
+    "interpreter": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+    "python": "3.12",
+    "machine": "aarch64"
+  },
+  "final_pytest": {
+    "tests": 37,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "reported_elapsed_seconds": 8.8,
+    "exit_code": 0,
+    "junit": {
+      "path": "artifacts/jev-runtime/decision3-local-transport-20261022-01/cpu-tests-final.xml",
+      "sha256": "308ec0b1b279a22149a37d9c95f342b64dcd532745ad70f0be0639423051e38b",
+      "size_bytes": 7205
+    },
+    "argv": [
+      "timeout",
+      "45s",
+      "prlimit",
+      "--as=268435456",
+      "--cpu=30",
+      "--core=0",
+      "--",
+      "env",
+      "OPENBLAS_NUM_THREADS=1",
+      "OMP_NUM_THREADS=1",
+      "MKL_NUM_THREADS=1",
+      "MALLOC_ARENA_MAX=1",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "artifacts/jev-runtime/decision3-local-transport-20261022-01/test_local_transport.py"
+    ]
+  },
+  "final_ruff": {
+    "exit_code": 0,
+    "result": "All checks passed",
+    "address_space_bytes": 268435456,
+    "cpu_seconds": 15,
+    "wall_seconds": 20,
+    "RAYON_NUM_THREADS": 1,
+    "MALLOC_ARENA_MAX": 1
+  },
+  "prior_diagnosis": {
+    "initial_tests": "26 passed, 3 failed and 3 teardown errors: repository Python3.12 missing pidfd wrappers, plus one transient unrelated unreadable recent process; corrected pidfd cleanup with libc APIs and retained fail-closed unknown observations.",
+    "initial_ruff": "Parallel Ruff without single-worker environment exited134 under256MiB AS; sequential RAYON_NUM_THREADS=1/MALLOC_ARENA_MAX=1 succeeds at same limit."
+  },
+  "verified": "37 bounded CPU tests pass with real loopback HTTP and owned fake children only. Direct/observed process closure is measured; whole-tree exit and continuation remain unconditionally false pending an independent kernel owner boundary. No GPU/model/warmup/quality/speed qualification.",
+  "no_real_model_runtime_imported_by_tests": true,
+  "no_historical_source_changes": true,
+  "final_read_only_historical_source_check": {
+    "schema_id": "decision3-local-current-source17-integration-gap-v1",
+    "UTC": "2026-10-22T08:00:40.753691+00:00",
+    "source17_manifest": {
+      "path": "artifacts/jev-runtime/decision3-matched-v7-warm-readiness-20261018-01/source-inventory17.json",
+      "sha256": "d8c886416bfc54192a3f861a8cb386e25754606a42410317056d2eef2f638985",
+      "size_bytes": 4392
+    },
+    "historical_manifest_and_projection_preserved": true,
+    "current_files_checked": 17,
+    "current_pin_matches": 16,
+    "current_pin_mismatches": [
+      {
+        "path": "src/s1/jev_generated.py",
+        "expected_historical_pin": {
+          "sha256": "582b520615cf123367436622f4e5ca6f5d94abb227449d866ec64cbb8adc9b3c",
+          "size_bytes": 18825
+        },
+        "current_pin": {
+          "sha256": "c356e0eb3c046cb0787d7be0c5960803006231e8bdb414de644ae2167e72d849",
+          "size_bytes": 23569
+        }
+      }
+    ],
+    "old_bootstrap_current_tree_admitted": false,
+    "cause": "The old bootstrap calls original source17/CORE authentication, which requires all historical project source pins even if transport itself uses no project modules.",
+    "required_successor": "Explicit new source-authentication composition for the complete current execution union and declared generated-helper delta; retain old source17 projection, no manifest rewrite/monkeypatch.",
+    "transport_scope": "Transport runtime and CPU fixtures import stdlib only and do not import these project files.",
+    "actual_model_execution": false
+  },
+  "whitespace_check": "No trailing whitespace in any new Python/JSON/Markdown file.",
+  "confirmed_review_fixes": {
+    "closure_claim": {
+      "status": "fixed",
+      "regression": "Real double-fork + setsid + exec with empty environment leaves the unobserved fake grandchild alive after clean observed closure; whole-tree/owned-exit/continuation claims remain false. Test parent independently pidfd-binds, terminates and reaps that fake process, restoring its prior subreaper setting.",
+      "production_pidfd_cleanup_checks_unchanged": true,
+      "direct_and_observed_exit_facts_retained": true,
+      "external_kernel_boundary_required": true,
+      "continuation_authorized": false
+    },
+    "http_final_publication": {
+      "status": "fixed",
+      "regressions": [
+        "Real HTTP200 header preparation delayed past deadline produces only504 and a rebound no-action receipt",
+        "Concurrent queued-request refusal during prepared200 headers blocks the arm; final network publication is504 before original deadline"
+      ],
+      "request_lock_held_through_publication": true,
+      "prepared_headers_before_final_gate": true,
+      "state_check_and_header_write_serialized_against_blocking": true
+    }
+  },
+  "superseded_prior_validation": {
+    "validation": {
+      "path": "artifacts/jev-runtime/decision3-local-transport-20261022-01/validation-before-closure-fix.json",
+      "sha256": "aaf1ec4b43bd2010a96460e5acbf2aa42266607139041a5415b96fe0bbd6d58e",
+      "size_bytes": 4688
+    },
+    "junit": {
+      "path": "artifacts/jev-runtime/decision3-local-transport-20261022-01/cpu-tests-before-closure-fix.xml",
+      "sha256": "06e7d95f67ad279e0a0d9f75647407096cd4bec202e07ed1ac91ca1ac1d56c7e",
+      "size_bytes": 6627
+    },
+    "tests": 34,
+    "scope": "Prior synthetic tests missed the confirmed marker-clearing escape and final header-publication races; they do not substantiate the corrected whole-tree claim."
+  },
+  "closure_only_intermediate_tests": {
+    "tests": 35,
+    "elapsed_seconds": 7.94,
+    "junit": {
+      "path": "artifacts/jev-runtime/decision3-local-transport-20261022-01/cpu-tests-closure-only.xml",
+      "sha256": "fc7e9ebf057998b46f0ad13f341b6d708514b968e90c3e0f177c4eb702af5945",
+      "size_bytes": 6819
+    }
+  }
+}

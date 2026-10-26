@@ -1,0 +1,117 @@
+{
+  "schema_id": "jev-feedback-source-successor-inverse-proof-v1",
+  "agent_protocol": "typed-stale-action-feedback-v1",
+  "sources": [
+    {
+      "parent": {
+        "path": "scripts/jev_native_v2_browser.py",
+        "sha256": "c513dc5bcb091de4fd0d4bd7a0776078e82be16106328b6de9d8424e32f2ee11",
+        "size_bytes": 45824
+      },
+      "derivative": {
+        "path": "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/feedback_native_driver.py",
+        "sha256": "d50e5d5833a993535f33a0f8a4243403b17608199a6961ad4df9e846b24c8d1f",
+        "size_bytes": 46165
+      },
+      "literal_substitutions": 5,
+      "inverse_complete_bytes_equal": true,
+      "inverse_complete_AST_equal": true,
+      "edits": [
+        {
+          "before": "ROOT = Path(__file__).resolve().parents[1]",
+          "after": "ROOT = Path(__file__).resolve().parents[3]"
+        },
+        {
+          "before": "PROFILE = \"jev-current-nf4-v7-browser-v1\"",
+          "after": "PROFILE = \"jev-current-nf4-v7-feedback-browser-v1\""
+        },
+        {
+          "before": "        \"profile\": PROFILE,\n        \"prompt_format\": prompt_format,\n",
+          "after": "        \"profile\": PROFILE,\n        \"agent_protocol\": \"typed-stale-action-feedback-v1\",\n        \"prompt_format\": prompt_format,\n"
+        },
+        {
+          "before": "    import jev_browser_profile_v7_benchmark as v7\n",
+          "after": "    import feedback_bundle as v7\n"
+        },
+        {
+          "before": "        \"scripts/jev_native_v2_browser.py\",\n",
+          "after": "        \"scripts/jev_native_v2_browser.py\",\n        \"artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/feedback_native_driver.py\",\n        \"artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/feedback_bundle.py\",\n        \"artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/action_feedback.py\",\n"
+        }
+      ]
+    },
+    {
+      "parent": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/launch_browser.py",
+        "sha256": "44eadeb19d907dc6084e31e5e86aa81bb73f514365ee3722c0baaf274a5fd842",
+        "size_bytes": 30555
+      },
+      "derivative": {
+        "path": "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/launch_browser.py",
+        "sha256": "80c2210033104e24cd75c1896ca5c1451e797b59340507144cff955c63231aff",
+        "size_bytes": 31101
+      },
+      "literal_substitutions": 6,
+      "inverse_complete_bytes_equal": true,
+      "inverse_complete_AST_equal": true,
+      "edits": [
+        {
+          "before": "DRIVER = \"scripts/jev_native_v2_browser.py\"",
+          "after": "DRIVER = \"artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/feedback_native_driver.py\""
+        },
+        {
+          "before": "PROFILE = \"jev-current-nf4-v7-browser-owned-v1\"",
+          "after": "PROFILE = \"jev-current-nf4-v7-feedback-browser-owned-v1\""
+        },
+        {
+          "before": "FORMATS = {\"raw\": \"raw-json-v1\", \"v2\": \"shared-elements-v2\"}",
+          "after": "FORMATS = {\"v2-feedback\": \"shared-elements-v2\"}"
+        },
+        {
+          "before": "    require(plan[\"schema_id\"] == PROFILE and plan[\"root\"] == str(ROOT), \"Exact local profile/root\")\n",
+          "after": "    require(plan[\"schema_id\"] == PROFILE and plan[\"root\"] == str(ROOT), \"Exact local profile/root\")\n    require(plan.get(\"agent_protocol\") == \"typed-stale-action-feedback-v1\" and plan.get(\"matched_control_plan_sha256\") == \"73bff770e242b93d5b7b53d24ef933926bd63897a4707d6d2e2a0f06f4438b6d\", \"Explicit selected feedback protocol/control\")\n"
+        },
+        {
+          "before": "        DRIVER,\n        GUARD_INDEX,\n",
+          "after": "        DRIVER,\n        \"artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/feedback_bundle.py\",\n        \"artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/action_feedback.py\",\n        GUARD_INDEX,\n"
+        },
+        {
+          "before": "        and receipt[\"prompt_format\"] == plan[\"prompt_format\"],\n",
+          "after": "        and receipt[\"prompt_format\"] == plan[\"prompt_format\"]\n        and receipt.get(\"agent_protocol\") == plan[\"agent_protocol\"],\n"
+        }
+      ]
+    },
+    {
+      "parent": {
+        "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/browser_entry.py",
+        "sha256": "b3fe4fab7fef0d6042516504cd659eb42fae784d62e0ed66fce5cd36b0ff32c2",
+        "size_bytes": 2287
+      },
+      "derivative": {
+        "path": "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/browser_entry.py",
+        "sha256": "b3fe4fab7fef0d6042516504cd659eb42fae784d62e0ed66fce5cd36b0ff32c2",
+        "size_bytes": 2287
+      },
+      "literal_substitutions": 0,
+      "inverse_complete_bytes_equal": true,
+      "inverse_complete_AST_equal": true,
+      "edits": []
+    },
+    {
+      "parent": {
+        "path": "artifacts/jev-runtime/browser-stale-feedback-runtime-20261022-01/action_feedback.py",
+        "sha256": "79ccf2ccc2d88f9613c1320ee883ce9742b0a88c0535dbfae4de7c97ee428246",
+        "size_bytes": 3875
+      },
+      "derivative": {
+        "path": "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/action_feedback.py",
+        "sha256": "79ccf2ccc2d88f9613c1320ee883ce9742b0a88c0535dbfae4de7c97ee428246",
+        "size_bytes": 3875
+      },
+      "literal_substitutions": 0,
+      "inverse_complete_bytes_equal": true,
+      "inverse_complete_AST_equal": true,
+      "edits": []
+    }
+  ],
+  "actual_actor_or_model_started": false
+}

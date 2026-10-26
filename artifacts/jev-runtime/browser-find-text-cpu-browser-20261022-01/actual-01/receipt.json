@@ -1,0 +1,269 @@
+{
+  "schema_id": "jev-find-text-owned-cpu-browser-v1",
+  "fixture_only": true,
+  "quality_score": null,
+  "model_qualified": false,
+  "server_bootstrap_qualified": false,
+  "chromium": {
+    "path": "/home/albert_hsieh/.cache/ms-playwright/chromium_headless_shell-1208/chrome-linux/headless_shell",
+    "sha256": "3d7ae069d9c2e7f049998f6871be2381fb6967f7a06c26ea0b346321e3dc496f",
+    "size_bytes": 287892096
+  },
+  "launch_flags": [
+    "--disable-gpu",
+    "--disable-software-rasterizer",
+    "--disable-background-networking"
+  ],
+  "cases": [
+    {
+      "name": "long_literal_hidden_duplicate",
+      "before": {
+        "y": 0,
+        "top": 30117.875,
+        "bottom": 30136.875,
+        "in_view": false
+      },
+      "after": {
+        "y": 29737,
+        "top": 380.875,
+        "bottom": 399.875,
+        "in_view": true
+      },
+      "actions": 1,
+      "decisions": 1,
+      "feedback": {
+        "operation": "FIND_TEXT",
+        "query": "owned-987e8b60d9e60ac7e01f0d77 ' \\ literal",
+        "status": "found",
+        "scroll_requested": true,
+        "scroll_changed": true,
+        "physical_control_input": "none",
+        "task_success": "not_evaluated"
+      },
+      "policy_index": 0,
+      "helper_index": 0
+    },
+    {
+      "name": "hidden_only_not_found",
+      "before": {
+        "y": 0,
+        "in_view": false
+      },
+      "after": {
+        "y": 0,
+        "in_view": false
+      },
+      "actions": 1,
+      "decisions": 1,
+      "feedback": {
+        "operation": "FIND_TEXT",
+        "query": "owned-987e8b60d9e60ac7e01f0d77 ' \\ literal",
+        "status": "not_found",
+        "scroll_requested": false,
+        "physical_control_input": "none",
+        "task_success": "not_evaluated"
+      },
+      "policy_index": 1,
+      "helper_index": 1
+    },
+    {
+      "name": "random_absent_not_found",
+      "before": {
+        "y": 0,
+        "top": 30117.875,
+        "bottom": 30136.875,
+        "in_view": false
+      },
+      "after": {
+        "y": 0,
+        "top": 30117.875,
+        "bottom": 30136.875,
+        "in_view": false
+      },
+      "actions": 1,
+      "decisions": 1,
+      "feedback": {
+        "operation": "FIND_TEXT",
+        "query": "absent-b7730d9dd4872f709ecb7f7b",
+        "status": "not_found",
+        "scroll_requested": false,
+        "physical_control_input": "none",
+        "task_success": "not_evaluated"
+      },
+      "policy_index": 2,
+      "helper_index": 2
+    },
+    {
+      "name": "stale_before_navigation",
+      "before": {
+        "y": 0,
+        "top": 30117.875,
+        "bottom": 30136.875,
+        "in_view": false
+      },
+      "after": {
+        "y": 0,
+        "top": 30117.875,
+        "bottom": 30136.875,
+        "in_view": false
+      },
+      "actions": 1,
+      "decisions": 1,
+      "feedback": {
+        "operation": "FIND_TEXT",
+        "query": "owned-987e8b60d9e60ac7e01f0d77 ' \\ literal",
+        "status": "stale",
+        "scroll_requested": false,
+        "physical_control_input": "none",
+        "task_success": "not_evaluated"
+      },
+      "policy_index": 3,
+      "helper_index": 3
+    },
+    {
+      "name": "post_dispatch_stale_unknown",
+      "before": {
+        "y": 0,
+        "top": 30117.875,
+        "bottom": 30136.875,
+        "in_view": false
+      },
+      "after": {
+        "y": 29737,
+        "top": 380.875,
+        "bottom": 399.875,
+        "in_view": true
+      },
+      "actions": 1,
+      "decisions": 1,
+      "feedback": {
+        "operation": "FIND_TEXT",
+        "query": "owned-987e8b60d9e60ac7e01f0d77 ' \\ literal",
+        "status": "stale",
+        "scroll_requested": null,
+        "physical_control_input": "none",
+        "task_success": "not_evaluated"
+      },
+      "policy_index": 4,
+      "helper_index": 4
+    },
+    {
+      "name": "real_late_helper_no_navigation",
+      "before": {
+        "y": 0,
+        "top": 30117.875,
+        "bottom": 30136.875,
+        "in_view": false
+      },
+      "after": {
+        "y": 0,
+        "top": 30117.875,
+        "bottom": 30136.875,
+        "in_view": false
+      },
+      "actions": 1,
+      "decisions": 1,
+      "feedback": {
+        "operation": "FIND_TEXT",
+        "query": "owned-987e8b60d9e60ac7e01f0d77 ' \\ literal",
+        "status": "deadline",
+        "scroll_requested": false,
+        "late": true,
+        "physical_control_input": "none",
+        "task_success": "not_evaluated"
+      },
+      "policy_index": 5,
+      "helper_index": 5
+    },
+    {
+      "name": "sixteen_actions_then_refusal",
+      "actions": 16,
+      "decisions": 17,
+      "seventeenth_action_refused": true,
+      "helper_calls_after_budget": 0
+    }
+  ],
+  "owned_processes": [
+    {
+      "pid": 147648,
+      "start_ticks": 2082428,
+      "state": "S"
+    },
+    {
+      "pid": 147666,
+      "start_ticks": 2082439,
+      "state": "S"
+    },
+    {
+      "pid": 147677,
+      "start_ticks": 2082565,
+      "state": "R"
+    }
+  ],
+  "closed_observed_processes": true,
+  "comfy_calls": 0,
+  "real_model_calls": 0,
+  "wire_inverse": {
+    "original_sha256": "c048d7779e60fce5d1a56b38e26b9ddf5ed9e1ff9c6adc478786d0267cca3027",
+    "derived_sha256": "3414b84586b20a8756bc4b4ae5673b961c1d3d1a53252e784fa885255fbcd058",
+    "inverse_exact": true,
+    "declared_edits": 2
+  },
+  "protocol_inverse": {
+    "jev_action_grammar": {
+      "original_sha256": "399e06e28172c96004b774ba97c04100687340e6b1326d317dbdf10557da75d2",
+      "derived_sha256": "a26f2b968183dd246728daa11ed153d80f8f6ec2a9f5f841615df0fa7e017442",
+      "declared_edits": 3,
+      "inverse_exact": true
+    },
+    "jev_generated": {
+      "original_sha256": "c356e0eb3c046cb0787d7be0c5960803006231e8bdb414de644ae2167e72d849",
+      "derived_sha256": "b238a566d161682be579e7fcfda8a1dc910d4aaa34b49df5982f65fa351cf217",
+      "declared_edits": 3,
+      "inverse_exact": true
+    },
+    "jev_decision3_native": {
+      "original_sha256": "67616bb70a8acdbf96b1d2e4c1407cf8cc2a24db51b5ca383e33b4d9a0488de9",
+      "derived_sha256": "07a12011f25246666551cb27892fed672a27068da477f2768048816c1478571f",
+      "declared_edits": 2,
+      "inverse_exact": true
+    }
+  },
+  "native_calls": 23,
+  "policy_calls": 23,
+  "helper_calls": 22,
+  "local_document_requests": 7,
+  "blocked_nonlocal_requests": 0,
+  "cdp_calls": 201,
+  "completed": true,
+  "cleanup_errors": [],
+  "process_closure": [
+    {
+      "before": {
+        "pid": 147648,
+        "start_ticks": 2082428,
+        "state": "S"
+      },
+      "after": null,
+      "same_process_absent": true
+    },
+    {
+      "before": {
+        "pid": 147666,
+        "start_ticks": 2082439,
+        "state": "S"
+      },
+      "after": null,
+      "same_process_absent": true
+    },
+    {
+      "before": {
+        "pid": 147677,
+        "start_ticks": 2082565,
+        "state": "R"
+      },
+      "after": null,
+      "same_process_absent": true
+    }
+  ]
+}

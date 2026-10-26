@@ -1,0 +1,91 @@
+{
+  "claim_limits": [
+    "Successful preparation seals metadata only; no model/helper/runtime qualification or live helper seed is established",
+    "Post-write full validation failure can leave a refused metadata file; no actor has been started, and the existing no-overwrite rule preserves it for inspection",
+    "Review does not attest current host capacity, actual GPU behavior, whole-process containment or model quality"
+  ],
+  "delta": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261023-05/source-delta.json",
+    "sha256": "a849de979f4169c7733de28245a7f0a602bb2e7c0f2d69d0816e4dfb027b3026",
+    "size_bytes": 1336
+  },
+  "followup_delta": {
+    "additional_test_or_actor_execution_by_reviewer": false,
+    "inverse_test_bytes_sha256": "7af576d089a674f6520e9fdf18d53d693e16bcdc6259a040604b2218633fa543",
+    "kind": "Test-only Ruff E741 alias rename O to ORIGINAL: one definition plus four uses",
+    "production_owner_entry_preparer_bytes_unchanged": true
+  },
+  "remaining_must_fix": [],
+  "reported_actual_preflight_inspected": {
+    "exit_code": 1,
+    "gate": "memory_reserve",
+    "reference": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261023-05/real-readiness-preflight-01.json",
+      "sha256": "949bb08846935d4cb6ff0bcdd211fc3b501261bb4d7480808fdedcf067bd40cd",
+      "size_bytes": 2088
+    },
+    "reported_available_bytes": 29065850880,
+    "reported_plan_owner_service_outputs_created": false,
+    "required_available_bytes": 73958271732,
+    "scope": "Receipt and original unchanged host-refusal branch inspected only; reviewer did not repeat observer or inspect current host/runtime"
+  },
+  "reviewed_at_utc": "2026-10-22T22:13:24.330435+00:00",
+  "reviewer": "q95_owner05_review separate agent",
+  "saved_CPU_test_receipt": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261023-05/cpu-tests-02.xml",
+    "sha256": "656ddd902b5ce87b6e61c43ee7cadcaa50a8ba7180b96d36d822880ab9f985fc",
+    "size_bytes": 2635
+  },
+  "saved_tests_inspected": {
+    "count": 14,
+    "elapsed_seconds": 0.352,
+    "errors": 0,
+    "failures": 0,
+    "rerun_by_reviewer": false
+  },
+  "schema_id": "q95-owner05-independent-source-review-v1",
+  "scope": "Read-only source/AST/metadata and saved-test-receipt inspection only; no tests rerun and no observer, actor, model, GPU, Driver, HTTP, unit, service or Comfy operation invoked",
+  "source_refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261023-05/q95_owner.py",
+      "sha256": "62ac775cedd7d16864564955a40f86aee5a4e6240a8f8b715271749ecd80582b",
+      "size_bytes": 31653
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261023-05/launch_q95.py",
+      "sha256": "db259d080227dca3c666d999fd9cf62bd40849c4974735285ecc38fb8b4e998d",
+      "size_bytes": 3539
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261023-05/prepare_plan.py",
+      "sha256": "e9e9da694e7f0902f92ffd9b416707fb2250b0a3d586c9749974f2939e4387eb",
+      "size_bytes": 4854
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261023-05/test_prepare_plan.py",
+      "sha256": "cc1feb983fb1c022ad957415d1c72eedda4cc6213ac1aec5ba13cdb06e2a94f0",
+      "size_bytes": 6950
+    }
+  ],
+  "status": "CLEAR",
+  "updated_at_utc": "2026-10-22T22:15:20.607348+00:00",
+  "verified": {
+    "AST_identical_functions": 27,
+    "actual_launch_still_requires_separate_exact_SHA_entry_and_repeated_original_checks": true,
+    "all_runtime_admission_cleanup_and_host_predicate_bodies_retained": true,
+    "complete_original_plan_validation_after_metadata_write": true,
+    "entry_identical_to_db259_parent": true,
+    "fixed_authorities_checked_before_readonly_observer_execution": true,
+    "fresh_plan_EXCL_mode0600_and_file_fsync": true,
+    "full_inverse_AST_to_parent": true,
+    "full_inverse_bytes_to_parent_1e8cd005": true,
+    "module_function_count": 28,
+    "new_preparer_default_dry_never_loads_owner_or_observer": true,
+    "new_slot_unit_service_output_profile_explicit": true,
+    "new_source_reader_is_bounded_1MiB_plus1": true,
+    "no_plan_seed_owner_output_or_unit_on_host_refusal": true,
+    "only_changed_function": "validate: owner04 output literal becomes owner05",
+    "original_initial_R_plus2BASE_and_Comfy_idle_gate_reused": true,
+    "owner_entry_SHA_checked_before_and_after_host_observation": true
+  }
+}

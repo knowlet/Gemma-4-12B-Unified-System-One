@@ -1,0 +1,40 @@
+--- scripts/jev_native_v2_browser.py
++++ artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/feedback_native_driver.py
+@@ -24,8 +24,8 @@
+ import time
+ from pathlib import Path
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-PROFILE = "jev-current-nf4-v7-browser-v1"
++ROOT = Path(__file__).resolve().parents[3]
++PROFILE = "jev-current-nf4-v7-feedback-browser-v1"
+ IDENTITY = "generated-actions-nf4"
+ FORMATS = ("raw-json-v1", "shared-elements-v2")
+ V7 = "composed-visible-text-settled-v7"
+@@ -183,6 +183,7 @@
+     expected_format(metadata, prompt_format)
+     return {
+         "profile": PROFILE,
++        "agent_protocol": "typed-stale-action-feedback-v1",
+         "prompt_format": prompt_format,
+         "adapter": str(adapter),
+         "adapter_manifest": pin(manifest),
+@@ -657,6 +658,9 @@
+ def composition_paths():
+     labels = (
+         "scripts/jev_native_v2_browser.py",
++        "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/feedback_native_driver.py",
++        "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/feedback_bundle.py",
++        "artifacts/jev-runtime/browser-stale-feedback-bundle-20261022-01/action_feedback.py",
+         "scripts/jev_browser_profile_v7_benchmark.py",
+         "scripts/jev_observation_profile_v7.py",
+         "scripts/jev_heldout_public_cases.py",
+@@ -775,7 +779,7 @@
+ 
+ 
+ def run_groups(output, upstream, endpoint, token, chromium, *, completed=None):
+-    import jev_browser_profile_v7_benchmark as v7
++    import feedback_bundle as v7
+ 
+     groups = []
+     for name, mode, ids in (("known4", "original", KNOWN4), ("public6", "heldout", PUBLIC6)):

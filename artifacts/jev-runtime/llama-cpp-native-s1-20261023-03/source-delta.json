@@ -1,0 +1,115 @@
+{
+  "changes": [
+    {
+      "after": "    bool swa_full = true;\n    bool cpu_mmap_only = false;\n",
+      "before": "    bool swa_full = true;\n"
+    },
+    {
+      "after": "                         \"  --swa-full: 1 = full-size SWA cache (default); 0 = compact SWA cache.\\n\"\n                         \"  --cpu-mmap-only 0|1: default 0; 1 requires --gpu-layers 0, requests mmap,\\n\"\n                         \"    disables lazy loading, CPU weight repacking and context operation offload.\\n\";\n",
+      "before": "                         \"  --swa-full: 1 = full-size SWA cache (default); 0 = compact SWA cache.\\n\";\n"
+    },
+    {
+      "after": "            out.swa_full = value == \"1\";\n        }\n        else if (key == \"--cpu-mmap-only\") {\n            require(value == \"0\" || value == \"1\", \"--cpu-mmap-only must be exactly 0 or 1\");\n            out.cpu_mmap_only = value == \"1\";\n        }\n",
+      "before": "            out.swa_full = value == \"1\";\n        }\n"
+    },
+    {
+      "after": "    require(out.threads > 0 && out.image_max_tokens > 0, \"invalid thread/image token limit\");\n    require(!out.cpu_mmap_only || out.gpu_layers == 0,\n            \"--cpu-mmap-only 1 requires --gpu-layers 0\");\n",
+      "before": "    require(out.threads > 0 && out.image_max_tokens > 0, \"invalid thread/image token limit\");\n"
+    },
+    {
+      "after": "        mp.n_gpu_layers = opts.gpu_layers;\n        if (opts.cpu_mmap_only) {\n            mp.load_mode = LLAMA_LOAD_MODE_MMAP;\n            mp.lazy_mode = LLAMA_LAZY_MODE_OFF;\n            mp.use_extra_bufts = false;\n        }\n",
+      "before": "        mp.n_gpu_layers = opts.gpu_layers;\n"
+    },
+    {
+      "after": "        cp.swa_full = opts.swa_full;\n        if (opts.cpu_mmap_only) {\n            cp.offload_kqv = false;\n            cp.op_offload = false;\n        }\n",
+      "before": "        cp.swa_full = opts.swa_full;\n"
+    },
+    {
+      "after": "                    {\"max_output_slots\", MAX_ANSWER_SLOTS}, {\"swa_full\", opts.swa_full},\n                    {\"cpu_mmap_only\", opts.cpu_mmap_only},\n",
+      "before": "                    {\"max_output_slots\", MAX_ANSWER_SLOTS}, {\"swa_full\", opts.swa_full},\n"
+    }
+  ],
+  "cli_contract": {
+    "accepted_exact_values": [
+      "0",
+      "1"
+    ],
+    "compiled_CLI_checks": "NOT_RUN; source-only",
+    "context_settings_when_true": {
+      "offload_kqv": false,
+      "op_offload": false
+    },
+    "default": false,
+    "flag": "--cpu-mmap-only",
+    "model_settings_when_true": {
+      "lazy_mode": "LLAMA_LAZY_MODE_OFF",
+      "load_mode": "LLAMA_LOAD_MODE_MMAP",
+      "use_extra_bufts": false
+    },
+    "optional": true,
+    "requires_when_true": "gpu_layers == 0, refused in parse_options before backend initialization",
+    "runtime_json_key": "runtime.cpu_mmap_only",
+    "runtime_json_type": "boolean"
+  },
+  "cmake": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-03/CMakeLists.txt",
+    "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+    "size_bytes": 2004
+  },
+  "limits": [
+    "Disables known CPU extra-buffer repack route, not proof of allfile-backed allocations",
+    "mmap residency/pagecache/otherbuffers/workspace/memcg/UMA unknown",
+    "No numerical equivalence/memory-fit/performance/quality inheritance"
+  ],
+  "parent_cmake": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/CMakeLists.txt",
+    "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+    "size_bytes": 2004
+  },
+  "parent_delta": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/source-delta.json",
+    "sha256": "264f0ec86d8c992372e677bfaa1ef7991ff3ace151fe67e3d6b120ecad8ba1e2",
+    "size_bytes": 3590
+  },
+  "parent_source": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/s1_gguf.cpp",
+    "sha256": "b9205973d97145adff2ba5368d935597ab904245b701551d3148f94999cff19a",
+    "size_bytes": 16923
+  },
+  "patch": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-03/source.patch",
+    "sha256": "1d16aa8fdc296f1393734bf3cffc3bb5ec7576cc80b7f19f3174ce618c6ab04e",
+    "size_bytes": 3625
+  },
+  "qualified_library_boundary": "Requires exact selected CPU-only184f653 libraries. Flags do not universally prohibit backend discovery/driver initialization; actual runtime/maps must be inspected.",
+  "schema_id": "llama-cpp-native-s1-cpu-mmap-source-delta-v3",
+  "scope": "Seven exact conditional CPU-mmap option source changes relative to frozenv2; CMake exact copy; no compiler/native/model execution.",
+  "source": {
+    "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-03/s1_gguf.cpp",
+    "sha256": "d9ff808d54cee375a09120b49e0c0e0840198d916a0185ecbd7d9e389493f36b",
+    "size_bytes": 17830
+  },
+  "unmodified_invariants": [
+    "v2swa flag/default/metadata and cache arithmetic",
+    "all model/context/batch/thread/GPU defaults when newflagfalse",
+    "original48layers/attention/slot/logit/projection path",
+    "LoRA/calibration/RPC/helper/ownership/resource gates"
+  ],
+  "upstream_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/include/llama.h",
+      "sha256": "961430f89e2553dbcd99e3e6c59826af9ec143f05911520c74f804d986ff3cd2",
+      "size_bytes": 90731
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/src/llama-model.cpp",
+      "sha256": "e19e39d935cc1085aecdde5e4e39e8c1a741d51318ae731c229bc9ec9b4d1ed2",
+      "size_bytes": 187552
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-source-184f653/ggml/src/ggml-cpu/repack.cpp",
+      "sha256": "5fa9f24cc2631609f40fa47a64078f77dccbe9f327711af91af671cd29b8b87d",
+      "size_bytes": 213604
+    }
+  ]
+}

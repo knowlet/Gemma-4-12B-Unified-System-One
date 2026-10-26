@@ -1,0 +1,101 @@
+{
+  "schema": "decision3-dsl01-train-collector-plan-v1",
+  "profile": "decision3-dsl01-train-features-cpu5-4g-source-candidate-v1",
+  "status": "selected_after_separate_review",
+  "collector_source": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/collector.py",
+    "sha256": "d3b067d536e42c4f611a32b027f886ede96aaf487cb38c6bfe57ead52148c4d5",
+    "size_bytes": 33197
+  },
+  "dependencies": {
+    "native_actor": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/actor.py",
+      "sha256": "9a7e5af918c17f6824a720fb6d112ffa5fdac03493dde3efa176c7d50470a365",
+      "size_bytes": 31080
+    },
+    "native_plan": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/edge-plan.json",
+      "sha256": "095db88b78687d90fbed51aafd736c1b06fb1a582312de8dff97bf6109131e96",
+      "size_bytes": 31270
+    },
+    "native_helper": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/resource_helper.py",
+      "sha256": "4df54e06e8a795ebf5b300a3e2074319e781a278a2a870c21c2bd52897d7eb11",
+      "size_bytes": 7954
+    },
+    "np5_actor": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/actor.py",
+      "sha256": "c8a439c794f5176564a29473c524d62f86218818b1f7fb66089c8e007dfd7f82",
+      "size_bytes": 19795
+    },
+    "observer": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/observer.py",
+      "sha256": "455e2c7bf20d1a96f99795566062db15dbe779dd5610e573277c382775bc4f37",
+      "size_bytes": 6417
+    },
+    "numpy_probe": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/numpy_probe.py",
+      "sha256": "22ed700ebc9ea49fd8cf4d1a532ca3a571290d349b69053c6bea082631582f7f",
+      "size_bytes": 16236
+    },
+    "head_core": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cached-head-core-20261023-01/head_core.py",
+      "sha256": "6761dd654481424f4d6c908a7c9fd2d43e4762eeb5420af9f22612ffe77657ed",
+      "size_bytes": 6957
+    },
+    "owner_controller": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-09/controller.py",
+      "sha256": "81846efe2ee0357da07283c1a77a606283a920cbddef668c8f62def291057dee",
+      "size_bytes": 41886
+    }
+  },
+  "np5_root_acceptance": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-readout-numpy-cpu5-qualification-20261024-02/root-accepted-np5-qualification-02.json",
+    "sha256": "81063db0b9044ebf1a5bba6d7c60575f0ec51d0510c5a1ffb840ba89fa3b6bc0",
+    "size_bytes": 5141
+  },
+  "train_capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/root-train-collector-capability-01.json",
+    "sha256": "e7193d079732421f689a6f43152b4af2f304efd03c69a23b053c95d53266e7df",
+    "size_bytes": 1448
+  },
+  "train_inputs": {
+    "requests": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-decision-dsl-20261023-01/corpus/data/train/requests.jsonl",
+      "sha256": "9ca13562700032b5a0f613195cdd4767687e908c1a3a3f3bc9ea14338c3e5f60",
+      "size_bytes": 1129144
+    },
+    "summary": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-decision-dsl-20261023-01/corpus/data/train/summary.json",
+      "sha256": "bbb3ab5f31d856f09f0eb3e67440679198701bb2bae5f223e4dbebb2e8649660",
+      "size_bytes": 688
+    }
+  },
+  "dsl_version": "independent-browser-workflow-dsl/1",
+  "split": "train",
+  "ancestor_id": "appointment_edit/workflow-3",
+  "requests": 8,
+  "wall_seconds": 120,
+  "call_seconds": 20,
+  "owner_unit": "jev-d3-llama-cpp-cpu5-fast-4g-coexist-20261024-09.service",
+  "owner_profile": "llama-cpp-cpu5-fast-same-cluster-4g-coexist-command-owned-v1",
+  "memory_max_bytes": 4294967296,
+  "swap_max_bytes": 0,
+  "reserve_bytes": 26119172916,
+  "startup_available_bytes": 30414140212,
+  "cpu_affinity": [
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "cpu_quota_percent": 500,
+  "threads": 5,
+  "source_qualification": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/collector-source-validation-02.json",
+    "sha256": "4f27d6af6858d30450dac16b1ffbba8a75cd345b876fa437341d9d17ed633f11",
+    "size_bytes": 1643
+  },
+  "peer_scope": "Source-only; no independent actual reader. Root prerequisite acceptance after actual05 closed audit03."
+}

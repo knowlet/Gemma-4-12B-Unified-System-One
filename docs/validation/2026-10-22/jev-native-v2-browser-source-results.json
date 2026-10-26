@@ -1,0 +1,272 @@
+{
+  "schema_id": "jev-native-v2-browser-source-and-cpu-regression-results-v1",
+  "at_utc": "2026-10-22T05:31:03.610547+00:00",
+  "status": "BROWSER_BOUNDARY_AND_FULL_SELECTED_CPU_PASS_ACTUAL_GPU_TRAINING_BROWSER_UNRUN",
+  "prior_pushed_milestone": "43997957f2e753bc5673b66170477d59fdce92b1",
+  "profile": "jev-current-nf4-v7-browser-v1",
+  "source_review": "CLEAR for exact final source hashes; no review actors or ML execution.",
+  "sources": [
+    {
+      "path": "scripts/jev_native_v2_browser.py",
+      "sha256": "033e0b5e96e39d6d65d38b8b4ee4df86d19ee965afbb42a190b9629d5afd563e",
+      "size_bytes": 40549
+    },
+    {
+      "path": "tests/test_jev_native_v2_browser.py",
+      "sha256": "0975017f1f5dd02dd6442f394df77c1f2dc1b038a35297cc378df0e8184a8438",
+      "size_bytes": 26512
+    },
+    {
+      "path": "docs/research/jev-native-v2-browser.md",
+      "sha256": "0fa75fb730480d8ad3d146c538ccab64b6c7bb051f29817145e75223bedec5c2",
+      "size_bytes": 5475
+    }
+  ],
+  "focused_browser_tests": {
+    "path": "artifacts/jev-runtime/native-v2-training-20261022-01/browser-test-results-01.json",
+    "sha256": "07c1881b1f85f5035263fe890b66608babb3787f3eb8c23637c302bf31831fe6",
+    "size_bytes": 1806
+  },
+  "focused_browser_test_count": 34,
+  "browser_composition": {
+    "base_precision": "NF4",
+    "model_identity": "generated-actions-nf4",
+    "prompt_formats": [
+      "raw-json-v1",
+      "shared-elements-v2"
+    ],
+    "comparison_intent": "Verified raw96 parent versus nativeV2 child under the same current NF4 base/helper.",
+    "historical_reference": "Historical Q95/BF16 V7 5/10 remains a distinct precision/helper reference, not a matched control.",
+    "fixed_original_cases": 4,
+    "fixed_public_transfer_cases": 6,
+    "planned_denominator": 10,
+    "max_steps": 16,
+    "seed": 20261014,
+    "model_helper_deadline_seconds": 20,
+    "helper_max_tokens": 128,
+    "max_context_tokens": 8192,
+    "unchanged": "V7 bundles, viewport, original request construction and final-DOM judges.",
+    "evidence": "Retains raw local HTTP requests/candidates/responses and policy IDs; full client/server joins and external process/cgroup closure still required.",
+    "lifecycle": "Primary browser error preserved through cleanup/publication failures. Unconfirmed server drain remains failed and has no output index. Whole HTTP expiry returns504 before dispatch or after candidate without authorizing an expired action."
+  },
+  "native_training_plan": {
+    "reference": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/launch-plan-01.json",
+      "sha256": "a74e9244c5026408ff86d42a8a9d1b5190f03a007143b1a1539e10b84efedd88",
+      "size_bytes": 19666
+    },
+    "sources": 103,
+    "population": "All96 actual fitter-captured runtime sources plus7 owner/guardian/resource dependencies.",
+    "all_current_source_hashes_match": true,
+    "exact_arguments_parse_in_no_run_mode": true,
+    "owner_default_dry": true,
+    "driver_alias_metadata_current_match": true,
+    "Driver_payload_hash_or_CUDA_execution_claim": false,
+    "train_updates_planned": 142,
+    "development_cases": 37,
+    "development_updates_planned": 0,
+    "learning_rate": 5e-05,
+    "seed": 42,
+    "full_historical_cases": 179,
+    "actual_native_unit_started": false,
+    "native_capacity_qualified": false
+  },
+  "CPU_profile": {
+    "name": "CPU-only3GiB-16GiB-host-v1",
+    "controller": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/run_cpu_regressions.py",
+      "sha256": "e295d63cdf434c8d1866c0890729bd03e2d78ffd2166ed5a4fe7d3093346db98",
+      "size_bytes": 10887
+    },
+    "worker": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/integration_tests.py",
+      "sha256": "dc0b867f3ba6e81eaa843de078d9c2970494a6a315cc002ac932430071989f20",
+      "size_bytes": 3812
+    },
+    "prior_controller": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/run_integration_tests.py",
+      "sha256": "bf1da9320c8387ec34116e5f6eaf58524318599ed32a0a9be029d1f1f3de3249",
+      "size_bytes": 4582
+    },
+    "research": {
+      "path": "docs/research/jev-native-v2-cpu-regressions.md",
+      "sha256": "0ad0e9d14925a24757b313d8c949ea2e15801c8702a5728d7a508a4e9ef189d2",
+      "size_bytes": 1945
+    },
+    "host_startup_bytes": 20468203520,
+    "host_stop_below_bytes": 17179869184,
+    "unit_memory_max_bytes": 3221225472,
+    "unit_swap_bytes": 0,
+    "unit_seconds": 600,
+    "worker_alarm_seconds": 540,
+    "CUDA_VISIBLE_DEVICES": "",
+    "scope": "A separate policy for bounded CPU regressions. Actual systemd/cgroup caps are read back; real host observations are retained. It neither changes GPU admission nor derives full-suite capacity from partial peaks. Torch initialization is checked before/after; no claim that dependencies never query a driver."
+  },
+  "prior_CPU_attempts": [
+    {
+      "attempt": "tests-01",
+      "status": "ABORTED_NOT_A_TEST_PASS",
+      "reason": "host_reserve_crossed",
+      "last_live_elapsed_seconds": 130.20855206192937,
+      "last_live_host": {
+        "mem_available_bytes": 26080014336,
+        "comfy_running": 1,
+        "comfy_pending": 0
+      },
+      "last_observed_unit_peak_bytes": 1004314624,
+      "cgroup_absent_after_stop": true,
+      "final_pytest_count": null,
+      "reference_local": {
+        "path": "artifacts/jev-runtime/native-v2-training-20261022-01/tests-01/integration-tests-root-closure.json",
+        "sha256": "f6a1a7fc4b7827594b1a3986dca4ba045d23b7dc918614e6bb0778fc887bbcf4",
+        "size_bytes": 11640
+      }
+    },
+    {
+      "attempt": "tests-02",
+      "status": "ABORTED_NOT_A_TEST_PASS",
+      "reason": "host_reserve_crossed",
+      "last_live_elapsed_seconds": 60.11126754805446,
+      "last_live_host": {
+        "mem_available_bytes": 26050416640,
+        "comfy_running": 1,
+        "comfy_pending": 0
+      },
+      "last_observed_unit_peak_bytes": 739303424,
+      "cgroup_absent_after_stop": true,
+      "final_pytest_count": null,
+      "reference_local": {
+        "path": "artifacts/jev-runtime/native-v2-training-20261022-01/tests-02/integration-tests-root-closure.json",
+        "sha256": "7349426712e8213fafdecb08b25e6caae338511698ba48ed1a6a5ded8fcd9e13",
+        "size_bytes": 6421
+      }
+    }
+  ],
+  "selected_CPU_integration": {
+    "status": "PASS",
+    "attempt": "tests-03",
+    "unit": "jev-native-v2-check-tests-03-20261022.service",
+    "invocation_id": "6741a68fdc1c46bcbbde1ba4d797eec2",
+    "pid": 2308131,
+    "passed": 580,
+    "skipped": 2,
+    "failed": 0,
+    "skip_reason": "JEV_UPSTREAM_PATH not supplied in full-suite environment; both skipped cases subsequently passed in a separate pinned-upstream targeted run.",
+    "pytest_reported_seconds": 323.05,
+    "JUnit_seconds": 323.033,
+    "worker_seconds": 325.74905503098853,
+    "worker_process_peak_RSS_bytes": 1033682944,
+    "systemd_terminal_cached_memory_peak_bytes": 1222406144,
+    "memory_peak_scope": "Reported cached systemd peak; no final post-exit cgroup zero-OOM claim.",
+    "source_count": 106,
+    "sources_unchanged": true,
+    "controller_worker_sources_unchanged": true,
+    "Torch_CUDA_initialized_after": false,
+    "actual_limit_readback": {
+      "memory.max": "3221225472",
+      "memory.swap.max": "0"
+    },
+    "owned_invocation_authenticated": true,
+    "cgroup_absent_after_stop": true,
+    "after_stop": {
+      "MainPID": "0",
+      "Result": "success",
+      "ExecMainPID": "0",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "ControlGroup": "",
+      "MemoryCurrent": "[not set]",
+      "MemoryPeak": "[not set]",
+      "MemorySwapPeak": "[not set]",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "InvocationID": ""
+    },
+    "terminal": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/tests-03/integration-tests-terminal.json",
+      "sha256": "59aed31dbc66f9273941828514e54a8f92486258c97fb7ec5763ef7a74816ae1",
+      "size_bytes": 22510
+    },
+    "JUnit": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/tests-03/integration-tests.xml",
+      "sha256": "eb7ed7a7181cf468345da80820b5ac1c119269267ce84e279c066cb0464a3e29",
+      "size_bytes": 91160
+    },
+    "closure": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/tests-03/integration-tests-root-closure.json",
+      "sha256": "1d5d13b7021ea78e83704ef98e51d43a7669bdae71636ce01bced3d70e393e8d",
+      "size_bytes": 51272
+    },
+    "limits": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/tests-03/integration-tests-unit-readback.json",
+      "sha256": "85d8dce7b7e0af5c90d289e4e353ab68e48a88690ff74be596d6553003133a04",
+      "size_bytes": 925
+    },
+    "scope": "Includes genuine tiny CPU142-update fitting,37development zero-updates,warm-start andpartial-failure tests with mocked12B model/gates and synthetic tokenizer. No production12B training or GPU capacity attestation."
+  },
+  "GPU_policy_unchanged": {
+    "source_results": {
+      "path": "docs/validation/2026-10-22/jev-native-gx10-resident-source-results.json",
+      "sha256": "d091856722a4e5154d604164a2e122f74b533a97dbaf6aa7440fae711dccdaaa",
+      "size_bytes": 9285
+    },
+    "startup_bytes": 116313485312,
+    "reserve_bytes": 26119172096,
+    "loaded_floor_bytes": 77658779648
+  },
+  "resource_window_readonly": {
+    "path": "artifacts/jev-runtime/native-v2-training-20261022-01/comfy-job-resource-window-01.json",
+    "sha256": "a6257683f427e6cb37e99679195a592b105c9c0f0bdf88e54519dfca081f3545",
+    "size_bytes": 2827
+  },
+  "actual_new_GPU_execution": {
+    "native12B_model_loads": 0,
+    "native12B_updates": 0,
+    "NF4_browser_model_loads": 0,
+    "browser_trials": 0,
+    "Comfy_interrupt_unload_free_or_queue_mutations": 0
+  },
+  "remaining": [
+    "Resource-admitted full12B native142-step training and37devzero-update evaluation, followed by strict artifact verification and external closure.",
+    "Actual currentNF4 raw96/nativeV2 matched ten-task browser runs and complete response/action evidence joins.",
+    "Allsix Decision3 warm/native browser comparison."
+  ],
+  "scope": "Source/tests/aggregate/hash references only; raw wires, token arrays, weights and runtime/library payload copies remain local. Full usability/competition objective remains unfinished.",
+  "goal_complete": false,
+  "targeted_pinned_upstream": {
+    "status": "PASS",
+    "passed": 2,
+    "failed": 0,
+    "deselected": 87,
+    "pytest_seconds": 0.56,
+    "exit_code": 0,
+    "Python": ".venv Python3.12",
+    "checkout": "artifacts/jev-runtime/upstream",
+    "commit": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+    "original_model_questions_bytes_verified_by_tests": true,
+    "selector": "tests/test_jev_generated.py -k actual_pinned_upstream_choose_accepts_only_the_selected_head",
+    "environment": {
+      "JEV_UPSTREAM_PATH": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "address_space_limit_bytes": 268435456,
+    "CPU_limit_seconds": 30,
+    "JUnit": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/upstream-tests-01.xml",
+      "sha256": "4721a60d495b0858f847d63ad72e6b3a41349c45ef943f8515f98aa02ca7c949",
+      "size_bytes": 563
+    },
+    "scope": "Actual pinned upstream choose() integrated with a local FastAPI test client and fake generation. No real model or Chromium/browser task."
+  },
+  "resource_now": {
+    "at_utc": "2026-10-22T05:31:03.610547+00:00",
+    "MemTotal": 130595860480,
+    "MemAvailable": 26644484096,
+    "comfy_running": 1,
+    "comfy_pending": 0
+  }
+}

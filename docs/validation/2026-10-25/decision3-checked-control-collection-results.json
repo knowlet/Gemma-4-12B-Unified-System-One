@@ -1,0 +1,141 @@
+{
+  "schema": "public-decision3-checked-control-collection-results-v1",
+  "date": "2026-10-25",
+  "timezone": "Asia/Taipei",
+  "status": "independently_admitted_training_data_only",
+  "scope": "owned_train_only_scripted_native_browser_collection",
+  "scenario_profile": "checked-control-progress-v1",
+  "scenario_schema_id": "decision3-owned-checked-control-scenarios-v1",
+  "scenario_namespace": "decision3-owned-checked-control-training-v1",
+  "execution": {
+    "git_base": "baa9f751df44541c92a61107b2eece8346652604",
+    "additional_sources": "new_uncommitted_byte_pinned_sources",
+    "later_commit_claimed_as_executed": false,
+    "original_exit_code": 0,
+    "reported_collection_wall_seconds": 5.8400035569793545,
+    "inference_performed": false,
+    "cpu_affinity": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "memory_max_bytes": 4294967296,
+    "memory_swap_max_bytes": 0,
+    "startup_memory_gate_unchanged": true,
+    "approximate_available_GB": 32.81,
+    "approximate_required_GB": 30.414,
+    "additional_memory_cleanup_performed": false,
+    "original_owned_scope_closed": true,
+    "empty_process_scans": 2,
+    "OS_containment_claim": false,
+    "startup_available_bytes": 32807473152,
+    "startup_required_bytes": 30414140212
+  },
+  "settings": {
+    "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+    "max_ticks": 16,
+    "observation_helper": "V7",
+    "observation_helper_sha256": "d9f4236d1d46c9472c3d6c1551342639ecb870e6c0dd419246927645410ea868",
+    "original_default_profile": "affordance-v1",
+    "original_default_menu_counts": [
+      4,
+      7,
+      8
+    ],
+    "original_default_profile_unchanged": true
+  },
+  "population": {
+    "split": "train",
+    "owned_families": [
+      "radio-two",
+      "radio-three"
+    ],
+    "native_rows": 10,
+    "rows_per_family": {
+      "radio-two": 5,
+      "radio-three": 5
+    },
+    "route_each_family": [
+      "CLICK",
+      "TYPE_TEXT",
+      "SELECT",
+      "CLICK",
+      "DONE"
+    ],
+    "second_CLICK_is_submit": true,
+    "operation_counts": {
+      "CLICK": 4,
+      "TYPE_TEXT": 2,
+      "SELECT": 2,
+      "DONE": 2
+    },
+    "naturally_observed_menu_counts": {
+      "6": 10
+    },
+    "question_heads_per_row": 4,
+    "postselection_rows_with_checked_radio_still_clickable": 8,
+    "wire_checkedness_literals": [
+      "false",
+      "true"
+    ]
+  },
+  "verification": {
+    "independent_full_admission_passed": true,
+    "selected_sources_reauthenticated": 93,
+    "captured_files_reauthenticated": 190,
+    "full_original_wire_and_order_preserved": true,
+    "all_native_targets_and_criteria_retained": true,
+    "native_executor_and_freshness_replayed": true,
+    "DOM_transitions_and_terminal_goals_replayed": true,
+    "invented_controls_passed": 101,
+    "integration_tests_deselected": 1,
+    "invented_control_seconds": 1.5,
+    "ruff": "pass",
+    "source_peer_review": "accepted",
+    "controls_establish_model_quality": false
+  },
+  "earlier_attempts": {
+    "preserved_separately": true,
+    "prospective_relative_path_failure_before_owner": true,
+    "greenlet_dependency_failure_before_episodes": true,
+    "memory_refusal_before_unit": true,
+    "legitimate_text_blur_change_misclassified_by_proof_checker": true,
+    "misclassified_batch_goals_true": 2,
+    "misclassified_batch_status": "failed_quarantined",
+    "misclassified_batch_admitted_rows": 0,
+    "correction": "exact_trusted_current_text_change_before_button_click",
+    "fresh_full_recollection_passed": true,
+    "failed_rows_promoted": false
+  },
+  "audit": {
+    "accepted_sha256": "376999d8f51bd327cdfe928e7fbdcc478e21a011b60be4908d052ed9d439eaaf",
+    "projection_sha256": "a9c37369a796d32fff366e3701ed9876aace27f4c7c64a40753a0f944acd34b7",
+    "receipt_sha256": "410fc7046a2e913b4acef998284aeabf3ae2c542cb56c8ec0b58afcbdbaa47bc",
+    "plan_sha256": "8c3538b270dac48577abbf8388e02527547ba624593ff2dbf2afc51d8d0cfccd",
+    "collector_source_sha256": "5637de71f59cf052f01b8464b1c6ab67a086cf41b6081f37bd3db82c5a863f3c",
+    "scenario_source_sha256": "d433cf9f357517f8bd470b77b28f4937bbb0448a63504204c9af5a8ff4e427e7"
+  },
+  "limits": {
+    "model_calls": 0,
+    "model_score": null,
+    "fit_eligible": false,
+    "feature_capture_started": false,
+    "fitting_started": false,
+    "new_model_evaluation_performed": false,
+    "operation_only_supervision_trains_CLICK_target_selection": false,
+    "model_qualified": false,
+    "browser_qualified": false,
+    "benchmark_qualified": false,
+    "candidate_Heaven_score": null,
+    "candidate_coherence_score": null,
+    "full10_score": null,
+    "competitor_win": false
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "schema_id": "jev-decision3-mini-complete-local-storage-transfer-results-v1",
+  "status": "COMPLETE_TRANSFER_HASHED_AND_BOUNDED_HEADER_GEOMETRY_MATCH_NOT_MODEL_QUALIFIED",
+  "model": "d3-mini",
+  "revision": "97dd054df4b3e0b3beb6af23ab8c82b7c0052e0e",
+  "transfer_receipt": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/d3-mini-transfer-01.json",
+    "sha256": "280b05f052440799badafde1b3ca27046f96cf766f1f83b2dbddd29245f2fc37",
+    "size_bytes": 8477
+  },
+  "outer_exit": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/root-mini-exit-01.json",
+    "sha256": "8eb8817cc95ded5135de9586170ad163d85b8657bf125daf37e59cc2f76e1c8a",
+    "size_bytes": 3427
+  },
+  "root_storage_verification": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/root-mini-storage-verification-01.json",
+    "sha256": "5aadd85fb6feac85753ab97b1869d608ea1ba6b4714de0b63ca77b111572f592",
+    "size_bytes": 8269
+  },
+  "files": 22,
+  "bytes": 9104396884,
+  "transfer_outer_seconds": 1303.6717810630798,
+  "transfer_complete_file_SHA_size_checked": true,
+  "source_before_after_unchanged": true,
+  "owned_pid_start": {
+    "pid": 1452323,
+    "start_ticks": 43629364,
+    "pgid": 1452323,
+    "sid": 1452323,
+    "closed": true
+  },
+  "bounded_header_checks": {
+    "core_source_sha256": "9919e3b1dd5d5a68377b8e74c1b313c9a368a1716400d32af72e8a548ef02b4c",
+    "maximum_header_bytes_per_tensor_file": 4194304,
+    "BF16_backbone_tensor_count": 723,
+    "BF16_backbone_parameters": 4539265536,
+    "FP32_readout_parameters": 652800,
+    "FP32_readout_shape": [
+      255,
+      2560
+    ],
+    "total_parameters": 4539918336,
+    "expected_total_parameters": 4539918336,
+    "full_tensor_payloads_reread_by_this_review": false
+  },
+  "review_scope": "Root matched all22 receipt/manifest selections and resolved-file stats, rehashed19 non-tensor files, read bounded headers for2 backbone shards plus readout, and confirmed PID/PG/SID absence. Large payload SHA relies on the executed frozen downloader and closed receipt; no second tensor payload hash or model execution claimed.",
+  "model_framework_GPU_processor_browser_calls": 0,
+  "runtime_qualified": false,
+  "quality_or_superiority_claim": false,
+  "remaining": "Fresh original model memory/cache/header admission and actual warmup/browser comparison. Flash storage transfer now active; D3 storage transfer remains pending. All six matched warm comparisons remain incomplete."
+}

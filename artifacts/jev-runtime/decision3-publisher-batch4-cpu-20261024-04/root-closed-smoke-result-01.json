@@ -1,0 +1,133 @@
+{
+  "schema": "root-closed-native-batch4-cpu16-smoke-review-v1",
+  "status": "PASS_WITH_LIMITS_SYNTHETIC_SMOKE_ONLY",
+  "reviewer": "root closed actual review",
+  "separate_reviewer_actual_bytes_read": false,
+  "full07_prerequisite_selected": false,
+  "model_key": "edge",
+  "model_revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+  "model_identity_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+  "owner_unit": "jev-d3-llama-cpp-cpu16-4g-coexist-20261024-08.service",
+  "memory_max_bytes": 4294967296,
+  "cpu_affinity": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "threads": 16,
+  "model_loads": 1,
+  "calls": [
+    {
+      "index": 0,
+      "durable_seconds": 1.2048053710022941,
+      "shape": [
+        4,
+        135,
+        1024
+      ]
+    },
+    {
+      "index": 1,
+      "durable_seconds": 1.0944040610047523,
+      "shape": [
+        4,
+        135,
+        1024
+      ]
+    }
+  ],
+  "whole_root_seconds": 17.296471427980578,
+  "command_seconds": 15.59842708898941,
+  "actor_seconds": 14.319179950020043,
+  "post_final_auth_memory": {
+    "memory.current": 951558144,
+    "memory.peak": 1061474304,
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "cpu.stat": {
+      "usage_usec": 39861208,
+      "user_usec": 35360147,
+      "system_usec": 4501060,
+      "nice_usec": 0,
+      "core_sched.force_idle_usec": 0,
+      "nr_periods": 146,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    }
+  },
+  "selected_source_records_authenticated": 55,
+  "model_records_authenticated": 20,
+  "runtime_records_authenticated": 28,
+  "runtime_scope": "selected SHA plus original stat-only records; no full DSO claim",
+  "original_authenticated_scoped_closure": true,
+  "whole_tree_exit_confirmed": false,
+  "model_quality_browser_training_or_win_qualified": false,
+  "qualification": {
+    "smoke_complete": true,
+    "external_authenticated_closure": true,
+    "one_actual_constructor": true,
+    "two_actual_four_row_events": true,
+    "durable_call_20s": true,
+    "whole_command_120s": true,
+    "final_full_model_and_sources_authenticated": true
+  },
+  "artifact_refs": {
+    "state": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-08/actual-01/edge-probe/state.json",
+      "size_bytes": 19215,
+      "sha256": "69f10c00da68535c8b38b606b67cd22cd439fbc152fa2621bec6b7197b1ab97e"
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/edge-plan.json",
+      "size_bytes": 31314,
+      "sha256": "9a1a48e46663240dd05f45a4558f48cfdfe0c4955ee2c2d7a74565da5015950d"
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-08/actual-01/receipt.json",
+      "size_bytes": 82280,
+      "sha256": "ee8a2253da7cf80c52c4f08fb66d90f5afed8da97099c3afe261fd1511f10470"
+    },
+    "root_execution": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-08/root-execution-native04-edge-smoke-01.json",
+      "size_bytes": 1735,
+      "sha256": "a1c8c052c08fba30dd78a647268e1a03dfd812eece14e8678bb83887ada1f112"
+    },
+    "spec": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/root-edge-smoke-command-spec-01.json",
+      "size_bytes": 12696,
+      "sha256": "a7eba2329c6de59a4fec6533d02fde4f0f04eb4d01abe14f305b21d73d1394e1"
+    },
+    "closure_observation": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-08/actual-01/external-boundary-closure.json",
+      "size_bytes": 3814,
+      "sha256": "44d934329508e2c217e4d9a80a4ee18e805f255463f99305499d8618c2c16aca"
+    },
+    "audit_source": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-04/root-closed-smoke-audit-01.py",
+      "size_bytes": 16213,
+      "sha256": "89e7f9a3fa3d7a98ac0b9cfcd405caea75ad158bf46b7aedef9081ac1417eae0"
+    }
+  },
+  "raw_requests_answers_probabilities_features_or_model_bytes_included": false
+}

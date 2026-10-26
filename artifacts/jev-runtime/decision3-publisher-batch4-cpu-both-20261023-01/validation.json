@@ -1,0 +1,95 @@
+{
+  "status": "SOURCE_ONLY_CANDIDATE_VALIDATION_PASS_NO_BENCHMARK_EXECUTION",
+  "created_at_utc": "2026-10-23T11:38:10.694210+00:00",
+  "stdlib_tests": {
+    "count": 13,
+    "pass": true,
+    "exit_code": 0,
+    "reported_seconds": 0.16,
+    "uses_only_synthetic_fakes_and_frozen_small_source_metadata_audits": true,
+    "referenced_actual_state_or_owner_or_payload_artifacts_read_by_tests": false
+  },
+  "ruff_check": "PASS",
+  "ruff_format_check": "PASS_2files",
+  "AST_parse": "PASS_2files",
+  "AST_static_single_call_sites": {
+    "load_runtime": 1,
+    "NativeBatch4Backend": 1,
+    "evaluate": 1,
+    "run_public": 1
+  },
+  "dry_default": {
+    "exit_code": 0,
+    "whole_campaign_seconds": 10000,
+    "per_call_seconds": 180,
+    "owner_runtime_seconds": 10800,
+    "models": [
+      "edge",
+      "lite"
+    ],
+    "constructors_declared": 1,
+    "fresh_callbacks_declared": 1479,
+    "model_benchmark_execution": false
+  },
+  "benchmark_source_plan": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01/benchmark-source-plan.json",
+    "sha256": "b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021",
+    "original_source_file_pins": 78,
+    "dataset_metadata_manifest_pins": 2,
+    "benchmark_inputs_gold_answers_or_cache_reads": false
+  },
+  "prior_frozen_sources": [
+    {
+      "folder": "decision3-publisher-cpu-20261023-01",
+      "frozen_entries_verified_unchanged": 8,
+      "freeze_sha256": "cf4f9acaadb319648a928ed107e7fbec369ad14a2f5907a5f2a352ae35c82a70"
+    },
+    {
+      "folder": "decision3-publisher-cpu-both-20261023-01",
+      "frozen_entries_verified_unchanged": 5,
+      "freeze_sha256": "7d4c2633d7deb0fb7baf538af655ff17dc77f48f39f10382a25aef00b2756a84"
+    },
+    {
+      "folder": "decision3-publisher-lite-cpu-20261023-01",
+      "frozen_entries_verified_unchanged": 8,
+      "freeze_sha256": "3c62cb91340660eebae86a6ecf727c573cd3a95c8aa69aadee3eb454ca6e3fdb"
+    },
+    {
+      "folder": "decision3-publisher-lite-cpu-both-20261023-01",
+      "frozen_entries_verified_unchanged": 5,
+      "freeze_sha256": "167a84dba76c0137992df16b57ef21fea19aade263757706e79a48d38fd187a2"
+    },
+    {
+      "folder": "decision3-publisher-batch4-cpu-20261023-01",
+      "frozen_entries_verified_unchanged": 9,
+      "freeze_sha256": "19e1224dcdce91a3b89893d1ebc6a1df423f1d31f765562838ea1dfb6a9b1d5c"
+    }
+  ],
+  "owner05_source_freeze_02_sha256": "b0848f94d86f32e0542834e8664d69dff97ddf6554161d55351736ed957fa6fe",
+  "owner05_current_source_entries_verified_unchanged": 8,
+  "shared_constructor_and_backend": "Frozen nativebatch4 actor.load_runtime and NativeBatch4Backend; no new model constructor/scorer/math implementation.",
+  "postauth_policy": "Inside future owner only: all20 model files+manifest+selected runtime/owner sources+78official sources+2datasetmetadata+campaign/native/helper/sourceaudit/smoke/audit references.",
+  "selected_smoke_prerequisite": "Future exact root CLI must supply successful same-model state SHA and closed independent audit SHA; audit authenticates state/plan/owner/root/spec/closure and all other small refs. Independent audit schema tests read only already frozen small audit receipts.",
+  "whole_and_call_late_tests": [
+    "durable progress delay refuses valid callback count and escapes Exception handlers",
+    "failure evidence remains inside call watchdog; lateness preserves primary as cause",
+    "late final results and final state do not return complete"
+  ],
+  "profile_limits": {
+    "Edge_and_Lite_are_distinct_candidates": true,
+    "Lite10000_full_suite_speed_or_memory_fit_proven": false,
+    "synthetic_probe_implies_full_context_fit": false,
+    "browser20_qualification": false,
+    "batch1_score_or_identity_inheritance": false
+  },
+  "preparation_scope": {
+    "Torch_framework_model_or_benchmark_execution": false,
+    "tensor_header_or_payload_reads_or_hashes": false,
+    "benchmark_task_input_gold_output_or_cache_reads_or_copies": false,
+    "unit_manager_process_or_active_job_probes": false,
+    "ComfyUI_actions": false,
+    "network_or_downloads": false,
+    "git_actions": false
+  },
+  "requires_independent_frozen_source_review_root_exact_plan_spec_and_fresh_admission": true
+}

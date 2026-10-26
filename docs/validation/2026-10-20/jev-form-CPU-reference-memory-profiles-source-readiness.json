@@ -1,0 +1,153 @@
+{
+  "schema": "jev_form_CPU_reference_memory_profiles_source_readiness_v1",
+  "status": "SOURCE_ROOT_AND_INDEPENDENT_CLEAR_BOTH_ACTUAL_PREEXEC_REFUSED",
+  "problem": "Processor-only form compilation previously inherited a training-scope memory threshold. Separate explicit CPU reference kinds preserve full payload/CFG validation and original host reserve while bounding owned process address space.",
+  "new_profiles": {
+    "v2": {
+      "profile": "CPU_REFERENCE_ONLY",
+      "parent_AS_soft_hard_GiB": [
+        2,
+        16
+      ],
+      "worker_AS_soft_hard_GiB": [
+        16,
+        16
+      ],
+      "prospective_and_tracked_RSS_GiB": 18,
+      "source": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/cpu_prepare_form_v2.py",
+        "sha256": "65305359a135009a99c0513e64de506a4521b38faeaa34711a3bb9ed1080af60",
+        "size_bytes": 57236
+      },
+      "tests": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/test_cpu_prepare_form_v2.py",
+        "sha256": "7bb0fb822a55c89c141d4b472a30d2b4f66869b9fcc26c0a7b9896b51182607e",
+        "size_bytes": 35272
+      },
+      "plan": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/CPU-v2-launch-plan-02.json",
+        "sha256": "7cd0be56c4aff93cf76f416138c26fa456d97862cf5c9ca2f4186384ace7b234",
+        "size_bytes": 18390
+      },
+      "HOLD": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/source-HOLD-CPU-v2-01/HOLD.json",
+        "sha256": "46163851fe2e5f30a7e3073da31cbfa5c99a1f689d7e7b997f0807c8d412ba1e",
+        "size_bytes": 4138
+      },
+      "root_review": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/root-CPU-v2-source-review-01.json",
+        "sha256": "8d7d846d669c135c16bcf8f342a7bbbf1316bf73154c080b11a6b6f2a199a82a",
+        "size_bytes": 675
+      },
+      "independent_review": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/independent-CPU-v2-source-review-01.json",
+        "sha256": "80bd30305ad229fe486eb58e54ba8923c3245c01ef4c3b885b9b686978ec4e14",
+        "size_bytes": 10768
+      },
+      "launch_refusal": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/root-CPU-v2-actual01-prelaunch-refusal-01.json",
+        "sha256": "ab5522dd4216a9595e840f278a4977001e5c7045f650c4fdde2e37e2ff0dcef9",
+        "size_bytes": 720
+      },
+      "required_at_host_total130595860480": 45446524928,
+      "prelaunch_available": 39346003968,
+      "actual_output_created": false
+    },
+    "v3": {
+      "profile": "CPU_REFERENCE_ONLY_V3",
+      "parent_AS_soft_hard_GiB": [
+        2,
+        8
+      ],
+      "worker_AS_soft_hard_GiB": [
+        8,
+        8
+      ],
+      "prospective_and_tracked_RSS_GiB": 10,
+      "source": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/cpu_prepare_form_v3.py",
+        "sha256": "b9b8c7a04464c9e5c41c7a704f6b1a46ae0de7fe1ee80d28adf9f208959bdf55",
+        "size_bytes": 57238
+      },
+      "tests": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/test_cpu_prepare_form_v3.py",
+        "sha256": "271f5568a89ce3122071cb3081e9b29c5972699e52b60dfb99852e749447c66d",
+        "size_bytes": 36386
+      },
+      "plan": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/CPU-v3-launch-plan-01.json",
+        "sha256": "327e3d2bf6980bceca2d60cfe81ac8b0343bc45149bc1969cb35bc897259b620",
+        "size_bytes": 18393
+      },
+      "HOLD": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/source-HOLD-CPU-v3-01/HOLD.json",
+        "sha256": "226b9955180f8d69d70e9987c842b2ae16252151404da0aedd148af51631bc8e",
+        "size_bytes": 4641
+      },
+      "root_review": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/root-CPU-v3-source-review-01.json",
+        "sha256": "c28fb38ec190494163d76bd3574872ad3b55d5e7c5cc984d8810d8371a24b619",
+        "size_bytes": 1042
+      },
+      "independent_review": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/independent-CPU-v3-source-review-01.json",
+        "sha256": "f050214efdafc8a4d2c38c16c4e40b59dd30e4323425b4b9a1b08023369f0ff2",
+        "size_bytes": 5755
+      },
+      "launch_refusal": {
+        "path": "artifacts/jev-runtime/owned-form-progress-collection-admission-20261019-01/root-CPU-v3-prelaunch-refusal-01.json",
+        "sha256": "66a309955448e7c2aeef647e5232a08e357151cf158bb6392d5f3bd3d2ec680b",
+        "size_bytes": 1527
+      },
+      "required_at_host_total130595860480": 36856590336,
+      "prelaunch_available": 28159541248,
+      "actual_output_created": false
+    }
+  },
+  "validation": {
+    "v2_synthetic": "25 passed2.309s",
+    "v3_synthetic": "26 passed2.737s",
+    "lint_and_format": "PASS; root read saved raw test and lint logs, no redundant rerun",
+    "v2": "Root and independent full source/test/plan read;23 nested references,105 current source SHA and16 inherited definitions AST verified",
+    "v3": "Root and independent2,895B delta/test delta read,10 literal inverse groups restore entire reviewed v2 source bytes and AST; source105/104 projection and23 rows/58 processor refs/environment/caps/phases retained",
+    "source_only_not_capacity": true
+  },
+  "retained_contract": {
+    "full_rows": 23,
+    "train": 13,
+    "development": 10,
+    "original_processor_reference_items": 58,
+    "source_union": 105,
+    "original_admission_sources": 104,
+    "original_kernel_and_CFG_unchanged": true,
+    "raw_native_requests_full_and_ordered": true,
+    "targets_masks_positions_firstEOS": 106,
+    "host_reserve": "max(24GiB,ceil(MemTotal/5))",
+    "original_CPU_floor": "reserve+4GiB unchanged",
+    "swap_or_resident_credit_bytes": 0,
+    "CUDA_visible_devices": "",
+    "CUDA_initialized_perrow_and_end": false,
+    "CPU_threads": 2,
+    "requested_monitor_seconds": 0.05,
+    "wall_seconds": 600,
+    "evidence_bytes": 1073741824,
+    "per_file_bytes": 67108864,
+    "terminal_reserve_bytes": 1048576,
+    "stdout_stderr_each_bytes": 1048576,
+    "TERM_KILL_grace_each_seconds": 2,
+    "owned_PID_start_PG_SID_checks_and_cleanup": true,
+    "failure_denominator": 23
+  },
+  "current_resource_observation": {
+    "path": "artifacts/jev-runtime/GX10-competing-runtime-observation-20261020-02.json",
+    "sha256": "0078f1552b5adcf26fe674e7f5c3a3f359cd0767fd8a54b3083476b4191b1999",
+    "size_bytes": 501
+  },
+  "limits": [
+    "Both external wrappers refused before driver exec, output directory, actual setrlimit or child creation. No genuine collection admission, processor compile, model forward or optimizer update occurred.",
+    "V3 tightens address-space bounds and lowers requested demand; original host reserve and all model/training gates remain unchanged. Actual8GiB processor compatibility remains unknown; ENOMEM/stack/import failure must remain failed, with no automatic fallback.",
+    "Per-process RLIMIT_AS is not cgroup/RSS or an aggregate tree reservation. Requested50ms monitor may miss transient descendants/spikes and may count shared RSS repeatedly.",
+    "At the last check host available28.16GB was below even the original30.41GB CPU floor. One external ComfyUI job was running; no signal/unload/cache operation was sent to it.",
+    "Original frozen v1/forms library/model kernels and historical outputs remain unchanged. These source changes do not establish new training capacity, browser score or superiority."
+  ]
+}

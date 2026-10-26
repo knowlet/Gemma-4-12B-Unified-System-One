@@ -1,0 +1,67 @@
+{
+  "schema": "decision3-publisher-cpu-both-plan-v1",
+  "profile": "decision3-edge-gx10-publisher-cpu-batch1-20261023-v1",
+  "campaign_sha256": "b7273b7d193c1457f031f361a9d2599c38a34a8dd01c81bdb6ce0219d91435be",
+  "local_head_at_creation": "3b89b4c4c18b058c30b7d2a15d99f76455249214",
+  "head_field_is_provenance_only": true,
+  "smoke_actor_sha256": "770a9790837161daf4570b5d15f02b318ddb24e454fe3aa6756363c809ecfda7",
+  "smoke_plan_sha256": "50f1d8f41b96e756baaa94ace3e338cd0a64d492f4f4d4a72b830be0fce15db9",
+  "adapter_sha256": "f5d28801d0e25b9d637102cbace5211cb7b0a1119e567a451def711700707961",
+  "benchmark_source_plan_sha256": "1c2e979220a9b6e7c0a026eb24e43b4e84b06d9c7d63fa1933e56d89a51f5bd0",
+  "whole_campaign_seconds": 6500,
+  "per_call_seconds": 180,
+  "per_call_policy": "official benchmark HTTP default for the complete state/questions request; not browser20 qualification",
+  "constructor_count": 1,
+  "concurrency": 1,
+  "context_limit": 16384,
+  "context_policy": "reject_no_truncation",
+  "reserve_bytes": 26119172916,
+  "memory_max_bytes": 2147483648,
+  "swap_max_bytes": 0,
+  "threads": 4,
+  "cpu_affinity": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "owner_unit": "jev-d3-llama-cpp-cpu4-20261023-03.service",
+  "owner_runtime_seconds": 7200,
+  "requires_successful_smoke_receipt": {
+    "profile": "decision3-publisher-edge-cpu-batch1-smoke-v1",
+    "plan_sha256": "50f1d8f41b96e756baaa94ace3e338cd0a64d492f4f4d4a72b830be0fce15db9",
+    "selection": "root frozen exact command argv supplies --smoke-receipt ABSOLUTE_STATE_PATH and --smoke-receipt-sha256 ACTUAL_SHA after the real request succeeds and its owner closes"
+  },
+  "suites": [
+    {
+      "name": "legacy-public231",
+      "tasks": 231,
+      "revision": "bb05a335bc809e61b20c0f745d25499a82b326fc"
+    },
+    {
+      "name": "jevbench-mini",
+      "requests": 1248,
+      "cases": 240,
+      "relations": 50,
+      "planned_tests": 1200,
+      "revision": "e18733694623aa93058e279c3534f8b8e2edefa3"
+    }
+  ],
+  "fresh_coherence_cache_required": true,
+  "fresh_successful_callable_returns_required": 1479,
+  "per_suite_latency": {
+    "startup_included": false,
+    "statistics": [
+      "count",
+      "median",
+      "nearest_rank_p95",
+      "maximum"
+    ],
+    "all_actual_latencies_retained_in_local_native_journal": true
+  },
+  "source_and_model_authentication": "preload all selected hashes; final all20 full model hashes+manifest/runtime file identities+78 official sources+shared source pins inside existing owner",
+  "external_closure_and_peak_required": true,
+  "benchmark_inputs_gold_or_answers_copied_into_source": false,
+  "model_or_torch_executed_during_preparation": false,
+  "publication": "none; root must select later exact aggregate/receipt allowlist and exclude benchmark inputs/gold/per-task answers/caches"
+}

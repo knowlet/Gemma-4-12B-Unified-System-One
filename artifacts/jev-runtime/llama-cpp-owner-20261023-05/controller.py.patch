@@ -1,0 +1,31 @@
+--- artifacts/jev-runtime/llama-cpp-owner-20261023-04/controller.py
++++ artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py
+@@ -17,8 +17,8 @@
+ 
+ HERE = Path(__file__).absolute().parent
+ ROOT = HERE.parents[2]
+-UNIT = "jev-d3-llama-cpp-cpu4-3g-20261023-04.service"
+-PROFILE = "llama-cpp-cpu4-3g-command-owned-v1"
++UNIT = "jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service"
++PROFILE = "llama-cpp-cpu4-3g-long-command-owned-v1"
+ CPU_CORES = frozenset({16, 17, 18, 19})
+ CPU_ALLOWED_LIST = "16-19"
+ SPEC_PROFILE = "llama-cpp-command-spec-v1"
+@@ -460,7 +460,7 @@
+         }
+         and value["profile"] == SPEC_PROFILE
+         and type(value["runtime_seconds"]) is int
+-        and value["runtime_seconds"] in {30, 7200}
++        and value["runtime_seconds"] in {30, 7200, 10800}
+         and type(value["file_size_max_bytes"]) is int
+         and value["file_size_max_bytes"] == FILE_SIZE_MAX,
+         "Exact selected CPU command profile/runtime/file-size cap",
+@@ -1068,7 +1068,7 @@
+                     "unit": UNIT,
+                     "memory_max_bytes": fixed_memory(),
+                     "initial_host_extra_bytes": INITIAL_HOST_EXTRA_BYTES,
+-                    "runtime_choices_seconds": [30, 7200],
++                    "runtime_choices_seconds": [30, 7200, 10800],
+                     "cpu_quota_percent": 400,
+                     "main_thread_cpu_affinity": sorted(CPU_CORES),
+                     "model_or_quality_qualified": False,

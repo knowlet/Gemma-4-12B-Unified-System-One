@@ -1,0 +1,52 @@
+{
+  "CUDA": {
+    "allocated_bytes": null,
+    "free_bytes": null,
+    "initialized": true,
+    "max_allocated_bytes": null,
+    "max_reserved_bytes": null,
+    "metrics_seconds": 0.0,
+    "reserved_bytes": null,
+    "scope": "CUDA metrics unmeasured before first explicit synchronize; no lazy-initializing query invoked.",
+    "total_bytes": null
+  },
+  "details": {
+    "scope": "PyTorch lazy-init returned; no GPU metrics yet and no complete physical context cost claim."
+  },
+  "elapsed_seconds": 2.602744336007163,
+  "host": {
+    "MemAvailable_bytes": 29029851136,
+    "MemTotal_bytes": 130595864576
+  },
+  "memory": {
+    "monotonic_after": 66166.518245751,
+    "monotonic_before": 66166.516376313,
+    "own_cgroup": {
+      "memory_current_bytes": 296845312,
+      "memory_peak_bytes": 296845312,
+      "memory_stat": {
+        "anon": 294137856,
+        "file": 20480,
+        "kernel": 2330624,
+        "pgfault": 80455,
+        "pgmajfault": 0,
+        "shmem": 0
+      },
+      "path": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-gpu-context-probe-20261023-01.service"
+    },
+    "process": {
+      "RssAnon_bytes": 294137856,
+      "RssFile_bytes": 232734720,
+      "RssShmem_bytes": 0,
+      "VmRSS_bytes": 526872576,
+      "VmSwap_bytes": 0
+    },
+    "scope": "Sequential non-atomic own-process/own-cgroup snapshot; page cache release and disk IO bytes are not inferred."
+  },
+  "monotonic": 66166.518495654,
+  "peak_RSS_bytes": 526786560,
+  "ru_majflt": 0,
+  "ru_minflt": 80359,
+  "snapshot_scope": "Sequential non-atomic own process/cgroup, host and global CUDA samples; owner admission remains external.",
+  "stage": "cuda-init-returned"
+}

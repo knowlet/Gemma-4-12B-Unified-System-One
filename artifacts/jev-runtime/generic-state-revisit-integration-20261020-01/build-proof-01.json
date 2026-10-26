@@ -1,0 +1,133 @@
+{
+  "profile": "guarded-observation-revisit-integration-experimental-v1",
+  "package_modules": {
+    "agent.py": {
+      "sha256": "090d928b5acfd918dfdc5e3cc0c67453a151a9b397d37418fe71b43ede4bdb55",
+      "size_bytes": 8545
+    },
+    "model.py": {
+      "sha256": "d4437f50784e4bfb7905006c1852a7eb128a3b8a69d62d01daf43dcfab987002",
+      "size_bytes": 9250
+    },
+    "observation_revisit.py": {
+      "sha256": "80249cdd386619b9121160c94d3a071f586cfa40d75977a7e751138175a6b5d0",
+      "size_bytes": 10461
+    }
+  },
+  "core_bytes_unchanged": true,
+  "transformations": [
+    {
+      "module": "agent.py",
+      "blocks": [
+        {
+          "label": "copy-import",
+          "occurrences": 1
+        },
+        {
+          "label": "adjacent-core-import",
+          "occurrences": 1
+        },
+        {
+          "label": "per-agent-tracker",
+          "occurrences": 1
+        },
+        {
+          "label": "initial-observation",
+          "occurrences": 1
+        },
+        {
+          "label": "observation-wrapper",
+          "occurrences": 1
+        },
+        {
+          "label": "snapshot-owned-copy",
+          "occurrences": 1
+        },
+        {
+          "label": "later-observations",
+          "occurrences": 3
+        },
+        {
+          "label": "choose-explicit-metadata",
+          "occurrences": 1
+        }
+      ],
+      "byte_inverse_exact": true,
+      "whole_inverse_AST_equal": true,
+      "changed_definitions": [
+        "Agent.__init__",
+        "Agent.command",
+        "Agent.snapshot"
+      ],
+      "added_definitions": [
+        "Agent._observe"
+      ],
+      "unchanged_definitions": [
+        "Agent.__enter__",
+        "Agent.__exit__",
+        "Agent.close",
+        "Agent.run"
+      ]
+    },
+    {
+      "module": "model.py",
+      "blocks": [
+        {
+          "label": "hint-copy-import",
+          "occurrences": 1
+        },
+        {
+          "label": "choose-keyword",
+          "occurrences": 1
+        },
+        {
+          "label": "state-hint-only-with-notes",
+          "occurrences": 1
+        }
+      ],
+      "byte_inverse_exact": true,
+      "whole_inverse_AST_equal": true,
+      "changed_definitions": [
+        "choose"
+      ],
+      "added_definitions": [],
+      "unchanged_definitions": [
+        "action_space",
+        "field_context",
+        "field_text",
+        "post_json",
+        "validate_choice"
+      ]
+    }
+  ],
+  "runtime_imported": false,
+  "materialized_profile": false,
+  "capacity_or_browser_qualified": false,
+  "transformer": {
+    "path": "artifacts/jev-runtime/generic-state-revisit-integration-20261020-01/revisit_integration.py",
+    "sha256": "081310eee8e20908c3131f89d8c3e2f7a2870c9a0e04e7788c6fe44bdd62e9c8",
+    "size_bytes": 8427
+  },
+  "inputs": [
+    {
+      "module": "agent.py",
+      "path": "artifacts/jev-runtime/public-native-hover-settled-v8-20261019-01/profile-01/runtime/jev_ultrafast/agent.py",
+      "sha256": "aaf8b271cb0ee6643fe7beb525328ab80de8568c7ac044d02b9c6721161e7c8b",
+      "size_bytes": 7880
+    },
+    {
+      "module": "model.py",
+      "path": "artifacts/jev-runtime/public-native-hover-settled-v8-20261019-01/profile-01/runtime/jev_ultrafast/model.py",
+      "sha256": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3",
+      "size_bytes": 8469
+    },
+    {
+      "module": "observation_revisit.py",
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/observation_revisit.py",
+      "sha256": "80249cdd386619b9121160c94d3a071f586cfa40d75977a7e751138175a6b5d0",
+      "size_bytes": 10461
+    }
+  ],
+  "status": "THREE_ADJACENT_MODULE_BYTES_BUILT_IN_MEMORY_ONLY_NOT_A_MATERIALIZED_RUNTIME",
+  "actual_runs": 0
+}

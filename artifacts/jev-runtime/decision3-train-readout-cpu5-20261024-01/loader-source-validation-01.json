@@ -1,0 +1,71 @@
+{
+  "schema": "held-train-loader-fit-source-validation-v1",
+  "status": "SOURCE_CHECKS_PASS_STILL_HELD",
+  "fakes": 13,
+  "results": [
+    {
+      "name": "imports",
+      "exit_code": 0,
+      "stdout": "Found 3 errors (3 fixed, 0 remaining).\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "stdout": "3 files reformatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "held_loader_fit_fakes",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ".............\n----------------------------------------------------------------------\nRan 13 tests in 0.064s\n\nOK\n",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": 536870912
+    },
+    {
+      "name": "ruff",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format_check",
+      "exit_code": 0,
+      "stdout": "3 files already formatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "CPU_seconds": 30,
+      "AS_bytes": null
+    }
+  ],
+  "source_records": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/train_loader.py",
+      "sha256": "d1db7f78505df3b10ec2603bf4dd902ff7ee5538bcf00e6ae2d98bdadfc4da8d",
+      "size_bytes": 41641
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/fit_head.py",
+      "sha256": "cc858c80a13c277e78bf8eb20eed5753036bbee55fefa60df6f794733bbdf568",
+      "size_bytes": 20607
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-train-readout-cpu5-20261024-01/test_train_loader.py",
+      "sha256": "5972bc7bf05247c0cf1982822e4d00475629333d31bb55e52ec5f44e37ac6246",
+      "size_bytes": 20923
+    }
+  ],
+  "format_AST_unchanged": true,
+  "training_performed": false
+}

@@ -1,0 +1,79 @@
+--- frozen-full04/campaign.py
++++ coexist-full05/campaign.py
+@@ -14,10 +14,11 @@
+ 
+ ROOT = Path(__file__).resolve().parents[3]
+ HERE = Path(__file__).resolve().parent
+-BATCH = ROOT / "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02"
+-BATCH_ACTOR_SHA = "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+-BATCH_FREEZE_SHA = "9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a"
+-NATIVE_PLAN_SHA = {"edge": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"}
++BATCH = ROOT / "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03"
++BATCH_ACTOR_SHA = "4a08be7703d8559f5dc86593f0e3138e9c9546ea1cc4613a951ed796a13d9d3f"
++BATCH_FREEZE_SHA = "a3c5a2adeea6e1b18650d63fd2f1cb09ec5d8cbd0b204f2e1196de4fe234ea1f"
++NATIVE_PLAN_SHA = {"edge": "5efcef370b0ae09a78d334d6e00c4a4e39ebbaae9ad18fd822581e8979e1b6e4"}
++HOST_OBSERVATION_POLICY = "comfy-observed-cpu-coexist-v1"
+ 
+ BENCHMARK_PLAN = (
+     ROOT
+@@ -109,7 +110,7 @@
+ 
+ 
+ def profile(key):
+-    return f"decision3-{key}-gx10-publisher-cpu2g-batch4-both-stage-completions-20261023-v1"
++    return f"decision3-{key}-gx10-publisher-cpu2g-coexist-batch4-both-stage-completions-20261024-v1"
+ 
+ 
+ def load_plan(path, expected):
+@@ -131,7 +132,10 @@
+     native_metadata = selected_small_json(BATCH / (key + "-plan.json"), NATIVE_PLAN_SHA[key])
+     require(
+         plan.get("model") == native_metadata["model"]
+-        and plan.get("owner_sources") == native_metadata["owner_sources"],
++        and plan.get("owner_sources") == native_metadata["owner_sources"]
++        and plan.get("host_observation_policy")
++        == native_metadata.get("host_observation_policy")
++        == HOST_OBSERVATION_POLICY,
+         "candidate model/owner identity metadata differs",
+     )
+     require(
+@@ -150,8 +154,8 @@
+         "native full-request batch4 policy differs",
+     )
+     require(
+-        plan.get("owner_unit") == "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service"
+-        and plan.get("owner_profile") == "llama-cpp-cpu4-2g-long-command-owned-v1"
++        plan.get("owner_unit") == "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service"
++        and plan.get("owner_profile") == "llama-cpp-cpu4-2g-coexist-command-owned-v1"
+         and plan.get("reserve_bytes") == 26119172916
+         and plan.get("memory_max_bytes") == 2147483648
+         and plan.get("startup_available_bytes") == 28266656564
+@@ -159,7 +163,7 @@
+         and plan.get("threads") == 4
+         and plan.get("cpu_quota_percent") == 400
+         and plan.get("cpu_affinity") == [16, 17, 18, 19],
+-        "owner06 CPU/memory policy differs",
++        "owner07 CPU-coexist/memory policy differs",
+     )
+     require(
+         plan.get("stage_completion_schema") == STAGE_SCHEMA
+@@ -174,6 +178,9 @@
+     key, model = native_plan["model_key"], native_plan["model"]
+     require(
+         receipt.get("profile") == native_plan["profile"]
++        and receipt.get("selected_owner_host_observation_policy")
++        == native_plan.get("host_observation_policy")
++        == HOST_OBSERVATION_POLICY
+         and receipt.get("model_key") == key
+         and receipt.get("plan_sha256") == NATIVE_PLAN_SHA[key]
+         and receipt.get("status")
+@@ -247,6 +254,9 @@
+         and audit.get("model_identity_sha256") == model["model_sha256"]
+         and audit.get("manifest_sha256") == model["manifest_sha256"]
+         and audit.get("owner_unit") == native_plan["owner_unit"]
++        and audit.get("host_observation_policy")
++        == native_plan.get("host_observation_policy")
++        == HOST_OBSERVATION_POLICY
+         and audit.get("memory_max_bytes") == native_plan["memory_max_bytes"]
+         and audit.get("batch_size") == 4,
+         "independent audit actual model/batch/cap differs",

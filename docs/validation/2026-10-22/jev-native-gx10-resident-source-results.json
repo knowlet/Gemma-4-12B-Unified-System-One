@@ -1,0 +1,229 @@
+{
+  "schema_id": "jev_native_gx10_resident_profile_source_results_v1",
+  "at_utc": "2026-10-22T05:00:17.326358+00:00",
+  "status": "SOURCE_AND_BOUNDARY_TESTS_PASS_ACTUAL_NATIVE_PROFILE_UNRUN",
+  "original_profile_changed": false,
+  "new_profile": "gx10-uma-native-40gib-v1",
+  "limits": {
+    "startup_available_bytes": 116313485312,
+    "resident_available_bytes": 77658779648,
+    "reserve_bytes": 26119172096,
+    "native_allocator_upper_bytes": 42949672960,
+    "native_allocator_soft_stop_bytes": 42412802048,
+    "owned_memcg_memory_max_bytes": 42949672960,
+    "owned_swap_bytes": 0,
+    "runtime_seconds": 10800,
+    "cooperative_alarm_seconds": 10740,
+    "unit_stop_grace_seconds": 20,
+    "owner_stop_timeout_seconds": 30,
+    "owner_host_stop_below_bytes": 28266655744,
+    "resident_credit_bytes": 0,
+    "swap_credit_bytes": 0
+  },
+  "limit_scope": "Allocator and memcg separate bounds, not a combined physical CUDA/CPU cap. Actual live host and Driver/Torch/own-unit observations required.",
+  "cause_evidence": {
+    "receipt": {
+      "path": "artifacts/jev-runtime/public-native-action-actual07-fit-20261016-01/fit-attempt-02/receipt.json",
+      "sha256": "79b2d500cba0017345bc3000c8f8647a51442269548936f5da9da9764d6a1999",
+      "size_bytes": 224140
+    },
+    "gates": {
+      "path": "artifacts/jev-runtime/public-native-action-actual07-fit-20261016-01/fit-attempt-02/resource-gates.jsonl",
+      "sha256": "cb2b2d094f36f582ca9d51fc7a37b12242d25cdd084b3dbf8e8bb7bb8f6a6375",
+      "size_bytes": 3631
+    },
+    "preconstructor_available_bytes": 119927267328,
+    "postload_available_bytes": 94667264000,
+    "original_train_floor_bytes": 106438961088,
+    "completed_updates": 0,
+    "historical_failure_preserved": true
+  },
+  "validation": {
+    "resource_profile_pure": {
+      "passed": 29,
+      "seconds": 23.37,
+      "model_GPU_unit_simulated": true,
+      "real_pre_model_capture": {
+        "historical_rows": 179,
+        "original_files": 45,
+        "resource_components": 3,
+        "constructor": "sentinel_only",
+        "full_sources_captured": true,
+        "all_python_source_manifest_labels": true
+      }
+    },
+    "adapter_pure": {
+      "passed": 50,
+      "seconds": 57.88,
+      "framework_imports_blocked": true,
+      "resource_component_mutation_refusals": true
+    },
+    "owner_lifecycle_pure": {
+      "passed": 10,
+      "seconds": 0.13,
+      "systemd_GPU_actor_simulated": true,
+      "covers": [
+        "first status failure own stop",
+        "foreign nonce not stopped",
+        "running host/Comfy change stops own unit",
+        "scan/save secondary preserve primary",
+        "stop timeout exceeds unit grace"
+      ]
+    },
+    "Ruff_check_and_format": "PASS",
+    "independent_source_review": "CLEAR",
+    "expanded_CPU_integration": {
+      "status": "ABORTED_BY_EXTERNAL_HOST_RESERVE_GUARD_NOT_A_TEST_PASS",
+      "unit": "jev-native-v2-check-tests-01-20261022.service",
+      "invocation_id": "57ccb4a7512144bc91e0b77d87d5e843",
+      "pid": 2295320,
+      "last_live_elapsed_seconds": 130.20855206192937,
+      "reason": "host_reserve_crossed",
+      "last_live_host": {
+        "mem_available_bytes": 26080014336,
+        "comfy_running": 1,
+        "comfy_pending": 0
+      },
+      "last_live_memory_current_bytes": 978915328,
+      "last_observed_memory_peak_bytes": 1004314624,
+      "peak_scope": "Observed live cached systemd values; not final post-exit counters.",
+      "final_pytest_count": null,
+      "CPU_tiny_updates_completed": null,
+      "final_CUDA_initialized": null,
+      "terminal_test_receipt_exists": false,
+      "own_unit_stopped": true,
+      "cgroup_absent_after_stop": true,
+      "after_stop": {
+        "MainPID": "0",
+        "Result": "success",
+        "ExecMainPID": "0",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "ControlGroup": "",
+        "MemoryCurrent": "[not set]",
+        "MemoryPeak": "[not set]",
+        "MemorySwapPeak": "[not set]",
+        "LoadState": "not-found",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "InvocationID": ""
+      },
+      "Comfy_mutations": 0,
+      "closure_reference_local": {
+        "path": "artifacts/jev-runtime/native-v2-training-20261022-01/tests-01/integration-tests-root-closure.json",
+        "sha256": "f6a1a7fc4b7827594b1a3986dca4ba045d23b7dc918614e6bb0778fc887bbcf4",
+        "size_bytes": 11640
+      },
+      "scope": "Only the CPU regression actor ran. The root assertion failure records nonterminal host-reserve stop; original evidence retained. No complete selected-suite pass is claimed."
+    }
+  },
+  "chosen_training": {
+    "initial_parent": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/parent-preflight-01.json",
+      "sha256": "02e85c65fac8f81fd7b80b1cd9bd12925fe0d0628d37b8243cc369e98971bb8f",
+      "size_bytes": 6292
+    },
+    "parent_scope": "Strictly verified96update raw parent with425ancestor; not V7 public240 5/10 artifact.",
+    "new_train_updates": 142,
+    "development_examples": 37,
+    "development_updates": 0,
+    "learning_rate": 5e-05,
+    "seed": 42,
+    "prompt_format": "shared-elements-v2",
+    "deployment_identity": "generated-actions-nf4",
+    "objective": "unchanged full-vocabulary-action-token-CE",
+    "loss_CFG_B_C_training": false
+  },
+  "component_capture": "Three fixed small library/source metadata components captured under inputs/resource-components; never inserted as JSON into Python source_manifest. Fixed SHA/size, missing/extra/symlink/drift tests retained.",
+  "published_sources": [
+    {
+      "path": "scripts/jev_browser_fit_native_actions.py",
+      "sha256": "8f127b338d32b079e814090a828fd3a608271fac5a711216d131c52b509988d5",
+      "size_bytes": 25307
+    },
+    {
+      "path": "src/s1/browser_native_resources.py",
+      "sha256": "237534f554044ef39e1c81e21190dd881873adbf318bd5d2e8e465a7b3e08fec",
+      "size_bytes": 27512
+    },
+    {
+      "path": "src/s1/browser_action_adapter.py",
+      "sha256": "1b15079ae222ab646c1f5fa60b1f905b358b2913329b4bec9d1d89c0b91db006",
+      "size_bytes": 57460
+    },
+    {
+      "path": "tests/test_jev_native_resources.py",
+      "sha256": "95a27afb70b667a9c007fa912c400a729f471b321f184701076de83a240854e6",
+      "size_bytes": 14094
+    },
+    {
+      "path": "tests/test_jev_native_action_adapter.py",
+      "sha256": "054ce84c6e860fa2d232ee0ebccfbf8ca8345a71b864b177680675036852d52f",
+      "size_bytes": 34294
+    },
+    {
+      "path": "docs/research/jev-native-gx10-resident-training.md",
+      "sha256": "42a63f7dd12d041e054460ded3aad16a3fbd9bebc827eaecb4a1c46c229eb44b",
+      "size_bytes": 3729
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/launch_training.py",
+      "sha256": "0f770fcaf8351aa50d0ddb902ab5b110942d4683c063bd95297b1af6defcb839",
+      "size_bytes": 12937
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/training_entry.py",
+      "sha256": "fa2f909d2af1a31409380e90d3e84bee60c6037bdeff6f0abef0cad29f5c3553",
+      "size_bytes": 1330
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/test_launch_training.py",
+      "sha256": "6165d072cb7f13767b0c26f49d1a27ff36ea6e2e0b0ca6051963694437ede08f",
+      "size_bytes": 8431
+    }
+  ],
+  "focused_resource_test_reference": {
+    "path": "artifacts/jev-runtime/native-v2-training-20261022-01/test-results-01.json",
+    "sha256": "42f21e6076c5a9524511ea085e1ea478f676746adad9e10ca19df73e3205a8d4",
+    "size_bytes": 2074
+  },
+  "owner_test_reference": {
+    "path": "artifacts/jev-runtime/native-v2-training-20261022-01/owner-tests-03.xml",
+    "sha256": "dbe99cbf917947fab34146da2ee68824dc679367265f3ea68516223ae86cbc11",
+    "size_bytes": 2042
+  },
+  "resource_now": {
+    "at_utc": "2026-10-22T05:00:17.326358+00:00",
+    "MemTotal": 130595860480,
+    "MemAvailable": 26751692800,
+    "comfy_running": 1,
+    "comfy_pending": 0
+  },
+  "actual_execution": {
+    "native_unit_started": false,
+    "new_browser_trials": 0,
+    "Comfy_mutations": 0,
+    "capacity_qualified": false,
+    "native_12B_model_loads": 0,
+    "native_12B_new_train_updates": 0
+  },
+  "remaining": [
+    "Actual resource-admitted142-update12B run and37devzero-update evaluation; strict exported artifact replay and whole-unit closure.",
+    "Matched newNF4 rawparent/nativeV2 ten-task browser comparison, with historicalQ95/BF165/10 reference kept distinct.",
+    "Allsix Decision3 warm/native browser comparison; mainD3 oldwarm floor exceeds localphysicalRAM."
+  ],
+  "goal_complete": false,
+  "published_resource_component_metadata": [
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/allocator-runtime-pins-02.json",
+      "sha256": "1d95d5f9250132299901871433850b0a39b86b18cc2b58eed378dabcf5117a61",
+      "size_bytes": 11204
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/native-toolchain-runtime-pins-02.json",
+      "sha256": "1ad0a1749e1ab69235cf6356939ef55edf904ba8942794f6241ef9580c676582",
+      "size_bytes": 85649
+    }
+  ],
+  "export_scope": "Selected source, aggregate evidence and small library/path/hash metadata only. No original wires, token arrays, runtime/library payloads or model weights."
+}

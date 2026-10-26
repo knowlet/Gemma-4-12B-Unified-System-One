@@ -1,0 +1,160 @@
+{
+  "schema": "decision3-navigation-distractor-two-head-browser-public-results-v1",
+  "date": "2026-10-26",
+  "status": "complete_matched_firstcase_pair_and_independent_native_numerical_audit",
+  "published_source_head": "e02685040adfe91274fb344534d2848968e78680",
+  "candidate": "d3-edge-navigation-distractor-two-head-delta-gpu-candidate",
+  "baseline": "generated-actions-nf4",
+  "scope": "known_firstcase_diagnostic_candidate_then_baseline",
+  "original_benchmark_actions_judge_and_budgets_unchanged": true,
+  "case_count_per_arm": 1,
+  "full_suite_denominator": 10,
+  "seed": 20261014,
+  "repeats": 1,
+  "max_steps_per_arm": 16,
+  "results": {
+    "candidate": {
+      "successes": 0,
+      "attempts": 1,
+      "goal_satisfied": false,
+      "terminal_status": "blocked",
+      "premature_done": false,
+      "action_count": 4,
+      "policy_calls": 4,
+      "text_calls": 0,
+      "helper_refusal_count": 0,
+      "error": null
+    },
+    "baseline": {
+      "successes": 0,
+      "attempts": 1,
+      "goal_satisfied": false,
+      "terminal_status": "done",
+      "premature_done": true,
+      "action_count": 4,
+      "policy_calls": 6,
+      "text_calls": 1,
+      "helper_refusal_count": 0,
+      "error": null
+    }
+  },
+  "whole_original_owner_wall_seconds": 229.05252778396243,
+  "radio_repeat_diagnosis": {
+    "same_radio_target_chosen_all4": true,
+    "selected_radio_already_checked_calls": 3,
+    "recent_history_lengths": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "last3_elements_identical": true,
+    "same_page_URL_and_text_all4": true,
+    "first3_recorded_page_changed": [
+      true,
+      false,
+      false
+    ],
+    "observed_native_head_counts": {
+      "operation": 7,
+      "click_target": 13,
+      "type_text_target": 1,
+      "select_target": 15
+    },
+    "same_feature_operation_BLOCKED_to_CLICK_flips": 4,
+    "same_feature_CLICK_target_flips": 0,
+    "local_counterfactual_is_not_full_trajectory_baseline": true,
+    "new_model_or_browser_calls": 0,
+    "evaluation_goals_or_choices_added_to_TRAIN": false
+  },
+  "observed_operation_names": [
+    "CLICK",
+    "TYPE_TEXT",
+    "SELECT",
+    "SCROLL_DOWN",
+    "WAIT",
+    "DONE",
+    "BLOCKED"
+  ],
+  "new72_TRAIN_native_head_counts": {
+    "operation": {
+      "6": 72
+    },
+    "click_target": {
+      "14": 24,
+      "18": 24,
+      "24": 24
+    },
+    "select_target": {
+      "3": 61,
+      "4": 11
+    }
+  },
+  "coverage_difference_is_not_proven_sole_cause": true,
+  "numerical_verification": {
+    "candidate_native_calls": 4,
+    "native_heads_verified": 16,
+    "native_probability_scalars_verified": 144,
+    "native_probability_comparisons_verified": 288,
+    "ordered_argmax_checks": 32,
+    "all255_baseline_logits_independently_computed_per_actual_head": true,
+    "all255_delta_logits_independently_computed_per_present_adapted_head": true,
+    "actual_per_head_feature_row_mapping_verified": true,
+    "native_entropy_confidence_verified": true,
+    "api_probability_normalization_replayed": true,
+    "api_probability_normalization_heads_replayed": 16,
+    "api_probability_normalization_scalars_replayed": 144,
+    "api_probability_normalization_passes_per_head": 2,
+    "api_probability_normalization_max_abs_difference": 0.0,
+    "independent_FP64_dot_softmax_max_abs_error": 2.558862728374578e-07,
+    "all_unadapted_raw_answers_exactly_preserved": true,
+    "W0_and_both_delta_raw_bytes_match_original_capability": true
+  },
+  "source_and_closure_verification": {
+    "outer_sources_reauthenticated": 883,
+    "service_inventory_sources": 207,
+    "positive_service_sources": 201,
+    "empty_package_sources": 6,
+    "service_dependencies_reauthenticated": 8,
+    "both_original_scoped_closures_verified": true,
+    "current_owned_allocator_final_bytes": 0,
+    "whole_tree_exit_confirmed": false,
+    "no_escape_enforced": false
+  },
+  "root_invented_controls_passed": 14,
+  "dev_used_for_model_selection": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "new_unseen_evaluation_claim": false,
+  "model_qualified": false,
+  "browser_qualified": false,
+  "benchmark_qualified": false,
+  "full_browser_score": null,
+  "jevbench_coherence_score": null,
+  "benchmark_heaven_score": null,
+  "ranking_or_win_claim": false,
+  "evidence_sha256": {
+    "independent_pair_audit": "6d10b352a50be2a8964e5917d5fd49e5b61f38768618584909955fc8ee0c509a",
+    "pair_auditor": "91fcd8afa00164f3d633cf97a87be8cc50c438cf804ebc89be2ad77c4bbf7583",
+    "radio_repeat_diagnosis": "32e066e70c3fc0956b2b6bbcd564b52a67bcc1dbcc8ce29868f09fade5bc75dc",
+    "radio_repeat_auditor": "58f0318d84b8b6abfecb8cb2fc9d09a86ec8dcc2e2464698d413cc904a1dc2ff",
+    "original_terminal_receipt": "2a7124cc13027c912f879de4a3d3e072be3b476a364fb9dc7af0e86968e07c88",
+    "launch_intent": "b09829b617c7e5519b9aca5d5afd3f78e472f38fc11673d2b58e9a004206bd94",
+    "native_GPU_aggregate": "bedfb980ae553a13f961a1831df1743be1f6eb522e0828dc0f981f6bf7170647",
+    "qualified_native_composition": "04a81a9107661f98a59dce608307989e6316bee17429200ac7da1ebb1ee3d3a2",
+    "fit_integrity": "0653b339a30737e013bb75694a596beaef3912c11fd73b7a8ccbbdd281c26fa4",
+    "dataset_acceptance": "d1d13532d77958a8200760af796568e2032f68e45918b8390cb2061371848049",
+    "fit_capability": "33b29ed06a9b4addba489a348444d5bb283c6ca97cf8fae4acf6c47f9b76af88",
+    "operation_delta_raw_fp32": "74b8e1e7c8c156ffa640566453338cfcdccf1b8da8759a09a0e53c4bac75a159",
+    "click_target_delta_raw_fp32": "ee115100b0bc59e5f5572e2207547fc1c70686a6eaf0c745bf6be52b6d86af0a"
+  },
+  "TRAIN_coverage_notes": {
+    "existing_prechecked_requested_radio_to_TYPE_TEXT": true,
+    "genuine_action_history_already_present": true,
+    "CLICK47_only_teacher_active_CLICK_rows": true,
+    "absence_of_all_checked_state_or_history_training_claimed": false,
+    "single_distribution_gap_proven_as_cause": false,
+    "new72_menus_have_no_scroll_controls": true,
+    "observed_browser_extra_operation": "SCROLL_DOWN"
+  }
+}

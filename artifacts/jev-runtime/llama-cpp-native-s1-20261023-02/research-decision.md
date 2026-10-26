@@ -1,0 +1,21 @@
+# Explicit SWA cache selection: source preparation
+
+On 2026-10-23, inspect and extend only the fresh v2 directory. Task-start HEAD is `99a9a93daa3e210398cb5c6c5b62cffbe5dfd2fe`, branch `codex/jev-public07-modal-training`; tracked worktree changes were absent. The parent owns v1 and actual build/runtime work. No compiler, native executable, inference-library import, model/header/payload read, model construction, GPU or service is permitted in this preparation.
+
+Reuse the prior pinned llama.cpp research and the installed pristine upstream source at `184f6536024668e8908ab8c86033d56708e62b40`. The focused upstream searches were `rg swa_full/n_ubatch/kv_unified/type_k/type_v` in `src/llama-context.cpp`, `rg swa-full` in `common/arg.cpp`, and inspection of the actual `src/llama-kv-cache-iswa.cpp` constructor. This is a bounded upstream source search, not a new global project survey. The root MIT license identifies the ggml authors, 2023–2026.
+
+| Candidate | Evidence and decision |
+| --- | --- |
+| Existing S1 runner with full cache | Existing v1 C++ source SHA `8dd7f74a3ba38fda24d305c2bcbb7793d23eb38011ccb58f4f0230f677caa70e`; preserve its non-generative slot scoring and default true. |
+| Pinned llama.cpp compact SWA cache | Directly use its existing `llama_context_params.swa_full` control. The upstream constructor sizes SWA cells as `PAD(min(context, window * (unified ? n_seq_max : 1) + n_ubatch), 256)`, then overrides to full context only when `swa_full` is true. No custom cache implementation. |
+| Generic generation runner / smaller model / shorter final context | Out of scope: changes the decision path or proposed target workload. No replacement adopted. |
+
+The native default context params use F16 K/V, `swa_full=true`, `kv_unified=false`; the current S1 runner selects `n_seq_max=1` and sets both batch/microbatch to the requested batch size. Its own CLI needs a value-taking `--swa-full 0|1` because upstream common CLI exposes only an enabling switch. Accept only the exact strings `0` and `1`; leave default true. Store the same boolean used in `cp.swa_full` in each successful runtime response. Do not change attention math, native decode, slots, model, number of layers, calibration, LoRA, RPC, batch/context defaults or ownership/resource limits.
+
+This is five controlled C++ replacements/additions and a byte-identical CMake copy from v1. Save a unified diff and exact inverse/source pins. A stdlib-only source regression must prove the full inverse restores the parent bytes; it must not imitate the C++ parser with a separate Python parser and call that runtime coverage. The invalid CLI matrix (`2`, negative values, strings, noncanonical numeric strings) is required for a later compiled invocation, not claimed executed here.
+
+For 48 layers, 40 SWA layers use eight KV heads of width 256, and eight full layers use one KV head of width 512. With two-byte K and V, context 8192 and microbatch 512: full payload is 2,818,572,288 bytes; compact SWA uses 1536 cells and totals 637,534,208 bytes. These are arithmetic tensor payload estimates only. Alignment, allocator/metadata, output/graph workspace, model pages, context/driver costs and UMA/memcg charging are not included, and the 2 GiB gate is unchanged.
+
+Future root-only evidence must first compare full versus compact at context 2048 with real inputs crossing position 1024, including unchanged logits/answers and actual memory. Separately measure compact at actual context 8192. Native cache reuse/eviction and numerical equivalence are not established by source inspection or the smaller test. No runtime fit, original N3/Q95 qualification, browser score or quality is inherited.
+
+Primary pinned sources: [SWA cache constructor](https://github.com/ggml-org/llama.cpp/blob/184f6536024668e8908ab8c86033d56708e62b40/src/llama-kv-cache-iswa.cpp), [native context defaults](https://github.com/ggml-org/llama.cpp/blob/184f6536024668e8908ab8c86033d56708e62b40/src/llama-context.cpp), [upstream CLI](https://github.com/ggml-org/llama.cpp/blob/184f6536024668e8908ab8c86033d56708e62b40/common/arg.cpp), [MIT license](https://github.com/ggml-org/llama.cpp/blob/184f6536024668e8908ab8c86033d56708e62b40/LICENSE). No upstream implementation was copied into a new cache; only its public boolean API is selected.

@@ -1,0 +1,121 @@
+{
+  "schema": "decision3-cpu5-operation-readout-fit-results-v1",
+  "status": "TRAINED_CANDIDATE_ACCEPTED_EVALUATION_PENDING",
+  "recorded_at_utc": "2026-10-24T06:22:24.561558+00:00",
+  "actual": "owner09/actual-27",
+  "candidate": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-readout-cpu5-20261024-01/root-frozen-operation-candidate-capability-01.json",
+    "sha256": "4dbbb9470d011931854f6473c0840ef7f0746c4194c719cde6ab454c3e79d463",
+    "size_bytes": 2875
+  },
+  "root_fit_acceptance": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-readout-cpu5-20261024-01/root-accepted-trained-readout-01.json",
+    "sha256": "551e5ae1dab335011b9eb410be28d00aa24d33e35dde4110921eecf2b474475f",
+    "size_bytes": 11542
+  },
+  "source_selection": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-readout-cpu5-20261024-01/root-operation-fit-command-selection-01.json",
+    "sha256": "906ca168d33531fa1b3d6eb9882062a4b2eac749ebfdfa5d169e4cef90b943cc",
+    "size_bytes": 1009
+  },
+  "source_fakes": {
+    "held_fit": 20,
+    "released_fit": 20,
+    "backend": 8,
+    "CPU0": true,
+    "AS_bytes": 536870912,
+    "CPU_seconds": 30,
+    "wall_seconds": 35
+  },
+  "source_peer_review": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-readout-cpu5-20261024-01/source-peer-review-01.json",
+    "sha256": "65825e4028ce9889d791f359fb40573e64aab5161a5726c4c99391f3a2e28490",
+    "size_bytes": 954
+  },
+  "source_peer_actual_read": false,
+  "train": {
+    "OS_access_sealing_claim": false,
+    "ancestors": 12,
+    "dev_or_sealed_selected": false,
+    "dev_used_for_model_selection": true,
+    "families": 4,
+    "optimizer_head_ids": [
+      "operation"
+    ],
+    "optimizer_input_dev": false,
+    "optimizer_input_sealed": false,
+    "projection": {
+      "absolute_tolerance": 1e-06,
+      "codes": 255,
+      "feature_width": 1024,
+      "id": "publisher-final-norm-last-position-fp32-255x1024-t1-v1",
+      "legal_mask": "code_index_less_than_actual_criteria_count",
+      "relative_tolerance": 1e-05,
+      "temperature": 1.0
+    },
+    "row_mapping_sha256": "6232c0439a51ee1adade86b0845e4f845c3150a98d2e414ec5b62d90d6fe2ade",
+    "supervised_heads": 96,
+    "supervised_target_heads_excluded": 36,
+    "total_verified_supervised_heads": 132,
+    "train_states": 96,
+    "training_strategy": "operation_only",
+    "unused_heads_skipped": 252
+  },
+  "hyperparameters": {
+    "batch_size": 64,
+    "l2": 0.0001,
+    "learning_rate": 0.003,
+    "seed": 20261023,
+    "steps": 512
+  },
+  "original_root_seconds": 3.7588863109995145,
+  "original_child_seconds": 2.0202331760083325,
+  "owned_unit_observed_peak_bytes": 47595520,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "complete_input_mapping_independently_reconstructed": true,
+  "optimizer_rerun_by_root_audit": false,
+  "backbone_loaded_for_fit": false,
+  "W0_mutated": false,
+  "private_parameter_arrays_published": false,
+  "default_model_or_service_changed": false,
+  "dev_used_for_model_selection": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "candidate_selection_before_dev_or_sealed": false,
+  "new_candidate_scores": {
+    "train_complete_objective": null,
+    "dev24_model_selection": null,
+    "sealed": null,
+    "browser_completion": null,
+    "jevbench_heaven": null,
+    "jevbench_coherence": null
+  },
+  "prior_original_d3_scores_separate": {
+    "public_accuracy": {
+      "correct": 158,
+      "total": 231,
+      "fraction": 0.683982683982684
+    },
+    "coherence": {
+      "completed": 1234,
+      "required": 1248,
+      "score": null,
+      "status": "INCOMPLETE_NO_SCORE"
+    }
+  },
+  "model_quality_or_competitor_win": false,
+  "next_steps": [
+    "Qualify new operation-only source/candidate with genuine original4/candidate4/original2/candidate2 numeric controls and unchanged20/120",
+    "Evaluate all24 dev snapshots as model-selection data with target readouts preserved",
+    "Run unchanged genuine browser protocol; do not train on exposed diagnostic",
+    "Keep both official JevBench suites separate, original scores do not transfer to candidate",
+    "Keep sealed48 unrevealed until candidate and protocol frozen"
+  ]
+}

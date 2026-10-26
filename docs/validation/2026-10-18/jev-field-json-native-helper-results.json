@@ -1,0 +1,271 @@
+{
+  "status": "complete_native_old_new_helper_diagnostic_not_HTTP_qualification_or_browser_score",
+  "model": "One fresh load of the same original qualified240 action-adapter artifact. Original base helper LoRA-disable/restore and full physical176/head/freeze/eval invariants preserved.",
+  "protocol": {
+    "fixed_calls": 10,
+    "contexts": 5,
+    "arms": "Original base_field_text and new constrained generate_field_text; fixed alternating arm order, no warmup/retry or prompt changes.",
+    "contexts_description": [
+      "Exact previously exposed641-token PubMed request that failed with thought-prefixed output",
+      "Fresh ASCII value",
+      "Fresh Japanese value",
+      "Exact quoted caption",
+      "Missing identifier requiring null refusal"
+    ],
+    "limits": "Actual128 generated-token cap including actual EOS; original8192 context limit and20s per-operation authorization after both durable per-call evidence writes. Campaign aggregate persistence is separate.",
+    "independence": "Expected values parsed only after complete raw seal and confirmed owned-worker exit. Full262144 native grammar masks rederived offline against every46 actual callback prefix and selected token; no value whitelist or output repair."
+  },
+  "results": {
+    "old": {
+      "strict_raw_JSON": "1/5",
+      "usable_correct_present_values": "3/4",
+      "correct_null_refusal": "1/1",
+      "consumer_expected_behavior_including_refusal": "4/5",
+      "elapsed_ms": [
+        5349.081395979738,
+        8957.90816101362
+      ]
+    },
+    "new": {
+      "strict_raw_JSON": "5/5",
+      "usable_correct_present_values": "4/4",
+      "correct_null_refusal": "1/1",
+      "consumer_expected_behavior_including_refusal": "5/5",
+      "elapsed_ms": [
+        8150.883216992952,
+        9960.180825000862
+      ]
+    },
+    "all10_actual_EOS_token_cap_and20s": "PASS",
+    "native_forward_calls": 115,
+    "actual_full_vocabulary_constraint_callbacks": 46,
+    "all_native_forwards_observed_with_action_LoRA_disabled_layers": 88,
+    "PubMed": "Original helper reproduces invalid JSON; new helper returns exact usable migraine. This is the observed consumer improvement."
+  },
+  "rows": [
+    {
+      "ordinal": 0,
+      "case_id": "exposed-pubmed-format",
+      "arm": "old-original-base_field_text",
+      "status": "failed",
+      "strict_format": false,
+      "semantic_exact": false,
+      "consumer_expected_behavior": false,
+      "actual_EOS": true,
+      "within128_tokens": true,
+      "within20s": true,
+      "returned_text_semantic_exact": false,
+      "elapsed_ms": 8957.90816101362,
+      "returned_text": null,
+      "error": {
+        "type": "FieldTextError",
+        "message": "Text helper did not generate valid JSON",
+        "notes": []
+      }
+    },
+    {
+      "ordinal": 1,
+      "case_id": "exposed-pubmed-format",
+      "arm": "new-constrained-generate_field_text",
+      "status": "returned",
+      "strict_format": true,
+      "semantic_exact": true,
+      "consumer_expected_behavior": true,
+      "actual_EOS": true,
+      "within128_tokens": true,
+      "within20s": true,
+      "returned_text_semantic_exact": true,
+      "elapsed_ms": 8918.488038005307,
+      "returned_text": "migraine",
+      "error": null
+    },
+    {
+      "ordinal": 2,
+      "case_id": "benign-ascii",
+      "arm": "new-constrained-generate_field_text",
+      "status": "returned",
+      "strict_format": true,
+      "semantic_exact": true,
+      "consumer_expected_behavior": true,
+      "actual_EOS": true,
+      "within128_tokens": true,
+      "within20s": true,
+      "returned_text_semantic_exact": true,
+      "elapsed_ms": 8740.09954201756,
+      "returned_text": "copperfen",
+      "error": null
+    },
+    {
+      "ordinal": 3,
+      "case_id": "benign-ascii",
+      "arm": "old-original-base_field_text",
+      "status": "returned",
+      "strict_format": false,
+      "semantic_exact": false,
+      "consumer_expected_behavior": true,
+      "actual_EOS": true,
+      "within128_tokens": true,
+      "within20s": true,
+      "returned_text_semantic_exact": true,
+      "elapsed_ms": 6668.660560011631,
+      "returned_text": "copperfen",
+      "error": null
+    },
+    {
+      "ordinal": 4,
+      "case_id": "benign-unicode",
+      "arm": "old-original-base_field_text",
+      "status": "returned",
+      "strict_format": false,
+      "semantic_exact": false,
+      "consumer_expected_behavior": true,
+      "actual_EOS": true,
+      "within128_tokens": true,
+      "within20s": true,
+      "returned_text_semantic_exact": true,
+      "elapsed_ms": 6984.413017024053,
+      "returned_text": "青い灯台",
+      "error": null
+    },
+    {
+      "ordinal": 5,
+      "case_id": "benign-unicode",
+      "arm": "new-constrained-generate_field_text",
+      "status": "returned",
+      "strict_format": true,
+      "semantic_exact": true,
+      "consumer_expected_behavior": true,
+      "actual_EOS": true,
+      "within128_tokens": true,
+      "within20s": true,
+      "returned_text_semantic_exact": true,
+      "elapsed_ms": 9391.723257984268,
+      "returned_text": "青い灯台",
+      "error": null
+    },
+    {
+      "ordinal": 6,
+      "case_id": "benign-quote",
+      "arm": "new-constrained-generate_field_text",
+      "status": "returned",
+      "strict_format": true,
+      "semantic_exact": true,
+      "consumer_expected_behavior": true,
+      "actual_EOS": true,
+      "within128_tokens": true,
+      "within20s": true,
+      "returned_text_semantic_exact": true,
+      "elapsed_ms": 9960.180825000862,
+      "returned_text": "The tag reads \"quiet inlet\".",
+      "error": null
+    },
+    {
+      "ordinal": 7,
+      "case_id": "benign-quote",
+      "arm": "old-original-base_field_text",
+      "status": "returned",
+      "strict_format": false,
+      "semantic_exact": false,
+      "consumer_expected_behavior": true,
+      "actual_EOS": true,
+      "within128_tokens": true,
+      "within20s": true,
+      "returned_text_semantic_exact": true,
+      "elapsed_ms": 7518.616144021507,
+      "returned_text": "The tag reads \"quiet inlet\".",
+      "error": null
+    },
+    {
+      "ordinal": 8,
+      "case_id": "missing-value",
+      "arm": "old-original-base_field_text",
+      "status": "failed",
+      "strict_format": true,
+      "semantic_exact": true,
+      "consumer_expected_behavior": true,
+      "actual_EOS": true,
+      "within128_tokens": true,
+      "within20s": true,
+      "returned_text_semantic_exact": false,
+      "elapsed_ms": 5349.081395979738,
+      "returned_text": null,
+      "error": {
+        "type": "FieldTextError",
+        "message": "Text helper did not generate a valid field value",
+        "notes": []
+      }
+    },
+    {
+      "ordinal": 9,
+      "case_id": "missing-value",
+      "arm": "new-constrained-generate_field_text",
+      "status": "failed",
+      "strict_format": true,
+      "semantic_exact": true,
+      "consumer_expected_behavior": true,
+      "actual_EOS": true,
+      "within128_tokens": true,
+      "within20s": true,
+      "returned_text_semantic_exact": false,
+      "elapsed_ms": 8150.883216992952,
+      "returned_text": null,
+      "error": {
+        "type": "FieldJSONError",
+        "message": "Generated field value is null, blank or exceeds2000 characters",
+        "notes": []
+      }
+    }
+  ],
+  "evidence": {
+    "exec_session": 41472,
+    "exit_code": 0,
+    "model_loads": {
+      "intent": 1,
+      "constructor_returned": 1,
+      "verified": 1
+    },
+    "owned_pid": 752935,
+    "whole_process_group_exit_confirmed": true,
+    "source_count": 94,
+    "source_scope": "Original91 immutable snapshot plus grammar/helper/probe; distinct from any future93 HTTP qualification.",
+    "closed_files": 60,
+    "closed_bytes": 335212,
+    "root_native_probe_pure_tests": 43,
+    "root_pure_test_seconds": 0.2,
+    "full_original_head_sha256": "9619fd670a4074367c72f2cf09d777970ad1eafa511bff605a82c8558dcc24d4",
+    "references": [
+      {
+        "path": "artifacts/jev-runtime/field-json-native-probe-20261018-01/source-HOLD-02/HOLD.json",
+        "sha256": "37397ea2893610f879bc092d8e868b28bd68751ecedeb8febd7a94d83dddac2d",
+        "size_bytes": 3481
+      },
+      {
+        "path": "artifacts/jev-runtime/field-json-native-probe-20261018-01/root-review-02.json",
+        "sha256": "8b8d472a13a3013bad7594b490b27a71e0ae4221fe3292ef198d270d1e4a0885",
+        "size_bytes": 1584
+      },
+      {
+        "path": "artifacts/jev-runtime/field-json-native-probe-20261018-01/close-probe.py",
+        "sha256": "b024a27ed1830425c85c9dc86b25e6e2b8df0c8df1da99b4a4887ab212db67bc",
+        "size_bytes": 11779
+      },
+      {
+        "path": "artifacts/jev-runtime/field-json-native-probe-20261018-01/actual-01-independent-closed-index.json",
+        "sha256": "77f245969ad22e2682d20558ff7d5272e2ad91c8277f70b0dd5091978fc21341",
+        "size_bytes": 11369
+      }
+    ]
+  },
+  "interpretation": [
+    "The constrained helper repairs this reproduced real input formatting failure while preserving exact Unicode and quotation marks.",
+    "The old consumer accepts exact JSON fences, so its strict raw JSON1/5 must not be reported as only one usable old result.",
+    "The new helper takes about8.15-9.96s in this small diagnostic. It remains under20s; this is not a latency or throughput improvement claim."
+  ],
+  "limits": [
+    "Four positive values and one null case are a small exposed/authored diagnostic, not a general success rate.",
+    "No browser inputs or HTTP service calls were made; PubMed filters and complete public browser tasks have not yet passed with the new helper.",
+    "New helper HTTP integration requires a fresh separate qualification with all41 original contract cases and newly bound raw/EOS/20s evidence.",
+    "No model weights were trained or changed."
+  ],
+  "next": "Implement and independently review the derived field-JSON HTTP qualification, then re-run actual browser workloads with the same fixed budgets."
+}

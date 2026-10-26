@@ -1,0 +1,380 @@
+{
+  "cache_arithmetic": {
+    "cases": [
+      {
+        "SWA_K_and_V_bytes": 671088640,
+        "SWA_cells": 2048,
+        "context": 2048,
+        "full_attention_K_and_V_bytes": 33554432,
+        "microbatch": 512,
+        "swa_full": true,
+        "total_MiB": 672.0,
+        "total_cache_tensor_bytes_arithmetic": 704643072
+      },
+      {
+        "SWA_K_and_V_bytes": 503316480,
+        "SWA_cells": 1536,
+        "context": 2048,
+        "full_attention_K_and_V_bytes": 33554432,
+        "microbatch": 512,
+        "swa_full": false,
+        "total_MiB": 512.0,
+        "total_cache_tensor_bytes_arithmetic": 536870912
+      },
+      {
+        "SWA_K_and_V_bytes": 2684354560,
+        "SWA_cells": 8192,
+        "context": 8192,
+        "full_attention_K_and_V_bytes": 134217728,
+        "microbatch": 512,
+        "swa_full": true,
+        "total_MiB": 2688.0,
+        "total_cache_tensor_bytes_arithmetic": 2818572288
+      },
+      {
+        "SWA_K_and_V_bytes": 503316480,
+        "SWA_cells": 1536,
+        "context": 8192,
+        "full_attention_K_and_V_bytes": 134217728,
+        "microbatch": 512,
+        "swa_full": false,
+        "total_MiB": 608.0,
+        "total_cache_tensor_bytes_arithmetic": 637534208
+      }
+    ],
+    "independently_recomputed_from_saved_assumptions": true,
+    "scope": "F16 K andV payload arithmetic only,48layers,40slidingKV8dim256/8fullKV1dim512,one sequence,window1024,ubatch512,PAD256. Native compact1536sliding cells at2048 and8192. Excludes model pages, graph/workspace/output/cache bookkeeping, alignment, allocator/driver/UMA accounting; not observed allocated memory or fit."
+  },
+  "future_compiled_test_source": {
+    "accepted_value_help_cases": 2,
+    "cases": 9,
+    "invalid_exact_value_cases": 6,
+    "limits": [
+      "Not run yet; no C++ CLI pass claimed.",
+      "No omitted-default CLI case is executed; defaulttrue is source-protected by exact initializer/inverse.",
+      "Help cases prove argument acceptance only, not cp.swa_full application or compact-cache allocation/model parity."
+    ],
+    "missing_value_case": 1,
+    "per_case_timeout_seconds": 5,
+    "source_conclusion": "Accepted0/1 parse before --help and exit before backend/model initialization. Invalid strings with nonexistent model/projector throw exact parser error before backend. Missing value rejects. Output records each returncode/stdout/stderr only after all assertions pass."
+  },
+  "must_fix": [],
+  "qualification_limits": [
+    "No LoRA/calibration/text-helper/RPC deadline feature added; no inherited N3/NF4/Q95/browser score.",
+    "No model loaded/scored or numerical eviction/reuse equivalence measured by this source review.",
+    "Original Q95 memory/context/identity/finalization gates and previous two benchmark scores/best4of10 remain unchanged."
+  ],
+  "refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/s1_gguf.cpp",
+      "sha256": "b9205973d97145adff2ba5368d935597ab904245b701551d3148f94999cff19a",
+      "size_bytes": 16923
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/CMakeLists.txt",
+      "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+      "size_bytes": 2004
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/source.patch",
+      "sha256": "98a5a4afb8b82f266125c6f9616de17f4accc554fd64f3a3fd8c15c855d3e0a0",
+      "size_bytes": 2565
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/source-delta.json",
+      "sha256": "264f0ec86d8c992372e677bfaa1ef7991ff3ace151fe67e3d6b120ecad8ba1e2",
+      "size_bytes": 3590
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/test_source.py",
+      "sha256": "04bcd3f56c0b603d254a7c9b41403fc6d8a6b78999d309c650a7b0fb588bb48a",
+      "size_bytes": 3524
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/test_compiled_cli.py",
+      "sha256": "15e63a10f78adcc38643acb72a20f0d04d2349741abe3e53620c712835717628",
+      "size_bytes": 1913
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/root-build-spec.json",
+      "sha256": "0fbf1fbbcacc68d31264f81a90824bf558274cf8b06db735ab5f9df025944701",
+      "size_bytes": 5414
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/validation.json",
+      "sha256": "be89ed643dfeb438efc3e83fc72cab2b505806e5dac2528738a955ae379972a6",
+      "size_bytes": 5528
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/cpu-tests-02.txt",
+      "sha256": "284318db5b986c0cbbafbd40799f73faee56282934a2d5c9db50fc3c94b05546",
+      "size_bytes": 455
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/ruff-02.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "size_bytes": 19
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/kv-arithmetic.json",
+      "sha256": "e937aee1e5036bc83819fd134fc43432c37e1e20b189a50fcc9ae6b3ff6a5346",
+      "size_bytes": 3375
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/README.md",
+      "sha256": "7d86d8029ab024373dd5ba441b4f8dca8082c2139358e1165e3c6a34d8c66f7a",
+      "size_bytes": 3753
+    }
+  ],
+  "required_runtime_followup": [
+    "Actual compiled9-case parser test and fresh binary identity after build.",
+    "Identical full/compact actual context2048 requests crossing1024, compare every legal logit/answer under predeclared tolerances and measure complete resource use.",
+    "Separate actual compact8192 context/identity/latency/finalization and full48-layer model qualification; no inference from2048 arithmetic."
+  ],
+  "reviewed_at_utc": "2026-10-23T02:16:39.794029+00:00",
+  "reviewed_option_contract": {
+    "assignment": "cp.swa_full=opts.swa_full",
+    "default": true,
+    "exact_values": [
+      "0",
+      "1"
+    ],
+    "flag": "--swa-full",
+    "output": "runtime.swa_full JSON boolean from the same selected options value",
+    "readback_limit": "Response metadata is selected option, not a separate API readback of opaque actual context/cache allocation.",
+    "source_refusal_examples": [
+      "2",
+      "-1",
+      "true",
+      "false",
+      "01",
+      "1x",
+      "",
+      "missing argument"
+    ],
+    "unchanged_defaults": "ctx16384/batch8192/GPU99/threads8/image280 remain original; these defaults are not a recommended admitted full-model run."
+  },
+  "reviewer": "/root/q95_owner05_review",
+  "saved_source_tests": {
+    "reviewer_reran_tests": false,
+    "ruff": "PASS",
+    "scope": "Exact source delta/inverse/patch and CMake equality only; no fake parser imitation or actual compilation.",
+    "tests_passed": 2,
+    "unittest_seconds": 0.006
+  },
+  "schema": "llama-cpp-native-S1-v2-independent-source-spec-review-v1",
+  "scope": "Read frozen C++/CMake/Python tests/source metadata and selected build spec. Reviewer performs standard-library hashes, exact forward/inverse/patch checks, Python AST parsing, cache arithmetic and canonical tool/library stat reads only. No compiler/helper/test/Torch/native import, probe, HTTP, model/header/payload access or active download unit action. Only this new review written.",
+  "selected_build_spec": {
+    "binary_stats": [
+      {
+        "path": "/usr/bin/cmake",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 48002409,
+          "st_mtime_ns": 1713179337000000000,
+          "st_size": 10489912
+        }
+      },
+      {
+        "path": "/usr/bin/aarch64-linux-gnu-g++-13",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 48006951,
+          "st_mtime_ns": 1766091591000000000,
+          "st_size": 990040
+        }
+      },
+      {
+        "path": "/usr/bin/make",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 48012593,
+          "st_mtime_ns": 1712592721000000000,
+          "st_size": 267672
+        }
+      },
+      {
+        "path": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 11534385,
+          "st_mtime_ns": 1783328682303782212,
+          "st_size": 23319208
+        }
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libllama.so.0.7.0",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 12982163,
+          "st_mtime_ns": 1792720800651861779,
+          "st_size": 4911136
+        }
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libmtmd.so.0.7.0",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 12982336,
+          "st_mtime_ns": 1792721030322443747,
+          "st_size": 1975008
+        }
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml.so.0.27.0",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 12982037,
+          "st_mtime_ns": 1792720419621112992,
+          "st_size": 78392
+        }
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-base.so.0.27.0",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 12981978,
+          "st_mtime_ns": 1792720341928372975,
+          "st_size": 876552
+        }
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build/bin/libggml-cpu.so.0.27.0",
+        "stat": {
+          "st_dev": 66306,
+          "st_ino": 12982028,
+          "st_mtime_ns": 1792720414739129267,
+          "st_size": 1002152
+        }
+      }
+    ],
+    "canonical_tool_and_library_stat_count": 9,
+    "command_count": 3,
+    "commands": [
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "-S",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-native-s1-20261023-02",
+          "-B",
+          "{OUTPUT}/s1-build",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DLLAMA_CPP_DIR=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-source-184f653",
+          "-DLLAMA_CPP_BUILD_DIR=/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-01/actual-02/build"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "--build",
+          "{OUTPUT}/s1-build",
+          "--config",
+          "Release",
+          "-j",
+          "1"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      },
+      {
+        "argv": [
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+          "-B",
+          "-s",
+          "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/test_compiled_cli.py",
+          "--runner",
+          "{OUTPUT}/s1-build/bin/s1-gguf",
+          "--output",
+          "{OUTPUT}/compiled-cli-results.json"
+        ],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      }
+    ],
+    "file_size_max_bytes": 268435456,
+    "library_identity_limit": "Reused canonical library stats agree with saved V1 audited files; spec does not enforce full dynamic-loader/dependency byte closure or substitute for post-build identity/result audit.",
+    "qualified_v1_build_audit": {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-01/independent-build-result-audit.json",
+      "sha256": "e26fb02de003277fdd20dd8bd01372c6300b36b14673148dece39ed3b7292fc9",
+      "size_bytes": 39125
+    },
+    "ref": {
+      "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/root-build-spec.json",
+      "sha256": "0fbf1fbbcacc68d31264f81a90824bf558274cf8b06db735ab5f9df025944701",
+      "size_bytes": 5414
+    },
+    "runtime_seconds": 7200,
+    "scope": "Fresh helper-only CMake configure/build -j1 using explicit previously built184 libraries, then actual parser test. Original controller5672 keeps2GiB/swap0/CPU100/main0/R+2initial/runtimeR/original observer/authclose. Start only after active Q8 download closes, as root selected.",
+    "small_source_count": 12,
+    "small_sources": [
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-01/controller.py",
+        "sha256": "5672bc297869cee138726301f8c7d607adda138169b204747b9e8a2766546326",
+        "size_bytes": 38075
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/root-build-spec.json",
+        "sha256": "0fbf1fbbcacc68d31264f81a90824bf558274cf8b06db735ab5f9df025944701",
+        "size_bytes": 5414
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+        "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+        "size_bytes": 21002
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+        "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+        "size_bytes": 38483
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+        "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+        "size_bytes": 2196
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/s1_gguf.cpp",
+        "sha256": "b9205973d97145adff2ba5368d935597ab904245b701551d3148f94999cff19a",
+        "size_bytes": 16923
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/CMakeLists.txt",
+        "sha256": "ac0ba97b62097685e449bafbb096e9835b2ba21204c46c2c7b2d640f1a2ece4b",
+        "size_bytes": 2004
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/test_compiled_cli.py",
+        "sha256": "15e63a10f78adcc38643acb72a20f0d04d2349741abe3e53620c712835717628",
+        "size_bytes": 1913
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/source-delta.json",
+        "sha256": "264f0ec86d8c992372e677bfaa1ef7991ff3ace151fe67e3d6b120ecad8ba1e2",
+        "size_bytes": 3590
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/source.patch",
+        "sha256": "98a5a4afb8b82f266125c6f9616de17f4accc554fd64f3a3fd8c15c855d3e0a0",
+        "size_bytes": 2565
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/validation.json",
+        "sha256": "be89ed643dfeb438efc3e83fc72cab2b505806e5dac2528738a955ae379972a6",
+        "size_bytes": 5528
+      },
+      {
+        "path": "artifacts/jev-runtime/llama-cpp-native-s1-20261023-02/research-decision.md",
+        "sha256": "1c624e6ad92e6bcf4d72cc3cfd53a5410568fc35f014bd60a95274c1edf87974",
+        "size_bytes": 4297
+      }
+    ]
+  },
+  "source_proof": {
+    "CMake_byte_exact_parent": true,
+    "changes_exactly": 5,
+    "forward_parent_to_child_byte_exact": true,
+    "inverse_child_to_parent_byte_exact": true,
+    "scope": "All other original source bytes, including slot/causal/logit/media/cleanup code, remain identical. New option selects an existing upstream cache path; its numerical/runtime behavior is not thereby qualified.",
+    "unified_patch_byte_exact": true
+  },
+  "verdict": "CLEAR_WITH_LIMITS"
+}

@@ -1,0 +1,13 @@
+# Decision3 CPU full06 retry provenance
+
+The first full06 attempt (owner07 actual03) stopped after 121 completed callbacks because whole-host available memory fell to 25,212,829,696 bytes, below the unchanged 26,119,172,916-byte reserve. The structured ECE fix was not reached. Neither benchmark has an accepted score from that attempt.
+
+The original authenticated stop recorded a zombie in both process scans and left `whole_unit_exit_confirmed`, `observed_cgroup_cohort_exit_confirmed`, and `cgroup_absent` false. Those historical values remain unchanged. A separate later read-only observation found the selected unit and cohort absent in two fresh scans. This supports a fresh launch gate; it does not qualify the failed run.
+
+The retry launcher uses the unchanged reviewed full06 campaign and selection. It verifies the failed attempt, the separate later absence record, fresh original-method scans, all selected sources, and the original resource admission again. Its output namespace is owner07 actual04. It retains 231 public callbacks followed by all 1,248 coherence MINI callbacks, 16,384 context with rejection rather than truncation, 180 seconds per callback, 10,000 seconds for the campaign, and 10,800 seconds for the owner. CPU16–19, quota400%, memory2GiB, swap0, and the full host reserve are unchanged. No ComfyUI service, model, queue, or cache operation is performed.
+
+Before dispatch, wait02 requires consecutive passing known-HTTP and full-reserve samples spanning at least60 seconds. A finished-to-finished sample gap above7.5 seconds resets that window. This corrects wait01, which incorrectly omitted the current observation duration from that gap. The bounded actual-main fake-clock regression demonstrates that a3-second observation plus5-second sleep can admit incorrectly under wait01, while wait02 expires without dispatch. Normal5-second samples admit after60 seconds; an invented failed gate resets the window and delays admission to95 seconds. These are synthetic waiting-logic checks, with no actual host/model/benchmark work.
+
+The retry's preliminary gate passed13 samples spanning60.028296047996264 seconds on2026-10-23 UTC, and the original launcher/controller gates then admitted a fresh full run. Scores remain pending until both complete stages, final model/source authentication, original closure, and closed-result review pass. The two JevBench suites must be reported separately; browser usability and a competitor win are still unproven.
+
+Evidence is limited to source, typed aggregate metadata, and provenance. Model bytes, runtime/native payloads, task/gold text, raw answers, feature arrays, actor state, and owner receipt stay outside Git.

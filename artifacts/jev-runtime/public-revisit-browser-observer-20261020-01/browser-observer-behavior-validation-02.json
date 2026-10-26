@@ -1,0 +1,81 @@
+{
+  "after": [
+    {
+      "path": "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/browser_observer.py",
+      "sha256": "ecac2e86ad4273e9ed6760347ba14098993c6c12799c64a577f6d6c970e44e78",
+      "size_bytes": 25819
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/service_binding.py",
+      "sha256": "19e55e3dc8f71405281594d846e3f5aeb74060df2874bf7e3dd039f86dbb6dac",
+      "size_bytes": 9050
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/test_browser_observer.py",
+      "sha256": "84e61fdcc15fc28ec8963f6c817adcf7caddd100b7c809642fbb3ef68f2ebbbc",
+      "size_bytes": 21746
+    }
+  ],
+  "before": [
+    {
+      "path": "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/browser_observer.py",
+      "sha256": "ecac2e86ad4273e9ed6760347ba14098993c6c12799c64a577f6d6c970e44e78",
+      "size_bytes": 25819
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/service_binding.py",
+      "sha256": "19e55e3dc8f71405281594d846e3f5aeb74060df2874bf7e3dd039f86dbb6dac",
+      "size_bytes": 9050
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/test_browser_observer.py",
+      "sha256": "84e61fdcc15fc28ec8963f6c817adcf7caddd100b7c809642fbb3ef68f2ebbbc",
+      "size_bytes": 21746
+    }
+  ],
+  "checks": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-B",
+        "-s",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/jev-revisit-browser-observer-pure-02",
+        "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/test_browser_observer.py"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "........................                                                 [100%]\n24 passed in 3.48s\n"
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/test_browser_observer.py"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "artifacts/jev-runtime/public-revisit-browser-observer-20261020-01/test_browser_observer.py"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "1 file already formatted\n"
+    }
+  ],
+  "previous_failure": "browser-observer-behavior-validation-01.json retained: fake fixture policy path /v1 failed original exact endpoint checker; fixed only fixture to /v1/systemone.",
+  "schema_id": "jev_revisit_browser_observer_behavior_validation_v1",
+  "scope": "Only explicit fake binder/materializer/zero-HTTP observer plus two exact owned tiny CPU sleep children and one clean-env source-only default CLI. Test temporary evidence is under this new namespace and removed on fixture closure. No existing private config/service, browser, processor, model, or HTTP.",
+  "source_stable": true
+}

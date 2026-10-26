@@ -1,0 +1,94 @@
+{
+  "schema": "interrupted-native2GiB-full-both-benchmark-attempt-v1",
+  "created_at_utc": "2026-10-23T14:06:13.878717+00:00",
+  "root_terminal": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-full04-edge-both-02.json",
+    "size_bytes": 1750,
+    "sha256": "21c68e8abd0d3e2ac616529be8847e3c53cc3f85f21ff7e2f1f739e24169d081"
+  },
+  "root_launch": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-launch-full04-edge-both-02.json",
+    "size_bytes": 1867,
+    "sha256": "d296184441f3200f492a33e90f479523ff246d6ed3a6d19d4e1a7f2f3e05981e"
+  },
+  "owner_receipt": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-02/receipt.json",
+    "size_bytes": 71312,
+    "sha256": "2e53be41623694faa1a716fa044651e7e81e3de1803e0e561644c6c257417476"
+  },
+  "original_closure": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-02/external-boundary-closure.json",
+    "size_bytes": 5053,
+    "sha256": "1e321cfce43fcf062fa3d4f0e86f95d5520bb1f0ea784286ed5a052badd1f8bf"
+  },
+  "state_reference_only": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-02/edge-both/state.json",
+    "size_bytes": 14239,
+    "sha256": "211d22f8261e1464c912ba97c3e4ec4ead77cf5258ca44e6606f7fb7611e4467"
+  },
+  "selected_command": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-edge-both-command-spec-01.json",
+    "size_bytes": 14126,
+    "sha256": "59396734477f90fa1a3f24bec60633796de06f84215597a4e59a5b5d9a274d49"
+  },
+  "initial_gate": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-full04-initial-gate-02.json",
+    "size_bytes": 9161,
+    "sha256": "ebb32dd26970a0a566ea344e5f3f69cd42d3494b2697713c2cf494b4ec76a4f1"
+  },
+  "later_original_absence": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-04/root-supplemental-actual02-closure-01.json",
+    "size_bytes": 4538,
+    "sha256": "607bad38ebb1b458fa99e2c77333bfd16dbccd950f21daa4f8eac35e7b72b491"
+  },
+  "root_exit_code": 1,
+  "root_wall_seconds": 17.317021786002442,
+  "completed": false,
+  "status": "interrupted_by_original_Comfy_idle_gate_after_model_load_no_complete_stage",
+  "model_loads_observed": 1,
+  "initial_full_model_authentication_observed": true,
+  "completed_stage_receipts_observed": {},
+  "progress_file_observed": false,
+  "durable_callback_counts": null,
+  "no_claim_that_missing_progress_means_zero_started_work": true,
+  "final_global_authentication_qualified": false,
+  "scores_separate": {
+    "Benchmark_Heaven_public231": null,
+    "JevBench_coherence_MINI": null
+  },
+  "primary_error": {
+    "phase": "controller",
+    "type": "ValueError",
+    "message": "Original read-only Comfy idle gate",
+    "evidence": {
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "mem_total_bytes": 130595864576,
+        "mem_available_bytes": 30474936320,
+        "comfy_running": 1,
+        "comfy_pending": 0,
+        "comfy_state": "http_busy",
+        "comfy_evidence": {
+          "transport": "HTTP",
+          "comfy_running": 1,
+          "comfy_pending": 0,
+          "http_status": 200,
+          "response_sha256": "a8e796dccfcd874cb860d51ed65bcdd87f8cabc7cd3eeb5ec7b77f299bf505a4"
+        }
+      },
+      "required_available_bytes": null,
+      "initial": false
+    },
+    "returncode": null,
+    "stdout": null,
+    "stderr": null,
+    "command_cleanup_errors": null
+  },
+  "original_whole_unit_exit_confirmed_preserved": false,
+  "original_first_scan_zombie_count": 1,
+  "original_second_scan_empty": true,
+  "later_two_original_empty_scans_and_cgroup_absence": true,
+  "original_false_flags_or_error_not_rewritten": true,
+  "raw_benchmark_tasks_gold_responses_or_DOM_copied": false,
+  "scope": "Incomplete real attempt only. Separate later original absence does not repair original closure flag, stage completion, model final auth or any score."
+}

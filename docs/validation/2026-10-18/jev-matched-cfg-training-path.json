@@ -1,0 +1,34 @@
+{
+  "status": "implemented_CPU_verified_no_new_fit_or_model_qualification",
+  "behavior": "A separately versioned producer selects the historical all-target full-vocabulary loss A or legal-branch conditional loss C explicitly. Both retain one original full causal forward, all inputs and both diagnostic families.",
+  "matched_configuration": "Same original521-update parent,120 public training rows,22 evaluation-only rows,120 updates,seed42,learning rate5e-5,AdamW with zero weight decay,clipping1 and176 FP32 q/v LoRA tensors. No base/head updates or inference grammar changes.",
+  "source_contract": {
+    "original_core_sources": 84,
+    "original_training_sources": 90,
+    "new_producer_sources": 94,
+    "new_qualification_sources": 95,
+    "original90_bytes_unchanged": true,
+    "source94_sha256": "b4d256c64490c4a9668e6ba6a38f8a8227ef46eef628dd091e9ea13aaa127d1e",
+    "execution95_sha256": "0dc39f5a893303595efcbde60ef94355ac92a77043c0777b7718e6327762f23b",
+    "artifact_kind": "jev_public_native_action_cfg_lora_v1",
+    "qualification_kind": "jev_public_cfg_action_bf16_qualification_v1",
+    "placement": "Experimental loss stays outside the frozen core package, so the original nested84-source admission still runs unchanged."
+  },
+  "verification": {
+    "root_complete_semantic_deltas_loop_and_tests_review": true,
+    "independent_relocated_loss_CPU_tests": "37 passed in1.51s",
+    "independent_training_CPU_tests": "22 passed in2.80s",
+    "independent_qualification_CPU_tests": "51 passed in2.03s",
+    "actual_original_public_admission": "All701 files and120/22 rows re-admitted through the original nested84 validator.",
+    "actual_native_tokenizer_plans": "All142 plans recompiled with the original native tokenizer class/origin and51-file environment closure; output bytes exactly match the prior sealed plans.",
+    "all142_plans_sha256": "38a863ee8c0234c40fc690688ebd8cba1d7bdcb9e5963bd0e50bbf7d6f8f247e",
+    "actual94_and95_current_source_verifiers": "PASS, including fresh recheck",
+    "producer_HOLD": "artifacts/jev-runtime/public-native-cfg-matched-fit-20261018-01/source-HOLD-02/HOLD.json",
+    "qualifier_HOLD": "artifacts/jev-runtime/public-cfg-qualifier-review-20261018-01/source-HOLD-02/HOLD.json"
+  },
+  "new_fit_updates": 0,
+  "new_model_or_browser_result": null,
+  "compute_status": "Modal workspace reports disabled. Observed local memory after model loading was95750008832 bytes, below the unchanged106438961088-byte training floor. No fit was started and no floor was lowered.",
+  "limits": "CPU input/plan/source checks do not establish successful BF16 training, artifact publication or runtime qualification. C versus A changes both position weighting and normalization; it is not whole-action negative log likelihood. The existing qualified240 model remains the comparison baseline.",
+  "next": "Run the matched fits when admitted compute is available, then freshly prepare, qualify and independently verify each candidate before real browser evaluation."
+}

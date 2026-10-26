@@ -1,0 +1,9 @@
+# Distinguish a stopped ComfyUI instance from unknown queue status
+
+2026-10-22, before implementation. The real native fit reached 119 completed updates before the owner lost its `/queue` connection and conservatively stopped its own unit. The old owner is terminal and the old output is retained. No adapter checkpoint was produced; a subsequent complete fit must start fresh rather than claim to resume these 119 updates.
+
+Reuse the current project HTTP queue guard and bounded `/proc` process/listener identity techniques already used by the browser observer and owned-process cleanup. No new dependency is required. Preserve the old owner and all old source/closure evidence; a new attempt uses a separately inventoried observer and owner.
+
+The new observer may distinguish `absent_confirmed` from HTTP `idle` only after a real ECONNREFUSED and two fresh bounded observations prove both no listener on port 8188 and no known local ComfyUI runtime process. Match structured executable/script/module/cwd facts, not arbitrary substrings: our model Python also lives in the ComfyUI virtual environment, and shell here-doc text may mention `main.py`. Retain uncertainty and refuse if a possible Comfy process is unreadable, a listener exists, or either scan conflicts. Other HTTP errors, malformed queue bodies and timeouts remain unknown and fail closed. Store only process identities/classifications or hashes, never arbitrary command lines or credentials.
+
+Confirmed absence authorizes only the same resource-admitted local workload; it is not a fabricated HTTP idle response. Existing host reserve, same-boot checks, unit ownership, caps, two-second monitoring and stop-own-unit behavior remain. No ComfyUI process, service, listener or queue is changed. Pure tests must cover live Comfy despite connection refusal, listener/unknown evidence, typed busy queues, complete absence, races and false-positive command text before a real observer admission is used.

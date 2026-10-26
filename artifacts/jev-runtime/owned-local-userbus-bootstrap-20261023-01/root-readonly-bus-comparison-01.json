@@ -1,0 +1,51 @@
+{
+  "schema": "root-readonly-same-user-bus-transport-comparison-v1",
+  "created_at_utc": "2026-10-23T13:07:34.567659+00:00",
+  "argv": [
+    "/usr/bin/systemctl",
+    "--user",
+    "show",
+    "jev-d3-llama-cpp-cpu4-20261023-03.service",
+    "--property=LoadState",
+    "--property=MainPID"
+  ],
+  "euid": 1001,
+  "runtime_dir": {
+    "path": "/run/user/1001",
+    "uid": 1001,
+    "mode_octal": "0o700"
+  },
+  "bus": {
+    "path": "/run/user/1001/bus",
+    "uid": 1001,
+    "socket": true
+  },
+  "comparisons": [
+    {
+      "explicit_env": {
+        "PATH": "/bin:/usr/bin",
+        "LANG": "C.UTF-8"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Failed to connect to bus: No medium found\n"
+    },
+    {
+      "explicit_env": {
+        "PATH": "/bin:/usr/bin",
+        "LANG": "C.UTF-8",
+        "XDG_RUNTIME_DIR": "/run/user/1001",
+        "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1001/bus"
+      },
+      "exit_code": 0,
+      "stdout": "MainPID=0\nLoadState=not-found\n",
+      "stderr": ""
+    }
+  ],
+  "result": "Reproduced status query failure under original clean env; explicit verified same-user local bus allows readonly missing-unit query",
+  "service_or_queue_cache_modified": false,
+  "unit_started_or_stopped": false,
+  "original_source_modified": false,
+  "model_or_native_binary_read_or_framework_imported": false,
+  "scope": "Only two readonly property queries for the already closed selected unit. Same-user manager address provides query transport; it does not grant no-escape or change original clean-environment/resource/observer authority."
+}

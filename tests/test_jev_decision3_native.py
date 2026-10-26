@@ -17,6 +17,7 @@ from s1.evaluation import decision3 as d3
 from s1.jev_decision3_native import (
     PROFILE,
     Decision3NativeQuestion,
+    Decision3NativeRequest,
     JevDecision3NativeAdapter,
     parse_native_payload,
 )
@@ -161,6 +162,47 @@ def test_generic52_contract_stays_strict_and_native_dto_validates_normally():
     with pytest.raises(ValidationError):
         Decision3NativeQuestion(id="q", instructions="choose", criteria={"x": "y"}, hidden_gold="x")
     assert DecisionRequest.model_fields["questions"].annotation == list[Question]
+
+
+@pytest.mark.parametrize("target_count", [38, 255])
+def test_diagnostic_native_questions_keep_their_payload_outside_browser_action_schema(target_count):
+    counts = {"operation": 7, "target": target_count, "text": 36, "singleton": 1}
+    original = {
+        "state": {"description": "Invented diagnostic; no browser action or task answer."},
+        "questions": {
+            key: {
+                "type": "choice",
+                "instructions": "Choose one fabricated label.",
+                "criteria": {f"fabricated_{index:03d}": None for index in range(count)},
+            }
+            for key, count in counts.items()
+        },
+    }
+    backend = FakeNative()
+    with pytest.raises(RequestValidationError, match="operation and named target heads"):
+        JevDecision3NativeAdapter(backend, model_identity="native-test").predict(
+            {"model": "native-test", **copy.deepcopy(original)}
+        )
+    assert backend.calls == []
+
+    request = Decision3NativeRequest.model_validate(
+        {
+            "state": copy.deepcopy(original["state"]),
+            "questions": [
+                {"id": key, **copy.deepcopy(question)}
+                for key, question in original["questions"].items()
+            ],
+        }
+    )
+    # General native diagnostics preserve their original names and full widths.
+    # Renaming them as browser actions would change the serialized model input.
+    encoded = json.dumps(original, ensure_ascii=False, separators=(",", ":")).encode()
+    assert (
+        json.dumps(d3.native_payload(request), ensure_ascii=False, separators=(",", ":")).encode()
+        == encoded
+    )
+    assert [question.id for question in request.questions] == list(counts)
+    assert [len(question.labels()) for question in request.questions] == list(counts.values())
 
 
 @pytest.mark.parametrize(

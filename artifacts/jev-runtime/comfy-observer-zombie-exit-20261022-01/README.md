@@ -1,0 +1,9 @@
+# Read-only resolution of an exited, unreaped process
+
+The original observer accepts a freshly observed kernel zombie as `non_runtime_zombie`. Its separate natural-exit resolver nevertheless insists that an initially uncertain process disappear from `/proc`, refusing if the parent has not reaped it within 0.5 seconds. An actual owned child reproduces this difference: the old resolver refuses, while the successor resolves the same already-exited child without reaping or signalling it.
+
+This successor adds one resolution path for initially eligible generic uncertainty: a pidfd opened without `PIDFD_THREAD` must indicate exit, and two fresh kernel reads must show the same start identity in state `Z`. The Linux [pidfd documentation](https://man7.org/linux/man-pages/man2/pidfd_open.2.html) specifies that this descriptor becomes readable after the last thread exits. A live unknown process, changed identity, intrinsic Comfy evidence or unreadable exit proof still refuses. The 0.5-second resolution and 2-second complete observation limits remain unchanged. Resolution failures now retain their reason and finish timestamp.
+
+All 106 original pure regressions and three additional actual owned-process controls passed: 109 tests in 1.70 seconds. The added controls cover an unreaped exited child, a still-live unknown child and a mismatched start identity. Only test-created children are cleaned up. No Comfy process, foreign process, model, GPU, service or unit was modified.
+
+The stopped Q95 owner observed PID 91598 as generic unknown, but its old receipt did not retain the final failure reason or process-state transition. This change is not proof that the individual process was a zombie, and it does not permit an alive unknown process to pass. Fresh actual owner admission and a full model/browser run remain separate work.

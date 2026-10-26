@@ -16,6 +16,7 @@ from .browser_text import _FieldTokenCapture
 from .errors import BackendResponseError, BackendTimeoutError, RequestValidationError
 from .jev import _parse_payload
 from .jev_hierarchy import _check_json, _criteria
+from .jev_prompt import PROMPT_FORMATS
 
 POLICY = "greedy_legal_action_v2"
 PROBABILITIES = "deterministic_decoded_policy_point_mass_not_model_posterior"
@@ -91,6 +92,92 @@ def _unique_object(pairs):
     return result
 
 
+def format_action_request(payload, identity, *, prompt_format="raw-json-v1"):
+    """Render one fully validated request without changing its wire or labels.
+
+    Inference and capacity measurements use this same text. A shared encoding
+    must reconstruct the exact ordered JSON bytes before the model can see it.
+    """
+    if type(prompt_format) is not str or prompt_format not in PROMPT_FORMATS:
+        raise ValueError("unsupported generated-action prompt format")
+    encoded, source, labels = _request(payload, identity)
+    if prompt_format == "raw-json-v1":
+        return (
+            INSTRUCTIONS + "\n" + encoded,
+            source,
+            labels,
+            {
+                "format": prompt_format,
+                "original_bytes": len(source),
+                "encoded_bytes": len(source),
+                "ordered_roundtrip_verified": True,
+            },
+        )
+    from .jev_prompt import (
+        SHARED_ELEMENT_INSTRUCTIONS,
+        SHARED_ELEMENT_V2_INSTRUCTIONS,
+        format_payload,
+        unpack_payload,
+    )
+
+    try:
+        packed, metadata = format_payload(payload, prompt_format=prompt_format)
+        reconstructed = json.dumps(
+            unpack_payload(packed), ensure_ascii=False, separators=(",", ":"), allow_nan=False
+        ).encode()
+    except (ValueError, TypeError, OverflowError, UnicodeError) as exc:
+        raise RequestValidationError(
+            "shared-element prompt could not preserve the complete ordered request"
+        ) from exc
+    if reconstructed != source:
+        raise RequestValidationError("shared-element prompt changed the complete ordered request")
+    instructions = (
+        SHARED_ELEMENT_V2_INSTRUCTIONS
+        if prompt_format == "shared-elements-v2"
+        else SHARED_ELEMENT_INSTRUCTIONS
+    )
+    shared_text = INSTRUCTIONS + "\n" + instructions + "\n" + packed
+    evidence = {
+        **metadata,
+        "format": prompt_format,
+        "original_bytes": len(source),
+        "encoded_bytes": len(packed.encode()),
+        "encoded_sha256": hashlib.sha256(packed.encode()).hexdigest(),
+        "ordered_roundtrip_verified": True,
+    }
+    if prompt_format == "shared-elements-v2":
+        raw_text = INSTRUCTIONS + "\n" + encoded
+        evidence.update(
+            requested_format=prompt_format,
+            selection_basis="complete_user_text_utf8_bytes",
+            candidate_user_text_bytes={
+                "raw-json-v1": len(raw_text.encode()),
+                prompt_format: len(shared_text.encode()),
+            },
+        )
+        if len(shared_text.encode()) >= len(raw_text.encode()):
+            evidence.update(
+                format="raw-json-v1",
+                encoded_bytes=len(source),
+                encoded_sha256=hashlib.sha256(source).hexdigest(),
+                element_rows=0,
+                criterion_refs=0,
+                literal_criteria=0,
+                candidate_shared_representation={
+                    **metadata,
+                    "encoded_sha256": hashlib.sha256(packed.encode()).hexdigest(),
+                },
+                fallback_reason="shared_user_text_is_not_smaller",
+            )
+            return raw_text, source, labels, evidence
+    return (
+        shared_text,
+        source,
+        labels,
+        evidence,
+    )
+
+
 class JevGeneratedActionAdapter:
     """One greedy native decode, validated before any upstream browser action.
 
@@ -98,10 +185,15 @@ class JevGeneratedActionAdapter:
     cancelled. A late returned decode is retained as evidence and never acted on.
     """
 
-    def __init__(self, backend, *, model_identity=None, constrain_actions=False):
+    def __init__(
+        self, backend, *, model_identity=None, constrain_actions=False, prompt_format="raw-json-v1"
+    ):
         if type(constrain_actions) is not bool:
             raise ValueError("generated-action grammar must be an explicit boolean")
+        if type(prompt_format) is not str or prompt_format not in PROMPT_FORMATS:
+            raise ValueError("unsupported generated-action prompt format")
         self.constrain_actions = constrain_actions
+        self.prompt_format = prompt_format
         self.model = getattr(backend, "model", None)
         self.identity = backend.name if model_identity is None else model_identity
         if not isinstance(self.identity, str) or not self.identity.strip():
@@ -140,6 +232,11 @@ class JevGeneratedActionAdapter:
             or self.model.max_context < 1
         ):
             raise ValueError("generated actions require a complete native model descriptor")
+        action_adapter = getattr(self.model, "action_adapter", None)
+        if action_adapter is not None:
+            from .browser_action_prompt import expected_format
+
+            expected_format(action_adapter.metadata, self.prompt_format)
 
     def predict(self, payload, *, evidence_sink=None):
         import torch
@@ -147,6 +244,7 @@ class JevGeneratedActionAdapter:
         started, model = time.monotonic(), self.model
         generation = {
             "policy": POLICY,
+            "prompt_format": self.prompt_format,
             "model": model.name,
             "revision": model.revision,
             "quantization": model.quantization,
@@ -189,23 +287,38 @@ class JevGeneratedActionAdapter:
 
         capture, hook = None, None
         try:
-            encoded, source, labels = _request(payload, self.identity)
+            native_envelope_required = False
+            if action_adapter is not None:
+                from .browser_action_prompt import NATIVE_KIND, expected_format, native_prompt
+
+                generation["phase"] = "adapter_prompt_preflight"
+                expected_format(action_adapter.metadata, self.prompt_format)
+                native_envelope_required = action_adapter.metadata.get("kind") == NATIVE_KIND
+            user_text, source, labels, representation = format_action_request(
+                payload, self.identity, prompt_format=self.prompt_format
+            )
             generation.update(
                 original_request_sha256=hashlib.sha256(source).hexdigest(),
                 candidate_labels=labels,
+                prompt_representation=representation,
                 phase="preflight",
             )
             prompt = model.processor.apply_chat_template(
                 [
                     {
                         "role": "user",
-                        "content": [{"type": "text", "text": INSTRUCTIONS + "\n" + encoded}],
+                        "content": [{"type": "text", "text": user_text}],
                     }
                 ],
                 tokenize=False,
                 add_generation_prompt=True,
                 enable_thinking=False,
             )
+            if native_envelope_required and prompt != native_prompt(user_text):
+                generation.update(phase="adapter_prompt_envelope", prompt=prompt)
+                raise RequestValidationError(
+                    "native action adapter processor prompt differs from its trained envelope"
+                )
             inputs = dict(
                 model.processor(text=prompt, return_tensors="pt", add_special_tokens=False)
             )

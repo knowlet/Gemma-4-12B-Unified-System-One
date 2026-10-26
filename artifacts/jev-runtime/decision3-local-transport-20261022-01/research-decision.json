@@ -1,0 +1,113 @@
+{
+  "schema_id": "decision3-local-transport-research-decision-v1",
+  "date": "2026-10-22",
+  "head_before_code": "853fc36b99fa345334469d52a1b54ad36c93bd0e",
+  "branch": "codex/jev-public07-modal-training",
+  "existing_dirty_paths": [
+    "docs/research/jev-decision3-local-successor-inventory.md"
+  ],
+  "owner_scope": "artifacts/jev-runtime/decision3-local-transport-20261022-01",
+  "profile": "decision3-gx10-local-owned-transport-v1",
+  "qualification": false,
+  "scope": "New stdlib owned-child framing/process lifecycle and authenticated loopback HTTP; fake-child CPU tests only. No models/Q95/Comfy/services/cloud or historical source mutation.",
+  "pinned_references": [
+    {
+      "path": "artifacts/jev-runtime/decision3-matched-v7-warm-readiness-20261018-01/source-candidate-01/jev_decision3_browser_worker.py",
+      "sha256": "f46fae94b759e373fce18d8e75abcac261b4e1f7c79bead0614cbed0e3d4f7d7",
+      "size_bytes": 51315
+    },
+    {
+      "path": "apps/modal/decision3_browser_service.py",
+      "sha256": "55229ac0215b9d070c26535e5e5e781f8e1eff8b0f322112a0466023d56e4023",
+      "size_bytes": 78181
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-GX10-warm-successor-20261020-01/gx10_warm_bootstrap.py",
+      "sha256": "4f383edd45dc4ce3d5e6be90a83bed0a431f42dcb115f92fcbb20be25e62f91a",
+      "size_bytes": 25273
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "01940654d0e52019280f391c76c48c95deeca5075ec5a56c99a0f32dd1886c75",
+      "size_bytes": 1202
+    }
+  ],
+  "source_mechanisms": [
+    {
+      "source": "artifacts/jev-runtime/decision3-matched-v7-warm-readiness-20261018-01/source-candidate-01/jev_decision3_browser_worker.py",
+      "symbols": [
+        "process_request",
+        "run",
+        "send"
+      ],
+      "adoption": "Preserve exact request_id,payload_json,http_sha256,remaining_seconds envelope, lowercase ready/response/closed events, raw response retention and fail-closed late delivery; add explicit new-profile identity fields in a new wrapper."
+    },
+    {
+      "source": "apps/modal/decision3_browser_service.py",
+      "symbols": [
+        "Session.read_control",
+        "Session.observe",
+        "Session.reap",
+        "Gateway.request",
+        "Gateway.delivery_failed"
+      ],
+      "adoption": "Adapt design for bounded pipes, PID/start/nonce/UUID binding, current process discovery, queue and publication deadlines, durable evidence and confirmed owned closure. Replace Modal RPC/mounts/H200-specific actor."
+    }
+  ],
+  "external_searches": [
+    {
+      "intent": "subprocess isolation and bounded communication",
+      "query": "site.docs.python.org 3.13 subprocess start_new_session process_group communicate TimeoutExpired"
+    },
+    {
+      "intent": "local threaded HTTP request handling",
+      "query": "site.docs.python.org 3.13 http.server ThreadingHTTPServer BaseHTTPRequestHandler"
+    }
+  ],
+  "external_references": [
+    {
+      "url": "https://docs.python.org/3.13/library/subprocess.html",
+      "read": "Popen, start_new_session and timeout behavior; use stdlib directly."
+    },
+    {
+      "url": "https://docs.python.org/3.13/library/http.server.html",
+      "read": "ThreadingHTTPServer and BaseHTTPRequestHandler; local benchmark transport only."
+    },
+    {
+      "url": "https://github.com/python/cpython/blob/v3.13.0/Lib/subprocess.py",
+      "version": "v3.13.0",
+      "adoption": "API/reference only, no source copied"
+    },
+    {
+      "url": "https://github.com/python/cpython/blob/v3.13.0/Lib/http/server.py",
+      "version": "v3.13.0",
+      "adoption": "API/reference only, no source copied"
+    },
+    {
+      "url": "https://github.com/python/cpython/blob/v3.13.0/LICENSE",
+      "license": "Python license terms reviewed; no vendored source"
+    }
+  ],
+  "candidate_decision": [
+    {
+      "candidate": "Existing local repository worker and Modal Session/Gateway",
+      "match": "Exact protocol/deadline semantics",
+      "license": "MIT, repository LICENSE",
+      "decision": "Reuse frozen request handler via a callable seam; adapt transport/lifecycle only in a new directory."
+    },
+    {
+      "candidate": "CPython subprocess/select/http.server",
+      "match": "Linux owned process/loopback transport",
+      "license": "Python license; standard installed library",
+      "decision": "Use directly, no added runtime dependency."
+    },
+    {
+      "candidate": "Existing warm bootstrap alone",
+      "match": "Native authentication/construction/text48 component only",
+      "decision": "Retain unmodified; cannot alone own HTTP or child lifecycle."
+    }
+  ],
+  "design": "Selection pins fresh boot/MemTotal/UUID. New child wrapper emits all-frame PID/start/nonce/model/UUID/boot binding; parent authenticates actual /proc identity. Exact old request envelope is unchanged. Bound all I/O/evidence. Stop only individually authenticated owned PID identities with pidfds. Unknown descendants or missing CLOSED/exit keep continuation false. Authenticated loopback HTTP preserves body bytes and full local queue/RPC/publication deadline.",
+  "verification": "CPU tests with real loopback sockets and fresh owned fake children: exact envelopes, valid lifecycle, partial startup, wrong identities, queue/worker/publication deadlines, incomplete closure and delivery failure; AS256MiB CPU30 wall45, BLAS1, Ruff.",
+  "remaining": "Does not authenticate real model/cache/runtime/Q95, perform text48, implement browser runner, validate native quality, or grant real model execution."
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "delta-four-call-numeric-source-validation-v1",
+  "status": "SOURCE_PASS_EXACT_ACTUAL_SELECTION_PENDING",
+  "source_author_scope": "pure source; no imports/checks/hashes/actual reads by author",
+  "root_scope": "source review,7 stdlib fakes,AST-whitelisted release and exact pins; actual inference pending",
+  "fakes": 7,
+  "results": [
+    {
+      "name": "imports",
+      "exit_code": 0,
+      "wall_seconds": 0.0183395019848831,
+      "stdout": "Found 1 error (1 fixed, 0 remaining).\n",
+      "stderr": "",
+      "CPU0": true,
+      "cpu_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "wall_seconds": 0.020336399000370875,
+      "stdout": "2 files reformatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "cpu_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "held_fakes",
+      "exit_code": 0,
+      "wall_seconds": 0.293480363994604,
+      "stdout": "",
+      "stderr": ".......\n----------------------------------------------------------------------\nRan 7 tests in 0.116s\n\nOK\n",
+      "CPU0": true,
+      "cpu_seconds": 30,
+      "AS_bytes": 536870912
+    },
+    {
+      "name": "released_format",
+      "exit_code": 0,
+      "wall_seconds": 0.019330943003296852,
+      "stdout": "1 file reformatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "cpu_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "ruff",
+      "exit_code": 0,
+      "wall_seconds": 0.021125502011273056,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "CPU0": true,
+      "cpu_seconds": 30,
+      "AS_bytes": null
+    },
+    {
+      "name": "format_check",
+      "exit_code": 0,
+      "wall_seconds": 0.012994495016755536,
+      "stdout": "3 files already formatted\n",
+      "stderr": "",
+      "CPU0": true,
+      "cpu_seconds": 30,
+      "AS_bytes": null
+    }
+  ],
+  "files": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-numeric-qualification-cpu5-20261024-01/actor.py",
+      "sha256": "22b39b79172098ebdc768a38e8e5d138df00583a41fcf679323a942877d90262",
+      "size_bytes": 32650
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-numeric-qualification-cpu5-20261024-01/test_actor.py",
+      "sha256": "4a4df8dbbec1bfad8cb9360dbe20bb0e9d5353ed59af3600d7cf192ba9f75a8a",
+      "size_bytes": 5431
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-numeric-qualification-cpu5-20261024-01/actor_released_v1.py",
+      "sha256": "815a62c71697bf00cf75c15808f637b1354020984fe1f0806d37769fb7aeb92c",
+      "size_bytes": 32961
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-delta-numeric-qualification-cpu5-20261024-01/README.md",
+      "sha256": "2175bd1c8e39069ff59354d6af8536145682ea4f98cbc537a088faf70d7f2013",
+      "size_bytes": 6522
+    }
+  ],
+  "released_AST_changes": [
+    "SOURCE_ONLY True to False",
+    "PINS exact final source SHA map"
+  ],
+  "pins": {
+    "native_actor": "9a7e5af918c17f6824a720fb6d112ffa5fdac03493dde3efa176c7d50470a365",
+    "native_plan": "095db88b78687d90fbed51aafd736c1b06fb1a582312de8dff97bf6109131e96",
+    "native_helper": "4df54e06e8a795ebf5b300a3e2074319e781a278a2a870c21c2bd52897d7eb11",
+    "np_actor": "c8a439c794f5176564a29473c524d62f86218818b1f7fb66089c8e007dfd7f82",
+    "observer": "455e2c7bf20d1a96f99795566062db15dbe779dd5610e573277c382775bc4f37",
+    "numpy_probe": "22ed700ebc9ea49fd8cf4d1a532ca3a571290d349b69053c6bea082631582f7f",
+    "fixture": "b1110b97ac4f816f8c562e964ce909b700c87c6fbaf1eb419f7b390e973e90a7",
+    "backend": "c8460c9d416fa1c784f86b5afb000fc2e6ddd31e757d4759904114a9ed40c1aa"
+  },
+  "genuine_model_inference_qualified": false,
+  "training_eligible": false,
+  "semantic_expected_answers": null
+}

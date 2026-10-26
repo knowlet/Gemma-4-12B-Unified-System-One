@@ -1,0 +1,154 @@
+{
+  "schema": "decision3-native-batch4-cpu-both-candidate-plan-v1",
+  "profile": "decision3-edge-gx10-publisher-cpu2g-batch4-both-stage-completions-20261023-v1",
+  "model_key": "edge",
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "campaign_sha256": "a96dd36184db3c54fab7a7bfa397dbce89ea1737119f33e5cfc53572ffe52747",
+  "local_head_at_creation": "1a6a2c6c50673238c79bb4d4cc2f440ed10a9de3",
+  "head_field_is_provenance_only": true,
+  "batch_actor_sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b",
+  "batch_freeze_sha256": "9dd2f66aa844477ab2b41abad31153643830cec85edf00efc290daa256be148a",
+  "native_plan_sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8",
+  "benchmark_source_plan_sha256": "b5caa794d864917a637034bd1cebe0487c9eec0e5c3c423835d24fca4f397021",
+  "whole_campaign_seconds": 10000,
+  "per_call_seconds": 180,
+  "per_call_policy": "Official offline benchmark complete callback default180s includes prepare, full native input/order, raw retention, validation and durable progress; never browser20 compliance.",
+  "owner_runtime_seconds": 10800,
+  "owner_unit": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+  "owner_profile": "llama-cpp-cpu4-2g-long-command-owned-v1",
+  "owner_sources": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+      "size": 40319,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12984784,
+        "st_size": 40319,
+        "st_mtime_ns": 1792759639803453042
+      },
+      "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/source-freeze.json",
+      "size": 2573,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12984792,
+        "st_size": 2573,
+        "st_mtime_ns": 1792759687956451647
+      },
+      "sha256": "7a83281f3ce088e29c0c1fa833b617a0eecd9d26214cbda4ebf97314c3f8bdbb"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+      "size": 30552,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12984813,
+        "st_size": 30552,
+        "st_mtime_ns": 1792760484637370411
+      },
+      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+      "size": 7734,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12984812,
+        "st_size": 7734,
+        "st_mtime_ns": 1792760002809551466
+      },
+      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source_audit.py",
+      "size": 5079,
+      "stat": {
+        "st_dev": 66306,
+        "st_ino": 12984814,
+        "st_size": 5079,
+        "st_mtime_ns": 1792759884392681840
+      },
+      "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+    }
+  ],
+  "reserve_bytes": 26119172916,
+  "memory_max_bytes": 2147483648,
+  "startup_available_bytes": 28266656564,
+  "swap_max_bytes": 0,
+  "threads": 4,
+  "cpu_affinity": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "cpu_quota_percent": 400,
+  "batch_size": 4,
+  "constructor_count": 1,
+  "concurrency": 1,
+  "fresh_calls": 1479,
+  "context_limit": 16384,
+  "context_policy": "reject_no_truncation",
+  "suites": [
+    {
+      "name": "legacy-public231",
+      "tasks": 231,
+      "revision": "bb05a335bc809e61b20c0f745d25499a82b326fc"
+    },
+    {
+      "name": "jevbench-mini",
+      "requests": 1248,
+      "cases": 240,
+      "relations": 50,
+      "planned_tests": 1200,
+      "revision": "e18733694623aa93058e279c3534f8b8e2edefa3"
+    }
+  ],
+  "prerequisite": {
+    "selection": "Future root selection must provide a genuinely new2GiB same-Edge nativebatch4 smoke state and independent closed finalaudit, exact new nativeplan/source/resource fingerprints. No3GiB smoke/audit/auth/performance/quality transfers. Pending refs are not executable acceptance.",
+    "audit_schema": "independent-native-batch4-synthetic-result-audit-v1",
+    "review_kind": "closed_real_smoke_result",
+    "required_qualification_fields": [
+      "smoke_complete",
+      "external_authenticated_closure",
+      "one_actual_constructor",
+      "two_actual_four_row_events",
+      "durable_call_20s",
+      "whole_command_120s",
+      "final_full_model_and_sources_authenticated"
+    ],
+    "native_plan_sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
+  },
+  "fresh_output_and_coherence_cache_required": true,
+  "final_authentication": "Full all20 model files+manifest+selected runtime/owner sources; all78 original scorer source files+2 existing dataset metadata manifests; campaign source+plan+native plan/freeze/helper+smoke state/audit+every small audit artifact ref. All inside future owned campaign.",
+  "score_scope": "Fresh Edge nativebatch4 CPU2GiB candidate only. No3GiB memory/fit/authentication/performance/quality/scores, batch1, browser or rank inheritance. New2GiB actual smoke/finalaudit mandatory.",
+  "execution_selection": "CANDIDATE_ONLY_PENDING_NEW2GiB_ACTUAL_SMOKE_AND_FINAL_AUDIT; root must select exact fresh resource closure and original fullR+actual2GiB admission. Lite remains prior3GiB; no2GiB Lite plan is selected.",
+  "benchmark_inputs_gold_answers_or_caches_copied_into_source": false,
+  "Torch_model_or_eval_executed_during_preparation": false,
+  "external_authenticated_current_campaign_closure_required_before_final_claim": true,
+  "stage_completion_schema": "authenticated-native-batch4-stage-completion-v1",
+  "stage_completion_policy": "full-auth-durable-stage-evidence-within-original-whole10000-root-audit-required",
+  "separate_stage_score_policy": "Both full suites remain mandatory. Only a complete, fully authenticated, durable stage receipt may be independently joined by root to this exact invocation/time/nonce/process and original current owner closure. Later-stage failure leaves overall incomplete and never imports prior profile scores."
+}

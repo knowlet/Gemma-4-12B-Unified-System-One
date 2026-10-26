@@ -1,0 +1,98 @@
+{
+  "schema_id": "jev-decision3-edge-first-startup-diagnosis-v1",
+  "created_at_utc": "2026-10-22T10:35:43.833263+00:00",
+  "status": "INCOMPLETE_STARTUP_BEFORE_MODEL_CONSTRUCTION_NO_QUALITY_SCORE",
+  "model": "vllm-sr/d3-edge",
+  "browser_tasks_completed": 0,
+  "fixed_planned_denominator": 10,
+  "score": null,
+  "model_child_constructed": false,
+  "source_stage": "actor-before-model-child",
+  "helper_failure": {
+    "type": "TimeoutError",
+    "code": "OBSERVATION_FAILED",
+    "elapsed_seconds": 1.0934554930008744,
+    "both_memory_gates_admitted": true,
+    "per_socket_timeout_seconds": 1.0,
+    "unchanged_total_checker_budget_seconds": 3.0,
+    "actual_authenticated_no_inference_schema_response": {
+      "request_id": "5b690b013cbdd32d3adf6db876230c10",
+      "status": 422,
+      "elapsed_ms": 2427.110929000264,
+      "completed": true,
+      "forward_count": 0
+    }
+  },
+  "closure_failure": {
+    "cause": "Strict live ControlGroup equality was applied after systemd naturally removed the failed actor cgroup.",
+    "original_closure_success_flags": false,
+    "root_independent_terminal_identity_and_absence_verified": true,
+    "unit_or_Comfy_mutated_for_reconciliation": false
+  },
+  "helper_owner_at_snapshot": {
+    "active": false,
+    "unit": "jev-d3-q95-helper-20261022-01.service",
+    "actor_pid": 85926,
+    "helper_pid": 86012,
+    "invocation_id": "ed098a7b1a69469686a88ddc57d80078",
+    "scope": "Completed owner-final receipt checked; initial ready seed is dead and must not be reused.",
+    "full_external_closure": true,
+    "closed_reason": "Continuous observer encountered generic unknown Python cwd; no claim that PID91598 was a zombie."
+  },
+  "evidence": {
+    "selected_plan": {
+      "path": "artifacts/jev-runtime/decision3-edge-browser-plan-20261022-01/plan-01.json",
+      "sha256": "ab64caef4c6734d5b84eb0dc06421b95a1a99ac3578dbf349bf09bc5575ff473",
+      "size_bytes": 11048
+    },
+    "selected_helper_seed": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-01/owner-01/helper-selection-seed.json",
+      "sha256": "ee293ced32fb8eb48c255fc8e1fa98f581de77b4c393f06c03c855a25095e93e",
+      "size_bytes": 2801
+    },
+    "startup_helper_check": {
+      "path": "artifacts/jev-runtime/decision3-local-execution-20261022-01/edge-01/known4/helper/helper-check-0000.json",
+      "sha256": "5b9bee427943a0ba7f7c324d88799b172716414c268c82ba9f4029ef7f2d629b",
+      "size_bytes": 3153
+    },
+    "execution_result": {
+      "path": "artifacts/jev-runtime/decision3-local-execution-20261022-01/edge-01/execution-result.json",
+      "sha256": "edb1a9845b7ccd01fa44417fa279b87070bd581b5950743f6357cdf53a31e29f",
+      "size_bytes": 526
+    },
+    "old_external_closure": {
+      "path": "artifacts/jev-runtime/decision3-local-execution-20261022-01/edge-01/known4/external-boundary-closure.json",
+      "sha256": "3bcd5cd77dd2074d6ee74701a459c7b302995b04b290bdf7ffb052c60a340fd1",
+      "size_bytes": 1919
+    },
+    "independent_terminal_closure": {
+      "path": "artifacts/jev-runtime/decision3-local-execution-20261022-01/edge-01/root-terminal-closure-01.json",
+      "sha256": "5d7bbb3ba644c30612954e9ddeedc52bb6a52a0486c0c23cf52eebb6e932199a",
+      "size_bytes": 2239
+    },
+    "zero_inference_schema_raw": {
+      "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-01/requests/5b690b013cbdd32d3adf6db876230c10/raw.json",
+      "sha256": "484c9a3f3de866e778ee898a0aec1ee3d573cd52e37b0c05b384a3111cf64b14",
+      "size_bytes": 832
+    },
+    "zero_inference_completion": {
+      "path": "artifacts/jev-runtime/decision3-q95-frozen-root-20261022-01/serve-01/requests/5b690b013cbdd32d3adf6db876230c10/outer-completion.json",
+      "sha256": "a180143b04e297f15886ab23a8c8e4311f0bd40a15cd637c9afc29894d638b1a",
+      "size_bytes": 552
+    },
+    "helper_owner_final": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-01/owner-01/owner-final.json",
+      "sha256": "3963129ac9a491cef423ad6210d7b9bfa43c444bcc090ebb1379aa79cdea2347",
+      "size_bytes": 15375
+    },
+    "helper_external_closure": {
+      "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-01/owner-01/external-boundary-closure.json",
+      "sha256": "5984dffc48fd53956e0926746b4fda3ab66c71a4ce4d962505ff1ff5f3cd82c8",
+      "size_bytes": 7655
+    }
+  },
+  "next": "Isolated timeout fix uses remaining existing3s budget; terminal reconciliation successor; retry fresh units/outputs after tests and independent review.",
+  "quality_zero_or_other_model_win_claimed": false,
+  "active_sources_or_old_evidence_rewritten": false,
+  "updated_at_utc": "2026-10-22T10:42:51.063448+00:00"
+}

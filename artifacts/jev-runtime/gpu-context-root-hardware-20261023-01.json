@@ -1,0 +1,19 @@
+{
+  "schema": "gpu-context-read-only-hardware-identity-v1",
+  "observed_at_utc": "2026-10-23T00:36:18.156150+00:00",
+  "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+  "elapsed_seconds": 0.022914362001756672,
+  "argv": [
+    "nvidia-smi",
+    "--query-gpu=uuid,name,driver_version,memory.total,memory.free",
+    "--format=csv,noheader,nounits"
+  ],
+  "exit_code": 0,
+  "stdout": "GPU-e3429caa-b057-cbe0-917d-d3b85b313be7, NVIDIA GB10, 580.178.04, [N/A], [N/A]\n",
+  "stderr": "",
+  "host_memory_bytes": {
+    "MemTotal": 130595864576,
+    "MemAvailable": 29337903104
+  },
+  "scope": "NVML-backed read-only identity and Linux memory read; no CUDA/Torch import, model access, allocator/context, process/service mutation or host reserve admission."
+}

@@ -1,0 +1,154 @@
+{
+  "schema": "revisit_materialized_profile_derivation_proof_v1",
+  "capture_adapter": {
+    "parent": {
+      "path": "scripts/jev_observation_profile_v8.py",
+      "sha256": "9d264939f805af7443e765906df4828534429872fc35563fa3a45ad383e60ba8",
+      "size_bytes": 22893
+    },
+    "adapter": {
+      "path": "scripts/jev_profile_tree_capture.py",
+      "sha256": "1cf4f46178ea7761209ba6abe87d708209d128b44e1fa41c658edcd7ff7c753d",
+      "size_bytes": 4137
+    },
+    "traversal_body_after_first_binding_line_byte_equal": true,
+    "body_sha256": "db9957acfedf3958b38bee5caaa4038f53a5f9e30092a910f129430fd0b350d8",
+    "traversal_body_AST_equal": true,
+    "delta": "Function signature takes explicit labels/limits/helpers; first hard-bound-label assignment becomes the original require/stat helper binding. Rest of function is byte exact. No old globals or function objects overwritten."
+  },
+  "runtime": {
+    "original7_to_new8": true,
+    "unchanged_parent_files": [
+      "jev_ultrafast/__init__.py",
+      "jev_ultrafast/browser.py",
+      "jev_ultrafast/questions.py",
+      "jev_ultrafast/static/fixture.html"
+    ],
+    "agent_model_delta_proof": {
+      "capacity_or_browser_qualified": false,
+      "core_bytes_unchanged": true,
+      "materialized_profile": false,
+      "package_modules": {
+        "agent.py": {
+          "sha256": "090d928b5acfd918dfdc5e3cc0c67453a151a9b397d37418fe71b43ede4bdb55",
+          "size_bytes": 8545
+        },
+        "model.py": {
+          "sha256": "d4437f50784e4bfb7905006c1852a7eb128a3b8a69d62d01daf43dcfab987002",
+          "size_bytes": 9250
+        },
+        "observation_revisit.py": {
+          "sha256": "80249cdd386619b9121160c94d3a071f586cfa40d75977a7e751138175a6b5d0",
+          "size_bytes": 10461
+        }
+      },
+      "profile": "guarded-observation-revisit-integration-experimental-v1",
+      "runtime_imported": false,
+      "transformations": [
+        {
+          "added_definitions": [
+            "Agent._observe"
+          ],
+          "blocks": [
+            {
+              "label": "copy-import",
+              "occurrences": 1
+            },
+            {
+              "label": "adjacent-core-import",
+              "occurrences": 1
+            },
+            {
+              "label": "per-agent-tracker",
+              "occurrences": 1
+            },
+            {
+              "label": "initial-observation",
+              "occurrences": 1
+            },
+            {
+              "label": "observation-wrapper",
+              "occurrences": 1
+            },
+            {
+              "label": "snapshot-owned-copy",
+              "occurrences": 1
+            },
+            {
+              "label": "later-observations",
+              "occurrences": 3
+            },
+            {
+              "label": "choose-explicit-metadata",
+              "occurrences": 1
+            }
+          ],
+          "byte_inverse_exact": true,
+          "changed_definitions": [
+            "Agent.__init__",
+            "Agent.command",
+            "Agent.snapshot"
+          ],
+          "module": "agent.py",
+          "unchanged_definitions": [
+            "Agent.__enter__",
+            "Agent.__exit__",
+            "Agent.close",
+            "Agent.run"
+          ],
+          "whole_inverse_AST_equal": true
+        },
+        {
+          "added_definitions": [],
+          "blocks": [
+            {
+              "label": "hint-copy-import",
+              "occurrences": 1
+            },
+            {
+              "label": "choose-keyword",
+              "occurrences": 1
+            },
+            {
+              "label": "state-hint-only-with-notes",
+              "occurrences": 1
+            }
+          ],
+          "byte_inverse_exact": true,
+          "changed_definitions": [
+            "choose"
+          ],
+          "module": "model.py",
+          "unchanged_definitions": [
+            "action_space",
+            "field_context",
+            "field_text",
+            "post_json",
+            "validate_choice"
+          ],
+          "whole_inverse_AST_equal": true
+        }
+      ]
+    },
+    "snapshot_profile_literal_inverse_byte_equal": true,
+    "new_core_sha256": "80249cdd386619b9121160c94d3a071f586cfa40d75977a7e751138175a6b5d0"
+  },
+  "profile_manifest": {
+    "path": "artifacts/jev-runtime/public-revisit-profile-20261020-01/profile-01/profile-manifest.json",
+    "sha256": "f3e65535836518581deab8487f6c20c837bcecfa03173db85f953cc02975ce88",
+    "size_bytes": 12379
+  },
+  "runner_manifests": [
+    {
+      "path": "artifacts/jev-runtime/public-revisit-profile-20261020-01/runner-known4-01/bundle-manifest.json",
+      "sha256": "5bee74baa01e0b436c2b55ae753aaf0db19539b615f5c47768bca2b71cd4eec5",
+      "size_bytes": 3267
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-profile-20261020-01/runner-public6-01/bundle-manifest.json",
+      "sha256": "5a7ba59eacb9cd5153b2ed9ffdd21bf75f7654281ce17fcbae9d9e92f178d455",
+      "size_bytes": 3393
+    }
+  ],
+  "actual_benchmark_runs": 0
+}

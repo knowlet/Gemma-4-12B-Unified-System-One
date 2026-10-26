@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import math
 import re
 import tempfile
 import threading
@@ -343,7 +344,7 @@ def _inventory(blob, split):
     return result
 
 
-def _training_evidence(root, receipt, provenance):
+def _training_evidence(root, receipt, provenance, *, inventory=_inventory):
     training = receipt.get("training", {})
     if (
         receipt.get("stage") != "complete"
@@ -411,7 +412,7 @@ def _training_evidence(root, receipt, provenance):
             blob = _record(root, prefix + "/" + label, entry)
             if label == "cases.jsonl":
                 cases = blob
-        if cases is None or _inventory(cases, split) != provenance[split]:
+        if cases is None or inventory(cases, split) != provenance[split]:
             raise ValueError("adapter provenance differs from actual frozen cases")
     if any(
         set(provenance["train"][key]) & set(provenance["development"][key])
@@ -419,6 +420,479 @@ def _training_evidence(root, receipt, provenance):
     ):
         raise ValueError("adapter training/development provenance overlaps")
     return identity
+
+
+def _native_encode(value):
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode()
+
+
+def _native_require(condition, message):
+    if not condition:
+        raise ValueError("Native action adapter: " + message)
+
+
+def _native_record(record, case, wire):
+    from .browser_action_prompt import NATIVE_FORMAT, native_prompt
+    from .evaluation.datasets import request_fingerprint
+    from .jev_generated import format_action_request
+
+    keys = {
+        "case_id",
+        "split",
+        "group_id",
+        "request_fingerprint",
+        "original_wire_sha256",
+        "normalized_wire_sha256",
+        "original_model_alias",
+        "inference_model_identity",
+        "normalization",
+        "policy",
+        "prompt",
+        "prompt_tokens",
+        "target_json",
+        "target_token_ids",
+        "native_stop_token_id",
+        "input_tokens",
+        "logical_input_tokens",
+        "logits_positions",
+        "processor_tensors",
+        "prompt_format",
+        "prompt_representation",
+    }
+    _native_require(type(record) is dict and set(record) == keys, "exact compiled record fields")
+    payload = copy.deepcopy(wire["payload"])
+    payload["model"] = "generated-actions-nf4"
+    user_text, source, labels, representation = format_action_request(
+        payload, "generated-actions-nf4", prompt_format=NATIVE_FORMAT
+    )
+    expected = {
+        "case_id": case.id,
+        "split": case.split,
+        "group_id": case.group_id or case.id,
+        "request_fingerprint": request_fingerprint(case.request),
+        "original_wire_sha256": _sha(_native_encode(wire["payload"])),
+        "normalized_wire_sha256": _sha(source),
+        "original_model_alias": wire["payload"]["model"],
+        "inference_model_identity": "generated-actions-nf4",
+        "normalization": "only payload.model replaced; all other original fields/order retained",
+        "policy": POLICY,
+        "prompt": native_prompt(user_text),
+        "target_json": _native_encode(wire["teacher_choice"]).decode(),
+        "native_stop_token_id": 106,
+        "prompt_format": NATIVE_FORMAT,
+        "prompt_representation": representation,
+    }
+    _native_require(
+        all(_native_encode(record[k]) == _native_encode(v) for k, v in expected.items()),
+        "compiled original wire, teacher, prefix or requested/effective format differs",
+    )
+    p, length = record["prompt_tokens"], record["input_tokens"]
+    _native_require(
+        type(p) is int
+        and p >= 1
+        and type(length) is int
+        and 1 <= length - p <= 32
+        and p + 32 <= 8192,
+        "unchanged native context/target bounds",
+    )
+    tensors = record["processor_tensors"]
+    _native_require(
+        type(tensors) is dict
+        and {"input_ids", "attention_mask"}
+        <= set(tensors)
+        <= {"input_ids", "attention_mask", "mm_token_type_ids", "token_type_ids", "position_ids"},
+        "complete native text tensors",
+    )
+    for name, values in tensors.items():
+        _native_require(
+            type(values) is list
+            and len(values) == 1
+            and type(values[0]) is list
+            and len(values[0]) == length
+            and all(type(v) in (int, bool) and v >= 0 for v in values[0]),
+            "native tensor shape/type: " + name,
+        )
+    ids, mask = tensors["input_ids"][0], tensors["attention_mask"][0]
+    _native_require(
+        all(type(v) is int for v in ids)
+        and all(v in (0, 1) for v in mask)
+        and all(mask[p - 1 :])
+        and type(record["logical_input_tokens"]) is int
+        and record["logical_input_tokens"] == sum(mask)
+        and not any(tensors.get("mm_token_type_ids", [[0]])[0]),
+        "native integer tokens and preserved text attention mask",
+    )
+    _native_require(
+        _native_encode(record["target_token_ids"]) == _native_encode(ids[p:])
+        and _native_encode(record["logits_positions"])
+        == _native_encode(list(range(p - 1, length - 1)))
+        and ids[-1] == 106
+        and 106 not in ids[p:-1],
+        "exact shifted targets and first native stop",
+    )
+    return labels
+
+
+def _native_cfg(row, record, labels):
+    from .jev_action_grammar import TARGET_HEADS
+
+    _native_require(
+        type(row) is dict
+        and set(row) == {"case_id", "plan", "inventory"}
+        and row["case_id"] == record["case_id"],
+        "CFG row identity/schema",
+    )
+    plan, inventory = row["plan"], row["inventory"]
+    _native_require(
+        type(inventory) is dict
+        and set(inventory) == {"labels", "canonical_actions", "encoded_actions", "telemetry"}
+        and _native_encode(inventory["labels"]) == _native_encode(labels),
+        "full ordered CFG labels",
+    )
+    canonical = [
+        _native_encode({"operation": operation, "target": target}).decode()
+        for operation in labels["operation"]
+        for target in (labels[TARGET_HEADS[operation]] if operation in TARGET_HEADS else [None])
+    ]
+    paths = inventory["encoded_actions"]
+    _native_require(
+        inventory["canonical_actions"] == canonical
+        and type(paths) is list
+        and len(paths) == len(canonical) <= 1205,
+        "every original canonical CFG action",
+    )
+    for path in paths:
+        _native_require(
+            type(path) is list
+            and 2 <= len(path) <= 32
+            and all(type(v) is int and v >= 0 for v in path)
+            and path[-1] == 106
+            and 106 not in path[:-1],
+            "recorded CFG token path",
+        )
+    _native_require(
+        len({tuple(path) for path in paths}) == len(paths) and sum(map(len, paths)) <= 38560,
+        "unique complete CFG inventory without pruning",
+    )
+    # Reconstruct the recorded trie. This verifies its whole persisted inventory,
+    # not an independent retokenization of native tokenizer output.
+    trie = {}
+    for path in paths:
+        node = trie
+        for token in path:
+            _native_require(None not in node, "CFG path cannot extend a completed action")
+            node = node.setdefault(token, {})
+        _native_require(not node, "CFG duplicate or prefix-conflicting path")
+        node[None] = True
+    targets = record["target_token_ids"]
+    _native_require(
+        targets in paths and canonical[paths.index(targets)] == record["target_json"],
+        "native teacher occupies its exact recorded legal path",
+    )
+    allowed, node = [], trie
+    for token in targets:
+        allowed.append(list(node))
+        node = node[token]
+    snapshot = {
+        "record": record,
+        "inputs": record["processor_tensors"],
+        "positions": record["logits_positions"],
+        "targets": targets,
+    }
+    expected = {
+        "schema_id": "native-cfg-action-loss-plan-v1",
+        "compiled_row_sha256": _sha(_native_encode(snapshot)),
+        "request_sha256": record["normalized_wire_sha256"],
+        "target_ids": targets,
+        "positions": record["logits_positions"],
+        "allowed_ids": allowed,
+        "decision_indices": [i for i, choices in enumerate(allowed) if len(choices) > 1],
+        "canonical_inventory_sha256": _sha(_native_encode(canonical)),
+        "encoded_inventory_sha256": _sha(_native_encode(paths)),
+        "legal_action_count": len(paths),
+        "scope": "all original legal candidates; teacher-forced native token branches",
+    }
+    _native_require(
+        _native_encode(plan) == _native_encode(expected), "CFG plan/snapshot/teacher binding"
+    )
+    telemetry = {
+        "constraint": "legal_action_token_trie_v1",
+        "legal_action_count": len(paths),
+        "canonical_inventory_sha256": expected["canonical_inventory_sha256"],
+        "encoded_token_lengths": list(map(len, paths)),
+        "encoded_tokens_total": sum(map(len, paths)),
+        "max_new_tokens": 32,
+        "max_legal_actions": 1205,
+        "max_encoded_tokens": 38560,
+        "eos_token_id": 106,
+        "prompt_length": record["prompt_tokens"],
+        "token_lengths_include_eos": True,
+    }
+    _native_require(
+        _native_encode(inventory["telemetry"]) == _native_encode(telemetry), "CFG telemetry"
+    )
+
+
+def _native_training(root, receipt, records):
+    training = receipt["training"]
+    steps = receipt.get("steps")
+    _native_require(
+        type(steps) is int
+        and 1 <= steps <= 280
+        and type(receipt.get("seed")) is int
+        and type(receipt.get("learning_rate")) in (int, float)
+        and math.isfinite(receipt["learning_rate"])
+        and receipt["learning_rate"] > 0
+        and type(training.get("completed_updates")) is int
+        and training["completed_updates"] == steps
+        and type(training.get("development_examples")) is int
+        and training["development_examples"] == 37
+        and type(training.get("development_updates")) is int
+        and training["development_updates"] == 0,
+        "bounded actual updates and zero development updates",
+    )
+    _native_require(
+        _native_encode(_json(_read(root, "training.json"))) == _native_encode(training),
+        "complete native training evidence",
+    )
+    updates = [_json(line) for line in _read(root, "updates.jsonl").splitlines() if line.strip()]
+    development = [
+        _json(line) for line in _read(root, "development.jsonl").splitlines() if line.strip()
+    ]
+    _native_require(
+        len(updates) == steps
+        and len(development) == 37
+        and [r["case_id"] for r in development] == list(records["development"]),
+        "complete ordered actual update/development ledgers",
+    )
+    calls = training.get("trace", {}).get("backbone_calls", [])
+    _native_require(
+        len(calls) == steps + 37, "one real backbone forward per update/development row"
+    )
+    physical = logical = projections = 0
+    for index, (split, row) in enumerate(
+        [*(("train", r) for r in updates), *(("development", r) for r in development)]
+    ):
+        _native_require(row["case_id"] in records[split], "actual ledger row belongs to its split")
+        record = records[split][row["case_id"]]
+        _native_require(
+            type(row.get("loss")) in (int, float)
+            and math.isfinite(row["loss"])
+            and row["loss"] >= 0
+            and type(row.get("correct_target_tokens")) is int
+            and 0 <= row["correct_target_tokens"] <= len(record["target_token_ids"])
+            and type(row.get("teacher_forced_exact_tokens")) is bool
+            and row["teacher_forced_exact_tokens"]
+            == (row["correct_target_tokens"] == len(record["target_token_ids"]))
+            and row["target_tokens"] == len(record["target_token_ids"])
+            and row["input_tokens"] == record["input_tokens"]
+            and row["logical_input_tokens"] == record["logical_input_tokens"],
+            "finite native loss and complete forward positions",
+        )
+        step = index + 1 if split == "train" else index - steps + 1
+        expected = {
+            "split": split,
+            "step": step,
+            "phase": "forward" if split == "train" else "evaluation",
+            "case_id": row["case_id"],
+            "input_shape": [1, record["input_tokens"]],
+        }
+        _native_require(
+            _native_encode(calls[index]) == _native_encode(expected),
+            "actual backbone call identity",
+        )
+        if split == "train":
+            _native_require(
+                row["step"] == step
+                and row["forward_batch_size"] == 1
+                and row["backbone_forward_calls"] == 1
+                and type(row["gradient_norm"]) in (int, float)
+                and math.isfinite(row["gradient_norm"])
+                and row["gradient_norm"] >= 0,
+                "finite actual q/v update gradient and step",
+            )
+        physical += record["input_tokens"]
+        logical += record["logical_input_tokens"]
+        projections += len(record["target_token_ids"])
+    if steps == 142:
+        _native_require(
+            {r["case_id"] for r in updates} == set(records["train"]),
+            "complete one-pass training IDs",
+        )
+    execution = training.get("execution", {})
+    _native_require(
+        _native_encode(
+            {
+                k: execution.get(k)
+                for k in (
+                    "backbone_forward_calls",
+                    "max_forward_batch_size",
+                    "physical_input_positions",
+                    "logical_input_tokens",
+                    "target_projection_positions",
+                )
+            }
+        )
+        == _native_encode(
+            {
+                "backbone_forward_calls": steps + 37,
+                "max_forward_batch_size": 1,
+                "physical_input_positions": physical,
+                "logical_input_tokens": logical,
+                "target_projection_positions": projections,
+            }
+        ),
+        "real forward/token ledger totals",
+    )
+
+
+def _native_resources(root, receipt):
+    """Replay only the explicitly selected resident profile, never historical gates."""
+    label = "resource-gates.jsonl"
+    if "resource_profile" not in receipt:
+        _native_require(
+            not {"resource_evidence", "resource_components"} & set(receipt),
+            "resource evidence requires its profile",
+        )
+        if (root / label).exists() or (root / label).is_symlink():
+            for line in _read(root, label).splitlines():
+                row = _json(line) if line.strip() else None
+                _native_require(
+                    not isinstance(row, dict)
+                    or not (
+                        row.get("schema_id") == "jev-native-resource-gate-gx10-uma-v1"
+                        or row.get("profile") == "gx10-uma-native-40gib-v1"
+                    ),
+                    "resident resource rows require an explicit profile",
+                )
+        return None
+
+    from . import browser_native_resources as resources
+
+    profile, evidence = receipt["resource_profile"], receipt.get("resource_evidence")
+    _native_require(
+        type(profile) is dict
+        and set(profile) == {"name", "expected_unit", "expected_boot_id"}
+        and profile["name"] == resources.PROFILE
+        and type(evidence) is dict
+        and set(evidence) == {"path", "sha256", "size_bytes"}
+        and evidence["path"] == label
+        and type(receipt.get("resource_components")) is dict,
+        "explicit resident resource profile and sealed evidence record",
+    )
+    _native_require(
+        "s1/browser_native_resources.py" in receipt["source_manifest"]["files"],
+        "captured resident resource validator source",
+    )
+    resources.verify_components(root / "inputs/resource-components", receipt["resource_components"])
+    resources.validate_evidence(
+        _record(root, label, evidence),
+        expected_unit=profile["expected_unit"],
+        expected_boot_id=profile["expected_boot_id"],
+        steps=receipt["steps"],
+        parent_present="initial_action_adapter" in receipt,
+    )
+    return copy.deepcopy(profile)
+
+
+def _native_evidence(root, receipt, manifest):
+    from . import browser_native_action_data as data_api
+    from .browser_action_prompt import NATIVE_FORMAT, NATIVE_KIND, expected_format
+
+    expected_format(manifest, NATIVE_FORMAT)
+    _native_require(
+        receipt.get("schema_version") == 2
+        and type(receipt["schema_version"]) is int
+        and receipt.get("kind") == NATIVE_KIND
+        and receipt.get("training_objective") == "full-vocabulary-action-token-CE"
+        and _native_encode(receipt.get("prompt_contract"))
+        == _native_encode(manifest["prompt_contract"])
+        and _native_encode(receipt.get("native_data")) == _native_encode(manifest["native_data"])
+        and receipt.get("qualified", False) is False
+        and receipt.get("task_quality_attested", False) is False
+        and receipt.get("task_score") is None,
+        "distinct unqualified V2 receipt/profile/data contract",
+    )
+    data = data_api.verify_frozen_historical_data(
+        root / "inputs/historical", manifest["native_data"]
+    )
+    _native_require(
+        data["counts"] == {"train": 142, "development": 37, "total": 179},
+        "all179 historical inputs",
+    )
+    _training_evidence(root, receipt, manifest["provenance"], inventory=data_api.inventory)
+    required_sources = {
+        "s1/browser_action_adapter.py",
+        "s1/browser_action_prompt.py",
+        "s1/browser_native_action_data.py",
+        "scripts/jev_browser_fit_native_actions.py",
+        "scripts/jev_browser_fit_actions.py",
+        "scripts/jev_cfg_action_loss.py",
+        manifest["native_data"]["component"]["path"],
+    }
+    _native_require(
+        required_sources <= set(receipt["source_manifest"]["files"]),
+        "captured native producer, compiler, data component and verifier sources",
+    )
+    component = manifest["native_data"]["component"]
+    captured_component = receipt["source_manifest"]["files"][component["path"]]
+    _native_require(
+        all(captured_component.get(k) == component[k] for k in ("sha256", "size_bytes")),
+        "captured immutable historical reader identity",
+    )
+    for label, pin in manifest["prompt_contract"]["sources"].items():
+        source = receipt["source_manifest"]["files"].get(label, {})
+        _native_require(
+            all(source.get(k) == v for k, v in pin.items()),
+            "captured formatter/codec contract source",
+        )
+    records = {}
+    for split in ("train", "development"):
+        blobs = data_api.split_blobs(data, split)
+        _native_require(
+            set(blobs) == {"cases.jsonl", "wire_requests.jsonl"}, "exact native split projection"
+        )
+        for label, blob in blobs.items():
+            _native_require(
+                _read(root, "inputs/" + split + "/" + label) == blob,
+                "frozen split replays exact historical teachers/wires",
+            )
+        _native_require(
+            set(receipt["input_manifests"][split]["files"]) == set(blobs),
+            "native split has only its two declared files",
+        )
+        compiled = _read(root, "compiled-" + split + ".jsonl")
+        rows = [_json(line) for line in compiled.splitlines() if line.strip()]
+        cfg_blob = _read(root, "cfg-plans-" + split + ".jsonl")
+        cfg = [_json(line) for line in cfg_blob.splitlines() if line.strip()]
+        cases_wires = [
+            (case, wire)
+            for case, wire in zip(data["cases"], data["wires"], strict=True)
+            if case.split == split
+        ]
+        summary, cfg_summary = receipt["compiled"][split], receipt["cfg_compiled"][split]
+        _native_require(
+            len(rows)
+            == len(cfg)
+            == len(cases_wires)
+            == summary["examples"]
+            == cfg_summary["examples"]
+            and _sha(compiled) == summary["sha256"]
+            and _sha(cfg_blob) == cfg_summary["sha256"],
+            "complete SHA-bound compiled native/CFG rows",
+        )
+        records[split] = {}
+        for record, cfg_row, (case, wire) in zip(rows, cfg, cases_wires, strict=True):
+            labels = _native_record(record, case, wire)
+            _native_cfg(cfg_row, record, labels)
+            records[split][case.id] = record
+        _native_require(
+            summary["prompt_tokens"] == sum(r["prompt_tokens"] for r in rows)
+            and summary["target_tokens"] == sum(len(r["target_token_ids"]) for r in rows),
+            "compiled token totals",
+        )
+    _native_training(root, receipt, records)
+    return _native_resources(root, receipt)
 
 
 def _config(config):
@@ -560,6 +1034,16 @@ class VerifiedActionAdapter:
             "train_cases": len(m["provenance"]["train"]["ids"]),
             "development_cases": len(m["provenance"]["development"]["ids"]),
             "source_scope": "development_only",
+            **(
+                {
+                    "prompt_format": "shared-elements-v2",
+                    "prompt_contract": copy.deepcopy(m["prompt_contract"]),
+                    "qualified": False,
+                    "task_score": None,
+                }
+                if m["kind"] == "jev_native_action_lora_v2"
+                else {}
+            ),
             **{k: v for k, v in self.tensor_metadata.items() if k != "tensor_shapes"},
         }
 
@@ -703,7 +1187,9 @@ def _verify_initial_parent(root, receipt, manifest, *, depth, seen):
     }
 
 
-def _verify_action_adapter(path, *, model_id, revision, quantization, depth=0, seen=()):
+def _verify_action_adapter(
+    path, *, model_id, revision, quantization, depth=0, seen=(), expected_prompt_format=None
+):
     """Read/verify local bytes before any backbone is loaded; never uses the Hub."""
     configured = Path(path)
     if configured.is_symlink() or not configured.is_dir():
@@ -711,9 +1197,10 @@ def _verify_action_adapter(path, *, model_id, revision, quantization, depth=0, s
     directory = configured.resolve()
     manifest_blob = _read(directory, "manifest.json", limit=4_000_000)
     m = _json(manifest_blob)
+    native = isinstance(m, dict) and m.get("kind") == "jev_native_action_lora_v2"
     pins = {
-        "schema_version": 1,
-        "kind": "jev_action_lora_v1",
+        "schema_version": 2 if native else 1,
+        "kind": "jev_native_action_lora_v2" if native else "jev_action_lora_v1",
         "base_model_id": BASE_ID,
         "base_revision": BASE_REVISION,
         "training_quantization": "none",
@@ -726,11 +1213,17 @@ def _verify_action_adapter(path, *, model_id, revision, quantization, depth=0, s
     }
     if (
         not isinstance(m, dict)
-        or set(m) != _KEYS
+        or set(m) != (_KEYS | {"prompt_contract", "native_data"} if native else _KEYS)
         or type(m["schema_version"]) is not int
         or any(m.get(k) != v for k, v in pins.items())
     ):
         raise ValueError("action adapter manifest schema/checkpoint/policy pin mismatch")
+    if native or expected_prompt_format is not None:
+        from .browser_action_prompt import NATIVE_FORMAT, expected_format
+
+        expected_format(
+            m, NATIVE_FORMAT if expected_prompt_format is None else expected_prompt_format
+        )
     if (model_id, revision, quantization) != (BASE_ID, BASE_REVISION, "nf4"):
         raise ValueError("action adapter requires the pinned NF4 deployment checkpoint")
     if (
@@ -771,21 +1264,47 @@ def _verify_action_adapter(path, *, model_id, revision, quantization, depth=0, s
         )
     ):
         raise ValueError("adapter training receipt checkpoint/policy pins differ from manifest")
-    _training_evidence(directory.parent, receipt, m["provenance"])
+    resource_profile = None
+    if native:
+        resource_profile = _native_evidence(directory.parent, receipt, m)
+    else:
+        _training_evidence(directory.parent, receipt, m["provenance"])
     parent = _verify_initial_parent(
         directory.parent, receipt, m, depth=depth, seen=(*seen, _sha(receipt_blob))
     )
     tensor_metadata = _tensor_bytes(files["adapter_model.safetensors"])
+    if native:
+        training = receipt["training"]
+        _native_require(
+            tensor_metadata["stored_dtypes"] == ["torch.float32"]
+            and training["trainable_parameters"] == tensor_metadata["parameters"]
+            and {name.replace(".default.", ".") for name in training["trainable_names"]}
+            == set(tensor_metadata["tensor_shapes"]),
+            "exact finite FP32 q/v trainable tensor inventory",
+        )
+        if resource_profile is not None:
+            tensor_metadata["training_resource_profile"] = resource_profile
     tensor_metadata.update(parent)
     return VerifiedActionAdapter(
         copy.deepcopy(m), _sha(manifest_blob), _sha(receipt_blob), files, tensor_metadata
     )
 
 
-def verify_action_adapter(path, *, model_id=BASE_ID, revision=BASE_REVISION, quantization="nf4"):
+def verify_action_adapter(
+    path,
+    *,
+    model_id=BASE_ID,
+    revision=BASE_REVISION,
+    quantization="nf4",
+    expected_prompt_format=None,
+):
     try:
         return _verify_action_adapter(
-            path, model_id=model_id, revision=revision, quantization=quantization
+            path,
+            model_id=model_id,
+            revision=revision,
+            quantization=quantization,
+            expected_prompt_format=expected_prompt_format,
         )
     except (TypeError, KeyError, AttributeError, UnicodeError) as exc:
         raise ValueError("malformed generated-action adapter artifact") from exc

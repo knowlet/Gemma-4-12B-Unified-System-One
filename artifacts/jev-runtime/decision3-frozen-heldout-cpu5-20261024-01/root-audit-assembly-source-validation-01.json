@@ -1,0 +1,52 @@
+{
+  "status": "SOURCE_PASS_ACTUAL_DEV_AUDIT_AND_ASSEMBLY_PENDING",
+  "results": [
+    {
+      "name": "ruff",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "name": "format_check",
+      "exit_code": 0,
+      "stdout": "4 files already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "files": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/root-closed-dev-chunk-audit-held.py",
+      "sha256": "dcbef3e1f9c4231c0fbbd5638d90f4c8033f072aad6cc532ecb03b9e68078a8a",
+      "size_bytes": 65084
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/root-closed-dev-chunk-audit-01.py",
+      "sha256": "d12451273d0eceb7e7b7b0c879c1ae4ad421389bcc5db055ea5eb2cc8b1e9f82",
+      "size_bytes": 65085
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/test_root_dev_audit.py",
+      "sha256": "32a5fa3bc7d275fa4509c04f4445ebcccf7f6d681f30ddf4412a50fe74bcb147",
+      "size_bytes": 3953
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-frozen-heldout-cpu5-20261024-01/root-assemble-dev-metrics-bundle-01.py",
+      "sha256": "0652a9e1426807b935592a8a39a97107b014fd7210017cae0c63df663085343c",
+      "size_bytes": 15266
+    }
+  ],
+  "audit_release_AST_change": "SOURCE_ONLY False only",
+  "audit_corruption_fakes": {
+    "count": 4,
+    "status": "passed",
+    "observed_stderr": "Ran 4 tests in 0.122s; OK",
+    "CPU0": true,
+    "CPU_seconds": 30,
+    "AS_bytes": 536870912
+  },
+  "preliminary_lint_refusal": "Assembler comprehension variable l renamed label_row before execution; auditor logic/test/released source unchanged.",
+  "source_peer_actual_read": false,
+  "new_NN_jobs": 0,
+  "training_eligible": false
+}

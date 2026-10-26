@@ -1,0 +1,141 @@
+--- frozen/launch_browser.py
++++ successor/launch_browser.py
+@@ -14,7 +14,15 @@
+ PARENT_SHA = "44eadeb19d907dc6084e31e5e86aa81bb73f514365ee3722c0baaf274a5fd842"
+ PROFILE = "jev-current-nf4-v7-q95-browser-owned-v1"
+ DRIVER = (HERE / "control_driver.py").relative_to(ROOT).as_posix()
+-OBSERVER = "artifacts/jev-runtime/comfy-observer-zombie-exit-20261022-01/comfy_observer.py"
++OBSERVER = "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py"
++OBSERVER_AUTHORITY = (
++    "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json"
++)
++REUSED_SOURCES = {
++    "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/control_driver.py": "00295d7110522dd346320e598298f923bda56fa4a73dba427035371801c73543",
++    "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/policy_boundary.py": "4ed323e24cff140caef36c6557fe3286154e1c11b92f39536615eab6f1d3a8ef",
++    "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/browser_entry.py": "ea0f70680691e1467523fb3a0a8fe34f661d8bb3e2076d00dcecd8a0488aa28d",
++}
+ Q95_SHA = "d33bfcac49f90c47b626c3915baf3d5fcbfb2e32522bfaccbbfec59dce35d8db"
+ Q95_MANIFESTS = {
+     "qualification": Q95_SHA,
+@@ -125,10 +133,20 @@
+         HELPER_PARENT,
+         *(
+             (HERE / name).relative_to(ROOT).as_posix()
+-            for name in ("gemma_helper.py", "policy_boundary.py")
++            for name in ("gemma_helper.py", "policy_boundary.py", "checked_source.py")
+         ),
+     }
+-    owner.require(required <= labels, "Complete explicit source composition pins")
++    owner.require(
++        required | set(REUSED_SOURCES) | {OBSERVER_AUTHORITY} <= labels,
++        "Complete explicit source composition pins",
++    )
++    owner.require(
++        all(
++            any(row["path"] == path and row["sha256"] == sha for row in plan["sources"])
++            for path, sha in REUSED_SOURCES.items()
++        ),
++        "Exact selected reused composition bytes",
++    )
+     _, seed = descriptor(plan)
+     owner.require(
+         all(seed[key] in plan["sources"] for key in ("qualification", "execution", "runtime")),
+@@ -150,7 +168,9 @@
+         and control["primary_error"] is None
+         and control["selection_sha256"] == plan["helper_selection"]["sha256"]
+         and control["helper_binding"] == seed["binding"]
+-        and control["native_receipt"] == owner.pin(output / "receipt.json"),
++        # Native pin has sha256,size_bytes; the owner also reports path.
++        and control["native_receipt"]
++        == {k: v for k, v in owner.pin(output / "receipt.json").items() if k != "path"},
+         "Complete source-bound same-helper control receipt",
+     )
+     owner.require(
+--- frozen/gemma_helper.py
++++ successor/gemma_helper.py
+@@ -128,7 +128,7 @@
+         p.exact_fields(co, "profile unit cgroup memory_max_bytes adapter_manifest")
+         p.need(
+             co["profile"] == NATIVE_PROFILE
+-            and co["unit"] == "jev-current-nf4-v2-q95-20261022-01.service"
++            and co["unit"] == "jev-current-nf4-v2-q95-20261022-02.service"
+             and co["memory_max_bytes"] == 40 * p.GIB,
+             "EXPLICIT_ORIGINAL_GEMMA_NATIVE40_PROFILE",
+         )
+--- frozen/prepare_control.py
++++ successor/prepare_control.py
+@@ -16,7 +16,10 @@
+     ROOT / "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/selected-plan.json"
+ )
+ BASE_SHA = "73bff770e242b93d5b7b53d24ef933926bd63897a4707d6d2e2a0f06f4438b6d"
+-OBSERVER = "artifacts/jev-runtime/comfy-observer-zombie-exit-20261022-01/comfy_observer.py"
++OBSERVER = "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py"
++OBSERVER_AUTHORITY = (
++    "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json"
++)
+ PARENT = "artifacts/jev-runtime/decision3-local-helper-budget-20261022-01/live_helper.py"
+ SOURCE_NAMES = (
+     "launch_browser.py",
+@@ -25,6 +28,7 @@
+     "gemma_helper.py",
+     "policy_boundary.py",
+     "prepare_control.py",
++    "checked_source.py",
+ )
+ 
+ 
+@@ -88,11 +92,11 @@
+     )
+     output, descriptor_path = HERE / "launch-plan-01.json", HERE / "helper-selection-01.json"
+     need(
+-        not output.exists() and not descriptor_path.exists() and not (HERE / "v2-q95-01").exists(),
++        not output.exists() and not descriptor_path.exists() and not (HERE / "v2-q95-02").exists(),
+         "Fresh plan, descriptor and actor outputs",
+     )
+     plan = copy.deepcopy(old)
+-    unit = "jev-current-nf4-v2-q95-20261022-01.service"
++    unit = "jev-current-nf4-v2-q95-20261022-02.service"
+     cgroup = f"/user.slice/user-{os.getuid()}.slice/user@{os.getuid()}.service/app.slice/{unit}"
+     adapter = next(r for r in old["sources"] if r["path"] == old["adapter"] + "/manifest.json")
+     descriptor = {
+@@ -116,6 +120,7 @@
+     new = [
+         *(ref(HERE / name) for name in SOURCE_NAMES),
+         ref(ROOT / OBSERVER),
++        ref(ROOT / OBSERVER_AUTHORITY),
+         ref(ROOT / PARENT),
+         ref(seed_path),
+         descriptor_ref,
+@@ -134,6 +139,16 @@
+             "Confined saved Q95 source",
+         )
+         new.append({"path": path.relative_to(ROOT).as_posix(), **expected})
++    new.extend(
++        ref(ROOT / path)
++        for path in (
++            "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/control_driver.py",
++            "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/policy_boundary.py",
++            "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/browser_entry.py",
++            "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/launch_browser.py",
++            "artifacts/jev-runtime/native-v2-q95-browser-control-20261022-01/gemma_helper.py",
++        )
++    )
+     for row in new:
+         need(
+             row["path"] not in refs or refs[row["path"]] == row,
+@@ -143,12 +158,12 @@
+     plan.update(
+         schema_id="jev-current-nf4-v7-q95-browser-owned-v1",
+         arm="v2-q95",
+-        attempt="01",
++        attempt="02",
+         unit=unit,
+         cgroup=cgroup,
+         nonce="jev-nf4-browser-" + secrets.token_hex(16),
+-        run_directory=(HERE / "v2-q95-01").relative_to(ROOT).as_posix(),
+-        output=(HERE / "v2-q95-01/browser").relative_to(ROOT).as_posix(),
++        run_directory=(HERE / "v2-q95-02").relative_to(ROOT).as_posix(),
++        output=(HERE / "v2-q95-02/browser").relative_to(ROOT).as_posix(),
+         sources=[refs[k] for k in sorted(refs)],
+         comfy_observer=ref(ROOT / OBSERVER),
+         helper_selection=descriptor_ref,

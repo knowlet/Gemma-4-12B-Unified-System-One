@@ -1,0 +1,162 @@
+{
+  "schema": "independent-cpu4-3g-original10800-owner-source-review-v1",
+  "created_at_utc": "2026-10-23T11:02:00.697635+00:00",
+  "reviewer": "/root/cpu_followup_review",
+  "result": "PASS_WITH_LIMITS_SOURCE_ONLY_NO_ACTUAL_ADMISSION",
+  "selected_freeze": {
+    "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/source-freeze.json",
+    "sha256": "59bad47f1d95485ca177cbf863a8bbb6919462c47ca3419a93004bf8010ad829",
+    "size_bytes": 1933
+  },
+  "controller_sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e",
+  "scope": {
+    "named_frozen_small_source_metadata_only": true,
+    "hash_AST_and_diff_without_import": true,
+    "active_actual03_read_or_written": false,
+    "model_tensor_tokenizer_headers_or_payload_read": false,
+    "runtime_framework_model_test_unit_observer_service_or_process_probe": false,
+    "network": false,
+    "git": false,
+    "frozen_source_changes": false
+  },
+  "checks": [
+    {
+      "id": "exact_freeze_and_successor",
+      "passed": true,
+      "evidence": "All8 source-freeze selected files plus freeze hash/size match. Controller reconstructed byte-for-byte from reviewed owner04 by exactly4 authorized single-line replacements; no other controller logic changed. Unit/profile are distinct; predecessor controller/test/review bytes remain pinned."
+    },
+    {
+      "id": "exact_patch",
+      "passed": true,
+      "evidence": [
+        {
+          "file": "controller.py",
+          "hunks_exactly_match_saved_patch": true,
+          "deleted_lines": 4,
+          "added_lines": 4
+        },
+        {
+          "file": "test_controller.py",
+          "hunks_exactly_match_saved_patch": true,
+          "deleted_lines": 7,
+          "added_lines": 8
+        }
+      ]
+    },
+    {
+      "id": "original_runtime_authority",
+      "passed": true,
+      "evidence": "Original boundary SHA7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5 already accepts exactly30/7200/10800 integer seconds and maps10800 to3h. No boundary source expansion; adjacent10799/10801 and bool remain refused by exact controller type/allowlist."
+    },
+    {
+      "id": "memory_reserve_unchanged",
+      "passed": true,
+      "evidence": "Fixed MEMORY_MAX_BYTES==INITIAL_HOST_EXTRA_BYTES==3221225472 (3GiB) with early mismatch refusal. For original MemTotal130595864576, R26119172916 and initial R+entire3GiB29340398388; runtimeR remains unchanged. Selection and manager/kernel memory/swap checks unchanged. Higher duration is not a higher memory budget."
+    },
+    {
+      "id": "cpu_and_file_limits_unchanged",
+      "passed": true,
+      "evidence": "CPU16-19, manager4s quota / kernel4*period, CPUaffinity readbacks, task/evidence retention, swap0, RLIMIT_CORE0/NOFILE512 and FILE_SIZE_MAX268435456 (256MiB) remain identical owner04 logic. Owner05 cannot be used for988MB helper acquisition; owner02 remains separate."
+    },
+    {
+      "id": "admission_deadline_and_closure_unchanged",
+      "passed": true,
+      "evidence": "Original selected boot/nonce/unit/invocation identity, host read-onlyComfy gate, source checks, command deadline runtime-7, actor hold, external exceptBaseException/finally finalize, original authenticated close and supplemental evidence behavior all retain byte-identical owner04 logic.10800 doesnot alter smoke120/20, benchmark per-call180, browserwhole20, or select a whole10000 campaign automatically."
+    },
+    {
+      "id": "original_authority_flags_unchanged",
+      "passed": true,
+      "evidence": "Original observer SHAfd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45 and authority SHAa2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727 remain unchanged. Original no_escape_enforced, whole_tree_exit_confirmed, continuation_authorized, model_qualified false flags are not promoted; controller still records whole_tree_exit_confirmedFalse. No quality/model/goal completion inheritance."
+    },
+    {
+      "id": "tests_validation_and_docs",
+      "passed": true,
+      "evidence": "Static AST parse of controller+tests succeeded;36 test functions counted. Author-saved static-validation records36tests exit0/0.106s, Ruffexit0, AST2 and dryexit0 with exact10800 choice and3GiB policy. Testdelta includes exact10800 acceptance via originalboundary and commandspec,10799/10801/bool/filelimit rejection. Reviewer didnot execute/import tests/controller/observer/model or reproduce author runtime claims. Scoped attr only*.patch whitespace=-blank-at-eol."
+    }
+  ],
+  "limits": [
+    "Source readiness alone is not actual10800 unit admission or complete model/runtime qualification. A future exact root command spec and actor/model-specific memory/runtime guards need separate frozen selection review.",
+    "Fresh source preparation may proceed while current Edge batch1 runs, but new modeljobs must wait for its authenticated external closure. No active reset/restart/deadline/source change is authorized by this review.",
+    "A candidate10000-second campaign leaves nominal800seconds under10800; actual total duration, resource fit and all1479call completion remain unmeasured. Preserve complete original benchmark inputs/scorers/freshcache and use a successful real nativebatch4 smoke prerequisite.",
+    "Sampled host/mask/resource evidence cannot establish continuous wholehostR or universal thread confinement. Original noescape authority limits remain."
+  ],
+  "source_refs": [
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/source-freeze.json",
+      "sha256": "59bad47f1d95485ca177cbf863a8bbb6919462c47ca3419a93004bf8010ad829",
+      "size_bytes": 1933
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+      "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e",
+      "size_bytes": 40319
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/test_controller.py",
+      "sha256": "907e95b22954597fedae84e4cfcd378167cc96e77f7f0c2dd91a09a0cf88f05e",
+      "size_bytes": 32873
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py.patch",
+      "sha256": "ecdd97916f0034e99207b5a9bfb2e2d05e69ab573ce7c1d49ac354d763abe9f6",
+      "size_bytes": 1462
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/test_controller.py.patch",
+      "sha256": "780e93567666b0cbfb762439ca41e53454705aff6ea07418a7a001dc00fcfbbb",
+      "size_bytes": 2041
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/.gitattributes",
+      "sha256": "c6e498a4062e317a2c97b82484cda8791e82be5d8c5779e8cf3d09f9a4b3c249",
+      "size_bytes": 33
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/research-decision.json",
+      "sha256": "e84feaeaf6fbab8c8e35b65071c258332abbd4e580654c1533f40dfb1673c9f1",
+      "size_bytes": 1278
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/README.md",
+      "sha256": "48e2b05bf21d890fd1cfe704a8e6aa6f7f331d311fc827006b59cd8567663083",
+      "size_bytes": 2265
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/static-validation.json",
+      "sha256": "f6eaccc6e8069e124eae8e84db5e6692bb094a4977935c23a849b73a09937f31",
+      "size_bytes": 900
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/controller.py",
+      "sha256": "fa5d41a64d32da7294c79fed5e62139095775ac7fd0f25bf32a3b93f8f642998",
+      "size_bytes": 40295
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/test_controller.py",
+      "sha256": "d5676720e4a38eb7fdef4136e961c73c3aebbafb872b26786aca457aa5226d49",
+      "size_bytes": 32804
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-04/independent-source-review.json",
+      "sha256": "8b20ccaf94bf5a154bdc5a70032d99f29840b99618b706ac376fcb55c7a716a9",
+      "size_bytes": 7248
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+      "size_bytes": 38483
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    }
+  ],
+  "all_refs_unchanged_before_after_review": true,
+  "review_writing_status": "ALL STOPPED after this independent receipt; no actual unit or model execution by reviewer."
+}

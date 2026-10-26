@@ -1,0 +1,501 @@
+{
+  "schema": "GX10_cache_residency_research_v1",
+  "created_unix": 1792488939.5877159,
+  "status": "RESEARCH_COMPLETE_SOURCE_ONLY_IMPLEMENTATION_NEXT_NO_MEASUREMENT",
+  "git_HEAD": "11551ad",
+  "scope": "Closed owned JSON/source reads and public primary documentation; no framework/model/GPU/browser/tokenizer/file-cache advice/signals/global changes. Current checkpoint metadata only.",
+  "closed_inputs": [
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/root-actual12-exit-review-01.json",
+      "sha256": "e131b91708bdf78d0b66292160ac2a4b749b860597c71fc8f89e05ecfa197bd7",
+      "size_bytes": 20168
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/root-actual13-exit-review-01.json",
+      "sha256": "d7352e4b11e477c9c376facb3b5f40a380fec18a8bcbbabf36279e67c87ebf86",
+      "size_bytes": 6141
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/root-actual12-fragmentation-investigation-01.json",
+      "sha256": "e13a8ad3066f87f81bb94ba5a26f47e9de8f06b19bec4d98226dbb2d5eb11074",
+      "size_bytes": 9192
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/actual-12/A/phases.jsonl",
+      "sha256": "72d6efcb22e4039652caeec0973c26d0fc205b180e85ff5640628852a1b62673",
+      "size_bytes": 378867
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/actual-12/C/phases.jsonl",
+      "sha256": "e82acdf8da744ff6a5fd2f8455c2f42f1be12ad267377585dc832f70736371bc",
+      "size_bytes": 259333
+    },
+    {
+      "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/actual-13/A/phases.jsonl",
+      "sha256": "3dab0a1813ead746226fa5b847ecef2c139366656e492826ce4075468d9634d8",
+      "size_bytes": 185206
+    }
+  ],
+  "current_read_only_observation": {
+    "path": "artifacts/jev-runtime/GX10-host-cache-and-device-observation-20261020-01.json",
+    "sha256": "f44520e28a782b7fa0e774052027034543ab09d5d47a8322fa0742b321c089ca",
+    "size_bytes": 1694
+  },
+  "closed_phase_extraction": [
+    {
+      "arm": "actual-12/A",
+      "line": 2,
+      "event": "intent",
+      "phase": "full-original-checkpoint-hash",
+      "sequence": 0,
+      "host_MemAvailable": 121265303552,
+      "cuda_free": 73467334656,
+      "torch_allocated": 0,
+      "torch_reserved": 0,
+      "inactive_split": 0,
+      "host_minus_cuda_free": 47797968896,
+      "cgroup_current": 893554688,
+      "cgroup_file": 126238720
+    },
+    {
+      "arm": "actual-12/A",
+      "line": 3,
+      "event": "complete",
+      "phase": "full-original-checkpoint-hash",
+      "sequence": 0,
+      "host_MemAvailable": 121248473088,
+      "cuda_free": 73449021440,
+      "torch_allocated": 0,
+      "torch_reserved": 0,
+      "inactive_split": 0,
+      "host_minus_cuda_free": 47799451648,
+      "cgroup_current": 892796928,
+      "cgroup_file": 126242816
+    },
+    {
+      "arm": "actual-12/A",
+      "line": 5,
+      "event": "intent",
+      "phase": "full-original-constructor",
+      "sequence": 1,
+      "host_MemAvailable": 121248473088,
+      "cuda_free": 73449021440,
+      "torch_allocated": 0,
+      "torch_reserved": 0,
+      "inactive_split": 0,
+      "host_minus_cuda_free": 47799451648,
+      "cgroup_current": 892792832,
+      "cgroup_file": 126242816
+    },
+    {
+      "arm": "actual-12/A",
+      "line": 6,
+      "event": "complete",
+      "phase": "full-original-constructor",
+      "sequence": 1,
+      "host_MemAvailable": 96032636928,
+      "cuda_free": 48232370176,
+      "torch_allocated": 24016809984,
+      "torch_reserved": 24270340096,
+      "inactive_split": 253530112,
+      "host_minus_cuda_free": 47800266752,
+      "cgroup_current": 1244409856,
+      "cgroup_file": 126287872
+    },
+    {
+      "arm": "actual-12/A",
+      "line": 168,
+      "event": "intent",
+      "phase": "native-train-forward",
+      "sequence": 8,
+      "host_MemAvailable": 96094453760,
+      "cuda_free": 48277504000,
+      "torch_allocated": 24016809984,
+      "torch_reserved": 24270340096,
+      "inactive_split": 253530112,
+      "host_minus_cuda_free": 47816949760,
+      "cgroup_current": 1387708416,
+      "cgroup_file": 143802368
+    },
+    {
+      "arm": "actual-12/A",
+      "line": 170,
+      "event": "complete",
+      "phase": "native-train-forward",
+      "sequence": 8,
+      "host_MemAvailable": 92594114560,
+      "cuda_free": 44569362432,
+      "torch_allocated": 26128814080,
+      "torch_reserved": 26679967744,
+      "inactive_split": 551153664,
+      "host_minus_cuda_free": 48024752128,
+      "cgroup_current": 2588045312,
+      "cgroup_file": 348372992
+    },
+    {
+      "arm": "actual-12/A",
+      "line": 184,
+      "event": "intent",
+      "phase": "native-train-forward",
+      "sequence": 13,
+      "host_MemAvailable": 94037389312,
+      "cuda_free": 46012026880,
+      "torch_allocated": 24204137984,
+      "torch_reserved": 24717033472,
+      "inactive_split": 475146752,
+      "host_minus_cuda_free": 48025362432,
+      "cgroup_current": 3147710464,
+      "cgroup_file": 348454912
+    },
+    {
+      "arm": "actual-12/A",
+      "line": 186,
+      "event": "complete",
+      "phase": "native-train-forward",
+      "sequence": 13,
+      "host_MemAvailable": 92225191936,
+      "cuda_free": 44199673856,
+      "torch_allocated": 25993505792,
+      "torch_reserved": 26516389888,
+      "inactive_split": 522884096,
+      "host_minus_cuda_free": 48025518080,
+      "cgroup_current": 3141791744,
+      "cgroup_file": 348487680
+    },
+    {
+      "arm": "actual-12/C",
+      "line": 2,
+      "event": "intent",
+      "phase": "full-original-checkpoint-hash",
+      "sequence": 0,
+      "host_MemAvailable": 121174790144,
+      "cuda_free": 73061883904,
+      "torch_allocated": 0,
+      "torch_reserved": 0,
+      "inactive_split": 0,
+      "host_minus_cuda_free": 48112906240,
+      "cgroup_current": 888713216,
+      "cgroup_file": 126238720
+    },
+    {
+      "arm": "actual-12/C",
+      "line": 3,
+      "event": "complete",
+      "phase": "full-original-checkpoint-hash",
+      "sequence": 0,
+      "host_MemAvailable": 121221541888,
+      "cuda_free": 73107959808,
+      "torch_allocated": 0,
+      "torch_reserved": 0,
+      "inactive_split": 0,
+      "host_minus_cuda_free": 48113582080,
+      "cgroup_current": 888860672,
+      "cgroup_file": 126242816
+    },
+    {
+      "arm": "actual-12/C",
+      "line": 5,
+      "event": "intent",
+      "phase": "full-original-constructor",
+      "sequence": 1,
+      "host_MemAvailable": 121221541888,
+      "cuda_free": 73108414464,
+      "torch_allocated": 0,
+      "torch_reserved": 0,
+      "inactive_split": 0,
+      "host_minus_cuda_free": 48113127424,
+      "cgroup_current": 888856576,
+      "cgroup_file": 126242816
+    },
+    {
+      "arm": "actual-12/C",
+      "line": 6,
+      "event": "complete",
+      "phase": "full-original-constructor",
+      "sequence": 1,
+      "host_MemAvailable": 96048726016,
+      "cuda_free": 47934435328,
+      "torch_allocated": 24016809984,
+      "torch_reserved": 24270340096,
+      "inactive_split": 253530112,
+      "host_minus_cuda_free": 48114290688,
+      "cgroup_current": 1233403904,
+      "cgroup_file": 126296064
+    },
+    {
+      "arm": "actual-12/C",
+      "line": 168,
+      "event": "intent",
+      "phase": "native-train-forward",
+      "sequence": 8,
+      "host_MemAvailable": 96108052480,
+      "cuda_free": 47976660992,
+      "torch_allocated": 24016809984,
+      "torch_reserved": 24270340096,
+      "inactive_split": 253530112,
+      "host_minus_cuda_free": 48131391488,
+      "cgroup_current": 1380966400,
+      "cgroup_file": 143806464
+    },
+    {
+      "arm": "actual-12/C",
+      "line": 170,
+      "event": "complete",
+      "phase": "native-train-forward",
+      "sequence": 8,
+      "host_MemAvailable": 92593168384,
+      "cuda_free": 44254294016,
+      "torch_allocated": 26117284864,
+      "torch_reserved": 26679967744,
+      "inactive_split": 562682880,
+      "host_minus_cuda_free": 48338874368,
+      "cgroup_current": 2582310912,
+      "cgroup_file": 348356608
+    },
+    {
+      "arm": "actual-12/C",
+      "line": 184,
+      "event": "intent",
+      "phase": "native-train-forward",
+      "sequence": 13,
+      "host_MemAvailable": 94048296960,
+      "cuda_free": 45708845056,
+      "torch_allocated": 24204137984,
+      "torch_reserved": 24717033472,
+      "inactive_split": 475146752,
+      "host_minus_cuda_free": 48339451904,
+      "cgroup_current": 3147067392,
+      "cgroup_file": 348467200
+    },
+    {
+      "arm": "actual-12/C",
+      "line": 186,
+      "event": "complete",
+      "phase": "native-train-forward",
+      "sequence": 13,
+      "host_MemAvailable": 92241887232,
+      "cuda_free": 43902300160,
+      "torch_allocated": 25979875328,
+      "torch_reserved": 26516389888,
+      "inactive_split": 536514560,
+      "host_minus_cuda_free": 48339587072,
+      "cgroup_current": 3147563008,
+      "cgroup_file": 348475392
+    },
+    {
+      "arm": "actual-13/A",
+      "line": 2,
+      "event": "intent",
+      "phase": "full-original-checkpoint-hash",
+      "sequence": 0,
+      "host_MemAvailable": 121167593472,
+      "cuda_free": 71979712512,
+      "torch_allocated": 0,
+      "torch_reserved": 0,
+      "inactive_split": 0,
+      "host_minus_cuda_free": 49187880960,
+      "cgroup_current": 883212288,
+      "cgroup_file": 126234624
+    },
+    {
+      "arm": "actual-13/A",
+      "line": 3,
+      "event": "complete",
+      "phase": "full-original-checkpoint-hash",
+      "sequence": 0,
+      "host_MemAvailable": 121241219072,
+      "cuda_free": 72051924992,
+      "torch_allocated": 0,
+      "torch_reserved": 0,
+      "inactive_split": 0,
+      "host_minus_cuda_free": 49189294080,
+      "cgroup_current": 882106368,
+      "cgroup_file": 126242816
+    },
+    {
+      "arm": "actual-13/A",
+      "line": 5,
+      "event": "intent",
+      "phase": "full-original-constructor",
+      "sequence": 1,
+      "host_MemAvailable": 121241219072,
+      "cuda_free": 72051924992,
+      "torch_allocated": 0,
+      "torch_reserved": 0,
+      "inactive_split": 0,
+      "host_minus_cuda_free": 49189294080,
+      "cgroup_current": 882102272,
+      "cgroup_file": 126242816
+    },
+    {
+      "arm": "actual-13/A",
+      "line": 6,
+      "event": "complete",
+      "phase": "full-original-constructor",
+      "sequence": 1,
+      "host_MemAvailable": 96117248000,
+      "cuda_free": 46927335424,
+      "torch_allocated": 24016809984,
+      "torch_reserved": 24270340096,
+      "inactive_split": 253530112,
+      "host_minus_cuda_free": 49189912576,
+      "cgroup_current": 1246117888,
+      "cgroup_file": 126296064
+    },
+    {
+      "arm": "actual-13/A",
+      "line": 168,
+      "event": "intent",
+      "phase": "native-train-forward",
+      "sequence": 8,
+      "host_MemAvailable": 96096739328,
+      "cuda_free": 46890516480,
+      "torch_allocated": 24016809984,
+      "torch_reserved": 24270340096,
+      "inactive_split": 253530112,
+      "host_minus_cuda_free": 49206222848,
+      "cgroup_current": 1387380736,
+      "cgroup_file": 143810560
+    },
+    {
+      "arm": "actual-13/A",
+      "line": 170,
+      "event": "complete",
+      "phase": "native-train-forward",
+      "sequence": 8,
+      "host_MemAvailable": 92313722880,
+      "cuda_free": 42899861504,
+      "torch_allocated": 26128781312,
+      "torch_reserved": 26952597504,
+      "inactive_split": 823816192,
+      "host_minus_cuda_free": 49413861376,
+      "cgroup_current": 2588467200,
+      "cgroup_file": 348372992
+    }
+  ],
+  "findings": [
+    "Approximately 47.8 to 49.2 GB of host-MemAvailable minus CUDA-free discrepancy was already present before this run checkpoint hash, while native allocated/reserved/inactive-split were all zero. This cannot be solely this allocator fragmentation.",
+    "Actual12 A hash intent gap47797968896B became47799451648B after hash, +1482752B. Actual13 A hash intent gap49187880960B became49189294080B, +1413120B. These warm preconditions do not show that the current hash created the large discrepancy, and cannot identify cache ancestry.",
+    "Actual13 A vs actual12 A hash-intent gap was already1389912064B larger. First-forward-complete gap was1389109248B larger, a difference of only802816B from the baseline gap change. The first-forward CUDA-free decline1669500928B includes reserved increase272629760B; the comparison is not an isolated allocator experiment.",
+    "Post-forward inactive_split551153664B in actual12 A versus823816192B in actual13 A is genuine measured difference; maxsplit128 did not establish capacity. Neither this difference nor current cache counters prove checkpoint attribution.",
+    "Existing root observation reports vram_free13268152534 minus torch_vram_free224194774 equals host MemFree13043957760B exactly, while MemAvailable39004987392B and Cached26030141440B differ. This is consistent with the documented free-vs-reclaimable distinction; installed ComfyUI source identity was not independently established here.",
+    "Closed native source host_memory recorded only MemTotal/MemAvailable/SwapTotal/SwapFree, so no retrospective MemFree/Cached decomposition is possible. cgroup file is not global page cache attribution, and global/per-process/native allocator axes must remain distinct."
+  ],
+  "checkpoint_metadata": {
+    "snapshot": "artifacts/jev-local-hf/hub/models--knowlet--Gemma-4-12B-Unified-System-One/snapshots/a66f836b56605039fe040f330180e336d19b3362/model.safetensors",
+    "canonical_blob": "artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+    "dev": 66306,
+    "inode": 11034709,
+    "size_bytes": 23919549408,
+    "uid": 1001,
+    "gid": 1001,
+    "mode": 256,
+    "mtime_ns": 1791911933623815346,
+    "ctime_ns": 1792315930876946537,
+    "nlink": 2,
+    "euid": 1001,
+    "effective_write_access": false,
+    "page_size": 4096,
+    "scope": "Metadata only; no open, mmap, mincore, read, pread or hash of checkpoint payload"
+  },
+  "queries": [
+    "site.docs.nvidia.com cudaMemGetInfo Tegra memory shared system memory page cache",
+    "site.docs.nvidia.com DGX Spark memory free CUDA available Linux page cache",
+    "site.kernel.org mincore fincore file cache documentation",
+    "site.github.com/util-linux/util-linux fincore.c mmap mincore MAP_PRIVATE PROT_NONE",
+    "linux vmtouch mincore file residency license"
+  ],
+  "candidates": [
+    {
+      "project": "Linux mincore",
+      "reference": "https://github.com/torvalds/linux/blob/v6.17/mm/mincore.c",
+      "version": "Upstream v6.17; installed6.17.0-1029-nvidia vendor source not independently inspected",
+      "license": "GPL-2.0 SPDX in source; syscall/API semantics only, no kernel implementation copied",
+      "symbols_read": [
+        "mincore_page",
+        "__mincore_unmapped_range",
+        "can_do_mincore",
+        "do_mincore",
+        "SYSCALL_DEFINE3(mincore)"
+      ],
+      "decision": "Use documented libc syscall interface via Python ctypes; refer to upstream semantics, no source transplant. Owner OR write authority matters; no permission changes."
+    },
+    {
+      "project": "util-linux fincore",
+      "reference": "https://raw.githubusercontent.com/util-linux/util-linux/master/misc-utils/fincore.c",
+      "version": "master accessed2026-10-20; immutable commit unavailable; not installed in PATH",
+      "license": "GPL-2.0-or-later header read",
+      "symbols_read": [
+        "do_mincore",
+        "mincore_fd",
+        "fincore_fd",
+        "fincore_name"
+      ],
+      "decision": "Reference design only: bounded windows, mincore vector, cleanup. Current fincore prefers cachestat and uses PROT_READ for qemu; probe requires PROT_NONE and no fallback, preventing opaque permission fallback or payload touching."
+    },
+    {
+      "project": "vmtouch",
+      "reference": "https://raw.githubusercontent.com/hoytech/vmtouch/master/vmtouch.c",
+      "version": "master accessed2026-10-20; VMTOUCH_VERSION1.3.1; immutable commit unavailable",
+      "license": "BSD-3-Clause LICENSE and source header read",
+      "symbols_read": [
+        "mincore",
+        "mmap",
+        "can_do_mincore",
+        "compare_func"
+      ],
+      "decision": "Not used: generic tool also exposes touch/evict/lock operations and fullfile mapping. Reference only for distinguishing residency measurement from cache control and duplicate inode accounting."
+    }
+  ],
+  "primary_docs": [
+    {
+      "url": "https://docs.nvidia.com/dgx/dgx-spark/known-issues.html#guidance-for-reporting-memory-resources-with-unified-memory-architecture",
+      "finding": "Spark CPU/GPU share DRAM; cudaMemGetInfo can understate allocatable capacity because it excludes potential reclamation. Vendor debugging text is not authorization to mutate system cache. Keep existing no-swap-credit and original gates."
+    },
+    {
+      "url": "https://docs.nvidia.com/cuda/cuda-runtime-api/cuda_runtime_api/group__CUDART__MEMORY.html",
+      "finding": "cudaMemGetInfo free is OS-reported free device memory, not an allocation guarantee; multi-tenant values race and UMA excludes swap. Current13.4 docs describe API, not exact installed CUDA13.0 binary."
+    },
+    {
+      "url": "https://www.kernel.org/doc/html/latest/filesystems/proc.html#meminfo",
+      "finding": "MemAvailable estimates memory usable without swapping from MemFree, reclaimable slab, file LRU and watermarks. Cached also includes tmpfs/shmem; it is not identical to reclaimable file bytes."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/mincore.2.html",
+      "finding": "Returns one low-bit residency entry per page for mapped address range; result can stale immediately. Page counts and exact final partial-page file bytes differ."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man1/fincore.1.html",
+      "finding": "Modern tool uses cachestat with mincore fallback; use explicit output fields. Its short no-write warning omits owner exception visible in upstream mincore source."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/cachestat.2.html",
+      "finding": "Linux6.5+ file range cache stats avoid a virtual mapping but depend on syscall availability/permission; not selected because parent requested explicit mincore-only source."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/v0.37.0/comfy/model_management.py",
+      "finding": "Upstream get_free_memory CUDA branch returns mem_get_info free plus reserved-minus-active; subtraction of torch_vram_free reconstructs underlying CUDA estimate when installed code matches. Upstream tag is not installed source provenance."
+    }
+  ],
+  "decision_before_implementation": {
+    "decision": "Small independently written standard-library ctypes probe in its own artifact namespace, using the existing original ResourceGate CPU implementation unchanged and externally SHA pinned. Reference API/design only; no source-code copying from GPL/BSD projects. No new installed package or runtime dependency.",
+    "required_contract": [
+      "Default dry; explicit --run plus reviewed sourceSHA and planSHA for actual invocation.",
+      "Exact fixed23919549408B blob from fixed pinned snapshot symlink; regular fd read-only NOFOLLOW; euid must own inode so mincore output cannot silently be fabricated. Retain mode0400.",
+      "256MiB page-aligned PROT_NONE/MAP_PRIVATE windows; <=64KiB residency vector; do not dereference mapping, read/pread/hash checkpoint, touch/cacheadvise or load model/framework/GPU.",
+      "Fresh durable unchanged original CPU gate before open, before each map and after measurement; sameboot zero credit; no relaxed threshold.",
+      "Stable before/after path and fd identity; oneinode only despite nlink2; fsynced bounded fresh output, UNKNOWN on error, no retry, unmap/close in finally.",
+      "Metrics include host free/available/cache/slab and process IO/majorfault counters beforeafter, without claiming counters alone prove no payload reads. No reclaimability/allocation/training/task-quality conclusion."
+    ],
+    "verification": "Meaningful pure fake-backend tests of alignment/partiallastpage/failurecleanup/identity/owner/gate/CLI/sourcepin/caps; no actual mmap/mincore even on temporary files during source preparation."
+  },
+  "execution": {
+    "actual_checkpoint_open": 0,
+    "checkpoint_payload_reads": 0,
+    "checkpoint_hash": 0,
+    "mmap": 0,
+    "mincore": 0,
+    "framework_GPU": 0,
+    "file_cache_control": 0
+  }
+}

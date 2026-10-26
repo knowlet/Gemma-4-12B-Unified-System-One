@@ -1,0 +1,9 @@
+# GX10 memory identity across reboot
+
+2026-10-22, before implementation. The fresh boot reports `MemTotal=130595864576`, exactly 4096 bytes above the previous boot. A read-only CUDA driver query (`cuDeviceTotalMem_v2`) reports the same new total, with one integrated NVIDIA GB10 and the unchanged selected UUID. `cuCtxGetCurrent` was null before and after; no model or CUDA context was created. NVML memory queries returned NOT_SUPPORTED and are not capacity evidence. The inherited libcuda path, size, mtime, device and inode still match the pinned driver metadata.
+
+The existing H15 component fixes the historical `UMA_TOTAL` in its host validator; `s1.browser_native_resources` also fixes that total in allocator-fraction arithmetic and CUDA counter checks. This incorrectly rejects a valid new boot before native training. The H15 allocator-cap mechanism itself already computes its fraction from the actual selected device total.
+
+Reuse the byte-pinned H15 mechanism and strict typed/no-hugetlb/UUID/name/integrated/driver-map checks. Add explicit current-profile host and UMA identity validators that bind the first selected boot's total, without changing raw observations, rewriting the historical component, or monkeypatching its constants. Bind the live runtime, each gate row and offline evidence validation to the same selected total. Derive allocator-fraction verification from the authenticated actual device total. Any within-run change or driver/allocator/host disagreement must still fail closed.
+
+The 40 GiB native allocator cap, 39.5 GiB live stop, independent 40 GiB memcg, zero swap/resident credit, host reserve and startup/resident formulas remain unchanged. Verify old fixtures plus the observed 4096-byte cross-boot variation, within-run drift and mismatched native totals before refreshing the launch plan. A plan or CPU test is not actual training or capacity qualification.

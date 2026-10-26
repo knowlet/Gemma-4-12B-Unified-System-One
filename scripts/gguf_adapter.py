@@ -238,6 +238,10 @@ def prediction_from_logits(request, response, temperature, model):
         "temperature": temperature,
         "passes": 1,
         "latency_ms": response["latency_ms"],
+        # The predictor measures HF preparation + IPC separately from native
+        # scoring. Retain that measurement through typed-answer conversion.
+        # Legacy callers without a native timer report unavailable, not total.
+        "native_latency_ms": response.get("native_latency_ms"),
         "runtime": response["runtime"],
         "runtime_slots": response["runtime_slots"],
         "native_token_count": response["native_token_count"],

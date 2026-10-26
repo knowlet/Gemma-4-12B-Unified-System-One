@@ -1,0 +1,440 @@
+--- artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py
++++ artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/actor.py
+@@ -17,11 +17,12 @@
+ ROOT = Path(__file__).resolve().parents[3]
+ HERE = Path(__file__).resolve().parent
+ HELPER = HERE / "resource_helper.py"
+-HELPER_SHA = "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
++HELPER_SHA = "7d90f15adee339ed292510d3f5c10c0b33b505279de32643fe1c3da425554552"
+ SOURCE_AUDIT_SHA = "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+-UNIT = "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service"
+-OWNER_PROFILE = "llama-cpp-cpu4-2g-long-command-owned-v1"
+-OWNER_CONTROLLER_SHA = "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
++UNIT = "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service"
++OWNER_PROFILE = "llama-cpp-cpu4-2g-coexist-command-owned-v1"
++OWNER_CONTROLLER_SHA = "685a9f809f429f4e9658083dc8530b563740625f9ba7816908fdc58002de256d"
++HOST_OBSERVATION_POLICY = "comfy-observed-cpu-coexist-v1"
+ RESERVE = 26_119_172_916
+ MEMORY_MAX = 2_147_483_648
+ WALL_SECONDS = 120
+@@ -103,7 +104,7 @@
+     lines = identity["cgroup"].splitlines()
+     require(
+         len(lines) == 1 and lines[0].startswith("0::/") and lines[0].endswith("/" + UNIT),
+-        "selected owner06 cgroup required",
++        "selected owner07 cgroup required",
+     )
+     require(identity["affinity"] == [16, 17, 18, 19], "CPU affinity differs")
+     require(
+@@ -127,7 +128,8 @@
+         "actual selected Edge/Lite identity differs",
+     )
+     require(
+-        plan.get("profile") == f"decision3-{key}-publisher-cpu-batch4-2g-synthetic-20261023-v1"
++        plan.get("profile")
++        == f"decision3-{key}-publisher-cpu-batch4-2g-coexist-synthetic-20261024-v1"
+         and plan.get("actor_sha256") == sha(__file__),
+         "batch4 profile/source differs",
+     )
+@@ -135,6 +137,11 @@
+         plan.get("helper_sha256") == HELPER_SHA
+         and plan.get("source_audit_sha256") == SOURCE_AUDIT_SHA,
+         "selected generic helper/AST audit differs",
++    )
++    require(
++        plan.get("host_observation_policy") == HOST_OBSERVATION_POLICY
++        and helper.HOST_OBSERVATION_POLICY == HOST_OBSERVATION_POLICY,
++        "selected owner07 CPU-coexist observation policy differs",
+     )
+     require(
+         plan.get("owner_unit") == UNIT
+@@ -146,16 +153,16 @@
+         and plan.get("owner_runtime_seconds") == 10800
+         and plan.get("cpu_affinity") == [16, 17, 18, 19]
+         and plan.get("cpu_quota_percent") == 400,
+-        "owner06 profile/budget differs",
++        "owner07 profile/budget differs",
+     )
+     require(
+         any(
+             row["path"]
+-            == str(ROOT / "artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py")
++            == str(ROOT / "artifacts/jev-runtime/llama-cpp-owner-20261024-07/controller.py")
+             and row["sha256"] == OWNER_CONTROLLER_SHA
+             for row in plan["owner_sources"]
+         ),
+-        "selected owner06 controller identity differs",
++        "selected owner07 controller identity differs",
+     )
+     require(
+         plan.get("batch_size") == BATCH_SIZE
+@@ -542,6 +549,7 @@
+         "process": identity,
+         "owned_limits": limits,
+         "host_startup_admission": gate,
++        "selected_owner_host_observation_policy": HOST_OBSERVATION_POLICY,
+         "model_loads": 0,
+         "native_request_calls": 0,
+         "benchmark_calls": 0,
+@@ -732,6 +740,7 @@
+                     "constructor_count": 1,
+                     "owner_unit": UNIT,
+                     "owner_profile": OWNER_PROFILE,
++                    "host_observation_policy": HOST_OBSERVATION_POLICY,
+                     "memory_max_bytes": MEMORY_MAX,
+                     "startup_available_bytes": RESERVE + MEMORY_MAX,
+                     "whole_seconds": WALL_SECONDS,
+--- artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py
++++ artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/resource_helper.py
+@@ -1,7 +1,9 @@
+ """Selected stdlib resource helper extracted from frozen Lite smoke utilities.
+ 
+ No Lite model loader/plan/entry is included; actual publisher NN math remains in
+-the separately pinned native batch4 actor. Resource-only2GiB successor.
++the separately pinned native batch4 actor. Distinct owner07 CPU-coexist policy.
++The controller owns strict Comfy HTTP observation; this leaf host_gate retains
++only its original full R+2GiB memory check and makes no Comfy HTTP claim.
+ """
+ 
+ from __future__ import annotations
+@@ -17,6 +19,8 @@
+ from pathlib import Path
+ 
+ ROOT = Path(__file__).resolve().parents[3]
++
++HOST_OBSERVATION_POLICY = "comfy-observed-cpu-coexist-v1"
+ 
+ 
+ RESERVE = 26_119_172_916
+--- artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/test_actor.py
++++ artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/test_actor.py
+@@ -71,7 +71,7 @@
+                     with self.assertRaisesRegex(RuntimeError, "batch/count/deadline"):
+                         a.load_plan(helper, bad, a.sha(bad))
+ 
+-    def test_owner06_validator_rejects_old_units_or_caps(self):
++    def test_owner07_validator_rejects_old_units_or_caps(self):
+         env = {"CUDA_VISIBLE_DEVICES": "", "HF_HUB_OFFLINE": "1"}
+         identity = {
+             "cgroup": "0::/owned/" + a.UNIT,
+@@ -86,6 +86,7 @@
+         a.validate_owner(identity, limits, env)
+         for key, value in [
+             ("cgroup", "0::/owned/jev-d3-llama-cpp-cpu4-3g-20261023-04.service"),
++            ("cgroup", "0::/owned/jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service"),
+             ("affinity", [16]),
+             ("environment", {"CUDA_VISIBLE_DEVICES": "0"}),
+         ]:
+@@ -272,6 +273,115 @@
+ 
+ 
+ class ResourceClosureTests(unittest.TestCase):
++    def test_native02_NN_auth_and_postcleanup_timing_AST_unchanged(self):
++        original = (
++            a.ROOT / "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py"
++        )
++        old = {
++            n.name: n
++            for n in ast.parse(original.read_text()).body
++            if isinstance(n, (ast.FunctionDef, ast.ClassDef))
++        }
++        new = {
++            n.name: n
++            for n in ast.parse((HERE / "actor.py").read_text()).body
++            if isinstance(n, (ast.FunctionDef, ast.ClassDef))
++        }
++        self.assertEqual(set(old), set(new))
++        allowed_resource_bindings = {"validate_owner", "load_plan", "execute", "main"}
++        for name in set(old) - allowed_resource_bindings:
++            self.assertEqual(
++                ast.dump(old[name], include_attributes=False),
++                ast.dump(new[name], include_attributes=False),
++                name,
++            )
++        # Execute differs only by the truthful selected-owner policy metadata.
++        current = copy.deepcopy(new["execute"])
++        for node in ast.walk(current):
++            if isinstance(node, ast.Dict):
++                indices = [
++                    i
++                    for i, key in enumerate(node.keys)
++                    if isinstance(key, ast.Constant)
++                    and key.value == "selected_owner_host_observation_policy"
++                ]
++                for i in reversed(indices):
++                    del node.keys[i]
++                    del node.values[i]
++        self.assertEqual(
++            ast.dump(old["execute"], include_attributes=False),
++            ast.dump(current, include_attributes=False),
++        )
++
++    def test_native02_helper_functions_all_byte_equivalent_AST(self):
++        original = (
++            a.ROOT
++            / "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py"
++        )
++        old = {
++            n.name: n
++            for n in ast.parse(original.read_text()).body
++            if isinstance(n, (ast.FunctionDef, ast.ClassDef))
++        }
++        new = {
++            n.name: n
++            for n in ast.parse((HERE / "resource_helper.py").read_text()).body
++            if isinstance(n, (ast.FunctionDef, ast.ClassDef))
++        }
++        self.assertEqual(set(old), set(new))
++        for name in old:
++            self.assertEqual(
++                ast.dump(old[name], include_attributes=False),
++                ast.dump(new[name], include_attributes=False),
++                name,
++            )
++
++    def test_original_numerical_and_budget_constants_unchanged(self):
++        original = (
++            a.ROOT / "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py"
++        )
++
++        def selected(path):
++            return {
++                target.id: ast.dump(node.value, include_attributes=False)
++                for node in ast.parse(path.read_text()).body
++                if isinstance(node, ast.Assign)
++                for target in node.targets
++                if isinstance(target, ast.Name)
++                and target.id
++                in {
++                    "RESERVE",
++                    "MEMORY_MAX",
++                    "WALL_SECONDS",
++                    "CALL_SECONDS",
++                    "BATCH_SIZE",
++                    "CALLS",
++                    "HEADS",
++                    "MODEL_MODULES",
++                    "MODELS",
++                }
++            }
++
++        self.assertEqual(selected(original), selected(HERE / "actor.py"))
++
++    def test_coexist_policy_must_join_new_plan_and_helper(self):
++        helper = a.load_helper()
++        path = HERE / "edge-plan.json"
++        original = json.loads(path.read_text())
++        with patch.object(a.sys, "executable", str(helper.RUNTIME_PYTHON)):
++            a.load_plan(helper, path, a.sha(path))
++            for policy in (None, "comfy-idle-only", "unknown", "comfy-observed-cpu-coexist-v2"):
++                changed = copy.deepcopy(original)
++                changed["host_observation_policy"] = policy
++                with tempfile.TemporaryDirectory() as temp:
++                    bad = Path(temp) / "policy.json"
++                    bad.write_text(json.dumps(changed))
++                    with self.assertRaisesRegex(RuntimeError, "observation policy"):
++                        a.load_plan(helper, bad, a.sha(bad))
++            with patch.object(helper, "HOST_OBSERVATION_POLICY", "comfy-idle-only"):
++                with self.assertRaisesRegex(RuntimeError, "observation policy"):
++                    a.load_plan(helper, path, a.sha(path))
++
+     def test_publisher_constructor_backend_and_validation_AST_unchanged(self):
+         original = (
+             a.ROOT / "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-01/actor.py"
+@@ -376,6 +486,9 @@
+             lambda p: p.update(owner_runtime_seconds=7200),
+             lambda p: p.update(owner_profile="llama-cpp-cpu4-3g-long-command-owned-v1"),
+             lambda p: p.update(owner_unit="jev-d3-llama-cpp-cpu4-3g-long-20261023-05.service"),
++            lambda p: p.update(owner_profile="llama-cpp-cpu4-2g-long-command-owned-v1"),
++            lambda p: p.update(owner_unit="jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service"),
++            lambda p: p["owner_sources"][0].update(sha256="0" * 64),
+             lambda p: p.update(wall_seconds=119),
+             lambda p: p.update(call_seconds=19),
+             lambda p: p.update(model_key="lite", model=a.MODELS["lite"]),
+--- artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json
++++ artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/edge-plan.json
+@@ -1,6 +1,6 @@
+ {
+   "schema": "decision3-native-batch4-CPU-probe-plan-v1",
+-  "profile": "decision3-edge-publisher-cpu-batch4-2g-synthetic-20261023-v1",
++  "profile": "decision3-edge-publisher-cpu-batch4-2g-coexist-synthetic-20261024-v1",
+   "model_key": "edge",
+   "model": {
+     "model_id": "vllm-sr/d3-edge",
+@@ -23,65 +23,65 @@
+       "full_attention"
+     ]
+   },
+-  "actor_sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b",
+-  "helper_sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df",
++  "actor_sha256": "4a08be7703d8559f5dc86593f0e3138e9c9546ea1cc4613a951ed796a13d9d3f",
++  "helper_sha256": "7d90f15adee339ed292510d3f5c10c0b33b505279de32643fe1c3da425554552",
+   "source_audit_sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3",
+-  "owner_unit": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+-  "owner_profile": "llama-cpp-cpu4-2g-long-command-owned-v1",
++  "owner_unit": "jev-d3-llama-cpp-cpu4-2g-coexist-20261024-07.service",
++  "owner_profile": "llama-cpp-cpu4-2g-coexist-command-owned-v1",
+   "owner_runtime_seconds": 10800,
+   "owner_sources": [
+     {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/controller.py",
+-      "size": 40319,
+-      "stat": {
+-        "st_dev": 66306,
+-        "st_ino": 12984784,
+-        "st_size": 40319,
+-        "st_mtime_ns": 1792759639803453042
+-      },
+-      "sha256": "aa2af9911fde9fd06526c3fd5fe45f6521e80103bbccf9c29b98c7f3bba5952d"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-06/source-freeze.json",
+-      "size": 2573,
+-      "stat": {
+-        "st_dev": 66306,
+-        "st_ino": 12984792,
+-        "st_size": 2573,
+-        "st_mtime_ns": 1792759687956451647
+-      },
+-      "sha256": "7a83281f3ce088e29c0c1fa833b617a0eecd9d26214cbda4ebf97314c3f8bdbb"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/actor.py",
+-      "size": 30552,
+-      "stat": {
+-        "st_dev": 66306,
+-        "st_ino": 12984813,
+-        "st_size": 30552,
+-        "st_mtime_ns": 1792760484637370411
+-      },
+-      "sha256": "977004620b2fdf2d47c683fdea7adb418e9a74d8765040ceb014d3a54d4cc88b"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+-      "size": 7734,
+-      "stat": {
+-        "st_dev": 66306,
+-        "st_ino": 12984812,
+-        "st_size": 7734,
+-        "st_mtime_ns": 1792760002809551466
+-      },
+-      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
+-    },
+-    {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/source_audit.py",
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-07/controller.py",
++      "size": 41866,
++      "stat": {
++        "st_dev": 66306,
++        "st_ino": 12064328,
++        "st_size": 41866,
++        "st_mtime_ns": 1792773555002255245
++      },
++      "sha256": "685a9f809f429f4e9658083dc8530b563740625f9ba7816908fdc58002de256d"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261024-07/freeze.json",
++      "size": 3011,
++      "stat": {
++        "st_dev": 66306,
++        "st_ino": 12064345,
++        "st_size": 3011,
++        "st_mtime_ns": 1792773929104073312
++      },
++      "sha256": "c3f79bf2397f839931068846022b984a62d54b06175ec3fd679fa9aa7478189c"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/actor.py",
++      "size": 31007,
++      "stat": {
++        "st_dev": 66306,
++        "st_ino": 12064331,
++        "st_size": 31007,
++        "st_mtime_ns": 1792774002835075677
++      },
++      "sha256": "4a08be7703d8559f5dc86593f0e3138e9c9546ea1cc4613a951ed796a13d9d3f"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/resource_helper.py",
++      "size": 7954,
++      "stat": {
++        "st_dev": 66306,
++        "st_ino": 12064332,
++        "st_size": 7954,
++        "st_mtime_ns": 1792773564944215583
++      },
++      "sha256": "7d90f15adee339ed292510d3f5c10c0b33b505279de32643fe1c3da425554552"
++    },
++    {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/source_audit.py",
+       "size": 5079,
+       "stat": {
+         "st_dev": 66306,
+-        "st_ino": 12984814,
++        "st_ino": 12064333,
+         "st_size": 5079,
+-        "st_mtime_ns": 1792759884392681840
++        "st_mtime_ns": 1792773562794453052
+       },
+       "sha256": "ae299d87cbf7338bb9ff29055efc335e96a44b73a29370e08428aad2fb2b68d3"
+     }
+@@ -785,24 +785,42 @@
+     "runtime_executed": false
+   },
+   "preparation": {
+-    "profile_scope": "DistinctEdgeonly2GiB resource source candidate; noLite2GiBplan and no prior3GiB result inheritance.",
+-    "model20_runtime28_metadata_copied_exact_from_frozen_Edge_native01": true,
+-    "model_or_tokenizer_or_native_payload_reads_or_restats": 0,
+-    "model_or_Torch_or_jobs_executed": false,
+-    "actual_batch_rows_latency_peak_fit": "UNMEASURED",
+-    "source_only_root_exactselection_and_fresh_admission_required": true,
+-    "prior3GiB_model_quality_fit_or_scores_inherited": false
++    "profile_scope": "Distinct owner07 CPU-coexist resource/observation binding only; Edge-only with no idle06 or prior native fit/quality inheritance",
++    "base_plan": {
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/edge-plan.json",
++      "size": 30406,
++      "stat": {
++        "st_dev": 66306,
++        "st_ino": 12984819,
++        "st_size": 30406,
++        "st_mtime_ns": 1792760484639137871
++      },
++      "sha256": "115b7850ac80b35aa0aacb5880644e1ee7ea79deb59beb748c7947c86d0492e8"
++    },
++    "model20_runtime_metadata_copied_exact_from_frozen_native02": true,
++    "model_tokenizer_native_payload_reads_or_restats": 0,
++    "model_Torch_jobs_or_observer_executed": false,
++    "actual_rows_latency_peak_fit": "UNMEASURED",
++    "root_exactselection_independent_review_fresh_original_new_profile_admission_required": true,
++    "old_original_idle_only_profile_unchanged": true
+   },
+   "resource_helper_provenance": {
+-    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
+-    "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df",
++    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-03/resource_helper.py",
++    "sha256": "7d90f15adee339ed292510d3f5c10c0b33b505279de32643fe1c3da425554552",
+     "source": {
+-      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-lite-cpu-20261023-01/actor.py",
+-      "sha256": "33859d8b57bc906e477dce6ebf9d76ba4175ce775abb55cd9c42510f6de0bc9e",
+-      "size": 24848
+-    },
+-    "extracted_stdlib_defs": 14,
+-    "NN_loader_or_Lite_entry_included": false,
+-    "only_host_gate_resource_delta": "MEMORY_MAX2GiB and corresponding diagnostic wording; originalfullR+cap at unchanged callsites"
+-  }
++      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261023-02/resource_helper.py",
++      "size": 7734,
++      "stat": {
++        "st_dev": 66306,
++        "st_ino": 12984812,
++        "st_size": 7734,
++        "st_mtime_ns": 1792760002809551466
++      },
++      "sha256": "e84d733dbf497bc2ed44fdaa822b4d7fb7607333f76290af6c189af653e867df"
++    },
++    "function_bodies": "All14 original stdlib APIs unchanged, including memory-only fullR+2GiB host_gate",
++    "new_policy_constant": "comfy-observed-cpu-coexist-v1",
++    "Comfy_HTTP_observation": "Selected owner07 controller owns strict HTTP idle/busy evidence; child memory helper does not query Comfy"
++  },
++  "host_observation_policy": "comfy-observed-cpu-coexist-v1"
+ }

@@ -1,0 +1,194 @@
+{
+  "schema_id": "jev-comfy-observer-owned-retry-milestone-v1",
+  "created_at_utc": "2026-10-22T07:27:55.417057+00:00",
+  "scope": "Runtime continuity and actual fresh retry admission, not completed training, browser quality or fresh JevBench score.",
+  "status": "fresh_native_retry_started",
+  "observer": {
+    "states": [
+      "http_idle",
+      "http_busy",
+      "absent_confirmed"
+    ],
+    "absence_requires": "ActualECONNREFUSED and two fresh sequential boot-bound listener/process scans with zeroComfy or uncertain entries. Absolute externalPython scripts require knowncwd outsideComfy.",
+    "tests": {
+      "passed": 45,
+      "receipt": {
+        "path": "artifacts/jev-runtime/gx10-boot-identity-20261022-01/observer-tests-02.xml",
+        "sha256": "6e0ddc54935aea0b800bc115305ecfdc2200a985da4d942e775904e8ef79cf63",
+        "size_bytes": 9112
+      }
+    },
+    "review": "Independent read-only review cleared finalobserverSHAafbc0ad9248543c7b4ec48a773a799dde779138971636f49ff89acd0b2c47ca9 and successorowners.",
+    "comfy_mutations": 0
+  },
+  "owner_tests": {
+    "passed": 14,
+    "receipt": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/owner-tests-01.xml",
+      "sha256": "804b42fb555326553f2e58e494ddd7f3081e13c527900c158bd4dcb5d42ae2fc",
+      "size_bytes": 3611
+    },
+    "scope": "Native and JevBench exactprobe sourcebinding, unknown-beforelaunch refusal and nohelpers duringdry execution; noGPU/actor."
+  },
+  "prior_attempt": {
+    "plan": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/launch-plan-03.json",
+      "sha256": "97322ddffd022f7f2d7a9087cb2460f85d3f03726417c40f772a8e6a08c9b188",
+      "size_bytes": 21055
+    },
+    "closure": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/root-external-closure-01.json",
+      "sha256": "0edea13c746f08874233ffa64ae0cd69394c7b6a4473147208f52b76665adee6",
+      "size_bytes": 356016
+    },
+    "receipt": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-01/fit-01/receipt.json",
+      "sha256": "851c3567f1ba26acd2745adb6d505dc145256040262b21428c562eabf9417fc8",
+      "size_bytes": 222383
+    },
+    "completed_ledger_updates": 119,
+    "planned_updates": 142,
+    "in_flight_effects": "Unknown after completedledger119; noresumption orsumclaim.",
+    "development_examples_evaluated": 0,
+    "usable_adapter_written": false,
+    "failure_trigger": "HTTPqueueECONNREFUSED underpreviousHTTP-onlyowner",
+    "model_quality_failure": false,
+    "owned_whole_closed": true,
+    "changed_sources": [],
+    "last_observed_resources": {
+      "process_peak_rss_bytes": 25300299776,
+      "cuda_allocated_bytes": 24164000768,
+      "cuda_reserved_bytes": 25478299648,
+      "peak_cuda_allocated_bytes": 26847079424,
+      "peak_cuda_reserved_bytes": 27739029504
+    },
+    "last_live_memory_peak_bytes": 27310567424,
+    "last_live_memory_swap_peak_bytes": 0,
+    "final_postexit_cgroup_counters": null
+  },
+  "fresh_retry": {
+    "plan": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/launch-plan-02.json",
+      "sha256": "ceec5040b7582fe01d1b749f90e0a0673c97ad66c035e4dc8a218f5c37c297c6",
+      "size_bytes": 23421
+    },
+    "actor_intent": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/actor-intent-01.json",
+      "sha256": "9de936213f55a782616d4951ace50b4b1bf8f261d2148712bae011bdf9e78e8c",
+      "size_bytes": 786
+    },
+    "actor": {
+      "pid": 28504,
+      "pgid": 28504,
+      "sid": 28504,
+      "start_ticks": 307572
+    },
+    "output": "artifacts/jev-runtime/native-v2-training-20261022-02/fit-01",
+    "started": true,
+    "model_loads": null,
+    "completed_updates": null,
+    "status_scope": "Started snapshot; finalreceipt notyetavailable.",
+    "training_recipe": {
+      "updates": 142,
+      "development_examples": 37,
+      "development_updates": 0,
+      "lr": 5e-05,
+      "seed": 42,
+      "base_dtype": "BF16",
+      "deployment_quantization": "NF4",
+      "prompt_format": "shared-elements-v2"
+    },
+    "execution_source_pins": 104,
+    "resume": false,
+    "initial_comfy_state": "absent_confirmed",
+    "initial_mem_available_bytes": 123996065792,
+    "separate_native_allocator_and_memcg_caps_bytes": 42949672960,
+    "memory_swap_max_bytes": 0
+  },
+  "next_fresh_jevbench": {
+    "plan": {
+      "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-04.json",
+      "sha256": "9cbd5b1b96d51fd3698c00dd3cf812378fc1a994b84666aa7774281f2f5d54cf",
+      "size_bytes": 54934
+    },
+    "started": false,
+    "suites_reported_separately": true,
+    "public_questions": 231,
+    "coherence_mini_slots": 1248
+  },
+  "scores": {
+    "fresh_jevbench": null,
+    "fresh_browser": null,
+    "previous_browser": {
+      "passed": 5,
+      "total": 10,
+      "unchanged": true
+    },
+    "historical_jevbench": {
+      "public_correct": 197,
+      "public_total": 231,
+      "default_coherence": 40.5,
+      "independent_development_coherence": 71.96,
+      "answer_date": "2026-10-08",
+      "rescore_date": "2026-10-22",
+      "fresh_GX10_inference": false
+    }
+  },
+  "files": [
+    {
+      "path": "artifacts/jev-runtime/gx10-boot-identity-20261022-01/comfy_observer.py",
+      "sha256": "afbc0ad9248543c7b4ec48a773a799dde779138971636f49ff89acd0b2c47ca9",
+      "size_bytes": 13982
+    },
+    {
+      "path": "artifacts/jev-runtime/gx10-boot-identity-20261022-01/test_comfy_observer.py",
+      "sha256": "d63f62be214ad88b2e3e5d5cc5bb42332eb040b73c2219cfde9280f73b238c3d",
+      "size_bytes": 11443
+    },
+    {
+      "path": "artifacts/jev-runtime/gx10-boot-identity-20261022-01/observer-tests-02.xml",
+      "sha256": "6e0ddc54935aea0b800bc115305ecfdc2200a985da4d942e775904e8ef79cf63",
+      "size_bytes": 9112
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/launch_training.py",
+      "sha256": "7fe5d24faceaac41257bfd2a711af5a9eeee5f6ead3524bd6336a8231bdbe13e",
+      "size_bytes": 13692
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/training_entry.py",
+      "sha256": "fa2f909d2af1a31409380e90d3e84bee60c6037bdeff6f0abef0cad29f5c3553",
+      "size_bytes": 1330
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/test_owner_observer.py",
+      "sha256": "cb45bc7d2ce67a4206bafb6201a39188f575acb3331b5fd70609eebf97483c9d",
+      "size_bytes": 4575
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/owner-tests-01.xml",
+      "sha256": "804b42fb555326553f2e58e494ddd7f3081e13c527900c158bd4dcb5d42ae2fc",
+      "size_bytes": 3611
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/launch-plan-01.json",
+      "sha256": "cfcd34106604253970526554ba561fce133b095469d1b67474ae90ac575277fc",
+      "size_bytes": 22522
+    },
+    {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-02/launch-plan-02.json",
+      "sha256": "ceec5040b7582fe01d1b749f90e0a0673c97ad66c035e4dc8a218f5c37c297c6",
+      "size_bytes": 23421
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/launch_score_with_observer.py",
+      "sha256": "42c5bcea9bc443f39d6b524635edf064ceb40ca31cbe0fc3385b0c1d81c7f7fc",
+      "size_bytes": 14841
+    },
+    {
+      "path": "artifacts/jevbench/20261022-local-score-01/launch-plan-04.json",
+      "sha256": "9cbd5b1b96d51fd3698c00dd3cf812378fc1a994b84666aa7774281f2f5d54cf",
+      "size_bytes": 54934
+    }
+  ]
+}

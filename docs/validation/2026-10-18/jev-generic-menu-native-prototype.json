@@ -1,0 +1,93 @@
+{
+  "schema_id": "jev-owned-generic-menu-prototype-v1",
+  "stage": "independent_native_reachability_prototype_complete_no_training_admission",
+  "source_HOLD": {
+    "path": "artifacts/jev-runtime/generic-menu-prototype-20261018-01/source-HOLD-03/HOLD.json",
+    "sha256": "065130af3257116ce78490d0a0c3a6484139cfe0ebb24175340f5950d0747533",
+    "size_bytes": 12634
+  },
+  "proof_receipt": {
+    "path": "artifacts/jev-runtime/generic-menu-prototype-20261018-01/proof-03/receipt.json",
+    "sha256": "dca8f38b0739df3ffe2bb35fab906bcb9963419d2a3930b4daf33a4b0cf6cc73",
+    "size_bytes": 7029
+  },
+  "closed_inventory": {
+    "path": "artifacts/jev-runtime/generic-menu-prototype-20261018-01/proof-03-inventory.json",
+    "sha256": "4a23c8732a3119dda2e8265cb702869c261b7b918289f43f5788e23486759dc9",
+    "size_bytes": 47705
+  },
+  "root_review": {
+    "path": "artifacts/jev-runtime/generic-menu-prototype-20261018-01/root-review-01.json",
+    "sha256": "2041fafaea6881b0250871b4b5c82ac60565c974286a98b64d8cfe7a754cb0a5",
+    "size_bytes": 312
+  },
+  "counts": {
+    "all_native_requests": 20,
+    "all_request_heads": 60,
+    "episodes": 14,
+    "initial_gold_heads": 20,
+    "initial_heads": 42,
+    "initial_requests": 14,
+    "native_actions": 37,
+    "native_input_events": 49,
+    "raw_READ_STATE": 51
+  },
+  "split_counts": {
+    "development": {
+      "all_actual_native_requests": 7,
+      "initial_DTO_requests": 5,
+      "initial_teacher_operations": {
+        "CLICK": 2,
+        "SCROLL_DOWN": 3
+      },
+      "offered_heads_all_actual_requests": 21,
+      "offered_heads_initial": 15,
+      "supervised_gold_heads_initial": 7
+    },
+    "train": {
+      "all_actual_native_requests": 13,
+      "initial_DTO_requests": 9,
+      "initial_teacher_operations": {
+        "CLICK": 4,
+        "SCROLL_DOWN": 5
+      },
+      "offered_heads_all_actual_requests": 39,
+      "offered_heads_initial": 27,
+      "supervised_gold_heads_initial": 13
+    }
+  },
+  "profile": {
+    "executor": "byte-identical original v4/native executor as pinned v5 manifest",
+    "manifest_sha256": "c0f2811f1fc0b68f280ac5227713fb5028e72a35aa525276cd2472c79296b5ac",
+    "name": "composed-visible-hover-entries-v5",
+    "source_sha256": "7847b2f9eecb3f9d492ccfdf8415c52632b99ac6ead6df560c49c3caf004e141"
+  },
+  "behavior": "Six goal-only menu-vs-scroll pairs and two no-menu controls across eight scenes; true0/1/3prior scrolls. Native fresh offered menu click reveals a real link, native link click reaches a freshly visible/unoccluded section; scroll branch reveals its near section. Every selected input uses unchanged executor and is proved before compatibility labels are emitted.",
+  "request_integrity": "Exact ordered wire authority is native-requests.jsonl and compatibility-wire-requests.jsonl; proof.json is a sorted report copy. All unused heads/candidates/state/history remain in the original native requests.",
+  "validation": {
+    "root_full_source_and_tests_read": true,
+    "root_pytest": "62 passed in0.65s",
+    "root_ruff": "pass",
+    "native_episodes": 14,
+    "native_exit_code": 0,
+    "actual_model_or_helper_POSTs": 0,
+    "external_requests": 0
+  },
+  "failed_runs_preserved": {
+    "proof01": "failed before browser due missing jinja2 in workspace.venv; no dependency installed",
+    "proof02": "first menu branch reached anchor; legacy rawsink registration absent, so DTO seq-1 was rejected before compatibility publication",
+    "proof03": "fresh full14episode complete with exact source97230 and all primary original wire journals retained",
+    "source_HOLD01": "409477..pre-execution environment-placeholder fix; no browser run",
+    "source_HOLD02": "f36a32..fullsource62tests; actualproof01 missing venv dependencies and actualproof02 rawsink registration failure retained"
+  },
+  "limitations": [
+    "Goals currently explicitly distinguish a reading directory from continuing down; lexical cues can explain replay success.",
+    "Train/development are different authored scenes but share the same generator/template family; neither local proof nor a future14choice replay establishes generalization.",
+    "Before training, diversify goal semantics and split complete scenes/template families; do not use six exposed website traces/goals/target actions as labels.",
+    "Demonstrated teacher actions are not an exhaustive proof that every alternative action is invalid.",
+    "These are native reachability and serialization proofs, not model policy performance or benchmark task scores."
+  ],
+  "public_collection_admitted": false,
+  "fit_bundle_created": false,
+  "model_policy_score": null
+}

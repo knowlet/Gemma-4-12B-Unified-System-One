@@ -1,0 +1,60 @@
+{
+  "schema_id": "composed-observation-integration-work-state-v1",
+  "sequence": 107,
+  "created_at_utc": "2026-10-22T09:35:13.468291+00:00",
+  "previous_state": {
+    "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-106.json",
+    "sha256": "290e8d998b0fc2324e034b44ef37d10cb9a87168d892a9fa4a440461bb7fb448",
+    "size_bytes": 2725
+  },
+  "goal_status": "active",
+  "status": "fresh_jevbench_both_complete_raw10_baseline_complete_native_N3_running",
+  "fresh_jevbench": {
+    "public_correct": 195,
+    "public_total": 231,
+    "coherence_fraction": 0.41263071895424835,
+    "report": {
+      "path": "docs/validation/2026-10-22/jevbench-both-fresh-gx10-results.json",
+      "sha256": "5035e9b5745336d5361d08ec6fa55360f752df408aa18c0a24e48388d730e275",
+      "size_bytes": 9757
+    }
+  },
+  "fresh_browser": {
+    "attempts": 10,
+    "successes": 2,
+    "known4": "1/4",
+    "public6": "1/6",
+    "external_closed": true,
+    "independent_DOM_replay_exact": true,
+    "report": {
+      "path": "docs/validation/2026-10-22/jev-current-nf4-raw-complete-results.json",
+      "sha256": "8bf6c96986cfc1a3a49c3d2cd41dfa4050f23188acc65912180ade619c9d3e4a",
+      "size_bytes": 8193
+    }
+  },
+  "native_N3_launch_snapshot": {
+    "unit": "jev-native-v2-training-20261022-01.service",
+    "pid": 67392,
+    "invocation_id": "74051f6f307c4f1b9466b5ca925da57e",
+    "owner_session": 51774,
+    "plan": {
+      "path": "artifacts/jev-runtime/native-v2-training-20261022-03/launch-plan-02.json",
+      "sha256": "41435aa11dca758f91fab77cc739a5595dfe2d20ac37f62d28a98a837bb76a48",
+      "size_bytes": 26606
+    },
+    "planned_training_updates": 142,
+    "planned_zero_update_development": 37,
+    "progress_at_last_observation": 31,
+    "fresh_full_run_not_resume": true,
+    "scope": "Historical launch/progress snapshot; query actual systemd/PID/current progress before claiming live or restarting."
+  },
+  "native142_and37_complete": false,
+  "matched_nativeV2_browser_complete": false,
+  "all_six_Decision3_complete": false,
+  "other_models_beaten": false,
+  "next": [
+    "Complete/authenticate/close current native142/37 run",
+    "Matched currentNF4 nativeV2 full10 browser arm",
+    "Fresh actualDecision3 local baselines with common helper; maintain capacity refusal separately until an admissible profile exists"
+  ]
+}

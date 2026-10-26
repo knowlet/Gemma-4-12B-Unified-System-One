@@ -1,0 +1,180 @@
+{
+  "schema_id": "jev-public07-240-v3-browser-results-v1",
+  "stage": "all_ten_attempted_owned_processes_closed_original_failures_preserved",
+  "qualification_sha256": "9bf5bff5f43d15e461c1f5002932419bf0623bb27ad4e15a8596d0a0f4b3fb1e",
+  "fit_manifest_sha256": "1b56f7697b551ca1869eda098fb4a82941ee0c5ab19259b1c8c9ea44cbcba78c",
+  "protocol": "Both known4 and exposed new6; unchanged v3 observation/executor/judges,1120x780,one repeat,max16,seed20261014,reasoning none,32 native policy tokens/20s,128 fixed base helper tokens with action LoRA disabled.",
+  "known_four": {
+    "summary": {
+      "path": "artifacts/jev-runtime/public07-240-known-v3-browser-20261018-01/results/summary.json",
+      "sha256": "b266065c5cad18e517b68f7a1274e879b865acdbee30c84d60ff904ef5b169bc",
+      "size_bytes": 283850
+    },
+    "closed_index": {
+      "path": "artifacts/jev-runtime/public07-240-known-v3-browser-20261018-01/closed-index-01.json",
+      "sha256": "c070df25bcdcacfe6fa74689d3ed47f68c3de24cd5e057075f90820bec8bffc8",
+      "size_bytes": 9981
+    },
+    "score": {
+      "attempts": 4,
+      "successes": 1,
+      "policy_calls": 33,
+      "text_calls": 3,
+      "premature_done_count": 1
+    },
+    "tasks": [
+      {
+        "case_id": "public-arxiv-title-filter-results-v1-000",
+        "success": false,
+        "goal_satisfied": false,
+        "status": "done",
+        "error": null,
+        "policy_calls": 5,
+        "text_calls": 1,
+        "premature_done": true
+      },
+      {
+        "case_id": "public-arxiv-original-paper-open-v1-000",
+        "success": false,
+        "goal_satisfied": false,
+        "status": "ready",
+        "error": "StalePage: Document is navigating",
+        "policy_calls": 6,
+        "text_calls": 1,
+        "premature_done": false
+      },
+      {
+        "case_id": "public-python-counter-most-common-v1-000",
+        "success": true,
+        "goal_satisfied": true,
+        "status": "done",
+        "error": null,
+        "policy_calls": 6,
+        "text_calls": 0,
+        "premature_done": false
+      },
+      {
+        "case_id": "public-nasa-mars-facts-moons-v1-000",
+        "success": false,
+        "goal_satisfied": false,
+        "status": "ready",
+        "error": "Runner stopped at the 16-decision budget",
+        "policy_calls": 16,
+        "text_calls": 1,
+        "premature_done": false
+      }
+    ]
+  },
+  "new_six": {
+    "summary": {
+      "path": "artifacts/jev-runtime/public07-240-six-v3-browser-20261018-01/results/summary.json",
+      "sha256": "614207c790ddeae8f2b84d2337749e892aaa721a2472b8d0db5c6f27bcac884b",
+      "size_bytes": 449445
+    },
+    "closed_index": {
+      "path": "artifacts/jev-runtime/public07-240-six-v3-browser-20261018-01/closed-index-01.json",
+      "sha256": "a454a055a6f0bffcad980d037dddfc6ffd8694099685c7b3680d54583910ede9",
+      "size_bytes": 13377
+    },
+    "score": {
+      "attempts": 6,
+      "successes": 3,
+      "policy_calls": 41,
+      "text_calls": 1,
+      "premature_done_count": 0
+    },
+    "tasks": [
+      {
+        "case_id": "heldout-public-000-000",
+        "success": true,
+        "goal_satisfied": true,
+        "status": "done",
+        "error": null,
+        "policy_calls": 3,
+        "text_calls": 0,
+        "premature_done": false
+      },
+      {
+        "case_id": "heldout-public-001-000",
+        "success": true,
+        "goal_satisfied": true,
+        "status": "done",
+        "error": null,
+        "policy_calls": 3,
+        "text_calls": 0,
+        "premature_done": false
+      },
+      {
+        "case_id": "heldout-public-002-000",
+        "success": false,
+        "goal_satisfied": false,
+        "status": "ready",
+        "error": "Runner stopped at the 16-decision budget",
+        "policy_calls": 16,
+        "text_calls": 0,
+        "premature_done": false
+      },
+      {
+        "case_id": "heldout-public-003-000",
+        "success": true,
+        "goal_satisfied": true,
+        "status": "done",
+        "error": null,
+        "policy_calls": 12,
+        "text_calls": 0,
+        "premature_done": false
+      },
+      {
+        "case_id": "heldout-public-004-000",
+        "success": false,
+        "goal_satisfied": false,
+        "status": "blocked",
+        "error": null,
+        "policy_calls": 1,
+        "text_calls": 0,
+        "premature_done": false
+      },
+      {
+        "case_id": "heldout-public-005-000",
+        "success": false,
+        "goal_satisfied": false,
+        "status": "predicted",
+        "error": "RuntimeError: Model provider returned HTTP 502; no action executed.",
+        "policy_calls": 6,
+        "text_calls": 1,
+        "premature_done": false
+      }
+    ]
+  },
+  "previous120": {
+    "known": "1/4",
+    "new": "3/6",
+    "qualifier_sha256": "c1fea3d45a7841c410f9c9c20eba32d3794025611ded8a68eeb9422baab50125"
+  },
+  "diagnosis": {
+    "known_arxiv_title": "Missing exact-phrase quotes in helper value; fresh query/applied-form/original-result checks fail after premature DONE.",
+    "known_arxiv_original": "Still changes draft oldest to relevance, then Next/Page1; final native click recorded before StalePage: Document is navigating. A settling change alone does not establish the intended original-paper task.",
+    "known_nasa": "Enters sitewide search, then global Planets/Moons/Solar System Facts navigation loops; ends on /solar-system instead of the requested local section at16 decisions.",
+    "new_curl": "16-decision downward-scroll budget exhausted with v3; no menu-observation change included in this epoch comparison.",
+    "new_pubmed_home": "BLOCKED at unusable initial page; strict task judge false, no successful task claimed.",
+    "new_pubmed_search": {
+      "HTTP_status": 502,
+      "helper_raw_output": "thought\n```json\n{\"text\": \"migraine\"}\n```",
+      "usage": {
+        "input_tokens": 641,
+        "output_tokens": 16
+      },
+      "actual_max_new_tokens": 128,
+      "generation_complete": true,
+      "action_adapter_state": "disabled_for_pinned_base_helper",
+      "failure_stage": "validation",
+      "error": {
+        "type": "FieldTextError",
+        "message": "Text helper did not generate valid JSON"
+      }
+    }
+  },
+  "interpretation": "Doubling updates from120 to240 did not improve either observed browser success count. The22 exposed native dev outputs were also identical decoded legal actions at16/22. Live page states/timing differ, so this is a recorded two-run comparison rather than a causal estimate or evidence of unchanged behavior on every state.",
+  "relative_model_victory_attested": false,
+  "new6_is_blind_holdout": false
+}

@@ -1,0 +1,242 @@
+{
+  "profile": "bf16-mmap-offload-cpu-owned-v1",
+  "selected_config": {
+    "profile": "bf16-mmap-offload-cpu-owned-v1",
+    "unit": "jev-d3-mmap-cpu-20261023-02.service",
+    "nonce": "jev-d3-boundary-4b5c490a03c43db2cca60c44a31a215b",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "output": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/actual-01",
+    "sources": [
+      {
+        "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-owner-20261023-02/controller.py",
+        "sha256": "0f12798ddd700848db6699cc57a3f21c53e5e3459610768a373aa0634a99c687",
+        "size_bytes": 29935
+      },
+      {
+        "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/fixture.py",
+        "sha256": "d86ff0144a22e68f2399b1c0ed8c416ceab14ae892b7c27a9acba1f059844185",
+        "size_bytes": 26546
+      },
+      {
+        "path": "artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/selection.json",
+        "sha256": "b03b26563fbf4da2847b475481aa9fd9258d885644ad492ff8c36633b278c09d",
+        "size_bytes": 7518
+      },
+      {
+        "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+        "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+        "size_bytes": 21002
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+        "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+        "size_bytes": 38483
+      },
+      {
+        "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+        "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+        "size_bytes": 2196
+      }
+    ],
+    "selection": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/bf16-mmap-offload-cpu-20261023-01/selection.json",
+    "selection_sha256": "b03b26563fbf4da2847b475481aa9fd9258d885644ad492ff8c36633b278c09d",
+    "actor_entry_sha256": "d86ff0144a22e68f2399b1c0ed8c416ceab14ae892b7c27a9acba1f059844185",
+    "mem_total_bytes": 130595864576
+  },
+  "completed": false,
+  "primary_error": {
+    "phase": "controller",
+    "type": "ValueError",
+    "message": "Actual process limit: Max core file size",
+    "evidence": null,
+    "returncode": null,
+    "stdout": null,
+    "stderr": null
+  },
+  "secondary_errors": [],
+  "closure": {
+    "profile": "decision3-external-unit-terminal-boundary-v1",
+    "selection": {
+      "unit": "jev-d3-mmap-cpu-20261023-02.service",
+      "nonce": "jev-d3-boundary-4b5c490a03c43db2cca60c44a31a215b",
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "memory_max_bytes": 2147483648,
+      "runtime_seconds": 30,
+      "stop_seconds": 3
+    },
+    "invocation_id": "9341fda6ae6349ec95434054b94094f0",
+    "actor": {
+      "pid": 306483,
+      "start_ticks": 6208462,
+      "pgid": 306483,
+      "sid": 306483,
+      "uid": 1001,
+      "state": "S",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-mmap-cpu-20261023-02.service"
+    },
+    "tracked_cohort": [
+      {
+        "pid": 306483,
+        "start_ticks": 6208462,
+        "pgid": 306483,
+        "sid": 306483,
+        "uid": 1001,
+        "state": "S",
+        "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-mmap-cpu-20261023-02.service"
+      }
+    ],
+    "before_stop": {
+      "Type": "exec",
+      "Restart": "no",
+      "TimeoutStopUSec": "3s",
+      "RuntimeMaxUSec": "30s",
+      "RemainAfterExit": "yes",
+      "MainPID": "306483",
+      "Result": "success",
+      "OOMPolicy": "kill",
+      "ExecMainPID": "306483",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "ControlGroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-mmap-cpu-20261023-02.service",
+      "Delegate": "no",
+      "MemoryAccounting": "yes",
+      "MemoryHigh": "infinity",
+      "MemoryMax": "2147483648",
+      "MemorySwapMax": "0",
+      "KillMode": "control-group",
+      "KillSignal": "15",
+      "FinalKillSignal": "9",
+      "SendSIGKILL": "yes",
+      "Description": "jev-d3-boundary-4b5c490a03c43db2cca60c44a31a215b",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "InvocationID": "9341fda6ae6349ec95434054b94094f0"
+    },
+    "closure_mode": "authenticated_stop",
+    "stop_required": true,
+    "already_terminal_identity_samples": [],
+    "already_terminal_identity_sandwich_verified": false,
+    "stop_result": "",
+    "after_stop": {
+      "Type": "",
+      "Restart": "no",
+      "TimeoutStopUSec": "1min 30s",
+      "RuntimeMaxUSec": "infinity",
+      "RemainAfterExit": "no",
+      "MainPID": "0",
+      "Result": "success",
+      "OOMPolicy": "",
+      "ExecMainPID": "0",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "ControlGroup": "",
+      "Delegate": "no",
+      "MemoryAccounting": "yes",
+      "MemoryHigh": "infinity",
+      "MemoryMax": "infinity",
+      "MemorySwapMax": "infinity",
+      "KillMode": "control-group",
+      "KillSignal": "15",
+      "FinalKillSignal": "9",
+      "SendSIGKILL": "yes",
+      "Description": "jev-d3-mmap-cpu-20261023-02.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "InvocationID": ""
+    },
+    "primary_error": {
+      "phase": "controller",
+      "type": "ValueError",
+      "message": "Actual process limit: Max core file size",
+      "evidence": null,
+      "returncode": null,
+      "stdout": null,
+      "stderr": null
+    },
+    "closure_errors": [],
+    "post_stop_terminal_verified": true,
+    "cgroup_absent": true,
+    "two_process_scans": [
+      {
+        "matches": [],
+        "unknown": []
+      },
+      {
+        "matches": [],
+        "unknown": []
+      }
+    ],
+    "sources_unchanged": true,
+    "whole_unit_exit_confirmed": true,
+    "observed_cgroup_cohort_exit_confirmed": true,
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "model_qualified": false,
+    "scope": "Authenticated selected unit and observed cgroup cohort only. The audited fork/setsid/empty-env case is covered; explicit delegated cgroup migration or user-manager requests are not prevented."
+  },
+  "final_host": {
+    "observation": {
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "mem_total_bytes": 130595864576,
+      "mem_available_bytes": 28710141952,
+      "comfy_running": 0,
+      "comfy_pending": 0,
+      "comfy_state": "http_idle",
+      "comfy_evidence": {
+        "transport": "HTTP",
+        "comfy_running": 0,
+        "comfy_pending": 0,
+        "http_status": 200,
+        "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+      }
+    },
+    "reserve_bytes": 26119172916,
+    "required_available_bytes": 26119172916,
+    "initial": false
+  },
+  "sources_unchanged": true,
+  "state": {
+    "initial_host": {
+      "observation": {
+        "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+        "mem_total_bytes": 130595864576,
+        "mem_available_bytes": 28738809856,
+        "comfy_running": 0,
+        "comfy_pending": 0,
+        "comfy_state": "http_idle",
+        "comfy_evidence": {
+          "transport": "HTTP",
+          "comfy_running": 0,
+          "comfy_pending": 0,
+          "http_status": 200,
+          "response_sha256": "6c1bb554d677ad1ea8526c38e26e141e6faf4f2fab85faaa8d264aeda0e7b4f0"
+        }
+      },
+      "reserve_bytes": 26119172916,
+      "required_available_bytes": 28266656564,
+      "initial": true
+    },
+    "systemd_run_stdout": "",
+    "preclose_exit_memory_raw": {
+      "MainPID": "306483",
+      "Result": "success",
+      "ExecMainPID": "306483",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "MemoryPeak": "12365824",
+      "Description": "jev-d3-boundary-4b5c490a03c43db2cca60c44a31a215b",
+      "InvocationID": "9341fda6ae6349ec95434054b94094f0"
+    },
+    "preclose_exit_memory_authenticated": true,
+    "preclose_main_live": true,
+    "closure_finished_monotonic": 62085.092692994
+  },
+  "unit_attempted": true,
+  "tiny_true_cpu_only": true,
+  "large_model_GPU_20s_or_quality_qualified": false,
+  "whole_tree_exit_confirmed": false,
+  "comfy_service_modified": false
+}

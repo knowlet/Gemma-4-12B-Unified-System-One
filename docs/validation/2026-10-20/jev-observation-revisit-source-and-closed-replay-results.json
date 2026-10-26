@@ -1,0 +1,81 @@
+{
+  "schema_id": "jev-observation-revisit-source-and-closed-replay-results-v1",
+  "date": "2026-10-20",
+  "status_at_milestone": "SOURCE_AND_CLOSED_REPLAY_CLEAR_CORE_NOT_WIRED",
+  "problem": "The existing Agent stops only three consecutive page_changed=false non-WAIT actions. Returning to previously observed content can evade that rule.",
+  "change": "A bounded informational tracker records accepted observations and reports previous observation sequence matches. It selects no action, changes no candidate/order/head and infers no goal state or lack of effect.",
+  "identity": "Exact matching includes document/page_key/guards/geometry and all observed fields except screenshot and legacy fingerprint. Explicit optional content projection keeps fixed URL/title/text/viewport/scroll/editable fields and ordered semantic action descriptors, while excluding document/binding/geometry/guard identity. Projection equality is not full state or action authority; unknown top-level fields are not universally retained by it.",
+  "bounds": {
+    "retained_digest_tuples": 32,
+    "metadata_bytes": 4096,
+    "raw_pages_retained": false,
+    "idempotent_same_sequence": true
+  },
+  "validation": {
+    "pure_tests": 51,
+    "pytest_seconds": 0.18,
+    "Ruff_and_format": "PASS",
+    "saved_observations_replayed": 51,
+    "input_unchanged": true,
+    "replay_errors": 0,
+    "independent_recomputation": "All51 digest/prior-sequence/cross-document/event joins verified"
+  },
+  "closed_replay": [
+    {
+      "case": "arxiv",
+      "observations": 17,
+      "exact_events": 0,
+      "content_projection_events": 1,
+      "cross_document_events": 1,
+      "scope": "Q95 pagination content at sequence5 returns at7; not the older11Go trace."
+    },
+    {
+      "case": "NASA",
+      "observations": 17,
+      "exact_events": 12,
+      "content_projection_events": 12,
+      "cross_document_events": 0
+    },
+    {
+      "case": "curl",
+      "observations": 17,
+      "exact_events": 0,
+      "content_projection_events": 0,
+      "cross_document_events": 0,
+      "scope": "Changing scroll state is not classified as a revisit; this failure remains uncovered."
+    }
+  ],
+  "evidence": {
+    "source": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/observation_revisit.py",
+      "sha256": "80249cdd386619b9121160c94d3a071f586cfa40d75977a7e751138175a6b5d0",
+      "size_bytes": 10461
+    },
+    "tests": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/test_observation_revisit.py",
+      "sha256": "417a0c6956204bd06f502a68c70f67ed7097d39764948c0ea110d8d355bbc277",
+      "size_bytes": 11209
+    },
+    "validation": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/pure-validation-summary-01.json",
+      "sha256": "88015f68f145d1465a53789576be2f6e99ed93aa081483b3c85c563041e47e70",
+      "size_bytes": 1897
+    },
+    "replay": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/closed-state-replay-01.json",
+      "sha256": "e8603635f57d0b401e4414ccc408226e0249a8b8116bb8567573c8f258e01e6b",
+      "size_bytes": 9524
+    },
+    "root_review": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/root-source-closed-replay-review-01.json",
+      "sha256": "e5080e48f678d4a9a76311e6058d11dfd0d47b7a3f34ba116c0d7ac865379759",
+      "size_bytes": 2873
+    },
+    "independent_review": {
+      "path": "artifacts/jev-runtime/generic-state-revisit-progress-20261020-01/independent-source-closed-replay-review-01.json",
+      "sha256": "ecaede35be9dab57148dbc03e52c0ceec7f20e2ccf470a0fa5f5b27b3c67bcc0",
+      "size_bytes": 7031
+    }
+  },
+  "remaining": "Connect a separately named experimental profile to accepted observation sequencing and existing request state, then obtain fresh complete input capacity and real-browser results. Core milestone alone changes no live Agent request. All three replayed original tasks remain failures, full10score remains5/10, and no model superiority is established."
+}

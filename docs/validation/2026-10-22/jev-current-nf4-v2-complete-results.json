@@ -1,0 +1,449 @@
+{
+  "schema_id": "jev-current-nf4-v2-complete-browser-results-v1",
+  "created_at_utc": "2026-10-22T10:10:40.895007+00:00",
+  "status": "COMPLETE_FIXED10_INDEPENDENT_DOM_REPLAY_EXTERNAL_CLOSURE",
+  "hardware": "GX10 GB10",
+  "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+  "base_model_id": "knowlet/Gemma-4-12B-Unified-System-One",
+  "revision": "a66f836b56605039fe040f330180e336d19b3362",
+  "quantization": "nf4",
+  "prompt_format": "shared-elements-v2",
+  "helper": "same NF4 base model with action adapter disabled; unchanged versus raw03",
+  "protocol": {
+    "known_tasks": 4,
+    "public_tasks": 6,
+    "seed": 20261014,
+    "max_policy_calls_per_task": 16,
+    "policy_and_helper_timeout_seconds": 20,
+    "HTTP_timeout_seconds": 25,
+    "helper_max_tokens": 128,
+    "context_tokens": 8192,
+    "observation_profile": "composed-visible-text-settled-v7",
+    "candidate_or_judge_changes": false
+  },
+  "evaluation_complete": true,
+  "aggregate": {
+    "attempts": 10,
+    "successes": 4,
+    "goals_satisfied": 4,
+    "done": 6,
+    "premature_done": 2,
+    "execution_errors": 2,
+    "policy_calls": 85,
+    "text_calls": 5
+  },
+  "success_rate": 0.4,
+  "groups": [
+    {
+      "name": "known4",
+      "attempts": 4,
+      "successes": 1,
+      "policy_calls": 24,
+      "text_calls": 4
+    },
+    {
+      "name": "public6",
+      "attempts": 6,
+      "successes": 3,
+      "policy_calls": 61,
+      "text_calls": 1
+    }
+  ],
+  "failure_outcomes": {
+    "premature_done": 2,
+    "decision_budget_exhausted": 2,
+    "blocked": 2
+  },
+  "HTTP_exchanges": {
+    "count": 90,
+    "statuses": {
+      "200": 90
+    },
+    "kinds": {
+      "/v1/systemone": 85,
+      "/chat/completions": 5
+    },
+    "scope": "Stored server publication/body hashes and sealed journal join only; server evidence alone does not prove client response delivery."
+  },
+  "paired_raw03_comparison": {
+    "fixed_denominator": 10,
+    "raw03_successes": 2,
+    "v2_01_successes": 4,
+    "gains": [
+      "heldout-public-001",
+      "heldout-public-003"
+    ],
+    "losses": [],
+    "gains_count": 2,
+    "losses_count": 0,
+    "unchanged_success_task_ids": [
+      "public-python-counter-most-common-v1",
+      "heldout-public-000"
+    ],
+    "unchanged_failure_task_ids": [
+      "public-arxiv-title-filter-results-v1",
+      "public-arxiv-original-paper-open-v1",
+      "public-nasa-mars-facts-moons-v1",
+      "heldout-public-002",
+      "heldout-public-004",
+      "heldout-public-005"
+    ],
+    "task_outcomes": [
+      {
+        "task_id": "public-arxiv-title-filter-results-v1",
+        "attempt_id": "public-arxiv-title-filter-results-v1-000",
+        "raw03": {
+          "success": false,
+          "status": "done",
+          "goal_satisfied": false,
+          "premature_done": true,
+          "policy_calls": 9,
+          "text_calls": 1,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": false,
+          "status": "done",
+          "goal_satisfied": false,
+          "premature_done": true,
+          "policy_calls": 6,
+          "text_calls": 1,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "public-arxiv-original-paper-open-v1",
+        "attempt_id": "public-arxiv-original-paper-open-v1-000",
+        "raw03": {
+          "success": false,
+          "status": "blocked",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 7,
+          "text_calls": 1,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": false,
+          "status": "blocked",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 8,
+          "text_calls": 1,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "public-python-counter-most-common-v1",
+        "attempt_id": "public-python-counter-most-common-v1-000",
+        "raw03": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 5,
+          "text_calls": 1,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 6,
+          "text_calls": 1,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "public-nasa-mars-facts-moons-v1",
+        "attempt_id": "public-nasa-mars-facts-moons-v1-000",
+        "raw03": {
+          "success": false,
+          "status": "done",
+          "goal_satisfied": false,
+          "premature_done": true,
+          "policy_calls": 14,
+          "text_calls": 1,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": false,
+          "status": "blocked",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 4,
+          "text_calls": 1,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "heldout-public-000",
+        "attempt_id": "heldout-public-000-000",
+        "raw03": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 3,
+          "text_calls": 0,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 3,
+          "text_calls": 0,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "heldout-public-001",
+        "attempt_id": "heldout-public-001-000",
+        "raw03": {
+          "success": false,
+          "status": "done",
+          "goal_satisfied": false,
+          "premature_done": true,
+          "policy_calls": 4,
+          "text_calls": 0,
+          "execution_error": false
+        },
+        "v2_01": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 3,
+          "text_calls": 0,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "heldout-public-002",
+        "attempt_id": "heldout-public-002-000",
+        "raw03": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 0,
+          "execution_error": true
+        },
+        "v2_01": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 0,
+          "execution_error": true
+        }
+      },
+      {
+        "task_id": "heldout-public-003",
+        "attempt_id": "heldout-public-003-000",
+        "raw03": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 0,
+          "execution_error": true
+        },
+        "v2_01": {
+          "success": true,
+          "status": "done",
+          "goal_satisfied": true,
+          "premature_done": false,
+          "policy_calls": 12,
+          "text_calls": 0,
+          "execution_error": false
+        }
+      },
+      {
+        "task_id": "heldout-public-004",
+        "attempt_id": "heldout-public-004-000",
+        "raw03": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 0,
+          "execution_error": true
+        },
+        "v2_01": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 0,
+          "execution_error": true
+        }
+      },
+      {
+        "task_id": "heldout-public-005",
+        "attempt_id": "heldout-public-005-000",
+        "raw03": {
+          "success": false,
+          "status": "ready",
+          "goal_satisfied": false,
+          "premature_done": false,
+          "policy_calls": 16,
+          "text_calls": 1,
+          "execution_error": true
+        },
+        "v2_01": {
+          "success": false,
+          "status": "done",
+          "goal_satisfied": false,
+          "premature_done": true,
+          "policy_calls": 11,
+          "text_calls": 1,
+          "execution_error": false
+        }
+      }
+    ],
+    "raw03_profile": {
+      "profile": null,
+      "prompt_format": "raw-json-v1",
+      "adapter": "artifacts/jev-browser/20261015-action-lora-counterfactual-fit-01/adapter",
+      "adapter_manifest": null
+    },
+    "v2_01_profile": {
+      "profile": null,
+      "prompt_format": "shared-elements-v2",
+      "adapter": "artifacts/jev-runtime/native-v2-training-20261022-03/fit-01/adapter",
+      "adapter_manifest": null
+    },
+    "scope": "Descriptive paired outcomes only. Adapter and observation serialization both changed; no controlled attribution and no current cross-model win claim.",
+    "raw03_audit": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/independent-audit-raw03.json",
+      "sha256": "0edb616db1f8774b5353dd2114667f1d693189a8fadda6284f7ee8aeb590a6dd",
+      "size_bytes": 7466
+    },
+    "raw03_selected_plan": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-03/raw-03/selected-plan.json",
+      "sha256": "e6aab745961255af77258d3cf6bcbbb516d3c8d9bc3507ab327fd99774d187d0",
+      "size_bytes": 175011
+    }
+  },
+  "independent_audit": {
+    "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/independent-audit-v2-01.json",
+    "sha256": "f6f15214f49cd4ec2602ba0bc265884106a605df9993065a26a365be0898747c",
+    "size_bytes": 15198
+  },
+  "audit_checks": {
+    "fixed10_IDS_and_recorded_DOM_replay": true,
+    "worker_complete_and_group_receipts": true,
+    "all_output_index_hashes_and_exact_population": true,
+    "sealed_server_journal_hashes_sequences_and_population": true,
+    "HTTP_body_hashes_and_server_journal_join": true,
+    "external_terminal_identity_unit_actor_cgroup_two_scans_and_host": true,
+    "small_selected_source_artifact_full_hashes": true,
+    "root_recorded_all785_source_closure_no_changes": true,
+    "cache_alias_before_after_current_targets_stats_and_small_payloads": true,
+    "paired_exact_ten_prior_pins_DOM_and_outcomes": true
+  },
+  "output_inventory": {
+    "files": 703,
+    "bytes": 57545201
+  },
+  "selected_source_artifacts": {
+    "count": 785,
+    "logical_bytes": 24109068775,
+    "independent_small_file_full_sha256_count": 784,
+    "large_payload_full_sha256_independently_verified": false,
+    "large_payload_refs": [
+      {
+        "path": "artifacts/jev-local-hf/hub/blobs/04/049761b5163d98cd27f2fb2dffb86d20b4dc6894baf3ad711cff387e29b2a09e",
+        "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53",
+        "size_bytes": 23919549408
+      }
+    ],
+    "large_payload_scope": "Root owner records full785 unchanged source/artifact refs and before/after payload alias equality. Independent audit hashes784 small files and rechecks current exact alias chains, resolved targets, weight sizes and stat identities. No independent full23.9GB base-weight payload rehash is attempted or credited."
+  },
+  "external_closure": {
+    "unit": "jev-current-nf4-v2-20261022-01.service",
+    "invocation_id": "162ea2fa15394651861a59462050d4d3",
+    "actor": {
+      "pid": 75166,
+      "pgid": 75166,
+      "sid": 75166,
+      "start_ticks": 1175624
+    },
+    "terminal_success": true,
+    "two_clean_proc_scans": true,
+    "independent_actor_and_cgroup_currently_absent": true,
+    "cache_alias_count": 11,
+    "final_host_same_boot_total_known": true
+  },
+  "evidence": {
+    "launch_plan": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/launch-plan-v2-01.json",
+      "sha256": "73bff770e242b93d5b7b53d24ef933926bd63897a4707d6d2e2a0f06f4438b6d",
+      "size_bytes": 230019
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/selected-plan.json",
+      "sha256": "73bff770e242b93d5b7b53d24ef933926bd63897a4707d6d2e2a0f06f4438b6d",
+      "size_bytes": 230019
+    },
+    "jev_public_web_cases": {
+      "path": "scripts/jev_public_web_cases.py",
+      "sha256": "0ec9826d334cb2fbed24ade8780fa785291017d904b18233419ced760750bca3",
+      "size_bytes": 23665
+    },
+    "jev_heldout_public_cases": {
+      "path": "scripts/jev_heldout_public_cases.py",
+      "sha256": "339cddf596a25ab433ca66e23924631b6261e62efc06f351878d4ef5c3f6f8f9",
+      "size_bytes": 16622
+    },
+    "worker_receipt": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/receipt.json",
+      "sha256": "d9eea1fb73abf381c086dc0c903d0428bc91fc5f52e864d925cceb8c44acb1ec",
+      "size_bytes": 713778
+    },
+    "external_closure": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/root-external-closure.json",
+      "sha256": "695d695e198114a7e75f55346dcdd6c5d1188ada1ba293cd8d5c1ba6d9f47c70",
+      "size_bytes": 867172
+    },
+    "output_index": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/output-index.json",
+      "sha256": "b1914dbaa59f71d82bb35224b9a0b0404c74ee1c9cf506329efab94dfddc89e9",
+      "size_bytes": 95857
+    },
+    "server_index": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/v2-01/browser/server-index.json",
+      "sha256": "0976289748be750fe93dee9fc40f8d87f9f4252ff0f1bd82da5d046e02e17f9d",
+      "size_bytes": 33042
+    },
+    "independent_auditor": {
+      "path": "artifacts/jev-runtime/native-v2-browser-execution-20261022-04/independent-audit-v2-01.py",
+      "sha256": "e0b301d7ad173ba3b3d3d68d5d2ba471047285541b88fdddb25dc752299f7524",
+      "size_bytes": 23776
+    },
+    "native_training_report": {
+      "path": "docs/validation/2026-10-22/jev-native-v2-complete-training-results.json",
+      "sha256": "a36cb7a0a11f9f765aea14ac98287a414e8853ad36d3279d72602b81da01ddc2",
+      "size_bytes": 7212
+    }
+  },
+  "scope": {
+    "both_adapter_and_serialization_changed": true,
+    "causal_attribution_to_format_alone": false,
+    "exposed_public_development_tasks": true,
+    "statistical_superiority_claimed": false,
+    "cross_model_superiority_claimed": false,
+    "Decision3_scores_available": false,
+    "official_leaderboard_submission": false,
+    "raw_DOM_requests_answers_questions_or_weights_published": false
+  }
+}

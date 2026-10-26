@@ -1,0 +1,194 @@
+{
+  "schema_id": "jev_native_v2_fit_processor_results_v1",
+  "at_utc": "2026-10-20T18:07:24.349920+00:00",
+  "status": "NATIVE_V2_PIPELINE_TESTED_FULL179_PROCESSOR_READY_REAL12B_FIT_RESOURCE_REFUSED",
+  "implementation_commit": "bb0fd14d6f721ac3709e192f9ac3fd35e7d068fe",
+  "profile": {
+    "artifact_kind": "jev_native_action_lora_v2",
+    "schema_version": 2,
+    "requested_format": "shared-elements-v2",
+    "training_quantization": "none",
+    "training_dtype": "bfloat16",
+    "deployment_quantization": "nf4",
+    "inference_identity": "generated-actions-nf4",
+    "objective": "full-vocabulary-action-token-CE",
+    "CFG_loss_training_performed": false,
+    "old_raw_artifact_profile_preserved": true,
+    "BF16_generated_actions_none_prompt_equivalence_attested": false
+  },
+  "final_GX10_CPU_regression": {
+    "passed": 490,
+    "skipped": 2,
+    "failed": 0,
+    "pytest_seconds": 236.803,
+    "source_files_stable": 99,
+    "invocation": "74977e15c8de47f08462cbfcf6087c2d",
+    "cached_terminal_MemoryPeak_bytes": 1095868416,
+    "process_peak_RSS_bytes": 1081323520,
+    "CUDA_initialized_before_after": false,
+    "CUDA_driver_probe_absence_attested": false,
+    "whole_owned_cgroup_removed": true,
+    "scope": "Genuine tiny CPU LoRA with synthetic tokenizer and mocked12B gates/checkpoint/model admission; no real12B qualification.",
+    "native_tiny_fit": {
+      "train_updates": 142,
+      "development_examples": 37,
+      "development_updates": 0,
+      "warm_start_tensor_initialization_verified": true,
+      "partial_update_primary_failure_preserved": true
+    }
+  },
+  "preserved_earlier_test_attempts": [
+    {
+      "attempt": "tests-01",
+      "passed": 10,
+      "failed": 1,
+      "reason": "Overbroad immutable-input output guard; corrected before final tests."
+    },
+    {
+      "attempt": "tests-02",
+      "passed": 13,
+      "errors": 1,
+      "reason": "Tiny fixture deepcopy attempted to pickle torch module; corrected fixture memo."
+    },
+    {
+      "attempt": "tests-03",
+      "passed": 489,
+      "skipped": 2,
+      "scope": "Passed before final attached-native processor envelope guard; final tests-04 supersedes it."
+    }
+  ],
+  "processor_and_posthoc_focused_tests": {
+    "initial_actor_tests_before_actual": {
+      "passed": 14,
+      "seconds": 2.28
+    },
+    "after_actual_combined_actor_posthoc": {
+      "passed": 31,
+      "failed": 0,
+      "deselected": 1,
+      "junit_seconds": 3.376,
+      "deselected_reason": "Sealed fresh-output-only actor test was already passed before actual output existed; original test and actual output preserved."
+    }
+  },
+  "actual_full179_processor": {
+    "counts": {
+      "train": 142,
+      "development": 37,
+      "total": 179
+    },
+    "selected_historical_data_files": 45,
+    "new_labels": 0,
+    "review": {
+      "cases": 179,
+      "counts": {
+        "raw-json-v1": {
+          "COMPILED/CFG_COMPILED": 179
+        },
+        "shared-elements-v2": {
+          "COMPILED/CFG_COMPILED": 179
+        }
+      },
+      "raw_byte_compatible": true,
+      "training_ready": true,
+      "task_quality_attested": false
+    },
+    "strict_native_artifact_replay": {
+      "compiled_native_records_verified": 179,
+      "compiled_native_CFG_inventories_verified": 179,
+      "not_independent_retokenization": true
+    },
+    "prompt_tokens": {
+      "raw-json-v1": {
+        "rows": 179,
+        "total": 495691,
+        "minimum": 1120,
+        "maximum": 5045,
+        "median": 2780
+      },
+      "shared-elements-v2": {
+        "rows": 179,
+        "total": 378810,
+        "minimum": 1120,
+        "maximum": 3465,
+        "median": 2021
+      }
+    },
+    "V2_effective_formats": {
+      "shared-elements-v2": 134,
+      "raw-json-v1": 45
+    },
+    "total_prompt_token_reduction_fraction": 0.23579407332390545,
+    "same_teacher_token_paths": 179,
+    "full_RAW_V2_grammar_target_parity_rows": 179,
+    "processor_references": 58,
+    "runtime_files": 348,
+    "source_files_stable": 110,
+    "invocation": "9d7332f36ff44dd793175d2152e643cc",
+    "actor": {
+      "pid": 1608751,
+      "start_ticks": 45708825,
+      "pgid": 1608751,
+      "sid": 1608751
+    },
+    "resource_gates": 1080,
+    "required_bytes_every_gate": 29340397568,
+    "minimum_observed_MemAvailable_bytes": 29908594688,
+    "largest_live_gate_cgroup_peak_bytes": 1048150016,
+    "unit_memory_max_bytes": 3221225472,
+    "unit_swap_max_bytes": 0,
+    "whole_owned_closed": true,
+    "unit_exit_code": 0,
+    "CUDA_initialized": false,
+    "original_root_wrapper_exit_code": 1,
+    "original_posthoc_error": {
+      "type": "ValueError",
+      "message": "Same full native data"
+    },
+    "posthoc_replay": "Separate verifier uses complete ordered JSON data-evidence bytes; tuples/list differ only after JSON storage. Original actor/plan/closure unchanged.",
+    "data_evidence_join": {
+      "ordered_data_evidence_equal": true,
+      "saved_sha256": "0906bfa8c8e26351b568d5bb255bb3f36a1745506a05835de44c663a44c83daf",
+      "fresh_sha256": "0906bfa8c8e26351b568d5bb255bb3f36a1745506a05835de44c663a44c83daf",
+      "python_container_equal": false
+    },
+    "original_179_full_wires_sha256": "192822199575e6386dd834b842967824c65022022d279cccd1b026e50729043c",
+    "ordered_saved_179_full_wires_verified": true,
+    "final_postexit_cgroup_counters": null,
+    "counter_scope": "Recorded live counters only; no final zero-OOM claim after cgroup removal.",
+    "native12B_model_constructor_forward_train_HTTP_browser_calls": 0,
+    "readiness_scope": "Processor/compiler readiness only; real12B fitting, resource qualification and browser quality pending."
+  },
+  "native_fit_resource_only_probe": {
+    "actual_fit_launched": false,
+    "framework_or_model_loads": 0,
+    "observations": [
+      {
+        "scope": "load",
+        "admitted": false,
+        "available_bytes": 31018700800,
+        "required_bytes": 73958270912
+      },
+      {
+        "scope": "train",
+        "admitted": false,
+        "available_bytes": 31018700800,
+        "required_bytes": 106438961088
+      }
+    ]
+  },
+  "unchanged_goal_limits": {
+    "latest_real_public_V7_browser_passed": 5,
+    "latest_real_public_V7_browser_total": 10,
+    "new_browser_trials": 0,
+    "six_Decision3_matched_warm_comparisons_complete": false,
+    "task_success_or_model_superiority_improvement_claimed": false,
+    "Comfy_interrupt_unload_free_calls": 0,
+    "queue_observation_only": true,
+    "goal_complete": false
+  },
+  "selected_evidence": {
+    "path": "artifacts/jev-runtime/native-v2-fit-integration-20261021-01/selected-evidence-index-01.json",
+    "sha256": "021e6f9e601ed8adaa0ec2a2322fd0b79b50d6a9074c27a2a96d939f14b6c9d0",
+    "size_bytes": 6453
+  }
+}

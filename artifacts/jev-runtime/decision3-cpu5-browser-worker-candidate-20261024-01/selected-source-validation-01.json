@@ -1,0 +1,169 @@
+{
+  "schema": "cpu5-browser-selected-source-validation-v1",
+  "status": "SOURCE_CHECKS_PASS_RELEASED_FOR_EXACT_OWNED_SELECTION_NO_ACTUAL",
+  "held_tests_pass": 8,
+  "selected_tests_pass": 8,
+  "results": [
+    {
+      "name": "import_order",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "--select",
+        "I",
+        "--fix",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.014726109016919509,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/bridge_successor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.019280348991742358,
+      "stdout": "1 file reformatted, 2 files left unchanged\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "released_stdlib_fakes",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01",
+        "-p",
+        "test_worker_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.22048836800968274,
+      "stdout": "",
+      "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.007s\n\nOK\n",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "ruff_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/bridge_successor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.01853331201709807,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "format_check",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/ruff",
+        "format",
+        "--check",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/bridge_successor.py",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.012827573023969308,
+      "stdout": "3 files already formatted\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": null,
+      "CPU_seconds": 30
+    },
+    {
+      "name": "original_caller_default_skip",
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/tests/test_jev_native_http_browser.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.6624931860133074,
+      "stdout": "s                                                                        [100%]\n=========================== short test summary info ============================\nSKIPPED [1] tests/test_jev_native_http_browser.py:84: Explicit external-native HTTP browser opt-in required\n1 skipped in 0.09s\n",
+      "stderr": "",
+      "affinity": [
+        0
+      ],
+      "AS_bytes": 536870912,
+      "CPU_seconds": 30
+    }
+  ],
+  "files": [
+    {
+      "path": "artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/worker.py",
+      "size_bytes": 33385,
+      "sha256": "c169d08545118b93846f63eb4548a46fe556f2fb810575e8b9864b0f053b9032"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/bridge_successor.py",
+      "size_bytes": 29861,
+      "sha256": "1c8f689bd40d5073f44f7e567c32c5944bf0df6a33957ba571760072e7632b00"
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-cpu5-browser-worker-candidate-20261024-01/test_worker_source.py",
+      "size_bytes": 8327,
+      "sha256": "9e4de2a2eb238a9025075e7ca325b770bbe2b8aa20dfd6b8ad709f5accdf395b"
+    }
+  ],
+  "deliberate_worker_AST_delta_only": {
+    "SOURCE_ONLY": false,
+    "OWNER_SHA": "81846efe2ee0357da07283c1a77a606283a920cbddef668c8f62def291057dee",
+    "NATIVE_SHA": "9a7e5af918c17f6824a720fb6d112ffa5fdac03493dde3efa176c7d50470a365",
+    "NATIVE_PLAN_SHA": "095db88b78687d90fbed51aafd736c1b06fb1a582312de8dff97bf6109131e96"
+  },
+  "caller_source_unchanged": {
+    "path": "tests/test_jev_native_http_browser.py",
+    "size_bytes": 15403,
+    "sha256": "8901cc7a44e62928453176d3c35bdeede4a7f91cf0f314160ef4d93ba854091b"
+  },
+  "peer_source_review": "native28_source_review found no new port blocker; browser_harness static imports/tools inventory",
+  "native05_root_closed_smoke": {
+    "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-20261024-05/root-closed-smoke-result-01.json",
+    "size_bytes": 4044,
+    "sha256": "ae81d2bf38fa4b4bc3b26194e239f26ae31121992ccee594768dfb33b2beab9a"
+  },
+  "no_browser_fit_or_success_inheritance": true,
+  "source_only_readme_and_docstrings_are_historical": true
+}

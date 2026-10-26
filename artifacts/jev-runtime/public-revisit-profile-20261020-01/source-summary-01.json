@@ -1,0 +1,119 @@
+{
+  "schema": "revisit_runtime_profile_and_thin_runner_source_summary_v1",
+  "status": "MATERIALIZED_VERIFIED_SOURCE_ONLY_REQUIRES_FRESH_CAPACITY_AND_BROWSER_EVALUATION",
+  "profile": "composed-visible-hover-entries-settled-revisit-v1",
+  "source_files": [
+    {
+      "path": "scripts/jev_profile_tree_capture.py",
+      "sha256": "1cf4f46178ea7761209ba6abe87d708209d128b44e1fa41c658edcd7ff7c753d",
+      "size_bytes": 4137
+    },
+    {
+      "path": "scripts/jev_observation_profile_revisit.py",
+      "sha256": "873abc6aa2a02272fd9b54d299d683598bdb3d5c0a848cc43a356daa5a36a0ca",
+      "size_bytes": 13642
+    },
+    {
+      "path": "scripts/jev_browser_revisit_benchmark.py",
+      "sha256": "f7f0c4f708203e107563fa70656bbeb3e04afcba463a0a9cf9eb156fbd8e51b3",
+      "size_bytes": 13193
+    }
+  ],
+  "tests": [
+    {
+      "path": "artifacts/jev-runtime/public-revisit-profile-20261020-01/test_revisit_profile.py",
+      "sha256": "bbec606412975f093f5539be7a9e700706da13949fa77c92ef67ba9a94c2f7a6",
+      "size_bytes": 9621
+    },
+    {
+      "path": "artifacts/jev-runtime/public-revisit-profile-20261020-01/test_revisit_runner.py",
+      "sha256": "e4db896d6a55959439ea73b8aa361ab322b9ad9da22bc7fef69e4caadd7892ab",
+      "size_bytes": 9812
+    }
+  ],
+  "evidence": {
+    "materialization": {
+      "path": "artifacts/jev-runtime/public-revisit-profile-20261020-01/materialization-01.json",
+      "sha256": "07f8eb6b437e95f9aeac00696b18138ed707b2fd346786820d38a7556c4d063c",
+      "size_bytes": 4540
+    },
+    "derivation": {
+      "path": "artifacts/jev-runtime/public-revisit-profile-20261020-01/derivation-proof-01.json",
+      "sha256": "26e5ddade02a8a623fe738c87e3cbe41caa0e9a9cd8f906fcd63ec20bb195dd4",
+      "size_bytes": 5006
+    },
+    "final_27_pure_tests": {
+      "path": "artifacts/jev-runtime/public-revisit-profile-20261020-01/preliminary-combined-tests-01.json",
+      "sha256": "d823ae0d9e883ef61075f778ac01f6001e0a65a18b4a6e0613a2311b9cb3dc85",
+      "size_bytes": 516
+    },
+    "ruff": {
+      "path": "artifacts/jev-runtime/public-revisit-profile-20261020-01/final-ruff-01.json",
+      "sha256": "d85645afd6ccbf269578a9d98452e7c637e66def225d808d56b8d629e6169a8b",
+      "size_bytes": 441
+    },
+    "format": {
+      "path": "artifacts/jev-runtime/public-revisit-profile-20261020-01/final-format-01.json",
+      "sha256": "618849977626c1dd3f3c45b23b55fc2f0f4f5c6af83687881db523c4576f0ebe",
+      "size_bytes": 464
+    }
+  },
+  "result": {
+    "profile_files_including_manifest": 59,
+    "runtime_files": 8,
+    "profile_bytes": 786602,
+    "caps_unchanged": {
+      "files": 64,
+      "total_bytes": 16777216,
+      "file_bytes": 1048576
+    },
+    "runner_files_including_manifest": {
+      "known_four": 19,
+      "public_six": 20
+    },
+    "pure_tests": "27 passed in4.97s",
+    "ruff_and_format": "passed",
+    "browser_framework_GPU_processor_model_calls": 0
+  },
+  "implementation": [
+    "Reuse pinned V8 base bundle and ordinary/stat/exclusive-write helpers. Only the explicit-label tree-capture adapter is extracted; its traversal body is byte/AST equal to V8. No old authority globals, source files or function objects are modified.",
+    "Runtime retains the original7 except sealed Agent/model wiring and snapshot profile identity literal; adds unchanged80249 core adjacent in the actual package. Native browser, questions, fixture, guard/freshness/candidate/DOM semantics are unchanged.",
+    "New manifest mechanically authenticates all59 profile files, dependency/self sources and8 runtime hashes. Fresh disjoint exclusive writes, closed file/directory capture, fsync, external self/manifest pins and rebuild equality are enforced. Copied sources verify the profile in a fresh stdlib process without the repository artifact helpers.",
+    "Thin runner derives the existing two sealed V8 benchmark bundles. Exactly3 profile imports,1 profile choice and1 tracker import change; event tracker changes only its profile literal. New independent runner kind calls the same generic benchmark. No15KB parent launcher or23KB builder is cloned as new implementation.",
+    "Preparation is default. Explicit execution source-authenticates both the new profile and launcher; these source pins do not establish resource/capacity admission. Original heldout1repeat/16step/seed20261014/development caps and all6 cases remain. Final integrity failure preserves a primary child exception."
+  ],
+  "validation_scope": [
+    "Real source-only profile plus both runner directories have been materialized and verified; this is beyond in-memory composition. Materialization records source before/after pins unchanged.",
+    "Pure tests cover fresh output, exact59 population/pins, copied-helper self-contained verification, tamper/unknown paths/symlinks/limits/external SHA refusal, sidecar identity and primary error preservation, both runner inverses, actual generic benchmark profile seams with fake canonical Git authority/native-module origins, default-no-child and explicit-run wiring with a fake child only.",
+    "The fake300-way structural preservation test remains in sealed integration18 tests; it does not qualify a native300-head inference."
+  ],
+  "remaining": [
+    "Fresh new full-request capacity and helper/co-resident memory admission are required before actual policy/browser use. Existing V8/Q95 evidence does not cover the added prompt.",
+    "No real browser/model/processor run, new quality/capacity result or task superiority. Latest complete exposed10-task Gemma browser score remains5/10; curl scroll failure remains uncovered."
+  ],
+  "source_only_entrypoints": {
+    "profile": [
+      ".venv/bin/python",
+      "-B",
+      "-s",
+      "scripts/jev_observation_profile_revisit.py",
+      "--canonical-root",
+      "<canonical7-root>",
+      "--output",
+      "<fresh-disjoint-profile>",
+      "--source-sha256",
+      "873abc6aa2a02272fd9b54d299d683598bdb3d5c0a848cc43a356daa5a36a0ca"
+    ],
+    "benchmark_prepare": [
+      ".venv/bin/python",
+      "-B",
+      "-s",
+      "scripts/jev_browser_revisit_benchmark.py",
+      "--bundle-dir",
+      "<fresh-runner>",
+      "--case-module",
+      "original|heldout"
+    ]
+  },
+  "research_before_code": "Existing pinned V8 builders/tree capture/benchmark runner source and generic profile seam were read first. Root explicitly approved the minimal explicit-label capture adapter. Reuses the prior core MIT/browser-use research; no new dependency."
+}

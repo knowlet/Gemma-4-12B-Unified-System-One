@@ -1,0 +1,184 @@
+{
+  "schema": "root-public-operation-browser-diagnostic-review-v1",
+  "status": "CANDIDATE_EXECUTION_PATH_VERIFIED_STRICT_BROWSER_DIAGNOSTIC_PASS",
+  "authority": "root",
+  "root_exit_code": 0,
+  "owner_completed": true,
+  "original_positive_scoped_closure": true,
+  "independent_actual_review_claimed": false,
+  "separate_reviewer_actual_bytes_read": false,
+  "source_peer_review_scope": "source only",
+  "source_records_authenticated": 63,
+  "model_records_authenticated": 20,
+  "runtime_records_authenticated": 28,
+  "runtime_SHA_records": 22,
+  "runtime_stat_only_records": 6,
+  "model_loads": 1,
+  "candidate_alias": "d3-edge-dsl01-operation-delta-cpu5-candidate",
+  "candidate_profile": "decision3-dsl01-operation-readout-cpu5-4g-candidate-v1",
+  "only_adapted_head_id": "operation",
+  "dev_used_for_model_selection": true,
+  "optimizer_input_dev": false,
+  "optimizer_input_sealed": false,
+  "candidate_selection_before_dev_or_sealed": false,
+  "candidate_capability": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-readout-cpu5-20261024-01/root-frozen-operation-candidate-capability-01.json",
+    "sha256": "4dbbb9470d011931854f6473c0840ef7f0746c4194c719cde6ab454c3e79d463",
+    "size_bytes": 2875
+  },
+  "numeric_acceptance": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-numeric-qualification-cpu5-20261024-01/root-accepted-operation-numeric-01.json",
+    "sha256": "404828850c2e3b3a46f8e20e712603c31b1d7156728b17bab740937207734c21",
+    "size_bytes": 14650
+  },
+  "calls": [
+    {
+      "index": 1,
+      "request_id": "caad732c7db7a71e131ce7546754a743",
+      "request_sha256": "e86dddc207fe5b84efc9939aaf8e3545bd2a714be96e9ec6e99811ca9be2c547",
+      "response_sha256": "be75c8b237e388121ffa1a38027ecc0e15458df4ae35633421a7f2070f8c9a7c",
+      "http_status": 200,
+      "client_seconds": 2.319331048987806,
+      "actual_shape": [
+        2,
+        578,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_native_logits_and_distributions_joined": true,
+      "root_FP64_softmax_max_probability_error": 1.4004177595339229e-08,
+      "ordered_head_ids": [
+        "operation",
+        "click_target"
+      ],
+      "legal_counts": [
+        4,
+        2
+      ],
+      "only_adapted_head_id": "operation",
+      "target_legal_logits_bitwise_unchanged": true,
+      "gateway_terminal_sample_ms": 2311.204295983771,
+      "timing_scope": "terminal sample is before writes; source final20 gate charges publication before ASGI start; client measures complete25s return",
+      "operation_argmax_changed_count": 0,
+      "target_argmax_changed_count": 0
+    },
+    {
+      "index": 2,
+      "request_id": "4cad4a5ae9ed4d6f7c68ce6d5f234ac4",
+      "request_sha256": "18d05f31e52c1915a030ccfe0c50cc19d9ec641b59562e5b914e578189f4417a",
+      "response_sha256": "c4d6a6e9d79b15afcb1a40fad5e9b4c8106ccc9fb495d99f14433fd19459eaa1",
+      "http_status": 200,
+      "client_seconds": 2.4286686459963676,
+      "actual_shape": [
+        2,
+        545,
+        1024
+      ],
+      "native_question_rows": 2,
+      "dummy_questions": 0,
+      "all_wire_native_logits_and_distributions_joined": true,
+      "root_FP64_softmax_max_probability_error": 2.3851674108010812e-08,
+      "ordered_head_ids": [
+        "operation",
+        "click_target"
+      ],
+      "legal_counts": [
+        4,
+        1
+      ],
+      "only_adapted_head_id": "operation",
+      "target_legal_logits_bitwise_unchanged": true,
+      "gateway_terminal_sample_ms": 2423.863320000237,
+      "timing_scope": "terminal sample is before writes; source final20 gate charges publication before ASGI start; client measures complete25s return",
+      "operation_argmax_changed_count": 1,
+      "target_argmax_changed_count": 0
+    }
+  ],
+  "operation_sequence": [
+    "CLICK",
+    "DONE"
+  ],
+  "trusted_clicks": 1,
+  "wrong_clicks": 0,
+  "completion_text_reached_next_model_inputs": [
+    false,
+    true
+  ],
+  "final_status": "done",
+  "goal_satisfied": true,
+  "strict_success": true,
+  "browser_score": null,
+  "benchmark_scores": null,
+  "training_eligible": false,
+  "exposed_diagnostic_may_not_enter_training": true,
+  "new_unseen_evaluation_claim": false,
+  "official_score_claim": false,
+  "quality_or_win_claim": false,
+  "model_plus_browser_observed_unit_peak_bytes": 1334431744,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "worker_seconds_before_final_write": 18.53190529497806,
+  "root_seconds": 21.242555041011656,
+  "all_actual_HTTP_candidate_joins_performed_by_root": true,
+  "actual_http_calls": 2,
+  "independent_extra_encoder_or_FP32_execution": false,
+  "refs": {
+    "root_terminal": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/root-execution-operation-browser-30.json",
+      "size_bytes": 1745,
+      "sha256": "408c0078bfc2e39ecc90e6c0b86f9a5f4c3611476daa04c8f561f88447a94eb8"
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-30/receipt.json",
+      "size_bytes": 88863,
+      "sha256": "f75c32229d1dfdb72db5c08a9448e15a701c3a2a1e116afc94a22370882e4ec3"
+    },
+    "closure": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-30/external-boundary-closure.json",
+      "size_bytes": 5823,
+      "sha256": "593e23ed848051eb7096d7bff5027f0e38c34c5ed04021de0b5f5980f4658d10"
+    },
+    "worker": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-30/operation-browser-candidate/worker-receipt.json",
+      "size_bytes": 9596,
+      "sha256": "195f9af38c0c9419bf17f831e9e1bc7b65224159bc75ccc5ef18275b56595c09"
+    },
+    "caller_report": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261024-09/actual-30/operation-browser-candidate/browser/report.json",
+      "size_bytes": 187780,
+      "sha256": "e9956abea834d8904d63bb9eedfc903760ed3515caa9d6241ea65b842dd8c3c7"
+    },
+    "spec": {
+      "path": "artifacts/jev-runtime/decision3-operation-browser-worker-cpu5-20261024-01/root-command-spec-01.json",
+      "size_bytes": 13306,
+      "sha256": "5a3c22e73b20dcaaef3add41a99ae95bc58d835be8d5462389d0b4b97d041d60"
+    },
+    "plan": {
+      "path": "artifacts/jev-runtime/decision3-operation-browser-worker-cpu5-20261024-01/plan-01.json",
+      "size_bytes": 13098,
+      "sha256": "65aaa9172ecce21bb892c3670ed217d9f95392882d31328d559df933db002930"
+    },
+    "audit_source": {
+      "path": "artifacts/jev-runtime/decision3-operation-browser-worker-cpu5-20261024-01/root-closed-operation-browser-audit-01.py",
+      "size_bytes": 40312,
+      "sha256": "9fc3a580701a17b0a823611f8277f96b1de1791de144eacb1126e918326b5f18"
+    }
+  },
+  "raw_states_responses_probabilities_features_or_model_bytes_included": false,
+  "scope": "Real HTTP/choose/Agent/Chromium wiring with the unchanged strict exposed Copper diagnostic; result and call count derived from all report/server evidence. Same new operation artifact and original byte/source/model identities checked; root joins every retained operation-only projection, unchanged target logits, legal native distributions and unchanged wire values. FP64 witness adds retained delta only for actual operation IDs then applies stable softmax; it is not a new h/matmul replay. Successful200 publication is guarded by original source final20; terminal time sample precedes writes and does not measure network delivery. No shared-head qualification, official/unseen evaluation, quality or benchmark win.",
+  "private_full_root_audit": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-operation-browser-worker-cpu5-20261024-01/root-closed-operation-browser-actual30-review-01.json",
+    "sha256": "68945e99b0e93588729a4ecdbd1a920e60ba0846b5afe4cbd484ab756c201fe6",
+    "size_bytes": 8678
+  },
+  "public_view_note": "Typed aggregate/provenance view; per-head original/adapted predicted-choice values remain private. Original audit result and payloads unchanged.",
+  "same_forward_logged_operation_argmax_changes": 1,
+  "same_forward_logged_target_argmax_changes": 0
+}

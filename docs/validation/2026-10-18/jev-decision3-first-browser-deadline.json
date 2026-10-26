@@ -1,0 +1,70 @@
+{
+  "schema_id": "jev-decision3-first-cold-browser-request-deadline-v1",
+  "app": "ap-dWSSxWE07L16ffykBNarv6",
+  "model": "d3",
+  "source17_sha256": "66bcc892563be1121c7740568679162503d695f1a0ac832c256abb82f72bd53e",
+  "actual_public_weight_profile_sha256": "ec90ce2f97876dae070e9fcd267d51300f956ec3d42488d8bb8898e92d02677d",
+  "actual_GPU": {
+    "name": "NVIDIA H200",
+    "uuid": "GPU-3fb6ae9a-8ff9-8ebd-fdd8-b5d60e2d02e5"
+  },
+  "loaded_parameters": 26086635760,
+  "warmup_calls": 0,
+  "model_load_seconds": 12.14,
+  "publisher_fast_path": {
+    "active": false,
+    "reason": "not a ROCm GPU"
+  },
+  "first_policy_request": {
+    "HTTP_payload_sha256": "bb6207c6f626708b106493782c03676077001e98ea1cb349e41c112646906fd7",
+    "native_input_tokens": 7149,
+    "backend_predict_calls": 1,
+    "requested_question_rows": 4,
+    "budget_seconds": 20,
+    "CUDA_fenced_seconds": 36.78698460600003,
+    "gateway_seconds": 38.36889762600185,
+    "raw_response_retained": true,
+    "action_authorized": false,
+    "error": {
+      "type": "TimeoutError",
+      "message": "Full remaining browser request budget exceeded",
+      "notes": [
+        "final_request_deadline also failed: TimeoutError('Full remaining browser request budget exceeded')"
+      ]
+    }
+  },
+  "original_known_four_summary": {
+    "path": "artifacts/jev-runtime/decision3-public-browser-20261018-01/benchmarks/d3-known-v3-01/results/summary.json",
+    "sha256": "4b776a0817ca64fb9d4b5cd042c95d489f6a2ea9635c8bd75a6f1e007f8b274c",
+    "size_bytes": 133533
+  },
+  "original_raw_successes": 0,
+  "original_raw_denominator": 4,
+  "actual_model_forward_requests": 1,
+  "later_three_known_task_requests": "Refused by the sticky failed-arm gateway, rather than evaluated by the model.",
+  "six_new_tasks": "Not run after the failed first model worker.",
+  "other_five_models": "Not run. All six CPU-staged models are not claimed GPU/browser tested.",
+  "closure": {
+    "owned_exit_confirmed": true,
+    "d3_returncode": 1,
+    "worker_success": false,
+    "worker_secondary_errors": [],
+    "identity_errors": [],
+    "full_closed_export_files": 50,
+    "full_closed_export_bytes": 1360964,
+    "export_index": {
+      "sha256": "0e954926e22fa1815741cc42583df16d774591613cdc14d53a2092259717bd3b",
+      "size_bytes": 5934
+    },
+    "all_file_hashes_sizes_and_population_verified": true,
+    "source": "artifacts/jev-runtime/decision3-public-browser-20261018-01/actual-campaign-01/cloud-export"
+  },
+  "limitations": [
+    "This demonstrates a missed first-request deadline under this cold-start protocol. It is not a verdict on warm serving latency or decision quality; compilation time was not separately measured.",
+    "The publisher fast path reports not a ROCm GPU on this H200. The observed native fallback remains recorded; no publisher speed parity is claimed.",
+    "The Gemma120 service had already completed 41 qualification cases. Do not equate its warmed baseline with this cold first-request latency.",
+    "The original success-only arm cursor lists even attempted d3 in unrun. Original receipt bytes are preserved; actual attempted population is one d3 arm, with five other models unrun.",
+    "Lifecycle v2 will separate an unsuccessful arm from a verified safe closure so later ordered models can be tested without changing the 20-second deadline."
+  ],
+  "model_quality_or_relative_victory_attested": false
+}

@@ -1,0 +1,69 @@
+{
+  "schema_id": "q95-system-services-owner-successor-v1",
+  "parent": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-03/q95_owner.py",
+    "sha256": "ce2dd64b9487f6b008341363827c76454f55181b54dcc7c838e49f3c4876548d",
+    "size_bytes": 28933
+  },
+  "owner": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-04/q95_owner.py",
+    "sha256": "68e44e99bfbb1c9114a5b5b378cac38f80b78c37d23f8e898b290c23e3a0a4a6",
+    "size_bytes": 29120
+  },
+  "entry": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-04/launch_q95.py",
+    "sha256": "db259d080227dca3c666d999fd9cf62bd40849c4974735285ecc38fb8b4e998d",
+    "size_bytes": 3539
+  },
+  "observer": {
+    "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+    "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+    "size_bytes": 38483
+  },
+  "observer_manifest": {
+    "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+    "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+    "size_bytes": 2196
+  },
+  "plan": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261022-04/launch-plan-01.json",
+    "sha256": "658d37196deac7261f3c9e5dd120aa0bb05af3a4281b245acbe6c05a974255a1",
+    "size_bytes": 3491
+  },
+  "edits": [
+    {
+      "before": "SERVICE = FROZEN / \"serve-03\"",
+      "after": "SERVICE = FROZEN / \"serve-04\""
+    },
+    {
+      "before": "PROFILE = \"decision3-q95-guarded-owner-retry-v1\"",
+      "after": "PROFILE = \"decision3-q95-guarded-owner-system-services-v2\""
+    },
+    {
+      "before": "UNIT = \"jev-d3-q95-helper-20261022-03.service\"",
+      "after": "UNIT = \"jev-d3-q95-helper-20261022-04.service\""
+    },
+    {
+      "before": "Path(plan[\"output\"]).name == \"owner-03\"",
+      "after": "Path(plan[\"output\"]).name == \"owner-04\""
+    },
+    {
+      "before": "comfy-observer-zombie-exit-20261022-01/comfy_observer.py",
+      "after": "observer-system-services-20261022-01/comfy_observer.py"
+    },
+    {
+      "before": "2bd125f17db7739d19979565fcf8013c897f620caaa948d8ffe4de1559bf9fd6",
+      "after": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45"
+    }
+  ],
+  "additional_selected_component": "    \"observer_manifest\": (\n        \"observer-system-services-20261022-01/system-services.json\",\n        \"a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727\",\n    ),\n",
+  "full_inverse_bytes_and_AST": true,
+  "entry_byte_identical": true,
+  "qualification_math_auth_deadlines_lifecycle_unchanged": true,
+  "owner_function_AST_delta": "accepted owner output03 to04 only; all other function AST unchanged; declarative profile/unit/source pins changed",
+  "actual_launch": false,
+  "parent_CPU_regressions": 42,
+  "observer_CPU_tests": 151,
+  "peer_review_status": "CLEAR: independent complete inverse source/AST; observer fd977/authority a244, factory0d926 and Lite40-source static plan separately reviewed",
+  "original_helper03_dead": true
+}

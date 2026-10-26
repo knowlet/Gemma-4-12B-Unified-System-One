@@ -1,0 +1,9 @@
+# Campaign02 timing repair
+
+Frozen01 could accept a success whose watchdog context cleanup finished after the declared180-second callback or10000-second campaign deadline. Source-only review located return statements inside the with scopes; its durable writes were checked, but success cleanup had no later explicit monotonic guard.
+
+Success returns now occur after both finally and the frozen watchdog context exit, with an explicit elapsed-time check and no later success I/O. Callback latency includes completed cleanup. A callback cleanup exception or late check rolls back completed count/latency and retains failed evidence before raising CampaignAbort outside ordinary scorer Exception handlers. Whole cleanup exception/lateness clears benchmark_scores and writes failed state. DeadlineScope preserves an already propagating primary if watchdog cleanup also raises, retaining the cleanup failure as a note.
+
+The original native actor/helper, constructor, numerical math,180/10000/10800 budgets,1479 callbacks, two complete original suites, task/judge/order/options, fresh cache, full authentication and exact successful same-model smoke plus closed independent audit prerequisites remain frozen01 references. Edge/Lite plans change only campaign_sha256. No new scorer or model path was introduced. Prior research remains in frozen01/research.md.
+
+Eighteen bounded stdlib tests include fake context exits that advance time or raise. Running the two cleanup regression methods against frozen01 reproduces three expected assertion failures and an unwrapped cleanup BaseException; all successor tests pass. Framework/model/benchmark tasks/gold/cache/unit/network/git are never executed or read during preparation. Root must supply a new exact selected spec and complete independent review before any actual campaign.

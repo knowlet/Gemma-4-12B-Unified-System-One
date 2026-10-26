@@ -1,0 +1,43 @@
+{
+  "schema": "gb10-UMA-driver-metadata-pins-v1",
+  "status": "SOURCE_ONLY_INHERITED_METADATA_AUTHORITY_NOT_DSO_SHA",
+  "inherited_runtime": {
+    "path": "artifacts/jev-runtime/public-native-fit-memory-peak-probe-20261018-01/native-toolchain-runtime-pins-02.json",
+    "sha256": "1ad0a1749e1ab69235cf6356939ef55edf904ba8942794f6241ef9580c676582",
+    "size_bytes": 85649
+  },
+  "cuda_link_origins": [
+    {
+      "device": 66306,
+      "inode": 47973051,
+      "mtime_ns": 1786313890000000000,
+      "path": "/lib/aarch64-linux-gnu/libcuda.so.1",
+      "resolved": "/usr/lib/aarch64-linux-gnu/libcuda.so.580.178.04",
+      "size_bytes": 96460560
+    },
+    {
+      "device": 66306,
+      "inode": 47973051,
+      "mtime_ns": 1786313890000000000,
+      "path": "/usr/lib/aarch64-linux-gnu/libcuda.so.1",
+      "resolved": "/usr/lib/aarch64-linux-gnu/libcuda.so.580.178.04",
+      "size_bytes": 96460560
+    }
+  ],
+  "expected_name": "NVIDIA GB10",
+  "expected_total_bytes": 130595860480,
+  "required_attribute": {
+    "name": "CU_DEVICE_ATTRIBUTE_INTEGRATED",
+    "numeric_value": 18,
+    "required_result": 1
+  },
+  "required_symbols": [
+    "cuCtxGetDevice",
+    "cuDeviceGetAttribute",
+    "cuDeviceGetUuid",
+    "cuDeviceGetName",
+    "cuDeviceTotalMem_v2"
+  ],
+  "load_scope": "Only exact canonical existing library via RTLD_NOLOAD; revalidate aliases/dev/inode/size/mtime and all symbol addresses in exact executable mappings before and after queries. No generic library search or fallback. Context device UUID/name/total bind Torch selected device; same boot/host total/hugetlb0 required.",
+  "attestation_limit": "Existing runtime02 carries metadata pins, not a libcuda payload SHA. No DSO payload is read/hashed during source-only preparation. This authority does not claim cryptographic attestation of all driver bytes."
+}

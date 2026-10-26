@@ -1,0 +1,55 @@
+# Existing S1 GGUF route: source-only compatibility brief
+
+The existing non-generative S1 runner is a suitable starting point for a new GGUF browser profile. At llama.cpp `184f6536024668e8908ab8c86033d56708e62b40`, no concrete C/C++ API signature break was found in the runner's used interface. The existing CMake file is a definite configuration blocker: it rejects any checkout other than `5fc4f3c8c7103ffd0b7ff5ee4855bcc78a3ed5cd`. Root has prepared a separate build definition for the new revision and library directory; the frozen original must retain its historical pin. This note did not configure, compile, link, import inference libraries, read model headers/payloads, load a model, or execute a service.
+
+The prior release is a real reuse opportunity, not a new conversion requirement inferred from scratch. `docs/validation/2026-10-04/gguf/conversion-manifest.json` records the same source `model.safetensors` SHA-256 `11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53`, size 23,919,549,408 bytes, and config SHA-256 `b50e760a9107b629e1a140ab7a4392e875c37baefee022f27c98b90b9d947cf0` as the current metadata selection. Its `source_checkpoint_sha256` field (`fa96debc...`) is a separate checkpoint-capture identity, not this tensor file's SHA. The recorded language Q8_0 is 12,669,647,264 bytes with SHA `9d3bc61851e5b7ed8e595b84327b85271830778d0e62fa9c1349c61843f369ed`; projector F16 is 122,031,744 bytes with SHA `cffbff05efd290fef28d084ebcb653de7594f5e26bae0eabbedf30d6c782c1d1`. The published package revision is `c418d37a17689fae554f7fc7d78db05ff7d52cfb`. These are saved receipt identities, not fresh verification of local or remote binaries. The historical package directory was absent at `artifacts/exports/s1-boolq-gguf` during this inspection.
+
+The current runner source is SHA `8dd7f74a3ba38fda24d305c2bcbb7793d23eb38011ccb58f4f0230f677caa70e` / 16,564 bytes. The old build-reproduction receipt names an earlier runner SHA `80f221df...`, so its successful build cannot qualify these current bytes or the new revision. A fresh build and load are still required.
+
+| Runner dependency | Pinned 184f653 source check |
+| --- | --- |
+| `llama_context_params.n_outputs_max = 64` | Field present, described as maximum outputs in a microbatch; `n_outputs_max_per_seq` now also exists and is initialized by the default-params API. |
+| `n_ctx`, `n_batch`, `n_ubatch`, `n_seq_max`, thread fields | Named fields present with compatible types; runner requests one sequence. |
+| `flash_attn_type = LLAMA_FLASH_ATTN_TYPE_ENABLED`, `swa_full = true` | Enum and fields present. Runtime kernel/backend support and cache memory remain unmeasured. |
+| Model/context load, tokenizer, batch/decode, memory reset, requested logits | Declarations present, including `llama_memory_clear(mem, bool)`, `llama_set_causal_attn(ctx, bool)` and `llama_get_logits_ith(ctx, int32_t)`. Header explicitly indexes requested logits through the original batch index. |
+| `mtmd_input_text` aggregate | Still exactly `text`, `text_len`, `add_special`, `parse_special`; the four-value initializer matches. |
+| `mtmd_context_params` | All runner-written named fields exist: `use_gpu`, `n_threads`, `warmup`, `print_timings`, `image_min_tokens`, `image_max_tokens`; additional fields come from `mtmd_context_params_default()`. |
+| Media bitmap/token/chunk APIs | Used image/audio constructors, capability/sample-rate/marker queries, tokenization, chunk token/position counts and ordinary-position query remain declared. |
+| `mtmd_helper_eval_chunk_single` | Exact eight-argument shape retained: mtmd context, llama context, chunk, past position, sequence ID, batch size, logits-last bool, new-past pointer. |
+| Backend loading and lifetime | `ggml_backend_load_all` plus model/context/mtmd/chunks/bitmap free functions remain declared. Shared-library compilation must use the same new headers/libraries; no old-library ABI compatibility is asserted. |
+
+A bounded stdlib scan found all 36 directly called native function names in the four selected headers; the five function-pointer deleters were also inspected. This is a declaration/name/signature inspection, not a compiler result. Old architecture comparison was unnecessary to establish these interface facts. The new `vendor/nlohmann/json.hpp` include location is present in the pinned checkout. Any future compiler/linker/runtime failure remains evidence to resolve rather than permission to fall back to generic text generation.
+
+The Python implementation is `scripts/gguf_adapter.py`, whose actual existing persistent wrapper is named `NativeProcess`. There is no existing `NativeGGUF` class in the tracked scripts/src/apps/tests inspected. Its path is already appropriate for ordinary S1 semantics:
+
+1. Validate a typed `DecisionRequest`; use the saved HF `AutoProcessor` on CPU and `UnifiedDecisionModel.prepare` with a lightweight context, without constructing/loading the HF language model.
+2. Preserve HF text/control token IDs, all answer slots and ordered question IDs through `make_native_payload`; call the persistent C++ runner once per decision request. Several physical decode calls can belong to that one decision pass. It never generates or feeds earlier answers back into later slots.
+3. Copy the selected candidate logits from full-vocabulary native projection, retaining native softcap once; use `prediction_from_logits` for the GGUF-owned temperature and typed answers. The runner accepts 2..52 options and up to 64 answer slots, matching the ordinary public contract, rather than the newer generated-JSON 400-target envelope.
+
+A minimal future `NativeGGUF` backend should expose `.name` and `.predict(DecisionRequest)` around that existing path, with an exact package/build/calibration identity and persistent process lifetime. It can be supplied directly to `create_app(..., jev_compatible=True, model_identity=<new GGUF identity>, request_evidence_sink=...)`, leaving all hierarchy/Decision3/generated-action flags false. Alternatively `BrowserDecisionBackend(..., prompt_mode='native')` only delegates `.predict`; its user/reasoned/grounded modes require Torch head/backbone interfaces and are unsuitable substitutes. `JevCompatibilityAdapter` already preserves named questions, complete structured instruction/criterion serialization and legitimate singleton targets before/after the ordinary backend.
+
+The existing browser `model_adapter` can then retain its original HTTP destination replacement, response model checks, retries/transport journal and explicit text-helper hook. A fresh profile, for example `jev-gguf-s1-native-slots-v1`, should explicitly bind that ordinary S1 policy to the same selected V7 observation/task inventory, seed, 16 outer steps, 20-second request budget and independent judges/output joins. It should fail on more than 52 options rather than silently pruning targets or claiming the N3 wider envelope. This is a suggested integration seam, not a prepared plan or an executed arm.
+
+There are four concrete integration gaps:
+
+- The current `scripts/jev_native_v2_browser.py` constructor creates NF4 Torch/PEFT objects, attaches its trained Q/V LoRA and grammar helper, and enables generated-action API handling. The S1 runner cannot be substituted into that constructor or inherit its N3/Q95 identities, resource floors, source proofs or qualification.
+- S1 slot scoring cannot produce arbitrary `TYPE_TEXT`. The browser requires a real selected `text_endpoint`/model or `text_helper` callback that reports its actual identity. The current syntax helper requires Torch `lm`/backbone/head/adapter state and does not work on this runner. Completing the fixed ten scenarios needs a separately explicit real generator and its own resource/provenance accounting; without it, only the policy component can be qualified. Fixture expectations or recorded field text cannot fill this gap.
+- `NativeProcess.score` currently uses blocking pipe writes/readline with no per-request timeout or response-size bound. Native elapsed time excludes Python preparation; runner startup is separate. A new wrapper must account for preparation, pipe wait and inference inside the actual 20 seconds, preserve serial request identity, and close/fail the owned process on late/partial output rather than allowing a stale response to become the next answer. Existing process `close()` has terminate/wait behavior but no final kill fallback; ownership/controller closure must be explicit.
+- `load_calibration` verifies GGUF format/runtime labels, conversion manifest SHA and the large model/projector hashes, then processor/template identity; these real startup reads must be budgeted, not silently replaced by size-only checks. The saved GGUF sidecar is an independent historical calibration with temperature `2.7830344470383452`, not the unadorned BF16 sidecar. It binds the old conversion manifest but does not compare the helper's reported llama.cpp revision to that old build. Reusing it on 184f653/CUDA must therefore be reported as historical-calibration reuse until fresh numeric/calibration evidence exists. The previously trained native-v2 browser LoRA remains absent from a plain released base Q8 package.
+
+The runner defaults are 16,384 context, 8,192 batch/microbatch, 99 requested GPU layers and eight threads; a new selected profile must choose them explicitly rather than inheriting the defaults. At 8,192 context, a simple BF16 K/V size estimate with its `swa_full=true`, 40 sliding and eight full layers is 2.625 GiB; default 16,384 would double that arithmetic. Allocator alignment, graph/workspaces, model mapping/page cache, GPU context/library costs and UMA accounting are not included or measured. `n_outputs_max=64` bounds an answer-slot output arena rather than proving total memory fit. GPU free bytes and host MemAvailable must not be added, and the original NF4/Q95 resource gate remains unchanged.
+
+Selected exact small-source identities (all read-only; no large binary hash):
+
+| File | SHA-256 |
+| --- | --- |
+| `tools/gguf/CMakeLists.txt` | `a4dc6f4cd7e64d55bf12e2fcb82cf5040878165dfddc4ce1c69b303a884f67ea` |
+| `scripts/gguf_adapter.py` | `95e9343ead0656f13197c4371ab48b445826d48bd37f8cc9f03b94ae926351c1` |
+| `184f653/include/llama.h` | `961430f89e2553dbcd99e3e6c59826af9ec143f05911520c74f804d986ff3cd2` |
+| `184f653/tools/mtmd/mtmd.h` | `b73526ee090cad221c88c092acab7daef528a2756e0be4b871093e026a126448` |
+| `184f653/tools/mtmd/mtmd-helper.h` | `971822a6c1b629bf6c4a5a2477e22e8a5cef1e4944939f6f6433baed9ef70a15` |
+| `184f653/ggml/include/ggml-backend.h` | `0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2` |
+| Historical conversion manifest | `464874bc51e8ee21ab56f34a4bf7d22b1fb83299a277cbcf966b42c5fc7802b7` |
+| Historical GGUF `s1_config.json` | `24882a49f5440412a63aecb7e446274d4ba6a4f8bb28930ddc4eaf1922d2863c` |
+
+All new work is this brief only. No frozen source or metadata was edited, and no build, test importing inference libraries, model access, benchmark or answer was produced.

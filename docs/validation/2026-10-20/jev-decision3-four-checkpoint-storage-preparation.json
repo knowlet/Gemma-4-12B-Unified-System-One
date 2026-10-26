@@ -1,0 +1,32 @@
+{
+  "schema_id": "jev-decision3-four-checkpoint-storage-preparation-v1",
+  "status": "STORAGE_SOURCE_PREPARED_NANO_TRANSFER_IN_PROGRESS_NOT_MODEL_READY",
+  "at_utc": "2026-10-20T12:00:25.959369+00:00",
+  "source": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/download_runtime.py",
+    "sha256": "9be84f2e4a7c82b03f80cf58579911fa316f8c56365d9b316519ae383f200c11",
+    "size_bytes": 9949
+  },
+  "selection_and_validation": {
+    "path": "artifacts/jev-runtime/decision3-GX10-cache-download-20261020-01/storage-plan-and-source-validation-01.json",
+    "sha256": "135c5f0bc0085641ba55490c43b16448fc0dd9aa3540c87f4666830d38dc601e",
+    "size_bytes": 22210
+  },
+  "scope_models": [
+    "d3-nano",
+    "d3-mini",
+    "d3-flash",
+    "d3"
+  ],
+  "files_including_manifests": 97,
+  "total_bytes": 82568221557,
+  "disk_free_before_transfer": 148920827904,
+  "disk_reserve_bytes": 34359738368,
+  "admission": "Separate storage-only host/inherited-cgroup reserve plus512MiB per-process virtual-address limit and128MiB buffer;1s monitor; no swap credit;3h wall per model; original model admission remains unchanged. This is not aggregate kernel memory/disk isolation or a measured model peak.",
+  "transport": "Installed official HuggingFace Hub1.33.0, fixed revision and public endpoint, token=False, implicit-token/telemetry/Xet disabled; sequential files; full file hashes and byte sizes checked. Existing model/cache/header checks remain mandatory before model use.",
+  "validation": "Four dry selections and Ruff/format checks passed; actual nano transfer has verified11 small files and is downloading its main tensor. Mutable in-flight transfer journal and model payloads are excluded from Git staging.",
+  "quality_or_superiority_claim": false,
+  "GPU_model_processor_browser_calls": 0,
+  "all_six_still_required": true,
+  "known_limit": "The largest original model admission floor exceeds physical GX10 RAM; downloading its weights does not admit execution or solve helper co-residency."
+}

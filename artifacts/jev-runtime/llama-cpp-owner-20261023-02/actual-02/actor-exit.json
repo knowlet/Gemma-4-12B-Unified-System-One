@@ -1,0 +1,57 @@
+{
+  "config_sha256": "c76486ac52471e15e497558e28999e3bb33c18a2b298af10e2970a39c4fc85f7",
+  "actor": {
+    "pid": 483885,
+    "start_ticks": 10440417,
+    "pgid": 483885,
+    "sid": 483885,
+    "uid": 1001,
+    "state": "R",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-02.service"
+  },
+  "entry_exit_code": 0,
+  "error": null,
+  "command_results": [
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/acquire.py",
+        "--execute",
+        "--output",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+      "resolved_executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+      "pid": 483890,
+      "observed_identity": {
+        "process": {
+          "pid": 483890,
+          "start_ticks": 10440438,
+          "pgid": 483885,
+          "sid": 483885,
+          "uid": 1001,
+          "state": "R",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-02.service"
+        },
+        "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+        "argv": [],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      },
+      "executable_stat_at_start": {
+        "st_dev": 66306,
+        "st_ino": 11534385,
+        "st_size": 23319208,
+        "st_mtime_ns": 1783328682303782212
+      },
+      "returncode": 0,
+      "elapsed_seconds": 143.6649537350022
+    }
+  ],
+  "planned_command_count": 1,
+  "postreceipt_hold_seconds": 5,
+  "hold_started_monotonic": 104548.068588945,
+  "hold_deadline_monotonic": 104553.068588945,
+  "reason": "Keep admitted wrapper live for original authenticated unit close"
+}

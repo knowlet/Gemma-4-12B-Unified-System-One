@@ -1,0 +1,40 @@
+{
+  "status": "SOURCE_ONLY_ONE_SHOT_HTTP_DESIGN_AND_SOURCE_CANDIDATE",
+  "recorded_utc": "2026-10-23T12:48:18.372117+00:00",
+  "predecessor_freeze": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/freeze.json",
+    "size_bytes": 5230,
+    "sha256": "8c8c6ffbd7c645d54d77e595c90845693df3416935f785cb7057e9563021e023"
+  },
+  "predecessor_actor": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/actor.py",
+    "size_bytes": 35316,
+    "sha256": "5a1cf29db2218b00c4349f20151a22b021ec01c265e798866b5ff278986abc76"
+  },
+  "predecessor_authority": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/authority.py",
+    "size_bytes": 7180,
+    "sha256": "95401c05a512467234442ccc34dfe1177b49a8f2d36eb30756f87d9a69f0490f"
+  },
+  "integration_audit": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-integration-review-20261023-01/source-only-http-timing-audit.json",
+    "size_bytes": 12169,
+    "sha256": "142c258233303c82b852957840740ff3b36be904695d0ab661e6d1297070ecf8"
+  },
+  "upstream_research": {
+    "model.py": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+      "size_bytes": 8469,
+      "sha256": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3"
+    },
+    "questions.py": {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream/jev_ultrafast/questions.py",
+      "size_bytes": 2048,
+      "sha256": "66a7054b85040b949e1757311257ea0c5a843c635f9a40c99f6d15ad660fb422"
+    }
+  },
+  "design": "One worker asyncio event loop runs pinned uvicorn+h11. Original sync upstream field_text and its original CLIENT(http2=True,timeout25)/post_json retry execute with asyncio.to_thread. A one-request wrapper allows at most one call into unchanged public02 app. No readiness HTTP probe. Parent immutable server-started20 and original180 whole remain authority through worker/evidence/cleanup. Client full-body elapsed is measured separately and never changes original score/refusal gates.",
+  "observability": "Wrap original CLIENT.post only to forward exact unchanged args and retain its original returned Response after full synchronous collection, record every retry attempt and timing. Original timeout, retry/status/backoff, payload, response/field_text code and native math remain unchanged. Actual raw content is private future output only, never source or Git.",
+  "no_current_execution": "No host/observer/unit/live process/runtime/Torch/native/model/payload/network/HTTP/Git actions. Only selected bounded source/metadata reads and later stdlib fakes/AST/Ruff/dry are allowed. Root owns catalog/helper actual admissions.",
+  "remaining_limits": "Not multi-request/server/browser integration; no retry-success, client-whole20, absolute real-time kill or full native DSO closure claim. All timing intervals recorded separately."
+}

@@ -11,6 +11,61 @@ The prior [October 13 local report](https://github.com/knowlet/Gemma-4-12B-Unifi
 recorded 0/3 travel and 0/5 completion tasks. BoolQ and public231 decision accuracy
 are different populations and do not establish browser task success.
 
+## Explicit shared-element prompt experiments — October 20–21
+
+The generated-action adapter accepts experimental `shared-elements-v1` and
+`shared-elements-v2` prompts. They factor repeated element fields and candidate descriptions into a
+shared table while retaining every original candidate, field, value and order.
+The complete original request passes the ordinary validator first; decoding the
+representation must reproduce its exact ordered UTF-8 JSON bytes before the
+native processor or model runs. Nonmatching candidate descriptions stay literal.
+
+Enable it through the existing application factory:
+
+```python
+app = create_app(
+    backend,
+    jev_compatible=True,
+    jev_generated_actions=True,
+    jev_generated_prompt_format="shared-elements-v2",
+    model_identity="experiment",
+    api_key=api_key,
+)
+```
+
+The default `raw-json-v1` keeps the original prompt text. Context admission,
+the 32-token output reserve, action grammar, output-key validation and browser
+freshness guards are unchanged. Responses record the selected representation
+under `generation.prompt_representation` alongside the original request hash
+and candidate labels.
+
+The first format reduced one declared large saved-snapshot request from 15,495
+to 9,220 tokens, still above the limit. It also made the original near-context
+positive control exceed the limit; see the
+[complete paired CPU results](validation/2026-10-20/jev-shared-elements-v1-paired-cpu-results.json).
+V2 removes duplicate candidate keys from references and shares the most common
+description shape. If its complete user text, including representation
+instructions, is no smaller in UTF-8 bytes, it uses the exact raw text instead.
+The response records both requested and effective formats, both byte costs,
+and the fallback reason. This is a byte-based choice; token capacity still
+requires measurement with the actual processor.
+
+The [V2 paired CPU replay](validation/2026-10-21/jev-shared-elements-v2-paired-cpu-results.json)
+measured that same large snapshot at **7,610 tokens**, retaining all 250 offered
+click targets and five operation keys. All 68 policy inputs fit, compared with 67 for raw text; the original
+75-row population and refusal controls remain intact. The 8,151-token positive
+control keeps its exact raw prompt through the disclosed fallback. These are
+input-capacity outcomes, with no model forward or browser task execution.
+
+This format is a separate model-input condition. Existing raw-prompt training
+and native/browser qualification do not cover it. V2 passed 258 codec,
+generated-action, pinned upstream and API tests; tokenizer capacity and real
+task completion are measured separately. Smaller JSON bytes alone establish
+neither token fit nor a browser success improvement. Source decisions and test
+scope are recorded in the
+[first implementation report](validation/2026-10-20/jev-shared-elements-implementation-results.json)
+and [V2 implementation report](validation/2026-10-21/jev-shared-elements-v2-implementation-results.json).
+
 ## Current BF16 diagnostic status
 
 The October 15 child adapter completed the original gate **1/1** and the known

@@ -1,0 +1,70 @@
+{
+  "schema_id": "decision3-publisher-warmup-protocol-v1",
+  "stage": "source_review_and_pure_validation_complete_actual_warm_performance_unexecuted",
+  "source_HOLD": {
+    "path": "artifacts/jev-runtime/decision3-publisher-warmed-startup-20261018-01/source-HOLD-01/HOLD.json",
+    "sha256": "6546469b7b80f7f3f338c53f6d23595560c24177e386f456b50f5fa7b6d033bb",
+    "size_bytes": 9341
+  },
+  "complete_reviewed_delta": {
+    "path": "artifacts/jev-runtime/decision3-publisher-warmed-startup-20261018-01/source-HOLD-01/baseline-to-current.patch",
+    "sha256": "5f3c1b004eb53422ca79ecf5abd0b282693951a537cbe171fee57c1e9babde79",
+    "size_bytes": 74894
+  },
+  "default": "cold preserved",
+  "opt_in": "publisher-text48-v1",
+  "public_six_workload": {
+    "max_nonclose_worker_envelopes_per_arm": 96,
+    "prospective_files": 1605
+  },
+  "known_four_workload": {
+    "max_nonclose_worker_envelopes_per_arm": 64,
+    "prospective_files": 1221
+  },
+  "campaign_separation": "Separate source-pinned six-arm campaigns; a combined160-envelope warm campaign is not admitted. Retries consume the finite envelope budget.",
+  "publisher_warmup": {
+    "method": "Pinned runtime.warmup(lengths=(37,64,320,333,1000,1024), images=False) before READY",
+    "invocations": 1,
+    "probabilities_API_entries": 48,
+    "synthetic_sequence_rows": 216,
+    "synthetic_input_tokens": 96544,
+    "settings": "NVIDIA,fast=None,native batch8,permutation_average=False",
+    "audit": "Existing resource gate before each native entry; actual inputs, raw returns, CUDA fences and separate attempted/entered/completed/validated counters; exact instance-method restoration in finally.",
+    "failure": "No READY or cold fallback after partial/failed warmup."
+  },
+  "unchanged_limits": {
+    "task_seconds": 20,
+    "browser_decisions_per_task": 16,
+    "MAX_FILES": 2048,
+    "MAX_BYTES": 536870912
+  },
+  "bindings": "Session, local Gateway, READY, RPC and CLOSED bind the externally selected startup/workload, new source17 and unchanged selected complete CPU weight profile; postwarm full cache/source/geometry/package checks precede READY.",
+  "counts": "Warmup calls, gateway ingress, forwarded browser envelopes, native backend/system_one/probabilities entries and helper calls remain distinct. API entries are not GPU kernel launches.",
+  "timing": "Load/cache authentication/warmup/postchecks/total readiness reported separately. Task clock starts after explicit readiness and includes original decode/queue/native/conversion/evidence; compilation or other work inside a task is never subtracted.",
+  "root_validation": {
+    "complete_1798_line_delta_read": true,
+    "delta_reconstructed_from_HEAD_baselines_exactly": true,
+    "all_source17_and_source18_pins_verified": true,
+    "immutable_core_wrapper_wire_source12_verified": true,
+    "pytest": "205 passed in8.78s",
+    "pytest_tool_session": 89604,
+    "ruff_check": "pass",
+    "ruff_format_check": "pass",
+    "scope": "Pure/fake numerical components and existing owned loopback HTTP tests; no real model/GPU/Modal warm run."
+  },
+  "cold_parity": {
+    "proof": {
+      "path": "artifacts/jev-runtime/decision3-publisher-warmed-startup-20261018-01/cold-request-byte-parity-01/proof.json",
+      "sha256": "0773052c1bb08009af1e680ac1019ac17f585eaeceef1fcf6b31e8b3aec7657f",
+      "size_bytes": 762
+    },
+    "cases": [
+      "success",
+      "native-late",
+      "conversion-late"
+    ],
+    "scope": "Actual native adapter/wire with fake backend and clock. Byte equality after owned output path normalization only; not a proof of every possible cold execution."
+  },
+  "actual_warm_browser_score": null,
+  "relative_model_victory_attested": false
+}

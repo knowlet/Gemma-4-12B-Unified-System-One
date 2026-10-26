@@ -1,0 +1,77 @@
+{
+  "schema_id": "root-replay08-original-admission-wait-terminal-v1",
+  "created_at_utc": "2026-10-23T16:02:50.445457+00:00",
+  "status": "NO_ADMISSION_NO_MODEL_LAUNCHED",
+  "root_tool_session": 48931,
+  "exit_code": 2,
+  "checks": 36,
+  "wait_seconds": 180,
+  "optional_quiet_seconds": 0,
+  "window_resets": 0,
+  "scope": "One original passing admission sample would permit this short probe, followed by fresh original launcher and unchanged owner gates. No launcher/unit/model was started. The full campaign optional60s criterion belongs only to that other launch.",
+  "wait_source": {
+    "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/root-reviewed-replay08-admission-wait.py",
+    "size_bytes": 7742,
+    "sha256": "97297cf129b7fa1a34cd8a5a6cd106e8ba9b5faf331660c1bc65f2897e50df70"
+  },
+  "launcher_source_not_executed": {
+    "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/root-reviewed-replay08-launcher.py",
+    "size_bytes": 9518,
+    "sha256": "9cc8359030a94b821f6e728f4bd5904044c815f6b21f9bc946ae255af7938ba6"
+  },
+  "independent_script_review": {
+    "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/independent-launcher-admission-source-review-01.json",
+    "size_bytes": 7759,
+    "sha256": "bcd8d036b80c2499bb625b7c4af748b6390bf313d61c9b94c266d229bedc9089"
+  },
+  "independent_root_selection_review": {
+    "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/independent-root-selection-review-02.json",
+    "size_bytes": 3117,
+    "sha256": "dddcb62f977222c2ce2c36e78f54ed4beafff929a92f0107e38f2a24656adf1a"
+  },
+  "original_selector_preflight": {
+    "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/root-original-selector-preflight-02.json",
+    "size_bytes": 1365,
+    "sha256": "f16c62f03d9e8142e343438f5d053434e29397f845e711961089406a6b60205c"
+  },
+  "last_original_gate_error": {
+    "type": "ValueError",
+    "message": "Original read-only Comfy idle gate",
+    "observation": {
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "mem_total_bytes": 130595864576,
+      "mem_available_bytes": 26393231360,
+      "comfy_running": 1,
+      "comfy_pending": 0,
+      "comfy_state": "http_busy",
+      "comfy_evidence": {
+        "transport": "HTTP",
+        "http_status": 200,
+        "response_sha256": "2865707c46fc409cc648b92d97831948691e5a2eb827838d3f6a50e1b88499fd"
+      }
+    },
+    "required_available_bytes": null,
+    "initial": true
+  },
+  "full_R_plus_entire_cap_startup_requirement_bytes": 28266656564,
+  "failure_interpretation": "Comfy gate refused before memory check; last sampled available bytes also below unchanged startup requirement. No successful memory admission is claimed.",
+  "fresh_paths_still_absent": [
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-08",
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-launch-readout-replay-08.json",
+    "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-readout-replay-08.json",
+    "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/root-replay-initial-gate-08.json"
+  ],
+  "actual08_closure": null,
+  "native_calls": 0,
+  "features_collected": false,
+  "actual_replay_parity_result": null,
+  "training_eligible": false,
+  "benchmark_scores": null,
+  "browser_qualified": false,
+  "model_execution_qualified": false,
+  "whole_tree_audited": false,
+  "no_escape_audited": false,
+  "continuation_qualified": false,
+  "service_cache_queue_or_model_changes": false,
+  "terminal_evidence_scope": "Root directly observed unified execution terminal and checked source hashes/fresh output absence; no invented per-sample log or actual owner receipt."
+}

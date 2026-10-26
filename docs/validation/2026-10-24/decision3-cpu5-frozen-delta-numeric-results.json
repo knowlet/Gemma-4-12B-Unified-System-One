@@ -1,0 +1,212 @@
+{
+  "schema": "decision3-cpu5-frozen-delta-numeric-results-v1",
+  "status": "numeric_composition_qualified_HTTP_browser_and_heldout_pending",
+  "model": {
+    "model_id": "vllm-sr/d3-edge",
+    "name": "d3-edge",
+    "revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "model_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "layers": [
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ]
+  },
+  "candidate_alias": "d3-edge-dsl01-train-delta-cpu5-candidate",
+  "root_accepted_numeric": {
+    "path": "artifacts/jev-runtime/decision3-delta-numeric-qualification-cpu5-20261024-01/root-accepted-delta-numeric-01.json",
+    "sha256": "91f80677a7956dbdee721661c3f20b8dfcbf5df8d7948b7221debdbd84d174d1",
+    "size_bytes": 12363
+  },
+  "model_loads": 1,
+  "genuine_forward_calls": 4,
+  "calls": [
+    {
+      "index": 1,
+      "kind": "original",
+      "actual_rows": 4,
+      "events": [
+        [
+          4,
+          188,
+          1024
+        ]
+      ],
+      "legal_counts": [
+        8,
+        1,
+        2,
+        3
+      ],
+      "full_call_seconds": 3.123117245006142,
+      "all_actual_FP32_probabilities_logits_argmax_entropy_matched": true,
+      "additional_stdlib_float64_witness": [
+        {
+          "head": "operation",
+          "legal_count": 8,
+          "maximum_probability_absolute_error": 4.819792025489988e-07,
+          "ordered_argmax_matched": true
+        },
+        {
+          "head": "click_target",
+          "legal_count": 1,
+          "maximum_probability_absolute_error": 0.0,
+          "ordered_argmax_matched": true
+        },
+        {
+          "head": "type_text_target",
+          "legal_count": 2,
+          "maximum_probability_absolute_error": 5.369038769131862e-09,
+          "ordered_argmax_matched": true
+        },
+        {
+          "head": "select_target",
+          "legal_count": 3,
+          "maximum_probability_absolute_error": 8.706673408909182e-07,
+          "ordered_argmax_matched": true
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "kind": "candidate",
+      "actual_rows": 4,
+      "events": [
+        [
+          4,
+          188,
+          1024
+        ]
+      ],
+      "legal_counts": [
+        8,
+        1,
+        2,
+        3
+      ],
+      "full_call_seconds": 3.144740763993468,
+      "all_actual_FP32_probabilities_logits_argmax_entropy_matched": true,
+      "additional_stdlib_float64_witness": [
+        {
+          "head": "operation",
+          "legal_count": 8,
+          "maximum_probability_absolute_error": 8.691546863337507e-07,
+          "ordered_argmax_matched": true
+        },
+        {
+          "head": "click_target",
+          "legal_count": 1,
+          "maximum_probability_absolute_error": 0.0,
+          "ordered_argmax_matched": true
+        },
+        {
+          "head": "type_text_target",
+          "legal_count": 2,
+          "maximum_probability_absolute_error": 2.682395108116742e-09,
+          "ordered_argmax_matched": true
+        },
+        {
+          "head": "select_target",
+          "legal_count": 3,
+          "maximum_probability_absolute_error": 1.0588332044481064e-06,
+          "ordered_argmax_matched": true
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "kind": "original",
+      "actual_rows": 2,
+      "events": [
+        [
+          2,
+          188,
+          1024
+        ]
+      ],
+      "legal_counts": [
+        8,
+        1
+      ],
+      "full_call_seconds": 2.6209123370063026,
+      "all_actual_FP32_probabilities_logits_argmax_entropy_matched": true,
+      "additional_stdlib_float64_witness": [
+        {
+          "head": "operation",
+          "legal_count": 8,
+          "maximum_probability_absolute_error": 4.819792025489988e-07,
+          "ordered_argmax_matched": true
+        },
+        {
+          "head": "click_target",
+          "legal_count": 1,
+          "maximum_probability_absolute_error": 0.0,
+          "ordered_argmax_matched": true
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "kind": "candidate",
+      "actual_rows": 2,
+      "events": [
+        [
+          2,
+          188,
+          1024
+        ]
+      ],
+      "legal_counts": [
+        8,
+        1
+      ],
+      "full_call_seconds": 2.6429970629978925,
+      "all_actual_FP32_probabilities_logits_argmax_entropy_matched": true,
+      "additional_stdlib_float64_witness": [
+        {
+          "head": "operation",
+          "legal_count": 8,
+          "maximum_probability_absolute_error": 8.691546863337507e-07,
+          "ordered_argmax_matched": true
+        },
+        {
+          "head": "click_target",
+          "legal_count": 1,
+          "maximum_probability_absolute_error": 0.0,
+          "ordered_argmax_matched": true
+        }
+      ]
+    }
+  ],
+  "owned_peak_bytes": 1025757184,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "root_seconds": 26.374785027990583,
+  "source_union": 60,
+  "baseline_byte_hash_unchanged": "d408d94a0ab2915fa85c511dd9b8d62af49903c4e4ca28e2e2d5aff9ef565e0f",
+  "frozen_nonzero_delta_file_sha256": "812256139b35429dc55f4f178af8c177d2a31c023414e668e9b39cdc217d14be",
+  "publisher_native_candidate_claim": false,
+  "source_peer_actual_reader": false,
+  "training_eligible": false,
+  "semantic_accuracy": null,
+  "browser_success": null,
+  "JevBench_accuracy_calibration_cost_speed_score": null,
+  "JevBench_coherence_score": null,
+  "quality_or_win_claim": false
+}

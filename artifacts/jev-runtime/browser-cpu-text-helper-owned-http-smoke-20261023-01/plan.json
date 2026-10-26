@@ -1,0 +1,520 @@
+{
+  "profile": "qwen25-05b-cpu4-2g-owned-http-smoke-v1",
+  "status": "SOURCE_ONLY_NO_ROOT_COMMAND_SPEC_SELECTED",
+  "model": {
+    "id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "dtype": "bfloat16",
+    "device": "cpu",
+    "threads": 4,
+    "native_max_new_tokens": 128,
+    "whole_context_tokens": 8192,
+    "strict_exact_json": true,
+    "actual_eos_required": true
+  },
+  "owner_source_sha256": "882ba1579b17b31dca0ee01fe2e89f46b1bc8c17b7635a0c4aa05042fc847ac0",
+  "sources": [
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/actor.py",
+      "size_bytes": 37176,
+      "sha256": "c82103943a1f04b2667597359fd768ef759777fe890a0c1f5fc3d80097daed46"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/authority.py",
+      "size_bytes": 7180,
+      "sha256": "95401c05a512467234442ccc34dfe1177b49a8f2d36eb30756f87d9a69f0490f"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/transport.py",
+      "size_bytes": 11073,
+      "sha256": "2c59ae0ec3e68825d5824f94a9725ac88acb368ecb2e2bf98123643ffe37da24"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/http-stack.json",
+      "size_bytes": 10027,
+      "sha256": "367929d91afe9c55bd487bf81c9f46437b930eeda308c53d2840cba8183496c4"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
+      "size_bytes": 31089,
+      "sha256": "a312dba1fabd173e1ce502f6896431a7cc3d6b4979a7eae49c2b1807d343b0fa"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py",
+      "size_bytes": 4918,
+      "sha256": "38f4e346c47c4091b22f396e38aca583f33729bd357c04a3e5abeb329cf2b62d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/runtime-selection.pending.json",
+      "size_bytes": 6582,
+      "sha256": "b5e0c09b60b2de3dadfb48d98febc8e61c236bb9e61a0d03ae9b126a26223e26"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py",
+      "size_bytes": 39721,
+      "sha256": "882ba1579b17b31dca0ee01fe2e89f46b1bc8c17b7635a0c4aa05042fc847ac0"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "size_bytes": 21002,
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "size_bytes": 38483,
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "size_bytes": 2196,
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py",
+      "size_bytes": 20369,
+      "sha256": "350c7fc009372779c3f991f5b5c45efd8b3972615f5b03dca9861d65bd673e3a"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json",
+      "size_bytes": 17773,
+      "sha256": "c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/package-receipt.json",
+      "size_bytes": 7663,
+      "sha256": "fce23ca9ae2e3aa00dc5e412c9c9a06eed3ee53083447cadbeb7a0d7e471638e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/config.py",
+      "size_bytes": 20887,
+      "sha256": "27ab5d061c1e70d8142475f409b2181c9f36f1297758ac9eadc7fa4214b31a63"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/server.py",
+      "size_bytes": 12879,
+      "sha256": "29dd92d146abcf0272b7d6076734e084c3f1c5155ad7321503c0aacba02e4fd0"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/protocols/http/h11_impl.py",
+      "size_bytes": 20694,
+      "sha256": "e1bf8ab302b9ec505a44f7875e52bfa32f2928ceaf1b585a00b0887911fed5b0"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h11/_connection.py",
+      "size_bytes": 26863,
+      "sha256": "93d61155fea4a19a9bb6d056dfac5259a26959d6706bec50554f401c4a3d0ee2"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx/_client.py",
+      "size_bytes": 65714,
+      "sha256": "c43f941baefe58c91e96d00039e1868fe719d91453026d7db1647194563bff8d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore/_sync/connection_pool.py",
+      "size_bytes": 16955,
+      "sha256": "6be4fc2d3b14c5ceebd16c356ad7c7483a163e34347c0f1497b4b7f85d0c8fbd"
+    }
+  ],
+  "overlay": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay",
+  "shared_catalog_plan": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json",
+    "size_bytes": 17773,
+    "sha256": "c41d9c2030a84faf2170579132d872688b9d427c4af2542fc9eb4e44747db5ef"
+  },
+  "owner_policy": {
+    "profile": "llama-cpp-cpu4-command-owned-v1",
+    "unit": "jev-d3-llama-cpp-cpu4-20261023-03.service",
+    "memory_max_bytes": 2147483648,
+    "swap_max_bytes": 0,
+    "reserve_bytes": 26119172916,
+    "fresh_initial_available_at_least_bytes": 28266656564,
+    "runtime_available_at_least_bytes": 26119172916,
+    "cpu_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_quota_percent": 400,
+    "original_controller_and_observer_unchanged": true,
+    "owner_runtime_seconds": 7200
+  },
+  "whole_smoke_seconds_including_preparation": 180.0,
+  "whole_request_seconds_including_queue_retain_publication": 20.0,
+  "external_watchdog": "Live same-unit parent uses exact PID/start/cgroup and pidfd to signal only the spawned child; child cannot cancel, finish, disarm, extend or replace original deadline. Original owner remains responsible for whole unit closure. Scheduling is measured later; no absolute real-time hard20 guarantee claimed.",
+  "catalog_acceptance_required": true,
+  "root_future_command_spec_required": true,
+  "transport": "one_shot_loopback_HTTP",
+  "fresh_synthetic_request": "Original pinned upstream model.field_text(context), original TEXT_VALUE+two messages+1024/reasoningnone, novel random opaque reference. Actual frozen02 native generation only; no task/gold/fallback.",
+  "fairness": "One fixed shared NN helper selection across policies. No task/judge, each task's16-decision budget, each complete request's20-second limit, options or benchmark source is changed. Smoke success qualifies one NN/ASGI request only. This2GiB candidate inherits no3GiB performance, fit, quality or scores.",
+  "full_native_DSO_closure": false,
+  "execution_during_preparation": {
+    "owner": false,
+    "observer": false,
+    "torch_import": false,
+    "model_load": false,
+    "generation": false,
+    "browser": false,
+    "payload_reads": false,
+    "network": false,
+    "git": false,
+    "actual_HTTP": false,
+    "HTTP_stack_import": false,
+    "upstream_real_client_instantiation": false
+  },
+  "predecessor": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-smoke-20261023-03/freeze.json",
+    "size_bytes": 5230,
+    "sha256": "8c8c6ffbd7c645d54d77e595c90845693df3416935f785cb7057e9563021e023"
+  },
+  "successor_scope": "One-shot genuine loopback HTTP transport around unchanged frozen03 native runtime/authority/helper and original pinned upstream sync client. No new model math/context/token/EOS/20/180/client25/retry scoregate. Explicit HTTP critical projection, private upstream loader and observed cleanup/full-read timing only; not multi-request/browser qualification.",
+  "historical_closure_reused_as_admission": false,
+  "owner03_prior_source_review": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-q8-smoke-20261023-04/independent-source-selection-review.json",
+    "size_bytes": 14288,
+    "sha256": "189a6b7304ad4a11f29f879e0df5f6c35ea97599963ea3ba5fc1c4eaebdf0a02"
+  },
+  "performance_memory_fit_quality_or_scores_inherited": false,
+  "http_stack": {
+    "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/http-stack.json",
+    "size_bytes": 10027,
+    "sha256": "367929d91afe9c55bd487bf81c9f46437b930eeda308c53d2840cba8183496c4"
+  },
+  "separately_closed_native_smoke03_required_before_root_selection": true,
+  "client_timing": "Cold load/READY/client start/full body/field_text return/cleanup separately observed. client_elapsed_lt20 is observation only and changes no score/refusal gate; originalHTTP25 and retries remain.",
+  "source_pool": {
+    "status": "PROJECTED_NOT_AN_ACTUAL_ROOT_COMMAND_SPEC",
+    "known_root_paths": [
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/helper.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-01/runtime-selection.pending.json",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-20261023-02/helper.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/actor.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/authority.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/http-stack.json",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-owned-http-smoke-20261023-01/transport.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/catalog.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/browser-cpu-text-helper-runtime-catalog-20261023-02/plan.json",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-02/helper-package/package-receipt.json",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-03/controller.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/accelerate/__init__.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h11/_connection.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore/_sync/connection_pool.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx/_client.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/safetensors/__init__.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/tokenizers/__init__.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/__init__.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/cache_utils.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/generation/stopping_criteria.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/generation/utils.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/modeling_utils.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/models/auto/tokenization_auto.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/models/qwen2/configuration_qwen2.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/models/qwen2/modeling_qwen2.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/tokenization_utils_base.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/config.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/protocols/http/h11_impl.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/server.py"
+    ],
+    "known_root_path_count": 32,
+    "outside_root_runtime_sources_retained_in_owned_auth": [
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/__init__.py",
+        "size_bytes": 111841,
+        "sha256": "cf40c075c95864036e835795756d69b8cccfafa76f3bcde5eba9d06065ccd3d1"
+      }
+    ],
+    "nested_http_sources_pre_post_authenticated": [
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/__init__.py",
+        "size_bytes": 147,
+        "sha256": "e0bc04a7b8e82234c91950a0cc1e064130281411f80180f63be10f098c56b7a3"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/config.py",
+        "size_bytes": 20887,
+        "sha256": "27ab5d061c1e70d8142475f409b2181c9f36f1297758ac9eadc7fa4214b31a63"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/server.py",
+        "size_bytes": 12879,
+        "sha256": "29dd92d146abcf0272b7d6076734e084c3f1c5155ad7321503c0aacba02e4fd0"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/protocols/http/h11_impl.py",
+        "size_bytes": 20694,
+        "sha256": "e1bf8ab302b9ec505a44f7875e52bfa32f2928ceaf1b585a00b0887911fed5b0"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/loops/asyncio.py",
+        "size_bytes": 301,
+        "sha256": "a8f9d02d3da1b5991c186fe77274f2ad21f7f23124aa383c82ec0fd25035e3a0"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/lifespan/off.py",
+        "size_bytes": 332,
+        "sha256": "9df23aa87014a3ff3e0445cc04aa0743dc146ec5eb3da5cb09b0d24b4bca4abf"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h11/__init__.py",
+        "size_bytes": 1507,
+        "sha256": "88ed4ace448ee36c99e9f7e0f953206f1fd9553586518d349d16045a7facde46"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h11/_version.py",
+        "size_bytes": 686,
+        "sha256": "1954ac6cf48f0dc3ae17aa6d7c88979d52686849b7ca05db327aa5aff1a26a1c"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h11/_connection.py",
+        "size_bytes": 26863,
+        "sha256": "93d61155fea4a19a9bb6d056dfac5259a26959d6706bec50554f401c4a3d0ee2"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx/__init__.py",
+        "size_bytes": 2171,
+        "sha256": "0ac6997bac998f4ac783adf6d8058a587193315afdb718047c3e4fdff46bcfad"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx/__version__.py",
+        "size_bytes": 108,
+        "sha256": "2e853261e3974e2786cee3ffeb850bd30c5db718eebbf41b3af13b34e83e22a5"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx/_client.py",
+        "size_bytes": 65714,
+        "sha256": "c43f941baefe58c91e96d00039e1868fe719d91453026d7db1647194563bff8d"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx/_transports/default.py",
+        "size_bytes": 13983,
+        "sha256": "03379a454c95c0271c4f2c8d25ec437f49f57457f3cf2769748420bf0ecf2e79"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx/_models.py",
+        "size_bytes": 44700,
+        "sha256": "e3ffc6bb2bf580bc6e6428708a6f247d036220e709f5a72b785392babbd97e6b"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore/__init__.py",
+        "size_bytes": 3445,
+        "sha256": "f644ff92a0a10822544c7c30db866647f7b371d6e94585a4b03fa060dce464ff"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore/_sync/connection_pool.py",
+        "size_bytes": 16955,
+        "sha256": "6be4fc2d3b14c5ceebd16c356ad7c7483a163e34347c0f1497b4b7f85d0c8fbd"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore/_sync/connection.py",
+        "size_bytes": 8238,
+        "sha256": "f5ec4639bdcf07e329d93d7eb1c91278bdadfad27ff7e357a2657c8a19960a05"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore/_sync/http11.py",
+        "size_bytes": 13476,
+        "sha256": "205a1b0f531de491652462969e1d7f4377a98a452bc88f2aa34f6ff0c8892040"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore/_sync/http2.py",
+        "size_bytes": 23400,
+        "sha256": "031538ca172aebc067e6fa9d258b625ca6148fb9ef8586f1cf7bf8ad3e319ef0"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore/_backends/sync.py",
+        "size_bytes": 7977,
+        "sha256": "6e113877d88af549b176c76c826d847ca9d76819acd9682019853eee3994ba35"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/click/__init__.py",
+        "size_bytes": 4634,
+        "sha256": "1487767d7092241df27960fe7b6b8e37e9818456b661cf4cbd71a61eef0e5c6d"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h2/__init__.py",
+        "size_bytes": 109,
+        "sha256": "b3892c18f75413875495df6372e3f129b293a230392c3f1b42001fb92b973f5f"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h2/connection.py",
+        "size_bytes": 86876,
+        "sha256": "001ac10ddb176742575dbc6b1c77471113d885f0ce0860b65e56269adc0f9419"
+      },
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/hpack/__init__.py",
+        "size_bytes": 597,
+        "sha256": "8d7e285593c15d356e93f6b7c6856a51bb93e2cd6f95e7d74a091e5587b71471"
+      },
+      {
+        "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/hyperframe/__init__.py",
+        "size_bytes": 111,
+        "sha256": "43f3017642040964cbbe4b0e5e0e67607517f2303c861a10b2e8fa394436e252"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn-0.34.3.dist-info/METADATA",
+        "size_bytes": 6531,
+        "sha256": "442d4eaebbb15807c2c562d73fec5452893c187f4f7b3e22218145ba6e5d0670"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h11-0.16.0.dist-info/METADATA",
+        "size_bytes": 8348,
+        "sha256": "28f326098ac09fcba79b8f180f96087c841fe2456215cb7b872a9c7d5cd19d64"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx-0.28.1.dist-info/METADATA",
+        "size_bytes": 7052,
+        "sha256": "febb9b0f8f3e80d57c8199c304f35c4336e8581d1d18d7983c92766b82793b25"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore-1.0.9.dist-info/METADATA",
+        "size_bytes": 21529,
+        "sha256": "fe2d4fda6199128978779e0cf27f3c045c531863fcdd987eacc74f3a18d41c21"
+      },
+      {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/click-8.4.2.dist-info/METADATA",
+        "size_bytes": 2621,
+        "sha256": "194c9dd81d567f9081f026c7e401060fbafa7bc147c8e0a58b3668b40a64c031"
+      }
+    ],
+    "nested_upstream_sources_pre_post_authenticated": {
+      "model.py": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream/jev_ultrafast/model.py",
+        "size_bytes": 8469,
+        "sha256": "a85ada8458d23642c5c8a4095acf0565e6268f81dcda26f6308942b653e9c9f3"
+      },
+      "questions.py": {
+        "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/upstream/jev_ultrafast/questions.py",
+        "size_bytes": 2048,
+        "sha256": "66a7054b85040b949e1757311257ea0c5a843c635f9a40c99f6d15ad660fb422"
+      }
+    },
+    "outer_http_projection": [
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/config.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/server.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/protocols/http/h11_impl.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h11/_connection.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx/_client.py",
+      "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore/_sync/connection_pool.py"
+    ],
+    "provenance_only_not_execution_sources": [
+      "historical authority/freeze/test/README files",
+      "source-only HTTP timing audit",
+      "prior smoke03 source/freeze/reviews"
+    ],
+    "future_distinct_path_reserves": {
+      "closed_catalog_acceptance_plus_not_already_known_actual_refs": 5,
+      "own_plan_freeze_source_review_preflight_root_spec": 5,
+      "separately_closed_native03_prerequisite_evidence": 8,
+      "unaccounted_mandatory_ref_reserve": 1
+    },
+    "pessimistic_total_unique_with_five_mandatory": 51,
+    "pessimistic_explicit_excluding_five_mandatory": 46,
+    "unchanged_explicit_limit": 58,
+    "all_actual_future_refs_must_be_deduplicated_and_checked_before_root_selection": true,
+    "outer_scope": "Original controller final source recheck covers actual selected ROOTspec source pool only. It does not automatically cover every nested HTTP file; those exact expected SHA/size rows are bound by the outer HTTPmanifest and authenticated before runtime import and after the exchange inside the owned worker. All original13 runtime/helper/authority/model content authentication remains. No full Python/transitive/DSO closure."
+  },
+  "transport_versions": {
+    "uvicorn": {
+      "origin": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/uvicorn/__init__.py",
+      "version": "0.34.3"
+    },
+    "h11": {
+      "origin": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h11/__init__.py",
+      "version": "0.16.0"
+    },
+    "httpx": {
+      "origin": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpx/__init__.py",
+      "version": "0.28.1"
+    },
+    "httpcore": {
+      "origin": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/httpcore/__init__.py",
+      "version": "1.0.9"
+    },
+    "click": {
+      "origin": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/click/__init__.py",
+      "version": "8.4.2"
+    },
+    "h2": {
+      "origin": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/h2/__init__.py",
+      "version": "4.3.0"
+    },
+    "hpack": {
+      "origin": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/hpack/__init__.py",
+      "version": "4.2.0"
+    },
+    "hyperframe": {
+      "origin": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/hyperframe/__init__.py",
+      "version": "6.1.0"
+    }
+  },
+  "scope": "Source-only candidate; one real native loopback HTTP exchange only after separate native03/catalog acceptance/exact root selection/fresh admission. No browser/multi-request/whole-client20/general-quality/fullclosure qualification.",
+  "runtime_sources": [
+    {
+      "path": "/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/__init__.py",
+      "size_bytes": 111841,
+      "sha256": "cf40c075c95864036e835795756d69b8cccfafa76f3bcde5eba9d06065ccd3d1"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/__init__.py",
+      "size_bytes": 42006,
+      "sha256": "2725cadd5afaa29b2a12faec1960cb7ac1df77dc76d655310efb33d4607b35f5"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/tokenizers/__init__.py",
+      "size_bytes": 3152,
+      "sha256": "b1cee924695651af5c3dab98e8c34406ab355a2cc1d633228646c470210e649e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/safetensors/__init__.py",
+      "size_bytes": 210,
+      "sha256": "92c988289b8c225a92f25e487ad5d7a1eb7e326eec0fedfc6b75e6f04d85e32f"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/accelerate/__init__.py",
+      "size_bytes": 1555,
+      "sha256": "a479388e26b653f219788e744c45e73d0c172f021d441725ff2af89bf6ee7a8f"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/models/qwen2/modeling_qwen2.py",
+      "size_bytes": 21608,
+      "sha256": "34390fea7648b444d5727abef0b85acceba28f856aedec6c335d51253806bfee"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/models/qwen2/configuration_qwen2.py",
+      "size_bytes": 3435,
+      "sha256": "281986fef33b2c5226389a479113eb963c8336467e76e1b8d49fd3d18ee4a882"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/generation/utils.py",
+      "size_bytes": 232146,
+      "sha256": "bb558d8676be95457126c82a32600dad206c13e4fb96b4f5d114f1f2483d7f62"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/generation/stopping_criteria.py",
+      "size_bytes": 34379,
+      "sha256": "7e4ce5eeee83eab48a63a5419cd68be6f0591201fe7f9248dda77a7c3045bd7e"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/modeling_utils.py",
+      "size_bytes": 268806,
+      "sha256": "38c2bd02ed7af229f54e2f02dae65663be7af29ed2c9498bd1c460cf60fbb62d"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/cache_utils.py",
+      "size_bytes": 104677,
+      "sha256": "702144bb44553f6339ea1bf23c8205a708bb5f8c7c09cb3a2db484182646743c"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/tokenization_utils_base.py",
+      "size_bytes": 182553,
+      "sha256": "e7eb23b77be31b251570936ca74b2a3f2c04f1a44a13aa079ac4957535916a4b"
+    },
+    {
+      "path": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/overlay/transformers/models/auto/tokenization_auto.py",
+      "size_bytes": 53966,
+      "sha256": "0be342af672191e3a010f1f75f7dd09827ca4fb32b1d90bf017712cd5ff31819"
+    }
+  ]
+}

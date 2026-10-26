@@ -1,0 +1,66 @@
+{
+  "schema_id": "composed-observation-integration-work-state-v1",
+  "sequence": 108,
+  "created_at_utc": "2026-10-22T10:10:40.895007+00:00",
+  "previous_state": {
+    "path": "artifacts/jev-runtime/composed-observation-integration-work-state-20261016-107.json",
+    "sha256": "b622173b8031f0ebd597af666df55dce0082f3ed5edd652ce4bb983f20685cb2",
+    "size_bytes": 2353
+  },
+  "goal_status": "active",
+  "status": "fresh_both_JevBench_raw2of10_V2_4of10_native142_37_complete_and_closed",
+  "fresh_jevbench": {
+    "public_correct": 195,
+    "public_total": 231,
+    "coherence_fraction": 0.41263071895424835,
+    "report": {
+      "path": "docs/validation/2026-10-22/jevbench-both-fresh-gx10-results.json",
+      "sha256": "5035e9b5745336d5361d08ec6fa55360f752df408aa18c0a24e48388d730e275",
+      "size_bytes": 9757
+    }
+  },
+  "raw_browser": {
+    "successes": 2,
+    "attempts": 10,
+    "external_closed": true,
+    "report": {
+      "path": "docs/validation/2026-10-22/jev-current-nf4-raw-complete-results.json",
+      "sha256": "8bf6c96986cfc1a3a49c3d2cd41dfa4050f23188acc65912180ade619c9d3e4a",
+      "size_bytes": 8193
+    }
+  },
+  "native_V2": {
+    "training_updates": 142,
+    "development_examples": 37,
+    "development_updates": 0,
+    "strict_CPU_verified": true,
+    "external_closed": true,
+    "report": {
+      "path": "docs/validation/2026-10-22/jev-native-v2-complete-training-results.json",
+      "sha256": "a36cb7a0a11f9f765aea14ac98287a414e8853ad36d3279d72602b81da01ddc2",
+      "size_bytes": 7212
+    }
+  },
+  "matched_V2_browser": {
+    "successes": 4,
+    "attempts": 10,
+    "paired_gains": 2,
+    "paired_losses": 0,
+    "independent_DOM_replay": true,
+    "external_closed": true,
+    "report": {
+      "path": "docs/validation/2026-10-22/jev-current-nf4-v2-complete-results.json",
+      "sha256": "302b83775297e50a108eb5427812efcadf45b56da1d4e852490cc7f01014ee11",
+      "size_bytes": 14763
+    }
+  },
+  "GPU_model_jobs_active_at_record_creation": false,
+  "live_status_is_historical_snapshot": true,
+  "all_six_Decision3_complete": false,
+  "other_models_beaten": false,
+  "next": [
+    "Owned fresh Q95 helper; actual six Decision3 baselines retaining capacity refusals separately",
+    "Matched Gemma control under the same Q95 helper",
+    "Generic rejected-action feedback regression and measured browser improvement without changing judges"
+  ]
+}

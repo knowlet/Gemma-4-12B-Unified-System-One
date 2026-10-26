@@ -1,0 +1,19 @@
+# CPU mmap loading selection before model construction
+
+This fresh v3 extends frozen v2 only. Research on 2026-10-23 reused pinned llama.cpp `184f6536024668e8908ab8c86033d56708e62b40` and the previous source-only S1 work; no model/header/payload, Torch/native import, compiler, executable, hardware or service was used. Shared-worktree task-start HEAD remains `99a9a93daa3e210398cb5c6c5b62cffbe5dfd2fe`; root owns build/run/commit and all original gates.
+
+The known allocation risk is upstream CPU weight repacking. `src/llama-model.cpp` defaults to load mode AUTO, lazy mode AUTO and `use_extra_bufts=true`. Its `make_cpu_buft_list` adds CPU extra buffer types only when that last setting is true. `ggml/src/ggml-cpu/repack.cpp` has Q8_0 traits for NEON+dot-product or int8-matmul, names this buffer `CPU_REPACK`, and allocates an ordinary CPU backing buffer before repacking. Thus a nominally memory-mapped Q8 model can acquire additional resident anonymous weight storage; `n_gpu_layers=0` does not prevent that mechanism.
+
+| Choice | Decision |
+| --- | --- |
+| Retain AUTO plus CPU extras | Preserve only under default `--cpu-mmap-only 0`; unsuitable as an assumed low-memory proof. |
+| Explicit mature mmap API and no extras | Adopt only for `--cpu-mmap-only 1`: set `mp.load_mode=LLAMA_LOAD_MODE_MMAP`, `mp.lazy_mode=LLAMA_LAZY_MODE_OFF`, `mp.use_extra_bufts=false`. These public fields/enums are present in the pinned header; no custom loader or cache. |
+| Global backend/device suppression or new storage engine | Not implemented. The selected build/library identity remains the required CPU-only boundary. |
+
+The new exact-string flag defaults false and accepts only `0`/`1`. When true, require `gpu_layers==0` after parsing all options and before any backend discovery/model constructor. Also set the existing context fields `cp.offload_kqv=false` and `cp.op_offload=false` conditionally, as explicitly requested by root; default false leaves all existing native defaults untouched. Emit `runtime.cpu_mmap_only` as the boolean used for this branch. No separate opaque-context readback or universal no-CUDA claim follows from this value.
+
+This conditional disables the known extra-buffer repack path and requests mmap loading; it does not prove all allocations are file-backed or bounded. Accelerator/host buffer candidates, backend discovery/driver initialization, mmap residency/page cache, context/graph/workspace and cgroup accounting still require actual maps/logs/memory evidence under the selected CPU-only libraries. Lazy OFF is the upstream eager tensor-read setting within explicit mmap mode, not a new lazy-loading implementation. There is no memory-fit, output parity or performance claim.
+
+Use seven exact source changes relative to v2 and a byte-identical v2 CMake copy. An inverse regression must recover the entire v2 source and unchanged v1 ancestor, retaining v2's SWA parser/default/runtime metadata. No Python imitation of the C++ parser will be called runtime validation. Compiled invalid-value and invalid GPU-combination checks, actual mmap/no-repack evidence and the pending full/compact smoke belong to root's later run. Do not relax resource gates, force page-cache eviction, touch Comfy, add LoRA/RPC, or alter the 48-layer model/decision path.
+
+Primary pinned sources: [model defaults and buffer selection](https://github.com/ggml-org/llama.cpp/blob/184f6536024668e8908ab8c86033d56708e62b40/src/llama-model.cpp), [Q8 CPU repacking](https://github.com/ggml-org/llama.cpp/blob/184f6536024668e8908ab8c86033d56708e62b40/ggml/src/ggml-cpu/repack.cpp), [public loading/context controls](https://github.com/ggml-org/llama.cpp/blob/184f6536024668e8908ab8c86033d56708e62b40/include/llama.h). Their MIT license was checked in the preceding v2 research. This only selects the existing API and copies the project's own runner, rather than copying a new repacking implementation.

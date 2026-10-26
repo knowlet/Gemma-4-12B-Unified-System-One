@@ -1,0 +1,221 @@
+{
+  "schema": "independent-public-helper-acquisition-source-review-v1",
+  "created_at_utc": "2026-10-23T11:00:23.146664+00:00",
+  "reviewer": "/root/cpu_followup_review",
+  "result": "PASS_WITH_LIMITS_SOURCE_ONLY_PENDING_EXACT_ROOT_COMMAND_SPEC_AND_FRESH_ADMISSION",
+  "selected_source_freeze": {
+    "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/source-freeze.json",
+    "sha256": "29b9b9ef963b984ba3fd3cfae15ebb31610d4ae5fcb63d61b60a350da0fc4a6b",
+    "size_bytes": 1749
+  },
+  "scope": {
+    "named_frozen_small_source_metadata_only": true,
+    "independent_hash_and_ast_only": true,
+    "model_tokenizer_payload_or_headers_read": false,
+    "active_actual03_read_or_written": false,
+    "process_cgroup_service_observer_or_comfy_runtime_calls": false,
+    "model_framework_native_or_test_execution": false,
+    "network_or_download": false,
+    "git": false,
+    "frozen_source_edits": false
+  },
+  "checks": [
+    {
+      "id": "freeze_identity",
+      "passed": true,
+      "evidence": "All5 freeze-selected small files and freeze itself match exact SHA/size; guard source/reference-fetcher/original boundary/observer/authority pinned bytes match. AST parse only, no source import/execution."
+    },
+    {
+      "id": "public_identity",
+      "passed": true,
+      "evidence": "Pinned public id Qwen/Qwen2.5-0.5B-Instruct revision7ae557604adf67be50417f59c2c2f167def9a775. Metadata digest524ffed9… binds9fixed names, no remote code/file discovery and no task/gold/credential input. This review uses saved metadata, not a new network validation."
+    },
+    {
+      "id": "complete_population",
+      "passed": true,
+      "evidence": "Exactly9selected files total999602607B; fixed model988097824B, other8files11504783B. Acquisition disk requirement1066711471B covers complete package plus64MiB. Metadata has unique sibling names, positive exact sizes and valid40hex Gitblob IDs."
+    },
+    {
+      "id": "stream_hash",
+      "passed": true,
+      "evidence": "One pass computes SHA256 and Git SHA1(blob-space-size-NUL-content). LFS model must match pinned SHA256+size; other8files match exact publisher blobId+size and save newly observed SHA256. No expected small-file SHA256 is invented before download."
+    },
+    {
+      "id": "http_and_stream_bounds",
+      "passed": true,
+      "evidence": "Fixed HTTPS revision URLs and public filenames; onlyHTTP200 accepted, Content-Length if present must equal expected size. Each read bounded by min(1MiB,remaining+1); excess rejected beforewrite, short rejected atEOF, corrupt rejected byhash. No retry, resume or ranged206 acceptance."
+    },
+    {
+      "id": "publication",
+      "passed": true,
+      "evidence": "Fresh ordinary repository path rejectsparent traversal and symlink components, output mode0700, target/partial opened exclusively. Payload is flushed/fsynced, authenticated before hardlink publication; hardlink cannot replace concurrent existing destination, partial unlink follows. Perfile evidence pre-serializes finiteJSON, exclusivewrites, fsyncs and latechecks. A failed evidence write cannotreturn a verified row even if already published payload remains."
+    },
+    {
+      "id": "download_owner_only",
+      "passed": true,
+      "evidence": "Imports only stdlib and frozen existingowner02 after sourceSHA check. Actualself cgroup suffix must match jev-d3-llama-cpp-20261023-02.service, affinityCPU0, cpu.max quota=period, memory.max2147483648, swap0, RLIMIT_FSIZE=(34359738368,34359738368). Correct existing32GiBfile owner used; owner03/04 256MiBfile profile wouldrefuse."
+    },
+    {
+      "id": "authority_and_reserve",
+      "passed": true,
+      "evidence": "load_guard pins owner02; owned_context reloads original boundary+observer with fixedSHA. Owner02 original host function enforces Comfy idle/absent and R=max24GiB,ceil(total/5), giving currentR26119172916. Fresh externalowner must independently enforce initialR+2GiB28266656564; actor uses runtimeR before eachfile/final. No Comfy mutation, no inference/GPU or expanded authority gate."
+    },
+    {
+      "id": "whole_timer_and_late_checks",
+      "passed": true,
+      "evidence": "600s SIGALRM starts after initial metadata/guard/identity/host/disk/outputsetup, covering everyfile, final source/process/limits/host recheck and successreceipt write. No inherited ITIMER_REAL allowed. Fetch monotonic deadlines checkbefore network/everyread/prepublication/postevidence; network timeout<=30s andremainingwhole. Final explicit600s elapsedcheck and afterdurablewrite check prevent nominal late success. Externalowner runtime covers preflight/failurecleanup and remains independentlynecessary."
+    },
+    {
+      "id": "failure_evidence",
+      "passed": true,
+      "evidence": "exceptBaseException demotes success receipt to failed name when present, records bounded generic failure type/message without redirectURLs/headers, retains partials and raisesgenericRuntimeError. Primary failure remains failed even if evidence save/demotion fails; receipt filename alone neverqualifies. No success inference from retained files."
+    },
+    {
+      "id": "final_sources_identity",
+      "passed": true,
+      "evidence": "Metadata equality and guardSHA rechecked afterstreams. Final owned_context rereadsoriginal fixedboundary/observer andactualprocess/limits, same_identity validatesPIDstart/uid/cgroup/exe/argv/cwd, finalhostgate and noframework imports checked. Externalowner must recheck acquire/test/metadata/source refs andoriginalauthority onclose; actor doesnotselfclaim those externalfacts."
+    },
+    {
+      "id": "dry_default_no_model",
+      "passed": true,
+      "evidence": "Noexecute path prints drymetadata withoutdownload, guardimport or model/tokenizer. Execute requires -B-s and no torch/transformers/safetensors/numpy loaded; no modelconstruction/generation/benchmark/browser operation exists in this downloader."
+    },
+    {
+      "id": "validation_scope",
+      "passed": true,
+      "evidence": "Author-saved validation has12stdlib synthetic tests exit0, AST2, Ruffexit0,dryexit0; independent review statically parsed2files and counted12testfunctions but didnotrerun/import them. Tests cover known stream/status/identity/path/deadline/evidence/outsideowner boundaries, not actualdownload ormodelqualification."
+    }
+  ],
+  "selected_package": {
+    "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "files": [
+      {
+        "rfilename": "LICENSE",
+        "size": 11343,
+        "blobId": "6634c8cc3133b3848ec74b9f275acaaa1ea618ab"
+      },
+      {
+        "rfilename": "README.md",
+        "size": 4917,
+        "blobId": "4b8373851d093eb9f3017443f27781c6971eff24"
+      },
+      {
+        "rfilename": "config.json",
+        "size": 659,
+        "blobId": "0dbb161213629a23f0fc00ef286e6b1e366d180f"
+      },
+      {
+        "rfilename": "generation_config.json",
+        "size": 242,
+        "blobId": "dfc11073787daf1b0f9c0f1499487ab5f4c93738"
+      },
+      {
+        "rfilename": "merges.txt",
+        "size": 1671839,
+        "blobId": "20024bfe7c83998e9aeaf98a0cd6a2ce6306c2f0"
+      },
+      {
+        "rfilename": "model.safetensors",
+        "size": 988097824,
+        "blobId": "d7db405a3f0d9bf1ba5bdd4e4211db8022ebe4eb",
+        "lfs": {
+          "sha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe",
+          "size": 988097824,
+          "pointerSize": 134
+        }
+      },
+      {
+        "rfilename": "tokenizer.json",
+        "size": 7031645,
+        "blobId": "443909a61d429dff23010e5bddd28ff530edda00"
+      },
+      {
+        "rfilename": "tokenizer_config.json",
+        "size": 7305,
+        "blobId": "07bfe0640cb5a0037f9322287fbfc682806cf672"
+      },
+      {
+        "rfilename": "vocab.json",
+        "size": 2776833,
+        "blobId": "4783fe10ac3adce15ac8f358ef5462739852c569"
+      }
+    ],
+    "file_count": 9,
+    "total_bytes": 999602607,
+    "disk_floor_bytes": 1066711471,
+    "model_sha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe"
+  },
+  "nonblocking_limits": [
+    "600s describes post-admission acquisition phase, not complete interpreter launch/initialguard/host/disk preflight. Externalowner boundedruntime must cover entirecommand andcleanup.",
+    "Stream identities authenticate exact downloaded bytes before publication, not permanentimmutability, independent second payloadread, or a full installedPython/DSO closure. Futureloader must authenticateactualpayloads inside its own admittedowner.",
+    "No special same-UID adversarial filesystem race/noescape guarantee is inferred from pathchecks/hardlink. Original no_escape_enforced/whole_tree_exit_confirmed/continuation_authorized/model_qualifiedfalseflags remain unchanged.",
+    "Publisher metadata advertises Apache2.0; exact LICENSE payloadcontent remains unseenuntilauthenticateddownload. Modelweight/tokenizer/license streams were notreadbyreviewer.",
+    "No download completion, memoryfit, CUDAqualification, helperfieldgeneration, JSON/EOS quality, browser20latency, benchmarkscore or overallgoalcompletion is established."
+  ],
+  "required_before_actual_execution": [
+    "Wait until currentEdge campaign authenticatedterminalclosure; no overlappingmodeljobs and no reset/restart/mutation ofactivejob.",
+    "Freezeandreviewexactrootcommandspec selecting existingowner02, freshordinaryoutputundernewactualownerfolder, explicit-B-s repoPython actorargv and selectedsourceSHArefs; selectowner runtime sufficientfor600sphaseandcleanup, never30sprofile.",
+    "FreshsamebootwholehostinitialR+full2GiBadmission andoriginalComfyreadonlygate, actualCPU0/quota100%/2GiB/swap0/32GiBfilelimits; originalauthorityauthenticatedclosure mustfollow.",
+    "Independentauditrequiresactor+ownerexit0, all9complete publisheridentity+actualSHArows, sourcesunchanged, finalhostgate, elapsed<600 and nolaterfailure/lateevidence, plusexternalunit/cohortclosedwithtwoemptyscans/cgroupabsent. Downloadpayloads neverentercommitinventory."
+  ],
+  "source_refs": [
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/source-freeze.json",
+      "sha256": "29b9b9ef963b984ba3fd3cfae15ebb31610d4ae5fcb63d61b60a350da0fc4a6b",
+      "size_bytes": 1749
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/acquire.py",
+      "sha256": "e5840bf13411098214545cdbeed0e183d5afbf26f5512aa550ad1d3d00fb1f52",
+      "size_bytes": 12455
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/test_acquire.py",
+      "sha256": "833eb816612e504d01331b3d2ef9424723f2664a98bd32b9815cd156a5b31c66",
+      "size_bytes": 5259
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/publisher-model-metadata.json",
+      "sha256": "524ffed976ac1ba768ca111598ddd9f5c1a744d4bb615e8c78c7a1f3167c46ed",
+      "size_bytes": 8219
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/README.md",
+      "sha256": "36cb0bc9de189c2ea08889628c393dbadb7c6600fb4d7c754d917cab2b4f1cef",
+      "size_bytes": 3701
+    },
+    {
+      "path": "artifacts/jev-runtime/browser-cpu-text-helper-acquisition-20261023-01/validation.json",
+      "sha256": "60615657771f4d4d3b2ac71e06ad615b62bd10b1b2e3e5f867ea7615c89a4a2f",
+      "size_bytes": 3275
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-02/controller.py",
+      "sha256": "2d250d1cbe79bdd179381b766c5b4c9499801f79a61c94d5a15adc16fefffb25",
+      "size_bytes": 38074
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/fetch_package.py",
+      "sha256": "079f1664500185cd6056b6969e87aa8e2b0cc496dcd857ba9a52cef9a285c73a",
+      "size_bytes": 4225
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+      "size_bytes": 38483
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    }
+  ],
+  "all_source_refs_unchanged_before_after_review": true,
+  "review_writing_status": "ALL STOPPED after this receipt; no runtime/source modification by reviewer."
+}

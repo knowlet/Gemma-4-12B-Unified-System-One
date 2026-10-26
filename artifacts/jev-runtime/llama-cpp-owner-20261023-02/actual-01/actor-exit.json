@@ -1,0 +1,56 @@
+{
+  "config_sha256": "fdc5d89a6611076ad14b9ab55f33eb550804c781a8a39b500fcd15fc5662be7b",
+  "actor": {
+    "pid": 348003,
+    "start_ticks": 7034876,
+    "pgid": 348003,
+    "sid": 348003,
+    "uid": 1001,
+    "state": "R",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-02.service"
+  },
+  "entry_exit_code": 0,
+  "error": null,
+  "command_results": [
+    {
+      "argv": [
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+        "-B",
+        "-s",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-published-q8-20261023-01/fetch_package.py",
+        "--output",
+        "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/artifacts/jev-runtime/llama-cpp-owner-20261023-02/actual-01/package"
+      ],
+      "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One",
+      "resolved_executable": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+      "pid": 348007,
+      "observed_identity": {
+        "process": {
+          "pid": 348007,
+          "start_ticks": 7034897,
+          "pgid": 348003,
+          "sid": 348003,
+          "uid": 1001,
+          "state": "R",
+          "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/jev-d3-llama-cpp-20261023-02.service"
+        },
+        "exe": "/home/albert_hsieh/.local/share/uv/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12",
+        "argv": [],
+        "cwd": "/home/albert_hsieh/Gemma-4-12B-Unified-System-One"
+      },
+      "executable_stat_at_start": {
+        "st_dev": 66306,
+        "st_ino": 11534385,
+        "st_size": 23319208,
+        "st_mtime_ns": 1783328682303782212
+      },
+      "returncode": 0,
+      "elapsed_seconds": 1801.536635078999
+    }
+  ],
+  "planned_command_count": 1,
+  "postreceipt_hold_seconds": 5,
+  "hold_started_monotonic": 72150.525882728,
+  "hold_deadline_monotonic": 72155.525882728,
+  "reason": "Keep admitted wrapper live for original authenticated unit close"
+}

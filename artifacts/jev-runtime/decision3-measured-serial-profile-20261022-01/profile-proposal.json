@@ -1,0 +1,179 @@
+{
+  "schema_id": "decision3-measured-serial-resource-profile-proposal-v1",
+  "profile": "decision3-gx10-serial-mmap-measured-v1",
+  "status": "source_only_unreviewed_profile_no_launch_plan",
+  "launch_argv": null,
+  "actual_load_performed": false,
+  "model_qualified": false,
+  "score": null,
+  "original_profile": {
+    "source": {
+      "path": "artifacts/jev-runtime/decision3-current-source-bootstrap-20261022-01/current_core.py",
+      "sha256": "13b77299787d77587de2253a5f953b101113fc8d694edd27ee651d709be0e435",
+      "size_bytes": 26252
+    },
+    "floor_bytes": 132618706804,
+    "physical_memtotal_bytes": 130595864576,
+    "refusal_under_original_policy_remains": true,
+    "hardware_impossibility_claim": false
+  },
+  "model": {
+    "id": "d3",
+    "repository": "vllm-sr/d3",
+    "revision": "225be8b1e2270becab69c5fe05b26f99cbbdd66b",
+    "resident_file_bytes": 52176025120,
+    "precision": "bfloat16",
+    "readout_dtype": "float32",
+    "loaded_parameters": 26086635760,
+    "readout_shape": [
+      255,
+      5120
+    ]
+  },
+  "unchanged_numerics_and_workload": {
+    "publisher_sources": "Exact cached checkpoint source pins; no loader/model monkeypatch.",
+    "prompt": "d3-code-readout-v1",
+    "attention": "noncausal_full_attention",
+    "pooling": "last",
+    "temperature": 1.0,
+    "batch_size": 8,
+    "fast": false,
+    "permutation_average": false,
+    "native_candidate_cap": 255,
+    "project_context": 8192,
+    "publisher_max_length": null,
+    "warmup": "Original publisher text48: lengths [37,64,320,333,1000,1024], exact48calls/216rows/96544tokens; no reduced or substituted warmup.",
+    "images": false,
+    "tasks": "Unchanged originalknown4/public6 all10,V7,16steps,20s policy,Q95helper20s/128tokens/8192context; two fresh model workers,64/96 envelopes."
+  },
+  "loader_policy": {
+    "HF_DEACTIVATE_ASYNC_LOAD": "1",
+    "HF_ENABLE_PARALLEL_LOADING": "false",
+    "HF_PARALLEL_LOADING_WORKERS": "1",
+    "local_files_only": true,
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "device_map": {
+      "": "cuda:0"
+    },
+    "safetensors": "Local filesystem mmap + lazy get_slice, per-tensor materialize and direct BF16 CUDAplacement. Do not set disable_mmap=True or pre-read tensor payloads into Python byte buffers.",
+    "not_guaranteed": "Async disabled limits materialization concurrency, but mmap physical residency and conversion temporaries still require actual peak evidence."
+  },
+  "proposed_distinct_resource_budgets": {
+    "owner_unit_memory_max_bytes": 6442450944,
+    "owner_unit_swap_max_bytes": 0,
+    "cuda_allocator_cap_bytes": 62277025792,
+    "non_allocator_framework_buffer_bytes": 2147483648,
+    "initial_combined_increment_budget_bytes": 70866960384,
+    "reserve_formula": "max(24GiB,ceil(rawMemTotal/5))",
+    "selected_reserve_bytes": 26119172916,
+    "fresh_host_available_required_bytes": 96986133300,
+    "cuda_cap_minus_resident_bytes": 10101000672,
+    "selection_scope": "New resource policy, not original80GiB unit or original2R floor. Existing selected owner7a50 Selection already accepts6GiB without any lifecycle/closure change.",
+    "double_accounting": "CPU memcg and CUDA allocator budgets are added conservatively even if kernel UMA accounting overlaps. No shared credit, resident credit, swap credit, or summing free pools.",
+    "accounting_limit": "If CUDA memory is charged against6GiB memcg here, the isolated load may refuse/OOM. That is a resource-profile failure, not permission to assume memory is uncharged or raise limits mid-run."
+  },
+  "fresh_admission": {
+    "order": [
+      "Externally select new source/profile/planSHA, fresh output/unit/nonces, same actual boot/MemTotal/UUID/interpreter/runtime/source/cache identities.",
+      "Require actualQ95 readiness/live callback and existing Q95 host reserve+2BASE admission; preserve95sources/348runtime, nativehelper qualification distinct.",
+      "Before model/framework: complete ancestors memory.current/max/swap/events; selected own6GiB/swap0 readback, host MemAvailable >=R+CPUcap+CUDAcap+2GiB. Fresh helper-loaded MemAvailable is a measured input, not fabricated capacity credit.",
+      "Driver metadata integratedGB10/singledevice/UUID/rawtotal must match selected host total and boot. Record libcuda path/stat and raw values without normalization.",
+      "After CUDAcontext but before constructor: require rawtorch/driver UUID/total equality; set torch.cuda.set_per_process_memory_fraction(CUDAcap/authenticated_actual_total), readback fraction and multiply actual same total, never pinned historicaldenominator.",
+      "Require actualCUDAfree >=resident+2GiB beforeconstructor and >=2GiB at subsequent stages. This is a separate floor; it is never added to hostMemAvailable.",
+      "At every phase/sample: sameboot/total/UUID, hostMemAvailable >=R+2GiB, no selected cgroupOOM/swap activity, actualCUDAallocated/reserved <=selectedcap and ancestryreadback matches. Any mismatch fails and closes selected unit."
+    ],
+    "all_budget_values_must_be_sealed": true,
+    "no_relaxation_on_refusal": true,
+    "numeric_example": {
+      "T_bytes": 130595864576,
+      "R_bytes": 26119172916,
+      "required_helper_loaded_host_available_bytes": 96986133300,
+      "depends_on_actual_fresh_available_not_total_only": true
+    }
+  },
+  "measurement_contract": {
+    "external_owner_sampler": "Read-only /proc/meminfo and selected/ancestor cgroup memory.current/peak/events every50ms throughout framework import, cache authentication, constructor, warmup, task groups and finalization. Track successful sample count/maxgap and stopped reason.",
+    "worker_samples": "Original phase labels plus before/afterframework, before/afterconstructor and eachwarmup/task; torch allocatorpeak/reset boundaries recorded explicitly, rawcuMemGetInfo/torch totals and actualNVMLsupport status preserved.",
+    "actual_peak_fields": [
+      "min_host_MemAvailable",
+      "max_selected_memory.current",
+      "memory.peak",
+      "ancestor_memory.current_and_headroom",
+      "memory.events_and_swap.current_deltas",
+      "torch_max_memory_allocated",
+      "torch_max_memory_reserved",
+      "actual_constructor_elapsed",
+      "sampler_max_gap",
+      "all48publisher_warmupcalls_and_geometry",
+      "final_cache/source/runtime/driver_binding"
+    ],
+    "sampling_claim": "Observed reserve between samples only; no universal continuous peak guarantee. Kernel/cuda caps are separate enforcement,2GiB outsidebuffer is prospective and must be validated by measured behavior, not asserted as a proven bound. The original text48 warmup stops at1024tokens; its success does not certify peak usage for every8192-token request. Actual unchanged task/head lengths and their observed peaks must be reported separately.",
+    "abort_scope": "Owned unit/actor only; preserve raw returned probabilities/failure evidence and exact external closure. No foreign process, Comfy, crashhandler or host kernel changes.",
+    "first_trial": "Separate constructor+fulltext48 load measurement score:null; after successful reviewed measured load/geometry/closure, prepare full10 with twofreshworkers under the same sealed newpolicy. An Edge pilot may check accounting first; it does not qualify fullD3capacity."
+  },
+  "concrete_implementation_seams": [
+    {
+      "component": "new resource_policy.py",
+      "change": "Pure typed integer admission from fresh host/cgroup/driver observations, selectedCPU/CUDA caps and reserve. No historical memory_decision edits."
+    },
+    {
+      "component": "new SerialD3Backend constructor",
+      "change": "Explicit named subclass/fork constructor with newresourcegate and unchanged publisher load kwargs/runtimechecks; reuse originalpredict/native DTO/normalization. OriginalDecision3Backend require_memory remains frozen and continues refusal. No monkeypatch, unchecked __new__, or relabeling originalqualification."
+    },
+    {
+      "component": "new bootstrap callable/selection",
+      "change": "Explicit fork of currentbootstrap orchestration uses newGates and newbackend constructor; preserve current_source18 pins and append newruntimefiles/descriptor refs in independently sealed successor union. Do not dynamically rewrite AST/text or alter activeimports."
+    },
+    {
+      "component": "new execution/helper-co-resident profiles",
+      "change": "Original248 execution CAP80/85f2 D3 CORE admission would reject this trial. Prepare explicit successor plan/selection that calls newresourcepolicy for D3co-resident admission while preserving exactQ95live/auth/staticchecks and publisher semantics. Keep existing Edge/fourmodels originalprofiles unchanged."
+    },
+    {
+      "component": "owner",
+      "change": "Reuse exact7a50 lifecycle with6GiB Selection, distinct unit/nonces/outputs, readback caps and normal terminal/cohortclosure. No new universal containmentclaim."
+    }
+  ],
+  "before_any_actual_load": [
+    "Review concrete typed policy/backend/bootstrap/execution source and numerical-body parity.",
+    "Run meaningful tiny CPU policy arithmetic/identity/withinrun-drift/cap-negative tests in quiet window; no Ruff crash envelope.",
+    "Independently seal newplan + actualfreshhelperseed/boot/T/UUID and check fresh MemAvailable inequality. Root controls actual launch after review."
+  ],
+  "source_refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-edge-known4-semantic-audit-20261022-01/loader-source-observation.json",
+      "sha256": "42e8495d483ea2a80de3e0290189b6b66a87f76b454d3426e29618c1f2106450",
+      "size_bytes": 5599
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-current-source-bootstrap-20261022-01/current_bootstrap.py",
+      "sha256": "a39e811764f83eff793f3f5ade7fb9defd7e21fdc7d86207b5e12ce7c22b8581",
+      "size_bytes": 30181
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    {
+      "path": "src/s1/evaluation/decision3.py",
+      "sha256": "aaa21ab6f2ecf5ae0e00694b43755541dc75fc0310ba10d945ade2a4511add52",
+      "size_bytes": 24613
+    },
+    {
+      "path": "artifacts/jev-runtime/overlay/transformers/core_model_loading.py",
+      "sha256": "c5b6bcdb6401a3cfdf825bc979d41ac3e7e075e09459021363dce5e68c54de22",
+      "size_bytes": 84952
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-current-source-bootstrap-20261022-01/current_worker.py",
+      "sha256": "edb7e6ed3e6b250a76d00189998d403c1cdda2bdec2cedafacc08aa8f97306c3",
+      "size_bytes": 29872
+    }
+  ],
+  "research_decision": {
+    "path": "artifacts/jev-runtime/decision3-measured-serial-profile-20261022-01/research-decision.json",
+    "sha256": "4c50d751d940563441175e20f37c5953ed5bfb37ed4a55b93474118834499bb1",
+    "size_bytes": 1295
+  }
+}

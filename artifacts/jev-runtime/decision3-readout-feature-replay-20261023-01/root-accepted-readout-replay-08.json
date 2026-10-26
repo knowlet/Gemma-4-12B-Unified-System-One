@@ -1,0 +1,140 @@
+{
+  "schema": "root-accepted-original-readout-replay-projection-v1",
+  "status": "ACCEPTED_SINGLE_CALL_FEATURE_MECHANISM_PARITY_ONLY",
+  "scope": "Root-accepted closed original idle-only owner06 actual08. Typed aggregate projection of authenticated receipts and independent actual audit, not a fresh NN rerun or a training acceptance ledger.",
+  "observed_finished_at_utc": "2026-10-23T16:34:46.867910+00:00",
+  "artifact_refs": {
+    "root_execution": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/root-execution-readout-replay-08.json",
+      "size_bytes": 1714,
+      "sha256": "52710333086276c854081016609e0c25296e499c4bbe8e438501bf01781d87cd"
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-08/receipt.json",
+      "size_bytes": 74393,
+      "sha256": "a64f5881bb092451d24b2e537da414570a6742aff3db72f29ccd146354ecfe33"
+    },
+    "original_closure": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-06/actual-08/external-boundary-closure.json",
+      "size_bytes": 3790,
+      "sha256": "1e96d9c32870238e857368ffa307e2ba6fad4e4d579c6d4fce2a63788bc57bc4"
+    },
+    "independent_actual_review": {
+      "path": "artifacts/jev-runtime/decision3-readout-feature-replay-20261023-01/independent-actual-readout-replay-08-review-01.json",
+      "size_bytes": 13042,
+      "sha256": "0d8335bd37d03fc3852b3b4e68985c1bfb410d91025f67e16c11c66bd0003f55"
+    }
+  },
+  "selection": {
+    "original_owner_profile": "llama-cpp-cpu4-2g-long-command-owned-v1",
+    "owner_unit": "jev-d3-llama-cpp-cpu4-2g-long-20261023-06.service",
+    "command_spec_sha256": "138c836f7416c5437a6f9abe6fbba519d4e2da4ddfcd2a1d110c51bc6d86a3cb",
+    "plan_sha256": "21817cfd2e961de040d40cabd5f5bd54245a58e68e936715f5e589482b5e5558",
+    "model_revision": "cab71e6ad3461b8086d51ddb572c656babd63b0b",
+    "model_identity_sha256": "6e00d04abbdbdf6d35c9e12065769d9edaacc3bfe9404583891797718d239dc8",
+    "manifest_sha256": "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59",
+    "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+    "nonce": "jev-d3-boundary-3f1c7ed3d4da8577f93ce0a1714fcb55",
+    "invocation_id": "55dc4e28afd347438cfcfacc4626140d"
+  },
+  "mechanism": {
+    "constructors": 1,
+    "native_requests": 1,
+    "actual_partial_rows": 3,
+    "native_batch_maximum": 4,
+    "legal_option_counts": [
+      2,
+      3,
+      4
+    ],
+    "legal_probabilities_compared": 9,
+    "all_legal_probabilities_within_predeclared_tolerance": true,
+    "all_ordered_argmaxes_equal": true,
+    "absolute_tolerance": 1e-06,
+    "relative_tolerance": 1e-05,
+    "tolerance_formula": "abs(replay-native)<=1e-6+1e-5*abs(native)",
+    "max_absolute_probability_error": 8.764062620070234e-08,
+    "first_layer_shape": [
+      3,
+      169,
+      1024
+    ],
+    "final_norm_shape": [
+      3,
+      169,
+      1024
+    ],
+    "retained_feature_shape": [
+      3,
+      1024
+    ],
+    "additional_encoder_forwards": 0,
+    "additional_norm_passes": 0,
+    "baseline_identity_and_version_witness_unchanged": true,
+    "live_baseline_tensor_byte_hash_claim": false,
+    "backbone_dtype": "bfloat16",
+    "readout_and_feature_dtype": "float32",
+    "device": "cpu",
+    "cuda_initialized_final": false
+  },
+  "timing_seconds": {
+    "complete_prediction_after_hook_evidence_watchdog_cleanup": 0.8898411160043906,
+    "whole_actor_after_final_write_watchdog_cleanup": 14.338274930996704,
+    "owned_command": 15.838367507996736,
+    "root_wall": 17.485777056004736,
+    "prediction_budget": 20,
+    "execute_entry_whole_budget": 120,
+    "scope": "One invocation; complete prediction includes prepare, native call, replay, retention and cleanup. Cold startup is not a20-second service claim."
+  },
+  "resources": {
+    "CPU_affinity": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "CPU_quota_percent": 400,
+    "memory_max_bytes": 2147483648,
+    "swap_max_bytes": 0,
+    "reserve_bytes": 26119172916,
+    "initial_required_available_bytes": 28266656564,
+    "runtime_required_available_bytes": 26119172916,
+    "authenticated_owned_peak_bytes": 1632899072,
+    "sampled_OOM_and_OOM_kill_counters": 0,
+    "original_idle_only_policy": true,
+    "Comfy_service_modified": false,
+    "scope": "Own unit cumulative peak includes wrapper/framework/model. OOM and host observations are sampled, not a continuous guarantee."
+  },
+  "acceptance": {
+    "root_exit0": true,
+    "original_owner_completed": true,
+    "owner_errors_empty": true,
+    "sources_unchanged": true,
+    "full_model_manifest_runtime_source_auth_before_and_after": true,
+    "authenticated_original_stop": true,
+    "exact_two_empty_process_scans": true,
+    "cgroup_absent": true,
+    "whole_unit_exit_confirmed": true,
+    "observed_cgroup_cohort_exit_confirmed": true,
+    "independent_actual_parity_review_passed": true
+  },
+  "limits": {
+    "feature_commit_status": "PENDING",
+    "training_eligible": false,
+    "semantic_correctness_evaluated": false,
+    "benchmark_calls": 0,
+    "browser_calls": 0,
+    "public231_score": null,
+    "coherenceMINI1248_score": null,
+    "browser_success_rate": null,
+    "HTTP_qualified": false,
+    "model_qualified": false,
+    "trained_delta": null,
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "owner07_coexist_fit_latency_quality_or_authentication_inherited": false,
+    "raw_responses_features_or_actual_state_in_this_projection": false
+  },
+  "provenance_limit": "Parity numbers are taken from the independent actual audit, which checked ignored local synthetic outputs. This projection checked exact small receipt hashes/identity/closure joins only and did not open raw responses, features or actor state."
+}

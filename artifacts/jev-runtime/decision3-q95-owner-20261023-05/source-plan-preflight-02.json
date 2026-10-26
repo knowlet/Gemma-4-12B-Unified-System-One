@@ -1,0 +1,22 @@
+{
+  "observed_at_utc": "2026-10-22T23:24:52.440117+00:00",
+  "entry": {
+    "path": "artifacts/jev-runtime/decision3-q95-owner-20261023-05/prepare_plan.py",
+    "sha256": "e9e9da694e7f0902f92ffd9b416707fb2250b0a3d586c9749974f2939e4387eb",
+    "size_bytes": 4854
+  },
+  "argv": [
+    "/home/albert_hsieh/Gemma-4-12B-Unified-System-One/.venv/bin/python",
+    "-B",
+    "artifacts/jev-runtime/decision3-q95-owner-20261023-05/prepare_plan.py",
+    "--seal",
+    "--plan-name",
+    "launch-plan-02.json"
+  ],
+  "exit_code": 1,
+  "stdout": "{\"error\": {\"message\": \"Selected Q95 owner stage refused\", \"observation_evidence\": {\"gate\": \"memory_reserve\", \"observed\": {\"boot_id\": {\"present\": true, \"truncated\": false, \"type\": \"str\", \"value\": \"90eeafaa-7c2f-45f0-8b45-f74ef2ee1005\"}, \"comfy_pending\": {\"present\": true, \"type\": \"int\", \"value\": 0}, \"comfy_running\": {\"present\": true, \"type\": \"int\", \"value\": 0}, \"comfy_state\": {\"present\": true, \"truncated\": false, \"type\": \"str\", \"value\": \"http_idle\"}, \"mem_available_bytes\": {\"present\": true, \"type\": \"int\", \"value\": 28758568960}, \"mem_total_bytes\": {\"present\": true, \"type\": \"int\", \"value\": 130595864576}}, \"phase\": \"initial\", \"schema_id\": \"q95-host-gate-refusal-v1\", \"thresholds\": {\"boot_id\": \"90eeafaa-7c2f-45f0-8b45-f74ef2ee1005\", \"margin_bytes\": 47839098816, \"mem_total_bytes\": 130595864576, \"min_mem_available_bytes\": 73958271732, \"reserve_bytes\": 26119172916}}, \"type\": \"ValueError\"}, \"model_loaded\": false, \"quality_score\": null, \"status\": \"preparation_refused_no_unit_started\", \"unit_started\": false}\n",
+  "stderr": "{\"host_gate_refusal\":{\"gate\":\"memory_reserve\",\"observed\":{\"boot_id\":{\"present\":true,\"truncated\":false,\"type\":\"str\",\"value\":\"90eeafaa-7c2f-45f0-8b45-f74ef2ee1005\"},\"comfy_pending\":{\"present\":true,\"type\":\"int\",\"value\":0},\"comfy_running\":{\"present\":true,\"type\":\"int\",\"value\":0},\"comfy_state\":{\"present\":true,\"truncated\":false,\"type\":\"str\",\"value\":\"http_idle\"},\"mem_available_bytes\":{\"present\":true,\"type\":\"int\",\"value\":28758568960},\"mem_total_bytes\":{\"present\":true,\"type\":\"int\",\"value\":130595864576}},\"phase\":\"initial\",\"schema_id\":\"q95-host-gate-refusal-v1\",\"thresholds\":{\"boot_id\":\"90eeafaa-7c2f-45f0-8b45-f74ef2ee1005\",\"margin_bytes\":47839098816,\"mem_total_bytes\":130595864576,\"min_mem_available_bytes\":73958271732,\"reserve_bytes\":26119172916}}}\n",
+  "source_unchanged": true,
+  "unit_started_by_preparer": false,
+  "model_loaded_by_preparer": false
+}

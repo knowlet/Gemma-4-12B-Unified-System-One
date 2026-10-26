@@ -1,0 +1,271 @@
+{
+  "schema": "independent-incomplete-owned-campaign-metadata-audit-v1",
+  "created_at_utc": "2026-10-23T12:06:57.834104+00:00",
+  "reviewer": "/root/cpu_followup_review",
+  "result": "INCOMPLETE_ATTEMPT_METADATA_CONSISTENT_NO_SCORE_OR_FINAL_QUALIFICATION",
+  "model_key": "edge",
+  "native_batch_upper_bound": 4,
+  "terminal_exec_session_id": 6292,
+  "root_exit_code": 1,
+  "root_wall_seconds": 183.35575167600473,
+  "artifact_refs": {
+    "root_summary": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-incomplete-actual03-summary.json",
+      "sha256": "fc37fa38acfcc81a5b2a4fec111d04f05545fa73dde5cc7e9e87b354035d5b11",
+      "size_bytes": 5687
+    },
+    "root_execution": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/root-execution-batch4-edge-both-03.json",
+      "sha256": "b819be0f478c60bf02d04832f20cf0012fd75a311030a78e3c8686d1d902decb",
+      "size_bytes": 1753
+    },
+    "owner_receipt": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-03/receipt.json",
+      "sha256": "c14baf4f1b5dac608f50b8a85b79ccdfc3b409940cad6bc056f215caf7a0d336",
+      "size_bytes": 194493
+    },
+    "original_closure": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-03/external-boundary-closure.json",
+      "sha256": "4dbcfb570abbf68007d81b25894bcba1b55c17ae47bd4da454855b4b123de9f4",
+      "size_bytes": 5053
+    },
+    "scalar_progress": {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-03/both-benchmarks/native-evidence/progress.json",
+      "sha256": "2cc11548b82dbfdcb0bffca0c3ba37bab3947c5d3a84cac15c7cc9435db396fe",
+      "size_bytes": 1666
+    },
+    "later_closure_observation": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-supplemental-actual03-closure.json",
+      "sha256": "1154763371f5c57e64d33f6076be3b0d72ce3701bd6fc0fea72fe4e2e7520ddd",
+      "size_bytes": 5340
+    },
+    "later_host_gate": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-idle-recheck-01.json",
+      "sha256": "58996ffeeff30a941b2b7b7e84a83fd42b4b8c20964b649dda3f695ca7ae8aa5",
+      "size_bytes": 1039
+    },
+    "spec": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-edge-campaign-command-spec.json",
+      "sha256": "da16f74b5ede56a7bb567f53eaf8e7b8d0560ff976878f704ddc6924471b745b",
+      "size_bytes": 13455
+    },
+    "source_selection_review": {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/independent-source-selection-review.json",
+      "sha256": "2621c004e549b27e24ff8494c945e9176b63e8881993fb5d18de84cc62ae75f2",
+      "size_bytes": 57620
+    }
+  },
+  "verified": {
+    "root_terminal_refs_exact_and_closed": true,
+    "spec_controller_review_and56_unique_selected_source_metadata_match": true,
+    "recorded_owner_sources_unchanged_and_five_mandatory_small_sources_currently_rehashed": true,
+    "root_stop_reason_matches_original_controller_and_closure_error": true,
+    "fullR_plus3GiB_idle_initial_admission_recorded": true,
+    "original_authenticated_stop_exact_nonce_PID_start_invocation_preserved": true,
+    "original_zombie_and_false_closure_flags_preserved": true,
+    "later_two_readonly_original_method_empty_scans_distinct_from_original_closure": true,
+    "progress_summary_matches_exact_scalar_progress_file": true,
+    "no_suite_or_final_full_authentication_claim": true,
+    "all_reviewed_metadata_rehashed_again_before_receipt": true
+  },
+  "stop_reason": {
+    "observed": "Original read-only Comfy idle gate detected running1/pending0/http_busy during controller runtime check. The original authenticated stop sent selected unit SIGTERM; final-host check retained the same busy condition as a secondary error.",
+    "primary_phase": "controller",
+    "primary_type": "ValueError",
+    "primary_observation": {
+      "boot_id": "90eeafaa-7c2f-45f0-8b45-f74ef2ee1005",
+      "mem_total_bytes": 130595864576,
+      "mem_available_bytes": 29817741312,
+      "comfy_running": 1,
+      "comfy_pending": 0,
+      "comfy_state": "http_busy",
+      "comfy_evidence": {
+        "transport": "HTTP",
+        "comfy_running": 1,
+        "comfy_pending": 0,
+        "http_status": 200,
+        "response_sha256": "f2232867a921e41aabd89c7f2ff2fedee844886ee397b644f2a51d512d3f947f"
+      }
+    },
+    "secondary_phase": "final_host",
+    "Comfy_service_modified": false,
+    "causal_limit": "This is an idle-policy stop. It establishes neither model/math failure nor a callback/campaign deadline or OOM failure. No workload was restarted or resumed by this review."
+  },
+  "incomplete_progress": {
+    "stage": "legacy-public231",
+    "started_calls": 166,
+    "completed_calls": 165,
+    "raw_native_returns": 165,
+    "required_public_calls": 231,
+    "required_coherence_calls": 1248,
+    "required_total_calls": 1479,
+    "active_callback_index_at_stop": 165,
+    "active_status_is_stale_after_external_stop": true,
+    "recorded_partial_latency_summary": {
+      "count": 165,
+      "median_seconds": 0.30484097100270446,
+      "p95_seconds": 5.033867489997647,
+      "max_seconds": 7.981351795009687,
+      "quantile_method": "nearest_rank_p95; ordinary_median",
+      "startup_included": false,
+      "browser_20_second_qualification": false,
+      "unit": "one unchanged complete state/questions callback; native question chunks of up to4"
+    },
+    "counts_and_latency_scope": "Scalar file consistency only; no raw callbacks, predictions, tasks, gold or caches were read/count-recomputed, and no complete public accuracy or coherence aggregate/CI can be produced.",
+    "Benchmark_Heaven_public231_score": null,
+    "JevBench_coherence_MINI_score": null,
+    "final_full_model_runtime_suite_source_authentication_completed": false
+  },
+  "resource_metadata": {
+    "memory_cap_bytes": 3221225472,
+    "swap_max_bytes": 0,
+    "initial_available_bytes": 29722804224,
+    "required_initial_fullR_plus_cap_bytes": 29340398388,
+    "runtime_reserve_R_bytes": 26119172916,
+    "recorded_successful_postlaunch_host_samples": 181,
+    "recorded_phase_counts": {
+      "readiness": 2,
+      "preexec": 1,
+      "loop": 178
+    },
+    "recorded_min_successful_sample_MemAvailable_bytes": 27671216128,
+    "retained_runtime_samples": 64,
+    "runtime_loop_observations_total": 178,
+    "retention": "first63 plus latest; scalar summary includes all successful samples; not continuous",
+    "retained_own_cgroup_memory_events_max_oom_oomkill_groupkill": 0,
+    "authenticated_preclose_unit_MemoryPeak_bytes": 1949376512,
+    "preclose_unit_main_still_live": true,
+    "CPU_main_thread_affinity_observations": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "kernel_cpu_max": [
+      "400000",
+      "100000"
+    ],
+    "file_limit_bytes": 268435456,
+    "limits": "Unit peak includes actor/framework/cache/wrapper activity; events are retained cumulative snapshots, not proof of a continuous cap or final post-stop counters. Main-thread affinity observations do not establish all-thread lifetime enforcement. Recorded partial callback latencies exclude model startup and are not browser20 qualification."
+  },
+  "closure": {
+    "original_mode": "authenticated_stop",
+    "original_post_stop_terminal_verified": true,
+    "original_cgroup_absent": true,
+    "original_after_stop_signal": 15,
+    "original_first_scan_zombie": {
+      "pid": 492327,
+      "start_ticks": 10575909,
+      "state": "Z"
+    },
+    "original_second_scan_empty": true,
+    "original_whole_unit_exit_confirmed": false,
+    "original_observed_cgroup_cohort_exit_confirmed": false,
+    "later_supplement_two_empty_scans": true,
+    "later_status_sandwiches_not_found_MainPID0_ControlGroup_empty": true,
+    "later_cgroup_absent": true,
+    "scope": "Later selected-unit/observed-cohort absence supplements the preserved original failed two-scan conjunction; it does not overwrite original false flags or establish delegated-cgroup prevention."
+  },
+  "original_authority_flags": {
+    "no_escape_enforced": false,
+    "whole_tree_exit_confirmed": false,
+    "continuation_authorized": false,
+    "model_qualified": false
+  },
+  "later_gate": {
+    "captured_at_utc": "2026-10-23T12:02:54.260191+00:00",
+    "passed": false,
+    "Comfy_running": 1,
+    "Comfy_pending": 0,
+    "MemAvailable_bytes": 26119716864,
+    "new_admission_granted": false,
+    "scope": "Historical saved snapshot only; no current host probe by reviewer. It supplies no future launch permission."
+  },
+  "qualification": {
+    "campaign_complete": false,
+    "Benchmark_Heaven_public231_complete": false,
+    "JevBench_coherence_MINI_complete": false,
+    "final_full_model_runtime_and_suite_source_authenticated": false,
+    "original_whole_unit_exit_confirmed": false,
+    "browser_whole20s_qualified": false,
+    "helper_generation_qualified": false,
+    "all_six_matched_or_victory": false
+  },
+  "next_attempt_boundary": "Requires a new output/unit invocation and fresh original admission including Comfy idle and fullR+3GiB. No cache reuse/resume or score continuation from incomplete actual03.",
+  "methods_and_exclusions": [
+    "Only exact authorized terminal controller receipt/closure/scalar progress plus root summary/supplement/idle metadata and five small mandatory source references were read.",
+    "The only native-evidence file read was exact progress.json. Actor state, raw/native returns/per-call evidence, tasks/gold/predictions/cache/results and all model/tokenizer/runtime binary payload bytes were excluded.",
+    "No model/framework import, native execution, test rerun, process/host/unit/cgroup/observer call, signal, network or Git operation."
+  ],
+  "verified_metadata_file_count": 13,
+  "verified_metadata_total_bytes": 388106,
+  "verified_refs": [
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-incomplete-actual03-summary.json",
+      "sha256": "fc37fa38acfcc81a5b2a4fec111d04f05545fa73dde5cc7e9e87b354035d5b11",
+      "size_bytes": 5687
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-supplemental-actual03-closure.json",
+      "sha256": "1154763371f5c57e64d33f6076be3b0d72ce3701bd6fc0fea72fe4e2e7520ddd",
+      "size_bytes": 5340
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-idle-recheck-01.json",
+      "sha256": "58996ffeeff30a941b2b7b7e84a83fd42b4b8c20964b649dda3f695ca7ae8aa5",
+      "size_bytes": 1039
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/root-execution-batch4-edge-both-03.json",
+      "sha256": "b819be0f478c60bf02d04832f20cf0012fd75a311030a78e3c8686d1d902decb",
+      "size_bytes": 1753
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-03/receipt.json",
+      "sha256": "c14baf4f1b5dac608f50b8a85b79ccdfc3b409940cad6bc056f215caf7a0d336",
+      "size_bytes": 194493
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-03/external-boundary-closure.json",
+      "sha256": "4dbcfb570abbf68007d81b25894bcba1b55c17ae47bd4da454855b4b123de9f4",
+      "size_bytes": 5053
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/actual-03/both-benchmarks/native-evidence/progress.json",
+      "sha256": "2cc11548b82dbfdcb0bffca0c3ba37bab3947c5d3a84cac15c7cc9435db396fe",
+      "size_bytes": 1666
+    },
+    {
+      "path": "artifacts/jev-runtime/llama-cpp-owner-20261023-05/controller.py",
+      "sha256": "81a492bb00a430c8728e0fcafe94a4220961312e521e8c0d7863c7f601c8ef2e",
+      "size_bytes": 40319
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/root-edge-campaign-command-spec.json",
+      "sha256": "da16f74b5ede56a7bb567f53eaf8e7b8d0560ff976878f704ddc6924471b745b",
+      "size_bytes": 13455
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-local-owner-terminal-20261022-01/owner_boundary.py",
+      "sha256": "7a50c47d6d7f696973c666cb7a40ce47dd0a7624667a18422c8c60c0db72e4e5",
+      "size_bytes": 21002
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/comfy_observer.py",
+      "sha256": "fd977040d659770e26a8fd6cc2b94e6c5440a6a3d3f05099e07d7597d8309e45",
+      "size_bytes": 38483
+    },
+    {
+      "path": "artifacts/jev-runtime/observer-system-services-20261022-01/system-services.json",
+      "sha256": "a2446af344f084dcf556256fd04c9754fcba940f33b3866990de85a7374c0727",
+      "size_bytes": 2196
+    },
+    {
+      "path": "artifacts/jev-runtime/decision3-publisher-batch4-cpu-both-20261023-02/independent-source-selection-review.json",
+      "sha256": "2621c004e549b27e24ff8494c945e9176b63e8881993fb5d18de84cc62ae75f2",
+      "size_bytes": 57620
+    }
+  ],
+  "findings": [],
+  "all_review_writes_stopped": true
+}
