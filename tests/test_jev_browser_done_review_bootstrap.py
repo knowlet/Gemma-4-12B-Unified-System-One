@@ -94,7 +94,13 @@ def test_bootstrap_wraps_loaded_runner_and_restores_callbacks(
     original = bootstrap._module
     command = Agent.command
     events = []
-    result = bridge.run(bootstrap, enabled=True, event_sink=events.append, **pins)
+    result = bridge.run(
+        bootstrap,
+        enabled=True,
+        feedback_enabled=verdict == "unknown",
+        event_sink=events.append,
+        **pins,
+    )
     assert result["status"] == expected
     assert len(bootstrap.records) == calls
     assert len(bootstrap.captured) == calls
@@ -114,6 +120,9 @@ def test_bootstrap_wraps_loaded_runner_and_restores_callbacks(
             assert event[label + "_sha256"] == hashlib.sha256(encoded).hexdigest()
             assert body == record[label]
     assert bootstrap.agent.state["browser"].actions == ([] if verdict == "supported" else ["item"])
+    if verdict == "unknown":
+        sent = json.loads(bootstrap.captured[-1]["request_bytes"])
+        assert sent["state"]["completion_review_advisory"]["verdict"] == "unknown"
     assert bootstrap._module is original and Agent.command is command
     assert "_jev_done_review_" + pins["released_owner_sha256"][:16] not in sys.modules
 

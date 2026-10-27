@@ -233,6 +233,116 @@ def test_unconfirmed_done_replans_only_offered_action_and_records_actual_wire(se
             assert a.state["browser"].actions == ["item"]
 
 
+@pytest.mark.parametrize("verdict", ["unsupported", "unknown"])
+def test_opt_in_feedback_changes_only_replan_copy_and_is_hash_bound(setup, verdict):
+    setup.options["review"] = verdict
+    events = []
+    with owner.attach_to_runner(
+        runner, enabled=True, feedback_enabled=True, event_sink=events.append
+    ):
+        with context(setup) as (records, _):
+            a = Agent(setup.model)
+            assert a.command("tick")["status"] == "ready"
+            original, review_body, replan = setup.sent
+            assert original["state"] == review_body["state"]
+            assert owner.FEEDBACK_KEY not in original["state"]
+            assert replan["state"] == {
+                **original["state"],
+                owner.FEEDBACK_KEY: {
+                    "verdict": verdict,
+                    "guidance": owner.FEEDBACK_GUIDANCE[verdict],
+                },
+            }
+            assert "DONE" in original["questions"]["operation"]["criteria"]
+            assert "DONE" not in replan["questions"]["operation"]["criteria"]
+            assert a.state["decisions"][-1]["request"] == replan
+            assert a.state["decisions"][-1]["completion_review"]["feedback_enabled"] is True
+            replan_event = next(event for event in events if event["status"] == "replan_call")
+            assert replan_event["request_sha256"] == owner._body_sha256(replan)
+            assert records[-1]["request"] == replan
+            assert a.state["decision"] is None and a.state["browser"].actions == ["item"]
+
+
+def test_feedback_requires_explicit_boolean_and_is_not_sent_for_supported(setup):
+    with pytest.raises(ValueError, match="feedback opt-in"):
+        with owner.attach_to_runner(runner, enabled=True, feedback_enabled="yes"):
+            pass
+    with owner.attach_to_runner(runner, enabled=True, feedback_enabled=True):
+        with context(setup):
+            a = Agent(setup.model)
+            assert a.command("tick")["status"] == "done"
+            assert len(setup.sent) == 2
+            assert all(owner.FEEDBACK_KEY not in row["state"] for row in setup.sent)
+
+
+@pytest.mark.parametrize(
+    "verdict,expected_status,expected_actions",
+    [("unsupported", "ready", ["item"]), ("unknown", "blocked", [])],
+)
+def test_feedback_can_inform_a_synthetic_policy_choice(
+    setup, verdict, expected_status, expected_actions
+):
+    setup.options["review"] = verdict
+    network = setup.model.post_json
+
+    def choose_from_feedback(url, key, body):
+        result = network(url, key, body)
+        advisory = body["state"].get(owner.FEEDBACK_KEY)
+        if advisory:
+            operation = "CLICK" if advisory["verdict"] == "unsupported" else "BLOCKED"
+            result["answers"]["operation"] = valid_answer(
+                operation, body["questions"]["operation"]["criteria"]
+            )
+        return result
+
+    setup.model.post_json = choose_from_feedback
+    with owner.attach_to_runner(runner, enabled=True, feedback_enabled=True):
+        with context(setup):
+            agent = Agent(setup.model)
+            assert agent.command("tick")["status"] == expected_status
+            assert agent.state["browser"].actions == expected_actions
+
+
+def test_feedback_text_is_bound_before_event_callbacks(setup, monkeypatch):
+    setup.options["review"] = "unknown"
+    expected = owner.FEEDBACK_GUIDANCE["unknown"]
+    key = owner.FEEDBACK_KEY
+
+    def event(_event):
+        monkeypatch.setitem(owner.FEEDBACK_GUIDANCE, "unknown", "changed by callback")
+        monkeypatch.setattr(owner, "FEEDBACK_KEY", "changed_by_callback")
+
+    with owner.attach_to_runner(runner, enabled=True, feedback_enabled=True, event_sink=event):
+        with context(setup):
+            assert Agent(setup.model).command("tick")["status"] == "ready"
+    assert setup.sent[-1]["state"][key]["guidance"] == expected
+    assert "changed_by_callback" not in setup.sent[-1]["state"]
+
+
+def test_feedback_rejects_a_key_altered_before_opt_in(setup, monkeypatch):
+    monkeypatch.setattr(owner, "FEEDBACK_KEY", "changed_before_attach")
+    with pytest.raises(ValueError, match="fixed feedback key"):
+        with owner.attach_to_runner(runner, enabled=True, feedback_enabled=True):
+            pass
+
+
+def test_feedback_rejects_guidance_altered_before_opt_in(setup, monkeypatch):
+    monkeypatch.setitem(owner.FEEDBACK_GUIDANCE, "unknown", "changed before attach")
+    with pytest.raises(ValueError, match="fixed feedback guidance"):
+        with owner.attach_to_runner(runner, enabled=True, feedback_enabled=True):
+            pass
+
+
+def test_feedback_off_does_not_depend_on_feedback_globals(setup, monkeypatch):
+    monkeypatch.setattr(owner, "FEEDBACK_KEY", None)
+    monkeypatch.setattr(owner, "FEEDBACK_GUIDANCE", None)
+    setup.options["review"] = "unknown"
+    with owner.attach_to_runner(runner, enabled=True, feedback_enabled=False):
+        with context(setup):
+            assert Agent(setup.model).command("tick")["status"] == "ready"
+    assert setup.sent[-1]["state"] == setup.sent[0]["state"]
+
+
 def test_non_done_is_unmodified_and_extra_calls_zero(setup):
     setup.options["initial"] = "CLICK"
     with owner.attach_to_runner(runner, enabled=True):
@@ -350,8 +460,11 @@ def test_unexpected_browser_fresh_wrapper_fails_closed(setup):
             assert a.state["browser"].actions == []
 
 
+@pytest.mark.parametrize("feedback_enabled", [False, True])
 @pytest.mark.parametrize("callback", ["event", "policy"])
-def test_callback_cannot_reenter_review_or_execute_and_guard_clears(setup, callback):
+def test_callback_cannot_reenter_review_or_execute_and_guard_clears(
+    setup, callback, feedback_enabled
+):
     selected = {}
     original_network = setup.model.post_json
 
@@ -369,7 +482,9 @@ def test_callback_cannot_reenter_review_or_execute_and_guard_clears(setup, callb
             reenter()
 
     setup.model.post_json = network
-    with owner.attach_to_runner(runner, enabled=True, event_sink=event):
+    with owner.attach_to_runner(
+        runner, enabled=True, feedback_enabled=feedback_enabled, event_sink=event
+    ):
         with context(setup):
             a = Agent(setup.model)
             selected["agent"] = a
@@ -380,6 +495,24 @@ def test_callback_cannot_reenter_review_or_execute_and_guard_clears(setup, callb
             # An exception in either callback must release the guard.
             assert a.command("tick")["status"] == "ready"
             assert a.state["browser"].actions == ["item"]
+
+
+def test_feedback_replan_event_page_mutation_cannot_execute(setup):
+    setup.options["review"] = "unknown"
+    selected = {}
+
+    def event(row):
+        if row["status"] == "replan_call":
+            selected["agent"].state["page"]["text"] = "changed"
+
+    with owner.attach_to_runner(runner, enabled=True, feedback_enabled=True, event_sink=event):
+        with context(setup):
+            agent = Agent(setup.model)
+            selected["agent"] = agent
+            with pytest.raises(ValueError, match="visible state changed"):
+                agent.command("tick")
+            assert agent.state["decision"] is None and agent.state["status"] == "ready"
+            assert agent.state["browser"].actions == []
 
 
 def test_progress_advisory_state_is_explicitly_unsupported(setup):

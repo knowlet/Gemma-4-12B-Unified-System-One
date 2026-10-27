@@ -24,6 +24,7 @@ def run(
     held_owner_sha256=None,
     released_owner_path=None,
     released_owner_sha256=None,
+    feedback_enabled=False,
     max_reviews=2,
     event_sink=None,
     **capture_arguments,
@@ -72,7 +73,11 @@ def run(
                 try:
                     stack.enter_context(
                         owner.attach_to_runner(
-                            module, enabled=True, max_reviews=max_reviews, event_sink=event_sink
+                            module,
+                            enabled=True,
+                            feedback_enabled=feedback_enabled,
+                            max_reviews=max_reviews,
+                            event_sink=event_sink,
                         )
                     )
                 except BaseException:
