@@ -26,6 +26,7 @@ import jev_decision3_candidate_http_owner as common
 SOURCE_ONLY = True
 SCHEMA = "decision3-cpu-padding-experiment-plan-v1"
 SCHEMA_V2 = "decision3-cpu-padding-experiment-plan-v2"
+SCHEMA_V3 = "decision3-cpu-padding-experiment-plan-v3"
 CGROUP_ROOT = Path("/sys/fs/cgroup")
 ROOT = Path(__file__).absolute().parent.parent
 SCRIPTS = ROOT / "scripts"
@@ -56,7 +57,7 @@ def _profile(plan):
     if plan.get("schema", SCHEMA) == SCHEMA:
         return {"cpus": frozenset(range(15, 20)), "cpu_list": "15-19", "threads": 5}
     _need(
-        plan.get("schema") == SCHEMA_V2 and type(plan.get("cpu_profile")) is str,
+        plan.get("schema") in {SCHEMA_V2, SCHEMA_V3} and type(plan.get("cpu_profile")) is str,
         "explicit CPU profile required",
     )
     profiles = {
@@ -84,6 +85,12 @@ def _parse_cpu_list(value):
     return result
 
 
+class _CpuLimitError(ValueError):
+    def __init__(self, check):
+        super().__init__("actual worker CPU, memory and swap limits required")
+        self.check = check
+
+
 def _cpu_limits(group, pid, profile):
     _need(
         type(group) is str and group.startswith("/") and ".." not in Path(group).parts,
@@ -91,16 +98,29 @@ def _cpu_limits(group, pid, profile):
     )
     path = CGROUP_ROOT / group.lstrip("/")
     _need(path.resolve().is_relative_to(CGROUP_ROOT.resolve()), "cgroup escaped root")
-    quota, period = map(int, (path / "cpu.max").read_text().split())
-    _need(
-        os.sched_getaffinity(pid) == profile["cpus"]
-        and _parse_cpu_list((path / "cpuset.cpus.effective").read_text().strip()) == profile["cpus"]
-        and (path / "memory.max").read_text().strip() == str(common.MEMORY_MAX)
-        and (path / "memory.swap.max").read_text().strip() == "0"
-        and period > 0
-        and quota == period * profile["threads"],
-        "actual worker CPU, memory and swap limits required",
+
+    def check(name, action):
+        try:
+            valid = action()
+        except (OSError, ValueError, TypeError):
+            raise _CpuLimitError(name) from None
+        if not valid:
+            raise _CpuLimitError(name)
+
+    def quota_valid():
+        quota, period = map(int, (path / "cpu.max").read_text().split())
+        return period > 0 and quota == period * profile["threads"]
+
+    check("affinity", lambda: os.sched_getaffinity(pid) == profile["cpus"])
+    check(
+        "cpuset",
+        lambda: (
+            _parse_cpu_list((path / "cpuset.cpus.effective").read_text().strip()) == profile["cpus"]
+        ),
     )
+    check("memory", lambda: (path / "memory.max").read_text().strip() == str(common.MEMORY_MAX))
+    check("swap", lambda: (path / "memory.swap.max").read_text().strip() == "0")
+    check("quota", quota_valid)
 
 
 def _own_profile_cgroup(unit, profile):
@@ -132,8 +152,10 @@ def _source_set():
 
 
 def _release_path(name, schema):
-    _need(name in _HELD and schema in {SCHEMA, SCHEMA_V2}, "known release required")
-    suffix = "_v2_release.py" if schema == SCHEMA_V2 else "_release.py"
+    _need(name in _HELD and schema in {SCHEMA, SCHEMA_V2, SCHEMA_V3}, "known release required")
+    suffix = {SCHEMA: "_release.py", SCHEMA_V2: "_v2_release.py", SCHEMA_V3: "_v3_release.py"}[
+        schema
+    ]
     return SCRIPTS / (_HELD[name].removesuffix(".py") + suffix)
 
 
@@ -142,6 +164,14 @@ def _source_set_v2():
     for name in _HELD:
         names.remove(str(_release_path(name, SCHEMA)))
         names.add(str(_release_path(name, SCHEMA_V2)))
+    return names
+
+
+def _source_set_v3():
+    names = _source_set()
+    for name in _HELD:
+        names.remove(str(_release_path(name, SCHEMA)))
+        names.add(str(_release_path(name, SCHEMA_V3)))
     return names
 
 
@@ -173,8 +203,8 @@ def _plan(path, expected):
             "memory_floor_bytes",
             "rounds",
         }
-        | ({"cpu_profile"} if plan.get("schema") == SCHEMA_V2 else set())
-        and plan["schema"] in {SCHEMA, SCHEMA_V2},
+        | ({"cpu_profile"} if plan.get("schema") in {SCHEMA_V2, SCHEMA_V3} else set())
+        and plan["schema"] in {SCHEMA, SCHEMA_V2, SCHEMA_V3},
         "exact CPU experiment plan required",
     )
     _profile(plan)
@@ -201,7 +231,10 @@ def _plan(path, expected):
     pins = plan["source_pins"]
     _need(
         type(pins) is dict
-        and set(pins) == (_source_set_v2() if plan["schema"] == SCHEMA_V2 else _source_set())
+        and set(pins)
+        == {SCHEMA: _source_set, SCHEMA_V2: _source_set_v2, SCHEMA_V3: _source_set_v3}[
+            plan["schema"]
+        ]()
         and all(type(v) is str and re.fullmatch(r"[0-9a-f]{64}", v) for v in pins.values()),
         "exact allowlisted source inventory required",
     )
@@ -535,30 +568,67 @@ def run(plan_path, plan_sha):
         and not any(output.iterdir()),
         "fresh private worker output required",
     )
-    if os.getpgrp() != os.getpid():
-        os.setsid()
-    _need(os.getpgrp() == os.getpid(), "isolated worker process group required")
-    group = (
-        common._own_cgroup(plan["unit"])
-        if plan.get("schema", SCHEMA) == SCHEMA
-        else _own_profile_cgroup(plan["unit"], _profile(plan))
-    )
-    invocation = os.environ.get("INVOCATION_ID", "")
-    _need(re.fullmatch(r"[0-9a-f]{32}", invocation), "unit invocation required")
-    common._verify_source_pins(plan["source_pins"])
-    common._validate_interpreter(plan)
-    hello = {
-        "schema": "decision3-cpu-hello-v1",
-        "pid": os.getpid(),
-        "startticks": common.systemd.process_identity(os.getpid())["startticks"],
-        "boot_id": common.systemd.boot_id(),
-        "unit": plan["unit"],
-        "invocation": invocation,
-        "plan_sha256": plan_sha,
-        "pgid": os.getpgrp(),
-        "cgroup": group,
-    }
-    common._write_new(output / "hello.json", child._encode(hello))
+    stage = "process_group"
+    try:
+        if os.getpgrp() != os.getpid():
+            os.setsid()
+        _need(os.getpgrp() == os.getpid(), "isolated worker process group required")
+        stage = "cgroup"
+        group = (
+            common._own_cgroup(plan["unit"])
+            if plan.get("schema", SCHEMA) == SCHEMA
+            else _own_profile_cgroup(plan["unit"], _profile(plan))
+        )
+        stage = "invocation"
+        invocation = os.environ.get("INVOCATION_ID", "")
+        _need(re.fullmatch(r"[0-9a-f]{32}", invocation), "unit invocation required")
+        stage = "sources"
+        common._verify_source_pins(plan["source_pins"])
+        stage = "interpreter"
+        common._validate_interpreter(plan)
+        stage = "hello"
+        hello = {
+            "schema": "decision3-cpu-hello-v1",
+            "pid": os.getpid(),
+            "startticks": common.systemd.process_identity(os.getpid())["startticks"],
+            "boot_id": common.systemd.boot_id(),
+            "unit": plan["unit"],
+            "invocation": invocation,
+            "plan_sha256": plan_sha,
+            "pgid": os.getpgrp(),
+            "cgroup": group,
+        }
+        common._write_new(output / "hello.json", child._encode(hello))
+    except Exception as error:
+        if plan.get("schema") == SCHEMA_V3:
+            check = error.check if isinstance(error, _CpuLimitError) else None
+            category = (
+                "memory"
+                if isinstance(error, MemoryError)
+                else "import"
+                if isinstance(error, ImportError)
+                else "timeout"
+                if isinstance(error, TimeoutError)
+                else "validation"
+                if isinstance(error, (ValueError, TypeError))
+                else "other"
+            )
+            try:
+                common._write_new(
+                    output / "prehello-failure.json",
+                    child._encode(
+                        {
+                            "schema": "decision3-cpu-prehello-failure-v1",
+                            "plan_sha256": plan_sha,
+                            "stage": stage,
+                            "category": category,
+                            "cpu_check": check,
+                        }
+                    ),
+                )
+            except Exception:
+                error.add_note("private prehello failure record unavailable")
+        raise
     started = time.monotonic()
     while not (output / "go.json").exists():
         _need(time.monotonic() - started < 20, "watcher handshake timed out")
@@ -615,7 +685,7 @@ def _run_after_go(plan, output, invocation, plan_sha, stage):
     _need(str(runtime.device) == "cpu" and runtime.fast is None, "plain CPU runtime required")
     result = _experiment(runtime, candidate, plan["rounds"], stage)
     stage("result_write")
-    if plan.get("schema") == SCHEMA_V2:
+    if plan.get("schema") in {SCHEMA_V2, SCHEMA_V3}:
         result["cpu_profile"] = plan["cpu_profile"]
     result["publisher_manifest_sha256"] = manifest_sha
     result["model_verification"] = (

@@ -262,6 +262,36 @@ def _diagnostic(output, invocation, plan_sha):
     return {"last_entered_stage": last, "failure_category": category}
 
 
+def _prehello_diagnostic(output, plan_sha):
+    path = output / "prehello-failure.json"
+    if not os.path.lexists(path):
+        return None
+    value = common._decode(child._read_bounded(path, 4096))
+    _need(
+        type(value) is dict
+        and set(value) == {"schema", "plan_sha256", "stage", "category", "cpu_check"}
+        and value["schema"] == "decision3-cpu-prehello-failure-v1"
+        and value["plan_sha256"] == plan_sha
+        and value["stage"]
+        in {"process_group", "cgroup", "invocation", "sources", "interpreter", "hello"}
+        and value["category"] in {"memory", "import", "timeout", "validation", "other"}
+        and (
+            value["cpu_check"] is None
+            or (
+                value["stage"] == "cgroup"
+                and value["cpu_check"] in {"affinity", "cpuset", "quota", "memory", "swap"}
+            )
+        ),
+        "invalid prehello diagnostic",
+    )
+    return {
+        "source": "unbound_worker_report",
+        "stage": value["stage"],
+        "category": value["category"],
+        "cpu_check": value["cpu_check"],
+    }
+
+
 def _terminal(output, invocation, plan_sha):
     raw = child._read_bounded(output / "terminal.json", 4096)
     value = common._decode(raw)
@@ -356,11 +386,11 @@ def supervise(plan_path, plan_sha, report_dir):
                     "pgid": hello["pgid"],
                     "cgroup": group,
                 }
-                if plan.get("schema") == worker.SCHEMA_V2:
+                if plan.get("schema") in {worker.SCHEMA_V2, worker.SCHEMA_V3}:
                     binding["cpu_profile"] = plan["cpu_profile"]
                     binding["cpu_list"] = worker._profile(plan)["cpu_list"]
                 common._append_event(events, binding)
-                if plan.get("schema") == worker.SCHEMA_V2:
+                if plan.get("schema") in {worker.SCHEMA_V2, worker.SCHEMA_V3}:
                     common._append_event(
                         events, {"event": "cpu_observation", **_cpu_observation(group)}
                     )
@@ -378,7 +408,7 @@ def supervise(plan_path, plan_sha, report_dir):
             elif hello is not None and properties["MainPID"] != "0":
                 _bind(properties, hello, plan, plan_sha)
                 if (
-                    plan.get("schema") == worker.SCHEMA_V2
+                    plan.get("schema") in {worker.SCHEMA_V2, worker.SCHEMA_V3}
                     and time.monotonic() >= next_cpu_observation
                 ):
                     common._append_event(
@@ -447,6 +477,13 @@ def supervise(plan_path, plan_sha, report_dir):
                 failure = error
             else:
                 failure.add_note("process closure unconfirmed")
+        if failure is not None and not bound and plan.get("schema") == worker.SCHEMA_V3:
+            try:
+                diagnostic = _prehello_diagnostic(output, plan_sha)
+                if diagnostic is not None:
+                    closure["prehello_diagnostic"] = diagnostic
+            except Exception:
+                closure["prehello_diagnostic"] = {"status": "invalid"}
         if bound:
             try:
                 closure["diagnostic"] = _diagnostic(output, invocation, plan_sha)

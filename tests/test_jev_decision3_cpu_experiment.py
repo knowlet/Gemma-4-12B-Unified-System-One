@@ -1147,3 +1147,232 @@ def test_v1_v2_release_inventories_and_worker_launch_do_not_overlap():
     assert str(worker._release_path("worker", worker.SCHEMA)) in old_args
     assert str(worker._release_path("worker", worker.SCHEMA_V2)) in new_args
     assert str(worker._release_path("worker", worker.SCHEMA)) not in new_args
+
+
+@pytest.mark.parametrize(
+    "stage", ["process_group", "cgroup", "invocation", "sources", "interpreter", "hello"]
+)
+def test_v3_prehello_failure_records_only_bounded_categories(tmp_path, monkeypatch, stage):
+    output = tmp_path / "worker"
+    output.mkdir(mode=0o700)
+    plan = {
+        "schema": worker.SCHEMA_V3,
+        "cpu_profile": "cpu10",
+        "unit": "synthetic.service",
+        "output_dir": str(output),
+        "source_pins": {},
+    }
+    sha = "a" * 64
+    monkeypatch.setattr(worker, "SOURCE_ONLY", False)
+    monkeypatch.setattr(worker, "_plan", lambda *_: plan)
+    monkeypatch.setattr(worker.os, "getpid", lambda: 123)
+    monkeypatch.setattr(worker.os, "getpgrp", lambda: 122 if stage == "process_group" else 123)
+
+    def fail(*_args):
+        raise ValueError("private/path secret and traceback must not be recorded")
+
+    monkeypatch.setattr(worker.os, "setsid", fail if stage == "process_group" else lambda: None)
+    monkeypatch.setattr(
+        worker, "_own_profile_cgroup", fail if stage == "cgroup" else lambda *_: "/synthetic"
+    )
+    monkeypatch.setenv("INVOCATION_ID", "bad" if stage == "invocation" else "b" * 32)
+    monkeypatch.setattr(
+        worker.common, "_verify_source_pins", fail if stage == "sources" else lambda *_: None
+    )
+    monkeypatch.setattr(
+        worker.common, "_validate_interpreter", fail if stage == "interpreter" else lambda *_: None
+    )
+    monkeypatch.setattr(
+        worker.common.systemd,
+        "process_identity",
+        fail if stage == "hello" else lambda *_: {"startticks": 1},
+    )
+    with pytest.raises(ValueError):
+        worker.run("unused", sha)
+    raw = (output / "prehello-failure.json").read_bytes()
+    assert b"secret" not in raw and b"private/path" not in raw and b"traceback" not in raw
+    assert json.loads(raw) == {
+        "schema": "decision3-cpu-prehello-failure-v1",
+        "plan_sha256": sha,
+        "stage": stage,
+        "category": "validation",
+        "cpu_check": None,
+    }
+    assert watcher._prehello_diagnostic(output, sha) == {
+        "source": "unbound_worker_report",
+        "stage": stage,
+        "category": "validation",
+        "cpu_check": None,
+    }
+
+
+def test_v3_missing_cpuset_remains_fatal_and_records_fixed_check(tmp_path, monkeypatch):
+    root = tmp_path / "cgroup"
+    leaf = root / "app.slice/synthetic.service"
+    leaf.mkdir(parents=True)
+    monkeypatch.setattr(worker, "CGROUP_ROOT", root)
+    profile = worker._profile({"schema": worker.SCHEMA_V3, "cpu_profile": "cpu10"})
+    monkeypatch.setattr(worker.os, "sched_getaffinity", lambda _: set(profile["cpus"]))
+    (leaf / "cpu.max").write_text("1000000 100000")
+    (leaf / "memory.max").write_text(str(worker.common.MEMORY_MAX))
+    (leaf / "memory.swap.max").write_text("0")
+    with pytest.raises(worker._CpuLimitError) as error:
+        worker._cpu_limits("/app.slice/synthetic.service", 123, profile)
+    assert error.value.check == "cpuset"
+    assert "No such file" not in str(error.value)
+
+
+def test_v3_worker_records_cpu_check_without_exception_text(tmp_path, monkeypatch):
+    output = tmp_path / "worker"
+    output.mkdir(mode=0o700)
+    plan = {
+        "schema": worker.SCHEMA_V3,
+        "cpu_profile": "cpu10",
+        "unit": "synthetic.service",
+        "output_dir": str(output),
+        "source_pins": {},
+    }
+    monkeypatch.setattr(worker, "SOURCE_ONLY", False)
+    monkeypatch.setattr(worker, "_plan", lambda *_: plan)
+    monkeypatch.setattr(worker.os, "getpid", lambda: 123)
+    monkeypatch.setattr(worker.os, "getpgrp", lambda: 123)
+
+    def fail(*_args):
+        raise worker._CpuLimitError("cpuset")
+
+    monkeypatch.setattr(worker, "_own_profile_cgroup", fail)
+    with pytest.raises(worker._CpuLimitError):
+        worker.run("unused", "a" * 64)
+    assert watcher._prehello_diagnostic(output, "a" * 64) == {
+        "source": "unbound_worker_report",
+        "stage": "cgroup",
+        "category": "validation",
+        "cpu_check": "cpuset",
+    }
+    assert (output / "prehello-failure.json").stat().st_mode & 0o077 == 0
+
+
+def test_v3_unbound_failure_is_diagnostic_not_closure_proof(tmp_path, monkeypatch):
+    run = tmp_path / "run"
+    run.mkdir()
+    output = run / "worker"
+    output.mkdir(mode=0o700)
+    report = run / "watcher"
+    plan = {
+        "schema": worker.SCHEMA_V3,
+        "cpu_profile": "cpu10",
+        "output_dir": str(output),
+        "unit": "jev-cpu-" + "a" * 32 + ".service",
+        "source_pins": {},
+        "memory_floor_bytes": worker.common.MEMORY_FLOOR,
+        "wall_seconds": 60,
+        "python": worker.common.GPU_PYTHON,
+    }
+    sha = "e" * 64
+    monkeypatch.setattr(watcher, "SOURCE_ONLY", False)
+    monkeypatch.setattr(worker, "_plan", lambda *_: plan)
+    monkeypatch.setattr(watcher.common, "_validate_interpreter", lambda *_: None)
+    monkeypatch.setattr(watcher.common, "_verify_source_pins", lambda *_: None)
+    monkeypatch.setattr(watcher, "_verify_release", lambda *_: None)
+    monkeypatch.setattr(watcher.common, "_observe", lambda *_: {})
+    states = iter(
+        [
+            {"LoadState": "not-found", "ActiveState": "inactive", "MainPID": "0"},
+            {"LoadState": "loaded", "InvocationID": "d" * 32},
+        ]
+    )
+    monkeypatch.setattr(watcher.common.systemd, "service_show", lambda *_a, **_kw: next(states))
+    monkeypatch.setattr(watcher.shared, "_unit_identity", lambda *_: ("d" * 32, "/untrusted"))
+
+    def fail(*_args):
+        raise ValueError("synthetic failed")
+
+    monkeypatch.setattr(watcher.common, "_terminal_metadata", fail)
+    monkeypatch.setattr(watcher, "_recover_identity", fail)
+    stopped = []
+    monkeypatch.setattr(watcher.common, "_stop_same", lambda *args: stopped.append(args))
+
+    def launch(*_args, **_kwargs):
+        watcher.common._write_new(
+            output / "prehello-failure.json",
+            watcher.child._encode(
+                {
+                    "schema": "decision3-cpu-prehello-failure-v1",
+                    "plan_sha256": sha,
+                    "stage": "cgroup",
+                    "category": "validation",
+                    "cpu_check": "cpuset",
+                }
+            ),
+        )
+
+    monkeypatch.setattr(watcher.subprocess, "run", launch)
+    with pytest.raises(ValueError, match="synthetic failed"):
+        watcher.supervise(str(run / "plan.json"), sha, str(report))
+    closure = json.loads((report / "closure.json").read_bytes())
+    assert closure["status"] == "cleanup_unconfirmed" and not stopped
+    assert closure["cgroup"] == closure["process_group"] == "unconfirmed"
+    assert closure["prehello_diagnostic"] == {
+        "source": "unbound_worker_report",
+        "stage": "cgroup",
+        "category": "validation",
+        "cpu_check": "cpuset",
+    }
+
+
+def test_v3_prehello_rejects_untrusted_content_and_wrong_plan(tmp_path):
+    path = tmp_path / "prehello-failure.json"
+    value = {
+        "schema": "decision3-cpu-prehello-failure-v1",
+        "plan_sha256": "a" * 64,
+        "stage": "cgroup",
+        "category": "validation",
+        "cpu_check": "cpuset",
+    }
+    path.write_text(json.dumps(value))
+    assert watcher._prehello_diagnostic(tmp_path, "a" * 64)["cpu_check"] == "cpuset"
+    for bad in (
+        {**value, "cpu_check": "private/path"},
+        {**value, "message": "secret"},
+        {**value, "plan_sha256": "b" * 64},
+    ):
+        path.write_text(json.dumps(bad))
+        with pytest.raises(ValueError):
+            watcher._prehello_diagnostic(tmp_path, "a" * 64)
+
+
+def test_v3_release_inventory_is_disjoint_from_older_releases():
+    v1, v2, v3 = worker._source_set(), worker._source_set_v2(), worker._source_set_v3()
+    assert len(v1) == len(v2) == len(v3)
+    for name in ("worker", "watcher", "candidate"):
+        old = str(worker._release_path(name, worker.SCHEMA))
+        previous = str(worker._release_path(name, worker.SCHEMA_V2))
+        new = str(worker._release_path(name, worker.SCHEMA_V3))
+        assert new.endswith("_v3_release.py") and new in v3 and new not in v1 and new not in v2
+        assert old not in v3 and previous not in v3
+    args = watcher._unit_args(
+        {
+            "schema": worker.SCHEMA_V3,
+            "cpu_profile": "cpu10",
+            "unit": "synthetic.service",
+            "python": worker.common.GPU_PYTHON,
+            "wall_seconds": 600,
+        },
+        "/tmp/plan",
+        "a" * 64,
+    )
+    assert "--property=AllowedCPUs=5-9,15-19" in args
+    assert "--property=CPUQuota=1000%" in args
+    assert str(worker._release_path("worker", worker.SCHEMA_V3)) in args
+
+
+def test_v3_plan_uses_only_v3_source_inventory(tmp_path, monkeypatch):
+    plan, _path, save = make_plan(tmp_path, monkeypatch)
+    monkeypatch.setattr(worker, "_source_set_v3", lambda: {"/approved/v3"})
+    plan.update(
+        schema=worker.SCHEMA_V3, cpu_profile="cpu10", source_pins={"/approved/v3": "b" * 64}
+    )
+    assert worker._plan(*save(plan)) == plan
+    plan["source_pins"] = {"/approved/source": "a" * 64}
+    with pytest.raises(ValueError, match="allowlisted"):
+        worker._plan(*save(plan))
