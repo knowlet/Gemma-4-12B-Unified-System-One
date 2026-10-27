@@ -15,12 +15,14 @@
 
 兩個 branches 合計進行 6,128 次 legal-position 比較。
 
-完整獨立驗收仍未完成。第一版 replay 曾因驗證 runtime 來源路徑時，將 workspace overlay 誤認為應位於 vendor 安裝位置而失敗，該版本與紀錄均保留。後續來源審查又發現，審核器的 final rehash 尚未涵蓋兩個已選定的 command stdout／stderr 檔案，因此先前 aggregate 的「全輸入身分已重驗」宣稱不完整。原報告已保留，正修正第三版並重新覆核；上述數值重算結果不構成完整獨立驗收通過。
+修正後的第三版獨立覆核已重新執行兩批數值重算，並重驗兩批合計 639 個讀取檔案的身分，包含各批的 command stdout／stderr；完整 48 筆輸入的數值聯集與兩批程序範圍的收尾檢查均通過。最終彙整報告 SHA256 為 `b472fa9beb0ba24d350a555c50fded9a272ab17691f055b95223faca1b6f77cf`。這項驗收涵蓋 GPU 數值與所選程序範圍，尚未驗證瀏覽器任務完成率。
+
+先前的第一版 replay 因將 workspace overlay 誤認為 vendor 安裝位置而失敗；後續版本雖完成數值重算，來源審查發現其最終身分重驗漏掉 command stdout／stderr。這些版本及原報告均已保留，第三版補上缺漏後重新覆核，沒有重新呼叫模型。
 
 合成控制測試結果如下，僅代表控制測試通過：
 
 - GPU qualifier：21/21。
 - 第一案例整合：18/18。
-- 獨立 auditor：11 + 6 + 9 項。
+- 獨立 auditor：11 + 6 + 9 項，以及 8 項日誌保留與身分重驗控制。
 
 新 candidate 尚未執行真實瀏覽器測試，也尚未執行 JevBench coherence 與 Benchmark Heaven 兩套評測；目前均無分數，不宣稱可用性改善或優於其他模型。
