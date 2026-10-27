@@ -7,6 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
+from urllib.parse import urlsplit
 
 import jev_browser_heldout_benchmark as LAUNCHER
 import pytest
@@ -171,7 +172,8 @@ def test_no_suite_mixing_budget_change_or_unknown_case(tmp_path, extra):
         LAUNCHER._arguments(cli(tmp_path / "run") + extra)
 
 
-def test_delegate_exact_copied_runner_without_task_success_claim(tmp_path, monkeypatch):
+@pytest.mark.parametrize("elapsed_ms", [1.0, 8123.5], ids=["ordinary", "port-digits-in-time"])
+def test_delegate_exact_copied_runner_without_task_success_claim(tmp_path, monkeypatch, elapsed_ms):
     calls = []
 
     def run(command, *, check):
@@ -179,6 +181,8 @@ def test_delegate_exact_copied_runner_without_task_success_claim(tmp_path, monke
         return SimpleNamespace(returncode=0)
 
     monkeypatch.setattr(LAUNCHER.subprocess, "run", run)
+    ticks = iter([0.0, elapsed_ms / 1000])
+    monkeypatch.setattr(LAUNCHER, "time", SimpleNamespace(perf_counter=lambda: next(ticks)))
     args = cli(tmp_path / "run")
     assert LAUNCHER.main(["--bundle-dir", str(tmp_path / "bundle"), "--", *args]) == 0
     command, check = calls[0]
@@ -195,7 +199,16 @@ def test_delegate_exact_copied_runner_without_task_success_claim(tmp_path, monke
         receipt["bundle_manifest_sha256"]
         == hashlib.sha256((tmp_path / "bundle/bundle-manifest.json").read_bytes()).hexdigest()
     )
-    assert "8123" not in json.dumps(receipt)  # Actual wire/credentials are not re-logged.
+    assert receipt["elapsed_ms"] == pytest.approx(elapsed_ms)
+    if elapsed_ms == 8123.5:
+        assert "8123" in str(receipt["elapsed_ms"])
+    endpoint = args[args.index("--endpoint") + 1]
+    assert endpoint not in json.dumps(receipt)  # Actual wire/credentials are not re-logged.
+    assert urlsplit(endpoint).netloc not in json.dumps(receipt)
+    assert (
+        receipt["argument_sha256"]
+        == hashlib.sha256(json.dumps(command[4:], ensure_ascii=False).encode()).hexdigest()
+    )
 
 
 def test_child_failure_and_midrun_source_failure_both_remain_visible(tmp_path, monkeypatch):
