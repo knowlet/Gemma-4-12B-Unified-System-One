@@ -10,7 +10,7 @@ import jev_browser_benchmark as runner
 import jev_browser_progress_integration as integration
 import jev_browser_progress_owner as owner
 import pytest
-from test_jev_browser_progress_integration import body, page
+from test_jev_browser_progress_integration import body, cross_cycle, page
 
 
 class FakeModel(types.ModuleType):
@@ -144,6 +144,66 @@ def test_original_runner_callback_receives_one_scoped_advisory(session):
         assert model.post_json is original_post
         assert "command" not in agent.__dict__
         assert "act" not in agent.state["browser"].__dict__
+
+
+@pytest.mark.parametrize("cross_document", [False, True])
+def test_owner_cross_document_advisory_requires_explicit_opt_in(session, cross_document):
+    agent, browser = session.agent, session.agent.state["browser"]
+    a, b, a2, b2 = cross_cycle()
+    agent.state["page"] = a
+    observations = iter((b, a2, b2))
+    browser.observe = lambda: next(observations)
+    with runner_context(session):
+        with owner.attach(
+            agent,
+            session.agent_module,
+            session.model,
+            integration,
+            pins=session.pins(),
+            enabled=True,
+            cross_document=cross_document,
+        ):
+            for _ in range(3):
+                agent.command("tick")
+            agent.command("predict")
+    state = session.sent[-1]["state"]
+    if cross_document:
+        assert state[integration.KEY]["alternating_cycle"]
+    else:
+        assert integration.KEY not in state
+
+
+@pytest.mark.parametrize("fault", ["unconfirmed", "stale", "wrong_document"])
+def test_cross_document_owner_requires_executed_action_and_fresh_current_page(session, fault):
+    agent, browser = session.agent, session.agent.state["browser"]
+    a, b, a2, b2 = cross_cycle()
+    agent.state["page"] = a
+    observations = iter((b, a2, b2))
+    browser.observe = lambda: next(observations)
+    with runner_context(session):
+        with owner.attach(
+            agent,
+            session.agent_module,
+            session.model,
+            integration,
+            pins=session.pins(),
+            enabled=True,
+            cross_document=True,
+        ):
+            agent.command("tick")
+            if fault == "unconfirmed":
+                browser.result = {"executed": "other"}
+            agent.command("tick")
+            browser.result = {"executed": "e1"}
+            agent.command("tick")
+            if fault == "stale":
+                browser.fresh_value = False
+                browser.observe = lambda: copy.deepcopy(b2)
+            elif fault == "wrong_document":
+                agent.state["page"]["page_key"][0] = 999
+                agent.state["page"]["marker"][0] = 999
+            agent.command("predict")
+            assert integration.KEY not in session.sent[-1]["state"]
 
 
 @pytest.mark.parametrize("failure", ["stale", "unconfirmed", "exception", "changed_document"])

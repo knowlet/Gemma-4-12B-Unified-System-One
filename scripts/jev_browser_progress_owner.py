@@ -92,7 +92,9 @@ def _document(page):
 
 
 @contextmanager
-def attach(agent, agent_module, model_module, integration, *, pins, enabled=False):
+def attach(
+    agent, agent_module, model_module, integration, *, pins, enabled=False, cross_document=False
+):
     """Attach one serial episode; disabled is an exact pass-through.
 
     Call after the runner installs its original post_json callback. Source pin
@@ -101,6 +103,7 @@ def attach(agent, agent_module, model_module, integration, *, pins, enabled=Fals
     """
     _gate()
     _need(type(enabled) is bool, "explicit opt-in required")
+    _need(type(cross_document) is bool, "explicit cross-document opt-in required")
     if not enabled:
         yield
         return
@@ -145,7 +148,9 @@ def attach(agent, agent_module, model_module, integration, *, pins, enabled=Fals
     )
     _verify_pins(pins, objects)
     episode = secrets.token_hex(16)
-    tracker = integration.BrowserProgressIntegration(episode_id=episode)
+    tracker = integration.BrowserProgressIntegration(
+        episode_id=episode, cross_document=cross_document
+    )
     owner_thread = threading.get_ident()
     active = {
         "predict": False,
@@ -311,10 +316,11 @@ def attach(agent, agent_module, model_module, integration, *, pins, enabled=Fals
                 return value
             before, chosen, text = captured
             doc = _document(before)
+            after_doc = _document(after)
             if (
                 doc is None
-                or type(_document(after)) is not type(doc)
-                or _document(after) != doc
+                or after_doc is None
+                or (not cross_document and (type(after_doc) is not type(doc) or after_doc != doc))
                 or chosen.get("id") != history[-1].get("choice")
                 or chosen.get("kind") != history[-1].get("kind")
                 or chosen.get("label") != history[-1].get("action")

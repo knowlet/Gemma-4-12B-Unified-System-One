@@ -36,7 +36,7 @@ def _encode(value):
     )
 
 
-def _projection(page):
+def _projection(page, *, cross_document=False):
     """Return a complete projection of the bounded snapshot, or None.
 
     ``complete`` applies only to the explicitly documented projection. It is
@@ -70,6 +70,42 @@ def _projection(page):
             or page["marker"][7] != page["text"]
         ):
             return None
+        control_values = None
+        if cross_document:
+            key, marker = page["page_key"], page["marker"]
+            if (
+                len(key) != 7
+                or type(marker[0]) is not type(key[0])
+                or marker[0] != key[0]
+                or key[1] != page["url"]
+                or marker[2:6] != key[2:6]
+                or marker[4:6] != [page.get("w"), page.get("h")]
+                or page["scroll"].get("y") != key[3]
+                or type(key[6]) is not list
+                or marker[9] != key[6]
+                or type(marker[8]) is not list
+            ):
+                return None
+            action_semantics = [
+                {k: v for k, v in item.items() if k not in {"id", "rect"}}
+                for item in page["actions"]
+                if type(item) is dict and item.get("kind") not in {"scroll", "wait"}
+            ]
+            if marker[8] != action_semantics:
+                return None
+            control_values, control_nodes = [], set()
+            for control in key[6]:
+                if (
+                    type(control) is not list
+                    or len(control) != 6
+                    or type(control[0]) is not int
+                    or control[0] <= 0
+                    or control[0] in control_nodes
+                ):
+                    return None
+                control_nodes.add(control[0])
+                # Preserve the native control order and every state field.
+                control_values.append(control[1:])
         observations = []
         guard_at_cap = False
         seen_ids = set()
@@ -135,11 +171,50 @@ def _projection(page):
             },
             "complete": True,
         }
+        if cross_document:
+            del state["progress"]["document_token"]
+            state["progress"]["window"] = page["page_key"][2:6]
+            state["controls"]["native_control_state"] = control_values
         if len(_encode(state).encode("utf-8")) > MAX_BYTES:
             return None
         return state, flags
     except (KeyError, TypeError, ValueError, OverflowError, UnicodeError, RecursionError):
         return None
+
+
+def _semantic_target(page, selected):
+    """Resolve a unique target from observed semantics, never a node index."""
+
+    def identity(action):
+        kind = action.get("kind")
+        if kind in {"scroll", "wait"}:
+            return _encode({"kind": kind, "delta": action.get("delta")})
+        node = action.get("node")
+        guard = page["guards"].get(str(node))
+        if type(node) is not int or type(guard) is not list or len(guard) != 14:
+            raise ValueError("guarded semantic target required")
+        return _encode(
+            {
+                "kind": kind,
+                "label": action.get("label"),
+                "role": action.get("role"),
+                "value": action.get("value"),
+                "current_value": action.get("current_value"),
+                "guard": guard[1:],
+            }
+        )
+
+    target = identity(selected)
+    if sum(identity(item) == target for item in page["actions"]) != 1:
+        raise ValueError("semantic target is ambiguous")
+    return target
+
+
+def _snapshot_binding(page):
+    raw = _encode(page).encode("utf-8")
+    if len(raw) > 1024 * 1024:
+        raise ValueError("bounded snapshot required")
+    return hashlib.sha256(raw).digest()
 
 
 def _policy_binding(page, history_entry):
@@ -204,17 +279,21 @@ def _episode_binding(episode_id, page, history_entry, execution):
 class BrowserProgressIntegration:
     """One serial episode; parent must authenticate actual source and events."""
 
-    def __init__(self, *, episode_id, history_limit=32):
+    def __init__(self, *, episode_id, history_limit=32, cross_document=False):
         _gate()
         if type(episode_id) is not str or re.fullmatch(r"[0-9a-f]{32}", episode_id) is None:
             raise ValueError("explicit unique episode identity required")
+        if type(cross_document) is not bool:
+            raise ValueError("explicit cross-document opt-in required")
         self._episode = episode_id
+        self._cross_document = cross_document
         self._limit = history_limit
         self._ledger = ProgressLedger(history_limit=history_limit)
         self._step = None
         self._pending = None
         self._binding = None
         self._episode_binding = None
+        self._previous_snapshot = None
 
     def _unknown(self):
         self._ledger = ProgressLedger(history_limit=self._limit)
@@ -222,6 +301,7 @@ class BrowserProgressIntegration:
         self._pending = None
         self._binding = None
         self._episode_binding = None
+        self._previous_snapshot = None
         return {"observation": "unknown"}
 
     def record_committed(self, *, episode_id, before, selected_id, after, history_entry, execution):
@@ -285,8 +365,12 @@ class BrowserProgressIntegration:
                 "label"
             ) != history_entry.get("action"):
                 return self._unknown()
-            pre = _projection(before)
-            post = _projection(after) if after is not None else None
+            pre = _projection(before, cross_document=self._cross_document)
+            post = (
+                _projection(after, cross_document=self._cross_document)
+                if after is not None
+                else None
+            )
             if after is not None:
                 if (
                     type(after) is not dict
@@ -302,9 +386,16 @@ class BrowserProgressIntegration:
                 return self._unknown()
             if pre is None or post is None:
                 return self._unknown()
+            if self._cross_document and (
+                self._previous_snapshot is not None
+                and self._previous_snapshot != _snapshot_binding(before)
+            ):
+                return self._unknown()
             kind = action["kind"]
             node = action.get("node")
-            if type(node) is int:
+            if self._cross_document:
+                target = _semantic_target(before, action)
+            elif type(node) is int:
                 target = _encode([before["page_key"][0], node])
             elif kind in {"scroll", "wait"}:
                 target = _encode([before["page_key"][0], kind, action.get("delta")])
@@ -318,6 +409,8 @@ class BrowserProgressIntegration:
                 executed=True,
             )
             self._step = history_entry["step"]
+            if self._cross_document:
+                self._previous_snapshot = _snapshot_binding(after)
             self._pending = None
             self._binding = None
             self._episode_binding = None

@@ -135,6 +135,124 @@ def annotate(adapter, request, before, after, step, selected="e1"):
     )
 
 
+def cross_page(*, document, node, url, text, fingerprint, control_value="same"):
+    """Build the complete native snapshot contract with synthetic identities."""
+    result = page(url=url, text=text, node=node, fingerprint=fingerprint)
+    controls = [[node + 100, control_value, False, -1, False, False]]
+    result["page_key"] = [document, url, 0, 0, 800, 600, controls]
+    result["marker"] = [
+        document,
+        url,
+        0,
+        0,
+        800,
+        600,
+        result["title"],
+        text,
+        [
+            {key: value for key, value in action.items() if key not in {"id", "rect"}}
+            for action in result["actions"]
+            if action["kind"] not in {"scroll", "wait"}
+        ],
+        copy.deepcopy(controls),
+    ]
+    return result
+
+
+def cross_cycle():
+    return (
+        cross_page(document=1, node=1, url="https://example.invalid/a", text="A", fingerprint="1"),
+        cross_page(document=2, node=2, url="https://example.invalid/b", text="B", fingerprint="2"),
+        cross_page(document=3, node=3, url="https://example.invalid/a", text="A", fingerprint="3"),
+        cross_page(document=4, node=4, url="https://example.invalid/b", text="B", fingerprint="4"),
+    )
+
+
+def test_opt_in_detects_cross_document_cycle_with_new_node_ids():
+    a, b, a2, b2 = cross_cycle()
+    adapter = integration.BrowserProgressIntegration(episode_id=EPISODE, cross_document=True)
+    assert not committed(adapter, a, b, 1)["alternating_cycle"]
+    assert not committed(adapter, b, a2, 2)["alternating_cycle"]
+    result = committed(adapter, a2, b2, 3)
+    assert result["repeated_transition"] and result["alternating_cycle"]
+    request = body(b2, entry(a2, b2, 3))
+    saved = copy.deepcopy(request)
+    annotated = annotate(adapter, request, a2, b2, 3)
+    assert annotated["state"][integration.KEY]["alternating_cycle"]
+    assert annotated["questions"] == saved["questions"] and request == saved
+
+
+@pytest.mark.parametrize("change", ["url", "fragment", "visible", "control", "target"])
+def test_cross_document_cycle_requires_the_same_full_observed_state(change):
+    a, b, a2, b2 = cross_cycle()
+    if change in {"url", "fragment"}:
+        suffix = "?revision=2" if change == "url" else "#different"
+        a2["url"] += suffix
+        a2["page_key"][1] = a2["marker"][1] = a2["url"]
+    elif change == "visible":
+        a2["text"] = a2["marker"][7] = "New content"
+    elif change == "control":
+        a2["page_key"][6][0][1] = a2["marker"][9][0][1] = "changed"
+    else:
+        a2["guards"]["3"][12] = "/another-target"
+    adapter = integration.BrowserProgressIntegration(episode_id=EPISODE, cross_document=True)
+    committed(adapter, a, b, 1)
+    committed(adapter, b, a2, 2)
+    result = committed(adapter, a2, b2, 3)
+    assert not result["repeated_transition"] and not result["alternating_cycle"]
+    request = body(b2, entry(a2, b2, 3))
+    assert annotate(adapter, request, a2, b2, 3) is request
+
+
+def test_cross_document_ambiguous_semantic_target_is_unknown():
+    a, b, a2, b2 = cross_cycle()
+    other = copy.deepcopy(a2["actions"][0])
+    other.update(id="e2", node=33)
+    a2["actions"].append(other)
+    a2["guards"]["33"] = copy.deepcopy(a2["guards"]["3"])
+    a2["guards"]["33"][0] = 33
+    a2["marker"][8].append({k: v for k, v in other.items() if k not in {"id", "rect"}})
+    adapter = integration.BrowserProgressIntegration(episode_id=EPISODE, cross_document=True)
+    committed(adapter, a, b, 1)
+    committed(adapter, b, a2, 2)
+    assert committed(adapter, a2, b2, 3)["observation"] == "unknown"
+    request = body(b2, entry(a2, b2, 3))
+    assert annotate(adapter, request, a2, b2, 3) is request
+
+
+@pytest.mark.parametrize(
+    "fault", ["before_document", "after_document", "url_binding", "marker", "control_state"]
+)
+def test_cross_document_requires_complete_document_bound_observations(fault):
+    a, b, _, _ = cross_cycle()
+    if fault == "before_document":
+        a["marker"][0] = 999
+    elif fault == "after_document":
+        b["marker"][0] = 999
+    elif fault == "url_binding":
+        b["page_key"][1] = "https://example.invalid/other"
+    elif fault == "marker":
+        b["marker"][8] = []
+    else:
+        b["page_key"][6][0][1] = "different"
+    adapter = integration.BrowserProgressIntegration(episode_id=EPISODE, cross_document=True)
+    assert committed(adapter, a, b, 1)["observation"] == "unknown"
+
+
+def test_cross_document_requires_consecutive_actual_snapshot_and_episode():
+    a, b, a2, b2 = cross_cycle()
+    adapter = integration.BrowserProgressIntegration(episode_id=EPISODE, cross_document=True)
+    committed(adapter, a, b, 1)
+    wrong_b = copy.deepcopy(b)
+    wrong_b["fingerprint"] = "other-snapshot"
+    assert committed(adapter, wrong_b, a2, 2)["observation"] == "unknown"
+    assert not committed(adapter, a2, b2, 3)["alternating_cycle"]
+    other = integration.BrowserProgressIntegration(episode_id="b" * 32, cross_document=True)
+    assert committed(other, a, b, 1)["observation"] == "unknown"
+    with pytest.raises(ValueError, match="opt-in"):
+        integration.BrowserProgressIntegration(episode_id=EPISODE, cross_document=1)
+
+
 def body(snapshot=None, last=None):
     snapshot = snapshot or page()
     last = last or entry(snapshot, snapshot, 1)
