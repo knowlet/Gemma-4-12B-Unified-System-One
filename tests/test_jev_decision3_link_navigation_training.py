@@ -324,3 +324,50 @@ def test_preflight_rejects_nonempty_or_wrong_error_container(inputs, errors):
     shards[0]["cases"][0]["preflight"]["errors"] = errors
     with pytest.raises(ValueError, match="preflight"):
         training.merge(old, accepted, admitted, shards)
+
+
+def _with_nested_old_request(old, accepted, value, *, wire=None):
+    row = old["operation"]["row_map"][0]
+    row["source_row"] = {"identity": {"request_sha256": value}}
+    if wire is not None:
+        row["source_row"]["wire_sha256"] = wire
+    mapping = old["operation"]["row_map"]
+    mapping_sha = training._sha(training._encode(mapping))
+    old["operation"]["row_mapping_sha256"] = mapping_sha
+    accepted["operation"]["row_map"] = copy.deepcopy(mapping)
+    accepted["operation"]["row_mapping_sha256"] = mapping_sha
+
+
+def test_nested_old_full_request_digest_matches_wire_inventory(inputs):
+    old, accepted, admitted, shards = inputs
+    value = accepted["operation"]["wire_sha256_ordered"][0]
+    _with_nested_old_request(old, accepted, value, wire=value)
+    result = training.merge(old, accepted, admitted, shards)
+    assert result["new_rows"] == {"operation": 72, "click_target": 48}
+
+
+@pytest.mark.parametrize("value", ["f" * 64, "invalid", None])
+def test_nested_old_request_digest_mismatch_or_invalid_is_refused(inputs, value):
+    old, accepted, admitted, shards = inputs
+    _with_nested_old_request(old, accepted, value)
+    with pytest.raises(ValueError, match="old row and wire inventory|invalid old full-request"):
+        training.merge(old, accepted, admitted, shards)
+
+
+def test_nested_old_request_detects_cross_batch_duplicate(inputs):
+    old, accepted, admitted, shards = inputs
+    duplicate = pipeline.compile_wire_projection(admitted)[0]["wire_sha256"]
+    _with_nested_old_request(old, accepted, duplicate)
+    inventory = accepted["operation"]["wire_sha256_ordered"]
+    inventory[0] = duplicate
+    accepted["operation"]["wire_inventory_sha256"] = training._sha(training._encode(inventory))
+    with pytest.raises(ValueError, match="duplicates"):
+        training.merge(old, accepted, admitted, shards)
+
+
+def test_old_request_and_wire_digests_cannot_conflict(inputs):
+    old, accepted, admitted, shards = inputs
+    value = accepted["operation"]["wire_sha256_ordered"][0]
+    _with_nested_old_request(old, accepted, value, wire="f" * 64)
+    with pytest.raises(ValueError, match="old row and wire inventory"):
+        training.merge(old, accepted, admitted, shards)

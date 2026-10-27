@@ -145,13 +145,15 @@ def _old_prefix(old, accepted):
 
 
 def _known_old_identities(value):
-    """Collect existing wire and case IDs without altering their historical maps."""
+    """Collect old full-request and wire hashes using their shared compact encoding."""
     wires, cases = set(), set()
 
     def visit(item):
         if type(item) is dict:
-            if _pin(item.get("wire_sha256")):
-                wires.add(item["wire_sha256"])
+            for key in ("wire_sha256", "request_sha256"):
+                if key in item:
+                    _need(_pin(item[key]), "invalid old full-request identity")
+                    wires.add(item[key])
             if type(item.get("case_id")) is str:
                 cases.add(item["case_id"])
             for nested in item.values():
