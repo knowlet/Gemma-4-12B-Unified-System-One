@@ -2,10 +2,9 @@
 
 from dataclasses import asdict
 
+import jev_blind_feedback_pair_plan as verifier
+import jev_blind_feedback_synthetic_controller as controller
 import pytest
-
-from scripts import jev_blind_feedback_pair_plan as verifier
-from scripts import jev_blind_feedback_synthetic_controller as controller
 
 
 def synthetic_plan():

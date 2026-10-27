@@ -2,9 +2,8 @@
 
 from copy import deepcopy
 
+import jev_blind_feedback_pair_plan as subject
 import pytest
-
-from scripts import jev_blind_feedback_pair_plan as subject
 
 
 def synthetic_plan():

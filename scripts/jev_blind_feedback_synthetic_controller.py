@@ -12,7 +12,7 @@ verification. The synthetic handle intentionally cannot carry an oracle or data.
 from copy import deepcopy
 from dataclasses import dataclass
 
-from scripts.jev_blind_feedback_pair_plan import validate_plan
+from jev_blind_feedback_pair_plan import validate_plan
 
 SOURCE_ONLY = True
 
