@@ -235,7 +235,7 @@ def test_multiple_loopback_calls_ready_stop_and_private_records(
                 "invocation": invocation,
                 "plan_sha256": sha,
             }
-            Path(plan["stop_path"]).write_text(json.dumps(stop))
+            child._publish_control(Path(plan["stop_path"]), child._encode(stop))
         thread.join(timeout=5)
         assert not thread.is_alive() and not errors
         assert result[0]["request_calls"] == 2
@@ -249,15 +249,18 @@ def test_multiple_loopback_calls_ready_stop_and_private_records(
             assert json.loads(raw)["status"] == "prepared_not_delivered"
     finally:
         if thread.is_alive():
-            Path(plan["stop_path"]).write_text(
-                json.dumps(
-                    {
-                        "schema": "decision3-candidate-browser-stop-v1",
-                        "invocation": invocation,
-                        "plan_sha256": sha,
-                    }
+            stop_path = Path(plan["stop_path"])
+            if not stop_path.exists():
+                child._publish_control(
+                    stop_path,
+                    child._encode(
+                        {
+                            "schema": "decision3-candidate-browser-stop-v1",
+                            "invocation": invocation,
+                            "plan_sha256": sha,
+                        }
+                    ),
                 )
-            )
             thread.join(timeout=5)
 
 
@@ -404,14 +407,15 @@ def test_child_handshake_skips_backend_and_cuda_cleanup_for_live_listener(tmp_pa
         time.sleep(0.01)
     hello = json.loads((output / "hello.json").read_text())
     assert hello["invocation"] == "a" * 32 and hello["plan_sha256"] == sha
-    (output / "go.json").write_text(
-        json.dumps(
+    child._publish_control(
+        output / "go.json",
+        child._encode(
             {
                 "schema": "decision3-candidate-browser-go-v1",
                 "invocation": "a" * 32,
                 "plan_sha256": sha,
             }
-        )
+        ),
     )
     worker.join(timeout=5)
     assert not worker.is_alive() and len(errors) == 1 and errors[0] is error
@@ -421,7 +425,9 @@ def test_child_handshake_skips_backend_and_cuda_cleanup_for_live_listener(tmp_pa
     assert calls == ["sync"]
 
 
-@pytest.mark.parametrize("name", ["hello.json", "ready.json", "terminal.json"])
+@pytest.mark.parametrize(
+    "name", ["hello.json", "ready.json", "terminal.json", "go.json", "stop.json"]
+)
 def test_control_publication_is_atomic_during_delayed_write(tmp_path, monkeypatch, name):
     started = threading.Event()
     complete = threading.Event()
