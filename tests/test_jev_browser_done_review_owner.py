@@ -527,3 +527,251 @@ def test_progress_advisory_state_is_explicitly_unsupported(setup):
                 a.command("act", {"fingerprint": "fresh"})
             assert a.state["decision"] is None and a.state["status"] == "ready"
             assert a.state["browser"].actions == [] and len(setup.sent) == 1
+
+
+def configure_singleton(setup):
+    source = CHOOSE.replace(
+        "{'CLICK': 'click', 'DONE': 'done', 'BLOCKED': 'blocked'}",
+        "{'DONE': 'done', 'BLOCKED': 'blocked'}",
+    ).replace(", 'click_target': {'type':'choice', 'criteria': {'1': 'continue'}}", "")
+    assert source != CHOOSE
+    setup.model.action_space = lambda _actions: ([], {}, {})
+    exec(compile(source, __file__, "exec"), setup.model.__dict__)
+    setup.agent_module.choose = setup.model.choose
+
+
+@pytest.mark.parametrize("verdict", ["unsupported", "unknown"])
+@pytest.mark.parametrize("feedback_enabled", [False, True])
+def test_singleton_stop_is_local_and_preserves_original_decision(setup, verdict, feedback_enabled):
+    configure_singleton(setup)
+    setup.options["review"] = verdict
+    events = []
+    with owner.attach_to_runner(
+        runner,
+        enabled=True,
+        feedback_enabled=feedback_enabled,
+        singleton_stop_enabled=True,
+        event_sink=events.append,
+    ):
+        with context(setup) as (records, _):
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            result = agent.command("tick")
+            assert result["status"] == "blocked" and result["plan_index"] == 0
+            assert result["decision"] is None and type(result["elapsed_ms"]) is int
+            assert agent.state["browser"].actions == [] and agent.state["history"] == []
+            assert len(agent.state["decisions"]) == 1
+            assert agent.state["decisions"][0]["choice"] == "DONE"
+            assert agent.state["decisions"][0]["raw_answers"] == records[0]["response"]["answers"]
+            assert len(records) == len(setup.sent) == 2
+            assert all(owner.FEEDBACK_KEY not in request["state"] for request in setup.sent)
+            with pytest.raises(ValueError, match="Observe"):
+                agent.command("act", {"fingerprint": "fresh"})
+            assert agent.state["browser"].actions == []
+    assert [row["status"] for row in events] == ["review_call", "singleton_stop_requested"]
+    assert events[1] == {
+        "status": "singleton_stop_requested",
+        "verdict": verdict,
+        "decision_request_sha256": owner._body_sha256(setup.sent[0]),
+        "review_request_sha256": events[0]["request_sha256"],
+        "review_response_sha256": events[0]["response_sha256"],
+    }
+
+
+def test_singleton_stop_needs_explicit_boolean_and_event_sink(setup):
+    with pytest.raises(ValueError, match="singleton stop opt-in"):
+        with owner.attach_to_runner(runner, enabled=True, singleton_stop_enabled="yes"):
+            pass
+    with pytest.raises(ValueError, match="event sink required"):
+        with owner.attach_to_runner(runner, enabled=True, singleton_stop_enabled=True):
+            pass
+
+
+def test_singleton_supported_still_uses_original_done(setup):
+    configure_singleton(setup)
+    events = []
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=events.append
+    ):
+        with context(setup) as (records, _):
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            assert agent.command("tick")["status"] == "done"
+            assert len(records) == 2 and len(agent.state["decisions"]) == 1
+    assert [row["status"] for row in events] == ["review_call", "done_supported"]
+
+
+def test_singleton_stop_does_not_require_an_extra_replan_budget(setup):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    setup.agent_module.MAX_STEPS = 1
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=lambda _: None
+    ):
+        with context(setup) as (records, _):
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            assert agent.command("tick")["status"] == "blocked"
+            assert len(records) == 2 and len(agent.state["decisions"]) == 1
+
+
+def test_singleton_stop_disabled_keeps_existing_failed_replan(setup):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    events = []
+    with owner.attach_to_runner(runner, enabled=True, event_sink=events.append):
+        with context(setup) as (records, _):
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            with pytest.raises((ValueError, KeyError)):
+                agent.command("tick")
+            assert agent.state["decision"] is None and agent.state["browser"].actions == []
+            assert len(records) == 3
+    assert events[-1]["status"] == "replan_failed"
+
+
+@pytest.mark.parametrize(
+    "interference", ["reenter", "mutate_plan", "mutate_start", "mutate_page", "throw"]
+)
+def test_singleton_event_interference_never_executes_or_completes(setup, interference):
+    configure_singleton(setup)
+    setup.options["review"] = "unsupported"
+    agent = Agent(setup.model)
+    agent.state["page"]["actions"] = []
+
+    def sink(row):
+        if row["status"] != "singleton_stop_requested":
+            return
+        if interference == "reenter":
+            agent.command("tick")
+        elif interference == "mutate_plan":
+            agent.state["plan_index"] = 1
+        elif interference == "mutate_start":
+            agent.state["started_at"] += 1
+        elif interference == "mutate_page":
+            agent.state["page"]["text"] = "changed"
+        else:
+            raise RuntimeError("sink failed")
+
+    with owner.attach_to_runner(runner, enabled=True, singleton_stop_enabled=True, event_sink=sink):
+        with context(setup):
+            with pytest.raises((ValueError, RuntimeError)):
+                agent.command("tick")
+            assert agent.state["status"] != "done"
+            assert agent.state["decision"] is None and agent.state["browser"].actions == []
+
+
+def test_singleton_rejects_offered_alternatives_hidden_from_request(setup):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    setup.model.action_space = lambda actions: ([], {"CLICK": {"1": actions[0]}}, {})
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=lambda _: None
+    ):
+        with context(setup):
+            agent = Agent(setup.model)
+            with pytest.raises(ValueError, match="actionable alternatives"):
+                agent.command("tick")
+            assert agent.state["decision"] is None and agent.state["status"] != "done"
+            assert agent.state["browser"].actions == []
+
+
+def test_non_singleton_opt_in_preserves_original_replan(setup):
+    setup.options["review"] = "unsupported"
+    events = []
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=events.append
+    ):
+        with context(setup) as (records, _):
+            agent = Agent(setup.model)
+            assert agent.command("tick")["status"] == "ready"
+            assert agent.state["browser"].actions == ["item"] and len(records) == 3
+    assert events[-1]["status"] == "replanned"
+
+
+def test_singleton_stale_after_event_does_not_report_terminal_success(setup):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    agent = Agent(setup.model)
+    agent.state["page"]["actions"] = []
+    events = []
+
+    def sink(event):
+        events.append(event)
+        if event["status"] == "singleton_stop_requested":
+            agent.state["browser"].fresh_values = [False]
+
+    with owner.attach_to_runner(runner, enabled=True, singleton_stop_enabled=True, event_sink=sink):
+        with context(setup):
+            with pytest.raises(StalePage):
+                agent.command("tick")
+            assert agent.state["status"] == "ready" and agent.state["decision"] is None
+            assert agent.state["browser"].actions == []
+    assert events[-1]["status"] == "singleton_stop_requested"
+
+
+def test_singleton_snapshot_error_leaves_no_replayable_decision(setup, monkeypatch):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    original_snapshot = Agent.snapshot
+
+    def snapshot(agent):
+        if agent.state["status"] == "blocked":
+            raise RuntimeError("synthetic snapshot failed")
+        return original_snapshot(agent)
+
+    monkeypatch.setattr(Agent, "snapshot", snapshot)
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=lambda _: None
+    ):
+        with context(setup):
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            with pytest.raises(RuntimeError, match="snapshot failed"):
+                agent.command("tick")
+            assert agent.state["status"] == "blocked" and agent.state["decision"] is None
+            assert agent.state["browser"].actions == []
+
+
+@pytest.mark.parametrize("clock_fault", ["future_start", "nonfinite_clock"])
+def test_singleton_invalid_time_fails_closed(setup, monkeypatch, clock_fault):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    agent = Agent(setup.model)
+    agent.state["page"]["actions"] = []
+    if clock_fault == "future_start":
+        agent.state["started_at"] = time.perf_counter() + 3600
+
+    def sink(event):
+        if event["status"] == "singleton_stop_requested" and clock_fault == "nonfinite_clock":
+            monkeypatch.setattr(owner.time, "perf_counter", lambda: float("nan"))
+
+    with owner.attach_to_runner(runner, enabled=True, singleton_stop_enabled=True, event_sink=sink):
+        with context(setup):
+            with pytest.raises(ValueError, match="singleton clock invalid"):
+                agent.command("tick")
+            assert agent.state["status"] == "ready" and agent.state["decision"] is None
+            assert agent.state["browser"].actions == []
+
+
+def test_singleton_event_is_unresolved_by_existing_reconciliation():
+    import jev_done_review_reconciliation as reconciliation
+
+    result = reconciliation.reconcile(
+        events=[
+            {
+                "status": "singleton_stop_requested",
+                "verdict": "unknown",
+                "decision_request_sha256": "a" * 64,
+                "review_request_sha256": "b" * 64,
+                "review_response_sha256": "c" * 64,
+            }
+        ],
+        runner_records=[],
+        captures=[],
+        bindings=[],
+        service_events=[],
+        client_closure={"confirmed": True, "remaining": [], "tracked_PID_start_ticks": {}},
+    )
+    assert result["status"] == "unresolved"
+    assert result["observed_events"]["unrecognized"] == 1

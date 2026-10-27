@@ -25,7 +25,6 @@ def semantic_binding_context(monkeypatch):
     monkeypatch.setattr(audit, "SOURCE_ONLY", False)
     pins = {"operation": "a" * 64, "click_target": "b" * 64}
     names = ["CLICK", "DONE", "SELECT", "TYPE_TEXT"]
-    names_sha = hashlib.sha256(binding._encode(names)).hexdigest()
     artifacts, receipts, events, bindings = {}, [], [], []
     behavior = {"mismatch": None, "listener_closed": True, "adapter_closed": False}
     base = FakeNative()
@@ -144,7 +143,9 @@ def semantic_binding_context(monkeypatch):
         raw = artifacts[receipt["directory"]]
         return raw + b" " if behavior["mismatch"] == "bytes" else raw
 
-    def make(max_requests=16):
+    def make(max_requests=16, *, operation_names=None):
+        selected_names = names if operation_names is None else operation_names
+        selected_names_sha = hashlib.sha256(binding._encode(selected_names)).hexdigest()
         return binding.SemanticBrowserBinding(
             base,
             {"operation": object(), "click_target": object()},
@@ -155,8 +156,8 @@ def semantic_binding_context(monkeypatch):
             http_module=http,
             adapter_module=semantic_module,
             audit_module=audit,
-            operation_names=names,
-            operation_names_sha256=names_sha,
+            operation_names=selected_names,
+            operation_names_sha256=selected_names_sha,
             model_identity="native-test",
             token="t" * 32,
             max_requests=max_requests,

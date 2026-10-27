@@ -16,6 +16,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import math
 import os
 import threading
 import time
@@ -115,7 +116,13 @@ def _remaining(decisions, extra_calls, max_steps):
 
 @contextmanager
 def attach_to_runner(
-    runner, *, enabled=False, feedback_enabled=False, max_reviews=2, event_sink=None
+    runner,
+    *,
+    enabled=False,
+    feedback_enabled=False,
+    singleton_stop_enabled=False,
+    max_reviews=2,
+    event_sink=None,
 ):
     """Wrap the real runner adapter; disabled makes no changes at all.
 
@@ -125,6 +132,9 @@ def attach_to_runner(
     and raise before an action. Unknown is not accepted as completion.
     Feedback is separately opt-in and contains only the verdict and fixed
     conservative guidance; the original pending request is never modified.
+    The separate singleton-stop opt-in records a local blocked stop, never a
+    model decision, if review rejects DONE and no actionable operation exists.
+    Existing reconciliation treats this new event as unresolved.
     """
     _need(type(enabled) is bool, "explicit opt-in required")
     if not enabled:
@@ -132,8 +142,10 @@ def attach_to_runner(
         return
     _need(SOURCE_ONLY is False, "held DONE review bridge requires independent review")
     _need(type(feedback_enabled) is bool, "explicit feedback opt-in required")
+    _need(type(singleton_stop_enabled) is bool, "explicit singleton stop opt-in required")
     _need(type(max_reviews) is int and 1 <= max_reviews <= 4, "bounded review limit required")
     _need(event_sink is None or callable(event_sink), "optional event sink must be callable")
+    _need(not singleton_stop_enabled or callable(event_sink), "singleton stop event sink required")
     feedback_key = None
     feedback_guidance = None
     if feedback_enabled:
@@ -236,6 +248,8 @@ def attach_to_runner(
                     decision_log = copy.deepcopy(state.get("decisions"))
                     snapshot = copy.deepcopy(page)
                     goal = state.get("goal")
+                    started_at_snapshot = state.get("started_at")
+                    plan_index_snapshot = state.get("plan_index")
                     visible = _visible_request(model_module, page, goal, history, request)
                     _need(
                         _remaining(
@@ -256,10 +270,12 @@ def attach_to_runner(
                         verdict = model_module.validate_choice(
                             result["answers"].get(REVIEW_ID, {}), REVIEW_OPTIONS
                         )["choice"]
+                        review_request_sha256 = _body_sha256(review_body)
+                        review_response_sha256 = _body_sha256(result)
                         event(
                             "review_call",
-                            request_sha256=_body_sha256(review_body),
-                            response_sha256=_body_sha256(result),
+                            request_sha256=review_request_sha256,
+                            response_sha256=review_response_sha256,
                         )
                     except BaseException as exc:
                         try:
@@ -311,6 +327,74 @@ def attach_to_runner(
                         still_current()
                         state["decision"] = decision
                         return original_command(agent, name, body)
+                    questions = request.get("questions")
+                    operation = questions.get("operation") if type(questions) is dict else None
+                    criteria = operation.get("criteria") if type(operation) is dict else None
+                    if (
+                        singleton_stop_enabled
+                        and type(criteria) is dict
+                        and set(criteria) == {"DONE", "BLOCKED"}
+                    ):
+                        _need(set(questions) == {"operation"}, "singleton operation head required")
+                        _, targets, controls = model_module.action_space(page["actions"])
+                        _need(
+                            type(targets) is dict
+                            and not targets
+                            and type(controls) is dict
+                            and not controls,
+                            "singleton stop requires no actionable alternatives",
+                        )
+
+                        def singleton_current():
+                            try:
+                                still_current()
+                                _need(
+                                    type(started_at_snapshot) in (int, float)
+                                    and math.isfinite(started_at_snapshot)
+                                    and state.get("started_at") == started_at_snapshot
+                                    and type(plan_index_snapshot) is int
+                                    and plan_index_snapshot == 0
+                                    and state.get("plan_index") == plan_index_snapshot,
+                                    "singleton timing or plan changed",
+                                )
+                            except BaseException:
+                                state["decision"] = None
+                                state["status"] = "ready"
+                                raise
+
+                        singleton_current()
+                        try:
+                            event(
+                                "singleton_stop_requested",
+                                verdict=verdict,
+                                decision_request_sha256=_body_sha256(request),
+                                review_request_sha256=review_request_sha256,
+                                review_response_sha256=review_response_sha256,
+                            )
+                        except BaseException:
+                            state["decision"] = None
+                            state["status"] = "ready"
+                            raise
+                        singleton_current()
+                        try:
+                            now = time.perf_counter()
+                            _need(
+                                type(now) in (int, float)
+                                and math.isfinite(now)
+                                and now >= started_at_snapshot,
+                                "singleton clock invalid",
+                            )
+                            elapsed_ms = round((now - started_at_snapshot) * 1000)
+                            _need(elapsed_ms >= 0, "singleton elapsed time invalid")
+                        except BaseException:
+                            state["decision"] = None
+                            state["status"] = "ready"
+                            raise
+                        state["decision"] = None
+                        state["status"] = "blocked"
+                        state["plan_index"] = 0
+                        state["elapsed_ms"] = elapsed_ms
+                        return agent.snapshot()
                     _need(
                         _remaining(
                             state.get("decisions"), counters["extra_calls"], agent_module.MAX_STEPS

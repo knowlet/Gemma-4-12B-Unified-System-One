@@ -221,3 +221,81 @@ def test_feedback_reaches_real_semantic_adapter_prepare(
         instance.service.delivery(row, delivered=True)
     finally:
         instance.close()
+
+
+@pytest.mark.parametrize("verdict", ["unsupported", "unknown"])
+def test_singleton_stop_uses_real_parser_service_binding_without_replan(
+    setup, semantic_binding_context, monkeypatch, verdict
+):
+    monkeypatch.setattr(route, "SOURCE_ONLY", False)
+    source = (
+        CHOOSE.replace(
+            "{'CLICK': 'click', 'DONE': 'done', 'BLOCKED': 'blocked'}",
+            "{'DONE': 'done', 'BLOCKED': 'blocked'}",
+        )
+        .replace("'model': 'synthetic'", "'model': 'native-test'")
+        .replace(", 'click_target': {'type':'choice', 'criteria': {'1': 'continue'}}", "")
+    )
+    assert source != CHOOSE
+    setup.model.action_space = lambda _actions: ([], {}, {})
+    exec(compile(source, __file__, "exec"), setup.model.__dict__)
+    setup.agent_module.choose = setup.model.choose
+    instance = semantic_binding_context.make(
+        operation_names=["BLOCKED", "CLICK", "DONE", "SELECT", "TYPE_TEXT"]
+    )
+    sent, events = [], []
+
+    def force(raw):
+        answers = raw["answers"]
+        key = owner.REVIEW_ID if owner.REVIEW_ID in answers else "operation"
+        choice = verdict if key == owner.REVIEW_ID else "DONE"
+        answer = answers[key]
+        answer["choice"] = choice
+        answer["probabilities"] = {key: float(key == choice) for key in answer["probabilities"]}
+        answer["confidence"] = 1.0
+
+    semantic_binding_context.base.after = force
+
+    def post(_url, _key, body):
+        sent.append(copy.deepcopy(body))
+        reply, receipt = instance.service.handle(
+            json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode(),
+            started=time.monotonic(),
+        )
+        instance.service.delivery(receipt, delivered=True)
+        return json.loads(reply)
+
+    setup.model.post_json = post
+    try:
+        with route.attach(native, binding, enabled=True):
+            with owner.attach_to_runner(
+                runner,
+                enabled=True,
+                feedback_enabled=True,
+                singleton_stop_enabled=True,
+                event_sink=events.append,
+            ):
+                with runner.model_adapter(
+                    setup.agent_module,
+                    setup.model,
+                    endpoint="http://127.0.0.1:9000",
+                    model="native-test",
+                    api_key="key",
+                ) as (records, _):
+                    agent = Agent(setup.model)
+                    agent.state["page"]["actions"] = []
+                    assert agent.command("tick")["status"] == "blocked"
+                    assert agent.state["decision"] is None and agent.state["history"] == []
+                    assert agent.state["browser"].actions == []
+                    assert len(agent.state["decisions"]) == 1
+                    assert agent.state["decisions"][0]["choice"] == "DONE"
+                    assert len(records) == len(sent) == 2
+        assert len(semantic_binding_context.bindings) == 2
+        assert instance.service.failed is False
+        assert set(sent[0]["questions"]["operation"]["criteria"]) == {"DONE", "BLOCKED"}
+        assert set(sent[0]["questions"]) == {"operation"}
+        assert set(sent[1]["questions"]) == {owner.REVIEW_ID}
+        assert [event["status"] for event in events] == ["review_call", "singleton_stop_requested"]
+        assert events[-1]["review_request_sha256"] == owner._body_sha256(sent[-1])
+    finally:
+        instance.close()
