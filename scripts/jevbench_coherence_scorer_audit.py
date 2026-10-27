@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 import jevbench_public_request_inventory as inventory
-from jevbench_heaven_scorer_audit import encode, need, read, sha
+from jevbench_heaven_scorer_audit import encode, need, read, read_pinned_journal, sha
 
 from s1.contracts import DecisionRequest
 from s1.evaluation.decision3 import native_payload, normalize_native_response
@@ -353,7 +353,7 @@ def audit(run_root, official_root):
     need(sha(report_bytes) == evaluation.get("official_report_sha256"), "report_hash")
     recorded = decode(report_bytes)
     timing_bytes = read(root, "worker/callback-timing.jsonl")
-    journal_bytes = read(root, "journal.dat")
+    journal_bytes = read_pinned_journal(root, plan, evaluation["lease"]["sha256"])
     need(
         sha(timing_bytes) == evaluation["callback_timing"]["sha256"]
         and evaluation["callback_timing"]["count"] == 1248

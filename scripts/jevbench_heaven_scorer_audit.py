@@ -13,7 +13,9 @@ import collections
 import hashlib
 import json
 import math
+import os
 import re
+import stat
 import sys
 from pathlib import Path
 
@@ -64,6 +66,95 @@ def lines(root, relative):
         json.loads(x, parse_constant=lambda _: need(False, "nonfinite"))
         for x in read(root, relative).splitlines()
     ]
+
+
+def read_pinned_journal(root, plan, expected_sha256):
+    """Read the plan's in-root lease journal once, bound to inode and digest."""
+    transport = plan.get("transport") if type(plan) is dict else None
+    need(type(transport) is dict, "journal_identity")
+    name = transport.get("journal")
+    stats = transport.get("stat")
+    need(type(stats) is dict, "journal_identity")
+    identity = stats.get("journal")
+    need(
+        type(name) is str
+        and type(identity) is dict
+        and set(identity) == {"device", "inode"}
+        and all(type(value) is int and value >= 0 for value in identity.values())
+        and type(expected_sha256) is str
+        and re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is not None,
+        "journal_identity",
+    )
+    root = Path(root)
+    path = Path(name)
+    need(
+        root.is_absolute()
+        and ".." not in root.parts
+        and path.is_absolute()
+        and path.is_relative_to(root)
+        and path != root
+        and ".." not in path.relative_to(root).parts,
+        "evidence_path",
+    )
+    parts = path.relative_to(root).parts
+    directories = (*root.parts[1:], *parts[:-1])
+    dirs = []
+    fd = None
+    try:
+        directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+        dirs.append(os.open("/", directory_flags))
+        for part in directories:
+            dirs.append(os.open(part, directory_flags, dir_fd=dirs[-1]))
+        fd = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW, dir_fd=dirs[-1])
+
+        def linked_directories():
+            root_info = os.stat("/", follow_symlinks=False)
+            opened_root = os.fstat(dirs[0])
+            need(
+                stat.S_ISDIR(root_info.st_mode)
+                and (root_info.st_dev, root_info.st_ino)
+                == (opened_root.st_dev, opened_root.st_ino),
+                "evidence_path",
+            )
+            for parent, child, part in zip(dirs[:-1], dirs[1:], directories, strict=True):
+                current = os.stat(part, dir_fd=parent, follow_symlinks=False)
+                opened = os.fstat(child)
+                need(
+                    stat.S_ISDIR(current.st_mode)
+                    and (current.st_dev, current.st_ino) == (opened.st_dev, opened.st_ino),
+                    "evidence_path",
+                )
+
+        linked_directories()
+        before = os.fstat(fd)
+        need(
+            stat.S_ISREG(before.st_mode)
+            and {"device": before.st_dev, "inode": before.st_ino} == identity
+            and before.st_size <= 16 * 1024**2,
+            "journal_identity",
+        )
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            raw = stream.read(16 * 1024**2 + 1)
+        after = os.fstat(fd)
+        linked_directories()
+        current = os.stat(parts[-1], dir_fd=dirs[-1], follow_symlinks=False)
+        fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
+        need(
+            tuple(getattr(before, key) for key in fields)
+            == tuple(getattr(after, key) for key in fields)
+            == tuple(getattr(current, key) for key in fields)
+            and len(raw) == before.st_size,
+            "journal_identity",
+        )
+        need(sha(raw) == expected_sha256, "lease_digest")
+        return raw
+    except OSError as error:
+        raise ValueError("evidence_path") from error
+    finally:
+        if fd is not None:
+            os.close(fd)
+        for directory in reversed(dirs):
+            os.close(directory)
 
 
 def source_check(plan):
@@ -146,7 +237,12 @@ def audit(run_root, official_root):
     go = read_json(run_root, "worker/go.json")
     closure = read_json(run_root, "supervisor/closure.json")
     supervision = lines(run_root, "supervisor/events.jsonl")
-    journal = lines(run_root, "journal.dat")
+    evaluation = terminal["evaluation"]
+    journal_bytes = read_pinned_journal(run_root, plan, evaluation["lease"]["sha256"])
+    journal = [
+        json.loads(x, parse_constant=lambda _: need(False, "nonfinite"))
+        for x in journal_bytes.splitlines()
+    ]
     stage = read_json(run_root, "worker/staging/status.json")
     quarantine = read_json(run_root, scorer + "/STATUS_NOT_ACCEPTED.json")
     need(
@@ -183,7 +279,6 @@ def audit(run_root, official_root):
         and terminal.get("model_score") is None,
         "cleanup_or_supervisor",
     )
-    evaluation = terminal["evaluation"]
     need(
         evaluation.get("status") == "completed_pending_external_audit"
         and evaluation.get("score_accepted") is False
@@ -340,7 +435,7 @@ def audit(run_root, official_root):
         previous_end = completed["monotonic_ns"]
     need(
         evaluation["lease"].get("own_completed_pairs") == 231
-        and evaluation["lease"].get("sha256") == sha(read(run_root, "journal.dat")),
+        and evaluation["lease"].get("sha256") == sha(journal_bytes),
         "lease_digest",
     )
     observations = [e for e in supervision if e.get("event") == "host"]
@@ -399,7 +494,7 @@ def audit(run_root, official_root):
         "cuda_allocated_at_worker_cleanup": terminal["final_cuda_allocated"],
         "summary": {key: summary[key] for key in selected},
         "latency_comparable": False,
-        "latency_note": "full guarded callback; 8.68-second CPU fit may overlap, timing is unknown; not a clean comparison",
+        "latency_note": "full guarded callback; workload overlap is not verified and latency is not fairly comparable",
         "scope": "public 231 only, unsealed; no leaderboard rank or other benchmark score",
     }
 

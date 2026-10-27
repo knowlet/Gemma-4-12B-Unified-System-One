@@ -7,6 +7,25 @@ import jevbench_coherence_scorer_audit as audit
 import pytest
 
 
+def test_coherence_accepts_only_the_plan_bound_journal(tmp_path):
+    journal = tmp_path / "forward.journal"
+    raw = b'{"event":"synthetic"}\n'
+    journal.write_bytes(raw)
+    info = journal.stat()
+    plan = {
+        "transport": {
+            "journal": str(journal),
+            "stat": {"journal": {"device": info.st_dev, "inode": info.st_ino}},
+        }
+    }
+    assert audit.read_pinned_journal(tmp_path, plan, audit.sha(raw)) == raw
+    replacement = tmp_path / "replacement"
+    replacement.write_bytes(raw)
+    replacement.replace(journal)
+    with pytest.raises(ValueError, match="journal_identity"):
+        audit.read_pinned_journal(tmp_path, plan, audit.sha(raw))
+
+
 def test_replay_requires_exact_order_and_json_types():
     first = {"state": {"x": 1}, "questions": {"a": {}, "b": {}}}
     second = {"state": "synthetic", "questions": {"next": {}}}
