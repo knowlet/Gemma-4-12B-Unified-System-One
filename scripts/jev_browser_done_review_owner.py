@@ -26,6 +26,8 @@ from contextlib import contextmanager
 SOURCE_ONLY = True
 POLICY_URL = "https://api.typesafe.ai/v1/systemone"
 REVIEW_ID = "completion_evidence"
+_RUNNER_RECORDS_MAX_COUNT = 1024
+_RUNNER_RECORDS_MAX_BYTES = 16 * 1024 * 1024
 REVIEW_OPTIONS = {
     "supported": "Current visible evidence supports every part of the user's goal.",
     "unsupported": "Current visible evidence shows at least one goal requirement is not satisfied.",
@@ -60,13 +62,17 @@ def _need(value, message):
         raise ValueError(message)
 
 
-def _body_sha256(value):
-    """Hash bounded canonical JSON for later private transport reconciliation."""
+def _body_bytes(value):
     raw = json.dumps(
         value, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False
     ).encode("utf-8")
     _need(len(raw) <= 4 * 1024 * 1024, "bounded review event body required")
-    return hashlib.sha256(raw).hexdigest()
+    return raw
+
+
+def _body_sha256(value):
+    """Hash bounded canonical JSON for later private transport reconciliation."""
+    return hashlib.sha256(_body_bytes(value)).hexdigest()
 
 
 def _visible_request(model, page, goal, history, request):
@@ -174,6 +180,86 @@ def attach_to_runner(
             )
             state_by_agent = weakref.WeakKeyDictionary()
 
+            def records_snapshot(records):
+                _need(
+                    type(records) is list and len(records) <= _RUNNER_RECORDS_MAX_COUNT,
+                    "bounded runner records required",
+                )
+                result, total = [], 0
+                for record in records:
+                    raw = _body_bytes(record)
+                    total += len(raw)
+                    _need(total <= _RUNNER_RECORDS_MAX_BYTES, "runner records byte limit exceeded")
+                    result.append((record, len(raw), hashlib.sha256(raw).hexdigest()))
+                return tuple(result)
+
+            def records_unchanged(records, snapshot):
+                if len(records) != len(snapshot):
+                    return False
+                total = 0
+                for actual, (expected, size, digest) in zip(records, snapshot):
+                    if actual is not expected:
+                        return False
+                    raw = _body_bytes(actual)
+                    total += len(raw)
+                    _need(total <= _RUNNER_RECORDS_MAX_BYTES, "runner records byte limit exceeded")
+                    if len(raw) != size or hashlib.sha256(raw).hexdigest() != digest:
+                        return False
+                return True
+
+            def singleton_record(request, decision):
+                # The one-based sequence counts all records over the adapter's
+                # lifetime, not just policy calls or one attempt. A repeated
+                # request cannot identify a decision.
+                _need(
+                    type(value) is tuple
+                    and len(value) == 2
+                    and type(value[0]) is list
+                    and len(value[0]) <= _RUNNER_RECORDS_MAX_COUNT,
+                    "singleton runner records required",
+                )
+                records = value[0]
+                policies = [
+                    (index, record)
+                    for index, record in enumerate(records)
+                    if type(record) is dict and record.get("kind") == "policy"
+                ]
+                matching = [item for item in policies if item[1].get("request") == request]
+                _need(
+                    len(matching) == 1 and policies[-1][0] == matching[0][0],
+                    "unique latest singleton decision record required",
+                )
+                index, record = matching[0]
+                response = record.get("response")
+                _need(
+                    record.get("error") is None
+                    and type(response) is dict
+                    and type(response.get("answers")) is dict
+                    and response["answers"] == decision.get("raw_answers")
+                    and type(response["answers"].get("operation")) is dict
+                    and response["answers"]["operation"].get("choice") == "DONE"
+                    and ("model" not in decision or response.get("model") == decision["model"]),
+                    "singleton runner response differs from decision",
+                )
+                return records, index, _body_sha256(response), records_snapshot(records)
+
+            def singleton_review_record(initial, review_body, response):
+                records, _, _, before = initial
+                _need(
+                    len(records) == len(before) + 1 and records_unchanged(records[:-1], before),
+                    "singleton runner record sequence changed before review",
+                )
+                review = records[-1]
+                _need(
+                    type(review) is dict
+                    and review.get("kind") == "policy"
+                    and review.get("error") is None
+                    and review.get("request") == review_body
+                    and review.get("response") == response,
+                    "singleton review runner record differs",
+                )
+                return records_snapshot(records)
+
             def event(status, **details):
                 if event_sink is not None:
                     event_sink({"status": status, **details})
@@ -251,6 +337,21 @@ def attach_to_runner(
                     started_at_snapshot = state.get("started_at")
                     plan_index_snapshot = state.get("plan_index")
                     visible = _visible_request(model_module, page, goal, history, request)
+                    initial_record = None
+                    questions = request.get("questions")
+                    operation = questions.get("operation") if type(questions) is dict else None
+                    criteria = operation.get("criteria") if type(operation) is dict else None
+                    if (
+                        singleton_stop_enabled
+                        and type(criteria) is dict
+                        and set(criteria) == {"DONE", "BLOCKED"}
+                    ):
+                        try:
+                            initial_record = singleton_record(request, decision)
+                        except (ValueError, TypeError, OverflowError, RecursionError):
+                            # A supported review still follows the original DONE
+                            # path. An unbound local stop must fail closed below.
+                            initial_record = None
                     _need(
                         _remaining(
                             state.get("decisions"), counters["extra_calls"], agent_module.MAX_STEPS
@@ -260,6 +361,7 @@ def attach_to_runner(
                     )
                     counters["reviews"] += 1
                     counters["extra_calls"] += 1
+                    review_records = None
                     try:
                         review_body = _review_request(request, visible, goal)
                         result = original_post(
@@ -270,6 +372,14 @@ def attach_to_runner(
                         verdict = model_module.validate_choice(
                             result["answers"].get(REVIEW_ID, {}), REVIEW_OPTIONS
                         )["choice"]
+                        if initial_record is not None:
+                            try:
+                                review_records = singleton_review_record(
+                                    initial_record, review_body, result
+                                )
+                            except (ValueError, TypeError, OverflowError, RecursionError):
+                                # Only the local stop needs this stricter evidence.
+                                review_records = None
                         review_request_sha256 = _body_sha256(review_body)
                         review_response_sha256 = _body_sha256(result)
                         event(
@@ -327,15 +437,16 @@ def attach_to_runner(
                         still_current()
                         state["decision"] = decision
                         return original_command(agent, name, body)
-                    questions = request.get("questions")
-                    operation = questions.get("operation") if type(questions) is dict else None
-                    criteria = operation.get("criteria") if type(operation) is dict else None
                     if (
                         singleton_stop_enabled
                         and type(criteria) is dict
                         and set(criteria) == {"DONE", "BLOCKED"}
                     ):
                         _need(set(questions) == {"operation"}, "singleton operation head required")
+                        _need(
+                            initial_record is not None and review_records is not None,
+                            "singleton decision record unbound",
+                        )
                         _, targets, controls = model_module.action_space(page["actions"])
                         _need(
                             type(targets) is dict
@@ -348,6 +459,11 @@ def attach_to_runner(
                         def singleton_current():
                             try:
                                 still_current()
+                                records, _, _, _ = initial_record
+                                _need(
+                                    records_unchanged(records, review_records),
+                                    "singleton decision record changed",
+                                )
                                 _need(
                                     type(started_at_snapshot) in (int, float)
                                     and math.isfinite(started_at_snapshot)
@@ -368,6 +484,9 @@ def attach_to_runner(
                                 "singleton_stop_requested",
                                 verdict=verdict,
                                 decision_request_sha256=_body_sha256(request),
+                                runner_response_sha256=initial_record[2],
+                                adapter_record_sequence=initial_record[1] + 1,
+                                sequence_scope="runner_model_adapter_lifetime",
                                 review_request_sha256=review_request_sha256,
                                 review_response_sha256=review_response_sha256,
                             )

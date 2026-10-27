@@ -573,9 +573,245 @@ def test_singleton_stop_is_local_and_preserves_original_decision(setup, verdict,
         "status": "singleton_stop_requested",
         "verdict": verdict,
         "decision_request_sha256": owner._body_sha256(setup.sent[0]),
+        "runner_response_sha256": owner._body_sha256(records[0]["response"]),
+        "adapter_record_sequence": 1,
+        "sequence_scope": "runner_model_adapter_lifetime",
         "review_request_sha256": events[0]["request_sha256"],
         "review_response_sha256": events[0]["response_sha256"],
     }
+
+
+@pytest.mark.parametrize(
+    "damage", ["duplicate", "response", "missing", "later_policy", "redacted_request", "model"]
+)
+def test_singleton_stop_requires_unique_matching_decision_record(setup, damage):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    events = []
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=events.append
+    ):
+        with context(setup) as (records, _):
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            agent.command("predict")
+            if damage == "duplicate":
+                records.append(copy.deepcopy(records[0]))
+            elif damage == "response":
+                records[0]["response"]["answers"]["operation"]["choice"] = "BLOCKED"
+            elif damage == "missing":
+                records.clear()
+            elif damage == "later_policy":
+                other = copy.deepcopy(records[0])
+                other["request"]["model"] = "other"
+                records.append(other)
+            elif damage == "redacted_request":
+                records[0]["request"]["model"] = "[REDACTED]"
+            else:
+                agent.state["decision"]["model"] = "synthetic"
+                records[0]["response"]["model"] = "different"
+            with pytest.raises(ValueError, match="singleton decision record unbound"):
+                agent.command("act", {"fingerprint": "fresh"})
+            assert agent.state["decision"] is None
+            assert agent.state["status"] == "ready"
+            assert agent.state["browser"].actions == []
+    assert all(event["status"] != "singleton_stop_requested" for event in events)
+
+
+def test_singleton_supported_review_does_not_require_decision_record(setup):
+    configure_singleton(setup)
+    setup.options["review"] = "supported"
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=lambda _: None
+    ):
+        with context(setup) as (records, _):
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            agent.command("predict")
+            records.clear()
+            assert agent.command("act", {"fingerprint": "fresh"})["status"] == "done"
+
+
+@pytest.mark.parametrize("mutation_event", ["review_call", "singleton_stop_requested"])
+def test_singleton_stop_refuses_record_mutation_from_event_callback(setup, mutation_event):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    current = {}
+
+    def sink(event):
+        if event["status"] == mutation_event:
+            current["records"][0]["response"]["model"] = "changed"
+
+    with owner.attach_to_runner(runner, enabled=True, singleton_stop_enabled=True, event_sink=sink):
+        with context(setup) as (records, _):
+            current["records"] = records
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            with pytest.raises(ValueError, match="singleton decision record changed"):
+                agent.command("tick")
+            assert agent.state["decision"] is None
+            assert agent.state["status"] == "ready"
+            assert agent.state["browser"].actions == []
+
+
+@pytest.mark.parametrize("mutation_event", ["review_call", "singleton_stop_requested"])
+@pytest.mark.parametrize(
+    "damage",
+    ["append_policy", "append_text", "drop_review", "change_prior", "replace_same", "reorder"],
+)
+def test_singleton_stop_refuses_any_callback_record_sequence_change(setup, mutation_event, damage):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    current = {}
+    events = []
+
+    def sink(event):
+        events.append(event)
+        if event["status"] != mutation_event:
+            return
+        records = current["records"]
+        if damage == "append_policy":
+            records.append({"kind": "policy", "request": {"other": True}})
+        elif damage == "append_text":
+            records.append({"kind": "text"})
+        elif damage == "drop_review":
+            records.pop()
+        elif damage == "change_prior":
+            records[0]["earlier"] = "changed"
+        elif damage == "replace_same":
+            records[0] = copy.deepcopy(records[0])
+        else:
+            records[0], records[1] = records[1], records[0]
+
+    with owner.attach_to_runner(runner, enabled=True, singleton_stop_enabled=True, event_sink=sink):
+        with context(setup) as (records, _):
+            current["records"] = records
+            records.append({"kind": "text", "earlier": "original"})
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            with pytest.raises(ValueError, match="singleton decision record changed"):
+                agent.command("tick")
+            assert agent.state["decision"] is None
+            assert agent.state["status"] == "ready"
+            assert agent.state["browser"].actions == []
+    assert any(event["status"] == mutation_event for event in events)
+
+
+def test_singleton_stop_uses_adapter_lifetime_record_sequence(setup):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    events = []
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=events.append
+    ):
+        with context(setup) as (records, _):
+            records.append({"kind": "text"})
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            assert agent.command("tick")["status"] == "blocked"
+            assert events[-1]["adapter_record_sequence"] == 2
+            assert events[-1]["sequence_scope"] == "runner_model_adapter_lifetime"
+
+
+@pytest.mark.parametrize("oversize", ["total_bytes", "single_record", "record_count"])
+def test_singleton_stop_rejects_unbounded_runner_records(setup, oversize):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    events = []
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=events.append
+    ):
+        with context(setup) as (records, _):
+            if oversize == "total_bytes":
+                payload = "x" * 3_500_000
+                records.extend({"kind": "text", "payload": payload} for _ in range(5))
+            elif oversize == "single_record":
+                records.append({"kind": "text", "payload": "x" * (4 * 1024 * 1024)})
+            else:
+                records.extend({"kind": "text"} for _ in range(1025))
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            with pytest.raises(ValueError, match="singleton decision record unbound"):
+                agent.command("tick")
+            assert agent.state["decision"] is None
+            assert agent.state["status"] == "ready"
+            assert agent.state["browser"].actions == []
+    assert [event["status"] for event in events] == ["review_call"]
+
+
+def test_singleton_stop_accepts_large_but_bounded_runner_records(setup):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    events = []
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=events.append
+    ):
+        with context(setup) as (records, _):
+            payload = "x" * 3_500_000
+            records.extend({"kind": "text", "payload": payload} for _ in range(4))
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            assert agent.command("tick")["status"] == "blocked"
+            assert events[-1]["adapter_record_sequence"] == 5
+
+
+@pytest.mark.parametrize("prior_records,accepted", [(1022, True), (1023, False)])
+def test_singleton_record_count_budget_includes_review_record(setup, prior_records, accepted):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    events = []
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=events.append
+    ):
+        with context(setup) as (records, _):
+            records.extend({"kind": "text"} for _ in range(prior_records))
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            if accepted:
+                assert agent.command("tick")["status"] == "blocked"
+                assert events[-1]["adapter_record_sequence"] == prior_records + 1
+            else:
+                with pytest.raises(ValueError, match="singleton decision record unbound"):
+                    agent.command("tick")
+                assert agent.state["decision"] is None
+                assert agent.state["status"] == "ready"
+                assert agent.state["browser"].actions == []
+                assert all(event["status"] != "singleton_stop_requested" for event in events)
+
+
+@pytest.mark.parametrize("damage", ["extra_policy", "review_request", "earlier_record"])
+def test_singleton_stop_refuses_unbound_review_record(setup, damage):
+    configure_singleton(setup)
+    setup.options["review"] = "unknown"
+    current = {}
+    original_network = setup.model.post_json
+
+    def network(url, key, body):
+        if owner.REVIEW_ID in body["questions"]:
+            records = current["records"]
+            if damage == "extra_policy":
+                records.append({"kind": "policy", "request": {"other": True}})
+            elif damage == "review_request":
+                records[-1]["request"]["model"] = "[REDACTED]"
+            else:
+                records[0]["request"]["model"] = "[REDACTED]"
+        return original_network(url, key, body)
+
+    setup.model.post_json = network
+    events = []
+    with owner.attach_to_runner(
+        runner, enabled=True, singleton_stop_enabled=True, event_sink=events.append
+    ):
+        with context(setup) as (records, _):
+            current["records"] = records
+            agent = Agent(setup.model)
+            agent.state["page"]["actions"] = []
+            with pytest.raises(ValueError, match="singleton decision record unbound"):
+                agent.command("tick")
+            assert agent.state["decision"] is None
+            assert agent.state["status"] == "ready"
+            assert agent.state["browser"].actions == []
+    assert all(event["status"] != "singleton_stop_requested" for event in events)
 
 
 def test_singleton_stop_needs_explicit_boolean_and_event_sink(setup):
