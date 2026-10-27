@@ -34,7 +34,10 @@ def setup(monkeypatch):
             result = super().predict(request, deadline=deadline, evidence_sink=evidence_sink)
             if not behavior["no_witness"]:
                 if behavior["replay_witness"]:
-                    receipts.append(copy.deepcopy(receipts[-1]))
+                    duplicate = copy.deepcopy(receipts[-1])
+                    # Changing an incidental field cannot make the location new.
+                    duplicate["call"] += 1
+                    receipts.append(duplicate)
                 else:
                     receipts.append(
                         {
