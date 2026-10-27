@@ -60,7 +60,7 @@ def main():
     client = httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(200, content=b'{"ok":true}')))
     model = SimpleNamespace(CLIENT=client)
     try:
-        with model_adapter(None, model, api_key="synthetic-private-token"):
+        with model_adapter(None, model, api_key="synthetic-private-token", endpoint="https://example.invalid"):
             response = client.post("https://example.invalid", json={"invented": 1}, headers={"Authorization": "Bearer synthetic-private-token"})
         return {"args": sys.argv[:], "path0": sys.path[0], "status": response.status_code, "name": __name__}
     finally:
@@ -128,6 +128,36 @@ def test_same_process_main_retains_argv_and_uses_private_sink(fixture):
         name.startswith("_jev_private_runner_") or name.startswith("_jev_private_capture_")
         for name in sys.modules
     )
+
+
+def test_same_process_bootstrap_passes_destination_attribution_without_url(fixture):
+    config, events = fixture
+    bootstrap.run(**config, destination_attribution=True)
+    assert len(events) == 1 and events[0]["destination_match"] == "policy_endpoint"
+    assert "url" not in events[0] and "headers" not in events[0]
+    assert "example.invalid" not in repr(events)
+
+
+def test_destination_sink_only_accepts_fixed_labels_when_opted_in():
+    event = {
+        "sequence": 1,
+        "status": "response",
+        "request_source": "response-attached-request",
+        "request_bytes": b"{}",
+        "response_bytes": b"{}",
+        "http_status": 200,
+        "exception_type": None,
+        "scope": "httpx-observed content; response may be decoded",
+        "destination_match": "policy_endpoint",
+    }
+    seen = []
+    with pytest.raises(ValueError):
+        bootstrap._sink_proxy(seen.append)(event)
+    proxy = bootstrap._sink_proxy(seen.append, destination_attribution=True)
+    with pytest.raises(ValueError):
+        proxy({**event, "destination_match": "https://private.invalid/"})
+    proxy(event)
+    assert seen == [event]
 
 
 @pytest.mark.parametrize("item", ["manifest", "runner", "held", "release", "extra"])
@@ -338,3 +368,32 @@ def test_v7_requires_the_original_explicit_forwarded_profile(fixture, tmp_path, 
     with pytest.raises(ValueError, match="V7 runner profile"):
         bootstrap.run(**config)
     assert events == []
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+def test_legacy_capture_interface_only_accepts_default_mode(fixture, enabled):
+    config, events = fixture
+    held_path = Path(config["held_capture_path"])
+    held = held_path.read_bytes()
+    modern = b"def attach_to_runner(runner, *, sink, destination_attribution=False):"
+    legacy = b"def attach_to_runner(runner, *, sink):\n    destination_attribution = False"
+    assert held.count(modern) == 1
+    held = held.replace(modern, legacy)
+    released = held.replace(b"SOURCE_ONLY = True", b"SOURCE_ONLY = False", 1)
+    held_path.write_bytes(held)
+    Path(config["released_capture_path"]).write_bytes(released)
+    config["held_capture_sha256"] = sha(held)
+    config["released_capture_sha256"] = sha(released)
+    before_argv, before_path = sys.argv, list(sys.path)
+    if enabled:
+        with pytest.raises(TypeError, match="destination_attribution"):
+            bootstrap.run(**config, destination_attribution=True)
+        assert events == []
+    else:
+        assert bootstrap.run(**config)["status"] == 200
+        assert len(events) == 1 and "destination_match" not in events[0]
+    assert sys.argv is before_argv and sys.path == before_path
+    assert not any(
+        name.startswith("_jev_private_runner_") or name.startswith("_jev_private_capture_")
+        for name in sys.modules
+    )

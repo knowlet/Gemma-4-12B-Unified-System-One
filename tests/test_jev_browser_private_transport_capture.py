@@ -75,6 +75,122 @@ def test_pinned_runner_opt_in_captures_each_retry_without_headers_or_mutation():
     model.CLIENT.close()
 
 
+def test_opt_in_classifies_runner_destinations_without_exposing_them():
+    captured = []
+    model = make_model(lambda _request: httpx.Response(200, content=b'{"model":"actual"}'))
+    agent = SimpleNamespace(field_text=lambda _: None)
+    with capture.attach_to_runner(runner, sink=captured.append, destination_attribution=True):
+        with runner.model_adapter(
+            agent,
+            model,
+            endpoint="http://policy.invalid/v1/decision",
+            model="candidate",
+            api_key="private-token-123",
+            text_endpoint="http://text.invalid/v1/",
+            text_model="text-model",
+        ):
+            model.post_json("https://api.typesafe.ai/v1/systemone", "secret", {"sample": 1})
+            model.post_json("http://text.invalid/v1/chat/completions", "secret", {"sample": 2})
+            model.post_json("http://other.invalid/private", "secret", {"sample": 3})
+    assert [row["destination_match"] for row in captured] == [
+        "policy_endpoint",
+        "text_endpoint",
+        "unknown",
+    ]
+    assert all("url" not in row and "headers" not in row for row in captured)
+    assert all(b"invalid" not in row["request_bytes"] for row in captured)
+    model.CLIENT.close()
+
+
+def test_shared_and_default_port_destination_is_ambiguous():
+    captured = []
+    model = make_model(lambda _request: httpx.Response(200, content=b"{}"))
+    with capture.capture_post(
+        model.CLIENT,
+        sink=captured.append,
+        destinations={"policy": "HTTP://example.invalid:80", "text": "http://example.invalid/"},
+    ):
+        model.CLIENT.post("http://example.invalid/", json={"sample": True})
+    assert captured[0]["destination_match"] == "shared_endpoint"
+    model.CLIENT.close()
+
+
+def test_url_query_or_credentials_cannot_be_mislabeled_or_leaked():
+    captured = []
+    model = make_model(lambda _request: httpx.Response(200, content=b"{}"))
+    with capture.capture_post(
+        model.CLIENT,
+        sink=captured.append,
+        destinations={"policy": "http://policy.invalid/decision", "text": None},
+    ):
+        model.CLIENT.post("http://policy.invalid/decision?token=private", json={"sample": 1})
+        model.CLIENT.post("http://person:private@policy.invalid/decision", json={"sample": 2})
+    assert [row["destination_match"] for row in captured] == ["unknown", "unknown"]
+    assert "private" not in repr(captured)
+    model.CLIENT.close()
+
+
+def test_exception_destination_classification_is_not_delivery_evidence():
+    captured = []
+
+    def handler(request):
+        raise httpx.ConnectError("sensitive detail", request=request)
+
+    model = make_model(handler)
+    with capture.capture_post(
+        model.CLIENT,
+        sink=captured.append,
+        destinations={"policy": "http://policy.invalid/decision", "text": None},
+    ):
+        with pytest.raises(httpx.ConnectError):
+            model.CLIENT.post("http://policy.invalid/decision", json={"sample": True})
+    assert captured[0]["destination_match"] == "policy_endpoint"
+    assert captured[0]["request_source"] == "exception-attached-request-not-delivery-proof"
+    assert captured[0]["response_bytes"] is None
+    assert "sensitive detail" not in repr(captured)
+    model.CLIENT.close()
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        "https://u:p@host/x",
+        "https://host/x?secret=private",
+        "https://host/x?",
+        "https://host/x#",
+        "https://host:bad/private",
+        "https://host/private\n",
+        "ftp://host/x",
+    ],
+)
+def test_destination_configuration_rejects_unsafe_urls_without_echo(bad):
+    model = make_model(lambda _request: httpx.Response(200, content=b"{}"))
+    captured = []
+    with pytest.raises(ValueError) as caught:
+        with capture.capture_post(
+            model.CLIENT, sink=captured.append, destinations={"policy": bad, "text": None}
+        ):
+            pass
+    assert bad not in str(caught.value)
+    assert captured == []
+    model.CLIENT.close()
+
+
+def test_missing_exception_request_classification_remains_unknown():
+    error = httpx.ConnectError("private")
+    client = SimpleNamespace(post=lambda *_args, **_kwargs: (_ for _ in ()).throw(error))
+    captured = []
+    with capture.capture_post(
+        client,
+        sink=captured.append,
+        destinations={"policy": "http://policy.invalid/", "text": None},
+    ):
+        with pytest.raises(httpx.ConnectError):
+            client.post("ignored")
+    assert captured[0]["destination_match"] == "unknown"
+    assert captured[0]["request_source"] == "unavailable"
+
+
 def test_transport_exception_is_preserved_and_attached_request_is_not_delivery_proof():
     captured, failure = [], []
 
@@ -356,4 +472,59 @@ def test_nonfinite_json_is_refused_before_capture(body):
         with pytest.raises(RuntimeError, match="Private transport capture failed"):
             model.CLIENT.post("https://example.invalid", json={"state": "synthetic"})
     assert captured == []
+    model.CLIENT.close()
+
+
+def test_opt_in_capture_failure_preserves_transport_error_and_cleans_up():
+    request = httpx.Request("POST", "http://policy.invalid/decision", content=b"{}")
+    original_error = httpx.ConnectError("original", request=request)
+
+    def failed(*_args, **_kwargs):
+        raise original_error
+
+    client = SimpleNamespace(post=failed)
+    attempted = []
+
+    def bad_sink(event):
+        attempted.append(event)
+        raise RuntimeError("private details")
+
+    with capture.capture_post(
+        client,
+        sink=bad_sink,
+        destinations={"policy": "http://policy.invalid/decision", "text": None},
+    ):
+        with pytest.raises(httpx.ConnectError) as caught:
+            client.post("ignored")
+    assert caught.value is original_error
+    assert caught.value.__notes__ == ["Private transport capture failed: RuntimeError"]
+    assert len(attempted) == 1 and attempted[0]["destination_match"] == "policy_endpoint"
+    assert "private details" not in str(caught.value.__notes__)
+    assert client.post is failed
+    # A fresh context verifies that the failed capture did not retain the client lock.
+    with capture.capture_post(client, sink=lambda event: None):
+        with pytest.raises(httpx.ConnectError):
+            client.post("ignored")
+    assert client.post is failed
+
+
+def test_opt_in_sink_failure_blocks_success_and_cleans_up():
+    model = make_model(lambda _request: httpx.Response(200, content=b"{}"))
+    before = model.CLIENT.post
+    attempted = []
+
+    def bad_sink(event):
+        attempted.append(event)
+        raise ValueError("private details")
+
+    with capture.capture_post(
+        model.CLIENT,
+        sink=bad_sink,
+        destinations={"policy": "http://policy.invalid/decision", "text": None},
+    ):
+        with pytest.raises(RuntimeError, match="Private transport capture failed") as caught:
+            model.CLIENT.post("http://policy.invalid/decision", json={})
+    assert "private details" not in str(caught.value)
+    assert len(attempted) == 1 and attempted[0]["destination_match"] == "policy_endpoint"
+    assert model.CLIENT.post == before
     model.CLIENT.close()

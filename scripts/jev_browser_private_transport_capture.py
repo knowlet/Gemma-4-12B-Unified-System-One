@@ -13,6 +13,9 @@ import inspect
 import json
 import threading
 from contextlib import contextmanager
+from urllib.parse import urlsplit
+
+import httpx
 
 SOURCE_ONLY = True
 MAX_REQUEST_BYTES = 1_000_000
@@ -68,7 +71,85 @@ def _check_body(body, secrets):
             )
 
 
-def _event(*, sink, sequence, response, error, secrets):
+def _destination_url(value):
+    """Validate and normalize a configured destination without exposing it."""
+    _need(
+        type(value) is str
+        and 0 < len(value) <= 8192
+        and not any(ord(char) < 0x21 or ord(char) == 0x7F for char in value),
+        "bounded explicit destination URL required",
+    )
+    try:
+        parsed = urlsplit(value)
+        _need(
+            parsed.scheme in {"http", "https"}
+            and bool(parsed.hostname)
+            and parsed.username is None
+            and parsed.password is None
+            and "?" not in value
+            and "#" not in value
+            and not parsed.query
+            and not parsed.fragment,
+            "credential-free destination URL required",
+        )
+        return _url_key(httpx.URL(value))
+    except (ValueError, TypeError, httpx.InvalidURL):
+        raise ValueError("credential-free destination URL required") from None
+
+
+def _destinations(value):
+    if value is None:
+        return None
+    _need(
+        type(value) is dict and set(value) == {"policy", "text"}, "explicit destinations required"
+    )
+    _need(value["text"] is None or type(value["text"]) is str, "text destination required")
+    return (
+        _destination_url(value["policy"]),
+        _destination_url(value["text"]) if value["text"] is not None else None,
+    )
+
+
+def _url_key(url):
+    """Compare host, effective port and exact HTTP request target in memory."""
+    _need(type(url) is httpx.URL, "HTTPX destination required")
+    _need(
+        url.scheme in {"http", "https"}
+        and bool(url.host)
+        and not url.userinfo
+        and not url.fragment,
+        "credential-free HTTP destination required",
+    )
+    port = url.port if url.port is not None else (443 if url.scheme == "https" else 80)
+    return url.scheme, url.raw_host, port, url.raw_path
+
+
+def _destination_match(request, destinations):
+    """Classify only the attached request's URL, not its purpose or delivery."""
+    if request is None:
+        return "unknown"
+    try:
+        url = request.url
+    except (AttributeError, RuntimeError):
+        return "unknown"
+    if type(url) is not httpx.URL:
+        return "unknown"
+    try:
+        key = _url_key(url)
+    except ValueError:
+        return "unknown"
+    policy = key == destinations[0]
+    text = destinations[1] is not None and key == destinations[1]
+    if policy and text:
+        return "shared_endpoint"
+    if policy:
+        return "policy_endpoint"
+    if text:
+        return "text_endpoint"
+    return "unknown"
+
+
+def _event(*, sink, sequence, response, error, secrets, destinations=None):
     """Emit bodies observed by HTTPX; an exception request is not delivery proof."""
     request, response_bytes = None, None
     source = "unavailable"
@@ -110,18 +191,19 @@ def _event(*, sink, sequence, response, error, secrets):
     )
     _check_body(request_bytes, secrets)
     _check_body(response_bytes, secrets)
-    result = sink(
-        {
-            "sequence": sequence,
-            "status": "transport_exception" if error is not None else "response",
-            "request_source": source,
-            "request_bytes": request_bytes,
-            "response_bytes": response_bytes,
-            "http_status": response.status_code if response is not None else None,
-            "exception_type": type(error).__name__ if error is not None else None,
-            "scope": "httpx-observed content; response may be decoded",
-        }
-    )
+    event = {
+        "sequence": sequence,
+        "status": "transport_exception" if error is not None else "response",
+        "request_source": source,
+        "request_bytes": request_bytes,
+        "response_bytes": response_bytes,
+        "http_status": response.status_code if response is not None else None,
+        "exception_type": type(error).__name__ if error is not None else None,
+        "scope": "httpx-observed content; response may be decoded",
+    }
+    if destinations is not None:
+        event["destination_match"] = _destination_match(request, destinations)
+    result = sink(event)
     if inspect.iscoroutine(result):
         result.close()
         raise ValueError("private sink must complete synchronously")
@@ -129,7 +211,7 @@ def _event(*, sink, sequence, response, error, secrets):
 
 
 @contextmanager
-def capture_post(client, *, sink, secrets=()):
+def capture_post(client, *, sink, secrets=(), destinations=None):
     """Wrap one isolated HTTPX client; preserve each call, retry and exception.
 
     A successful response without complete bytes or a failed sink aborts before
@@ -146,6 +228,7 @@ def capture_post(client, *, sink, secrets=()):
         "explicit credential strings required",
     )
     secrets = tuple(secrets)
+    destinations = _destinations(destinations)
     _need(_CLIENT_LOCK.acquire(blocking=False), "capture requires one isolated client")
     try:
         original = client.post
@@ -175,6 +258,7 @@ def capture_post(client, *, sink, secrets=()):
                         response=error_response,
                         error=error,
                         secrets=secrets,
+                        destinations=destinations,
                     )
                 except BaseException as capture_error:
                     try:
@@ -185,7 +269,14 @@ def capture_post(client, *, sink, secrets=()):
                         pass
                 raise
             try:
-                _event(sink=sink, sequence=sequence, response=response, error=None, secrets=secrets)
+                _event(
+                    sink=sink,
+                    sequence=sequence,
+                    response=response,
+                    error=None,
+                    secrets=secrets,
+                    destinations=destinations,
+                )
             except Exception:
                 raise RuntimeError("Private transport capture failed; no action executed") from None
             return response
@@ -216,7 +307,7 @@ def capture_post(client, *, sink, secrets=()):
 
 
 @contextmanager
-def attach_to_runner(runner, *, sink):
+def attach_to_runner(runner, *, sink, destination_attribution=False):
     """Temporarily inject capture before the pinned runner's own post wrapper.
 
     Run this inside the same pinned child process as ``runner.run_benchmark``.
@@ -229,6 +320,7 @@ def attach_to_runner(runner, *, sink):
         callable(sink) and callable(getattr(runner, "model_adapter", None)),
         "runner and private sink required",
     )
+    _need(type(destination_attribution) is bool, "explicit destination attribution required")
     _need(_RUNNER_LOCK.acquire(blocking=False), "capture requires one isolated runner")
     try:
         original = runner.model_adapter
@@ -247,7 +339,15 @@ def attach_to_runner(runner, *, sink):
             runner.os.environ.get("TYPESAFE_API_KEY", ""),
             runner.os.environ.get("TEXT_MODEL_API_KEY", ""),
         )
-        with capture_post(client, sink=sink, secrets=secrets):
+        destinations = None
+        if destination_attribution:
+            text_endpoint = kwargs.get("text_endpoint")
+            _need(text_endpoint is None or type(text_endpoint) is str, "text endpoint required")
+            destinations = {
+                "policy": kwargs.get("endpoint"),
+                "text": text_endpoint.rstrip("/") + "/chat/completions" if text_endpoint else None,
+            }
+        with capture_post(client, sink=sink, secrets=secrets, destinations=destinations):
             with original(agent_module, model_module, **kwargs) as result:
                 yield result
 

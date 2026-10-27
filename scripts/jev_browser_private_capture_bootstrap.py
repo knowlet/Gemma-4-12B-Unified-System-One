@@ -348,7 +348,8 @@ class _PinnedFinder(importlib.abc.MetaPathFinder, importlib.abc.Loader):
         exec(compile(raw, str(path), "exec"), module.__dict__)
 
 
-def _sink_proxy(sink):
+def _sink_proxy(sink, *, destination_attribution=False):
+    _need(type(destination_attribution) is bool, "explicit destination attribution required")
     sequence = 0
 
     def private_event(event):
@@ -366,6 +367,7 @@ def _sink_proxy(sink):
                 "exception_type",
                 "scope",
             }
+            | ({"destination_match"} if destination_attribution else set())
             and type(event["sequence"]) is int
             and event["sequence"] == sequence + 1
             and event["status"] in {"response", "transport_exception"}
@@ -382,6 +384,13 @@ def _sink_proxy(sink):
             and type(event["scope"]) is str,
             "bounded private body event without headers or URL required",
         )
+        if destination_attribution:
+            _need(
+                type(event["destination_match"]) is str
+                and event["destination_match"]
+                in {"policy_endpoint", "text_endpoint", "shared_endpoint", "unknown"},
+                "fixed destination classification required",
+            )
         _need(
             (event["request_bytes"] is None or len(event["request_bytes"]) <= 1_000_000)
             and (event["response_bytes"] is None or len(event["response_bytes"]) <= 16 * 1024**2),
@@ -420,6 +429,7 @@ def run(
     released_capture_path,
     released_capture_sha256,
     profile_helper_sha256=None,
+    destination_attribution=False,
     sink,
     arguments,
 ):
@@ -434,6 +444,7 @@ def run(
     _need(
         callable(sink)
         and sys.dont_write_bytecode is True
+        and type(destination_attribution) is bool
         and type(arguments) in (list, tuple)
         and all(type(item) is str for item in arguments),
         "no-bytecode child, explicit private sink and original string arguments required",
@@ -473,7 +484,10 @@ def run(
             and callable(getattr(runner, "model_adapter", None)),
             "pinned runner entry points required",
         )
-        with capture.attach_to_runner(runner, sink=_sink_proxy(sink)):
+        options = {"sink": _sink_proxy(sink, destination_attribution=destination_attribution)}
+        if destination_attribution:
+            options["destination_attribution"] = True
+        with capture.attach_to_runner(runner, **options):
             return runner.main()
     except BaseException as error:
         primary = error
