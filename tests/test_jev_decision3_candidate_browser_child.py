@@ -160,14 +160,14 @@ def _request(address, token, sequence):
 
 @pytest.mark.parametrize("end", ["request_limit", "parent_stop"])
 def test_multiple_loopback_calls_ready_stop_and_private_records(
-    tmp_path, monkeypatch, context, end
+    tmp_path, monkeypatch, candidate_binding_context, end
 ):
     monkeypatch.setattr(child, "SOURCE_ONLY", False)
     monkeypatch.setattr(lifecycle, "SOURCE_ONLY", False)
     plan = plan_for(tmp_path)
     if end == "parent_stop":
         plan["max_requests"] = 3
-    context.lease.held = context.lease.fatal = None
+    candidate_binding_context.lease.held = candidate_binding_context.lease.fatal = None
     monkeypatch.setattr(child.common, "_shared_identity", lambda *_args: None)
     monkeypatch.setattr(child.common, "_verify_source_pins", lambda *_args: None)
     monkeypatch.setattr(child.common, "_load_deltas", lambda *_args: {})
@@ -178,20 +178,22 @@ def test_multiple_loopback_calls_ready_stop_and_private_records(
     monkeypatch.setattr(
         audit,
         "make_witness_writer",
-        lambda *_args, **_kwargs: (lambda **_values: None, context.receipts),
+        lambda *_args, **_kwargs: (lambda **_values: None, candidate_binding_context.receipts),
     )
-    lease_module = SimpleNamespace(ForwardLease=lambda *_args, **_kwargs: context.lease)
+    lease_module = SimpleNamespace(
+        ForwardLease=lambda *_args, **_kwargs: candidate_binding_context.lease
+    )
 
     class BindingModule:
         @staticmethod
         def CandidateBrowserBinding(*_args, **kwargs):
-            instance = context.make(max_requests=plan["max_requests"])
+            instance = candidate_binding_context.make(max_requests=plan["max_requests"])
             original_sink = instance.service.event_sink
 
             def event(row):
                 original_sink(row)
                 if row["status"] == "prepared":
-                    kwargs["private_artifact_sink"](context.bindings[-1])
+                    kwargs["private_artifact_sink"](candidate_binding_context.bindings[-1])
                 kwargs["event_sink"](row)
 
             instance.service.event_sink = event
@@ -208,7 +210,7 @@ def test_multiple_loopback_calls_ready_stop_and_private_records(
                     plan,
                     sha,
                     invocation,
-                    context.base,
+                    candidate_binding_context.base,
                     object(),
                     (http, lease_module, BindingModule, lifecycle),
                     output,
@@ -269,11 +271,11 @@ def test_multiple_loopback_calls_ready_stop_and_private_records(
     [(True, "listener blocked"), (False, "lease still held"), (False, "socket still open")],
 )
 def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
-    tmp_path, monkeypatch, context, thread_alive, reason
+    tmp_path, monkeypatch, candidate_binding_context, thread_alive, reason
 ):
     monkeypatch.setattr(child, "SOURCE_ONLY", False)
     plan = plan_for(tmp_path)
-    context.lease.held = context.lease.fatal = None
+    candidate_binding_context.lease.held = candidate_binding_context.lease.fatal = None
     monkeypatch.setattr(child.common, "_shared_identity", lambda *_args: None)
     monkeypatch.setattr(child.common, "_verify_source_pins", lambda *_args: None)
     monkeypatch.setattr(child.common, "_load_deltas", lambda *_args: {})
@@ -281,11 +283,15 @@ def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
     monkeypatch.setattr(
         audit,
         "make_witness_writer",
-        lambda *_args, **_kwargs: (lambda **_values: None, context.receipts),
+        lambda *_args, **_kwargs: (lambda **_values: None, candidate_binding_context.receipts),
     )
-    lease_module = SimpleNamespace(ForwardLease=lambda *_args, **_kwargs: context.lease)
+    lease_module = SimpleNamespace(
+        ForwardLease=lambda *_args, **_kwargs: candidate_binding_context.lease
+    )
     binding_module = SimpleNamespace(
-        CandidateBrowserBinding=lambda *_args, **_kwargs: context.make(max_requests=2)
+        CandidateBrowserBinding=lambda *_args, **_kwargs: candidate_binding_context.make(
+            max_requests=2
+        )
     )
     primary = TimeoutError(reason) if thread_alive else None
 
@@ -298,7 +304,7 @@ def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
             self.cleanup_finished = False
             self.closure_guard = kwargs["closure_guard"]
             if reason == "lease still held":
-                context.lease.held = object()
+                candidate_binding_context.lease.held = object()
 
         def start(self):
             return "127.0.0.1", 12345
@@ -323,7 +329,7 @@ def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
             plan,
             "d" * 64,
             "f" * 32,
-            context.base,
+            candidate_binding_context.base,
             object(),
             (
                 http,
@@ -337,7 +343,7 @@ def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
     if primary is not None:
         assert caught.value is primary
     assert getattr(caught.value, "candidate_cleanup_unconfirmed") is True
-    assert not context.behavior["adapter_closed"]
+    assert not candidate_binding_context.behavior["adapter_closed"]
 
 
 def test_child_handshake_skips_backend_and_cuda_cleanup_for_live_listener(tmp_path, monkeypatch):

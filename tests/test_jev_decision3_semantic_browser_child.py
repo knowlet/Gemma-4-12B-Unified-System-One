@@ -176,14 +176,14 @@ def _request(address, token, sequence):
 @pytest.mark.parametrize("end", ["request_limit", "parent_stop"])
 @pytest.mark.parametrize("audit_invalid", [False, True])
 def test_multiple_loopback_calls_ready_stop_and_private_records(
-    tmp_path, monkeypatch, context, end, audit_invalid
+    tmp_path, monkeypatch, semantic_binding_context, end, audit_invalid
 ):
     monkeypatch.setattr(child, "SOURCE_ONLY", False)
     monkeypatch.setattr(lifecycle, "SOURCE_ONLY", False)
     plan = plan_for(tmp_path)
     if end == "parent_stop":
         plan["max_requests"] = 3
-    context.lease.held = context.lease.fatal = None
+    semantic_binding_context.lease.held = semantic_binding_context.lease.fatal = None
     monkeypatch.setattr(child.common, "_shared_identity", lambda *_args: None)
     monkeypatch.setattr(child.common, "_verify_source_pins", lambda *_args: None)
     monkeypatch.setattr(child.semantic_owner, "_load_deltas", lambda *_args: {})
@@ -197,12 +197,12 @@ def test_multiple_loopback_calls_ready_stop_and_private_records(
     monkeypatch.setattr(
         audit,
         "make_witness_writer",
-        lambda *_args, **_kwargs: (lambda **_values: None, context.receipts),
+        lambda *_args, **_kwargs: (lambda **_values: None, semantic_binding_context.receipts),
     )
     audited = []
 
     def audit_once(directory, **kwargs):
-        receipt = context.receipts[len(audited)]
+        receipt = semantic_binding_context.receipts[len(audited)]
         assert directory == receipt["directory"]
         assert kwargs["expected_file_sha256"] == receipt["manifest_sha256"]
         assert kwargs["expected_witness_sha256"] == receipt["witness_sha256"]
@@ -216,18 +216,20 @@ def test_multiple_loopback_calls_ready_stop_and_private_records(
         return {"status": "numeric_consistency_only", "browser_qualified": False}
 
     monkeypatch.setattr(audit, "audit_directory", audit_once)
-    lease_module = SimpleNamespace(ForwardLease=lambda *_args, **_kwargs: context.lease)
+    lease_module = SimpleNamespace(
+        ForwardLease=lambda *_args, **_kwargs: semantic_binding_context.lease
+    )
 
     class BindingModule:
         @staticmethod
         def SemanticBrowserBinding(*_args, **kwargs):
-            instance = context.make(max_requests=plan["max_requests"])
+            instance = semantic_binding_context.make(max_requests=plan["max_requests"])
             original_sink = instance.service.event_sink
 
             def event(row):
                 original_sink(row)
                 if row["status"] == "prepared":
-                    kwargs["private_artifact_sink"](context.bindings[-1])
+                    kwargs["private_artifact_sink"](semantic_binding_context.bindings[-1])
                 kwargs["event_sink"](row)
 
             instance.service.event_sink = event
@@ -244,7 +246,7 @@ def test_multiple_loopback_calls_ready_stop_and_private_records(
                     plan,
                     sha,
                     invocation,
-                    context.base,
+                    semantic_binding_context.base,
                     object(),
                     (http, lease_module, BindingModule, lifecycle, object(), audit),
                     output,
@@ -277,7 +279,7 @@ def test_multiple_loopback_calls_ready_stop_and_private_records(
         if audit_invalid:
             assert len(errors) == 1 and "synthetic numeric inconsistency" in str(errors[0])
             assert not result and len(audited) == 1
-            assert context.behavior["adapter_closed"]
+            assert semantic_binding_context.behavior["adapter_closed"]
             return
         assert not errors and len(audited) == 2
         assert len(result[0]["numeric_audits"]) == 2
@@ -312,11 +314,11 @@ def test_multiple_loopback_calls_ready_stop_and_private_records(
     [(True, "listener blocked"), (False, "lease still held"), (False, "socket still open")],
 )
 def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
-    tmp_path, monkeypatch, context, thread_alive, reason
+    tmp_path, monkeypatch, semantic_binding_context, thread_alive, reason
 ):
     monkeypatch.setattr(child, "SOURCE_ONLY", False)
     plan = plan_for(tmp_path)
-    context.lease.held = context.lease.fatal = None
+    semantic_binding_context.lease.held = semantic_binding_context.lease.fatal = None
     monkeypatch.setattr(child.common, "_shared_identity", lambda *_args: None)
     monkeypatch.setattr(child.common, "_verify_source_pins", lambda *_args: None)
     monkeypatch.setattr(child.semantic_owner, "_load_deltas", lambda *_args: {})
@@ -327,7 +329,7 @@ def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
     monkeypatch.setattr(
         audit,
         "make_witness_writer",
-        lambda *_args, **_kwargs: (lambda **_values: None, context.receipts),
+        lambda *_args, **_kwargs: (lambda **_values: None, semantic_binding_context.receipts),
     )
     monkeypatch.setattr(
         audit,
@@ -337,9 +339,13 @@ def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
             "browser_qualified": False,
         },
     )
-    lease_module = SimpleNamespace(ForwardLease=lambda *_args, **_kwargs: context.lease)
+    lease_module = SimpleNamespace(
+        ForwardLease=lambda *_args, **_kwargs: semantic_binding_context.lease
+    )
     binding_module = SimpleNamespace(
-        SemanticBrowserBinding=lambda *_args, **_kwargs: context.make(max_requests=2)
+        SemanticBrowserBinding=lambda *_args, **_kwargs: semantic_binding_context.make(
+            max_requests=2
+        )
     )
     primary = TimeoutError(reason) if thread_alive else None
 
@@ -352,7 +358,7 @@ def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
             self.cleanup_finished = False
             self.closure_guard = kwargs["closure_guard"]
             if reason == "lease still held":
-                context.lease.held = object()
+                semantic_binding_context.lease.held = object()
 
         def start(self):
             return "127.0.0.1", 12345
@@ -377,7 +383,7 @@ def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
             plan,
             "d" * 64,
             "f" * 32,
-            context.base,
+            semantic_binding_context.base,
             object(),
             (
                 http,
@@ -393,7 +399,7 @@ def test_failed_service_cleanup_preserves_primary_and_refuses_adapter_cleanup(
     if primary is not None:
         assert caught.value is primary
     assert getattr(caught.value, "candidate_cleanup_unconfirmed") is True
-    assert not context.behavior["adapter_closed"]
+    assert not semantic_binding_context.behavior["adapter_closed"]
 
 
 def test_child_handshake_skips_backend_and_cuda_cleanup_for_live_listener(tmp_path, monkeypatch):
@@ -542,7 +548,9 @@ def test_control_temp_collision_preserves_unowned_file(tmp_path, monkeypatch):
     assert not (tmp_path / "hello.json").exists()
 
 
-def test_binding_construction_failure_requires_external_termination(tmp_path, monkeypatch, context):
+def test_binding_construction_failure_requires_external_termination(
+    tmp_path, monkeypatch, semantic_binding_context
+):
     monkeypatch.setattr(child, "SOURCE_ONLY", False)
     plan = plan_for(tmp_path)
     monkeypatch.setattr(child.common, "_shared_identity", lambda *_: None)
@@ -554,14 +562,14 @@ def test_binding_construction_failure_requires_external_termination(tmp_path, mo
     def failed(*_args, **_kwargs):
         raise failure
 
-    lease_module = SimpleNamespace(ForwardLease=lambda *_a, **_k: context.lease)
+    lease_module = SimpleNamespace(ForwardLease=lambda *_a, **_k: semantic_binding_context.lease)
     binding_module = SimpleNamespace(SemanticBrowserBinding=failed)
     with pytest.raises(RuntimeError, match="constructor failure") as caught:
         child._serve(
             plan,
             "d" * 64,
             "f" * 32,
-            context.base,
+            semantic_binding_context.base,
             object(),
             (http, lease_module, binding_module, lifecycle, object(), audit),
             Path(plan["output_dir"]),
@@ -571,16 +579,18 @@ def test_binding_construction_failure_requires_external_termination(tmp_path, mo
     assert caught.value.candidate_cleanup_unconfirmed is True
 
 
-def test_no_success_on_zero_completed_calls(tmp_path, monkeypatch, context):
-    context.lease.fatal = None
+def test_no_success_on_zero_completed_calls(tmp_path, monkeypatch, semantic_binding_context):
+    semantic_binding_context.lease.fatal = None
     monkeypatch.setattr(child, "SOURCE_ONLY", False)
     plan = plan_for(tmp_path)
     monkeypatch.setattr(child.common, "_shared_identity", lambda *_: None)
     monkeypatch.setattr(child.semantic_owner, "_load_deltas", lambda *_: {})
     monkeypatch.setattr(child.semantic_owner, "_load_vocabulary", lambda *_: ["CLICK"])
     monkeypatch.setattr(audit, "make_witness_writer", lambda *_a, **_k: (lambda **_: None, []))
-    lease_module = SimpleNamespace(ForwardLease=lambda *_a, **_k: context.lease)
-    binding_module = SimpleNamespace(SemanticBrowserBinding=lambda *_a, **_k: context.make())
+    lease_module = SimpleNamespace(ForwardLease=lambda *_a, **_k: semantic_binding_context.lease)
+    binding_module = SimpleNamespace(
+        SemanticBrowserBinding=lambda *_a, **_k: semantic_binding_context.make()
+    )
 
     class IdleLifecycle:
         def __init__(self, *_args, **kwargs):
@@ -605,7 +615,7 @@ def test_no_success_on_zero_completed_calls(tmp_path, monkeypatch, context):
             plan,
             "d" * 64,
             "f" * 32,
-            context.base,
+            semantic_binding_context.base,
             object(),
             (
                 http,
@@ -618,7 +628,7 @@ def test_no_success_on_zero_completed_calls(tmp_path, monkeypatch, context):
             Path(plan["output_dir"]),
             lambda: None,
         )
-    assert context.behavior["adapter_closed"]
+    assert semantic_binding_context.behavior["adapter_closed"]
 
 
 def test_explicit_semantic_releases_are_loaded_through_reviewed_gate(tmp_path, monkeypatch):
@@ -673,7 +683,7 @@ def test_actual_semantic_sources_must_be_in_explicit_pin_inventory(tmp_path, mon
 
 
 def test_real_semantic_stack_and_witness_audit_through_child(
-    tmp_path, monkeypatch, context, synthetic
+    tmp_path, monkeypatch, semantic_binding_context, synthetic
 ):
     """End-to-end invented CPU tensors; no browser, GPU or real lease is started."""
     import httpx
@@ -721,13 +731,15 @@ def test_real_semantic_stack_and_witness_audit_through_child(
     for head in hashes:
         plan["deltas"][head]["fp32_sha256"] = hashes[head]
 
-    class Lease(context.module.ForwardLease):
+    class Lease(semantic_binding_context.module.ForwardLease):
         def __init__(self, *_args, **_kwargs):
             super().__init__()
             self.fatal = None
 
     leases = SimpleNamespace(
-        SOURCE_ONLY=False, ForwardLease=Lease, SerialBackend=context.module.SerialBackend
+        SOURCE_ONLY=False,
+        ForwardLease=Lease,
+        SerialBackend=semantic_binding_context.module.SerialBackend,
     )
     output = Path(plan["output_dir"])
     result, errors = [], []

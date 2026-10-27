@@ -30,7 +30,7 @@ pytest_plugins = (
 @pytest.mark.parametrize("verdict", ["unsupported", "unknown"])
 @pytest.mark.parametrize("singleton", [False, True])
 def test_feedback_flows_through_native_parser_and_semantic_binding(
-    setup, context, monkeypatch, verdict, singleton
+    setup, semantic_binding_context, monkeypatch, verdict, singleton
 ):
     monkeypatch.setattr(route, "SOURCE_ONLY", False)
     operations = (
@@ -58,7 +58,7 @@ def test_feedback_flows_through_native_parser_and_semantic_binding(
     assert action_source != CHOOSE
     exec(compile(action_source, __file__, "exec"), setup.model.__dict__)
     setup.agent_module.choose = setup.model.choose
-    instance = context.make()
+    instance = semantic_binding_context.make()
     sent, events = [], []
 
     def force(raw):
@@ -73,7 +73,7 @@ def test_feedback_flows_through_native_parser_and_semantic_binding(
         answer["probabilities"] = {key: float(key == choice) for key in answer["probabilities"]}
         answer["confidence"] = 1.0
 
-    context.base.after = force
+    semantic_binding_context.base.after = force
 
     def post(_url, _key, body):
         sent.append(copy.deepcopy(body))
@@ -109,14 +109,14 @@ def test_feedback_flows_through_native_parser_and_semantic_binding(
                     assert agent.state["decision"] is None
         assert len(sent) == len(records) == 3
         if singleton:
-            assert len(context.bindings) == 2
+            assert len(semantic_binding_context.bindings) == 2
             assert instance.service.failed is True
             assert [row["status"] for row in events][-1] == "replan_failed"
             return
-        assert len(context.bindings) == 3
-        assert context.bindings[-1]["original_request"] == sent[-1]
-        assert context.bindings[-1]["native_payload"]["state"] == sent[-1]["state"]
-        assert context.base.calls[-1].state == sent[-1]["state"]
+        assert len(semantic_binding_context.bindings) == 3
+        assert semantic_binding_context.bindings[-1]["original_request"] == sent[-1]
+        assert semantic_binding_context.bindings[-1]["native_payload"]["state"] == sent[-1]["state"]
+        assert semantic_binding_context.base.calls[-1].state == sent[-1]["state"]
         assert sent[-1]["state"][owner.FEEDBACK_KEY] == {
             "verdict": verdict,
             "guidance": owner.FEEDBACK_GUIDANCE[verdict],
@@ -129,7 +129,9 @@ def test_feedback_flows_through_native_parser_and_semantic_binding(
         instance.close()
 
 
-def test_feedback_reaches_real_semantic_adapter_prepare(context, synthetic, monkeypatch, tmp_path):
+def test_feedback_reaches_real_semantic_adapter_prepare(
+    semantic_binding_context, synthetic, monkeypatch, tmp_path
+):
     import jev_decision3_candidate_http as http
     import numpy as np
 
@@ -164,8 +166,8 @@ def test_feedback_reaches_real_semantic_adapter_prepare(context, synthetic, monk
         deltas,
         hashes,
         Torch,
-        lease_module=context.module,
-        lease=context.lease,
+        lease_module=semantic_binding_context.module,
+        lease=semantic_binding_context.lease,
         http_module=http,
         adapter_module=semantic,
         audit_module=audit,

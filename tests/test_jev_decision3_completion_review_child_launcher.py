@@ -15,10 +15,10 @@ from test_jev_decision3_completion_review_route import review_payload
 pytest_plugins = ("test_jev_decision3_semantic_browser_binding",)
 
 
-def test_owned_launcher_connects_real_service_and_restores(context, monkeypatch):
+def test_owned_launcher_connects_real_service_and_restores(semantic_binding_context, monkeypatch):
     monkeypatch.setattr(launcher, "SOURCE_ONLY", False)
     monkeypatch.setattr(route, "SOURCE_ONLY", False)
-    instance = context.make()
+    instance = semantic_binding_context.make()
     child = types.ModuleType("synthetic_owned_child")
     child.__file__ = __file__
     child.instance = instance
@@ -55,7 +55,7 @@ def test_owned_launcher_connects_real_service_and_restores(context, monkeypatch)
         with launcher.attach_owned_child(child, route_release):
             result = child._serve(plan, "sha", "invocation", None, None, modules, None, None)
             assert list(json.loads(result)["answers"]) == [route.HEAD]
-            assert context.bindings[0]["original_request"] == review_payload()
+            assert semantic_binding_context.bindings[0]["original_request"] == review_payload()
             assert "_candidate_completion_review_route" not in sys.modules
         assert child._serve is original
     finally:

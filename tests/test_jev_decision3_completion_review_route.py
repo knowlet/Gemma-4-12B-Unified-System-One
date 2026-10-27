@@ -95,8 +95,8 @@ def test_invalid_review_and_mixed_heads_fail_closed(mutate):
             native.parse_native_payload(request, model_identity="native-test")
 
 
-def test_service_http_review_binds_full_request_witness_and_response(context):
-    instance = context.make()
+def test_service_http_review_binds_full_request_witness_and_response(semantic_binding_context):
+    instance = semantic_binding_context.make()
     wrapper = instance.wrapper
     original_sink, original_predict = wrapper.witness_sink, wrapper.predict
 
@@ -140,8 +140,13 @@ def test_service_http_review_binds_full_request_witness_and_response(context):
             conn.close()
             assert response.status == 200
             assert list(json.loads(raw)["answers"]) == [route.HEAD]
-            assert len(context.bindings) == len(context.receipts) == len(context.base.calls) == 1
-            record = context.bindings[0]
+            assert (
+                len(semantic_binding_context.bindings)
+                == len(semantic_binding_context.receipts)
+                == len(semantic_binding_context.base.calls)
+                == 1
+            )
+            record = semantic_binding_context.bindings[0]
             assert record["original_request"] == request
             assert record["http_body_sha256"] == hashlib.sha256(body).hexdigest()
             assert record["response_sha256"] == hashlib.sha256(raw).hexdigest()
@@ -149,7 +154,11 @@ def test_service_http_review_binds_full_request_witness_and_response(context):
                 binding.verify_client_exchange(record, body, raw)["status"]
                 == "provided_bytes_match"
             )
-            manifest = json.loads(context.artifacts[context.receipts[0]["directory"]])
+            manifest = json.loads(
+                semantic_binding_context.artifacts[
+                    semantic_binding_context.receipts[0]["directory"]
+                ]
+            )
             assert manifest["metadata"]["projection"]["applied_head_ids"] == []
             assert manifest["metadata"]["projection"]["absent_head_ids"] == [
                 "operation",
@@ -168,7 +177,7 @@ def test_service_http_review_binds_full_request_witness_and_response(context):
             assert response2.status == 200
             assert list(json.loads(response2.read())["answers"]) == list(action["questions"])
             conn.close()
-            assert context.bindings[1]["original_request"] == action
+            assert semantic_binding_context.bindings[1]["original_request"] == action
             server.shutdown()
             thread.join(timeout=5)
             assert not thread.is_alive()
@@ -209,34 +218,40 @@ def test_child_bridge_wraps_only_pinned_owned_service_and_restores():
 
 
 @pytest.mark.parametrize("mode", ["raw", "delta", "bytes", "vocab_sha"])
-def test_review_witness_tampering_fails_before_response(context, mode):
-    instance = context.make()
-    context.behavior["mismatch"] = mode
+def test_review_witness_tampering_fails_before_response(semantic_binding_context, mode):
+    instance = semantic_binding_context.make()
+    semantic_binding_context.behavior["mismatch"] = mode
     try:
         with route.attach(native, binding, enabled=True):
             with pytest.raises(ValueError):
                 instance.service.handle(
                     json.dumps(review_payload()).encode(), started=time.monotonic()
                 )
-        assert instance.service.failed and not context.bindings
-        assert not any(row["status"] == "prepared" for row in context.events)
+        assert instance.service.failed and not semantic_binding_context.bindings
+        assert not any(row["status"] == "prepared" for row in semantic_binding_context.events)
     finally:
         instance.close()
 
 
-def test_review_preserves_original_service_deadline(context):
-    instance = context.make()
+def test_review_preserves_original_service_deadline(semantic_binding_context):
+    instance = semantic_binding_context.make()
     instance.service.clock = lambda: 21.0
     try:
         with route.attach(native, binding, enabled=True):
             with pytest.raises(ValueError, match="deadline"):
                 instance.service.handle(json.dumps(review_payload()).encode(), started=0.0)
-        assert instance.service.failed and not context.bindings and not context.base.calls
+        assert (
+            instance.service.failed
+            and not semantic_binding_context.bindings
+            and not semantic_binding_context.base.calls
+        )
     finally:
         instance.close()
 
 
-def test_review_real_adapter_http_witness_and_fp64_audit(context, synthetic, monkeypatch, tmp_path):
+def test_review_real_adapter_http_witness_and_fp64_audit(
+    semantic_binding_context, synthetic, monkeypatch, tmp_path
+):
     """One invented review passes both real parsers and the real FP64 auditor."""
     import jev_decision3_semantic_operation_adapter as semantic
     import jev_decision3_semantic_operation_audit as audit
@@ -271,8 +286,8 @@ def test_review_real_adapter_http_witness_and_fp64_audit(context, synthetic, mon
         deltas,
         hashes,
         Torch,
-        lease_module=context.module,
-        lease=context.lease,
+        lease_module=semantic_binding_context.module,
+        lease=semantic_binding_context.lease,
         http_module=http,
         adapter_module=semantic,
         audit_module=audit,

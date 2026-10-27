@@ -19,7 +19,7 @@ from s1.evaluation.decision3 import native_payload
 
 
 @pytest.fixture
-def context(monkeypatch):
+def semantic_binding_context(monkeypatch):
     monkeypatch.setattr(binding, "SOURCE_ONLY", False)
     monkeypatch.setattr(http, "SOURCE_ONLY", False)
     monkeypatch.setattr(audit, "SOURCE_ONLY", False)
@@ -184,18 +184,18 @@ def context(monkeypatch):
     )
 
 
-def test_source_gate_and_released_lease_required(context, monkeypatch):
+def test_source_gate_and_released_lease_required(semantic_binding_context, monkeypatch):
     monkeypatch.setattr(binding, "SOURCE_ONLY", True)
     with pytest.raises(ValueError, match="independent review"):
-        context.make()
+        semantic_binding_context.make()
     monkeypatch.setattr(binding, "SOURCE_ONLY", False)
-    context.module.SOURCE_ONLY = True
+    semantic_binding_context.module.SOURCE_ONLY = True
     with pytest.raises(ValueError, match="released lease"):
-        context.make()
+        semantic_binding_context.make()
 
 
-def test_sixteen_calls_bind_witness_raw_request_and_response(context):
-    instance = context.make()
+def test_sixteen_calls_bind_witness_raw_request_and_response(semantic_binding_context):
+    instance = semantic_binding_context.make()
     for index in range(16):
         request = payload(2)
         request["state"] = {"sequence": index}
@@ -205,85 +205,96 @@ def test_sixteen_calls_bind_witness_raw_request_and_response(context):
         assert list(parsed["answers"]) == list(request["questions"])
         assert row["http_body_sha256"] == hashlib.sha256(body).hexdigest()
         assert row["response_sha256"] == hashlib.sha256(response).hexdigest()
-        assert row["witness_receipt"] == context.receipts[index]
-        assert context.bindings[index]["original_request"] == request
-        assert context.bindings[index]["call"] == index + 1
-        assert context.bindings[index]["named_response"] == parsed
-        assert context.bindings[index]["witness_receipt"] == context.receipts[index]
-        assert context.bindings[index]["http_body_sha256"] == row["http_body_sha256"]
-        assert context.bindings[index]["response_sha256"] == row["response_sha256"]
+        assert row["witness_receipt"] == semantic_binding_context.receipts[index]
+        assert semantic_binding_context.bindings[index]["original_request"] == request
+        assert semantic_binding_context.bindings[index]["call"] == index + 1
+        assert semantic_binding_context.bindings[index]["named_response"] == parsed
         assert (
-            binding.verify_client_exchange(context.bindings[index], body, response)["status"]
+            semantic_binding_context.bindings[index]["witness_receipt"]
+            == semantic_binding_context.receipts[index]
+        )
+        assert (
+            semantic_binding_context.bindings[index]["http_body_sha256"] == row["http_body_sha256"]
+        )
+        assert semantic_binding_context.bindings[index]["response_sha256"] == row["response_sha256"]
+        assert (
+            binding.verify_client_exchange(
+                semantic_binding_context.bindings[index], body, response
+            )["status"]
             == "provided_bytes_match"
         )
         if index == 0:
             with pytest.raises(ValueError, match="client byte hashes"):
                 binding.verify_client_exchange(
-                    context.bindings[index],
+                    semantic_binding_context.bindings[index],
                     json.dumps(request, separators=(",", ":")).encode(),
                     response,
                 )
             with pytest.raises(ValueError, match="client byte hashes"):
-                binding.verify_client_exchange(context.bindings[index], body, response + b" ")
+                binding.verify_client_exchange(
+                    semantic_binding_context.bindings[index], body, response + b" "
+                )
         instance.service.delivery(row, delivered=True)
-    assert len(context.base.calls) == len(context.receipts) == 16
-    assert len({item["directory"] for item in context.receipts}) == 16
+    assert len(semantic_binding_context.base.calls) == len(semantic_binding_context.receipts) == 16
+    assert len({item["directory"] for item in semantic_binding_context.receipts}) == 16
     with pytest.raises(ValueError, match="request limit"):
         instance.service.handle(json.dumps(payload(2)).encode(), started=time.monotonic())
     instance.close()
-    assert context.behavior["adapter_closed"] and instance.closed
+    assert semantic_binding_context.behavior["adapter_closed"] and instance.closed
 
 
 @pytest.mark.parametrize("mismatch", ["native", "raw", "delta", "bytes", "vocab", "vocab_sha"])
-def test_inconsistent_witness_never_prepares_response(context, mismatch):
-    instance = context.make()
-    context.behavior["mismatch"] = mismatch
+def test_inconsistent_witness_never_prepares_response(semantic_binding_context, mismatch):
+    instance = semantic_binding_context.make()
+    semantic_binding_context.behavior["mismatch"] = mismatch
     with pytest.raises(ValueError):
         instance.service.handle(json.dumps(payload(2)).encode(), started=time.monotonic())
     assert instance.service.failed
-    assert len(context.receipts) == 1
-    assert not any(event["status"] == "prepared" for event in context.events)
+    assert len(semantic_binding_context.receipts) == 1
+    assert not any(event["status"] == "prepared" for event in semantic_binding_context.events)
     instance.close()
 
 
-def test_unknown_operation_is_never_delivered_even_if_injected_provider_is_wrong(context):
-    instance = context.make()
+def test_unknown_operation_is_never_delivered_even_if_injected_provider_is_wrong(
+    semantic_binding_context,
+):
+    instance = semantic_binding_context.make()
     request = payload(2)
     request["questions"]["operation"]["criteria"]["SCROLL_DOWN"] = "scroll"
     with pytest.raises(ValueError, match="unknown semantic operation"):
         instance.service.handle(json.dumps(request).encode(), started=time.monotonic())
     assert instance.service.failed
-    assert not context.bindings
+    assert not semantic_binding_context.bindings
     instance.close()
 
 
-def test_close_refuses_a_held_lease_even_when_fd_is_absent(context):
-    instance = context.make()
-    context.lease.held = object()
+def test_close_refuses_a_held_lease_even_when_fd_is_absent(semantic_binding_context):
+    instance = semantic_binding_context.make()
+    semantic_binding_context.lease.held = object()
     with pytest.raises(ValueError, match="lease still held"):
         instance.close()
-    assert not context.behavior["adapter_closed"]
-    context.lease.held = None
+    assert not semantic_binding_context.behavior["adapter_closed"]
+    semantic_binding_context.lease.held = None
     instance.close()
 
 
-def test_close_refuses_active_or_unconfirmed_resources(context):
-    instance = context.make()
+def test_close_refuses_active_or_unconfirmed_resources(semantic_binding_context):
+    instance = semantic_binding_context.make()
     assert instance.service.lock.acquire(blocking=False)
     try:
         with pytest.raises(ValueError, match="request or delivery still active"):
             instance.close()
     finally:
         instance.service.lock.release()
-    context.behavior["listener_closed"] = False
+    semantic_binding_context.behavior["listener_closed"] = False
     with pytest.raises(ValueError, match="listener closure"):
         instance.close()
-    assert not context.behavior["adapter_closed"]
-    context.behavior["listener_closed"] = True
-    context.lease.fd = 42
+    assert not semantic_binding_context.behavior["adapter_closed"]
+    semantic_binding_context.behavior["listener_closed"] = True
+    semantic_binding_context.lease.fd = 42
     with pytest.raises(ValueError, match="lease still held"):
         instance.close()
-    context.lease.fd = None
+    semantic_binding_context.lease.fd = None
     _response, row = instance.service.handle(
         json.dumps(payload(2)).encode(), started=time.monotonic()
     )
@@ -291,26 +302,26 @@ def test_close_refuses_active_or_unconfirmed_resources(context):
         instance.close()
     instance.service.delivery(row, delivered=True)
     instance.close()
-    assert context.behavior["adapter_closed"]
+    assert semantic_binding_context.behavior["adapter_closed"]
     with pytest.raises(ValueError, match="open browser binding"):
         instance.close()
 
 
-def test_close_releases_binding_owned_runtime_reference(context):
+def test_close_releases_binding_owned_runtime_reference(semantic_binding_context):
     import gc
     import weakref
 
-    runtime = weakref.ref(context.base.runtime)
-    instance = context.make()
+    runtime = weakref.ref(semantic_binding_context.base.runtime)
+    instance = semantic_binding_context.make()
     instance.close()
-    context.base.runtime = None
+    semantic_binding_context.base.runtime = None
     gc.collect()
     assert runtime() is None
     assert instance.service.backend is None and instance.wrapper is None
 
 
-def test_private_artifact_sink_failure_refuses_delivery(context):
-    instance = context.make()
+def test_private_artifact_sink_failure_refuses_delivery(semantic_binding_context):
+    instance = semantic_binding_context.make()
 
     def failed_sink(_record):
         raise OSError("private sink unavailable")
@@ -319,12 +330,12 @@ def test_private_artifact_sink_failure_refuses_delivery(context):
     with pytest.raises(OSError, match="private sink unavailable"):
         instance.service.handle(json.dumps(payload(2)).encode(), started=time.monotonic())
     assert instance.service.failed and instance.service.pending is None
-    assert context.events[-1]["status"] == "failed"
+    assert semantic_binding_context.events[-1]["status"] == "failed"
     instance.close()
 
 
-def test_real_loopback_two_calls_bind_supplied_client_bytes(context):
-    instance = context.make(max_requests=2)
+def test_real_loopback_two_calls_bind_supplied_client_bytes(semantic_binding_context):
+    instance = semantic_binding_context.make(max_requests=2)
     server = http.loopback_server(instance.service)
     thread = threading.Thread(target=server.serve_forever)
     thread.start()
@@ -345,7 +356,9 @@ def test_real_loopback_two_calls_bind_supplied_client_bytes(context):
                 raw = response.read()
                 assert response.status == 200
                 assert (
-                    binding.verify_client_exchange(context.bindings[index], body, raw)["status"]
+                    binding.verify_client_exchange(
+                        semantic_binding_context.bindings[index], body, raw
+                    )["status"]
                     == "provided_bytes_match"
                 )
             finally:
@@ -355,8 +368,8 @@ def test_real_loopback_two_calls_bind_supplied_client_bytes(context):
         thread.join(timeout=5)
         server.server_close()
     assert not thread.is_alive()
-    assert len(context.receipts) == len(context.bindings) == 2
-    assert [event["status"] for event in context.events] == [
+    assert len(semantic_binding_context.receipts) == len(semantic_binding_context.bindings) == 2
+    assert [event["status"] for event in semantic_binding_context.events] == [
         "prepared",
         "socket_write_returned",
         "prepared",
@@ -369,7 +382,7 @@ pytest_plugins = ("test_jev_decision3_semantic_operation_adapter",)
 
 
 def test_real_semantic_adapter_and_audit_through_http_binding(
-    context, synthetic, monkeypatch, tmp_path
+    semantic_binding_context, synthetic, monkeypatch, tmp_path
 ):
     """Exercise the complete invented CPU path; no source or GPU provenance is implied."""
     import jev_decision3_semantic_operation_adapter as semantic
@@ -404,8 +417,8 @@ def test_real_semantic_adapter_and_audit_through_http_binding(
         deltas,
         hashes,
         Torch,
-        lease_module=context.module,
-        lease=context.lease,
+        lease_module=semantic_binding_context.module,
+        lease=semantic_binding_context.lease,
         http_module=http,
         adapter_module=semantic,
         audit_module=audit,
