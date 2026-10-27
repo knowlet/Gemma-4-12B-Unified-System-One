@@ -3,9 +3,8 @@
 import copy
 from html.parser import HTMLParser
 
+import jev_decision3_link_navigation_scenarios as navigation
 import pytest
-
-from scripts import jev_decision3_link_navigation_scenarios as navigation
 
 
 class Anchors(HTMLParser):
