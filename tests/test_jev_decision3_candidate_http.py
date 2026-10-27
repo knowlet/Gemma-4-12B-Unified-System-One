@@ -18,7 +18,12 @@ def setup(monkeypatch):
     monkeypatch.setattr(candidate_http, "SOURCE_ONLY", False)
     receipts, events, phases = [], [], []
     delivered = threading.Event()
-    behavior = {"invalid_witness": False, "no_witness": False, "identity_changed": False}
+    behavior = {
+        "invalid_witness": False,
+        "no_witness": False,
+        "identity_changed": False,
+        "replay_witness": False,
+    }
 
     class Backend(FakeNative):
         def __init__(self):
@@ -28,7 +33,16 @@ def setup(monkeypatch):
         def predict(self, request, *, deadline=None, evidence_sink=None):
             result = super().predict(request, deadline=deadline, evidence_sink=evidence_sink)
             if not behavior["no_witness"]:
-                receipts.append({"call": len(receipts) + 1, "sha256": "a" * 64})
+                if behavior["replay_witness"]:
+                    receipts.append(copy.deepcopy(receipts[-1]))
+                else:
+                    receipts.append(
+                        {
+                            "call": len(receipts) + 1,
+                            "sha256": "a" * 64,
+                            "directory": f"/synthetic/call-{len(receipts):04d}",
+                        }
+                    )
             return result
 
     backend = Backend()
@@ -362,3 +376,85 @@ def test_identity_bound_at_service_initialization_before_first_forward(setup):
     with pytest.raises(ValueError, match="owner identity changed"):
         service.handle(json.dumps(payload(2)).encode(), started=time.monotonic())
     assert not setup.backend.calls
+
+
+@pytest.mark.parametrize("change", ["clear", "replace", "mutate"])
+def test_witness_history_must_continue_unmodified_between_calls(setup, change):
+    service = setup.make()
+    body = json.dumps(payload(2)).encode()
+    _, first = service.handle(body, started=time.monotonic())
+    service.delivery(first, delivered=True)
+    if change == "clear":
+        setup.receipts.clear()
+    elif change == "replace":
+        setup.receipts[:] = [{"call": 99, "sha256": "b" * 64, "directory": "/synthetic/other"}]
+    else:
+        setup.receipts[0]["sha256"] = "b" * 64
+    with pytest.raises(ValueError, match="witness snapshot changed between calls"):
+        service.handle(body, started=time.monotonic())
+    assert service.failed and len(setup.backend.calls) == 1
+    assert setup.events[-1]["status"] == "failed"
+
+
+def test_reused_receipt_directory_rejected_even_if_appended(setup):
+    service = setup.make()
+    body = json.dumps(payload(2)).encode()
+    _, first = service.handle(body, started=time.monotonic())
+    service.delivery(first, delivered=True)
+    setup.behavior["replay_witness"] = True
+    with pytest.raises(ValueError, match="duplicate witness receipt directory"):
+        service.handle(body, started=time.monotonic())
+    assert service.failed and len(setup.backend.calls) == 2
+    assert [event["status"] for event in setup.events] == [
+        "prepared",
+        "socket_write_returned",
+        "failed",
+    ]
+
+
+def test_identical_witness_hashes_can_have_distinct_receipt_directories(setup):
+    service = setup.make()
+    body = json.dumps(payload(2)).encode()
+    for _ in range(2):
+        _, row = service.handle(body, started=time.monotonic())
+        service.delivery(row, delivered=True)
+    assert setup.receipts[0]["sha256"] == setup.receipts[1]["sha256"]
+    assert setup.receipts[0]["directory"] != setup.receipts[1]["directory"]
+    assert not service.failed
+
+
+def test_witness_history_modified_during_preparation_cannot_be_returned(setup):
+    service = setup.make()
+    original_sink = service.event_sink
+
+    def changing_sink(row):
+        original_sink(row)
+        if row["status"] == "prepared":
+            setup.receipts.clear()
+
+    service.event_sink = changing_sink
+    with pytest.raises(ValueError, match="witness snapshot changed while preparing"):
+        service.handle(json.dumps(payload(2)).encode(), started=time.monotonic())
+    assert service.failed
+    assert [event["status"] for event in setup.events] == ["prepared", "failed"]
+
+
+def test_initial_snapshot_must_have_unique_receipt_directories(setup):
+    setup.receipts.extend(
+        [
+            {"directory": "/synthetic/call-0000", "sha256": "a" * 64},
+            {"directory": "/synthetic/call-0000", "sha256": "b" * 64},
+        ]
+    )
+    with pytest.raises(ValueError, match="duplicate witness receipt directory"):
+        setup.make()
+
+
+@pytest.mark.parametrize(
+    "directory",
+    ["relative/path", "/synthetic/./call-0000", "/synthetic/../call-0000", "//synthetic/call-0000"],
+)
+def test_witness_directory_must_use_canonical_absolute_spelling(setup, directory):
+    setup.receipts.append({"directory": directory, "sha256": "a" * 64})
+    with pytest.raises(ValueError, match="canonical absolute witness"):
+        setup.make()

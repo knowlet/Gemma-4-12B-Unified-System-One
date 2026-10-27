@@ -19,6 +19,7 @@ import socket
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
 
 import jev_decision3_browser_wire as wire
 from jev_decision3_browser_worker import DeadlineBackend
@@ -120,6 +121,7 @@ class CandidateHTTP:
         self.pending = None
         self.lock = threading.Lock()
         self.identity = self._authenticate("initialized")
+        self._expected_witness_snapshot = _encode(self._snapshot())
 
     def _authenticate(self, phase):
         self.backend.lease.check()
@@ -129,6 +131,29 @@ class CandidateHTTP:
         )
         _encode(identity)
         return identity
+
+    def _snapshot(self):
+        """Detach the ordered witness history and require unique receipt locations."""
+        raw = self.witness_snapshot()
+        _need(type(raw) is list and len(raw) <= 32, "bounded witness snapshot required")
+        snapshot = copy.deepcopy(raw)
+        directories = []
+        for receipt in snapshot:
+            _need(
+                type(receipt) is dict
+                and bool(receipt)
+                and type(receipt.get("directory")) is str
+                and bool(receipt["directory"])
+                and not receipt["directory"].startswith("//")
+                and Path(receipt["directory"]).is_absolute()
+                and str(Path(receipt["directory"])) == receipt["directory"]
+                and ".." not in Path(receipt["directory"]).parts,
+                "canonical absolute witness receipt directory required",
+            )
+            directories.append(receipt["directory"])
+        _need(len(set(directories)) == len(directories), "duplicate witness receipt directory")
+        _encode(snapshot)
+        return snapshot
 
     def handle(self, body, *, started):
         """Prepare a response; delivery is separately recorded by the handler."""
@@ -157,13 +182,11 @@ class CandidateHTTP:
                 _need(0 <= elapsed < TIMEOUT_SECONDS, "HTTP cooperative deadline exceeded")
 
             check()
-            before = self.witness_snapshot()
+            before = self._snapshot()
             _need(
-                type(before) is list and len(before) <= 32,
-                "bounded ordered witness receipt snapshot required",
+                _encode(before) == self._expected_witness_snapshot,
+                "witness snapshot changed between calls",
             )
-            before = copy.deepcopy(before)
-            _encode(before)
             identity = self._authenticate("before-request")
             _need(_encode(identity) == _encode(self.identity), "owner identity changed")
             payload = _parse(body)
@@ -179,11 +202,9 @@ class CandidateHTTP:
             )
             legacy = adapter.predict(payload)
             check()
-            after = self.witness_snapshot()
+            after = self._snapshot()
             _need(
-                type(after) is list
-                and len(after) == len(before) + 1
-                and _encode(after[:-1]) == _encode(before),
+                len(after) == len(before) + 1 and _encode(after[:-1]) == _encode(before),
                 "one fresh same-call witness receipt required",
             )
             receipt = copy.deepcopy(after[-1])
@@ -214,6 +235,12 @@ class CandidateHTTP:
             )
             self.event_sink(copy.deepcopy(row))
             check()
+            _need(
+                _encode(self._snapshot()) == _encode(after),
+                "witness snapshot changed while preparing response",
+            )
+            check()
+            self._expected_witness_snapshot = _encode(after)
             self.pending = copy.deepcopy(row)
             return response, row
         except BaseException as error:
