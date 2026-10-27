@@ -1,6 +1,6 @@
 # Decision3 可變操作選項訓練資料收集
 
-此收集器最初用來補足固定 K=8 訓練資料與實際可變選項之間的覆蓋缺口。checked-control 設定提供勾選控制項與後續欄位操作；goal-routed 設定另涵蓋依目標選擇下一個操作的場景。各設定分別驗證，均不提供模型品質分數。
+此收集器最初用來補足固定 K=8 訓練資料與實際可變選項之間的覆蓋缺口。checked-control 設定提供勾選控制項與後續欄位操作；goal-routed 設定另涵蓋依目標選擇下一個操作的場景。獨立的 text-history 收集器補充目前文字值與後續操作的訓練場景。各設定分別驗證，均不提供模型品質分數。
 
 [收集器](../scripts/jev_decision3_affordance_collection.py)透過 `--scenario-profile` 明確選擇 train-only 場景來源：
 
@@ -9,6 +9,8 @@
 | `affordance-v1`（預設） | [原始場景模組](../scripts/jev_decision3_affordance_scenarios.py) | 四個可變選項場景 | 4、7、8 |
 | `checked-control-progress-v1`（須明確選定） | [checked-control 場景模組](../scripts/jev_decision3_checked_control_scenarios.py) | `radio-two`、`radio-three` | 6 |
 | `goal-routed-control-v1`（須明確選定） | [依目標選擇操作的場景模組](../scripts/jev_decision3_goal_routed_control_scenarios.py) | 每個種子 12 個場景，初始 CLICK／TYPE_TEXT／SELECT 各 4 個 | 6 |
+
+`text-history-control-v1` 必須使用獨立的 [text-history 收集器](../scripts/jev_decision3_text_history_collection.py)及 [場景模組](../scripts/jev_decision3_text_history_control_scenarios.py)，不適用上述原收集器。每個種子產生 33 個 train-only 場景，計畫要求操作選項數 K=7。
 
 預設設定保留原來四個場景與 K4／K7／K8 的完整要求：
 
@@ -22,6 +24,8 @@
 新設定的兩個場景族各有兩個或三個 radio 控制項，另有文字欄位、選單與送出按鈕，不需要捲動。種子會輪替可見標籤、所需值與 DOM 順序。教師路徑依實際狀態選取尚未勾選的目標 radio，再填寫、選取、送出，最後重新驗證 DONE；已勾選的 radio 仍保持可見且可點擊。研究依據與資料界線見 [checked-control 狀態進度設計](research/jev-checked-control-progress.md)。
 
 `goal-routed-control-v1` 補足固定 radio→文字→選單路徑的覆蓋缺口：radio 可能與目標無關，也可能已符合要求；教師只操作尚未完成且目標有要求的欄位，再送出並驗證實際記錄。普通表單起始值、目標文字順序與 DOM 排列會變化；可見且可點的控制項保留在原始選項中。場景網址使用不包含路徑類別的識別碼。這份設定沒有加入合成操作歷史，也不修改停滯規則。計畫中的新場景仍須完成真實瀏覽器收集與獨立 admission，才能成為資料證據。
+
+`text-history-control-v1` 組合文字欄位初始為空白、錯值或目標值，以及尚待送出、選取 radio 或選單的情況；另有控制項變更後清空或改寫文字的反例。教師依目前實際欄位狀態選擇尚未完成的操作，因此既不一律重複輸入，也不因歷史曾輸入而禁止必要的再次輸入。場景模組不製造操作歷史；實際 history 必須由原始 Agent 執行產生，並於 admission 核對。每個場景的作者選單包含 12、16 或 24 個選項，這些數字不是實際觀測的模型選項數；計畫中的 K7 與場景軌跡仍須由真實收集及獨立驗證證明。
 
 K 由原始 publisher 根據實際觀測建立，不注入或刪減選項。表中的數字是各設定的收集計畫要求；只有獨立驗證通過，才能確認實際涵蓋。每種 K 都須包含繼續操作與經驗證的完成狀態，新設定的 K6 不會放寬預設設定的 K4／K7／K8 要求。
 
@@ -47,10 +51,10 @@ K 由原始 publisher 根據實際觀測建立，不注入或刪減選項。表�
 
 | 欄位 | 用途 |
 | --- | --- |
-| `scenario_profile` | 明確選定上表中的設定；省略時沿用 `affordance-v1` |
+| `scenario_profile` | 明確選定收集器支援的設定；省略時沿用 `affordance-v1` |
 | `scenario_schema_id` | 所選場景模組的獨立 schema |
 | `scenario_namespace` | 所選場景模組的獨立訓練身分範圍 |
-| `expected_menu_counts` | 預設為 `[4, 7, 8]`；兩個控制項設定為 `[6]`，仍須由真實觀測證明 |
+| `expected_menu_counts` | 預設為 `[4, 7, 8]`；checked-control 和 goal-routed 為 `[6]`，text-history 為 `[7]`，均須由真實觀測證明 |
 
 來源庫存包含收集器內的設定登錄與所選場景模組；新設定也固定原始模組，涵蓋共用輔助程式。重新規劃、收據、軌跡與 admission 都會核對設定身分；profile、schema 或 namespace 不符時，在教師或 DOM 重播前拒絕。缺少設定欄位的舊計畫只能解讀為原始場景，不能讓新 namespace 退回預設設定。新場景的 scenario、ancestor 及正規化目標雜湊仍須通過同一套排除清單，已曝光的評測案例與目標不得轉為訓練標籤。
 
@@ -77,6 +81,8 @@ python scripts/jev_decision3_affordance_collection.py \
 上述範例選擇新 checked-control 設定。若要使用原來四個場景，可指定 `--scenario-profile affordance-v1`；省略此參數也會保留原始預設。收集時必須沿用檢視過的場景設定及所有其他參數。
 
 若要選擇依目標決定操作的 12 個場景，改用 `--scenario-profile goal-routed-control-v1`，並使用全新的輸出目錄與 collection ID。不同設定的計畫、收據及軌跡不可互換；新設定不會改寫先前已接受的 119 筆訓練資料或授權。
+
+若要選擇 text-history 場景，將範例的程式換成 `scripts/jev_decision3_text_history_collection.py`，設定 `--scenario-profile text-history-control-v1`，並指定全新的輸出目錄與 collection ID。先以其他同樣必要的參數產生並審查新的計畫，後續使用該計畫中的收集器與計畫雜湊；不可沿用舊收集器的執行 pins。
 
 檢視 `prospective.json` 後，保留完全相同的參數，再加上：
 
@@ -113,7 +119,9 @@ admitted = collection.admit_training_collection(
 rows = collection.compile_wire_projection(admitted)
 ```
 
-`expected_receipt_sha256` 是 `receipt.json` 原始檔案位元組的 SHA-256。Admission 會重驗來源與觀測設定、loopback 網路範圍、所有場景及步驟、原始 Agent history、CDP 命令歸屬、新鮮度與動作順序、實際 DOM 轉移、DONE 條件與瀏覽器關閉。遺失、重疊、未分配的命令或未完整涵蓋所選設定的 K 都會拒絕整批資料：預設要求恰為 K=4、7、8，新設定要求恰為 K=6。
+`expected_receipt_sha256` 是 `receipt.json` 原始檔案位元組的 SHA-256。Admission 會重驗來源與觀測設定、loopback 網路範圍、所有場景及步驟、原始 Agent history、CDP 命令歸屬、新鮮度與動作順序、實際 DOM 轉移、DONE 條件與瀏覽器關閉。遺失、重疊、未分配的命令或未完整涵蓋所選設定的 K 都會拒絕整批資料：預設要求恰為 K=4、7、8，checked-control 和 goal-routed 要求恰為 K=6，text-history 要求恰為 K=7。
+
+Text-history 收集的 admission 與投影使用同一份未修改來源樹中的 `import jev_decision3_text_history_collection as collection`；其餘參數及雜湊核對流程相同。該設定要求每個完成的場景自然觀測到 K7，並核對連續 history 與真實動作；合成測試中的 history 不足以證明這些條件已在瀏覽器達成。
 
 投影保留完整原始 `payload`、欄位及選項順序、未使用的 head 與只有單一選項的 head，不改寫 `generated-actions-none` 別名。`teacher_choice`、`valid_next_targets`、`loss_mask` 與證據識別碼位於原始請求之外；只有 operation 參與此收集格式的 loss，target 與文字仍保留作為執行證據。無 target 的操作使用 `target=null`；`BLOCKED` 可留在選項中，但不能成為正向訓練標籤。
 
