@@ -5,6 +5,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -371,3 +372,63 @@ def test_token_escaping_never_written(prepared, tmp_path):
     token = "X" * 40
     with pytest.raises(ValueError, match="private token"):
         actor._no_secret(('"' + r"\u0058" * 40 + '"').encode(), token)
+
+
+def test_source_fifo_refused_without_blocking(tmp_path):
+    fifo = tmp_path / "synthetic-source"
+    os.mkfifo(fifo, 0o600)
+    script = """\
+import sys
+sys.path.insert(0, 'scripts')
+import jev_feedback_pair_actor as actor
+try:
+    actor._read(sys.argv[1], '0' * 64)
+except ValueError as error:
+    assert 'bounded file required' in str(error)
+else:
+    raise AssertionError('FIFO unexpectedly accepted')
+"""
+    subprocess.run(
+        [sys.executable, "-B", "-s", "-c", script, str(fifo)],
+        cwd=ROOT,
+        check=True,
+        timeout=3,
+    )
+
+
+@pytest.mark.parametrize("reader_open", [False, True])
+def test_journal_fifo_refused_without_blocking(tmp_path, reader_open):
+    fifo = tmp_path / "synthetic-journal"
+    os.mkfifo(fifo, 0o600)
+    script = """\
+import errno, sys
+sys.path.insert(0, 'scripts')
+import jev_feedback_pair_actor as actor
+try:
+    actor._append(sys.argv[1], b'{}')
+except OSError as error:
+    assert sys.argv[2] == 'no-reader' and error.errno == errno.ENXIO
+except ValueError as error:
+    assert sys.argv[2] == 'reader' and 'ordinary journal required' in str(error)
+else:
+    raise AssertionError('FIFO unexpectedly accepted')
+"""
+    fd = os.open(fifo, os.O_RDONLY | os.O_NONBLOCK) if reader_open else None
+    try:
+        subprocess.run(
+            [
+                sys.executable,
+                "-B",
+                "-s",
+                "-c",
+                script,
+                str(fifo),
+                "reader" if reader_open else "no-reader",
+            ],
+            cwd=ROOT,
+            check=True,
+            timeout=3,
+        )
+    finally:
+        if fd is not None:
+            os.close(fd)

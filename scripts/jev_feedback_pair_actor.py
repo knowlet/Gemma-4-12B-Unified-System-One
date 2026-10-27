@@ -103,7 +103,7 @@ def _absolute(value):
 def _read(path, expected, limit=_MAX_SOURCE):
     _need(type(expected) is str and re.fullmatch(r"[0-9a-f]{64}", expected), "SHA256 required")
     path = _absolute(str(path))
-    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     try:
         before = os.fstat(fd)
         _need(stat.S_ISREG(before.st_mode) and 0 < before.st_size <= limit, "bounded file required")
@@ -182,7 +182,7 @@ def _write_new(path, raw):
 
 def _append(path, raw):
     _need(type(raw) is bytes and len(raw) <= 65536, "bounded private event required")
-    fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_NOFOLLOW)
+    fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_NOFOLLOW | os.O_NONBLOCK)
     try:
         _need(stat.S_ISREG(os.fstat(fd).st_mode), "ordinary journal required")
         with os.fdopen(fd, "ab", closefd=False) as stream:

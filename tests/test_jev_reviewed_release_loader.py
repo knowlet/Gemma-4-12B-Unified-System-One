@@ -4,7 +4,9 @@ import hashlib
 import importlib.util
 import os
 import py_compile
+import subprocess
 import sys
+from pathlib import Path
 
 import jev_decision3_candidate_http_owner as owner
 import pytest
@@ -157,3 +159,26 @@ def test_source_does_not_inherit_loader_future_annotations(sources):
     pins = create(b"T = int\ndef example(value: T):\n    return value\n")
     module = load(release, pins)
     assert module.example.__annotations__ == {"value": int}
+
+
+def test_fifo_reviewed_source_refused_without_blocking(tmp_path):
+    fifo = tmp_path / "synthetic-held.py"
+    os.mkfifo(fifo, 0o600)
+    script = """\
+import sys
+from pathlib import Path
+sys.path.insert(0, 'scripts')
+import jev_decision3_candidate_http_owner as owner
+try:
+    owner._read_reviewed_source(Path(sys.argv[1]), '0' * 64)
+except ValueError as error:
+    assert 'bounded ordinary pinned source' in str(error)
+else:
+    raise AssertionError('FIFO unexpectedly accepted')
+"""
+    subprocess.run(
+        [sys.executable, "-B", "-s", "-c", script, str(fifo)],
+        cwd=Path(__file__).resolve().parents[1],
+        check=True,
+        timeout=3,
+    )

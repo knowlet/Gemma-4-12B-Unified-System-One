@@ -578,7 +578,7 @@ def _drop_exception_frames(error):
 def _read_reviewed_source(path, expected):
     """Read and authenticate the same bounded bytes that will be executed."""
     _need(path.is_absolute() and not path.is_symlink(), "ordinary pinned source required")
-    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     try:
         before = os.fstat(fd)
         _need(
