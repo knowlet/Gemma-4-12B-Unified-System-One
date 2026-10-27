@@ -23,6 +23,7 @@ import json
 import os
 import re
 import secrets
+import stat
 import subprocess
 import sys
 import threading
@@ -574,6 +575,34 @@ def _drop_exception_frames(error):
     return stack
 
 
+def _read_reviewed_source(path, expected):
+    """Read and authenticate the same bounded bytes that will be executed."""
+    _need(path.is_absolute() and not path.is_symlink(), "ordinary pinned source required")
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        before = os.fstat(fd)
+        _need(
+            stat.S_ISREG(before.st_mode) and 0 < before.st_size <= 8 * 1024**2,
+            "bounded ordinary pinned source required",
+        )
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            raw = stream.read(8 * 1024**2 + 1)
+        after = os.fstat(fd)
+        current = os.stat(path, follow_symlinks=False)
+        fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
+        _need(
+            tuple(getattr(before, field) for field in fields)
+            == tuple(getattr(after, field) for field in fields)
+            == tuple(getattr(current, field) for field in fields)
+            and len(raw) == before.st_size
+            and _sha(raw) == expected,
+            "selected source bytes changed",
+        )
+        return raw
+    finally:
+        os.close(fd)
+
+
 def _load_reviewed_release(path, held_name, pins, module_name):
     """Load an independently pinned source-identical release, never flip a gate."""
     held = Path(__file__).absolute().parent / held_name
@@ -582,8 +611,9 @@ def _load_reviewed_release(path, held_name, pins, module_name):
         str(held) in pins and str(released) in pins and released != held,
         "held and independently reviewed release source pins required",
     )
-    _verify_source_pins({str(held): pins[str(held)], str(released): pins[str(released)]})
-    source, actual = held.read_bytes(), released.read_bytes()
+    held_pin, release_pin = pins[str(held)], pins[str(released)]
+    source = _read_reviewed_source(held, held_pin)
+    actual = _read_reviewed_source(released, release_pin)
     marker = b"SOURCE_ONLY = True"
     _need(
         source.count(marker) == 1 and actual == source.replace(marker, b"SOURCE_ONLY = False", 1),
@@ -595,11 +625,18 @@ def _load_reviewed_release(path, held_name, pins, module_name):
     _need(module_name not in sys.modules, "fresh release module name required")
     sys.modules[module_name] = module
     try:
-        spec.loader.exec_module(module)
+        exec(compile(actual, str(released), "exec", dont_inherit=True), module.__dict__)
+        _need(
+            _read_reviewed_source(held, held_pin) == source
+            and _read_reviewed_source(released, release_pin) == actual,
+            "reviewed source changed during import",
+        )
+        _need(sys.modules.get(module_name) is module, "released module identity changed")
+        _need(module.SOURCE_ONLY is False, "reviewed released module required")
     except BaseException:
-        del sys.modules[module_name]
+        if sys.modules.get(module_name) is module:
+            del sys.modules[module_name]
         raise
-    _need(module.SOURCE_ONLY is False, "reviewed released module required")
     return module
 
 
