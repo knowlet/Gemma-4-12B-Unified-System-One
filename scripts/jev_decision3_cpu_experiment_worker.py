@@ -25,6 +25,8 @@ import jev_decision3_candidate_http_owner as common
 
 SOURCE_ONLY = True
 SCHEMA = "decision3-cpu-padding-experiment-plan-v1"
+SCHEMA_V2 = "decision3-cpu-padding-experiment-plan-v2"
+CGROUP_ROOT = Path("/sys/fs/cgroup")
 ROOT = Path(__file__).absolute().parent.parent
 SCRIPTS = ROOT / "scripts"
 CACHE = ROOT / "artifacts/jev-local-hf/hub"
@@ -50,6 +52,64 @@ def _need(condition, message):
         raise ValueError(message)
 
 
+def _profile(plan):
+    if plan.get("schema", SCHEMA) == SCHEMA:
+        return {"cpus": frozenset(range(15, 20)), "cpu_list": "15-19", "threads": 5}
+    _need(
+        plan.get("schema") == SCHEMA_V2 and type(plan.get("cpu_profile")) is str,
+        "explicit CPU profile required",
+    )
+    profiles = {
+        "cpu5": {"cpus": frozenset(range(15, 20)), "cpu_list": "15-19", "threads": 5},
+        "cpu10": {
+            "cpus": frozenset((*range(5, 10), *range(15, 20))),
+            "cpu_list": "5-9,15-19",
+            "threads": 10,
+        },
+    }
+    _need(plan["cpu_profile"] in profiles, "unknown CPU profile")
+    return profiles[plan["cpu_profile"]]
+
+
+def _parse_cpu_list(value):
+    _need(type(value) is str and len(value) <= 4096 and value, "bounded effective cpuset required")
+    result = set()
+    for item in value.split(","):
+        match = re.fullmatch(r"([0-9]+)(?:-([0-9]+))?", item)
+        _need(match is not None, "invalid effective cpuset")
+        start = int(match.group(1))
+        end = int(match.group(2) or start)
+        _need(0 <= start <= end < 4096, "bounded effective cpuset required")
+        result.update(range(start, end + 1))
+    return result
+
+
+def _cpu_limits(group, pid, profile):
+    _need(
+        type(group) is str and group.startswith("/") and ".." not in Path(group).parts,
+        "owned cgroup path required",
+    )
+    path = CGROUP_ROOT / group.lstrip("/")
+    _need(path.resolve().is_relative_to(CGROUP_ROOT.resolve()), "cgroup escaped root")
+    quota, period = map(int, (path / "cpu.max").read_text().split())
+    _need(
+        os.sched_getaffinity(pid) == profile["cpus"]
+        and _parse_cpu_list((path / "cpuset.cpus.effective").read_text().strip()) == profile["cpus"]
+        and (path / "memory.max").read_text().strip() == str(common.MEMORY_MAX)
+        and (path / "memory.swap.max").read_text().strip() == "0"
+        and period > 0
+        and quota == period * profile["threads"],
+        "actual worker CPU, memory and swap limits required",
+    )
+
+
+def _own_profile_cgroup(unit, profile):
+    group = common.systemd.cgroup_membership(os.getpid())
+    _need(group.endswith("/app.slice/" + unit), "selected unit cgroup required")
+    _cpu_limits(group, os.getpid(), profile)
+    return group
+
+
 def _source_set():
     names = [SCRIPTS / name for name in _HELD.values()]
     names += [SCRIPTS / name.replace(".py", "_release.py") for name in _HELD.values()]
@@ -69,6 +129,20 @@ def _source_set():
         Path(common.GPU_PYTHON_REAL),
     ]
     return {str(path) for path in names}
+
+
+def _release_path(name, schema):
+    _need(name in _HELD and schema in {SCHEMA, SCHEMA_V2}, "known release required")
+    suffix = "_v2_release.py" if schema == SCHEMA_V2 else "_release.py"
+    return SCRIPTS / (_HELD[name].removesuffix(".py") + suffix)
+
+
+def _source_set_v2():
+    names = _source_set()
+    for name in _HELD:
+        names.remove(str(_release_path(name, SCHEMA)))
+        names.add(str(_release_path(name, SCHEMA_V2)))
+    return names
 
 
 def _plan(path, expected):
@@ -99,9 +173,11 @@ def _plan(path, expected):
             "memory_floor_bytes",
             "rounds",
         }
-        and plan["schema"] == SCHEMA,
+        | ({"cpu_profile"} if plan.get("schema") == SCHEMA_V2 else set())
+        and plan["schema"] in {SCHEMA, SCHEMA_V2},
         "exact CPU experiment plan required",
     )
+    _profile(plan)
     _need(
         type(plan["unit"]) is str and re.fullmatch(r"jev-cpu-[0-9a-f]{32}\.service", plan["unit"]),
         "fresh unit required",
@@ -125,7 +201,7 @@ def _plan(path, expected):
     pins = plan["source_pins"]
     _need(
         type(pins) is dict
-        and set(pins) == _source_set()
+        and set(pins) == (_source_set_v2() if plan["schema"] == SCHEMA_V2 else _source_set())
         and all(type(v) is str and re.fullmatch(r"[0-9a-f]{64}", v) for v in pins.values()),
         "exact allowlisted source inventory required",
     )
@@ -462,7 +538,11 @@ def run(plan_path, plan_sha):
     if os.getpgrp() != os.getpid():
         os.setsid()
     _need(os.getpgrp() == os.getpid(), "isolated worker process group required")
-    group = common._own_cgroup(plan["unit"])
+    group = (
+        common._own_cgroup(plan["unit"])
+        if plan.get("schema", SCHEMA) == SCHEMA
+        else _own_profile_cgroup(plan["unit"], _profile(plan))
+    )
     invocation = os.environ.get("INVOCATION_ID", "")
     _need(re.fullmatch(r"[0-9a-f]{32}", invocation), "unit invocation required")
     common._verify_source_pins(plan["source_pins"])
@@ -499,26 +579,27 @@ def run(plan_path, plan_sha):
 
 def _run_after_go(plan, output, invocation, plan_sha, stage):
     stage("overlay")
+    threads = _profile(plan)["threads"]
     os.environ.update(
         {
             "HF_HUB_OFFLINE": "1",
             "TRANSFORMERS_OFFLINE": "1",
             "CUDA_VISIBLE_DEVICES": "",
             "TOKENIZERS_PARALLELISM": "false",
-            "OMP_NUM_THREADS": "5",
-            "MKL_NUM_THREADS": "5",
-            "OPENBLAS_NUM_THREADS": "5",
+            "OMP_NUM_THREADS": str(threads),
+            "MKL_NUM_THREADS": str(threads),
+            "OPENBLAS_NUM_THREADS": str(threads),
         }
     )
     common._verify_source_pins(plan["source_pins"])
     torch = common._bind_overlay(ROOT, plan["source_pins"])
-    torch.set_num_threads(5)
+    torch.set_num_threads(threads)
     torch.set_num_interop_threads(1)
     stage("model_load")
     manifest_sha = _verify_model_manifest(plan["source_pins"])
     publisher = _load_publisher(plan["source_pins"])
     candidate = common._load_reviewed_release(
-        str(SCRIPTS / "jev_decision3_cpu_padding_candidate_release.py"),
+        str(_release_path("candidate", plan.get("schema", SCHEMA))),
         "jev_decision3_cpu_padding_candidate.py",
         plan["source_pins"],
         "_cpu_padding_candidate_release",
@@ -534,6 +615,8 @@ def _run_after_go(plan, output, invocation, plan_sha, stage):
     _need(str(runtime.device) == "cpu" and runtime.fast is None, "plain CPU runtime required")
     result = _experiment(runtime, candidate, plan["rounds"], stage)
     stage("result_write")
+    if plan.get("schema") == SCHEMA_V2:
+        result["cpu_profile"] = plan["cpu_profile"]
     result["publisher_manifest_sha256"] = manifest_sha
     result["model_verification"] = (
         "publisher full verify at load; execution-time weights and external dependencies unverified"

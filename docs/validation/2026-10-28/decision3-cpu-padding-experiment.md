@@ -5,3 +5,5 @@
 按精確目標長度計算，不分組、原順序分組、長度分組分別需要 18316、17550、15410 個 padding slots；這只是一項幾何估算，不代表運算時間同比下降。現有 CPU 實驗與兩套 JevBench owner 的合成整合測試共 116 項通過，未載入真模型。實驗會保留各次完整機率與選擇，並比較不同模式結果；來源身分、實際資源、結束狀態和輸出仍須另行驗證。
 
 [Decision3 官方 batching 紀錄](https://github.com/vllm-project/semantic-router/blob/main/src/model-runtime/docs/records/decision3-batching.md)指出不同批次組合可能因數值捨入改變答案；該紀錄使用不同硬體和路徑，不能套用為 GX10 的測量。此候選與正式後端分開，沒有證明數值等價、速度改善、真實網站任務成功或 JevBench 表現。
+
+後續 v2 監督設定可明確選擇原五核心或十核心；十核心使用 CPU 5–9、15–19、1000% quota 與 10 個運算執行緒，其計畫及啟用副本與五核心實驗分離。worker 和 watcher 在執行時檢查所選核心、quota、記憶體和 swap；祖先 cgroup 的可讀配額及節流資料會個別記錄，缺失保持未知。兩個設定的合成整合測試共 160 項通過；這些檢查不證明 CPU 獨占或所有執行緒全程獲得完整配額。

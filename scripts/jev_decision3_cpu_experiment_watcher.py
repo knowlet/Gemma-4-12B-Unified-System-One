@@ -29,13 +29,14 @@ def _need(condition, message):
 
 
 def _unit_args(plan, plan_path, plan_sha):
+    profile = worker._profile(plan)
     properties = {
         "Type": "exec",
         "MemoryAccounting": "yes",
         "MemoryMax": str(common.MEMORY_MAX),
         "MemorySwapMax": "0",
-        "CPUQuota": "500%",
-        "AllowedCPUs": "15-19",
+        "CPUQuota": f"{profile['threads'] * 100}%",
+        "AllowedCPUs": profile["cpu_list"],
         "OOMPolicy": "kill",
         "KillMode": "control-group",
         "RuntimeMaxSec": str(plan["wall_seconds"]),
@@ -52,11 +53,11 @@ def _unit_args(plan, plan_path, plan_sha):
         *["--property=" + k + "=" + v for k, v in properties.items()],
         "/usr/bin/taskset",
         "-c",
-        "15-19",
+        profile["cpu_list"],
         plan["python"],
         "-B",
         "-s",
-        str(worker.SCRIPTS / "jev_decision3_cpu_experiment_worker_release.py"),
+        str(worker._release_path("worker", plan.get("schema", worker.SCHEMA))),
         "--plan",
         str(plan_path),
         "--plan-sha256",
@@ -117,8 +118,81 @@ def _bind(properties, hello, plan, plan_sha):
         "exact unit limits required",
     )
     _need(os.getpgid(hello["pid"]) == hello["pgid"], "worker process group changed")
-    shared._live_limits(group, hello["pid"])
+    if plan.get("schema", worker.SCHEMA) == worker.SCHEMA:
+        shared._live_limits(group, hello["pid"])
+    else:
+        worker._cpu_limits(group, hello["pid"], worker._profile(plan))
     return invocation, group
+
+
+def _cpu_observation(group):
+    """Best-effort bounded leaf/ancestor quota and throttling telemetry."""
+    try:
+        _need(
+            type(group) is str and group.startswith("/") and ".." not in Path(group).parts,
+            "owned cgroup path required",
+        )
+        root = worker.CGROUP_ROOT.resolve()
+        leaf = (root / group.lstrip("/")).resolve()
+        _need(leaf.is_relative_to(root), "cgroup escaped root")
+        levels = []
+        path = leaf
+        for level in range(64):
+
+            def read_bounded(name):
+                with (path / name).open("rb") as stream:
+                    data = stream.read(4097)
+                _need(len(data) <= 4096, "bounded cgroup telemetry required")
+                return data.decode("ascii").strip()
+
+            record = {"ancestor_level": level, "cpu_max": None, "cpu_stat": None}
+            try:
+                quota = read_bounded("cpu.max").split()
+                _need(
+                    len(quota) == 2
+                    and (quota[0] == "max" or quota[0].isdigit())
+                    and quota[1].isdigit()
+                    and int(quota[1]) > 0,
+                    "invalid quota telemetry",
+                )
+                record["cpu_max"] = " ".join(quota)
+                record["quota_status"] = "observed"
+            except FileNotFoundError:
+                record["quota_status"] = "root_missing" if path == root else "unverified"
+            except (OSError, ValueError, UnicodeError):
+                record["quota_status"] = "unverified"
+            try:
+                stats = {}
+                for line in read_bounded("cpu.stat").splitlines():
+                    fields = line.split()
+                    if len(fields) == 2 and fields[0] in {
+                        "nr_periods",
+                        "nr_throttled",
+                        "throttled_usec",
+                    }:
+                        _need(
+                            fields[0] not in stats and fields[1].isdigit(),
+                            "invalid throttle telemetry",
+                        )
+                        stats[fields[0]] = int(fields[1])
+                _need(
+                    set(stats) == {"nr_periods", "nr_throttled", "throttled_usec"},
+                    "incomplete throttle telemetry",
+                )
+                record["cpu_stat"] = stats
+                record["throttle_status"] = "observed"
+            except (OSError, ValueError, UnicodeError):
+                record["throttle_status"] = "unverified"
+            levels.append(record)
+            if path == root:
+                observed = all(
+                    item["quota_status"] == item["throttle_status"] == "observed" for item in levels
+                )
+                return {"status": "observed" if observed else "partial", "levels": levels}
+            path = path.parent
+        raise ValueError("too many cgroup ancestors")
+    except (OSError, ValueError, UnicodeError):
+        return {"status": "unverified"}
 
 
 def _recover_identity(output, plan, plan_sha):
@@ -235,12 +309,13 @@ def supervise(plan_path, plan_sha, report_dir):
     launched = stopped = bound = False
     failure = None
     started = time.monotonic()
+    next_cpu_observation = 0.0
     try:
         common._validate_interpreter(plan)
         common._verify_source_pins(plan["source_pins"])
         for name in ("worker", "watcher", "candidate"):
             held = worker.SCRIPTS / worker._HELD[name]
-            release = worker.SCRIPTS / worker._HELD[name].replace(".py", "_release.py")
+            release = worker._release_path(name, plan.get("schema", worker.SCHEMA))
             _verify_release(held, release, plan["source_pins"])
         common._append_event(
             events, {"event": "prelaunch", **common._observe(plan["memory_floor_bytes"])}
@@ -274,16 +349,22 @@ def supervise(plan_path, plan_sha, report_dir):
                 hello = common._decode(child._read_bounded(output / "hello.json", 4096))
                 _bind(properties, hello, plan, plan_sha)
                 bound = True
-                common._append_event(
-                    events,
-                    {
-                        "event": "binding_verified",
-                        "invocation": invocation,
-                        "pid": hello["pid"],
-                        "pgid": hello["pgid"],
-                        "cgroup": group,
-                    },
-                )
+                binding = {
+                    "event": "binding_verified",
+                    "invocation": invocation,
+                    "pid": hello["pid"],
+                    "pgid": hello["pgid"],
+                    "cgroup": group,
+                }
+                if plan.get("schema") == worker.SCHEMA_V2:
+                    binding["cpu_profile"] = plan["cpu_profile"]
+                    binding["cpu_list"] = worker._profile(plan)["cpu_list"]
+                common._append_event(events, binding)
+                if plan.get("schema") == worker.SCHEMA_V2:
+                    common._append_event(
+                        events, {"event": "cpu_observation", **_cpu_observation(group)}
+                    )
+                    next_cpu_observation = time.monotonic() + 10
                 child._publish_control(
                     output / "go.json",
                     child._encode(
@@ -296,6 +377,14 @@ def supervise(plan_path, plan_sha, report_dir):
                 )
             elif hello is not None and properties["MainPID"] != "0":
                 _bind(properties, hello, plan, plan_sha)
+                if (
+                    plan.get("schema") == worker.SCHEMA_V2
+                    and time.monotonic() >= next_cpu_observation
+                ):
+                    common._append_event(
+                        events, {"event": "cpu_observation", **_cpu_observation(group)}
+                    )
+                    next_cpu_observation = time.monotonic() + 10
             terminal = common._terminal_metadata(properties, invocation)
             if terminal is not None:
                 break

@@ -175,6 +175,7 @@ def make_plan(tmp_path, monkeypatch):
     run.mkdir()
     monkeypatch.setattr(worker, "EXPERIMENTS", base)
     monkeypatch.setattr(worker, "_source_set", lambda: {"/approved/source"})
+    monkeypatch.setattr(worker, "_source_set_v2", lambda: {"/approved/source"})
     plan = {
         "schema": worker.SCHEMA,
         "unit": "jev-cpu-" + "a" * 32 + ".service",
@@ -235,24 +236,32 @@ def test_reviewed_release_only_changes_gate(tmp_path):
         watcher._verify_release(held, released, pins)
 
 
+@pytest.mark.parametrize("profile_name,expected_threads", [(None, 5), ("cpu5", 5), ("cpu10", 10)])
 def test_worker_runs_complete_fake_model_and_writes_private_result(
-    tmp_path, monkeypatch, experiment
+    tmp_path, monkeypatch, experiment, profile_name, expected_threads
 ):
     runtime, module = experiment
     output = tmp_path / "worker"
     output.mkdir(mode=0o700)
     invocation = "b" * 32
     plan = {"output_dir": str(output), "unit": "synthetic.service", "source_pins": {}, "rounds": 4}
+    if profile_name is not None:
+        plan.update(schema=worker.SCHEMA_V2, cpu_profile=profile_name)
     monkeypatch.setattr(worker, "SOURCE_ONLY", False)
     monkeypatch.setattr(worker, "_plan", lambda *_: plan)
     monkeypatch.setattr(worker.os, "getpgrp", os.getpid)
     monkeypatch.setattr(worker.common, "_own_cgroup", lambda _: "/synthetic")
+    monkeypatch.setattr(worker, "_own_profile_cgroup", lambda _unit, _profile: "/synthetic")
     monkeypatch.setattr(worker.common, "_verify_source_pins", lambda _: None)
     monkeypatch.setattr(worker.common, "_validate_interpreter", lambda _: None)
     monkeypatch.setattr(worker.common.systemd, "boot_id", lambda: "boot")
     monkeypatch.setattr(worker.common.systemd, "process_identity", lambda _: {"startticks": 7})
     monkeypatch.setenv("INVOCATION_ID", invocation)
-    torch = SimpleNamespace(set_num_threads=lambda _: None, set_num_interop_threads=lambda _: None)
+    thread_calls = []
+    torch = SimpleNamespace(
+        set_num_threads=lambda value: thread_calls.append(("threads", value)),
+        set_num_interop_threads=lambda value: thread_calls.append(("interop", value)),
+    )
     monkeypatch.setattr(worker.common, "_bind_overlay", lambda *_: torch)
     monkeypatch.setattr(worker, "_verify_model_manifest", lambda *_: "manifest")
 
@@ -271,7 +280,13 @@ def test_worker_runs_complete_fake_model_and_writes_private_result(
         "_load_publisher",
         lambda *_: SimpleNamespace(D3=SimpleNamespace(from_pretrained=from_pretrained)),
     )
-    monkeypatch.setattr(worker.common, "_load_reviewed_release", lambda *_: module)
+    release_calls = []
+
+    def load_release(*args):
+        release_calls.append(args)
+        return module
+
+    monkeypatch.setattr(worker.common, "_load_reviewed_release", load_release)
     write = worker.common._write_new
 
     def write_and_go(path, data):
@@ -290,9 +305,22 @@ def test_worker_runs_complete_fake_model_and_writes_private_result(
 
     monkeypatch.setattr(worker.common, "_write_new", write_and_go)
     worker.run("synthetic", "c" * 64)
+    expected_release = (
+        "jev_decision3_cpu_padding_candidate_v2_release.py"
+        if profile_name
+        else "jev_decision3_cpu_padding_candidate_release.py"
+    )
+    assert Path(release_calls[0][0]).name == expected_release
+    assert thread_calls == [("threads", expected_threads), ("interop", 1)]
+    for name in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+        assert os.environ[name] == str(expected_threads)
     result = json.loads((output / "result.json").read_bytes())
     terminal = json.loads((output / "terminal.json").read_bytes())
     assert len(result["samples"]) == 20 and len(result["comparisons"]) == 12
+    if profile_name is None:
+        assert "cpu_profile" not in result
+    else:
+        assert result["cpu_profile"] == profile_name
     assert (
         terminal["result_sha256"]
         == hashlib.sha256((output / "result.json").read_bytes()).hexdigest()
@@ -942,3 +970,180 @@ def test_missing_markers_do_not_claim_a_failure_stage(tmp_path):
         "last_entered_stage": None,
         "failure_category": None,
     }
+
+
+@pytest.mark.parametrize("name", ["cpu5", "cpu10"])
+def test_v2_plan_requires_known_immutable_profile(tmp_path, monkeypatch, name):
+    plan, _path, save = make_plan(tmp_path, monkeypatch)
+    plan.update(schema=worker.SCHEMA_V2, cpu_profile=name)
+    assert worker._plan(*save(plan)) == plan
+    plan["cpu_profile"] = "arbitrary"
+    with pytest.raises(ValueError, match="unknown CPU profile"):
+        worker._plan(*save(plan))
+    plan.pop("cpu_profile")
+    with pytest.raises(ValueError, match="exact CPU experiment plan"):
+        worker._plan(*save(plan))
+
+
+def test_v1_plan_does_not_allow_profile_field(tmp_path, monkeypatch):
+    plan, _path, save = make_plan(tmp_path, monkeypatch)
+    plan["cpu_profile"] = "cpu10"
+    with pytest.raises(ValueError, match="exact CPU experiment plan"):
+        worker._plan(*save(plan))
+
+
+@pytest.mark.parametrize(
+    "name,cpulist,quota", [("cpu5", "15-19", "500%"), ("cpu10", "5-9,15-19", "1000%")]
+)
+def test_v2_unit_has_exact_profile_limits(name, cpulist, quota):
+    plan = {
+        "schema": worker.SCHEMA_V2,
+        "cpu_profile": name,
+        "unit": "synthetic.service",
+        "python": worker.common.GPU_PYTHON,
+        "wall_seconds": 600,
+    }
+    args = watcher._unit_args(plan, "/tmp/plan", "a" * 64)
+    assert "--property=CPUQuota=" + quota in args
+    assert "--property=AllowedCPUs=" + cpulist in args
+    assert args[args.index("/usr/bin/taskset") + 1 :][:2] == ["-c", cpulist]
+    assert "--property=MemoryMax=8589934592" in args
+    assert "--property=MemorySwapMax=0" in args
+    assert "--property=RuntimeMaxSec=600" in args
+
+
+@pytest.mark.parametrize("name", ["cpu5", "cpu10"])
+@pytest.mark.parametrize("fault", [None, "affinity", "cpuset", "quota", "memory", "swap"])
+def test_v2_checks_actual_cgroup_limits(tmp_path, monkeypatch, name, fault):
+    group = "/app.slice/synthetic.service"
+    cg = tmp_path / group.lstrip("/")
+    cg.mkdir(parents=True)
+    monkeypatch.setattr(worker, "CGROUP_ROOT", tmp_path)
+    profile = worker._profile({"schema": worker.SCHEMA_V2, "cpu_profile": name})
+    (cg / "cpu.max").write_text(f"{profile['threads'] * 100000} 100000")
+    (cg / "cpuset.cpus.effective").write_text(profile["cpu_list"])
+    (cg / "memory.max").write_text(str(worker.common.MEMORY_MAX))
+    (cg / "memory.swap.max").write_text("0")
+    affinity = set(profile["cpus"])
+    if fault == "affinity":
+        affinity.remove(min(affinity))
+    elif fault == "cpuset":
+        (cg / "cpuset.cpus.effective").write_text("15-19") if name == "cpu10" else (
+            cg / "cpuset.cpus.effective"
+        ).write_text("15-18")
+    elif fault == "quota":
+        (cg / "cpu.max").write_text("100000 100000")
+    elif fault == "memory":
+        (cg / "memory.max").write_text("max")
+    elif fault == "swap":
+        (cg / "memory.swap.max").write_text("1")
+    monkeypatch.setattr(worker.os, "sched_getaffinity", lambda _: affinity)
+    if fault is None:
+        worker._cpu_limits(group, 123, profile)
+    else:
+        with pytest.raises(ValueError, match="actual worker CPU"):
+            worker._cpu_limits(group, 123, profile)
+
+
+def test_v2_cpu_telemetry_records_ancestors_or_unverified(tmp_path, monkeypatch):
+    leaf = tmp_path / "app.slice" / "run.service"
+    leaf.mkdir(parents=True)
+    monkeypatch.setattr(worker, "CGROUP_ROOT", tmp_path)
+    for path, quota in (
+        (leaf, "1000000 100000"),
+        (leaf.parent, "500000 100000"),
+        (tmp_path, "max 100000"),
+    ):
+        (path / "cpu.max").write_text(quota)
+        (path / "cpu.stat").write_text("nr_periods 19\nnr_throttled 2\nthrottled_usec 345\n")
+    value = watcher._cpu_observation("/app.slice/run.service")
+    assert value["status"] == "observed"
+    assert [x["cpu_max"] for x in value["levels"]] == [
+        "1000000 100000",
+        "500000 100000",
+        "max 100000",
+    ]
+    assert value["levels"][1]["cpu_stat"]["throttled_usec"] == 345
+    (leaf.parent / "cpu.stat").unlink()
+    value = watcher._cpu_observation("/app.slice/run.service")
+    assert value["status"] == "partial"
+    assert value["levels"][0]["quota_status"] == "observed"
+    assert value["levels"][1]["cpu_max"] == "500000 100000"
+    assert value["levels"][1]["throttle_status"] == "unverified"
+    (tmp_path / "cpu.max").unlink()
+    value = watcher._cpu_observation("/app.slice/run.service")
+    assert value["status"] == "partial"
+    assert value["levels"][2]["quota_status"] == "root_missing"
+    assert value["levels"][2]["cpu_max"] is None
+    assert value["levels"][0]["cpu_max"] == "1000000 100000"
+
+
+def test_v2_watcher_binding_checks_the_selected_profile(monkeypatch):
+    invocation, unit, pid = "d" * 32, "synthetic.service", 123
+    group, digest = "/user.slice/app.slice/" + unit, "e" * 64
+    plan = {"schema": worker.SCHEMA_V2, "cpu_profile": "cpu10", "unit": unit, "wall_seconds": 60}
+    properties = {
+        "MainPID": str(pid),
+        "ActiveState": "active",
+        "Type": "exec",
+        "MemoryAccounting": "yes",
+        "MemoryMax": str(worker.common.MEMORY_MAX),
+        "MemorySwapMax": "0",
+        "OOMPolicy": "kill",
+        "KillMode": "control-group",
+        "RuntimeMaxUSec": "1min",
+        "TimeoutStopUSec": "3s",
+    }
+    hello = {
+        "schema": "decision3-cpu-hello-v1",
+        "pid": pid,
+        "pgid": pid,
+        "startticks": 7,
+        "boot_id": "boot",
+        "unit": unit,
+        "invocation": invocation,
+        "plan_sha256": digest,
+        "cgroup": group,
+    }
+    monkeypatch.setattr(watcher.shared, "_unit_identity", lambda *_: (invocation, group))
+    monkeypatch.setattr(watcher.common.systemd, "boot_id", lambda: "boot")
+    monkeypatch.setattr(watcher.common.systemd, "process_identity", lambda _: {"startticks": 7})
+    monkeypatch.setattr(watcher.common.systemd, "cgroup_membership", lambda _: group)
+    monkeypatch.setattr(watcher.os, "getpgid", lambda _: pid)
+    calls = []
+    monkeypatch.setattr(worker, "_cpu_limits", lambda *args: calls.append(args))
+    assert watcher._bind(properties, hello, plan, digest) == (invocation, group)
+    assert calls[0][:2] == (group, pid)
+    assert calls[0][2]["threads"] == 10 and calls[0][2]["cpu_list"] == "5-9,15-19"
+
+
+def test_v2_worker_binding_checks_owned_unit_and_profile(monkeypatch):
+    profile = worker._profile({"schema": worker.SCHEMA_V2, "cpu_profile": "cpu10"})
+    unit = "synthetic.service"
+    group = "/user.slice/app.slice/" + unit
+    monkeypatch.setattr(worker.common.systemd, "cgroup_membership", lambda _: group)
+    calls = []
+    monkeypatch.setattr(worker, "_cpu_limits", lambda *args: calls.append(args))
+    assert worker._own_profile_cgroup(unit, profile) == group
+    assert calls == [(group, os.getpid(), profile)]
+    with pytest.raises(ValueError, match="selected unit"):
+        worker._own_profile_cgroup("other.service", profile)
+
+
+def test_v1_v2_release_inventories_and_worker_launch_do_not_overlap():
+    v1, v2 = worker._source_set(), worker._source_set_v2()
+    for name in ("worker", "watcher", "candidate"):
+        old = str(worker._release_path(name, worker.SCHEMA))
+        new = str(worker._release_path(name, worker.SCHEMA_V2))
+        assert old != new and old.endswith("_release.py") and new.endswith("_v2_release.py")
+        assert old in v1 and old not in v2
+        assert new in v2 and new not in v1
+    assert len(v1) == len(v2)
+    base = {"unit": "synthetic.service", "python": worker.common.GPU_PYTHON, "wall_seconds": 600}
+    old_args = watcher._unit_args(base, "/tmp/plan", "a" * 64)
+    new_args = watcher._unit_args(
+        {**base, "schema": worker.SCHEMA_V2, "cpu_profile": "cpu10"}, "/tmp/plan", "a" * 64
+    )
+    assert str(worker._release_path("worker", worker.SCHEMA)) in old_args
+    assert str(worker._release_path("worker", worker.SCHEMA_V2)) in new_args
+    assert str(worker._release_path("worker", worker.SCHEMA)) not in new_args
