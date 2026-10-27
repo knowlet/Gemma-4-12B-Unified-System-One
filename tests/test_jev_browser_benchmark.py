@@ -1427,6 +1427,29 @@ def test_real_runner_rejects_prefetched_outside_host_even_with_done_and_positive
 
 
 @pytest.mark.integration
+def test_opt_in_scope_diagnostics_preserve_real_runner_judge_and_error(
+    pinned_upstream, tmp_path, monkeypatch
+):
+    import jev_public_navigation_diagnostics as diagnostics
+
+    monkeypatch.setattr(diagnostics, "SOURCE_ONLY", False)
+    original = HARNESS.run_benchmark
+    with diagnostics.attach_to_runner(HARNESS, enabled=True) as reports:
+        test_real_runner_rejects_prefetched_outside_host_even_with_done_and_positive_judge(
+            pinned_upstream, tmp_path, monkeypatch
+        )
+    assert HARNESS.run_benchmark is original
+    assert len(reports) == 1
+    report = reports[0]
+    assert report["attempts"] == 1
+    assert report["totals_observed"]["violation_records"] == 4
+    assert report["totals_observed"]["observer_error_records"] == 0
+    assert report["coverage"] == report["source_provenance"] == "unverified"
+    assert "http://" not in json.dumps(report)
+    assert "https://" not in json.dumps(report)
+
+
+@pytest.mark.integration
 def test_upstream_manifest_checks_executed_initializer(pinned_upstream, tmp_path):
     copied = tmp_path / "upstream"
     shutil.copytree(pinned_upstream, copied)
