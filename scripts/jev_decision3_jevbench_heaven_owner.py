@@ -157,7 +157,7 @@ def _load_plan(path, digest):
 
 
 def _actual_sources(plan, backend):
-    import jev_decision3_link_navigation_features as features
+    import jev_decision3_runtime_integrity as features
     import run_jevbench_public as heaven
 
     from s1.backends import normalize_response
@@ -226,7 +226,7 @@ def _quarantine_scorer_output(scorer_output):
 
 
 def _runtime_guard(backend, torch):
-    import jev_decision3_link_navigation_features as features
+    import jev_decision3_runtime_integrity as features
 
     runtime = backend.runtime
     features._validate_provider_spec(backend.spec)
@@ -308,7 +308,7 @@ def _model_stat_snapshot(runtime, cache_root):
 
 def _run_heaven(plan, backend, torch, generic, lease_module, output, check):
     _gate()
-    import jev_decision3_link_navigation_features as features
+    import jev_decision3_runtime_integrity as features
     import run_jevbench_public as heaven
 
     transport = plan["transport"]

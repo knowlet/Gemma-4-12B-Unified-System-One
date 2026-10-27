@@ -7,7 +7,7 @@ import sys
 from types import ModuleType, SimpleNamespace
 
 import jev_decision3_jevbench_coherence_owner as owner
-import jev_decision3_link_navigation_features as features
+import jev_decision3_runtime_integrity as features
 import jevbench_public_request_inventory as inventory
 import pytest
 

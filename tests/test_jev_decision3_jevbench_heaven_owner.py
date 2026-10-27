@@ -10,7 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import jev_decision3_jevbench_heaven_owner as owner
-import jev_decision3_link_navigation_features as features
+import jev_decision3_runtime_integrity as features
 import pytest
 import run_jevbench_public as heaven
 
