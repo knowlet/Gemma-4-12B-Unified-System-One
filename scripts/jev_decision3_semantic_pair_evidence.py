@@ -97,6 +97,14 @@ def verify(
             path.is_absolute() and path.is_dir() and path.resolve() == path,
             "ordinary evidence directory required",
         )
+    closure = _json(_read(capture_dir.parent / "owned-client-closure.json", 1024**2))
+    _need(
+        type(closure) is dict
+        and closure.get("confirmed") is True
+        and closure.get("remaining") == []
+        and type(closure.get("tracked_PID_start_ticks")) is dict,
+        "confirmed owned client process-group closure required",
+    )
     _need(
         type(terminal) is dict and type(terminal.get("service")) is dict, "child terminal required"
     )
@@ -125,6 +133,7 @@ def verify(
     captures = []
     transport_exceptions = 0
     non_success_responses = 0
+    capture_pid = None
     for index, directory in enumerate(attempts, 1):
         _need(
             directory.name == f"attempt-{index:04d}"
@@ -139,6 +148,16 @@ def verify(
             and type(record.get("sequence")) is int,
             "capture sequence differs",
         )
+        pid = record.get("pid")
+        _need(
+            type(pid) is int
+            and pid > 0
+            and (capture_pid is None or capture_pid == pid)
+            and type(closure["tracked_PID_start_ticks"].get(str(pid))) is int
+            and closure["tracked_PID_start_ticks"][str(pid)] > 0,
+            "capture PID must belong to the closed owned client process group",
+        )
+        capture_pid = pid
         if record.get("status") == "transport_exception":
             _need(
                 type(record.get("exception_type")) is str and bool(record["exception_type"]),
@@ -263,6 +282,8 @@ def verify(
         "status": "provided_bytes_and_fp64_match",
         "model_calls": count,
         "capture_events": len(attempts),
+        "capture_pid": capture_pid,
+        "capture_pid_recorded_in_client_closure": True,
         "runner_policy_calls": runner_policy_calls,
         "runner_text_calls": runner_text_calls,
         "unmatched_capture_events": len(attempts) - count,

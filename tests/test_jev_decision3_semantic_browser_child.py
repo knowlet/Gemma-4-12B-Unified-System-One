@@ -770,6 +770,15 @@ def test_real_semantic_stack_and_witness_audit_through_child(
         body = json.dumps(request).encode()
         capture_dir = tmp_path / "client-capture"
         capture_dir.mkdir()
+        (tmp_path / "owned-client-closure.json").write_text(
+            json.dumps(
+                {
+                    "confirmed": True,
+                    "remaining": [],
+                    "tracked_PID_start_ticks": {str(os.getpid()): 1},
+                }
+            )
+        )
 
         def sink(event):
             attempt = capture_dir / f"attempt-{event['sequence']:04d}"
@@ -777,6 +786,7 @@ def test_real_semantic_stack_and_witness_audit_through_child(
             record = {
                 k: v for k, v in event.items() if k not in {"request_bytes", "response_bytes"}
             }
+            record["pid"] = os.getpid()
             for key in ("request_bytes", "response_bytes"):
                 raw = event[key]
                 (attempt / f"{key}.bin").write_bytes(raw)

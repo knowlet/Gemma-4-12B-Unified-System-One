@@ -21,6 +21,9 @@ def _fixture(tmp_path):
     service, capture = tmp_path / "service", tmp_path / "capture"
     service.mkdir()
     capture.mkdir()
+    (tmp_path / "owned-client-closure.json").write_bytes(
+        _bytes({"confirmed": True, "remaining": [], "tracked_PID_start_ticks": {"1234": 42}})
+    )
     expected = {"operation": "a" * 64, "click_target": "b" * 64}
     baseline = "c" * 64
     plan = {
@@ -39,6 +42,7 @@ def _fixture(tmp_path):
             _bytes(
                 {
                     "sequence": i,
+                    "pid": 1234,
                     "status": "response",
                     "request_source": "response-attached-request",
                     "http_status": 200,
@@ -211,7 +215,12 @@ def test_unmatched_transport_exception_is_counted_without_guessing_its_model(tmp
     third.mkdir()
     (third / "record.json").write_bytes(
         _bytes(
-            {"sequence": 3, "status": "transport_exception", "exception_type": "TimeoutException"}
+            {
+                "sequence": 3,
+                "pid": 1234,
+                "status": "transport_exception",
+                "exception_type": "TimeoutException",
+            }
         )
     )
     args["runner_text_calls"] = 1
@@ -237,6 +246,7 @@ def test_unmatched_empty_response_remains_unknown_without_fabricating_success(
         _bytes(
             {
                 "sequence": 3,
+                "pid": 1234,
                 "status": "response",
                 "request_source": "response-attached-request",
                 "http_status": 503,
@@ -249,3 +259,33 @@ def test_unmatched_empty_response_remains_unknown_without_fabricating_success(
     assert result["observed_non_success_responses"] == 1
     assert result["unmatched_capture_events"] == 1
     assert result["unmatched_capture_attribution"] == "unknown"
+
+
+@pytest.mark.parametrize("fault", ["untracked_pid", "changed_pid", "open_group", "missing_closure"])
+def test_capture_pid_must_be_in_closed_client_process_group(tmp_path, monkeypatch, fault):
+    args, _ = _fixture(tmp_path)
+    monkeypatch.setattr(evidence, "SOURCE_ONLY", False)
+    closure = tmp_path / "owned-client-closure.json"
+    record_path = args["capture_dir"] / "attempt-0002" / "record.json"
+    if fault == "untracked_pid":
+        closure.write_bytes(
+            _bytes({"confirmed": True, "remaining": [], "tracked_PID_start_ticks": {"999": 42}})
+        )
+    elif fault == "changed_pid":
+        record = json.loads(record_path.read_bytes())
+        record["pid"] = 999
+        record_path.write_bytes(_bytes(record))
+    elif fault == "open_group":
+        closure.write_bytes(
+            _bytes(
+                {
+                    "confirmed": True,
+                    "remaining": [{"pid": 1}],
+                    "tracked_PID_start_ticks": {"1234": 42},
+                }
+            )
+        )
+    else:
+        closure.unlink()
+    with pytest.raises((ValueError, FileNotFoundError)):
+        evidence.verify(**args)
