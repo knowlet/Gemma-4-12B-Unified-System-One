@@ -208,7 +208,9 @@ def test_supported_preserves_original_done_and_same_visible_context(setup):
                 "unsupported",
                 "unknown",
             }
-    assert events == [{"status": "done_supported", "reviews": 1}]
+    assert [event["status"] for event in events] == ["review_call", "done_supported"]
+    assert events[0]["request_sha256"] == owner._body_sha256(setup.sent[1])
+    assert events[-1] == {"status": "done_supported", "reviews": 1}
     assert Agent.command is original
 
 

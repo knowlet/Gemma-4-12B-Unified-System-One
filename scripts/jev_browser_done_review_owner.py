@@ -14,6 +14,8 @@ wrappers and extra state fields fail closed, not as evidence of completion.
 from __future__ import annotations
 
 import copy
+import hashlib
+import json
 import os
 import threading
 import time
@@ -38,6 +40,15 @@ REVIEW_RULES = (
 def _need(value, message):
     if not value:
         raise ValueError(message)
+
+
+def _body_sha256(value):
+    """Hash bounded canonical JSON for later private transport reconciliation."""
+    raw = json.dumps(
+        value, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False
+    ).encode("utf-8")
+    _need(len(raw) <= 4 * 1024 * 1024, "bounded review event body required")
+    return hashlib.sha256(raw).hexdigest()
 
 
 def _visible_request(model, page, goal, history, request):
@@ -207,14 +218,20 @@ def attach_to_runner(runner, *, enabled=False, max_reviews=2, event_sink=None):
                     counters["reviews"] += 1
                     counters["extra_calls"] += 1
                     try:
+                        review_body = _review_request(request, visible, goal)
                         result = original_post(
                             POLICY_URL,
                             os.environ["TYPESAFE_API_KEY"],
-                            _review_request(request, visible, goal),
+                            review_body,
                         )
                         verdict = model_module.validate_choice(
                             result["answers"].get(REVIEW_ID, {}), REVIEW_OPTIONS
                         )["choice"]
+                        event(
+                            "review_call",
+                            request_sha256=_body_sha256(review_body),
+                            response_sha256=_body_sha256(result),
+                        )
                     except BaseException as exc:
                         try:
                             event("review_failed", reviews=counters["reviews"])
@@ -298,6 +315,11 @@ def attach_to_runner(runner, *, enabled=False, max_reviews=2, event_sink=None):
                             reply["answers"].get("operation", {}), choices
                         )
                         _need(answer["choice"] != "DONE", "excluded DONE returned")
+                        event(
+                            "replan_call",
+                            request_sha256=_body_sha256(wire),
+                            response_sha256=_body_sha256(reply),
+                        )
                         reply = copy.deepcopy(reply)
                         # Upstream choose validates the original full vocabulary. Zero
                         # here means excluded by constraint, not a model-estimated score.
