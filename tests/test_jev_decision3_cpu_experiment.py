@@ -300,7 +300,8 @@ def test_worker_runs_complete_fake_model_and_writes_private_result(
     assert terminal["status"] == "completed_pending_external_audit"
 
 
-def test_watcher_supervises_fake_unit_to_verified_closure(tmp_path, monkeypatch):
+@pytest.mark.parametrize("diagnostic_case", ["complete", "missing", "failure"])
+def test_watcher_supervises_fake_unit_to_verified_closure(tmp_path, monkeypatch, diagnostic_case):
     run = tmp_path / "run"
     run.mkdir()
     output = run / "worker"
@@ -396,6 +397,12 @@ def test_watcher_supervises_fake_unit_to_verified_closure(tmp_path, monkeypatch)
 
     def complete(path, raw):
         publish(path, raw)
+        recorder = worker._StageRecorder(output, invocation, digest)
+        if diagnostic_case != "missing":
+            for stage in worker._STAGES:
+                recorder(stage)
+        if diagnostic_case == "failure":
+            recorder.failure(ValueError("synthetic error"))
         result = b'{"fake":"synthetic"}'
         watcher.common._write_new(output / "result.json", result)
         status = {
@@ -408,6 +415,13 @@ def test_watcher_supervises_fake_unit_to_verified_closure(tmp_path, monkeypatch)
         watcher.common._write_new(output / "terminal.json", child_encode(status))
 
     monkeypatch.setattr(watcher.child, "_publish_control", complete)
+    if diagnostic_case != "complete":
+        with pytest.raises(ValueError, match="private diagnostic invalid"):
+            watcher.supervise(str(plan_path), digest, str(report))
+        closure = json.loads((report / "closure.json").read_bytes())
+        assert closure["status"] == "failed"
+        assert closure["cgroup"] == closure["process_group"] == "absent"
+        return
     closure = watcher.supervise(str(plan_path), digest, str(report))
     assert closure["status"] == "completed_pending_external_audit"
     assert closure["cgroup"] == "absent" and closure["process_group"] == "absent"
@@ -415,6 +429,10 @@ def test_watcher_supervises_fake_unit_to_verified_closure(tmp_path, monkeypatch)
     events = [json.loads(line) for line in (report / "events.jsonl").read_bytes().splitlines()]
     assert [event["event"] for event in events] == ["prelaunch", "host", "binding_verified", "host"]
     assert closure["machine_exclusive"] is False
+    assert closure["diagnostic"] == {
+        "last_entered_stage": "result_write",
+        "failure_category": None,
+    }
 
 
 def child_encode(value):
@@ -824,3 +842,103 @@ def test_watcher_does_not_stop_when_hello_cannot_be_bound(tmp_path, monkeypatch)
     assert closure["status"] == "cleanup_unconfirmed"
     assert closure["cgroup"] == closure["process_group"] == "unconfirmed"
     assert not (output / "go.json").exists()
+
+
+@pytest.mark.parametrize("failed_stage", worker._STAGES)
+def test_worker_records_private_failure_at_each_stage(tmp_path, monkeypatch, failed_stage):
+    output = tmp_path / "worker"
+    output.mkdir(mode=0o700)
+    invocation, digest = "b" * 32, "c" * 64
+    plan = {"output_dir": str(output), "unit": "synthetic.service", "source_pins": {}}
+    monkeypatch.setattr(worker, "SOURCE_ONLY", False)
+    monkeypatch.setattr(worker, "_plan", lambda *_: plan)
+    monkeypatch.setattr(worker.os, "getpgrp", os.getpid)
+    monkeypatch.setattr(worker.common, "_own_cgroup", lambda *_: "/synthetic")
+    monkeypatch.setattr(worker.common, "_verify_source_pins", lambda *_: None)
+    monkeypatch.setattr(worker.common, "_validate_interpreter", lambda *_: None)
+    monkeypatch.setattr(worker.common.systemd, "boot_id", lambda: "boot")
+    monkeypatch.setattr(worker.common.systemd, "process_identity", lambda *_: {"startticks": 7})
+    monkeypatch.setenv("INVOCATION_ID", invocation)
+    write = worker.common._write_new
+
+    def write_and_go(path, data):
+        write(path, data)
+        if path.name == "hello.json":
+            write(
+                output / "go.json",
+                worker.child._encode(
+                    {
+                        "schema": "decision3-cpu-go-v1",
+                        "invocation": invocation,
+                        "plan_sha256": digest,
+                    }
+                ),
+            )
+
+    monkeypatch.setattr(worker.common, "_write_new", write_and_go)
+
+    def fail_at_stage(_plan, _output, _invocation, _digest, stage):
+        for name in worker._STAGES:
+            stage(name)
+            if name == failed_stage:
+                raise ValueError("SECRET-PROMPT private-path")
+
+    monkeypatch.setattr(worker, "_run_after_go", fail_at_stage)
+    with pytest.raises(ValueError, match="SECRET-PROMPT"):
+        worker.run("synthetic", digest)
+    assert watcher._diagnostic(output, invocation, digest) == {
+        "last_entered_stage": failed_stage,
+        "failure_category": "validation",
+    }
+    failure = (output / "failure.json").read_bytes()
+    assert b"SECRET-PROMPT" not in failure and b"private-path" not in failure
+    assert (output / "failure.json").stat().st_mode & 0o077 == 0
+    assert not (output / "terminal.json").exists()
+
+
+def test_hard_stop_leaves_last_entered_stage_without_inventing_a_reason(tmp_path):
+    recorder = worker._StageRecorder(tmp_path, "a" * 32, "b" * 64)
+    recorder("overlay")
+    recorder("model_load")
+    assert watcher._diagnostic(tmp_path, "a" * 32, "b" * 64) == {
+        "last_entered_stage": "model_load",
+        "failure_category": None,
+    }
+    assert not (tmp_path / "failure.json").exists()
+
+
+@pytest.mark.parametrize(
+    "fault", ["wrong_invocation", "wrong_plan", "extra_field", "gap", "wrong_category"]
+)
+def test_diagnostic_rejects_forged_or_incomplete_markers(tmp_path, fault):
+    invocation, digest = "a" * 32, "b" * 64
+    recorder = worker._StageRecorder(tmp_path, invocation, digest)
+    recorder("overlay")
+    recorder("model_load")
+    if fault == "gap":
+        (tmp_path / "stage-00.json").unlink()
+    elif fault == "wrong_category":
+        recorder.failure(ValueError("private"))
+        path = tmp_path / "failure.json"
+        value = json.loads(path.read_bytes())
+        value["category"] = "secret"
+        path.write_text(json.dumps(value))
+    else:
+        path = tmp_path / "stage-01.json"
+        value = json.loads(path.read_bytes())
+        if fault == "wrong_invocation":
+            value["invocation"] = "c" * 32
+        elif fault == "wrong_plan":
+            value["plan_sha256"] = "d" * 64
+        else:
+            value["extra"] = "secret"
+        path.write_text(json.dumps(value))
+    with pytest.raises(ValueError, match="diagnostic"):
+        watcher._diagnostic(tmp_path, invocation, digest)
+
+
+def test_missing_markers_do_not_claim_a_failure_stage(tmp_path):
+    assert watcher._diagnostic(tmp_path, "a" * 32, "b" * 64) == {
+        "last_entered_stage": None,
+        "failure_category": None,
+    }

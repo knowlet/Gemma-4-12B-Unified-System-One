@@ -148,6 +148,46 @@ def _closed_group(pgid):
     raise ValueError("owned process group still exists or identity was reused")
 
 
+def _diagnostic(output, invocation, plan_sha):
+    last = None
+    missing = False
+    for index, stage in enumerate(worker._STAGES):
+        path = output / f"stage-{index:02d}.json"
+        if not os.path.lexists(path):
+            missing = True
+            continue
+        _need(not missing, "diagnostic stage order invalid")
+        value = common._decode(child._read_bounded(path, 4096))
+        _need(
+            value
+            == {
+                "schema": "decision3-cpu-stage-v1",
+                "invocation": invocation,
+                "plan_sha256": plan_sha,
+                "stage": stage,
+            },
+            "diagnostic stage identity invalid",
+        )
+        last = stage
+    failure_path = output / "failure.json"
+    category = None
+    if os.path.lexists(failure_path):
+        value = common._decode(child._read_bounded(failure_path, 4096))
+        _need(
+            type(value) is dict
+            and set(value) == {"schema", "invocation", "plan_sha256", "stage", "category"}
+            and value["schema"] == "decision3-cpu-failure-v1"
+            and value["invocation"] == invocation
+            and value["plan_sha256"] == plan_sha
+            and last is not None
+            and value["stage"] == last
+            and value["category"] in {"memory", "import", "validation", "timeout", "other"},
+            "diagnostic failure identity invalid",
+        )
+        category = value["category"]
+    return {"last_entered_stage": last, "failure_category": category}
+
+
 def _terminal(output, invocation, plan_sha):
     raw = child._read_bounded(output / "terminal.json", 4096)
     value = common._decode(raw)
@@ -318,6 +358,21 @@ def supervise(plan_path, plan_sha, report_dir):
                 failure = error
             else:
                 failure.add_note("process closure unconfirmed")
+        if bound:
+            try:
+                closure["diagnostic"] = _diagnostic(output, invocation, plan_sha)
+                if failure is None:
+                    _need(
+                        closure["diagnostic"]["last_entered_stage"] == "result_write"
+                        and closure["diagnostic"]["failure_category"] is None,
+                        "successful worker requires complete stages and no failure record",
+                    )
+            except Exception:
+                closure["diagnostic"] = {"status": "invalid"}
+                if failure is None:
+                    failure = ValueError("private diagnostic invalid")
+                    if closure["status"] != "cleanup_unconfirmed":
+                        closure["status"] = "failed"
         common._write_new(report / "closure.json", child._encode(closure))
     if failure is not None:
         raise failure

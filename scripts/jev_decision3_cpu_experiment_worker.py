@@ -37,6 +37,7 @@ OVERLAY = ROOT / "artifacts/jev-runtime/overlay"
 EXPERIMENTS = ROOT / "artifacts/jev-runtime/decision3-cpu-padding-experiment"
 TORCH = Path("/home/albert_hsieh/ComfyUI/.venv/lib/python3.13/site-packages/torch/__init__.py")
 MANIFEST = "3bae8989a6feb36a66bf4d8c44112dc63199d0dc69f564dc895fe368b1e08e59"
+_STAGES = ("overlay", "model_load", "input_prepare", "inference", "result_write")
 _HELD = {
     "worker": "jev_decision3_cpu_experiment_worker.py",
     "watcher": "jev_decision3_cpu_experiment_watcher.py",
@@ -272,8 +273,10 @@ def _response(response, order, expected_tokens, model_name):
         )
 
 
-def _experiment(runtime, candidate, rounds):
+def _experiment(runtime, candidate, rounds, stage=lambda _: None):
+    stage("input_prepare")
     state, questions, lengths = _sample(runtime)
+    stage("inference")
     order = list(questions)
     tokens = sum(lengths)
     modes = ("native", "whole", "ordered_pairs", "length_pairs")
@@ -395,6 +398,56 @@ def _experiment(runtime, candidate, rounds):
     }
 
 
+class _StageRecorder:
+    def __init__(self, output, invocation, plan_sha):
+        self.output = output
+        self.invocation = invocation
+        self.plan_sha = plan_sha
+        self.current = None
+        self.next_index = 0
+
+    def __call__(self, name):
+        _need(
+            self.next_index < len(_STAGES) and name == _STAGES[self.next_index],
+            "stage order required",
+        )
+        value = {
+            "schema": "decision3-cpu-stage-v1",
+            "invocation": self.invocation,
+            "plan_sha256": self.plan_sha,
+            "stage": name,
+        }
+        common._write_new(self.output / f"stage-{self.next_index:02d}.json", child._encode(value))
+        self.current = name
+        self.next_index += 1
+
+    def failure(self, error):
+        if self.current is None:
+            return
+        if isinstance(error, MemoryError):
+            category = "memory"
+        elif isinstance(error, ImportError):
+            category = "import"
+        elif isinstance(error, (ValueError, TypeError)):
+            category = "validation"
+        elif isinstance(error, TimeoutError):
+            category = "timeout"
+        else:
+            category = "other"
+        common._write_new(
+            self.output / "failure.json",
+            child._encode(
+                {
+                    "schema": "decision3-cpu-failure-v1",
+                    "invocation": self.invocation,
+                    "plan_sha256": self.plan_sha,
+                    "stage": self.current,
+                    "category": category,
+                }
+            ),
+        )
+
+
 def run(plan_path, plan_sha):
     _need(SOURCE_ONLY is False, "reviewed CPU worker release required")
     plan = _plan(plan_path, plan_sha)
@@ -433,6 +486,19 @@ def run(plan_path, plan_sha):
     child._control(
         output / "go.json", schema="decision3-cpu-go-v1", invocation=invocation, plan_sha=plan_sha
     )
+    stage = _StageRecorder(output, invocation, plan_sha)
+    try:
+        _run_after_go(plan, output, invocation, plan_sha, stage)
+    except Exception as error:
+        try:
+            stage.failure(error)
+        except Exception:
+            error.add_note("private failure record unavailable")
+        raise
+
+
+def _run_after_go(plan, output, invocation, plan_sha, stage):
+    stage("overlay")
     os.environ.update(
         {
             "HF_HUB_OFFLINE": "1",
@@ -448,6 +514,7 @@ def run(plan_path, plan_sha):
     torch = common._bind_overlay(ROOT, plan["source_pins"])
     torch.set_num_threads(5)
     torch.set_num_interop_threads(1)
+    stage("model_load")
     manifest_sha = _verify_model_manifest(plan["source_pins"])
     publisher = _load_publisher(plan["source_pins"])
     candidate = common._load_reviewed_release(
@@ -465,7 +532,8 @@ def run(plan_path, plan_sha):
         permutation_average=False,
     )
     _need(str(runtime.device) == "cpu" and runtime.fast is None, "plain CPU runtime required")
-    result = _experiment(runtime, candidate, plan["rounds"])
+    result = _experiment(runtime, candidate, plan["rounds"], stage)
+    stage("result_write")
     result["publisher_manifest_sha256"] = manifest_sha
     result["model_verification"] = (
         "publisher full verify at load; execution-time weights and external dependencies unverified"
