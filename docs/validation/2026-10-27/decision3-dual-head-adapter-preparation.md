@@ -10,4 +10,4 @@
 
 撰寫本段時尚未以這個新候選執行真實 GPU、HTTP 或瀏覽器對照，也尚未取得其兩套 JevBench 分數；不能由合成測試或訓練集命中數推論真實任務成功率。
 
-後續[三筆訓練請求的真實 GPU 數值短測](decision3-dual-head-gpu-check.md)已完成。另準備僅限 loopback 的 HTTP 接線：它要求外部提供 GPU 租約、身分與同次見證，並記錄原始請求和回應雜湊；絕對期限涵蓋請求標頭與主體，但無法自行中止阻塞中的 GPU 前向。localhost 合成測試涵蓋慢速連線、身分改變和交付失敗；真實 GPU 與 HTTP 的整合仍待執行，socket 寫入返回本身不代表客戶端已收到回應。
+後續[三筆訓練請求的真實 GPU 數值短測](decision3-dual-head-gpu-check.md)及[一筆本機 HTTP／GPU 短測](decision3-dual-head-http-gpu-check.md)已完成。僅限 loopback 的 HTTP 接線要求外部提供 GPU 租約、身分與同次見證，並記錄原始請求和回應雜湊；絕對期限涵蓋請求標頭與主體，但無法自行中止阻塞中的 GPU 前向。localhost 合成測試涵蓋慢速連線、身分改變和交付失敗；socket 寫入返回本身不代表客戶端已收到回應，本次短測另核對了客戶端完整讀回。
