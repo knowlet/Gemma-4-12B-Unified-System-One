@@ -252,6 +252,33 @@ def _append(path, value):
         os.close(fd)
 
 
+def _write_control_bytes(stream, data):
+    stream.write(data)
+    stream.flush()
+    os.fsync(stream.fileno())
+
+
+def _publish_control(path, data):
+    """Publish a complete private handshake without replacing an existing file."""
+    path = Path(path)
+    temporary = path.with_name(f".{path.name}.{secrets.token_hex(16)}.tmp")
+    created = False
+    try:
+        fd = os.open(temporary, os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
+        created = True
+        with os.fdopen(fd, "wb") as stream:
+            _write_control_bytes(stream, data)
+        os.link(temporary, path, follow_symlinks=False)
+        directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        if created:
+            temporary.unlink()
+
+
 def _runtime_modules(plan):
     _gate()
     pins = plan["source_pins"]
@@ -505,7 +532,7 @@ def _serve(plan, plan_sha, invocation, backend, torch, modules, output, check):
             poll_seconds=0.1,
         )
         host, port = lifecycle.start()
-        common._write_new(
+        _publish_control(
             output / "ready.json",
             _encode(
                 {
@@ -616,7 +643,7 @@ def run(plan_path, plan_sha):
         "invocation": invocation,
         "plan_sha256": plan_sha,
     }
-    common._write_new(output / "hello.json", _encode(hello))
+    _publish_control(output / "hello.json", _encode(hello))
     started = time.monotonic()
     while not (output / "go.json").exists():
         _need(time.monotonic() - started < 20, "parent handshake timed out")
@@ -721,7 +748,7 @@ def run(plan_path, plan_sha):
                 status="failed_cleanup_unconfirmed",
                 cleanup_skipped="service or lease closure unconfirmed; external owner must terminate this invocation",
             )
-            common._write_new(output / "terminal.json", _encode(status))
+            _publish_control(output / "terminal.json", _encode(status))
             raise primary
         try:
             if backend is not None:
@@ -755,7 +782,7 @@ def run(plan_path, plan_sha):
                 primary = error
             else:
                 primary.add_note("CUDA cleanup also failed: " + repr(error))
-        common._write_new(output / "terminal.json", _encode(status))
+        _publish_control(output / "terminal.json", _encode(status))
     if primary is not None:
         raise primary
     return 0

@@ -419,3 +419,62 @@ def test_child_handshake_skips_backend_and_cuda_cleanup_for_live_listener(tmp_pa
     assert terminal["status"] == "failed_cleanup_unconfirmed"
     assert "final_cuda_allocated" not in terminal
     assert calls == ["sync"]
+
+
+@pytest.mark.parametrize("name", ["hello.json", "ready.json", "terminal.json"])
+def test_control_publication_is_atomic_during_delayed_write(tmp_path, monkeypatch, name):
+    started = threading.Event()
+    complete = threading.Event()
+    target = tmp_path / name
+    errors = []
+
+    def delayed_write(stream, data):
+        stream.write(data[:1])
+        stream.flush()
+        started.set()
+        if not complete.wait(5):
+            raise TimeoutError("test write did not resume")
+        stream.write(data[1:])
+        stream.flush()
+        os.fsync(stream.fileno())
+
+    monkeypatch.setattr(child, "_write_control_bytes", delayed_write)
+
+    def publish():
+        try:
+            child._publish_control(target, b'{"complete":true}')
+        except BaseException as error:
+            errors.append(error)
+
+    thread = threading.Thread(target=publish)
+    thread.start()
+    try:
+        assert started.wait(5)
+        assert not target.exists()
+    finally:
+        complete.set()
+        thread.join(5)
+    assert not thread.is_alive()
+    assert not errors
+    assert json.loads(target.read_bytes()) == {"complete": True}
+    assert target.stat().st_mode & 0o077 == 0
+    assert list(tmp_path.iterdir()) == [target]
+
+
+def test_control_publication_does_not_overwrite_collision(tmp_path):
+    target = tmp_path / "ready.json"
+    target.write_bytes(b"existing")
+    with pytest.raises(FileExistsError):
+        child._publish_control(target, b"new")
+    assert target.read_bytes() == b"existing"
+    assert list(tmp_path.iterdir()) == [target]
+
+
+def test_control_temp_collision_preserves_unowned_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(child.secrets, "token_hex", lambda _: "a" * 32)
+    temporary = tmp_path / (".hello.json." + "a" * 32 + ".tmp")
+    temporary.write_bytes(b"unowned")
+    with pytest.raises(FileExistsError):
+        child._publish_control(tmp_path / "hello.json", b"new")
+    assert temporary.read_bytes() == b"unowned"
+    assert not (tmp_path / "hello.json").exists()
