@@ -245,7 +245,7 @@ def tensor_statistics(tensor, torch, row_mask=None, max_values=262144):
 
 
 @contextmanager
-def observe_model(model, runtime, events, phase):
+def observe_model(model, runtime, events, phase, *, decision_callbacks=True):
     """Temporary observers return no replacement tensors or changed logits."""
     handles, originals, state = [], [], {"row_mask": None}
 
@@ -300,7 +300,7 @@ def observe_model(model, runtime, events, phase):
                 lambda _module, _args, output: record("generation_softcapped_logits", output.logits)
             )
         )
-        for module in (runtime.unified, runtime.gemma):
+        for module in (runtime.unified, runtime.gemma) if decision_callbacks else ():
             original = module.project_candidates
 
             def wrapper(*args, _original=original, **kwargs):
@@ -400,23 +400,34 @@ def measured_call(operation, runtime, guard):
     return result
 
 
-def execute_experiment(backend, runtime, guard, request, helper, output):
+def experiment_phases(helper_only=False):
+    return ("text_generation",) if helper_only else PHASES
+
+
+def execute_experiment(backend, runtime, guard, request, helper, output, *, helper_only=False):
     results, all_events = [], []
-    baseline = runtime.contracts.DecisionRequest.model_validate(copy.deepcopy(request))
-    for phase in PHASES:
+    baseline = (
+        None
+        if helper_only
+        else runtime.contracts.DecisionRequest.model_validate(copy.deepcopy(request))
+    )
+    for phase in experiment_phases(helper_only):
         events, phase_result = (
             [],
             {
                 "phase": phase,
                 "backend_calls": 0,
+                "generation_calls": 0,
                 "calls": [],
-                "question_order": [q.id for q in baseline.questions],
+                "question_order": [q.id for q in baseline.questions] if baseline else [],
                 "request_sha256": json_hash(request),
                 "errors": [],
                 "reported_cost_usd": None,
             },
         )
-        with observe_model(backend.model, runtime, events, phase):
+        with observe_model(
+            backend.model, runtime, events, phase, decision_callbacks=not helper_only
+        ):
             if phase == "text_generation":
                 call = measured_call(
                     lambda: generate_native(backend.model, runtime.torch, helper), runtime, guard
@@ -486,11 +497,13 @@ def run(args):
     receipt = {
         "status": "initializing",
         "pid": os.getpid(),
-        "phases": list(PHASES),
+        "phases": list(experiment_phases(args.helper_only)),
+        "helper_only": args.helper_only,
         "predecessors": [],
         "question_mode": args.question_mode,
         "official_rank": None,
         "scoring": "not performed",
+        "numerical_acceptance": "not performed",
         "telemetry": "Full tensor counts in bounded CPU chunks, including valid/padded rows at every decoder layer; observers alter timing/synchronization, never tensor values.",
         "telemetry_policy": copy.deepcopy(TELEMETRY_POLICY),
         "allocator_policy": copy.deepcopy(guard.ALLOCATOR_POLICY),
@@ -543,11 +556,20 @@ def run(args):
         save()
         if receipt["allocator_before_experiment"]["error"]:
             raise RuntimeError("MPS allocator maintenance failed before diagnostic")
-        results = execute_experiment(backend, runtime, guard, request, helper, args.output)
+        results = execute_experiment(
+            backend,
+            runtime,
+            guard,
+            request,
+            helper,
+            args.output,
+            helper_only=args.helper_only,
+        )
         receipt.update(
             status="completed_diagnostic",
             phase_errors={row["phase"]: row["errors"] for row in results},
             backend_calls=sum(row["backend_calls"] for row in results),
+            generation_calls=sum(row["generation_calls"] for row in results),
         )
         save()
         return 0 if not any(row["errors"] for row in results) else 1
@@ -565,6 +587,11 @@ def main(argv=None):
     parser.add_argument("--helper-record", type=int, required=True)
     parser.add_argument(
         "--question-mode", choices=("independent", "causal_multislot"), default="independent"
+    )
+    parser.add_argument(
+        "--helper-only",
+        action="store_true",
+        help="Run only the saved native text helper; no decision calls or numerical acceptance.",
     )
     parser.add_argument("--wait-for-pid", type=int, action="append", default=[])
     parser.add_argument("--poll-seconds", type=float, default=15)

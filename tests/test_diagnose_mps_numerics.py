@@ -91,7 +91,7 @@ def maintenance(error=None):
 
 
 @contextmanager
-def no_observers(model, runtime, events, phase):
+def no_observers(model, runtime, events, phase, *, decision_callbacks=True):
     events.append({"phase": phase, "event": "fake lifecycle observer"})
     yield
 
@@ -165,6 +165,7 @@ def test_all_fixed_phases_run_without_fallback_and_singletons_keep_exact_questio
         }
     )
     assert rows[2]["calls"][0]["response"]["raw_text"] == "malformed text"
+    assert sum(row["generation_calls"] for row in rows) == 1
     assert original == request()
     for index in [0, 3]:
         assert seen[index].state == original["state"]
@@ -173,6 +174,88 @@ def test_all_fixed_phases_run_without_fallback_and_singletons_keep_exact_questio
             expected = next(q for q in original["questions"] if q["id"] == question.id)
             assert question.__dict__ == expected
     assert rows[0]["request_sha256"] == rows[3]["request_sha256"] == RUNNER.json_hash(original)
+
+
+def test_helper_only_runs_one_generation_without_decision_validation_or_callbacks(
+    tmp_path, monkeypatch
+):
+    seen = []
+
+    class Backend:
+        model = SimpleNamespace(device="mps")
+
+        def predict(self, value):
+            pytest.fail("helper-only must not dispatch a decision")
+
+    @contextmanager
+    def observers(model, runtime, events, phase, *, decision_callbacks=True):
+        assert phase == "text_generation" and decision_callbacks is False
+        seen.append("generation_observers")
+        yield
+
+    def generation(model, torch, original_helper):
+        assert original_helper == helper()
+        seen.append("generation")
+        return {
+            "raw_text": '```json\n{"text": "Graph theory"}\n```',
+            "generated_token_ids": [1, 2, 3],
+            "error": {"type": "JSONDecodeError", "message": "strict JSON failed"},
+        }
+
+    # No contracts module is provided: helper-only must not validate a
+    # DecisionRequest or construct any decision execution path.
+    runtime = SimpleNamespace(torch=SimpleNamespace(mps=SimpleNamespace(synchronize=lambda: None)))
+    monkeypatch.setattr(RUNNER, "observe_model", observers)
+    monkeypatch.setattr(RUNNER, "generate_native", generation)
+    original = request()
+    rows = RUNNER.execute_experiment(
+        Backend(),
+        runtime,
+        SimpleNamespace(maintain_mps_allocator=lambda torch: maintenance()),
+        original,
+        helper(),
+        tmp_path,
+        helper_only=True,
+    )
+    assert seen == ["generation_observers", "generation"]
+    assert RUNNER.experiment_phases(True) == ("text_generation",)
+    assert [row["phase"] for row in rows] == ["text_generation"]
+    assert rows[0]["backend_calls"] == 0 and rows[0]["generation_calls"] == 1
+    assert rows[0]["question_order"] == []
+    assert rows[0]["request_sha256"] == RUNNER.json_hash(original)
+    assert rows[0]["calls"][0]["response"]["generated_token_ids"] == [1, 2, 3]
+    assert rows[0]["calls"][0]["response"]["raw_text"].startswith("```json")
+    assert rows[0]["errors"] == [{"type": "JSONDecodeError", "message": "strict JSON failed"}]
+    assert json.loads((tmp_path / "results.json").read_text()) == rows
+    assert sorted(path.name for path in tmp_path.iterdir()) == [
+        "results.json",
+        "text_generation.json",
+    ]
+
+
+def test_helper_only_real_observer_does_not_access_decision_projection_modules():
+    handles = []
+
+    class HookModule:
+        def register_forward_hook(self, callback):
+            handle = SimpleNamespace(removed=False)
+            handle.remove = lambda: setattr(handle, "removed", True)
+            handles.append(handle)
+            return handle
+
+        def register_forward_pre_hook(self, callback, **kwargs):
+            return self.register_forward_hook(callback)
+
+    backbone = HookModule()
+    backbone.language_model = SimpleNamespace(layers=[HookModule()])
+    model = SimpleNamespace(backbone=backbone, head=HookModule(), lm=HookModule())
+    # Neither candidate-projection module is present. Generation observers
+    # still install/remove their hooks without accessing either module.
+    with RUNNER.observe_model(
+        model, SimpleNamespace(), [], "text_generation", decision_callbacks=False
+    ):
+        assert len(handles) == 6 and not any(handle.removed for handle in handles)
+    assert all(handle.removed for handle in handles)
 
 
 def test_subfailure_is_preserved_without_manufacturing_merged_answers(tmp_path, monkeypatch):
@@ -255,6 +338,7 @@ def fixtures(tmp_path):
         helper_record=1,
         output=tmp_path / "output",
         question_mode="independent",
+        helper_only=False,
         wait_for_pid=[1, 2],
         poll_seconds=0.01,
     )
@@ -296,12 +380,64 @@ def test_capture_freeze_and_wait_precede_any_torch_or_model_import(
         return SimpleNamespace(backends=SimpleNamespace(GemmaBackend=Backend), torch=None)
 
     monkeypatch.setattr(RUNNER, "load_runtime", runtime)
-    monkeypatch.setattr(RUNNER, "execute_experiment", lambda *args: [])
+    monkeypatch.setattr(RUNNER, "execute_experiment", lambda *args, **kwargs: [])
     assert RUNNER.run(args) == 0
     assert events == ["terminal-1", "terminal-2", "torch-import", "model-load"]
     assert (args.output / "sources/scripts/resume_mps_benchmarks.py").is_file()
     receipt = json.loads((args.output / "receipt.json").read_text())
     assert receipt["packages"]["torch"] == (None if missing_package else "test-version")
+    assert receipt["phases"] == list(RUNNER.PHASES) and len(receipt["phases"]) == 5
+    assert receipt["helper_only"] is False
+
+
+def test_helper_only_receipt_declares_phase_and_no_numerical_acceptance(tmp_path, monkeypatch):
+    args = fixtures(tmp_path)
+    args.helper_only = True
+    args.wait_for_pid = []
+    guard = SimpleNamespace(
+        ALLOCATOR_POLICY={},
+        package_version=lambda name: "test-version",
+        maintain_mps_allocator=lambda torch: maintenance(),
+    )
+
+    class Backend:
+        model = SimpleNamespace(device="mps")
+        metadata = {"model": "test full Unified"}
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def predict(self, value):
+            pytest.fail("helper-only must not dispatch a decision")
+
+    runtime = SimpleNamespace(
+        backends=SimpleNamespace(GemmaBackend=Backend),
+        torch=SimpleNamespace(mps=SimpleNamespace(synchronize=lambda: None)),
+    )
+    monkeypatch.setattr(RUNNER, "load_module", lambda *args: guard)
+    monkeypatch.setattr(RUNNER, "load_runtime", lambda output: runtime)
+    monkeypatch.setattr(RUNNER, "observe_model", no_observers)
+    monkeypatch.setattr(RUNNER, "generate_native", lambda *args: {"raw_text": '{"text":"value"}'})
+    assert RUNNER.run(args) == 0
+    receipt = json.loads((args.output / "receipt.json").read_text())
+    assert receipt["phases"] == ["text_generation"]
+    assert receipt["helper_only"] is True
+    assert receipt["numerical_acceptance"] == receipt["scoring"] == "not performed"
+    assert receipt["backend_calls"] == 0 and receipt["generation_calls"] == 1
+
+
+@pytest.mark.parametrize("helper_only", [False, True])
+def test_helper_only_cli_is_opt_in(tmp_path, monkeypatch, helper_only):
+    seen = []
+    monkeypatch.setattr(RUNNER, "run", lambda args: seen.append(args) or 0)
+    argv = []
+    for flag in ["decision-trace", "helper-trace", "checkpoint", "source-root", "output"]:
+        argv.extend(["--" + flag, str(tmp_path / flag)])
+    argv.extend(["--decision-record", "1", "--helper-record", "1"])
+    if helper_only:
+        argv.append("--helper-only")
+    assert RUNNER.main(argv) == 0
+    assert len(seen) == 1 and seen[0].helper_only is helper_only
 
 
 def test_changed_frozen_input_blocks_model_loading(tmp_path, monkeypatch):
