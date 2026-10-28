@@ -209,6 +209,11 @@ def test_process_observation_error_preserves_error_receipt_and_prevents_load(tmp
     args = arguments(tmp_path)
     monkeypatch.setattr(RUNNER, "capture_handle", lambda pid: {"pid": pid, "identity": IDENTITY})
 
+    def missing_package(name):
+        raise RUNNER.importlib.metadata.PackageNotFoundError(name)
+
+    monkeypatch.setattr(RUNNER.importlib.metadata, "version", missing_package)
+
     def freeze(args, receipt):
         (args.output / "sources").mkdir()
         receipt["source_inventory"] = {}
@@ -225,6 +230,19 @@ def test_process_observation_error_preserves_error_receipt_and_prevents_load(tmp
     receipt = json.loads((args.output / "receipt.json").read_text())
     assert receipt["status"] == "error"
     assert receipt["error"]["message"] == "transient observation failure"
+    assert receipt["packages"] == {"torch": None, "transformers": None, "numpy": None}
+
+
+def test_package_metadata_keeps_installed_versions_and_propagates_unexpected_errors(monkeypatch):
+    monkeypatch.setattr(RUNNER.importlib.metadata, "version", lambda name: "recorded-" + name)
+    assert RUNNER.package_version("torch") == "recorded-torch"
+
+    def broken(_name):
+        raise RuntimeError("metadata corruption")
+
+    monkeypatch.setattr(RUNNER.importlib.metadata, "version", broken)
+    with pytest.raises(RuntimeError, match="metadata corruption"):
+        RUNNER.package_version("torch")
 
 
 def test_frozen_snapshot_mutation_prevents_resume(tmp_path):

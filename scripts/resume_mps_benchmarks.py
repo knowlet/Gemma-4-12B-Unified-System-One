@@ -50,6 +50,13 @@ def now():
     return datetime.now(timezone.utc).isoformat()
 
 
+def package_version(name):
+    try:
+        return importlib.metadata.version(name)
+    except importlib.metadata.PackageNotFoundError:
+        return None
+
+
 def write_json(path, value):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n")
@@ -761,9 +768,7 @@ def supervise(args):
         "parent": str(args.parent),
         "platform": platform.platform(),
         "python": sys.version,
-        "packages": {
-            name: importlib.metadata.version(name) for name in ("torch", "transformers", "numpy")
-        },
+        "packages": {name: package_version(name) for name in ("torch", "transformers", "numpy")},
     }
 
     def save():
