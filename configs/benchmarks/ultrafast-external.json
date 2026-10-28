@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "suite": "ultrafast-external-public-v1",
+  "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "scope": "External public website integration screening on Wikipedia. Not sealed, not official leaderboard results, and not a representative browser task population.",
+  "split_policy": "Frozen before model execution. Initial page observability was checked without model calls or browser actions. These tasks must not guide optimization before their first comparison is complete.",
+  "tasks": [
+    {
+      "id": "external-wikipedia-search-graph-theory",
+      "split": "external_transfer",
+      "url": "https://en.wikipedia.org/wiki/Main_Page",
+      "goal": "Find and open the English Wikipedia article Graph theory. Stop when that article is open.",
+      "expected": {
+        "url": "https://en.wikipedia.org/wiki/Graph_theory",
+        "title": "Graph theory - Wikipedia",
+        "heading": "Graph theory",
+        "body_contains": ["vertices", "edges"]
+      }
+    },
+    {
+      "id": "external-wikipedia-follow-graph-definition",
+      "split": "external_transfer",
+      "url": "https://en.wikipedia.org/wiki/Graph_theory",
+      "goal": "Open the separate English Wikipedia article Graph (discrete mathematics), which defines the mathematical structure. Stop when that article is open.",
+      "expected": {
+        "url": "https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)",
+        "title": "Graph (discrete mathematics) - Wikipedia",
+        "heading": "Graph (discrete mathematics)",
+        "body_contains": ["vertices", "edges"]
+      }
+    }
+  ]
+}

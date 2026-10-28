@@ -379,7 +379,8 @@ def main():
                             row = run_task(
                                 modules["agent"],
                                 task,
-                                f"{base_url}/fixture.html?scenario={task['scenario']}",
+                                task.get("url")
+                                or f"{base_url}/fixture.html?scenario={task['scenario']}",
                                 destination,
                                 max_decisions=args.max_decisions,
                                 task_timeout=args.task_timeout,

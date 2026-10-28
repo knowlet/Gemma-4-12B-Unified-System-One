@@ -68,13 +68,14 @@ def load_upstream(root):
     ).strip()
     if revision != UPSTREAM_REVISION or dirty:
         raise ValueError("Jev Ultrafast must be the clean pinned upstream checkout")
-    hashes = {}
+    hashes, source_bytes = {}, {}
     for name in SOURCE_FILES:
         raw = (root / name).read_bytes()
         pinned = subprocess.check_output(["git", "-C", str(root), "show", f"HEAD:{name}"])
         if raw != pinned:
             raise ValueError(f"upstream source mismatch: {name}")
         hashes[name] = hashlib.sha256(raw).hexdigest()
+        source_bytes[name] = raw
     alias = "_s1_ultrafast_" + revision[:12]
     for name in tuple(sys.modules):
         if name == alias or name.startswith(alias + "."):
@@ -87,7 +88,23 @@ def load_upstream(root):
     module = importlib.util.module_from_spec(spec)
     sys.modules[alias] = module
     try:
-        spec.loader.exec_module(module)
+        # Build the private package in dependency order from the exact bytes
+        # just checked against Git. SourceFileLoader could otherwise reuse an
+        # unchecked timestamp-valid .pyc for a child imported by __init__.
+        for child in ("questions", "browser", "model", "agent"):
+            relative = f"jev_ultrafast/{child}.py"
+            path = root / relative
+            child_name = alias + "." + child
+            child_spec = importlib.util.spec_from_file_location(child_name, path)
+            child_module = importlib.util.module_from_spec(child_spec)
+            sys.modules[child_name] = child_module
+            exec(compile(source_bytes[relative], str(path), "exec"), child_module.__dict__)
+            setattr(module, child, child_module)
+        init_path = root / "jev_ultrafast/__init__.py"
+        exec(
+            compile(source_bytes["jev_ultrafast/__init__.py"], str(init_path), "exec"),
+            module.__dict__,
+        )
     except BaseException:
         for name in tuple(sys.modules):
             if name == alias or name.startswith(alias + "."):
@@ -103,6 +120,7 @@ def load_upstream(root):
         "source_sha256": hashes,
         "policy_modified": False,
         "transport": "playwright-cdp",
+        "python_source_loading": "compile_verified_bytes_no_pyc",
     }
 
 
@@ -236,6 +254,7 @@ def verify_final_state(expected, final_state):
     if not expected or not isinstance(expected, dict):
         raise ValueError("task needs nonempty independent final-state predicates")
     allowed = {
+        "url",
         "hash",
         "title",
         "heading",

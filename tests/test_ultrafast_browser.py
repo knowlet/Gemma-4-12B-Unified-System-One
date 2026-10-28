@@ -5,6 +5,9 @@ from __future__ import annotations
 import base64
 import importlib.util
 import json
+import os
+import py_compile
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -38,6 +41,21 @@ def test_matching_result_does_not_substitute_for_requested_filter():
     assert not result["checks"]["free_cancellation"]["passed"]
 
 
+def test_matching_title_and_heading_do_not_substitute_for_destination_url():
+    expected = {
+        "url": "https://en.wikipedia.org/wiki/Graph_theory",
+        "title": "Graph theory - Wikipedia",
+        "heading": "Graph theory",
+    }
+    state = {**expected, "url": "https://en.wikipedia.org/w/index.php?search=Graph+theory"}
+    result = RUNNER.verify_final_state(expected, state)
+    assert not result["verified_success"]
+    assert result["checks"]["title"]["passed"]
+    assert result["checks"]["heading"]["passed"]
+    assert not result["checks"]["url"]["passed"]
+    assert RUNNER.verify_final_state(expected, expected)["verified_success"]
+
+
 @pytest.mark.parametrize(
     "expected", [{}, {"unknown": 1}, {"body_contains": "Article"}, {"body_contains": []}]
 )
@@ -59,6 +77,67 @@ def test_wrong_revision_or_dirty_upstream_rejected_before_import(
     monkeypatch.setattr(RUNNER.subprocess, "check_output", lambda *_args, **_kw: next(responses))
     with pytest.raises(ValueError, match="clean pinned"):
         RUNNER.load_upstream(tmp_path)
+
+
+@pytest.fixture
+def fake_upstream_sources(tmp_path, monkeypatch):
+    sources = {
+        "jev_ultrafast/__init__.py": b"from .agent import Agent\nfrom .browser import Browser\n",
+        "jev_ultrafast/questions.py": b'VALUE = "verified"\n',
+        "jev_ultrafast/browser.py": b"class Browser: pass\n",
+        "jev_ultrafast/model.py": b"from .questions import VALUE\n",
+        "jev_ultrafast/agent.py": b"from .model import VALUE\nclass Agent: pass\n",
+        "jev_ultrafast/snapshot.js": b"() => ({})\n",
+        "jev_ultrafast/static/fixture.html": b"<!doctype html><title>fixture</title>\n",
+        "LICENSE": b"Fixture only\n",
+    }
+    for relative, raw in sources.items():
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(raw)
+
+    def git(args, **_kwargs):
+        if "rev-parse" in args:
+            return RUNNER.UPSTREAM_REVISION + "\n"
+        if "status" in args:
+            return ""
+        return sources[args[-1].removeprefix("HEAD:")]
+
+    monkeypatch.setattr(RUNNER.subprocess, "check_output", git)
+    yield tmp_path, sources
+    alias = "_s1_ultrafast_" + RUNNER.UPSTREAM_REVISION[:12]
+    for name in tuple(sys.modules):
+        if name == alias or name.startswith(alias + "."):
+            del sys.modules[name]
+
+
+def test_upstream_executes_verified_source_instead_of_timestamp_valid_pyc(fake_upstream_sources):
+    root, sources = fake_upstream_sources
+    path = root / "jev_ultrafast/questions.py"
+    # Construct a bytecode cache with the same source size and mtime. Normal
+    # timestamp-based loading would regard this different code as valid.
+    path.write_bytes(b'VALUE = "poisoned"\n')
+    old_stat = path.stat()
+    py_compile.compile(str(path), doraise=True)
+    cache = Path(importlib.util.cache_from_source(str(path)))
+    assert b"poisoned" in cache.read_bytes()
+    path.write_bytes(sources["jev_ultrafast/questions.py"])
+    os.utime(path, ns=(old_stat.st_atime_ns, old_stat.st_mtime_ns))
+    assert path.stat().st_size == old_stat.st_size
+    modules, identity = RUNNER.load_upstream(root)
+    assert modules["model"].VALUE == "verified"
+    assert modules["agent"].VALUE == "verified"
+    assert identity["python_source_loading"] == "compile_verified_bytes_no_pyc"
+
+
+def test_failed_verified_module_cleans_private_namespace(fake_upstream_sources):
+    root, sources = fake_upstream_sources
+    sources["jev_ultrafast/model.py"] = b"raise RuntimeError('fixture import failure')\n"
+    (root / "jev_ultrafast/model.py").write_bytes(sources["jev_ultrafast/model.py"])
+    with pytest.raises(RuntimeError, match="fixture import failure"):
+        RUNNER.load_upstream(root)
+    alias = "_s1_ultrafast_" + RUNNER.UPSTREAM_REVISION[:12]
+    assert not any(name == alias or name.startswith(alias + ".") for name in sys.modules)
 
 
 def fake_agent_module(*, final_state, raises=False, status="done"):

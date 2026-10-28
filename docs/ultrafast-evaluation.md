@@ -54,6 +54,14 @@ The verifier receives the task's expected DOM fields; the policy receives only
 the natural-language goal, current upstream page observation and action history.
 No expected DOM predicate or fixed action sequence enters the model request.
 
+`--manifest configs/benchmarks/ultrafast-external.json` selects the separately
+frozen Wikipedia search and cross-page tasks. They use fresh private contexts
+and exact destination URL/title/heading predicates. Initial-page observation
+confirmed candidate sizes but did not execute the goals. An external task's
+model success remains unverified until its own run has completed; fixture
+success does not fill those results. The optional native text helper is required
+when the agent chooses to type in the search field.
+
 Profiles share the same loaded weights and text helper. First-profile order
 alternates across tasks/repeats. Model load time is recorded separately, with no
 discarded first-inference samples. This reduces order bias but does not eliminate
