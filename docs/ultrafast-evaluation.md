@@ -78,6 +78,17 @@ search submission. Its original scores remain unchanged, but they cannot prove
 an actual task-success advantage. This limitation does not change the separately
 frozen external destination checks.
 
+The [first external MPS baseline](validation/2026-10-28/mps-external-browser/README.md)
+completed all twelve attempts: causal passed 3/6 and independent 0/6. Search
+hit a separate native-helper JSON failure; independent calls failed with invalid
+probabilities before generation. Exact masks and an isolated MPS kernel control
+identified unsafe fully masked sliding-padding rows. A
+[native-window batching guard](validation/2026-10-28/mps-sliding-padding/README.md)
+now avoids creating those rows on MPS. Its repaired full-checkpoint numerical
+control passes; task replay and both benchmark regressions remain separate.
+The [earlier observer run](validation/2026-10-28/mps-observer-safety/README.md)
+was invalidated for unsafe copy/conversion and supplies no acceptance evidence.
+
 Profiles share the same loaded weights and text helper. First-profile order
 alternates across tasks/repeats. Model load time is recorded separately, with no
 discarded first-inference samples. This reduces order bias but does not eliminate
@@ -141,6 +152,10 @@ unoccupied-cache trim runs after callbacks and stage boundaries, including its
 latency and before/after memory snapshots. Its OOM effectiveness remains
 unverified until the resumed stages complete. Memory limits stay unchanged.
 Completed reports require full coverage and raw-answer score replay.
+Use repeated `--additional-predecessor-pid` arguments for any additional live
+diagnostics that must finish before the resume loads its model. Their original
+identities are captured together before waiting; the selected external
+supervisor's terminal child receipt remains independently required.
 
 The 2026-10-28 attempt to rerun the existing A100 campaign was rejected before
 job creation because the Modal workspace exceeded its spend limit. Local MPS
