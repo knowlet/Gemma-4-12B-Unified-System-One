@@ -174,6 +174,34 @@ exit nonzero. It does not alter goal verification or memory limits. The trace
 records profile/kind, errors and memory snapshots; snapshots are not peaks.
 This policy is not evidence that Torch 2.8 graph-cache growth is fixed.
 
+## Optional observation stability diagnostic
+
+`--stable-observation` is disabled by default and is passed by the sequential
+launcher only when explicitly enabled. Before each original outer `tick`, it
+polls the pinned upstream marker for 250 ms of equal valid observations. The
+polling window is at most 2 s or the remaining original task budget. Unsettled,
+unavailable or error observations do not count as stable; an unsettled window
+returns to the original tick. Waiting and trace writes count in the unchanged
+policy clock, and the deadline is checked again before any new tick dispatch.
+The synchronous CDP read has no per-call timeout: 2 s is a soft polling window,
+and actual overruns remain visible.
+
+The original marker performs upstream snapshot bookkeeping and can assign IDs
+to newly observed nodes. Extra reads may advance that bookkeeping. This option
+does not filter, truncate, inject or rewrite candidate descriptions, initialize
+a separate observer, reset clocks, use expected outcomes, or bypass the original
+predict/act/DONE freshness checks. A page can still change after the quiet
+period. Its effectiveness and added latency require a new measured run; no
+historical timeout becomes a success.
+
+Enabled identities declare the fixed policy and marker-source hash. Per-task
+`observation-stability.jsonl` records hash-only samples, semantic changes,
+invalid reads/errors, actual elapsed time and soft-window/task overruns. The
+existing CDP trace retains the full underlying marker responses. Default-off
+summary fields and launcher arguments remain unchanged. See the
+[research and saved hydration witness](research/ultrafast-observation-stability.md)
+for the measured motivation and CPU-only regression boundaries.
+
 ## Two JevBench regressions
 
 Optional `--heaven-root` and `--coherence-root` run both pinned suites after the

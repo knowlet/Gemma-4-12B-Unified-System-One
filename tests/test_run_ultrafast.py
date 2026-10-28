@@ -407,3 +407,103 @@ def test_runner_rejects_unknown_oversized_head_policy_before_loading_upstream(mo
     with pytest.raises(SystemExit) as actual:
         RUNNER.main()
     assert actual.value.code == 2
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+def test_stability_flag_declares_policy_and_passes_only_the_original_marker(
+    tmp_path, monkeypatch, enabled
+):
+    output, manifest = tmp_path / "run", tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "scope": "CPU fake integration",
+                "split_policy": "fixed",
+                "tasks": [
+                    {
+                        "id": "one",
+                        "split": "development",
+                        "url": "https://example.test/",
+                        "goal": "Original goal",
+                        "expected": {"title": "Original"},
+                    }
+                ],
+            }
+        )
+    )
+    argv = [
+        "run_ultrafast.py",
+        "--upstream",
+        str(tmp_path / "upstream"),
+        "--output",
+        str(output),
+        "--manifest",
+        str(manifest),
+        "--profiles",
+        "uniform",
+        "--repeats",
+        "1",
+    ] + (["--stable-observation"] if enabled else [])
+    monkeypatch.setattr(sys, "argv", argv)
+    original_marker = "(() => original upstream MARKER)()"
+    policy = {"name": "fixed marker diagnostic", "quiet_ms": 250, "poll_window_ms": 2000}
+    modules = {
+        "browser": SimpleNamespace(MARKER=original_marker),
+        "model": SimpleNamespace(),
+        "agent": SimpleNamespace(field_text=object()),
+    }
+    observed = []
+
+    class Transport:
+        browser_version = "fake only"
+
+        def __init__(self, *args):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def set_output(self, path):
+            path.mkdir(parents=True)
+
+        def close_task(self):
+            pass
+
+    def run_task(agent, selected, url, destination, **kwargs):
+        assert agent is modules["agent"] and url == "https://example.test/"
+        observed.append(kwargs)
+        return row("uniform", selected["id"], "development", success=True, latency=10, calls=0)
+
+    monkeypatch.setitem(
+        sys.modules,
+        "ultrafast_browser",
+        SimpleNamespace(
+            IsolatedCDP=Transport,
+            fixture_server=lambda *_args: nullcontext("http://local"),
+            load_upstream=lambda *_args: (modules, {}),
+            run_task=run_task,
+            STABLE_OBSERVATION_POLICY=policy,
+        ),
+    )
+    monkeypatch.setattr(RUNNER.importlib.metadata, "version", lambda _name: "fake-version")
+    monkeypatch.setattr(RUNNER.platform, "platform", lambda: "fake-platform")
+    monkeypatch.setattr(RUNNER.subprocess, "check_output", lambda *args, **kwargs: "fake head")
+    monkeypatch.setattr(
+        RUNNER, "GemmaBackend", lambda *args, **kwargs: pytest.fail("no real model")
+    )
+    assert RUNNER.main() == 0
+    identity = json.loads((output / "identity.json").read_text())
+    assert len(observed) == 1
+    if enabled:
+        assert identity["stable_observation"] == {
+            "enabled": True,
+            "policy": policy,
+            "marker_expression_sha256": hashlib.sha256(original_marker.encode()).hexdigest(),
+        }
+        assert observed[0]["stable_observation_marker"] == original_marker
+    else:
+        assert "stable_observation" not in identity
+        assert "stable_observation_marker" not in observed[0]

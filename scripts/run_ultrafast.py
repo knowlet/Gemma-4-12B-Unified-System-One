@@ -306,6 +306,7 @@ def main():
     )
     parser.add_argument("--native-text-helper", action="store_true")
     parser.add_argument("--mps-call-maintenance", action="store_true")
+    parser.add_argument("--stable-observation", action="store_true")
     parser.add_argument(
         "--oversized-head-policy", choices=("reject", "hierarchical"), default="reject"
     )
@@ -398,6 +399,16 @@ def main():
         },
         "reported_cost_usd": None,
     }
+    if args.stable_observation:
+        from ultrafast_browser import STABLE_OBSERVATION_POLICY
+
+        identity["stable_observation"] = {
+            "enabled": True,
+            "policy": copy.deepcopy(STABLE_OBSERVATION_POLICY),
+            "marker_expression_sha256": hashlib.sha256(
+                modules["browser"].MARKER.encode()
+            ).hexdigest(),
+        }
     write_json(args.output / "identity.json", identity)
     rows, backends, forward_records = [], {}, []
     maintenance = None
@@ -507,6 +518,11 @@ def main():
                                 destination,
                                 max_decisions=args.max_decisions,
                                 task_timeout=args.task_timeout,
+                                **(
+                                    {"stable_observation_marker": modules["browser"].MARKER}
+                                    if args.stable_observation
+                                    else {}
+                                ),
                             )
                             transport.close_task()
                             row.update(

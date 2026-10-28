@@ -1,16 +1,19 @@
 """Unmodified Jev Ultrafast policy on isolated Chromium, with independent outcomes.
 
-Only the CDP transport is substituted. The upstream snapshot, freshness guards,
-operation/target selection and action executor remain the pinned source bytes.
+Default execution substitutes only the CDP transport. An opt-in diagnostic adds
+an outer observation wait before each tick. The upstream snapshot, freshness
+guards, operation/target selection and action executor remain pinned source bytes.
 The local fixture is public integration screening, not a real-site leaderboard.
 """
 
 from __future__ import annotations
 
 import base64
+import copy
 import hashlib
 import importlib.util
 import json
+import math
 import subprocess
 import sys
 import threading
@@ -30,6 +33,21 @@ SOURCE_FILES = (
     "jev_ultrafast/static/fixture.html",
     "LICENSE",
 )
+STABLE_OBSERVATION_POLICY = {
+    "name": "pre-tick-original-marker-quiet-v1",
+    "quiet_ms": 250,
+    "poll_window_ms": 2000,
+    "poll_interval_ms": 50,
+    "marker_source": "Unchanged pinned upstream Browser.MARKER",
+    "comparison": "Original decoded marker equality; hashes are provenance only.",
+    "window_semantics": "Soft polling window; synchronous CDP reads have no per-call timeout and may overrun.",
+    "on_unsettled": "Record and continue the original tick unless the original task deadline has expired.",
+    "budget_scope": "All waiting counts in the existing policy clock; neither task nor agent clocks are reset.",
+    "freshness_guard_modified": False,
+    "candidates_modified": False,
+    "candidate_scope": "No candidate filtering, truncation, injection, or changed descriptions; normal observation can discover changed DOM candidates.",
+    "observer_state_effects": "The original MARKER runs snapshot.js, which may initialize window.__jevFast, allocate bookkeeping node IDs, and refresh its pageKey/guard functions. No custom initialization or observer-cache reset is added.",
+}
 
 # This separate read runs after termination. Its output is never passed to the
 # policy. Fixed selectors belong to the verifier, not the model/executor.
@@ -55,6 +73,123 @@ def _append(path, value):
     with Path(path).open("a") as stream:
         stream.write(json.dumps(value, ensure_ascii=False, allow_nan=False) + "\n")
         stream.flush()
+
+
+def _marker_hash(marker):
+    raw = json.dumps(marker, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(raw.encode()).hexdigest()
+
+
+def _valid_marker(marker):
+    """The pinned marker is a ten-item semantic array, never an unavailable read."""
+    return (
+        isinstance(marker, list)
+        and len(marker) == 10
+        and all(
+            type(marker[index]) in (int, float) and math.isfinite(marker[index])
+            for index in (0, 2, 3, 4, 5)
+        )
+        and all(isinstance(marker[index], str) for index in (1, 6, 7))
+        and isinstance(marker[8], list)
+        and all(isinstance(action, dict) for action in marker[8])
+        and isinstance(marker[9], list)
+        and all(isinstance(control, list) and len(control) == 6 for control in marker[9])
+    )
+
+
+def wait_for_stable_observation(browser, marker_expression, deadline, *, clock=None, sleep=None):
+    """Read the original marker with browser/timing access only; never change policy state."""
+    if not isinstance(marker_expression, str) or not marker_expression:
+        raise ValueError("the original upstream marker expression is required")
+    if type(deadline) not in (int, float) or not math.isfinite(deadline):
+        raise ValueError("a finite monotonic task deadline is required")
+    clock, sleep = clock or time.perf_counter, sleep or time.sleep
+    started = clock()
+    window_deadline = min(started + STABLE_OBSERVATION_POLICY["poll_window_ms"] / 1000, deadline)
+    result = {
+        "policy": copy.deepcopy(STABLE_OBSERVATION_POLICY),
+        "marker_expression_sha256": hashlib.sha256(marker_expression.encode()).hexdigest(),
+        "started_monotonic": started,
+        "task_deadline_monotonic": deadline,
+        "scheduled_window_ms": max(0, window_deadline - started) * 1000,
+        "remaining_task_ms_at_start": max(0, deadline - started) * 1000,
+        "stable": False,
+        "status": None,
+        "marker_changes": 0,
+        "samples": [],
+    }
+    previous, quiet_since = None, None
+    while (before := clock()) < window_deadline:
+        sample = {
+            "started_elapsed_ms": (before - started) * 1000,
+            "raw_marker_sha256": None,
+            "marker_type": None,
+            "valid": False,
+            "changed": None,
+            "error": None,
+        }
+        marker = None
+        try:
+            marker = browser.evaluate(marker_expression)
+            sample["marker_type"] = type(marker).__name__
+            sample["raw_marker_sha256"] = _marker_hash(marker)
+            if not _valid_marker(marker):
+                raise ValueError(
+                    "upstream marker is unavailable or does not match its semantic-array contract"
+                )
+            sample["valid"] = True
+        except Exception as exc:
+            message = str(exc)
+            sample["error"] = {"type": type(exc).__name__, "message": message[:1000]}
+            if len(message) > 1000:
+                sample["error"].update(
+                    message_truncated=True,
+                    message_sha256=hashlib.sha256(message.encode()).hexdigest(),
+                )
+        observed = clock()
+        sample["returned_elapsed_ms"] = (observed - started) * 1000
+        sample["read_validate_hash_ms"] = (observed - before) * 1000
+        if sample["valid"]:
+            sample["changed"] = None if previous is None else marker != previous
+            if previous is None or sample["changed"]:
+                if previous is not None:
+                    result["marker_changes"] += 1
+                quiet_since = observed
+            previous = copy.deepcopy(marker)
+            sample["quiet_ms"] = (observed - quiet_since) * 1000
+        else:
+            previous, quiet_since = None, None
+            sample["quiet_ms"] = 0
+        result["samples"].append(sample)
+        # A blocking read can return after either soft window or task deadline.
+        # Its result remains evidence, but cannot retroactively satisfy quiet time.
+        if observed > window_deadline:
+            break
+        quiet_deadline = (
+            quiet_since + STABLE_OBSERVATION_POLICY["quiet_ms"] / 1000
+            if quiet_since is not None
+            else None
+        )
+        if quiet_deadline is not None and observed >= quiet_deadline:
+            result.update(stable=True, status="stable")
+            break
+        remaining = window_deadline - observed
+        if remaining <= 0:
+            break
+        pause = min(STABLE_OBSERVATION_POLICY["poll_interval_ms"] / 1000, remaining)
+        if quiet_deadline is not None:
+            pause = min(pause, max(0, quiet_deadline - observed))
+        sleep(pause)
+    finished = clock()
+    result.update(
+        elapsed_ms=(finished - started) * 1000,
+        poll_window_overrun_ms=max(0, finished - window_deadline) * 1000,
+        task_deadline_overrun_ms=max(0, finished - deadline) * 1000,
+        task_deadline_reached=finished >= deadline,
+    )
+    if result["status"] is None:
+        result["status"] = "task_deadline" if finished >= deadline else "poll_window_elapsed"
+    return result
 
 
 def load_upstream(root):
@@ -287,7 +422,16 @@ def verify_final_state(expected, final_state):
     return {"verified_success": all(row["passed"] for row in checks.values()), "checks": checks}
 
 
-def run_task(agent_module, task, url, output, *, max_decisions=12, task_timeout=90):
+def run_task(
+    agent_module,
+    task,
+    url,
+    output,
+    *,
+    max_decisions=12,
+    task_timeout=90,
+    stable_observation_marker=None,
+):
     """Persist all exits, and never feed the independent oracle into the agent.
 
     The timeout is checked between commands, not a hard interruption of an
@@ -295,6 +439,10 @@ def run_task(agent_module, task, url, output, *, max_decisions=12, task_timeout=
     """
     if max_decisions < 1 or task_timeout <= 0:
         raise ValueError("positive task budgets required")
+    if stable_observation_marker is not None and (
+        not isinstance(stable_observation_marker, str) or not stable_observation_marker
+    ):
+        raise ValueError("the original upstream marker expression is required")
     verify_final_state(task["expected"], {})
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
@@ -304,6 +452,7 @@ def run_task(agent_module, task, url, output, *, max_decisions=12, task_timeout=
     error, verification_error, screenshot_error, close_error = None, None, None, None
     termination, cycles = "initialization", 0
     policy_wall_ms = None
+    stability_records = []
 
     def save_snapshot(phase):
         nonlocal snapshot
@@ -322,6 +471,21 @@ def run_task(agent_module, task, url, output, *, max_decisions=12, task_timeout=
             if time.perf_counter() - started >= task_timeout:
                 termination = "task_timeout"
                 break
+            if stable_observation_marker is not None:
+                waiting = wait_for_stable_observation(
+                    agent.browser, stable_observation_marker, started + task_timeout
+                )
+                waiting["before_decision_cycle"] = cycles + 1
+                waiting["policy_elapsed_ms_at_return"] = (
+                    waiting["started_monotonic"] - started
+                ) * 1000 + waiting["elapsed_ms"]
+                stability_records.append(waiting)
+                _append(output / "observation-stability.jsonl", waiting)
+                # Include the wait and its trace I/O in the unchanged task
+                # budget. No new tick follows a late synchronous CDP return.
+                if time.perf_counter() - started >= task_timeout:
+                    termination = "task_timeout"
+                    break
             cycles += 1
             agent.command("tick")
             save_snapshot("after_tick")
@@ -398,5 +562,28 @@ def run_task(agent_module, task, url, output, *, max_decisions=12, task_timeout=
         "verification": verification,
         "timeout_semantics": "checked between commands; inference is not interrupted",
     }
+    if stable_observation_marker is not None:
+        summary["stable_observation"] = {
+            "enabled": True,
+            "policy": copy.deepcopy(STABLE_OBSERVATION_POLICY),
+            "marker_expression_sha256": hashlib.sha256(
+                stable_observation_marker.encode()
+            ).hexdigest(),
+            "wait_trace": "observation-stability.jsonl" if stability_records else None,
+            "waits": len(stability_records),
+            "stable_waits": sum(row["stable"] for row in stability_records),
+            "elapsed_ms": math.fsum(row["elapsed_ms"] for row in stability_records),
+            "poll_window_overrun_ms": math.fsum(
+                row["poll_window_overrun_ms"] for row in stability_records
+            ),
+            "task_deadline_overrun_ms": math.fsum(
+                row["task_deadline_overrun_ms"] for row in stability_records
+            ),
+            "error_observations": sum(
+                sample["error"] is not None
+                for row in stability_records
+                for sample in row["samples"]
+            ),
+        }
     _write(output / "summary.json", summary)
     return summary

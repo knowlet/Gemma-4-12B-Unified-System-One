@@ -115,6 +115,7 @@ def test_capture_all_original_handles_then_wait_before_mps_child(queued_args, mo
     assert argv[argv.index("--task-timeout") + 1] == "180"
     assert "--native-text-helper" in argv
     assert "--mps-call-maintenance" not in argv and "--oversized-head-policy" not in argv
+    assert "--stable-observation" not in argv
     assert "--heaven-root" not in argv and "--coherence-root" not in argv
     assert kwargs["shell"] is False
     assert kwargs["cwd"] == RUNNER.ROOT
@@ -127,6 +128,7 @@ def test_capture_all_original_handles_then_wait_before_mps_child(queued_args, mo
     assert result["candidate_prefix_requested"] is False
     assert result["mps_call_maintenance_requested"] is False
     assert result["oversized_head_policy"] == "reject"
+    assert "stable_observation_requested" not in result
     assert result["predecessors"][1]["identity"] == identity(command="python prefix.py")
     assert result["predecessors"][1]["status"] == "original_exited"
     assert (queued_args.output / "child.log").read_bytes() == b"child output retained\n"
@@ -171,6 +173,48 @@ def test_default_child_argv_is_identical_to_original_launcher(queued_args):
         "180",
         "--native-text-helper",
     ]
+
+
+def test_stability_flag_is_declared_before_wait_and_frozen_sources_are_bound(
+    queued_args, monkeypatch
+):
+    baseline = RUNNER.child_argv(queued_args)
+    queued_args.stable_observation = True
+
+    def waiting():
+        captured = receipt(queued_args)
+        assert captured["stable_observation_requested"] is True
+        for name in (
+            "scripts/run_ultrafast.py",
+            "scripts/ultrafast_browser.py",
+            "scripts/run_ultrafast_after.py",
+        ):
+            archived = queued_args.output / "sources" / name
+            assert archived.read_bytes() == (RUNNER.ROOT / name).read_bytes()
+            assert captured["source_sha256"][name] == RUNNER.guard.sha256(archived)
+        return None
+
+    _, _, spawned = fake_processes(
+        monkeypatch, {89007: [identity(), waiting], 97017: [identity(), None]}
+    )
+    assert RUNNER.supervise(queued_args) == 0
+    assert spawned[0][0] == baseline + ["--stable-observation"]
+    assert receipt(queued_args)["child"]["argv"] == spawned[0][0]
+
+
+def test_queued_stability_source_change_aborts_before_child(queued_args, monkeypatch):
+    queued_args.stable_observation = True
+
+    def changed():
+        (RUNNER.ROOT / "scripts/ultrafast_browser.py").write_text("changed while queued")
+        return None
+
+    _, _, spawned = fake_processes(
+        monkeypatch, {89007: [identity(), changed], 97017: [identity(), None]}
+    )
+    with pytest.raises(RuntimeError, match="changed while queued"):
+        RUNNER.supervise(queued_args)
+    assert not spawned and receipt(queued_args)["status"] == "error"
 
 
 @pytest.mark.parametrize(

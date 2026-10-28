@@ -127,6 +127,8 @@ def child_argv(args):
         argv.append("--mps-call-maintenance")
     if args.oversized_head_policy != "reject":
         argv.extend(["--oversized-head-policy", args.oversized_head_policy])
+    if getattr(args, "stable_observation", False):
+        argv.append("--stable-observation")
     return argv
 
 
@@ -148,6 +150,8 @@ def supervise(args):
         "child": None,
         "reported_cost_usd": None,
     }
+    if getattr(args, "stable_observation", False):
+        receipt["stable_observation_requested"] = True
 
     def save():
         guard.write_json(receipt_path, receipt)
@@ -228,6 +232,7 @@ def main(argv=None):
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--task-timeout", type=float, default=180)
     parser.add_argument("--mps-call-maintenance", action="store_true")
+    parser.add_argument("--stable-observation", action="store_true")
     parser.add_argument(
         "--oversized-head-policy", choices=("reject", "hierarchical"), default="reject"
     )

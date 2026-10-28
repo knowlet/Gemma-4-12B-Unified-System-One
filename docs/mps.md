@@ -163,3 +163,64 @@ Tiny CPU models test cache isolation, native media and sliding-window behavior.
 They cannot establish 12B BF16/MPS parity, latency gains, browser success or
 benchmark acceptance. A successful bounded MPS experiment must still be followed
 by browser and both JevBench regressions before any default or quality claim.
+
+
+## Isolated runtime and shape controls, 2026-10-28
+
+The original dependency pins remain the reference. An isolated
+[Torch 2.14.1 environment](validation/2026-10-28/mps-torch214/README.md)
+corrects the small masked-SDPA/readback probes and substantially reduces retained
+driver memory in the fixed twenty-request control. It still fails the original
+0.01 probability comparison, with seven changed argmax heads. The new runtime
+has not been adopted as the default.
+
+Its [external browser candidate](validation/2026-10-28/mps-torch214-browser/README.md)
+passes 6/12 frozen attempts and its causal public231 audit has 231 valid,
+197 correct decisions. Search correctly types the generated value and exposes
+the bridge's 52-candidate limit. The optional
+[hierarchy diagnostic](validation/2026-10-28/mps-hierarchy-browser/README.md)
+retains all 57 observed candidates and reaches the correct article for both
+profiles, but both attempts exceed 180 seconds. Those remain strict failures.
+Full coherence and the independent public regression are still incomplete at
+this evidence checkpoint; bounded process epochs preserve prior successful
+answers while recording new inference separately.
+
+The [A/B/D shape control](validation/2026-10-28/mps-prefix-shapes/README.md)
+uses complete batched prompts, complete singleton prompts and native prefix
+reuse on one consumed development observation. All three pairwise probability
+gates fail, including complete-batch versus singleton (0.014570). Prefix reuse
+also differs from the singleton path (0.048472); all argmax agree and repeated
+runs of each variant are exact. This separates observed padding effects from
+unresolved prefix/suffix-shape effects. The instrumented timings do not establish
+end-to-end speed acceptance, and prefix reuse remains experimental.
+
+Two separate follow-up experiments are documented in the
+[cache-maintenance research](research/mps-cache-maintenance.md) and
+[observation-stability research](research/ultrafast-observation-stability.md).
+Both preserve the frozen numerical and task-budget gates. They investigate
+compiled-graph reuse and wasted predictions on changing page observations,
+respectively; neither is an accepted optimization or a default change.
+
+
+The cache control retains four ABBA blocks of the same three original
+development observations. A clears after every prediction; B clears only at
+block boundaries. Complete-block timings include all boundary clears and trace
+I/O, and total schedule timing also includes final cleanup. The fixed 0.01,
+argmax and native-shape gates are independent of these descriptive timings.
+Queue it behind the complete benchmark supervisor rather than running models
+in parallel:
+
+```bash
+artifacts/mps-next-env/bin/python scripts/benchmark_mps_maintenance.py \
+  --trace-root artifacts/ultrafast/20261028-native-01 \
+  --model artifacts/release/checkpoint \
+  --output artifacts/mps-maintenance/your-unique-control \
+  --wait-for-supervisor-receipt artifacts/ultrafast/20261028-torch214-benchmark-epochs-01/receipt.json
+```
+
+The control freezes input/source bytes and runtime package identities before
+waiting. It verifies the captured supervisor and every recorded model child are
+terminal before importing Torch or loading a model. Real inference, memory,
+cleanup and persistence failures stop subsequent calls and remain failures.
+The opt-in browser `--stable-observation` experiment is documented separately in
+[Ultrafast evaluation](ultrafast-evaluation.md#optional-observation-stability-diagnostic).
