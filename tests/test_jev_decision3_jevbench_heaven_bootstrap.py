@@ -32,11 +32,11 @@ def setup(tmp_path, monkeypatch):
         path.parent.mkdir(parents=True, exist_ok=True)
         raw = ("synthetic = " + repr(relative) + "\n").encode()
         if path.name == boot.OWNER:
-            raw = b"SOURCE_ONLY = True\ndef _validate_plan(plan): pass\n"
+            raw = b"\nSOURCE_ONLY = True\ndef _validate_plan(plan): pass\n"
         elif path.name == boot.SUPERVISOR:
-            raw = b"SOURCE_ONLY = True\ndef _unit_args(p, path, sha, release): return ['systemd-run', '--fixed', p['python'], '-B', '-s', str(release), '--plan', str(path), '--plan-sha256', sha]\n"
+            raw = b"\nSOURCE_ONLY = True\ndef _unit_args(p, path, sha, release): return ['systemd-run', '--fixed', p['python'], '-B', '-s', str(release), '--plan', str(path), '--plan-sha256', sha]\n"
         elif path.name in ("jev_decision3_jevbench_generic.py", "jev_gpu_forward_lease.py"):
-            raw = b"SOURCE_ONLY = True\n# synthetic\n"
+            raw = b"\nSOURCE_ONLY = True\n# synthetic\n"
         path.write_bytes(raw)
         sources[str(path)] = sha(raw)
         public[relative] = sha(raw)
@@ -56,7 +56,7 @@ def setup(tmp_path, monkeypatch):
     ):
         source, target = scripts / held, scripts / released
         if not source.exists():
-            source.write_bytes(b"SOURCE_ONLY = True\n# synthetic\n")
+            source.write_bytes(b"\nSOURCE_ONLY = True\n# synthetic\n")
         target.write_bytes(
             source.read_bytes().replace(b"SOURCE_ONLY = True", b"SOURCE_ONLY = False")
         )

@@ -21,7 +21,7 @@ from pathlib import Path
 SOURCE_ONLY = True
 ROOT = Path(__file__).absolute().parent.parent
 PREPARER = ROOT / "scripts/jev_decision3_jevbench_coherence_prepare.py"
-PREPARER_SHA = "d7976a8ae7f4da85e865a01ce4a4a81f20272449fa94962cf9fd86c0526cc3a1"
+PREPARER_SHA = "fe9aa06415157582b2f7af161306c03aa8cfb7da8c9c03f2e9553a493d870db7"
 CONFIG = ROOT / "configs/benchmarks/jevbench-coherence-public.json"
 CONFIG_SHA = "ebacca34e3d4193419e43629f73fa5fed6617834415ff87ff6d12a09b6d3904a"
 DESTINATION = Path("/tmp/jev-coherence-mini-controlled-snapshot")

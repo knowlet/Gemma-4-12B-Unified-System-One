@@ -27,8 +27,8 @@ SCRIPTS = ROOT / "scripts"
 BASE = ROOT / "artifacts/jev-runtime/decision3-heaven-v2"
 OFFICIAL = Path("/tmp/jev-heaven-public-inventory-20261027")
 BOOT_NAME = "jev_decision3_jevbench_heaven_bootstrap.py"
-BOOT_SHA = "b6c81c76c5344ea37527dcff921f2198e1328a90eadb3ac2e9b27c7545d5d7df"
-MARKER = b"SOURCE_ONLY" + b" = True"
+BOOT_SHA = "3db4d0000c12ef195c3977cb290e519f47916abceedf9025079ad3721f65016c"
+MARKER = b"\nSOURCE_ONLY" + b" = True\n"
 OFFICIAL_FILES = {
     "datasets/public/original.jsonl": "5c2414edb3006b8bfcb70fda433f0f9ca015759433849f8d3104328a1f7c4180",
     "datasets/public/easy.jsonl": "231df3c2c8e88a1a8c137ebe85de96ba70fabd330849098ac7b3c52c70b7172b",
@@ -215,7 +215,7 @@ def prepare():
         source, release = raws[str(SCRIPTS / held)], raws[str(SCRIPTS / active)]
         need(
             source.count(MARKER) == 1
-            and release == source.replace(MARKER, b"SOURCE_ONLY = False", 1),
+            and release == source.replace(MARKER, b"\nSOURCE_ONLY = False\n", 1),
             "existing release differs",
         )
     _official(raws[str(ROOT / "configs/benchmarks/jevbench-public.json")])
@@ -258,7 +258,7 @@ def prepare():
         for index, (held, release) in enumerate(pairs):
             source = raws[str(SCRIPTS / held)]
             need(source.count(MARKER) == 1, "one source gate required")
-            released = source.replace(MARKER, b"SOURCE_ONLY = False", 1)
+            released = source.replace(MARKER, b"\nSOURCE_ONLY = False\n", 1)
             temp, target = (
                 SCRIPTS / (".jev-heaven-" + nonce + "-" + str(index) + ".tmp"),
                 SCRIPTS / release,

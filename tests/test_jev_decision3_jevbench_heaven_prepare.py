@@ -57,7 +57,12 @@ def fake(tmp_path, monkeypatch):
             "jev_decision3_jevbench_generic.py",
             "jev_gpu_forward_lease.py",
         ):
-            raw = b"SOURCE_ONLY = True\n# synthetic\n"
+            raw = b"\nSOURCE_ONLY = True\n# synthetic\n"
+        if path.name in (boot.OWNER, boot.SUPERVISOR):
+            raw = (Path(__file__).resolve().parents[1] / relative).read_bytes()
+            assert sha(raw) == real_boot.PUBLIC[relative]
+            if path.name == boot.SUPERVISOR:
+                assert raw.count(b"SOURCE_ONLY = True") == 2
         path.write_bytes(raw)
         public[relative] = sha(raw)
     for held, release in (
@@ -78,7 +83,8 @@ def fake(tmp_path, monkeypatch):
         runtime[str(path)] = sha(path.read_bytes())
     boot.runtime_pins = lambda: runtime
     bootstrap = scripts / boot.BOOTSTRAP
-    bootstrap.write_bytes(b"SOURCE_ONLY = True\n# synthetic bootstrap\n")
+    original_bootstrap = Path(__file__).resolve().parents[1] / "scripts" / boot.BOOTSTRAP
+    bootstrap.write_bytes(original_bootstrap.read_bytes())
     monkeypatch.setattr(prep, "BOOT_SHA", sha(bootstrap.read_bytes()))
     payload, body = npy()
     delta_dir = root / "deltas"
@@ -153,9 +159,11 @@ def test_fresh_private_plan_and_gate_only_v2_releases(fake):
     ):
         original, release = prep.SCRIPTS / held, prep.SCRIPTS / released
         assert release.read_bytes() == original.read_bytes().replace(
-            prep.MARKER, b"SOURCE_ONLY = False", 1
+            prep.MARKER, b"\nSOURCE_ONLY = False\n", 1
         )
         assert plan["source_pins"][str(release)] == sha(release.read_bytes())
+    supervisor = (prep.SCRIPTS / boot.SUPERVISOR_RELEASE).read_bytes()
+    assert b'marker = b"SOURCE_ONLY = True"' in supervisor
 
 
 def test_synthetic_plan_is_accepted_by_actual_bootstrap_validator(fake, monkeypatch):
@@ -175,6 +183,14 @@ def test_synthetic_plan_is_accepted_by_actual_bootstrap_validator(fake, monkeypa
     plan = real_boot._plan(result["plan"], result["sha256"])
     verified = real_boot._verified_bytes(plan)
     assert set(verified) == set(plan["source_pins"]) == boot.source_set()
+    supervisor = prep.SCRIPTS / boot.SUPERVISOR_RELEASE
+    raw = supervisor.read_bytes().replace(
+        b'marker = b"SOURCE_ONLY = True"', b'marker = b"SOURCE_ONLY = False"', 1
+    )
+    supervisor.write_bytes(raw)
+    plan["source_pins"][str(supervisor)] = sha(raw)
+    with pytest.raises(ValueError, match="gate-only"):
+        real_boot._verified_bytes(plan)
 
 
 def test_existing_release_refuses_without_overwrite(fake):

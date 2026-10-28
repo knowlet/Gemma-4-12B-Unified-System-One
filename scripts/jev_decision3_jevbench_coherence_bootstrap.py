@@ -260,10 +260,10 @@ def _verified_bytes(plan):
         ("jev_gpu_forward_lease.py", "jev_gpu_forward_lease_release_20261027.py"),
     ):
         source, target = files[str(SCRIPTS / held)], files[str(SCRIPTS / release)]
-        marker = b"SOURCE_ONLY" + b" = True"
+        marker = b"\nSOURCE_ONLY" + b" = True\n"
         need(
             source.count(marker) == 1
-            and target == source.replace(marker, b"SOURCE_ONLY = False", 1),
+            and target == source.replace(marker, b"\nSOURCE_ONLY = False\n", 1),
             "gate-only release required",
         )
     manifest = (

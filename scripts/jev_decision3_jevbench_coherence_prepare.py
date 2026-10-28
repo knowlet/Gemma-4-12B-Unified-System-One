@@ -27,8 +27,8 @@ SCRIPTS = ROOT / "scripts"
 BASE = ROOT / "artifacts/jev-runtime/decision3-coherence-v2"
 OFFICIAL = Path("/tmp/jev-coherence-mini-controlled-snapshot")
 BOOT_NAME = "jev_decision3_jevbench_coherence_bootstrap.py"
-BOOT_SHA = "e0014c8998e619f49517a7b03ad531f02eefc155bb722754083754611d6226ad"
-MARKER = b"SOURCE_ONLY" + b" = True"
+BOOT_SHA = "3aa21e9110270c11a290e067840b43efc8702d35d554afa240dc60a886431d78"
+MARKER = b"\nSOURCE_ONLY" + b" = True\n"
 MINI_ASSETS = frozenset(
     "src/jevbench/suites/" + name
     for name in (
@@ -305,7 +305,7 @@ def prepare():
         source, release = raws[str(SCRIPTS / held)], raws[str(SCRIPTS / active)]
         need(
             source.count(MARKER) == 1
-            and release == source.replace(MARKER, b"SOURCE_ONLY = False", 1),
+            and release == source.replace(MARKER, b"\nSOURCE_ONLY = False\n", 1),
             "existing release differs",
         )
     _official(raws[str(ROOT / "configs/benchmarks/jevbench-coherence-public.json")])
@@ -348,7 +348,7 @@ def prepare():
         for index, (held, release) in enumerate(pairs):
             source = raws[str(SCRIPTS / held)]
             need(source.count(MARKER) == 1, "one source gate required")
-            released = source.replace(MARKER, b"SOURCE_ONLY = False", 1)
+            released = source.replace(MARKER, b"\nSOURCE_ONLY = False\n", 1)
             temp, target = (
                 SCRIPTS / (".jev-coherence-" + nonce + "-" + str(index) + ".tmp"),
                 SCRIPTS / release,
