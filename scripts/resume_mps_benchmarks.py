@@ -19,6 +19,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,6 +45,163 @@ ALLOCATOR_POLICY = {
     "limits_changed": False,
     "interpretation": "Hypothesis: release unoccupied allocator buffers; no performance or OOM remediation claim before measurement.",
 }
+
+
+class EpochCheckpoint(BaseException):
+    """Control flow outside official Exception-based model/error scoring."""
+
+    def __init__(self, evidence):
+        super().__init__(evidence["reason"])
+        self.evidence = evidence
+
+
+class EpochFailure(BaseException):
+    """A real failure stops the epoch; it is never retried as a checkpoint."""
+
+    def __init__(self, evidence):
+        super().__init__(evidence["error"]["message"])
+        self.evidence = evidence
+
+
+class EpochBudget:
+    """Latch before dispatch; queued callbacks cannot resume GPU work afterward."""
+
+    def __init__(self, max_new_calls=20, max_driver_fraction=0.8):
+        if type(max_new_calls) is not int or max_new_calls < 1 or not 0 < max_driver_fraction <= 1:
+            raise ValueError("positive epoch calls and driver fraction in (0,1] required")
+        self.max_new_calls, self.max_driver_fraction = max_new_calls, max_driver_fraction
+        self.new_calls, self.checkpoint, self.failure = 0, None, None
+        self.lock = threading.Lock()
+
+    def ensure_running(self):
+        with self.lock:
+            if self.failure is not None:
+                raise EpochFailure(copy.deepcopy(self.failure))
+            if self.checkpoint is not None:
+                raise EpochCheckpoint(copy.deepcopy(self.checkpoint))
+
+    def before_new_call(self, torch):
+        with self.lock:
+            if self.failure is not None:
+                raise EpochFailure(copy.deepcopy(self.failure))
+            if self.checkpoint is not None:
+                raise EpochCheckpoint(copy.deepcopy(self.checkpoint))
+            evidence = {
+                "new_calls": self.new_calls,
+                "max_new_calls": self.max_new_calls,
+                "max_driver_fraction": self.max_driver_fraction,
+                "memory": None,
+            }
+            if self.new_calls >= self.max_new_calls:
+                evidence["reason"] = "new_model_call_budget"
+            else:
+                try:
+                    torch.mps.synchronize()
+                    memory = {
+                        "current_allocated_bytes": torch.mps.current_allocated_memory(),
+                        "driver_allocated_bytes": torch.mps.driver_allocated_memory(),
+                        "recommended_max_bytes": torch.mps.recommended_max_memory(),
+                    }
+                    if memory["recommended_max_bytes"] <= 0:
+                        raise RuntimeError(
+                            "recommended MPS memory unavailable; epoch cannot dispatch"
+                        )
+                except Exception as exc:
+                    self.failure = {
+                        "error": {"type": type(exc).__name__, "message": str(exc)},
+                        "scope": "pre_dispatch_allocator_observation",
+                        "new_calls": self.new_calls,
+                    }
+                    raise EpochFailure(copy.deepcopy(self.failure)) from exc
+                evidence["memory"] = memory
+                if (
+                    memory["driver_allocated_bytes"]
+                    >= self.max_driver_fraction * memory["recommended_max_bytes"]
+                ):
+                    evidence["reason"] = "driver_memory_fraction"
+            if "reason" in evidence:
+                self.checkpoint = evidence
+                raise EpochCheckpoint(copy.deepcopy(evidence))
+            self.new_calls += 1
+
+    def fail(self, error, scope):
+        with self.lock:
+            if self.failure is None:
+                self.failure = {
+                    "error": copy.deepcopy(error),
+                    "scope": scope,
+                    "new_calls": self.new_calls,
+                }
+            evidence = copy.deepcopy(self.failure)
+        raise EpochFailure(evidence)
+
+
+def canonical_hash(value):
+    # Native prompts preserve object/candidate/question order. Sorting these
+    # keys could alias different model inputs despite equal JSON object values.
+    return hashlib.sha256(
+        json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode()
+    ).hexdigest()
+
+
+class PublicResponseCache:
+    """Immutable first-success responses, never labels or invented score values."""
+
+    def __init__(self, root, identity):
+        self.identity = copy.deepcopy(identity)
+        self.identity_sha256 = canonical_hash(identity)
+        self.root = Path(root) / self.identity_sha256
+        self.root.mkdir(parents=True, exist_ok=True)
+
+    def path(self, request):
+        return self.root / (canonical_hash(request) + ".json")
+
+    def read(self, request, validate):
+        path = self.path(request)
+        if not path.exists():
+            return None
+        record = json.loads(path.read_text())
+        if (
+            record.get("identity") != self.identity
+            or record.get("identity_sha256") != self.identity_sha256
+            or record.get("request") != request
+            or record.get("request_sha256") != canonical_hash(request)
+            or record.get("response_sha256") != canonical_hash(record.get("response"))
+        ):
+            raise ValueError("immutable public response cache identity/content differs")
+        validate(record["response"])
+        return record
+
+    def store(self, request, response, origin, validate):
+        validate(response)
+        record = {
+            "schema_version": 1,
+            "identity": self.identity,
+            "identity_sha256": self.identity_sha256,
+            "request": copy.deepcopy(request),
+            "request_sha256": canonical_hash(request),
+            "response": copy.deepcopy(response),
+            "response_sha256": canonical_hash(response),
+            "origin": origin,
+            "latency_scope": "Original dispatched inference plus maintenance; cache lookup is not fresh model latency.",
+        }
+        path = self.path(request)
+        # Publish a complete file atomically without replacing any prior answer.
+        temporary = path.with_name(path.name + f".{os.getpid()}.{threading.get_ident()}.tmp")
+        try:
+            with temporary.open("x") as stream:
+                stream.write(json.dumps(record, ensure_ascii=False, allow_nan=False) + "\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+            try:
+                os.link(temporary, path)
+            except FileExistsError:
+                existing = self.read(request, validate)
+                if existing["response"] != response:
+                    raise ValueError("immutable public first-success answer cannot be replaced")
+        finally:
+            temporary.unlink(missing_ok=True)
+        return path
 
 
 def now():
@@ -562,6 +720,15 @@ def run_stages(args, receipt, save):
         raise ValueError("resume runtime differs from original MPS/temperature policy")
     receipt["runtime_loaded"] = shared.metadata
     receipt["allocator_maintenance_policy"] = copy.deepcopy(ALLOCATOR_POLICY)
+    budget = EpochBudget(
+        getattr(args, "max_new_calls", 20), getattr(args, "max_driver_fraction", 0.8)
+    )
+    receipt["epoch_budget"] = {
+        "max_new_calls": budget.max_new_calls,
+        "max_driver_fraction": budget.max_driver_fraction,
+        "new_calls": 0,
+        "checkpoint_control": "Latched BaseException before the next uncached model dispatch.",
+    }
     suite = runtime.jb.load_suite("jevbench-mini")
     expected_suite = {**suite.record(), "plan": "tests.jsonl.gz"}
     receipt["suite_identity"] = expected_suite
@@ -580,6 +747,7 @@ def run_stages(args, receipt, save):
             "status": "running",
             "started_at_utc": now(),
             "model_calls": 0,
+            "public_cache_hits": 0,
             "reported_cost_usd": None,
             "original": str(original),
             "cache_before": None,
@@ -594,7 +762,10 @@ def run_stages(args, receipt, save):
             stage["allocator_maintenance_before"] = maintain_mps_allocator(runtime.torch)
             save()
             if stage["allocator_maintenance_before"]["error"]:
-                raise RuntimeError("MPS stage-boundary allocator maintenance failed")
+                budget.fail(
+                    stage["allocator_maintenance_before"]["error"],
+                    "stage_allocator_maintenance_before",
+                )
             completed = False
             if original.exists() and kind == "public231":
                 try:
@@ -651,8 +822,70 @@ def run_stages(args, receipt, save):
             backend.question_mode = profile
             backend.metadata = {**shared.metadata, "question_mode": profile}
             trace = folder / f"{kind}-model-calls.jsonl"
+            response_cache = None
+            if kind == "public231":
+                cache_identity = {
+                    "source_inventory": receipt["source_inventory"],
+                    "checkpoint": receipt["checkpoint"],
+                    "runtime": backend.metadata,
+                    "profile": profile,
+                    "packages": receipt["packages"],
+                    "allocator_policy": ALLOCATOR_POLICY,
+                    "epoch_limits": {
+                        "calls": budget.max_new_calls,
+                        "driver_fraction": budget.max_driver_fraction,
+                    },
+                }
+                public_cache_root = (
+                    getattr(args, "public_cache_root", None)
+                    or args.output.parent / "immutable-public-responses"
+                )
+                response_cache = PublicResponseCache(public_cache_root, cache_identity)
+                stage["public_response_cache"] = {
+                    "path": str(response_cache.root),
+                    "identity_sha256": response_cache.identity_sha256,
+                    "latency_scope": "Cached reconstruction is not fresh model latency; original inference observations remain in immutable cache origins and model-call traces.",
+                }
 
             def predict(state, questions):
+                budget.ensure_running()
+                payload = {"state": state, "questions": questions}
+
+                def validator(response):
+                    return runtime.backends.normalize_response(
+                        runtime.contracts.DecisionRequest.model_validate(payload), response
+                    )
+
+                if response_cache is not None:
+                    lookup_started = time.perf_counter()
+                    try:
+                        cached = response_cache.read(payload, validator)
+                    except Exception as exc:
+                        budget.fail(
+                            {"type": type(exc).__name__, "message": str(exc)},
+                            "public_response_cache_read",
+                        )
+                    if cached is not None:
+                        stage["public_cache_hits"] += 1
+                        event = {
+                            "origin": "immutable_first_success_response_cache",
+                            "request_sha256": canonical_hash(payload),
+                            "entry_path": str(response_cache.path(payload)),
+                            "entry_sha256": digest(response_cache.path(payload)),
+                            "original_inference": cached["origin"],
+                            "lookup_wall_ms": (time.perf_counter() - lookup_started) * 1000,
+                            "latency_scope": "Cache lookup/orchestration only, not fresh inference.",
+                        }
+                        with (folder / "public231-cache-events.jsonl").open("a") as stream:
+                            stream.write(
+                                json.dumps(event, ensure_ascii=False, allow_nan=False) + "\n"
+                            )
+                            stream.flush()
+                            os.fsync(stream.fileno())
+                        return copy.deepcopy(cached["response"])
+                # The first checkpoint latches globally. Queued official
+                # callbacks escape without touching MPS, retries, or scoring.
+                budget.before_new_call(runtime.torch)
                 started = time.perf_counter()
                 row = {
                     "request": {
@@ -662,8 +895,10 @@ def run_stages(args, receipt, save):
                     "response": None,
                     "error": None,
                     "reported_cost_usd": None,
+                    "origin": "new_model_inference",
                 }
                 stage["model_calls"] += 1
+                receipt["epoch_budget"]["new_calls"] = budget.new_calls
                 try:
                     runtime.torch.mps.synchronize()
                     response = backend.predict(
@@ -677,19 +912,53 @@ def run_stages(args, receipt, save):
                     except (TypeError, ValueError, OverflowError):
                         row["response"] = repr(response)
                         row["response_encoding"] = "python_repr_not_json"
-                    return response
+                    # Validate only; return/store the original response bytes.
+                    validator(response)
                 except Exception as exc:
                     row["error"] = {"type": type(exc).__name__, "message": str(exc)}
-                    raise
                 finally:
                     row["allocator_maintenance"] = maintain_mps_allocator(runtime.torch)
                     row["latency_ms"] = (time.perf_counter() - started) * 1000
-                    with trace.open("a") as stream:
-                        stream.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
-                        stream.flush()
-                        os.fsync(stream.fileno())
-                    if row["allocator_maintenance"]["error"] and row["error"] is None:
-                        raise RuntimeError("MPS callback allocator maintenance failed")
+                    try:
+                        with trace.open("a") as stream:
+                            stream.write(
+                                json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                            )
+                            stream.flush()
+                            os.fsync(stream.fileno())
+                    except Exception as exc:
+                        original = (
+                            row["error"]
+                            or row["allocator_maintenance"]["error"]
+                            or {"type": type(exc).__name__, "message": str(exc)}
+                        )
+                        budget.fail(original, "model_call_trace_write")
+                if row["error"] is not None:
+                    budget.fail(row["error"], "model_callback")
+                if row["allocator_maintenance"]["error"] is not None:
+                    budget.fail(
+                        row["allocator_maintenance"]["error"], "callback_allocator_maintenance"
+                    )
+                if response_cache is not None:
+                    try:
+                        response_cache.store(
+                            payload,
+                            response,
+                            {
+                                "epoch_output": str(args.output),
+                                "pid": os.getpid(),
+                                "model_call_trace": str(trace),
+                                "model_call_index": stage["model_calls"],
+                                "inference_plus_maintenance_ms": row["latency_ms"],
+                            },
+                            validator,
+                        )
+                    except Exception as exc:
+                        budget.fail(
+                            {"type": type(exc).__name__, "message": str(exc)},
+                            "public_response_cache_write",
+                        )
+                return response
 
             if kind == "public231":
                 identity = {
@@ -699,6 +968,8 @@ def run_stages(args, receipt, save):
                     "profile": profile,
                     "resume_source_inventory": receipt["source_inventory"],
                     "official_rank": None,
+                    "latency_scope": "Reconstruction may use immutable first-success cached responses; report callback latency is orchestration/cache time, not fresh model performance.",
+                    "fresh_latency_provenance": stage.get("public_response_cache"),
                 }
                 runtime.public.run_public(predict, heaven, folder / "public231", identity)
                 stage["audit"] = audit_public(
@@ -734,6 +1005,14 @@ def run_stages(args, receipt, save):
                     source_root=args.coherence_root,
                 )
             stage["status"] = "completed"
+        except EpochCheckpoint as checkpoint:
+            stage.update(status="checkpointed", checkpoint=checkpoint.evidence)
+            raise
+        except EpochFailure as failure:
+            stage.update(
+                status="error", error=failure.evidence["error"], failure_evidence=failure.evidence
+            )
+            raise
         except Exception as exc:
             stage.update(status="error", error={"type": type(exc).__name__, "message": str(exc)})
             raise
@@ -746,13 +1025,12 @@ def run_stages(args, receipt, save):
             if stage["allocator_maintenance_after"]["error"] and stage["status"] != "error":
                 stage.update(
                     status="error",
-                    error={
-                        "type": "RuntimeError",
-                        "message": "MPS stage-boundary allocator maintenance failed",
-                    },
+                    error=stage["allocator_maintenance_after"]["error"],
                 )
                 save()
-                raise RuntimeError("MPS stage-boundary allocator maintenance failed")
+                budget.fail(
+                    stage["allocator_maintenance_after"]["error"], "stage_allocator_maintenance"
+                )
 
 
 def predecessor_pids(args):
@@ -765,6 +1043,7 @@ def predecessor_pids(args):
 
 def supervise(args):
     additional_pids = predecessor_pids(args)
+    EpochBudget(getattr(args, "max_new_calls", 20), getattr(args, "max_driver_fraction", 0.8))
     args.output.mkdir(parents=True, exist_ok=False)
     receipt = {
         "status": "initializing",
@@ -815,6 +1094,24 @@ def supervise(args):
         receipt.update(status="completed", finished_at_utc=now())
         save()
         return 0
+    except EpochCheckpoint as checkpoint:
+        receipt.update(
+            status="checkpointed",
+            epoch_checkpoint=checkpoint.evidence,
+            finished_at_utc=now(),
+            checkpoint_scope="Control-flow boundary, not a model error or scored result. Successful prior answers remain in their original caches.",
+        )
+        save()
+        return 75
+    except EpochFailure as failure:
+        receipt.update(
+            status="error",
+            error=failure.evidence["error"],
+            failure_evidence=failure.evidence,
+            finished_at_utc=now(),
+        )
+        save()
+        return 1
     except Exception as exc:
         receipt.update(
             status="error",
@@ -835,16 +1132,22 @@ def main(argv=None):
     parser.add_argument("--wait-for-pid", type=int, required=True)
     parser.add_argument("--original-pid", type=int, required=True)
     parser.add_argument("--additional-predecessor-pid", type=int, action="append", default=[])
+    parser.add_argument("--max-new-calls", type=int, default=20)
+    parser.add_argument("--max-driver-fraction", type=float, default=0.8)
+    parser.add_argument("--public-cache-root", type=Path)
     parser.add_argument("--poll-seconds", type=float, default=15)
     args = parser.parse_args(argv)
     try:
         predecessor_pids(args)
+        EpochBudget(args.max_new_calls, args.max_driver_fraction)
     except ValueError as exc:
         parser.error(str(exc))
     if not 0 < args.poll_seconds <= 60:
         parser.error("poll interval in (0,60] required")
     for name in ("parent", "output", "coherence_root", "heaven_root", "predecessor_receipt"):
         setattr(args, name, getattr(args, name).resolve())
+    if args.public_cache_root is not None:
+        args.public_cache_root = args.public_cache_root.resolve()
     return supervise(args)
 
 

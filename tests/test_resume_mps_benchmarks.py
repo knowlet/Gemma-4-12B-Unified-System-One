@@ -6,6 +6,7 @@ import copy
 import importlib.util
 import json
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -451,7 +452,9 @@ def fake_runtime(tmp_path, events, *, fail_coherence=False, fail_prediction=Fals
         RUNNER.write_json(output / "manifest.json", {"status": "completed"})
 
     return SimpleNamespace(
-        backends=SimpleNamespace(GemmaBackend=Backend),
+        backends=SimpleNamespace(
+            GemmaBackend=Backend, normalize_response=lambda request, response: response
+        ),
         contracts=SimpleNamespace(
             DecisionRequest=SimpleNamespace(model_validate=lambda value: value)
         ),
@@ -844,8 +847,9 @@ def test_inference_error_survives_callback_and_boundary_trim_errors(tmp_path, mo
         tmp_path, events, fail_prediction=True, mps=fake_mps(fail_on_trim={2, 3})
     )
     monkeypatch.setattr(RUNNER, "load_runtime", lambda output: runtime)
-    with pytest.raises(RuntimeError, match="original inference OOM"):
+    with pytest.raises(RUNNER.EpochFailure, match="original inference OOM") as failure:
         RUNNER.run_stages(args, receipt, lambda: None)
+    assert failure.value.evidence["error"]["type"] == "RuntimeError"
     stage = receipt["stages"][0]
     assert stage["error"]["message"] == "original inference OOM"
     assert stage["allocator_maintenance_after"]["error"]["message"] == "trim failed"
@@ -895,3 +899,288 @@ def test_partial_coherence_with_wrong_profile_is_not_reused(tmp_path):
         RUNNER.inspect_original_coherence(
             path, expected_profile="causal_multislot", expected_suite=SUITE
         )
+
+
+def test_epoch_checkpoint_latches_and_threadpool_drains_without_gpu_or_model_errors():
+    budget = RUNNER.EpochBudget(max_new_calls=2, max_driver_fraction=0.8)
+    mps = fake_mps()
+    mps.state["driver"] = 10
+    torch = SimpleNamespace(mps=mps)
+    model_calls, cached, model_errors = [], [], []
+
+    def callback(index):
+        try:
+            budget.before_new_call(torch)
+            model_calls.append(index)
+            cached.append(index)  # Success has returned into the cache before next callback.
+            return index
+        except Exception as exc:
+            model_errors.append(str(exc))
+            raise
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        futures = [pool.submit(callback, index) for index in range(20)]
+        checkpoints = []
+        for future in futures:
+            try:
+                future.result()
+            except RUNNER.EpochCheckpoint as stop:
+                checkpoints.append(stop.evidence)
+    assert model_calls == cached == [0, 1]
+    assert model_errors == []
+    assert len(checkpoints) == 18 and all(
+        stop["reason"] == "new_model_call_budget" for stop in checkpoints
+    )
+    assert mps.state["calls"].count("synchronize") == 2
+    assert budget.new_calls == 2
+
+
+def test_driver_budget_latches_before_any_dispatch_and_never_reobserves_gpu():
+    budget = RUNNER.EpochBudget(max_new_calls=20, max_driver_fraction=0.8)
+    mps = fake_mps()  # Driver80, recommended100: stop at the declared fraction.
+    with pytest.raises(RUNNER.EpochCheckpoint) as stop:
+        budget.before_new_call(SimpleNamespace(mps=mps))
+    before = list(mps.state["calls"])
+    assert stop.value.evidence["reason"] == "driver_memory_fraction"
+    for _ in range(3):
+        with pytest.raises(RUNNER.EpochCheckpoint):
+            budget.before_new_call(SimpleNamespace(mps=mps))
+    assert mps.state["calls"] == before and budget.new_calls == 0
+
+
+@pytest.mark.parametrize("failure", ["synchronize", "recommended"])
+def test_pre_dispatch_observation_error_latches_without_retrying_gpu(failure):
+    budget = RUNNER.EpochBudget()
+    mps = fake_mps()
+    if failure == "synchronize":
+
+        def fail_sync():
+            mps.state["calls"].append("failed_synchronize")
+            raise RuntimeError("memory observation failed")
+
+        mps.synchronize = fail_sync
+    else:
+        mps.recommended_max_memory = lambda: 0
+    with pytest.raises(RUNNER.EpochFailure) as stop:
+        budget.before_new_call(SimpleNamespace(mps=mps))
+    before = list(mps.state["calls"])
+    assert stop.value.evidence["scope"] == "pre_dispatch_allocator_observation"
+    for _ in range(3):
+        with pytest.raises(RUNNER.EpochFailure) as queued:
+            budget.before_new_call(SimpleNamespace(mps=mps))
+        assert queued.value.evidence == stop.value.evidence
+    assert mps.state["calls"] == before and budget.new_calls == 0
+
+
+@pytest.mark.parametrize("failure", ["inference", "cleanup"])
+def test_real_callback_failure_latches_and_threadpool_drains_without_scored_errors(
+    tmp_path, monkeypatch, failure
+):
+    args, receipt, events = stage_setup(tmp_path, monkeypatch)
+    args.max_new_calls = 1
+    runtime = fake_runtime(
+        tmp_path,
+        events,
+        fail_prediction=failure == "inference",
+        mps=fake_mps(fail_on_trim={2} if failure == "cleanup" else ()),
+    )
+    model_errors, dispatches, stops = [], [], []
+    backend_predict = runtime.backends.GemmaBackend.predict
+
+    def predict(backend, request):
+        dispatches.append(request)
+        return backend_predict(backend, request)
+
+    monkeypatch.setattr(runtime.backends.GemmaBackend, "predict", predict)
+
+    def evaluate(model, **kwargs):
+        def callback(index):
+            try:
+                return model.fn({"index": index}, {"decision": {"type": "choice"}})
+            except Exception as exc:  # The official engine catches this family only.
+                model_errors.append(str(exc))
+                raise
+
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            futures = [pool.submit(callback, index) for index in range(12)]
+            for future in futures:
+                try:
+                    future.result()
+                except RUNNER.EpochFailure as stop:
+                    stops.append(stop)
+        raise stops[0]
+
+    runtime.jb.evaluate = evaluate
+    monkeypatch.setattr(RUNNER, "load_runtime", lambda output: runtime)
+    expected = "original inference OOM" if failure == "inference" else "trim failed"
+    with pytest.raises(RUNNER.EpochFailure, match=expected):
+        RUNNER.run_stages(args, receipt, lambda: None)
+    stage = receipt["stages"][0]
+    assert stage["status"] == "error" and stage["error"]["message"] == expected
+    assert len(dispatches) == stage["model_calls"] == receipt["epoch_budget"]["new_calls"] == 1
+    assert len(stops) == 12 and all(stop.evidence == stops[0].evidence for stop in stops)
+    assert model_errors == []
+    rows = (
+        (args.output / "causal_multislot/coherence-mini-model-calls.jsonl").read_text().splitlines()
+    )
+    assert len(rows) == 1
+    row = json.loads(rows[0])
+    if failure == "cleanup":
+        assert row["error"] is None and row["response"] is not None
+        assert row["allocator_maintenance"]["error"]["message"] == "trim failed"
+    else:
+        assert row["error"]["message"] == expected
+    assert not (args.output / "causal_multislot/coherence-mini.json").exists()
+
+
+def test_stage_final_cleanup_failure_promotes_resource_checkpoint_to_error(tmp_path, monkeypatch):
+    args, receipt, events = stage_setup(tmp_path, monkeypatch)
+    args.max_new_calls = 1
+    runtime = fake_runtime(tmp_path, events, mps=fake_mps(fail_on_trim={3}))
+
+    def evaluate(model, **kwargs):
+        model.fn("first", {"decision": {"type": "choice"}})
+        model.fn("next", {"decision": {"type": "choice"}})
+        pytest.fail("second request must checkpoint before dispatch")
+
+    runtime.jb.evaluate = evaluate
+    monkeypatch.setattr(RUNNER, "load_runtime", lambda output: runtime)
+    with pytest.raises(RUNNER.EpochFailure, match="trim failed") as stop:
+        RUNNER.run_stages(args, receipt, lambda: None)
+    assert stop.value.evidence["scope"] == "stage_allocator_maintenance"
+    stage = receipt["stages"][0]
+    assert stage["status"] == "error" and stage["model_calls"] == 1
+    assert stage["checkpoint"]["reason"] == "new_model_call_budget"
+    assert stage["error"]["message"] == "trim failed"
+
+
+def test_public_response_cache_keeps_first_success_and_origin_immutable(tmp_path):
+    identity = {"source": "fixed", "runtime": {"precision": "bfloat16"}, "profile": "independent"}
+    cache = RUNNER.PublicResponseCache(tmp_path, identity)
+    request = {"state": "observed state", "questions": {"q": {"criteria": {"a": "A", "b": "B"}}}}
+    response = {"answers": {"q": {"probabilities": {"a": 0.75, "b": 0.25}, "choice": "a"}}}
+
+    def validate(value):
+        return value["answers"]["q"]
+
+    path = cache.store(
+        request, response, {"epoch": "first", "inference_plus_maintenance_ms": 10}, validate
+    )
+    original = path.read_bytes()
+    loaded = cache.read(request, validate)
+    assert loaded["response"] == response and loaded["origin"]["epoch"] == "first"
+    cache.store(request, response, {"epoch": "second"}, validate)
+    assert path.read_bytes() == original
+    changed = {"answers": {"q": {"probabilities": {"a": 0.2, "b": 0.8}, "choice": "b"}}}
+    with pytest.raises(ValueError, match="cannot be replaced"):
+        cache.store(request, changed, {"epoch": "third"}, validate)
+    assert path.read_bytes() == original
+    foreign = RUNNER.PublicResponseCache(tmp_path, {**identity, "source": "changed-source"})
+    assert foreign.read(request, validate) is None
+
+
+def test_public_cache_rejects_invalid_response_tampering_and_preserves_candidate_order(tmp_path):
+    cache = RUNNER.PublicResponseCache(tmp_path, {"source": "fixed"})
+    request = {"state": "S", "questions": {"q": {"criteria": {"a": "A", "b": "B"}}}}
+
+    def reject(value):
+        raise ValueError("invalid native probability distribution")
+
+    with pytest.raises(ValueError, match="invalid native"):
+        cache.store(request, {"bad": True}, {}, reject)
+    assert not cache.path(request).exists()
+    cache.store(request, {"answers": {}}, {}, lambda value: None)
+    row = json.loads(cache.path(request).read_text())
+    row["response"] = {"tampered": True}
+    RUNNER.write_json(cache.path(request), row)
+    with pytest.raises(ValueError, match="identity/content differs"):
+        cache.read(request, lambda value: None)
+    reordered = copy.deepcopy(request)
+    reordered["questions"]["q"]["criteria"] = {"b": "B", "a": "A"}
+    assert cache.path(request) != cache.path(reordered)
+
+
+def test_epoch_checkpoint_is_terminal_control_receipt_not_model_error(tmp_path, monkeypatch):
+    args = arguments(tmp_path)
+    monkeypatch.setattr(RUNNER, "capture_handle", lambda pid: {"pid": pid, "identity": None})
+    monkeypatch.setattr(RUNNER, "wait_handle", lambda *args: None)
+    monkeypatch.setattr(RUNNER, "verify_external_child", lambda *args, **kwargs: None)
+
+    def freeze(args, receipt):
+        (args.output / "sources").mkdir()
+        receipt["source_inventory"] = {}
+
+    monkeypatch.setattr(RUNNER, "freeze_sources", freeze)
+
+    def checkpoint(*args):
+        raise RUNNER.EpochCheckpoint({"reason": "new_model_call_budget", "new_calls": 20})
+
+    monkeypatch.setattr(RUNNER, "run_stages", checkpoint)
+    assert RUNNER.supervise(args) == 75
+    receipt = json.loads((args.output / "receipt.json").read_text())
+    assert receipt["status"] == "checkpointed" and "error" not in receipt
+
+
+def test_official_style_queued_callbacks_checkpoint_with_prior_success_cached(
+    tmp_path, monkeypatch
+):
+    args, receipt, events = stage_setup(tmp_path, monkeypatch)
+    args.max_new_calls = 1
+    runtime = fake_runtime(tmp_path, events)
+    model_errors = []
+
+    def evaluate(model, **kwargs):
+        cache = Path(kwargs["cache"])
+
+        def request(index):
+            try:
+                response = model.fn({"index": index}, {"decision": {"type": "choice"}})
+                RUNNER.write_json(cache / f"success-{index}.json", response)
+                return response
+            except Exception as exc:
+                model_errors.append(str(exc))
+                raise
+
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            futures = [pool.submit(request, index) for index in range(12)]
+            for future in futures:
+                future.result()
+        pytest.fail("checkpoint must escape, not publish a partial scored report")
+
+    runtime.jb.evaluate = evaluate
+    monkeypatch.setattr(RUNNER, "load_runtime", lambda output: runtime)
+    with pytest.raises(RUNNER.EpochCheckpoint):
+        RUNNER.run_stages(args, receipt, lambda: None)
+    stage = receipt["stages"][0]
+    assert stage["status"] == "checkpointed" and "error" not in stage
+    assert stage["model_calls"] == receipt["epoch_budget"]["new_calls"] == 1
+    assert "success-0.json" in stage["cache_after"]
+    assert not any(key.startswith("success-1") for key in stage["cache_after"])
+    assert model_errors == []
+    assert not (args.output / "causal_multislot/coherence-mini.json").exists()
+
+
+def test_public_response_cache_survives_epoch_boundary_without_new_public_inference(
+    tmp_path, monkeypatch
+):
+    args, receipt, events = stage_setup(tmp_path, monkeypatch)
+    args.max_new_calls = 2
+    original_receipt = copy.deepcopy(receipt)
+    with pytest.raises(RUNNER.EpochCheckpoint):
+        RUNNER.run_stages(args, receipt, lambda: None)
+    assert receipt["stages"][1]["model_calls"] == 1
+    cache_files = list((tmp_path / "immutable-public-responses").rglob("*.json"))
+    assert len(cache_files) == 1
+    cached_bytes = cache_files[0].read_bytes()
+    later = copy.copy(args)
+    later.output = tmp_path / "second-epoch"
+    later.output.mkdir()
+    RUNNER.run_stages(later, original_receipt, lambda: None)
+    public = original_receipt["stages"][1]
+    assert public["model_calls"] == 0 and public["public_cache_hits"] == 1
+    assert cache_files[0].read_bytes() == cached_bytes
+    assert not (later.output / "independent/public231-model-calls.jsonl").exists()
+    event = json.loads((later.output / "independent/public231-cache-events.jsonl").read_text())
+    assert event["origin"] == "immutable_first_success_response_cache"
+    assert event["original_inference"]["epoch_output"] == str(args.output)
+    assert "not fresh inference" in event["latency_scope"]
