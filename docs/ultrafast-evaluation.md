@@ -117,6 +117,31 @@ second must be a clean `JevBench/jevbench@e18733694623aa93058e279c3534f8b8e2edef
 Keep their distinct public accuracy and strict metamorphic coherence reports;
 neither is an official submission. No calibration fitting occurs in this runner.
 
+The original long MPS process exhausted memory after the causal public run.
+Its incomplete coherence and zero-valid independent public results are preserved
+as [runtime failures](validation/2026-10-28/mps-memory-failure/README.md), not
+accepted quality scores. To resume missing stages after the captured external
+supervisor and its actual child terminate:
+
+```bash
+artifacts/browser-env/bin/python scripts/resume_mps_benchmarks.py \
+  --parent artifacts/ultrafast/20261028-native-01 \
+  --output artifacts/ultrafast/your-unique-resume \
+  --coherence-root artifacts/benchmark-tools/jevbench \
+  --heaven-root artifacts/benchmark-tools/heaven \
+  --wait-for-pid CAPTURED_SUPERVISOR_PID \
+  --predecessor-receipt artifacts/ultrafast/your-supervisor/receipt.json \
+  --original-pid ORIGINAL_BASELINE_PID
+```
+
+The launcher archives and validates original S1 sources, complete pinned
+benchmark repositories and checkpoint identities. Successful old cache entries
+retain their original epoch; new calls have full raw traces. A measured
+unoccupied-cache trim runs after callbacks and stage boundaries, including its
+latency and before/after memory snapshots. Its OOM effectiveness remains
+unverified until the resumed stages complete. Memory limits stay unchanged.
+Completed reports require full coverage and raw-answer score replay.
+
 The 2026-10-28 attempt to rerun the existing A100 campaign was rejected before
 job creation because the Modal workspace exceeded its spend limit. Local MPS
 measurements must retain their hardware/runtime identity and cannot substitute

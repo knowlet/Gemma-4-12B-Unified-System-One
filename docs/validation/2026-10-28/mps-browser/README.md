@@ -62,6 +62,8 @@ the newly added browser integration existed in that commit. Use the archive's
 source bytes and hashes to reproduce this exact run.
 
 Reproduce with the [Ultrafast instructions](../../../ultrafast-evaluation.md)
-and a fresh run directory. The parent run continues its separate public231 and
-coherence stages on MPS; their scores are not filled by this completed browser
-stage. The external Wikipedia suite is frozen but has not yet run with the model.
+and a fresh run directory. The parent run later
+[failed with MPS out-of-memory](../mps-memory-failure/README.md); its accepted
+causal public score and incomplete stages remain separate from this browser
+evidence. The frozen external Wikipedia suite has started in a fresh MPS process;
+its campaign outcome is not supplied by these completed local tasks.

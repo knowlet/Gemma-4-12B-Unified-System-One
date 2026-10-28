@@ -52,5 +52,8 @@ assert result["summary"]["n_valid"] == 231
 
 These are legacy public231 research results, not P300/S1200, sealed results,
 official rankings or external browser-task success. Cost remains unknown.
-Independent-mode public231 and both coherence results are still pending in the
-same serial MPS campaign. Prefix reuse is a separate queued experiment.
+The original serial process subsequently failed with MPS out-of-memory. Its
+independent public run has zero valid answers and its coherence runs are
+incomplete; see the [failure evidence](../mps-memory-failure/README.md).
+The separate [prefix experiment](../mps-prefix/README.md) completed but failed its
+probability gate. Neither outcome changes the accepted causal public score.
