@@ -62,6 +62,22 @@ model success remains unverified until its own run has completed; fixture
 success does not fill those results. The optional native text helper is required
 when the agent chooses to type in the search field.
 
+To run the external suite after existing MPS jobs, use
+`scripts/run_ultrafast_after.py` with a separate fresh supervisor directory and
+child run directory. Pass each currently live predecessor with repeated
+`--predecessor-pid` arguments. It captures their original identities, waits for
+both to end, checks frozen source hashes, and launches the comparison with the
+same model and settings for both profiles. The external tasks use a separately
+declared 180-second budget and the same 12-cycle cap; their timing is not pooled
+with the 90-second local fixture suite. Receipts preserve the exact command,
+process identity, logs and exit code. Observation/source errors prevent launch.
+
+The later [local-oracle diagnostic](validation/2026-10-28/mps-browser/oracle-diagnostic.json)
+found that the frozen local count string can reject a task-compatible empty
+search submission. Its original scores remain unchanged, but they cannot prove
+an actual task-success advantage. This limitation does not change the separately
+frozen external destination checks.
+
 Profiles share the same loaded weights and text helper. First-profile order
 alternates across tasks/repeats. Model load time is recorded separately, with no
 discarded first-inference samples. This reduces order bias but does not eliminate
