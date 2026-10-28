@@ -26,6 +26,14 @@ selected files must have one hard link. These checks reduce accidental changes
 but do not establish immutability: an owner or privileged process can change
 permissions or files, and path checks are not an atomic filesystem snapshot.
 
+The source-only snapshot creator copies exactly that selection from an
+explicit official checkout after checking each file against the pinned
+configuration. Its fixed destination must not already exist; it publishes
+ordinary single-link files with mode `0444` and directories with mode `0555`.
+It does not copy unselected examples. If interrupted, the caller must inspect
+the destination before retrying: identity-checked cleanup is not atomic and a
+hard termination can leave partial output. No root access is required.
+
 Python opens and starts the bootstrap release before it verifies the plan and
 workspace source pins. Its release, interpreter, standard-library environment
 and plan SHA require independent authentication, and there remains an entry
