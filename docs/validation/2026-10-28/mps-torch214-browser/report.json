@@ -1,0 +1,575 @@
+{
+  "schema_version": 1,
+  "status": "browser_completed_causal_public231_audited_original_process_checkpointed",
+  "source_run": "artifacts/ultrafast/20261028-torch214-candidate-01",
+  "declared_source_commit": "c783a7809f834ba25c1fa7045e5a28f83462d8b9",
+  "source_hash_scope": "All 68 originally declared local executed source files verified and archived; exact byte hashes, not current HEAD, identify execution.",
+  "runtime": {
+    "model": "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/release/checkpoint",
+    "revision": null,
+    "question_mode": "causal_multislot",
+    "temperature": 2.7830344470383452,
+    "device": "mps",
+    "dtype": "bfloat16",
+    "attn_implementation": "sdpa",
+    "compile_mode": null,
+    "max_forward_batch_size": 8,
+    "max_prepared_prompts": 8,
+    "torch_version": "2.14.1",
+    "transformers_version": "5.17.0",
+    "max_context": 16384,
+    "precision": "bfloat16",
+    "quantization": "none",
+    "quantization_details": {
+      "method": "none",
+      "quantized_linear_modules": 0
+    },
+    "adapter_path": null,
+    "mps_call_maintenance": {
+      "name": "mps-whole-call-cache-clear-v1",
+      "scope": "After each complete dispatched decision or native field helper call, including errors.",
+      "operations": [
+        "synchronize",
+        "memory_before",
+        "empty_cache",
+        "synchronize",
+        "memory_after"
+      ],
+      "latency_scope": "Callback latency includes whole-call cleanup; no warmup calls are discarded.",
+      "limits_changed": false,
+      "fault_policy": "Preserve the current response/error; a cleanup or trace-write fault blocks all subsequent dispatches.",
+      "interpretation": "Opt-in resource policy requiring measurement; no OOM, speed, or Torch 2.8 remediation claim."
+    }
+  },
+  "packages": {
+    "torch": "2.14.1",
+    "transformers": "5.17.0",
+    "playwright": "1.64.1",
+    "browser-harness": "0.1.13",
+    "numpy": "2.5.3"
+  },
+  "hardware": {
+    "processor": "arm",
+    "machine": "arm64",
+    "torch_num_threads": 8,
+    "mps_available": true,
+    "chip": "Apple M1 Max",
+    "memory_bytes": 68719476736
+  },
+  "mps_environment": {
+    "PYTORCH_ENABLE_MPS_FALLBACK": null,
+    "PYTORCH_MPS_FAST_MATH": null,
+    "PYTORCH_MPS_PREFER_METAL": null,
+    "PYTORCH_MPS_HIGH_WATERMARK_RATIO": null,
+    "PYTORCH_MPS_LOW_WATERMARK_RATIO": null
+  },
+  "browser": {
+    "attempted": 12,
+    "verified_successes": 6,
+    "goal_observed": 6,
+    "timeout_seconds": 180.0,
+    "max_decisions": 12,
+    "by_profile": {
+      "causal_multislot": {
+        "attempted": 6,
+        "verified_successes": 3
+      },
+      "independent": {
+        "attempted": 6,
+        "verified_successes": 3
+      }
+    },
+    "attempts": [
+      {
+        "profile": "causal_multislot",
+        "repeat": 1,
+        "task_id": "external-wikipedia-search-graph-theory",
+        "verified_success": false,
+        "goal_observed": false,
+        "within_budget": true,
+        "policy_wall_ms": 61688.606624957174,
+        "wall_ms": 61907.237415900454,
+        "termination": "exception",
+        "failure_class": "exception",
+        "backend_calls": 2,
+        "backbone_forwards": 16,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 1,
+        "predicates": {
+          "url": false,
+          "title": false,
+          "heading": false,
+          "body_contains": false
+        },
+        "error": {
+          "type": "UnsupportedRequest",
+          "message": "Ultrafast head 'click_target' has 57 options; the backend contract supports at most 52; nothing was truncated"
+        }
+      },
+      {
+        "profile": "independent",
+        "repeat": 1,
+        "task_id": "external-wikipedia-search-graph-theory",
+        "verified_success": false,
+        "goal_observed": false,
+        "within_budget": true,
+        "policy_wall_ms": 84506.21687504463,
+        "wall_ms": 84795.85045902058,
+        "termination": "exception",
+        "failure_class": "exception",
+        "backend_calls": 2,
+        "backbone_forwards": 18,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 1,
+        "predicates": {
+          "url": false,
+          "title": false,
+          "heading": false,
+          "body_contains": false
+        },
+        "error": {
+          "type": "UnsupportedRequest",
+          "message": "Ultrafast head 'click_target' has 57 options; the backend contract supports at most 52; nothing was truncated"
+        }
+      },
+      {
+        "profile": "independent",
+        "repeat": 1,
+        "task_id": "external-wikipedia-follow-graph-definition",
+        "verified_success": true,
+        "goal_observed": true,
+        "within_budget": true,
+        "policy_wall_ms": 120922.81274986453,
+        "wall_ms": 120987.10891697556,
+        "termination": "done",
+        "failure_class": null,
+        "backend_calls": 3,
+        "backbone_forwards": 5,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 0,
+        "predicates": {
+          "url": true,
+          "title": true,
+          "heading": true,
+          "body_contains": true
+        },
+        "error": null
+      },
+      {
+        "profile": "causal_multislot",
+        "repeat": 1,
+        "task_id": "external-wikipedia-follow-graph-definition",
+        "verified_success": true,
+        "goal_observed": true,
+        "within_budget": true,
+        "policy_wall_ms": 82361.90220806748,
+        "wall_ms": 82431.48920801468,
+        "termination": "done",
+        "failure_class": null,
+        "backend_calls": 3,
+        "backbone_forwards": 3,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 0,
+        "predicates": {
+          "url": true,
+          "title": true,
+          "heading": true,
+          "body_contains": true
+        },
+        "error": null
+      },
+      {
+        "profile": "independent",
+        "repeat": 2,
+        "task_id": "external-wikipedia-search-graph-theory",
+        "verified_success": false,
+        "goal_observed": false,
+        "within_budget": true,
+        "policy_wall_ms": 89650.84220794961,
+        "wall_ms": 89936.11304205842,
+        "termination": "exception",
+        "failure_class": "exception",
+        "backend_calls": 2,
+        "backbone_forwards": 18,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 1,
+        "predicates": {
+          "url": false,
+          "title": false,
+          "heading": false,
+          "body_contains": false
+        },
+        "error": {
+          "type": "UnsupportedRequest",
+          "message": "Ultrafast head 'click_target' has 57 options; the backend contract supports at most 52; nothing was truncated"
+        }
+      },
+      {
+        "profile": "causal_multislot",
+        "repeat": 2,
+        "task_id": "external-wikipedia-search-graph-theory",
+        "verified_success": false,
+        "goal_observed": false,
+        "within_budget": true,
+        "policy_wall_ms": 66700.4627501592,
+        "wall_ms": 66922.61704104021,
+        "termination": "exception",
+        "failure_class": "exception",
+        "backend_calls": 2,
+        "backbone_forwards": 16,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 1,
+        "predicates": {
+          "url": false,
+          "title": false,
+          "heading": false,
+          "body_contains": false
+        },
+        "error": {
+          "type": "UnsupportedRequest",
+          "message": "Ultrafast head 'click_target' has 57 options; the backend contract supports at most 52; nothing was truncated"
+        }
+      },
+      {
+        "profile": "causal_multislot",
+        "repeat": 2,
+        "task_id": "external-wikipedia-follow-graph-definition",
+        "verified_success": true,
+        "goal_observed": true,
+        "within_budget": true,
+        "policy_wall_ms": 105495.212999871,
+        "wall_ms": 105562.31479207054,
+        "termination": "done",
+        "failure_class": null,
+        "backend_calls": 3,
+        "backbone_forwards": 3,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 0,
+        "predicates": {
+          "url": true,
+          "title": true,
+          "heading": true,
+          "body_contains": true
+        },
+        "error": null
+      },
+      {
+        "profile": "independent",
+        "repeat": 2,
+        "task_id": "external-wikipedia-follow-graph-definition",
+        "verified_success": true,
+        "goal_observed": true,
+        "within_budget": true,
+        "policy_wall_ms": 132401.26766683534,
+        "wall_ms": 132477.22170781344,
+        "termination": "done",
+        "failure_class": null,
+        "backend_calls": 3,
+        "backbone_forwards": 5,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 0,
+        "predicates": {
+          "url": true,
+          "title": true,
+          "heading": true,
+          "body_contains": true
+        },
+        "error": null
+      },
+      {
+        "profile": "causal_multislot",
+        "repeat": 3,
+        "task_id": "external-wikipedia-search-graph-theory",
+        "verified_success": false,
+        "goal_observed": false,
+        "within_budget": true,
+        "policy_wall_ms": 68216.20066580363,
+        "wall_ms": 68433.70512500405,
+        "termination": "exception",
+        "failure_class": "exception",
+        "backend_calls": 2,
+        "backbone_forwards": 16,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 1,
+        "predicates": {
+          "url": false,
+          "title": false,
+          "heading": false,
+          "body_contains": false
+        },
+        "error": {
+          "type": "UnsupportedRequest",
+          "message": "Ultrafast head 'click_target' has 57 options; the backend contract supports at most 52; nothing was truncated"
+        }
+      },
+      {
+        "profile": "independent",
+        "repeat": 3,
+        "task_id": "external-wikipedia-search-graph-theory",
+        "verified_success": false,
+        "goal_observed": false,
+        "within_budget": true,
+        "policy_wall_ms": 94758.89874994755,
+        "wall_ms": 95048.09729196131,
+        "termination": "exception",
+        "failure_class": "exception",
+        "backend_calls": 2,
+        "backbone_forwards": 18,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 1,
+        "predicates": {
+          "url": false,
+          "title": false,
+          "heading": false,
+          "body_contains": false
+        },
+        "error": {
+          "type": "UnsupportedRequest",
+          "message": "Ultrafast head 'click_target' has 57 options; the backend contract supports at most 52; nothing was truncated"
+        }
+      },
+      {
+        "profile": "independent",
+        "repeat": 3,
+        "task_id": "external-wikipedia-follow-graph-definition",
+        "verified_success": true,
+        "goal_observed": true,
+        "within_budget": true,
+        "policy_wall_ms": 134755.62858302146,
+        "wall_ms": 134821.82174990885,
+        "termination": "done",
+        "failure_class": null,
+        "backend_calls": 3,
+        "backbone_forwards": 5,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 0,
+        "predicates": {
+          "url": true,
+          "title": true,
+          "heading": true,
+          "body_contains": true
+        },
+        "error": null
+      },
+      {
+        "profile": "causal_multislot",
+        "repeat": 3,
+        "task_id": "external-wikipedia-follow-graph-definition",
+        "verified_success": true,
+        "goal_observed": true,
+        "within_budget": true,
+        "policy_wall_ms": 91217.98908291385,
+        "wall_ms": 91290.37624993362,
+        "termination": "done",
+        "failure_class": null,
+        "backend_calls": 3,
+        "backbone_forwards": 3,
+        "observed_completed_backbone_forwards": null,
+        "text_calls": 0,
+        "predicates": {
+          "url": true,
+          "title": true,
+          "heading": true,
+          "body_contains": true
+        },
+        "error": null
+      }
+    ]
+  },
+  "causal_public231": {
+    "status": "completed_raw_hash_audited",
+    "attempted": 231,
+    "valid": 231,
+    "correct": 197,
+    "accuracy": 0.8528138528138528,
+    "verified_manifest_files": 233,
+    "audit": {
+      "status": "both_public_runs_raw_audited",
+      "same231logical_request_hashes": true,
+      "summary": {
+        "torch28": {
+          "n_attempted": 231,
+          "n_valid": 231,
+          "n_correct": 197,
+          "accuracy": 0.8528138528138528,
+          "coverage": 1.0,
+          "strict_schema_success": null,
+          "brier_mean": 0.2199823813649369,
+          "latency_s": null,
+          "ece": 0.05155500745424974,
+          "verified_files": 233
+        },
+        "torch214": {
+          "n_attempted": 231,
+          "n_valid": 231,
+          "n_correct": 197,
+          "accuracy": 0.8528138528138528,
+          "coverage": 1.0,
+          "strict_schema_success": null,
+          "brier_mean": 0.21945231933224907,
+          "latency_s": null,
+          "ece": 0.047819972280171,
+          "verified_files": 233
+        }
+      },
+      "changed_predictions": [
+        {
+          "task_id": "hard-opus-c-long_policy-08",
+          "old_predicted": "2",
+          "new_predicted": "3",
+          "old_correct": false,
+          "new_correct": false
+        }
+      ],
+      "scope": "Public screening only, no score fitting/official rank; probability drift and other pending gates remain separate."
+    },
+    "raw_manifest_sha256": "150629905917f0da3a4dc6375113a4f95e4d0243953caaaed7f630c13c7341bb",
+    "scope": "Public exposed screening; no official rank, calibration fitting, sealed evaluation or speed superiority claim."
+  },
+  "checkpoint": {
+    "recorded_at_utc": "2026-10-28T12:18:22.114777+00:00",
+    "pid": 23751,
+    "exec_session": 83711,
+    "exit_code": 143,
+    "termination": "Owned epoch checkpoint after audited causal public231, to prioritize a short preserve-all real-browser replay; not a model OOM or goal pause.",
+    "verified_absent": true,
+    "browser_completed_attempts": 12,
+    "browser_verified_successes": 6,
+    "causal_public231_valid": 231,
+    "causal_public231_correct": 197,
+    "accepted_coherence_score": null,
+    "independent_public231": "not_yet_run",
+    "coherence_cache_count": 94,
+    "all_cache_json_valid": true,
+    "old_cache_entries_unchanged": true,
+    "saved_maintenance_calls": 361,
+    "saved_maintenance_faults": 0,
+    "post_call_driver_min_bytes": 24576131072,
+    "post_call_driver_max_bytes": 26042040320,
+    "post_call_memory_kind": "snapshots_not_peak"
+  },
+  "historical_coherence": {
+    "cache_entries": 94,
+    "inventory_unchanged_between_stop_request_and_termination": true,
+    "inventory_sha256": "685264fe3c75e1d9fedb004595d649d2ce1332eaf6714fdf5a8116070b3a1991",
+    "accepted_score": null,
+    "cache_contents_excluded": true
+  },
+  "pending_bounded_epoch_resume": {
+    "observed_at_utc": "2026-10-28T12:42:14.094956+00:00",
+    "output": "artifacts/ultrafast/20261028-torch214-benchmark-epochs-01",
+    "status_at_observation": "running",
+    "receipt_sha256_at_observation": "9583703d8d1ce9c35d0fdd1915cb0ca7922f04b82bdb290ecc91250250101e0b",
+    "epoch_policy": {
+      "max_new_calls": 2000,
+      "max_driver_fraction": 0.8
+    },
+    "max_epochs": 256,
+    "accepted_completion": null,
+    "scope": "Informational running-state observation only; mutable receipt/cache/epoch outputs are excluded from this archive."
+  },
+  "verification": {
+    "final_predicates_replayed": true,
+    "all_12_task_summaries_and_call_totals_match_raw": true,
+    "all_declared_source_hashes_match": true,
+    "public_manifest_member_hashes_verified": true,
+    "public_raw_audit_independently_repeated": true
+  },
+  "omitted_large_recordings": [
+    {
+      "path": "causal_multislot/external-wikipedia-search-graph-theory-1/trace.zip",
+      "size_bytes": 6880791,
+      "sha256": "4b8b5620b8d64a06106471011daedf173c608d9488b3b74c003fb94aa95db333",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "independent/external-wikipedia-search-graph-theory-1/trace.zip",
+      "size_bytes": 9845552,
+      "sha256": "17b9438bf8b48b9a8b0874ca4180d1c2ebf6de4c61e4a230e9c938326e9ab410",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "independent/external-wikipedia-follow-graph-definition-1/trace.zip",
+      "size_bytes": 791583,
+      "sha256": "696d5e5799b0eaebc850a460c14da8246804292879de7f8a2611f915fb24525e",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "causal_multislot/external-wikipedia-follow-graph-definition-1/trace.zip",
+      "size_bytes": 791579,
+      "sha256": "842da3ac1d22e5ad0b1a83cc8a1986fe126d218540638cb6477df2408e9b4673",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "independent/external-wikipedia-search-graph-theory-2/trace.zip",
+      "size_bytes": 10336055,
+      "sha256": "1c9543bc9c5a6ab7f44d085f01bde3b7ebaf4e21c4880ce05bfd0870cbc56c27",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "causal_multislot/external-wikipedia-search-graph-theory-2/trace.zip",
+      "size_bytes": 7873953,
+      "sha256": "15b9ff3fa9ea226d8992b7c09b41f1f92288f32916646c7ad708c82298ecad76",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "causal_multislot/external-wikipedia-follow-graph-definition-2/trace.zip",
+      "size_bytes": 877490,
+      "sha256": "74f9d7d445c96baad7eb38a510ed6967f585111342a25fbce00ec0273d391aa3",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "independent/external-wikipedia-follow-graph-definition-2/trace.zip",
+      "size_bytes": 877155,
+      "sha256": "65c21fc0e5e4db6455c06a4aaa33c5784adf88d2aed891c6759135f34730bdda",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "causal_multislot/external-wikipedia-search-graph-theory-3/trace.zip",
+      "size_bytes": 7968206,
+      "sha256": "81ab1c5c4b720404912a23108d2099086a35c5e819dd5e9100a9b10f5369c7b1",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "independent/external-wikipedia-search-graph-theory-3/trace.zip",
+      "size_bytes": 10536007,
+      "sha256": "4cc3f671846704df307e2107b7609045b7cb0fa1a8bfc6e6f9e9205f5a440e88",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "independent/external-wikipedia-follow-graph-definition-3/trace.zip",
+      "size_bytes": 870619,
+      "sha256": "cf183be786831bfbfb895c95ad94bce893936f95442f5d0110a6b4fb60151b7f",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    },
+    {
+      "path": "causal_multislot/external-wikipedia-follow-graph-definition-3/trace.zip",
+      "size_bytes": 871452,
+      "sha256": "16fadb68c66a765f944c9db73e69b13a7de34155f8e52e64725e778b023ffe09",
+      "reason": "Large Playwright recording retained locally; raw CDP/snapshots/transport/final state and screenshot are archived."
+    }
+  ],
+  "exclusions": [
+    "weights",
+    "all symlinks",
+    "large tokenizer assets",
+    "mutable coherence-cache tree and current epoch outputs",
+    "redundant full benchmark repositories",
+    "Playwright trace.zip recordings; hashes retained"
+  ],
+  "cost_usd": null,
+  "official_rank": null,
+  "default_runtime_adopted": false,
+  "archive": {
+    "path": "torch214-browser-evidence.zip",
+    "size_bytes": 3671836,
+    "sha256": "d51df680b58d14dd3f3398b5862cc0e8344772bc22ee22d901c2e53b726db21c",
+    "payload_members": 440,
+    "zip_members": 441,
+    "member_manifest": "archive-members.json",
+    "member_manifest_sha256": "88b1040baa6aa8d5c9181ced1481bfd80870989fb275785914948d2e6cf249f6",
+    "crc_verified": true,
+    "all_member_sha256_verified": true,
+    "symlinks_included": false
+  }
+}

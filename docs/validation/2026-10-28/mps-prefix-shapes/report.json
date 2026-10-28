@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "scope": "One consumed development observation; numerical diagnostic, no production adoption or end-to-end speed claim",
+  "status": "completed",
+  "input": {
+    "task_id": "dev-design-free",
+    "split": "development",
+    "decision_index": 3,
+    "task_path": "artifacts/ultrafast/20261028-native-01/independent/dev-design-free-1/task.json",
+    "task_sha256": "e0a3d4c742ea5943cb55d783b03a43df9bb550f62878ed8203533fadea107034",
+    "trace_path": "artifacts/ultrafast/20261028-native-01/independent/dev-design-free-1/decision-transport.json",
+    "trace_sha256": "f839bba84c4f42b899ce72cbd409c80ae0cc48b99255508a07029e6b1d2b13f2",
+    "request_sha256": "8a3c77b0c7bf6da39fb6b99763939bd97da3b0cbae13f9d133445af123d2bba5",
+    "labels_or_outcomes_used": false
+  },
+  "environment": {
+    "python": "3.12.11",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "torch": "2.14.1",
+    "transformers": "5.17.0",
+    "mps_environment": {
+      "PYTORCH_ENABLE_MPS_FALLBACK": null,
+      "PYTORCH_MPS_FAST_MATH": null,
+      "PYTORCH_MPS_PREFER_METAL": null,
+      "PYTORCH_MPS_HIGH_WATERMARK_RATIO": null,
+      "PYTORCH_MPS_LOW_WATERMARK_RATIO": null
+    }
+  },
+  "checkpoint": {
+    "path": "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/release/checkpoint",
+    "manifest_sha256": "f38d7f50060eabcbed6f73d16404ad42eb6ba1bddc79b68052afc13cab8598eb",
+    "verified_files": [
+      {
+        "path": "LICENSE",
+        "size_bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "NOTICE",
+        "size_bytes": 992,
+        "sha256": "0b67ad0feadf099927772752c046ed6d2da1a69ef1e5e7749c17bcdc21cf138f"
+      },
+      {
+        "path": "README.md",
+        "size_bytes": 8906,
+        "sha256": "f29569b97c0cede37061f5cf5e4ac38d1424a05b99ccc2b87aa7d507078f846e"
+      },
+      {
+        "path": "chat_template.jinja",
+        "size_bytes": 18683,
+        "sha256": "ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4"
+      },
+      {
+        "path": "config.json",
+        "size_bytes": 4953,
+        "sha256": "b50e760a9107b629e1a140ab7a4392e875c37baefee022f27c98b90b9d947cf0"
+      },
+      {
+        "path": "evaluation-report.json",
+        "size_bytes": 7463,
+        "sha256": "07da695983a341ed1b488dedb7edd610b426fc86681a9fb45fbf9fe29f6fc280"
+      },
+      {
+        "path": "generation_config.json",
+        "size_bytes": 255,
+        "sha256": "040d0ccb9e10df02df9738424c1ce6d20d5d15b09362da922093ccd97573dbb4"
+      },
+      {
+        "path": "model.safetensors",
+        "size_bytes": 23919549408,
+        "sha256": "11144621122123135eb79c9cfd0466a2c51f230109124aefe401cdbec8c71a53"
+      },
+      {
+        "path": "processor_config.json",
+        "size_bytes": 1382,
+        "sha256": "6b938e76555b3e9946890770e1abcd442a4718f34041a58e8139dc8ad34545c9"
+      },
+      {
+        "path": "s1_config.json",
+        "size_bytes": 367,
+        "sha256": "322ffa1c6bfa7c4069da43265be1e79071eee6fbcff07cd4a74f9ed04774b962"
+      },
+      {
+        "path": "tokenizer.json",
+        "size_bytes": 32169626,
+        "sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f"
+      },
+      {
+        "path": "tokenizer_config.json",
+        "size_bytes": 3736,
+        "sha256": "794a39f8330ce05020774c70c091225bc5f031b9cacf41fc20e52eb54b4b52d8"
+      },
+      {
+        "path": "training-receipt.json",
+        "size_bytes": 24859,
+        "sha256": "a1c2b796b726a3f0236c27a44196948a45cbd6ba8b2db510aff35b99b7526a4e"
+      }
+    ]
+  },
+  "model": {
+    "name": "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/release/checkpoint",
+    "revision": null,
+    "device": "mps",
+    "dtype": "bfloat16",
+    "temperature": 2.7830344470383452,
+    "attn_implementation": "sdpa",
+    "max_context": 16384,
+    "compile_mode": null,
+    "quantization": "none",
+    "softcap": 30.0
+  },
+  "source_sha256": {
+    "src/s1/data_synth.py": "d364c7a24e42c687d1c388868939d201bddfc9bcf81ccefbb336eba3b9ff7afa",
+    "src/s1/demo_pages3.py": "87f3ae5e1b6f5510a0f579fe339eeab906db5688ee044a3c25d1ed745c15a095",
+    "src/s1/metrics.py": "a75b865f707218ce8c2a18f89770397bf026e488e7f40b1dc528aa0b138143c8",
+    "src/s1/modal_common.py": "1eb852d6f6da87a22f659710b3bc93c26c46be41608426df076214368eff573c",
+    "src/s1/demo_presets.py": "578c782c595fa49443440e42c2555ad09ec8dbea2151951f8b9314696250d151",
+    "src/s1/demo_page.py": "228d842a83d28917d735c04122b8b81f8269ee60227ab470bb54752d1720fd56",
+    "src/s1/demo_pages2.py": "b4c7433c4c5c96217e6555ad6db74e2a3b6a7ce8ab62b0be0fa0c39a13f8d605",
+    "src/s1/benchmark.py": "4aef45f3d1607821d5041de5c972d6c586c61c4047373376bee028631739ed18",
+    "src/s1/checkpoint.py": "d26007c4e1cf691d041549fac4440dbdc2d77ee6b2376a62fc06bde632fa3ef6",
+    "src/s1/doom_sim.py": "b189a2e1501286c9143f795cd06cd8023c45f512ebd8f9c9bd1a152142546de2",
+    "src/s1/demo_race.py": "beed0f607adbf787ff9ace4d3305e36a42144273d4881591b5bcc85375b58368",
+    "src/s1/unified.py": "a19d2dc827c3ebf65afaf4fb1b0732e2cad3f4191407328f88a731e315bc824a",
+    "src/s1/quantization.py": "b6d39372fbe195cfe9fd2776138dd6e1fe6f1cd860b8be05783b7c984a61ace5",
+    "src/s1/__init__.py": "c9c7ba0ea4cc81609fcf1f0ff2a853243a173a994257e0b9dd19be1a2e6dd52e",
+    "src/s1/data_real.py": "33e4c09f7c4519edef2661c1332cbf0cf1c91df7bbebc313227157690533bb49",
+    "src/s1/runtime.py": "8f6103c600f73b64adc8186cf0c081475e69e891eb1d3d7e89c36c2e5417abda",
+    "src/s1/api.py": "d9c5a043c05aa9cc3080303d28ee25aa2477f437b035612d25ff8c5adee286f5",
+    "src/s1/backends.py": "90c084fa5523dea71b49cf140ecfda1fd2165a9468368624bde6161e2dbf67bf",
+    "src/s1/nvfp4.py": "e9dbd3076665234cd9e2699c628dbc42c0f5e77571e1af35443cd13e0a44f09f",
+    "src/s1/engine.py": "38c236e53c31cd9e2299967f0d61874760a2fa0fe752ff4dd1b11d4b18e42ec5",
+    "src/s1/cli.py": "94615f41e71026c03d5ea3499fa20ac461ab805b12117597a4432c73cd54c53a",
+    "src/s1/contracts.py": "24c24c3ded9c35bfd263a4488bf88916a8960fa0b79283ccedbac232983f8a0a",
+    "src/s1/resources.py": "47e05dfa91980ae1e7a0b3f725db5847fc81a1296c4f75d39477696b0ee2c33f",
+    "src/s1/errors.py": "e5ad1d9b7e700f07a704d74d3e4ade7156c7a9eaad304d3fe4296bad0dc8c997",
+    "src/s1/training.py": "bcfe70c0c775af4f46bd61149858cebcfc642b8f9fd9e4349f9997c66fa42c65",
+    "src/s1/profiling.py": "4bfbcf641f81ee2ff3746ed89c136ba05b9ee87ebbec51ff70913feb0161f1c0",
+    "src/s1/schema.py": "995cac528f3b5579dd7d9a12146fc69c335853e62e5063b1a5471645c12242d2",
+    "src/s1/evaluation/prefix.py": "e25e47b05eaedf65ce0626352ed0a5c24da031bb50550b5bbd38cc68e2719a4b",
+    "src/s1/evaluation/field_text.py": "a622e13342357174477565983f098043f134e5676101f4ee13d01eb84ff6c4b4",
+    "src/s1/evaluation/metrics.py": "f15a8aed6c5b47ecd2b3d872a23df381f2ccd44b730df79870052d3e72065a5f",
+    "src/s1/evaluation/baselines.py": "837a9ff84630ce90d1673459cb0f957535533ef3ce44ef8aab0abf8614e9b02d",
+    "src/s1/evaluation/runner.py": "0a340ed4465f5cf5ba38d6ea68c139bf0e0edb2bfc7658dbf32e5cc98a35cf0f",
+    "src/s1/evaluation/responses.py": "e758340749f32e90d816fb8c7d35c845f6773a64de156eff0a5b86e9abcee3e9",
+    "src/s1/evaluation/mps_maintenance.py": "f3e38eead1a3745d7d926bd9d57d3eec83ea64100f46be8647c205860b34fb4b",
+    "src/s1/evaluation/importing.py": "8363a6c57093a5c428b2603bd6f322ead992fd6d00daebe73403503f597724ad",
+    "src/s1/evaluation/registry.py": "1e996388fbd57f312b90446f429f0a104d6609be6d059085c640f4699c8130bc",
+    "src/s1/evaluation/multimodal.py": "5528319227dda4d4b2652d0abbfc27634b4f97dc172affe228d5aac62fa6dd40",
+    "src/s1/evaluation/datasets.py": "4ad11baf145443441b4c726efc32c484681edcbe8621a657c9756ca98d3ecbf8",
+    "src/s1/evaluation/__init__.py": "127cf68d534aa63995896f51d47ff5015c1d8fcb3563914752aa130f5ff25f51",
+    "src/s1/evaluation/gates.py": "c6a70fa18c916c7871f51d5f1610239c43c86ec492437ad6b5be922a8c7d2087",
+    "src/s1/evaluation/checkpoints.py": "54e0a9cb08689bd1e3b5c822baef62ef102acce1c6547c75850ecd7c7f55aaf0",
+    "src/s1/evaluation/clef.py": "7b55cb4d93e6e8119cc150676b599c775856d76e6eef394183675511053bba3d",
+    "src/s1/evaluation/comparison.py": "e16cd72c552b1aa2573b4da3d414dc2aa37863f537e6cbd3f9d05dc1652e850a",
+    "src/s1/evaluation/providers.py": "94890151fe3e9b02a4677af5cfc5aad3959ba6c31675c2dda689fb0c5a3fd025",
+    "src/s1/evaluation/experiments.py": "b1d8932fb3a5273ca68da93ab2b5a336d56c230852af7e90051eb8aa320e9ddf",
+    "src/s1/evaluation/supervision.py": "588f088c911ac5c17712fa25bba44766ca28b3aba1e77221c5d51373e6fe6928",
+    "src/s1/evaluation/contracts.py": "afab553f4e1be747c16ee5997ba2cc9d88a2cff52b3acee8fc5643468a3b3d84",
+    "src/s1/evaluation/reports.py": "1f910ca0296852e73c330db900621f34eccb73de708a1aa67ff19574ed546e09",
+    "src/s1/evaluation/planning.py": "c285279055a0084a9f21de3b4efdc079be6dce130b5b02bb9154fe6c9abf4779",
+    "src/s1/evaluation/loadgen.py": "1cd4ff55c5bfbc52191158668ba7e22c62028c5b8c82ff2294bb27283769b525",
+    "src/s1/evaluation/training_curve.py": "58cd81d637ca3cf6a8197678b605cd3167d95fef7675208764df05834df77609",
+    "src/s1/evaluation/ultrafast.py": "5d4b45957370cc73b690ba74445f88d45a214c1be49553f7968641016bb50d4f",
+    "src/s1/evaluation/statistics.py": "0b9372e103f94d5c37d119e57e2f821c3e2c006ff97c222cacb8d372665b2e45",
+    "src/s1/evaluation/artifacts.py": "dd72c4aeb68de32cf5a58db81eac259422c30d46a09dbbda081d109418df6ec5",
+    "src/s1/evaluation/workflow.py": "7fa074dad866657ac803930715715703f7ba4a849faa5307f146eb4ab60468c7",
+    "src/s1/evaluation/gemma.py": "18402491a4672fb54dc41c70f82d8e7b6fd9d78f168338371e6b604ba365be47",
+    "src/s1/evaluation/local_competitors.py": "2c0e81ac596c4de56fa53539b0a243d4a62f29260e7eb88778b76a14270379a0",
+    "src/s1/evaluation/integrity.py": "63e88ed20bced5fad86ca328c9f975f71cdcfea2de1db5f96cb9d9d58466b0d0",
+    "src/s1/evaluation/calibration.py": "73937b8f82479c8c919c1568e9174498e83f5413ec2b260e2abbb832b758aca1",
+    "src/s1/evaluation/reporting.py": "f523fe7ceb3d69621de1ac084ab7015756e5e10a1a7dec0126507e5362ded95a",
+    "src/s1/evaluation/adapters.py": "ee768ba0d226a8cbbc4623459f004b5fd9046b2d36ebf644bf074ef3d346c94d",
+    "src/s1/evaluation/jev_omni.py": "b546b8431a70bd1d6206ba721ce2ec8cd7e18a43e70595dd5836d9a8b6d19d7b",
+    "scripts/diagnose_mps_prefix_shapes.py": "3c45801d99f65a4613514c8038e2d49d80547d023ee99277519521df67c84e9b",
+    "scripts/run_ultrafast.py": "14508f5ccdbd0c112e02e93f1e7e4d11501a9b14b34b2a6be3100de277ea3513",
+    "scripts/resume_mps_benchmarks.py": "fe1ece278faca1504c8a710a7397f35cfdd12c48696d5641a5f77f28130d0c10"
+  },
+  "gate": "all argmax agree and every measured pair has max probability delta <= 0.01",
+  "max_probability_delta": 0.01,
+  "summary": {
+    "comparisons": {
+      "A_vs_B": {
+        "max_probability_delta": 0.014569789822539259,
+        "all_argmax_agree": true,
+        "gate_passed": false
+      },
+      "A_vs_D": {
+        "max_probability_delta": 0.06304178727585402,
+        "all_argmax_agree": true,
+        "gate_passed": false
+      },
+      "B_vs_D": {
+        "max_probability_delta": 0.048471997453314764,
+        "all_argmax_agree": true,
+        "gate_passed": false
+      }
+    },
+    "repeat_max_probability_delta": {
+      "A": 0.0,
+      "B": 0.0,
+      "D": 0.0
+    },
+    "all_pairwise_gates_passed": false
+  },
+  "timing_scope": "synchronized instrumented execution; selected-vector clone hooks included, CPU vector export excluded",
+  "defaults_changed": false,
+  "reported_cost_usd": null,
+  "timing_ms": {
+    "A": {
+      "warmup": [
+        24144.800750073045
+      ],
+      "measured": [
+        20851.456415839493,
+        21109.554499853402
+      ],
+      "measured_median": 20980.505457846448
+    },
+    "B": {
+      "warmup": [
+        19472.136000171304
+      ],
+      "measured": [
+        19686.51287513785,
+        19629.94825001806
+      ],
+      "measured_median": 19658.230562577955
+    },
+    "D": {
+      "warmup": [
+        13668.01358293742
+      ],
+      "measured": [
+        13911.177082918584,
+        13872.408916940913
+      ],
+      "measured_median": 13891.792999929748
+    }
+  },
+  "interpretation": "Complete-prompt batching changes probabilities above the gate, and prefix reuse differs further from both baselines. Shapes alone do not establish which mechanism dominates. All repeated variants are individually exact and all argmax decisions agree. No quality labels or task golds used.",
+  "archive": {
+    "path": "shape-control-evidence.zip",
+    "bytes": 515056,
+    "sha256": "7448536271ba92e1d062fad638c97ab8ffdbfed01782089cc266edf09c287ab5",
+    "members": 69,
+    "crc_verified": true,
+    "member_digests_verified": true,
+    "excluded": "Only __pycache__ entries and symlinks; no weights exist in this source tree."
+  },
+  "process_exit_code": 1,
+  "exit_code_basis": "Original exec session34191 completed; exit1 reflects the preserved numerical acceptance failure."
+}
