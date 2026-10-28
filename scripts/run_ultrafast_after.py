@@ -100,7 +100,7 @@ def freeze_sources(manifest, output):
 
 
 def child_argv(args):
-    return [
+    argv = [
         sys.executable,
         str(ROOT / "scripts/run_ultrafast.py"),
         "--upstream",
@@ -123,6 +123,11 @@ def child_argv(args):
         str(args.task_timeout),
         "--native-text-helper",
     ]
+    if args.mps_call_maintenance:
+        argv.append("--mps-call-maintenance")
+    if args.oversized_head_policy != "reject":
+        argv.extend(["--oversized-head-policy", args.oversized_head_policy])
+    return argv
 
 
 def supervise(args):
@@ -137,6 +142,8 @@ def supervise(args):
         "runtime": "MPS only",
         "profiles": ["causal_multislot", "independent"],
         "candidate_prefix_requested": False,
+        "mps_call_maintenance_requested": args.mps_call_maintenance,
+        "oversized_head_policy": args.oversized_head_policy,
         "predecessors": [],
         "child": None,
         "reported_cost_usd": None,
@@ -220,6 +227,10 @@ def main(argv=None):
     )
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--task-timeout", type=float, default=180)
+    parser.add_argument("--mps-call-maintenance", action="store_true")
+    parser.add_argument(
+        "--oversized-head-policy", choices=("reject", "hierarchical"), default="reject"
+    )
     args = parser.parse_args(argv)
     if (
         any(pid <= 0 for pid in args.predecessor_pid)

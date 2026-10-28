@@ -106,6 +106,55 @@ def test_summary_retains_all_failed_tasks_and_does_not_invent_free_cost():
     assert RUNNER.summarize([]) == {}
 
 
+@pytest.mark.parametrize("records", [[], [{"backend_calls": 1}], [{"hierarchy": {"subcalls": []}}]])
+def test_flat_and_nondispatched_hierarchy_task_counts_keep_the_existing_shape(records):
+    assert RUNNER.task_backbone_counts(records, 7) == {"backbone_forwards": 7}
+
+
+@pytest.mark.parametrize("counts,actual", [([1, 2], 7), ([1, None], None), ([None], None)])
+def test_hierarchy_task_actual_count_is_unknown_if_any_core_call_is_unknown(counts, actual):
+    records = [{"hierarchy": {"subcalls": [{"backbone_forwards": value} for value in counts]}}]
+    assert RUNNER.task_backbone_counts(records, 7) == {
+        "backbone_forwards": actual,
+        "observed_completed_backbone_forwards": 7,
+    }
+
+
+def test_summary_keeps_mixed_known_unknown_actual_counts_null_and_sums_completed_lower_bounds():
+    rows = [
+        {**row("x", "flat", "external", success=True, latency=10, calls=1), "backbone_forwards": 4},
+        {
+            **row("x", "hierarchy", "external", success=True, latency=20, calls=1),
+            "backbone_forwards": 2,
+            "observed_completed_backbone_forwards": 2,
+        },
+        {
+            **row(
+                "x", "failed", "external", success=False, latency=30, calls=1, failure="model_error"
+            ),
+            "backbone_forwards": None,
+            "observed_completed_backbone_forwards": 0,
+        },
+    ]
+    summary = RUNNER.summarize(rows)["x"]
+    assert summary["backbone_forwards"] is None
+    assert summary["observed_completed_backbone_forwards"] == 6
+    assert summary["attempted"] == 3 and summary["verified_successes"] == 2
+    assert summary["model_calls"] == 3
+
+
+def test_all_known_flat_summary_has_no_hierarchy_counter_field():
+    rows = [
+        {
+            **row("flat", "one", "external", success=True, latency=10, calls=1),
+            "backbone_forwards": 4,
+        }
+    ]
+    summary = RUNNER.summarize(rows)["flat"]
+    assert summary["backbone_forwards"] == 4
+    assert "observed_completed_backbone_forwards" not in summary
+
+
 def checkpoint(tmp_path):
     """Tiny arbitrary bytes exercise hashing; no model loader or weight download."""
     path = tmp_path / "checkpoint"
@@ -339,3 +388,22 @@ def test_native_helper_keeps_raw_invalid_output_and_raises_without_value_repair(
     assert len(records) == 1 and records[0]["raw_text"] == raw
     assert records[0]["transport_normalization"] is None
     assert records[0]["error"] is not None
+
+
+def test_runner_rejects_unknown_oversized_head_policy_before_loading_upstream(monkeypatch):
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "run_ultrafast.py",
+            "--upstream",
+            "unused",
+            "--output",
+            "unused",
+            "--oversized-head-policy",
+            "unknown",
+        ],
+    )
+    with pytest.raises(SystemExit) as actual:
+        RUNNER.main()
+    assert actual.value.code == 2

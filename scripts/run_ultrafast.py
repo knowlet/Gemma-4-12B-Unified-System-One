@@ -26,7 +26,7 @@ from s1.evaluation.mps_maintenance import (
     MPSCallMaintenance,
     MPSMaintenanceBackend,
 )
-from s1.evaluation.ultrafast import UltrafastDecisionBridge
+from s1.evaluation.ultrafast import HIERARCHICAL_HEAD_POLICY, UltrafastDecisionBridge
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -85,6 +85,26 @@ def verify_checkpoint(path):
     }
 
 
+def _sum_or_unknown(values):
+    values = list(values)
+    return None if any(value is None for value in values) else sum(values)
+
+
+def task_backbone_counts(decision_records, observed_completed):
+    """Keep flat reporting unchanged; hierarchy failures expose only a lower bound."""
+    result = {"backbone_forwards": observed_completed}
+    hierarchy_calls = [
+        call
+        for record in decision_records
+        for call in record.get("hierarchy", {}).get("subcalls", [])
+    ]
+    if hierarchy_calls:
+        result["observed_completed_backbone_forwards"] = observed_completed
+        if any(call.get("backbone_forwards") is None for call in hierarchy_calls):
+            result["backbone_forwards"] = None
+    return result
+
+
 def summarize(rows):
     result = {}
     for profile in dict.fromkeys(row["profile"] for row in rows):
@@ -99,7 +119,7 @@ def summarize(rows):
             "model_calls": sum(row["backend_calls"] + row.get("text_calls", 0) for row in group),
             "decision_calls": sum(row["backend_calls"] for row in group),
             "text_calls": sum(row.get("text_calls", 0) for row in group),
-            "backbone_forwards": sum(row.get("backbone_forwards", 0) for row in group),
+            "backbone_forwards": _sum_or_unknown(row.get("backbone_forwards", 0) for row in group),
             "failure_classes": dict(
                 Counter(row["failure_class"] for row in group if not row["verified_success"])
             ),
@@ -114,6 +134,11 @@ def summarize(rows):
                 if (subset := [row for row in group if row["split"] == split])
             },
         }
+        if any("observed_completed_backbone_forwards" in row for row in group):
+            result[profile]["observed_completed_backbone_forwards"] = _sum_or_unknown(
+                row.get("observed_completed_backbone_forwards", row.get("backbone_forwards", 0))
+                for row in group
+            )
     return result
 
 
@@ -281,6 +306,9 @@ def main():
     )
     parser.add_argument("--native-text-helper", action="store_true")
     parser.add_argument("--mps-call-maintenance", action="store_true")
+    parser.add_argument(
+        "--oversized-head-policy", choices=("reject", "hierarchical"), default="reject"
+    )
     parser.add_argument("--heaven-root", type=Path)
     parser.add_argument("--coherence-root", type=Path)
     args = parser.parse_args()
@@ -348,6 +376,10 @@ def main():
         "exposure": {key: manifest[key] for key in ("scope", "split_policy")},
         "official_rank": None,
         "native_text_helper": args.native_text_helper,
+        "oversized_head_policy": args.oversized_head_policy,
+        "hierarchical_head_policy": copy.deepcopy(HIERARCHICAL_HEAD_POLICY)
+        if args.oversized_head_policy == "hierarchical"
+        else None,
         "mps_call_maintenance": {
             "enabled": args.mps_call_maintenance,
             "policy": copy.deepcopy(MPS_CALL_MAINTENANCE_POLICY)
@@ -449,7 +481,11 @@ def main():
                         )
                         for profile in order:
                             destination = args.output / profile / f"{task['id']}-{repeat + 1}"
-                            bridge = UltrafastDecisionBridge(backends[profile])
+                            bridge = UltrafastDecisionBridge(
+                                backends[profile],
+                                oversized_head_policy=args.oversized_head_policy,
+                                backbone_forward_count=lambda: len(forward_records),
+                            )
                             modules["model"].post_json = bridge
                             text_records = []
                             modules["agent"].field_text = original_text_helper
@@ -477,7 +513,9 @@ def main():
                                 profile=profile,
                                 repeat=repeat + 1,
                                 backend_calls=bridge.backend_calls,
-                                backbone_forwards=len(forward_records) - forward_start,
+                                **task_backbone_counts(
+                                    bridge.records, len(forward_records) - forward_start
+                                ),
                                 text_calls=len(text_records),
                                 reported_cost_usd=None,
                             )

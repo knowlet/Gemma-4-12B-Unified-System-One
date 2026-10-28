@@ -48,6 +48,8 @@ def queued_args(tmp_path, monkeypatch):
         upstream=root / "artifacts/benchmark-tools/jev-ultrafast",
         repeats=3,
         task_timeout=180,
+        mps_call_maintenance=False,
+        oversized_head_policy="reject",
     )
 
 
@@ -112,6 +114,7 @@ def test_capture_all_original_handles_then_wait_before_mps_child(queued_args, mo
     assert argv[argv.index("--max-decisions") + 1] == "12"
     assert argv[argv.index("--task-timeout") + 1] == "180"
     assert "--native-text-helper" in argv
+    assert "--mps-call-maintenance" not in argv and "--oversized-head-policy" not in argv
     assert "--heaven-root" not in argv and "--coherence-root" not in argv
     assert kwargs["shell"] is False
     assert kwargs["cwd"] == RUNNER.ROOT
@@ -122,6 +125,8 @@ def test_capture_all_original_handles_then_wait_before_mps_child(queued_args, mo
     assert result["child"]["started_at_utc"]
     assert result["child"]["argv"] == argv
     assert result["candidate_prefix_requested"] is False
+    assert result["mps_call_maintenance_requested"] is False
+    assert result["oversized_head_policy"] == "reject"
     assert result["predecessors"][1]["identity"] == identity(command="python prefix.py")
     assert result["predecessors"][1]["status"] == "original_exited"
     assert (queued_args.output / "child.log").read_bytes() == b"child output retained\n"
@@ -140,6 +145,60 @@ def test_original_pid_reuse_is_terminal_without_waiting_on_replacement(queued_ar
     result = receipt(queued_args)
     assert result["predecessors"][0]["status"] == "original_ended_pid_reused"
     assert result["predecessors"][0]["last_observation"] == replacement
+
+
+def test_default_child_argv_is_identical_to_original_launcher(queued_args):
+    assert RUNNER.child_argv(queued_args) == [
+        sys.executable,
+        str(RUNNER.ROOT / "scripts/run_ultrafast.py"),
+        "--upstream",
+        str(queued_args.upstream.resolve()),
+        "--output",
+        str(queued_args.run_output.resolve()),
+        "--manifest",
+        str(queued_args.manifest.resolve()),
+        "--model",
+        str(queued_args.model.resolve()),
+        "--device",
+        "mps",
+        "--profiles",
+        "causal_multislot,independent",
+        "--repeats",
+        "3",
+        "--max-decisions",
+        "12",
+        "--task-timeout",
+        "180",
+        "--native-text-helper",
+    ]
+
+
+@pytest.mark.parametrize(
+    "maintenance,policy", [(True, "reject"), (False, "hierarchical"), (True, "hierarchical")]
+)
+def test_opt_in_flags_pass_to_same_interpreter_child_and_are_declared_before_wait(
+    queued_args, monkeypatch, maintenance, policy
+):
+    baseline = RUNNER.child_argv(queued_args)
+    queued_args.mps_call_maintenance = maintenance
+    queued_args.oversized_head_policy = policy
+
+    def assert_receipt_before_wait():
+        captured = receipt(queued_args)
+        assert captured["mps_call_maintenance_requested"] is maintenance
+        assert captured["oversized_head_policy"] == policy
+        return None
+
+    _, _, spawned = fake_processes(
+        monkeypatch, {89007: [identity(), assert_receipt_before_wait], 97017: [identity(), None]}
+    )
+    assert RUNNER.supervise(queued_args) == 0
+    expected = baseline + (["--mps-call-maintenance"] if maintenance else [])
+    if policy != "reject":
+        expected.extend(["--oversized-head-policy", policy])
+    assert spawned[0][0] == expected
+    assert spawned[0][0][0] == sys.executable
+    assert receipt(queued_args)["child"]["argv"] == expected
 
 
 def test_missing_initial_handle_fails_closed_before_launch(queued_args, monkeypatch):
@@ -246,6 +305,7 @@ def test_new_child_output_appearing_during_wait_is_rejected(queued_args, monkeyp
         ["--predecessor-pid", "2", "--predecessor-pid", "2"],
         ["--predecessor-pid", "2", "--repeats", "0"],
         ["--predecessor-pid", "2", "--task-timeout", "nan"],
+        ["--predecessor-pid", "2", "--oversized-head-policy", "unknown"],
     ],
 )
 def test_cli_rejects_invalid_queue_or_run_budgets(tmp_path, monkeypatch, extra):
@@ -255,3 +315,35 @@ def test_cli_rejects_invalid_queue_or_run_budgets(tmp_path, monkeypatch, extra):
             ["--output", str(tmp_path / "receipt"), "--run-output", str(tmp_path / "child"), *extra]
         )
     assert error.value.code == 2
+
+
+@pytest.mark.parametrize(
+    "extra,maintenance,policy",
+    [
+        ([], False, "reject"),
+        (
+            ["--mps-call-maintenance", "--oversized-head-policy", "hierarchical"],
+            True,
+            "hierarchical",
+        ),
+    ],
+)
+def test_cli_policy_passthrough_is_opt_in(tmp_path, monkeypatch, extra, maintenance, policy):
+    captured = []
+    monkeypatch.setattr(RUNNER, "supervise", lambda args: captured.append(args) or 0)
+    assert (
+        RUNNER.main(
+            [
+                "--predecessor-pid",
+                "2",
+                "--output",
+                str(tmp_path / "receipt"),
+                "--run-output",
+                str(tmp_path / "child"),
+                *extra,
+            ]
+        )
+        == 0
+    )
+    assert captured[0].mps_call_maintenance is maintenance
+    assert captured[0].oversized_head_policy == policy

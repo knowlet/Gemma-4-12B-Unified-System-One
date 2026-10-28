@@ -392,8 +392,9 @@ def test_cli_rejects_maintenance_on_non_mps_before_upstream_or_model_loading(dev
 
 
 @pytest.mark.parametrize("mode", ["default_off", "enabled", "cleanup_fault"])
+@pytest.mark.parametrize("oversized_policy", ["reject", "hierarchical"])
 def test_campaign_preserves_goal_result_but_reports_resource_gate_and_archives_sources(
-    tmp_path, monkeypatch, mode
+    tmp_path, monkeypatch, mode, oversized_policy
 ):
     output, manifest = tmp_path / "output", tmp_path / "manifest.json"
     manifest.write_text(
@@ -420,6 +421,8 @@ def test_campaign_preserves_goal_result_but_reports_resource_gate_and_archives_s
     ]
     if mode != "default_off":
         argv.append("--mps-call-maintenance")
+    if oversized_policy != "reject":
+        argv.extend(["--oversized-head-policy", oversized_policy])
     monkeypatch.setattr(sys, "argv", argv)
     mps, calls = FakeMPS(fail_at=4 if mode == "cleanup_fault" else None), []
     torch = SimpleNamespace(
@@ -518,10 +521,18 @@ def test_campaign_preserves_goal_result_but_reports_resource_gate_and_archives_s
     assert RUNNER.main() == (1 if mode == "cleanup_fault" else 0)
     assert len(calls) == 1
     identity = json.loads((output / "identity.json").read_text())
+    assert identity["oversized_head_policy"] == oversized_policy
+    assert identity["hierarchical_head_policy"] == (
+        RUNNER.HIERARCHICAL_HEAD_POLICY if oversized_policy == "hierarchical" else None
+    )
     assert identity["mps_environment"] == {
         name: "0" if name == "PYTORCH_MPS_FAST_MATH" else None for name in environment
     }
     result = json.loads((output / "results.json").read_text())[0]
+    result_keys = list(result)
+    assert result_keys.index("backbone_forwards") == result_keys.index("backend_calls") + 1
+    assert result_keys.index("text_calls") == result_keys.index("backbone_forwards") + 1
+    assert "observed_completed_backbone_forwards" not in result
     assert result["verified_success"] is True
     original = json.loads((output / "independent/one-1/decision-transport.json").read_text())[0]
     assert original["raw_response"] == raw
