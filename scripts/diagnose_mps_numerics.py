@@ -29,6 +29,17 @@ PHASES = (
     "batched_after",
     "singletons_after",
 )
+TELEMETRY_POLICY = {
+    "version": "cpu-copy-then-cast-v2",
+    "device_readback": "Copy original dtype to CPU, then cast values to float32 or row masks to bool on CPU.",
+    "combined_device_dtype_transfer": False,
+    "prior_observer_invalidation": {
+        "run": "artifacts/mps-numerics/20261028-native-control-01",
+        "status": "invalid_for_unchanged_model_comparisons",
+        "reason": "The earlier combined MPS device/dtype observer can misread BF16 offset views and may mutate int64 input masks. Its BF16 telemetry and unchanged-model claims are invalidated; saved responses remain historical outputs of that instrumented run.",
+        "unaffected": "The original external browser baseline had no diagnostic observer and is not invalidated by this observer defect.",
+    },
+}
 
 
 def digest(path):
@@ -179,9 +190,7 @@ def tensor_statistics(tensor, torch, row_mask=None, max_values=262144):
     detached = tensor.detach()
     width = detached.shape[-1] if detached.ndim else 1
     values = detached.reshape(-1, width)
-    row_mask = (
-        row_mask.reshape(-1).to(device="cpu", dtype=torch.bool) if row_mask is not None else None
-    )
+    row_mask = row_mask.reshape(-1).to(device="cpu").bool() if row_mask is not None else None
     if row_mask is not None and row_mask.numel() != values.shape[0]:
         row_mask = None
 
@@ -223,7 +232,10 @@ def tensor_statistics(tensor, torch, row_mask=None, max_values=262144):
 
     rows_per_chunk = max(1, max_values // width)
     for start in range(0, values.shape[0], rows_per_chunk):
-        cpu = values[start : start + rows_per_chunk].to(device="cpu", dtype=torch.float32)
+        # MPS combined device+dtype conversion can mishandle nonzero storage
+        # offsets and shrinking casts. Copy dtype-preserving bytes first; every
+        # dtype conversion below runs on CPU and cannot write an MPS input mask.
+        cpu = values[start : start + rows_per_chunk].to(device="cpu").float()
         add(result["all"], cpu)
         if row_mask is not None:
             mask = row_mask[start : start + rows_per_chunk]
@@ -480,6 +492,7 @@ def run(args):
         "official_rank": None,
         "scoring": "not performed",
         "telemetry": "Full tensor counts in bounded CPU chunks, including valid/padded rows at every decoder layer; observers alter timing/synchronization, never tensor values.",
+        "telemetry_policy": copy.deepcopy(TELEMETRY_POLICY),
         "allocator_policy": copy.deepcopy(guard.ALLOCATOR_POLICY),
         "packages": {
             name: guard.package_version(name) for name in ("torch", "transformers", "numpy")

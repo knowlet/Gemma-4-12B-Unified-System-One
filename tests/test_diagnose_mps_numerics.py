@@ -343,3 +343,75 @@ def test_cpu_tensor_statistics_separates_padded_nonfinite_values_without_mutatio
     assert stats["valid_query_rows"]["nan"] == 0
     assert stats["padded_query_rows"]["nan"] == stats["padded_query_rows"]["positive_inf"] == 1
     torch.testing.assert_close(tensor, before, equal_nan=True)
+
+
+@pytest.mark.parametrize("row_offset", [0, 1, 68, 136])
+def test_offset_views_copy_original_dtype_before_cpu_cast_and_preserve_inputs(row_offset):
+    torch = pytest.importorskip("torch")
+    transfers = []
+
+    class TransferSpy:
+        def __init__(self, tensor):
+            self.tensor = tensor
+
+        @property
+        def shape(self):
+            return self.tensor.shape
+
+        @property
+        def ndim(self):
+            return self.tensor.ndim
+
+        @property
+        def dtype(self):
+            return self.tensor.dtype
+
+        @property
+        def device(self):
+            return "mps"
+
+        def detach(self):
+            return TransferSpy(self.tensor.detach())
+
+        def reshape(self, *shape):
+            return TransferSpy(self.tensor.reshape(*shape))
+
+        def __getitem__(self, key):
+            return TransferSpy(self.tensor[key])
+
+        def to(self, *args, **kwargs):
+            assert args == () and kwargs == {"device": "cpu"}, (
+                "combined device/dtype transfer is forbidden"
+            )
+            transfers.append((self.tensor.dtype, self.tensor.storage_offset()))
+            # Return a CPU tensor in the *original* dtype. Subsequent .float()
+            # or .bool() must therefore be a separate CPU-only conversion.
+            return self.tensor.clone()
+
+    base = torch.full((205, 3840), 0.5, dtype=torch.bfloat16)
+    mask_base = torch.zeros(205, dtype=torch.int64)
+    mask_base[row_offset : row_offset + 68] = 1
+    values = base[row_offset : row_offset + 68]
+    masks = mask_base[row_offset : row_offset + 68]
+    base_before, mask_before = base.clone(), mask_base.clone()
+    stats = RUNNER.tensor_statistics(
+        TransferSpy(values), torch, TransferSpy(masks), max_values=262144
+    )
+    assert stats["all"]["values"] == 68 * 3840
+    assert stats["all"]["finite"] == 68 * 3840
+    assert stats["all"]["finite_min"] == stats["all"]["finite_max"] == 0.5
+    assert stats["valid_query_rows"]["values"] == 68 * 3840
+    assert transfers[0] == (torch.int64, row_offset)
+    assert any(
+        dtype == torch.bfloat16 and offset == row_offset * 3840 for dtype, offset in transfers
+    )
+    torch.testing.assert_close(base, base_before, atol=0, rtol=0)
+    torch.testing.assert_close(mask_base, mask_before, atol=0, rtol=0)
+
+
+def test_new_observer_policy_explicitly_invalidates_prior_instrumented_comparison():
+    assert RUNNER.TELEMETRY_POLICY["combined_device_dtype_transfer"] is False
+    invalidation = RUNNER.TELEMETRY_POLICY["prior_observer_invalidation"]
+    assert invalidation["status"] == "invalid_for_unchanged_model_comparisons"
+    assert "20261028-native-control-01" in invalidation["run"]
+    assert "int64 input masks" in invalidation["reason"]
