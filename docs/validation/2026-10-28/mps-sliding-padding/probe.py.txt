@@ -1,0 +1,53 @@
+"""Isolate fully masked sliding-padding rows; no model, labels or logits repair."""
+
+import hashlib
+import json
+import platform
+from pathlib import Path
+
+import torch
+from torch.nn.functional import scaled_dot_product_attention
+
+torch.manual_seed(20261028)
+length, real, window = 1200, 100, 1024
+row = torch.arange(length)[:, None]
+col = torch.arange(length)[None, :]
+mask = ((col <= row) & (col > row - window) & (col < real))[None, None]
+base = [torch.randn(1, 2, length, 16) * 0.1 for _ in range(3)]
+results = []
+with torch.inference_mode():
+    for device in ("cpu", "mps"):
+        for dtype in (torch.float32, torch.bfloat16):
+            tensors = [x.to(device=device, dtype=dtype) for x in base]
+            active_mask = mask.to(device)
+            first = scaled_dot_product_attention(*tensors, attn_mask=active_mask)
+            second = scaled_dot_product_attention(first, first, first, attn_mask=active_mask)
+            if device == "mps":
+                torch.mps.synchronize()
+            a, b = first.cpu(), second.cpu()
+            results.append({
+                "device": device,
+                "dtype": str(dtype),
+                "first_real_nonfinite": int((~a[:, :, :real].isfinite()).sum()),
+                "first_padding_nonfinite": int((~a[:, :, real:].isfinite()).sum()),
+                "second_real_nonfinite": int((~b[:, :, :real].isfinite()).sum()),
+                "second_padding_nonfinite": int((~b[:, :, real:].isfinite()).sum()),
+            })
+            del tensors, active_mask, first, second
+            if device == "mps":
+                torch.mps.empty_cache()
+output = {
+    "torch": torch.__version__,
+    "platform": platform.platform(),
+    "shape": [1, 2, length, 16],
+    "real_tokens": real,
+    "window": window,
+    "fully_masked_query_rows": int((~mask.any(-1)).sum()),
+    "mask_sha256": hashlib.sha256(mask.numpy().tobytes()).hexdigest(),
+    "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    "seed": 20261028,
+    "results": results,
+    "scope": "Synthetic attention kernel diagnostic, not full-model proof or a fix.",
+}
+Path(__file__).with_name("report.json").write_text(json.dumps(output, indent=2) + "\n")
+print(json.dumps(output))

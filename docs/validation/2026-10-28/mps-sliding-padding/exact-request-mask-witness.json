@@ -1,0 +1,423 @@
+{
+  "scope": "CPU-only token preparation and installed mask constructors; no model construction/weight loading/forward/SDPA execution or GPU calls. All-masked mask rows are a witnessed shape property, not proof of MPS NaN causality.",
+  "torch_version": "2.8.0",
+  "transformers_version": "5.17.0",
+  "device": "cpu",
+  "sliding_window": 1024,
+  "use_bidirectional_attention": "vision",
+  "sources": {
+    "artifacts/ultrafast/20261028-external-native-01/sources/src/s1/unified.py": {
+      "sha256": "a19d2dc827c3ebf65afaf4fb1b0732e2cad3f4191407328f88a731e315bc824a"
+    },
+    "artifacts/ultrafast/20261028-external-native-01/sources/src/s1/evaluation/gemma.py": {
+      "sha256": "02cf34e6be837ee3858e3e10ae0fd22d308fd66696d203e788b6d5fd334b9b96"
+    },
+    "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/browser-env/lib/python3.12/site-packages/transformers/masking_utils.py": {
+      "sha256": "50a737f63d8c778a5597fa34ac139049af921f44958205e3e1c29fe2bae77254"
+    },
+    "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/browser-env/lib/python3.12/site-packages/transformers/models/gemma4_unified/modeling_gemma4_unified.py": {
+      "sha256": "ae181490a16d2f36cd8f74d4d268757a5388dafc421be0ccc5dbefeff3ba9e57"
+    },
+    "/Users/knowlet/Gemma-4-12B-Unified-System-One/artifacts/browser-env/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py": {
+      "sha256": "53c7229daca9ade4c5df874194448938c1edc925abbc71809f9750dd66381e6f"
+    }
+  },
+  "cases": [
+    {
+      "mapped_request_sha256": "1141bc95cd1b8ff4a864e61518cd32b009d15f33061ec302dba06cfd7bdd2837",
+      "matching_failures": [
+        {
+          "path": "artifacts/ultrafast/20261028-external-native-01/independent/external-wikipedia-follow-graph-definition-1/decision-transport.json",
+          "row": 0
+        },
+        {
+          "path": "artifacts/ultrafast/20261028-external-native-01/independent/external-wikipedia-follow-graph-definition-2/decision-transport.json",
+          "row": 0
+        },
+        {
+          "path": "artifacts/ultrafast/20261028-external-native-01/independent/external-wikipedia-follow-graph-definition-3/decision-transport.json",
+          "row": 0
+        }
+      ],
+      "input_keys": [
+        "input_ids",
+        "attention_mask",
+        "mm_token_type_ids"
+      ],
+      "tensors": {
+        "input_ids": {
+          "shape": [
+            2,
+            3488
+          ],
+          "dtype": "torch.int64",
+          "stride": [
+            3488,
+            1
+          ],
+          "contiguous": true,
+          "device": "cpu"
+        },
+        "attention_mask": {
+          "shape": [
+            2,
+            3488
+          ],
+          "dtype": "torch.int64",
+          "stride": [
+            3488,
+            1
+          ],
+          "contiguous": true,
+          "device": "cpu"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            2,
+            3488
+          ],
+          "dtype": "torch.int64",
+          "stride": [
+            3488,
+            1
+          ],
+          "contiguous": true,
+          "device": "cpu"
+        }
+      },
+      "heads": [
+        {
+          "id": "operation",
+          "options": 6,
+          "prompt_tokens": 2257,
+          "slots": [
+            2256
+          ],
+          "nopts": [
+            6
+          ],
+          "padding_tokens": 1231
+        },
+        {
+          "id": "click_target",
+          "options": 43,
+          "prompt_tokens": 3488,
+          "slots": [
+            3487
+          ],
+          "nopts": [
+            43
+          ],
+          "padding_tokens": 0
+        }
+      ],
+      "mm_token_type_ids_unique": [
+        0
+      ],
+      "masks": {
+        "full_attention": {
+          "shape": [
+            2,
+            1,
+            3488,
+            3488
+          ],
+          "dtype": "torch.bool",
+          "stride": [
+            12166144,
+            12166144,
+            3488,
+            1
+          ],
+          "contiguous": true,
+          "device": "cpu",
+          "heads": [
+            {
+              "id": "operation",
+              "all_masked_query_rows": 0,
+              "all_masked_real_query_rows": 0,
+              "all_masked_padded_query_rows": 0,
+              "first_all_masked_query": null,
+              "last_all_masked_query": null,
+              "answer_slots_all_masked": [
+                false
+              ],
+              "answer_slots_visible_key_counts": [
+                2257
+              ]
+            },
+            {
+              "id": "click_target",
+              "all_masked_query_rows": 0,
+              "all_masked_real_query_rows": 0,
+              "all_masked_padded_query_rows": 0,
+              "first_all_masked_query": null,
+              "last_all_masked_query": null,
+              "answer_slots_all_masked": [
+                false
+              ],
+              "answer_slots_visible_key_counts": [
+                3488
+              ]
+            }
+          ]
+        },
+        "sliding_attention": {
+          "shape": [
+            2,
+            1,
+            3488,
+            3488
+          ],
+          "dtype": "torch.bool",
+          "stride": [
+            12166144,
+            12166144,
+            3488,
+            1
+          ],
+          "contiguous": true,
+          "device": "cpu",
+          "heads": [
+            {
+              "id": "operation",
+              "all_masked_query_rows": 208,
+              "all_masked_real_query_rows": 0,
+              "all_masked_padded_query_rows": 208,
+              "first_all_masked_query": 3280,
+              "last_all_masked_query": 3487,
+              "answer_slots_all_masked": [
+                false
+              ],
+              "answer_slots_visible_key_counts": [
+                1024
+              ]
+            },
+            {
+              "id": "click_target",
+              "all_masked_query_rows": 0,
+              "all_masked_real_query_rows": 0,
+              "all_masked_padded_query_rows": 0,
+              "first_all_masked_query": null,
+              "last_all_masked_query": null,
+              "answer_slots_all_masked": [
+                false
+              ],
+              "answer_slots_visible_key_counts": [
+                1024
+              ]
+            }
+          ]
+        }
+      },
+      "candidate_count_mask": {
+        "valid_candidates": [
+          6,
+          43
+        ],
+        "all_masked_head_rows": [
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "mapped_request_sha256": "6738d65bdb13c3e6dbdeaae02726feff10f89fc51705155f7d3f66b061137d63",
+      "matching_failures": [
+        {
+          "path": "artifacts/ultrafast/20261028-external-native-01/independent/external-wikipedia-search-graph-theory-1/decision-transport.json",
+          "row": 0
+        },
+        {
+          "path": "artifacts/ultrafast/20261028-external-native-01/independent/external-wikipedia-search-graph-theory-2/decision-transport.json",
+          "row": 0
+        },
+        {
+          "path": "artifacts/ultrafast/20261028-external-native-01/independent/external-wikipedia-search-graph-theory-3/decision-transport.json",
+          "row": 0
+        }
+      ],
+      "input_keys": [
+        "input_ids",
+        "attention_mask",
+        "mm_token_type_ids"
+      ],
+      "tensors": {
+        "input_ids": {
+          "shape": [
+            2,
+            3331
+          ],
+          "dtype": "torch.int64",
+          "stride": [
+            3331,
+            1
+          ],
+          "contiguous": true,
+          "device": "cpu"
+        },
+        "attention_mask": {
+          "shape": [
+            2,
+            3331
+          ],
+          "dtype": "torch.int64",
+          "stride": [
+            3331,
+            1
+          ],
+          "contiguous": true,
+          "device": "cpu"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            2,
+            3331
+          ],
+          "dtype": "torch.int64",
+          "stride": [
+            3331,
+            1
+          ],
+          "contiguous": true,
+          "device": "cpu"
+        }
+      },
+      "heads": [
+        {
+          "id": "operation",
+          "options": 6,
+          "prompt_tokens": 2243,
+          "slots": [
+            2242
+          ],
+          "nopts": [
+            6
+          ],
+          "padding_tokens": 1088
+        },
+        {
+          "id": "click_target",
+          "options": 41,
+          "prompt_tokens": 3331,
+          "slots": [
+            3330
+          ],
+          "nopts": [
+            41
+          ],
+          "padding_tokens": 0
+        }
+      ],
+      "mm_token_type_ids_unique": [
+        0
+      ],
+      "masks": {
+        "full_attention": {
+          "shape": [
+            2,
+            1,
+            3331,
+            3331
+          ],
+          "dtype": "torch.bool",
+          "stride": [
+            11095561,
+            11095561,
+            3331,
+            1
+          ],
+          "contiguous": true,
+          "device": "cpu",
+          "heads": [
+            {
+              "id": "operation",
+              "all_masked_query_rows": 0,
+              "all_masked_real_query_rows": 0,
+              "all_masked_padded_query_rows": 0,
+              "first_all_masked_query": null,
+              "last_all_masked_query": null,
+              "answer_slots_all_masked": [
+                false
+              ],
+              "answer_slots_visible_key_counts": [
+                2243
+              ]
+            },
+            {
+              "id": "click_target",
+              "all_masked_query_rows": 0,
+              "all_masked_real_query_rows": 0,
+              "all_masked_padded_query_rows": 0,
+              "first_all_masked_query": null,
+              "last_all_masked_query": null,
+              "answer_slots_all_masked": [
+                false
+              ],
+              "answer_slots_visible_key_counts": [
+                3331
+              ]
+            }
+          ]
+        },
+        "sliding_attention": {
+          "shape": [
+            2,
+            1,
+            3331,
+            3331
+          ],
+          "dtype": "torch.bool",
+          "stride": [
+            11095561,
+            11095561,
+            3331,
+            1
+          ],
+          "contiguous": true,
+          "device": "cpu",
+          "heads": [
+            {
+              "id": "operation",
+              "all_masked_query_rows": 65,
+              "all_masked_real_query_rows": 0,
+              "all_masked_padded_query_rows": 65,
+              "first_all_masked_query": 3266,
+              "last_all_masked_query": 3330,
+              "answer_slots_all_masked": [
+                false
+              ],
+              "answer_slots_visible_key_counts": [
+                1024
+              ]
+            },
+            {
+              "id": "click_target",
+              "all_masked_query_rows": 0,
+              "all_masked_real_query_rows": 0,
+              "all_masked_padded_query_rows": 0,
+              "first_all_masked_query": null,
+              "last_all_masked_query": null,
+              "answer_slots_all_masked": [
+                false
+              ],
+              "answer_slots_visible_key_counts": [
+                1024
+              ]
+            }
+          ]
+        }
+      },
+      "candidate_count_mask": {
+        "valid_candidates": [
+          6,
+          41
+        ],
+        "all_masked_head_rows": [
+          false,
+          false
+        ]
+      }
+    }
+  ]
+}
