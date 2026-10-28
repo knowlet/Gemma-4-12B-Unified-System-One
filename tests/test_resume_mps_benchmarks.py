@@ -233,6 +233,101 @@ def test_process_observation_error_preserves_error_receipt_and_prevents_load(tmp
     assert receipt["packages"] == {"torch": None, "transformers": None, "numpy": None}
 
 
+def test_all_additional_handles_are_captured_before_wait_and_terminal_before_load(
+    tmp_path, monkeypatch
+):
+    args = arguments(tmp_path)
+    args.additional_predecessor_pid = [44736, 999]
+    RUNNER.write_json(
+        args.predecessor_receipt,
+        {
+            "supervisor_pid": 124,
+            "status": "completed",
+            "child": {"pid": 125, "identity": IDENTITY, "exit_code": 0},
+        },
+    )
+    events = []
+
+    def capture(pid):
+        events.append(f"capture-{pid}")
+        return {"pid": pid, "identity": IDENTITY}
+
+    def freeze(args, receipt):
+        assert events == ["capture-89007", "capture-124", "capture-44736", "capture-999"]
+        events.append("freeze")
+        (args.output / "sources").mkdir()
+        receipt["source_inventory"] = {}
+
+    def wait(handle, save, seconds):
+        assert events[:5] == [
+            "capture-89007",
+            "capture-124",
+            "capture-44736",
+            "capture-999",
+            "freeze",
+        ]
+        handle["status"] = "original_exited"
+        events.append(f"wait-{handle['pid']}")
+
+    def run(args, receipt, save):
+        assert all(
+            handle["status"] == "original_exited" for handle in receipt["additional_predecessors"]
+        )
+        assert all(f"wait-{pid}" in events for pid in [89007, 124, 44736, 999, 125])
+        events.append("model-load")
+
+    monkeypatch.setattr(RUNNER, "capture_handle", capture)
+    monkeypatch.setattr(RUNNER, "freeze_sources", freeze)
+    monkeypatch.setattr(RUNNER, "wait_handle", wait)
+    monkeypatch.setattr(RUNNER, "run_stages", run)
+    assert RUNNER.supervise(args) == 0
+    assert events[-1] == "model-load"
+
+
+@pytest.mark.parametrize("additional", [[0], [-1], [44736, 44736], [124], [89007]])
+def test_duplicate_or_nonpositive_additional_pids_rejected_before_capture(
+    tmp_path, monkeypatch, additional
+):
+    args = arguments(tmp_path)
+    args.additional_predecessor_pid = additional
+    monkeypatch.setattr(
+        RUNNER, "capture_handle", lambda pid: pytest.fail("invalid PID must never be observed")
+    )
+    with pytest.raises(ValueError, match="unique positive"):
+        RUNNER.supervise(args)
+    assert not args.output.exists()
+
+
+def test_additional_pid_cli_is_repeatable_and_defaults_remain_compatible(monkeypatch):
+    observed = []
+    monkeypatch.setattr(RUNNER, "supervise", lambda args: observed.append(args) or 0)
+    base = [
+        "--parent",
+        "parent",
+        "--output",
+        "fresh",
+        "--coherence-root",
+        "coherence",
+        "--heaven-root",
+        "heaven",
+        "--predecessor-receipt",
+        "receipt",
+        "--wait-for-pid",
+        "124",
+        "--original-pid",
+        "89007",
+    ]
+    assert RUNNER.main(base) == 0
+    assert observed[-1].additional_predecessor_pid == []
+    assert (
+        RUNNER.main(
+            [*base, "--additional-predecessor-pid", "44736", "--additional-predecessor-pid", "999"]
+        )
+        == 0
+    )
+    assert observed[-1].additional_predecessor_pid == [44736, 999]
+
+
 def test_package_metadata_keeps_installed_versions_and_propagates_unexpected_errors(monkeypatch):
     monkeypatch.setattr(RUNNER.importlib.metadata, "version", lambda name: "recorded-" + name)
     assert RUNNER.package_version("torch") == "recorded-torch"

@@ -755,7 +755,16 @@ def run_stages(args, receipt, save):
                 raise RuntimeError("MPS stage-boundary allocator maintenance failed")
 
 
+def predecessor_pids(args):
+    additional = list(getattr(args, "additional_predecessor_pid", []))
+    pids = [args.original_pid, args.wait_for_pid, *additional]
+    if any(type(pid) is not int or pid <= 0 for pid in pids) or len(set(pids)) != len(pids):
+        raise ValueError("predecessor PIDs must be unique positive integers")
+    return additional
+
+
 def supervise(args):
+    additional_pids = predecessor_pids(args)
     args.output.mkdir(parents=True, exist_ok=False)
     receipt = {
         "status": "initializing",
@@ -778,11 +787,16 @@ def supervise(args):
     try:
         receipt["original_baseline"] = capture_handle(args.original_pid)
         receipt["predecessor"] = capture_handle(args.wait_for_pid)
+        receipt["additional_predecessors"] = []
+        for pid in additional_pids:
+            receipt["additional_predecessors"].append(capture_handle(pid))
         freeze_sources(args, receipt)
         receipt["status"] = "waiting"
         save()
         wait_handle(receipt["predecessor"], save, args.poll_seconds)
         wait_handle(receipt["original_baseline"], save, args.poll_seconds)
+        for handle in receipt["additional_predecessors"]:
+            wait_handle(handle, save, args.poll_seconds)
         verify_external_child(
             args.predecessor_receipt,
             save,
@@ -793,6 +807,8 @@ def supervise(args):
         verify_frozen_sources(args.output, receipt["source_inventory"])
         # Re-observe the captured original once more immediately before load.
         wait_handle(receipt["original_baseline"], save, args.poll_seconds)
+        for handle in receipt["additional_predecessors"]:
+            wait_handle(handle, save, args.poll_seconds)
         receipt.update(status="running", started_at_utc=now())
         save()
         run_stages(args, receipt, save)
@@ -818,10 +834,15 @@ def main(argv=None):
     parser.add_argument("--predecessor-receipt", type=Path, required=True)
     parser.add_argument("--wait-for-pid", type=int, required=True)
     parser.add_argument("--original-pid", type=int, required=True)
+    parser.add_argument("--additional-predecessor-pid", type=int, action="append", default=[])
     parser.add_argument("--poll-seconds", type=float, default=15)
     args = parser.parse_args(argv)
-    if min(args.wait_for_pid, args.original_pid) <= 0 or not 0 < args.poll_seconds <= 60:
-        parser.error("positive PIDs and poll interval in (0,60] required")
+    try:
+        predecessor_pids(args)
+    except ValueError as exc:
+        parser.error(str(exc))
+    if not 0 < args.poll_seconds <= 60:
+        parser.error("poll interval in (0,60] required")
     for name in ("parent", "output", "coherence_root", "heaven_root", "predecessor_receipt"):
         setattr(args, name, getattr(args, name).resolve())
     return supervise(args)
