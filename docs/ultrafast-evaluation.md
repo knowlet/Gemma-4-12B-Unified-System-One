@@ -85,7 +85,10 @@ probabilities before generation. Exact masks and an isolated MPS kernel control
 identified unsafe fully masked sliding-padding rows. A
 [native-window batching guard](validation/2026-10-28/mps-sliding-padding/README.md)
 now avoids creating those rows on MPS. Its repaired full-checkpoint numerical
-control passes; task replay and both benchmark regressions remain separate.
+control passes. The subsequent
+[consumed-task replay](validation/2026-10-28/mps-postfix-browser/README.md)
+passes for both profiles; fresh transfer tasks and both benchmark regressions
+remain separate acceptance work.
 The [earlier observer run](validation/2026-10-28/mps-observer-safety/README.md)
 was invalidated for unsafe copy/conversion and supplies no acceptance evidence.
 

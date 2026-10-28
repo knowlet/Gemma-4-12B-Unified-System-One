@@ -54,4 +54,6 @@ witness and repaired patched control provide separate evidence. The
 [patched control archive](patched-native-control-evidence.zip) retains all raw
 responses, safe telemetry, input/source hashes and checkpoint identity. Times
 include observer synchronization and are not speed evidence. Actual browser
-replay and both JevBench suites remain separate acceptance steps.
+replay and both JevBench suites remain separate acceptance steps. The subsequent
+[consumed-task browser replay](../mps-postfix-browser/README.md) passes for both
+profiles; fresh task generalization and full benchmark regressions remain open.
