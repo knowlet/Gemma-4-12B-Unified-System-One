@@ -110,10 +110,18 @@ Raw reports and comparison metadata are in
 
 This workspace now focuses on MPS; CUDA testing is handled separately on gx10.
 The [MPS browser baseline](validation/2026-10-28/mps-browser/README.md) completed
-three repeats of six public local tasks: causal multislot passed 15/18 and
-independent questions passed 18/18. Independent execution was slower. This is a
+three repeats of six public local tasks: causal multislot passed 15/18 frozen
+oracle checks and independent questions passed 18/18. A later audit found that
+the three failures reject an empty-search count-format distinction, so an actual
+task-success advantage is unproven. Frozen scores are retained. Independent
+execution was slower. This is a
 small local browser screening population, not external-site or market-baseline
 acceptance. Model defaults remain unchanged.
+
+The [new causal MPS public231 baseline](validation/2026-10-28/mps-public231/README.md)
+completed 197/231 with full coverage. Its equal accuracy to the historical A100
+run hides three label differences and probability drift up to 0.506384; it is
+not controlled numerical parity. Both coherence stages remain pending.
 
 `s1.evaluation.prefix.predict_independent_prefix` is an explicit experiment. It
 prefills the complete native state/media prefix once, then deep-copies the full
