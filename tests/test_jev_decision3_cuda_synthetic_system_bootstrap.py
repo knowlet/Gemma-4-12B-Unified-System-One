@@ -1,6 +1,7 @@
 """Invented source bytes only: no model, dataset, cases or external execution."""
 
 import hashlib
+from pathlib import Path
 from types import SimpleNamespace
 
 import jev_decision3_cuda_synthetic_system_bootstrap as boot
@@ -312,11 +313,36 @@ def test_actual_system_entry_bytes_are_verified_and_wired(sources, monkeypatch, 
         assert entry.FILES["launcher"] == "jev_decision3_cuda_synthetic_system_launcher.py"
 
 
-def test_broker_and_supervisor_construct_the_same_fixed_worker_command(monkeypatch):
+@pytest.mark.parametrize(
+    "root",
+    [
+        Path("/home/albert_hsieh/Gemma-4-12B-Unified-System-One"),
+        Path("/home/runner/work/project/project"),
+    ],
+    ids=["gx10", "different-checkout"],
+)
+def test_broker_and_supervisor_construct_the_same_fixed_worker_command(monkeypatch, root):
     import jev_decision3_candidate_http_owner as common
     import jev_decision3_cuda_synthetic_system_broker as broker
     import jev_decision3_cuda_synthetic_system_supervisor as supervisor
 
+    # The production broker is bound to the GX10 checkout; the supervisor's
+    # launcher derives its path from its checkout. Compare both under the same
+    # explicit root, including a root different from this test's checkout.
+    assert broker.ROOT == Path("/home/albert_hsieh/Gemma-4-12B-Unified-System-One")
+    assert broker.RUN_ROOT == broker.ROOT / "artifacts/jev-runtime/decision3-cuda-synthetic-system"
+    assert broker.BOOTSTRAP == (
+        broker.ROOT / "scripts/jev_decision3_cuda_synthetic_system_bootstrap_release.py"
+    )
+    monkeypatch.setattr(
+        broker, "RUN_ROOT", root / "artifacts/jev-runtime/decision3-cuda-synthetic-system"
+    )
+    monkeypatch.setattr(
+        broker,
+        "BOOTSTRAP",
+        root / "scripts/jev_decision3_cuda_synthetic_system_bootstrap_release.py",
+    )
+    monkeypatch.setattr(launcher, "SCRIPTS", root / "scripts")
     monkeypatch.setattr(supervisor, "common", common)
     monkeypatch.setattr(supervisor, "launcher", launcher)
     plan_sha = "c" * 64
@@ -330,6 +356,15 @@ def test_broker_and_supervisor_construct_the_same_fixed_worker_command(monkeypat
     assert broker_args[0] == "/usr/bin/systemd-run"
     assert supervisor_args[0] == "systemd-run"
     assert broker_args[1:] == supervisor_args[1:]
+    # Comparing mismatched roots must still detect the changed executable path.
+    monkeypatch.setattr(launcher, "SCRIPTS", root / "different-scripts")
+    different = supervisor._unit_args(plan, path, plan_sha)
+    differences = [
+        (expected, actual)
+        for expected, actual in zip(broker_args[1:], different[1:], strict=True)
+        if expected != actual
+    ]
+    assert differences == [(str(broker.BOOTSTRAP), str(launcher._release("bootstrap")))]
 
 
 def test_show_uses_caller_timeout_after_authentication(adapter, monkeypatch):
