@@ -1,10 +1,27 @@
 """Synthetic events only; no public task text, private cases, or GPU."""
 
 import copy
+from pathlib import Path
 from types import SimpleNamespace
 
 import jevbench_coherence_scorer_audit as audit
 import pytest
+
+
+def test_audit_rejects_relative_and_symlink_official_root_before_evidence_reads(
+    tmp_path, monkeypatch
+):
+    official = tmp_path / "official"
+    official.mkdir()
+    alias = tmp_path / "alias"
+    alias.symlink_to(official, target_is_directory=True)
+    monkeypatch.chdir(tmp_path)
+    reads = []
+    monkeypatch.setattr(audit, "read", lambda *_: reads.append(True))
+    for root in (Path("official"), alias):
+        with pytest.raises(ValueError, match="ordinary_official_root"):
+            audit.audit(tmp_path, root)
+    assert reads == []
 
 
 def test_coherence_accepts_only_the_plan_bound_journal(tmp_path):

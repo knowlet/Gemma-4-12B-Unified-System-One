@@ -53,7 +53,11 @@ def synthetic(tmp_path, monkeypatch):
         owner.child, "_lease_summary", lambda _t, _pid, n: {"own_completed_pairs": n}
     )
     monkeypatch.setattr(features, "_validate_manifest", lambda *_: None)
-    monkeypatch.setattr(inventory, "_check_coherence_files", lambda *_: None)
+
+    def check_sources(*_args, suite_name):
+        assert suite_name == "jevbench-mini"
+
+    monkeypatch.setattr(inventory, "_check_coherence_files", check_sources)
     original_append = owner.child._append
 
     def append(path, row):
@@ -212,7 +216,8 @@ def synthetic(tmp_path, monkeypatch):
             }
         )
 
-    def finder(*_args):
+    def finder(*_args, suite_name):
+        assert suite_name == "jevbench-mini"
         package = ModuleType("jevbench")
         package.__path__ = []
         package.evaluate = evaluate

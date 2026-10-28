@@ -316,7 +316,7 @@ def _run_coherence(plan, backend, torch, generic, lease_module, output, check):
     config_raw = inventory.COHERENCE_CONFIG.read_bytes()
     _need(child._sha(config_raw) == CONFIG_SHA256, "fixed official coherence inventory required")
     config = common._decode(config_raw)
-    finder = inventory._verified_coherence(plan["tasks_root"], config)
+    finder = inventory._verified_coherence(plan["tasks_root"], config, suite_name="jevbench-mini")
     sys.meta_path.insert(0, finder)
     primary = None
     deltas = {}
@@ -600,7 +600,7 @@ def _run_coherence(plan, backend, torch, generic, lease_module, output, check):
             "candidate delta CPU bytes changed",
         )
         identity_guard(backend, lease)
-        inventory._check_coherence_files(plan["tasks_root"], config)
+        inventory._check_coherence_files(plan["tasks_root"], config, suite_name="jevbench-mini")
         # The original SDK report is retained only in the pre-labelled private staging directory.
         report_path = scorer_output / "report.json"
         report.save(report_path)

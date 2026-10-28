@@ -311,9 +311,11 @@ def _supervisor(root, plan, plan_sha, terminal, hello, closure, timing):
 
 
 def audit(run_root, official_root):
-    root, official_root = (
-        Path(run_root).resolve(strict=True),
-        Path(official_root).resolve(strict=True),
+    root = Path(run_root).resolve(strict=True)
+    official_root = Path(official_root)
+    need(
+        official_root.is_absolute() and official_root.resolve(strict=True) == official_root,
+        "ordinary_official_root",
     )
     plan_bytes = read(root, "plan.json")
     plan = decode(plan_bytes)
@@ -365,7 +367,7 @@ def audit(run_root, official_root):
     journal = [decode(line) for line in journal_bytes.splitlines()]
     captured, durations, event_count = _events(root, timing, journal, hello, plan)
     supervisor = _supervisor(root, plan, sha(plan_bytes), terminal, hello, closure, timing)
-    finder = inventory._verified_coherence(official_root, config)
+    finder = inventory._verified_coherence(official_root, config, suite_name="jevbench-mini")
     sys.meta_path.insert(0, finder)
     try:
         from jevbench import evaluate
@@ -417,7 +419,7 @@ def audit(run_root, official_root):
         expected_scores = {k: v for k, v in recorded["scores"].items() if k != "environment"}
         replayed_scores = {k: v for k, v in actual_scores.items() if k != "environment"}
         need(same_ordered(expected_scores, replayed_scores), "official_scores_difference")
-        inventory._check_coherence_files(official_root, config)
+        inventory._check_coherence_files(official_root, config, suite_name="jevbench-mini")
         score = {
             "overall": actual_scores["overall"],
             "overall_ci": actual_scores["ci"]["overall"],

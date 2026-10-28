@@ -2,6 +2,7 @@ import copy
 import hashlib
 import json
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import jevbench_public_request_inventory as inventory
@@ -155,3 +156,127 @@ def test_rejects_unpinned_import():
     finder = inventory._VerifiedFinder(None, {})
     with pytest.raises(ImportError, match="unpinned"):
         finder.find_spec("jevbench.surprise")
+
+
+@pytest.fixture
+def synthetic_official_sources(tmp_path):
+    files = {}
+    for name in sorted(inventory._MINI_SDK | inventory._MINI_ASSETS):
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        raw = ("invented content " + name).encode()
+        path.write_bytes(raw)
+        files[name] = hashlib.sha256(raw).hexdigest()
+    for name in (
+        "src/jevbench/suites/examples/cases.jsonl",
+        "src/jevbench/suites/examples/manifest.json",
+        "src/jevbench/unselected.py",
+    ):
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"invented unselected content")
+        files[name] = hashlib.sha256(b"invented unselected content").hexdigest()
+    return tmp_path, {"files": files}
+
+
+def test_mini_checks_only_explicit_sources_and_preserves_full_mode(
+    synthetic_official_sources, monkeypatch
+):
+    root, config = synthetic_official_sources
+    reads = []
+    original = Path.read_bytes
+
+    def record(path):
+        reads.append(str(path.relative_to(root)))
+        return original(path)
+
+    monkeypatch.setattr(Path, "read_bytes", record)
+    sources = inventory._check_coherence_files(root, config, suite_name="jevbench-mini")
+    assert set(reads) == inventory._MINI_SDK | inventory._MINI_ASSETS
+    assert set(sources) == inventory._MINI_SDK
+    assert not any("examples/" in name or name.endswith("unselected.py") for name in reads)
+    reads.clear()
+    inventory._check_coherence_files(root, config)
+    assert set(reads) == set(config["files"])
+
+
+@pytest.mark.parametrize("asset", sorted(inventory._MINI_ASSETS))
+def test_mini_rejects_every_missing_required_asset_before_read(
+    synthetic_official_sources, monkeypatch, asset
+):
+    root, config = synthetic_official_sources
+    (root / asset).unlink()
+    reads = []
+    monkeypatch.setattr(Path, "read_bytes", lambda path: reads.append(path))
+    with pytest.raises(ValueError):
+        inventory._check_coherence_files(root, config, suite_name="jevbench-mini")
+    assert reads == []
+
+
+def test_mini_requires_all_pins_and_ignores_unselected_config_entries(
+    synthetic_official_sources, monkeypatch
+):
+    root, config = synthetic_official_sources
+    del config["files"]["src/jevbench/suites/jevbench-240/tests.jsonl.gz"]
+    reads = []
+    monkeypatch.setattr(Path, "read_bytes", lambda path: reads.append(path))
+    with pytest.raises(ValueError, match="missing required MINI"):
+        inventory._check_coherence_files(root, config, suite_name="jevbench-mini")
+    assert reads == []
+
+
+@pytest.mark.parametrize("directory", ["jevbench-mini", "jevbench-240"])
+def test_mini_rejects_extra_data_before_any_file_read(
+    synthetic_official_sources, monkeypatch, directory
+):
+    root, config = synthetic_official_sources
+    extra = root / "src/jevbench/suites" / directory / "unexpected.jsonl"
+    extra.write_bytes(b"never read")
+    reads = []
+    monkeypatch.setattr(Path, "read_bytes", lambda path: reads.append(path))
+    with pytest.raises(ValueError, match="inventory differs"):
+        inventory._check_coherence_files(root, config, suite_name="jevbench-mini")
+    assert reads == []
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "src/jevbench/suites/jevbench-mini/tests.jsonl.gz",
+        "src/jevbench/suites/jevbench-mini/manifest.json",
+        "src/jevbench/suites/jevbench-240/cases.jsonl",
+        "src/jevbench/score.py",
+    ],
+)
+def test_mini_rejects_symlink_before_any_file_read(synthetic_official_sources, monkeypatch, name):
+    root, config = synthetic_official_sources
+    path = root / name
+    path.unlink()
+    path.symlink_to(root / "src/jevbench/suites/examples/cases.jsonl")
+    reads = []
+    monkeypatch.setattr(Path, "read_bytes", lambda path: reads.append(path))
+    with pytest.raises(ValueError, match="ordinary official"):
+        inventory._check_coherence_files(root, config, suite_name="jevbench-mini")
+    assert reads == []
+
+
+def test_mini_detects_required_hash_mismatch(synthetic_official_sources):
+    root, config = synthetic_official_sources
+    (root / "src/jevbench/suites/jevbench-240/tests.jsonl.gz").write_bytes(b"tampered")
+    with pytest.raises(ValueError, match="hash mismatch"):
+        inventory._check_coherence_files(root, config, suite_name="jevbench-mini")
+
+
+def test_mini_finder_rejects_relative_and_symlink_checkout_before_reads(
+    synthetic_official_sources, monkeypatch
+):
+    root, config = synthetic_official_sources
+    alias = root / "checkout-alias"
+    alias.symlink_to(root, target_is_directory=True)
+    monkeypatch.chdir(root.parent)
+    reads = []
+    monkeypatch.setattr(Path, "read_bytes", lambda path: reads.append(path))
+    for candidate in (Path(root.name), alias):
+        with pytest.raises(ValueError, match="ordinary absolute"):
+            inventory._verified_coherence(candidate, config, suite_name="jevbench-mini")
+    assert reads == []

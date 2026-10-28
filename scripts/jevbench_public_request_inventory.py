@@ -37,6 +37,91 @@ from s1.evaluation.decision3 import native_payload, request_blockers
 ROOT = Path(__file__).resolve().parents[1]
 COHERENCE_CONFIG = ROOT / "configs/benchmarks/jevbench-coherence-public.json"
 
+# The pinned official MINI loader recursively authenticates every base data file,
+# including the full base plan, before using the MINI plan. This is a fixed
+# inventory, not filesystem discovery or a claim that those base trials run.
+_MINI_ASSETS = frozenset(
+    "src/jevbench/suites/" + name
+    for name in (
+        "jevbench-mini/manifest.json",
+        "jevbench-mini/tests.jsonl.gz",
+        "jevbench-240/manifest.json",
+        "jevbench-240/cases.jsonl",
+        "jevbench-240/rewrites.jsonl",
+        "jevbench-240/tests.jsonl.gz",
+    )
+)
+_MINI_SDK = frozenset(
+    "src/jevbench/" + name
+    for name in (
+        "__init__.py",
+        "__main__.py",
+        "api.py",
+        "backends.py",
+        "cli.py",
+        "datagen/__init__.py",
+        "datagen/domains/__init__.py",
+        "datagen/domains/_rules.py",
+        "datagen/domains/agent_logs.py",
+        "datagen/domains/content_moderation.py",
+        "datagen/domains/customer_support.py",
+        "datagen/domains/ecommerce_returns.py",
+        "datagen/domains/education_grading.py",
+        "datagen/domains/finance_ops.py",
+        "datagen/domains/healthcare_admin.py",
+        "datagen/domains/hr_recruiting.py",
+        "datagen/domains/it_incidents.py",
+        "datagen/domains/legal_contracts.py",
+        "datagen/domains/logistics.py",
+        "datagen/domains/security_ops.py",
+        "datagen/freeze.py",
+        "datagen/sample.py",
+        "datagen/spec.py",
+        "datagen/text.py",
+        "engine.py",
+        "plan.py",
+        "relations/__init__.py",
+        "relations/_shared.py",
+        "relations/base.py",
+        "relations/bat.py",
+        "relations/cho.py",
+        "relations/diagnostics.py",
+        "relations/log.py",
+        "relations/mea.py",
+        "relations/rep.py",
+        "render.py",
+        "results.py",
+        "rewrite.py",
+        "schema.py",
+        "score.py",
+        "suites/__init__.py",
+        "taxonomy.py",
+    )
+)
+
+
+def _mini_directory_check(root):
+    """Reject inputs the official loader would otherwise read before hash checks.
+
+    This pre/post check alone does not prevent transient concurrent replacement;
+    the execution owner must provide a separately controlled immutable checkout.
+    """
+    for suite, expected in (
+        ("jevbench-mini", {"tests.jsonl.gz"}),
+        ("jevbench-240", {"cases.jsonl", "rewrites.jsonl", "tests.jsonl.gz"}),
+    ):
+        directory = root / "src/jevbench/suites" / suite
+        if directory.resolve() != directory or not directory.is_dir():
+            raise ValueError("ordinary official suite directory required")
+        found = set()
+        for entry in directory.iterdir():
+            if entry.name.endswith((".jsonl", ".jsonl.gz")):
+                if entry.is_symlink() or not entry.is_file():
+                    raise ValueError("ordinary official suite data required")
+                found.add(entry.name)
+        if found != expected:
+            raise ValueError("official suite data inventory differs")
+
 
 def _ordered_bytes(value):
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode()
@@ -88,10 +173,31 @@ class _VerifiedFinder(importlib.abc.MetaPathFinder, importlib.abc.Loader):
         exec(compile(self.sources[relative], module.__file__, "exec"), module.__dict__)
 
 
-def _check_coherence_files(root, config):
-    root = Path(root).resolve()
+def _check_coherence_files(root, config, *, suite_name=None):
+    supplied_root = Path(root)
+    root = supplied_root.resolve()
     sources = {}
-    for relative, expected in config["files"].items():
+    if suite_name not in (None, "jevbench-mini"):
+        raise ValueError("unsupported selective coherence suite")
+    files = config["files"]
+    if suite_name == "jevbench-mini":
+        if not supplied_root.is_absolute() or supplied_root != root:
+            raise ValueError("ordinary absolute coherence checkout required")
+        selected = _MINI_SDK | _MINI_ASSETS
+        if not selected.issubset(files):
+            raise ValueError("missing required MINI source pin")
+        # Preflight all paths and both directories before opening any payload.
+        _mini_directory_check(root)
+        for relative in selected:
+            path = root / relative
+            if path.resolve() != path or not path.is_file():
+                raise ValueError("ordinary official MINI source required")
+        names = sorted(selected)
+    else:
+        # Preserve the original complete-config inventory when unspecified.
+        names = files
+    for relative in names:
+        expected = files[relative]
         path = root / relative
         if not path.resolve().is_relative_to(root):
             raise ValueError("official coherence source escapes checkout")
@@ -103,9 +209,9 @@ def _check_coherence_files(root, config):
     return sources
 
 
-def _verified_coherence(root, config):
+def _verified_coherence(root, config, *, suite_name=None):
+    sources = _check_coherence_files(root, config, suite_name=suite_name)
     root = Path(root).resolve()
-    sources = _check_coherence_files(root, config)
     if any(name == "jevbench" or name.startswith("jevbench.") for name in sys.modules):
         raise RuntimeError("coherence module already loaded")
     return _VerifiedFinder(root, sources)
@@ -276,7 +382,8 @@ def run(heaven_root, coherence_root, suite_name):
     )
     pin_bytes = COHERENCE_CONFIG.read_bytes()
     pin = json.loads(pin_bytes)
-    finder = _verified_coherence(coherence_root, pin)
+    selected = "jevbench-mini" if suite_name == "jevbench-mini" else None
+    finder = _verified_coherence(coherence_root, pin, suite_name=selected)
     sys.meta_path.insert(0, finder)
     try:
         from jevbench.plan import decode_requests
@@ -288,7 +395,7 @@ def run(heaven_root, coherence_root, suite_name):
         manifest = json.loads(manifest_path.read_bytes())
         inventory = coherence_inventory(suite, manifest, decode_requests, validate_question)
         # The official suite reads data from disk; reject ordinary mid-run changes.
-        _check_coherence_files(coherence_root, pin)
+        _check_coherence_files(coherence_root, pin, suite_name=selected)
     finally:
         sys.meta_path.remove(finder)
         for name in list(sys.modules):
