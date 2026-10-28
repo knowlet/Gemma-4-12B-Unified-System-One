@@ -44,6 +44,53 @@ def _collate(prepared, pad_id):
     return result
 
 
+def _mps_sliding_window(model):
+    """The smallest native sliding window constrains safe MPS right-padding.
+
+    A padded query at least one window beyond its row's last real key has no
+    visible keys. MPS SDPA can emit NaNs there, which contaminate later layers
+    even when valid queries mask those padded keys. Avoid creating such rows;
+    do not rewrite masks or repair model probabilities.
+    """
+    if str(getattr(model, "device", "")).split(":", 1)[0].lower() != "mps":
+        return None
+    config = getattr(model.lm, "config", None)
+    if config is None:
+        return None
+    config = config.get_text_config() if hasattr(config, "get_text_config") else config
+    layer_types = getattr(config, "layer_types", ())
+    if "sliding_attention" not in layer_types:
+        return None
+    per_layer = getattr(config, "per_layer_config", None)
+    windows = [
+        getattr(per_layer[index] if per_layer is not None else config, "sliding_window", None)
+        for index, kind in enumerate(layer_types)
+        if kind == "sliding_attention"
+    ]
+    if any(type(window) is not int or window <= 0 for window in windows):
+        raise ValueError("MPS sliding-attention batching requires positive native sliding windows")
+    return min(windows)
+
+
+def _padding_safe_groups(items, window):
+    """Partition in original order; every group's padding gap is below window."""
+    if window is None:
+        yield items
+        return
+    start, shortest, longest = 0, None, None
+    for index, item in enumerate(items):
+        length = item[2][0]["input_ids"].shape[1]
+        low = length if shortest is None else min(shortest, length)
+        high = length if longest is None else max(longest, length)
+        if high - low >= window:
+            yield items[start:index]
+            start, shortest, longest = index, length, length
+        else:
+            shortest, longest = low, high
+    if start < len(items):
+        yield items[start:]
+
+
 def predict_batch(model, requests, *, independent=True, readout="candidate"):
     """Native prompts with bounded pending tensors and compatible forward groups.
 
@@ -58,10 +105,15 @@ def predict_batch(model, requests, *, independent=True, readout="candidate"):
         raise ValueError("empty batch")
     buckets, answers = defaultdict(list), [{} for _ in requests]
     batch_sizes, token_counts = [], []
+    sliding_window = _mps_sliding_window(model)
     model.lm.eval()
     with torch.inference_mode():
 
         def forward_group(items):
+            for group in _padding_safe_groups(items, sliding_window):
+                forward_native_group(group)
+
+        def forward_native_group(items):
             prepared = [item[2] for item in items]
             inputs = _collate(prepared, getattr(model.tok, "pad_token_id", None) or 0)
             batch_sizes.append(len(items))
@@ -122,6 +174,11 @@ def predict_batch(model, requests, *, independent=True, readout="candidate"):
                 "scope": "whole_adapter_batch",
                 "readout": readout,
                 "independent_questions": independent,
+                **(
+                    {"mps_sliding_window_batch_guard": sliding_window}
+                    if sliding_window is not None
+                    else {}
+                ),
             },
         }
         for request, result in zip(requests, answers, strict=True)
