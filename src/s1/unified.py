@@ -292,9 +292,13 @@ class UnifiedDecisionModel:
             raise ValueError("temperature must be positive and finite")
         self.temperature = float(temperature)
 
-    def prepare(self, request: DecisionRequest):
+    def prepare_prefix(self, request: DecisionRequest):
+        """Native processor-expanded state and complete media blocks, on CPU.
+
+        Question text is appended separately by ``prepare``. This boundary is
+        also used by the explicit request-local prefix-cache experiment.
+        """
         import numpy as np
-        import torch
         from PIL import Image, UnidentifiedImageError
 
         state = (
@@ -336,11 +340,15 @@ class UnifiedDecisionModel:
             kwargs["images"] = images
         if audio:
             kwargs.update(audio=audio, sampling_rate=16000)
-        inputs = dict(self.processor(**kwargs))
+        return dict(self.processor(**kwargs))
+
+    def prepare_suffix(self, questions, prefix_length):
+        """Return exact native question tokens, absolute answer slots, and counts."""
+        import torch
+
         # Slots are measured AFTER the processor expands image/audio placeholders.
-        prefix_length = inputs["input_ids"].shape[1]
         suffix, slots, nopts = [], [], []
-        for q in request.questions:
+        for q in questions:
             lines = [f"\nQuestion ({q.type}): {q.instructions}\n"]
             for letter, label, desc in zip(LETTERS, q.labels(), q.descriptions()):
                 lines.append(f"({letter}) {label}: {desc}\n")
@@ -352,17 +360,24 @@ class UnifiedDecisionModel:
             raise RequestValidationError(
                 f"request exceeds {self.max_context} context tokens; nothing was truncated"
             )
-        inputs["input_ids"] = torch.cat([inputs["input_ids"], torch.tensor([suffix])], dim=1)
+        return torch.tensor([suffix]), torch.tensor(slots), torch.tensor(nopts)
+
+    def prepare(self, request: DecisionRequest):
+        import torch
+
+        inputs = self.prepare_prefix(request)
+        suffix, slots, nopts = self.prepare_suffix(request.questions, inputs["input_ids"].shape[1])
+        inputs["input_ids"] = torch.cat([inputs["input_ids"], suffix], dim=1)
         for key, fill in (("attention_mask", 1), ("mm_token_type_ids", 0), ("token_type_ids", 0)):
             if key in inputs:
                 inputs[key] = torch.cat(
-                    [inputs[key], inputs[key].new_full((1, len(suffix)), fill)], dim=1
+                    [inputs[key], inputs[key].new_full((1, suffix.shape[1]), fill)], dim=1
                 )
         inputs = {k: v.to(self.device) if hasattr(v, "to") else v for k, v in inputs.items()}
         return (
             inputs,
-            torch.tensor(slots, device=self.device),
-            torch.tensor(nopts, device=self.device),
+            slots.to(self.device),
+            nopts.to(self.device),
         )
 
     def logits(self, request: DecisionRequest):

@@ -105,3 +105,53 @@ local performance check, not a production capacity or accuracy claim.
 
 Raw reports and comparison metadata are in
 [`validation/2026-10-02/summary.json`](validation/2026-10-02/summary.json).
+
+## Independent-question prefix experiment, 2026-10-28
+
+This workspace now focuses on MPS; CUDA testing is handled separately on gx10.
+The [MPS browser baseline](validation/2026-10-28/mps-browser/README.md) completed
+three repeats of six public local tasks: causal multislot passed 15/18 and
+independent questions passed 18/18. Independent execution was slower. This is a
+small local browser screening population, not external-site or market-baseline
+acceptance. Model defaults remain unchanged.
+
+`s1.evaluation.prefix.predict_independent_prefix` is an explicit experiment. It
+prefills the complete native state/media prefix once, then deep-copies the full
+cache metadata and tensors into bounded independent question branches. Both
+passes use the complete Unified backbone; no image/audio embedding path is
+bypassed. Caches are discarded after each request. Sliding-window cumulative
+positions must survive cloning, and bidirectional text attention is rejected.
+See the pinned [Unified forward API](https://huggingface.co/docs/transformers/v5.17.0/en/model_doc/gemma4_unified).
+
+For three already exposed development snapshots, duplicated padded prefill work
+was 3,624/3,417/3,492 token positions. Sharing each native prefix gives a planned
+2,356/2,233/2,258 positions. This is about 35% fewer positions, not a measured
+speedup; prefix/suffix calls and cache-copy costs must be measured too.
+
+```bash
+uv run --no-sync python scripts/benchmark_mps_prefix.py \
+  --trace-root artifacts/ultrafast/20261028-native-01 \
+  --model artifacts/release/checkpoint \
+  --output artifacts/mps-prefix/your-unique-run \
+  --repeat 2 --max-probability-delta 0.01
+```
+
+Run after other MPS jobs finish, or pass `--wait-for-pid` with the currently
+verified predecessor PID. Observation errors prevent model loading. The queued
+experiment snapshots source bytes before waiting and rejects source changes
+before loading the model, so later edits cannot silently change the measured
+implementation.
+
+The script uses only development browser snapshots plus the eight existing
+native text/image/audio/mixed regressions. It synchronizes MPS around each full
+operation, retains warmups separately, alternates ABBA/BAAB blocks, and compares
+every measured candidate output against every measured baseline. The initial
+numerical gate requires all argmax decisions to agree and maximum absolute
+probability drift at most 0.01; failing it is not repaired by renormalization,
+temperature fitting or widening the gate. Repeated baseline drift is also
+reported. Memory observations remain snapshots, not peaks; cost stays unknown.
+
+Tiny CPU models test cache isolation, native media and sliding-window behavior.
+They cannot establish 12B BF16/MPS parity, latency gains, browser success or
+benchmark acceptance. A successful bounded MPS experiment must still be followed
+by browser and both JevBench regressions before any default or quality claim.
