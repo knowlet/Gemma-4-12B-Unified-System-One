@@ -4,22 +4,38 @@ The six frozen public local tasks were each attempted three times per profile
 with the actual 12B specialist checkpoint. Every attempt used a fresh isolated
 Chromium context, the pinned Jev Ultrafast policy, a 12-cycle cap and a 90-second
 policy budget. The independent final DOM verifier, rather than agent DONE,
-determined whether the task succeeded.
+determined the frozen-oracle result. A later diagnostic found an overconstrained
+predicate, so these results do not establish a difference in natural-language
+task completion.
 
-| Profile | Verified tasks | Task latency p50 / p95 | Decision calls | False DONE |
+| Profile | Frozen-oracle passes | Task latency p50 / p95 | Decision calls | Recorded `false_done` labels |
 | --- | ---: | ---: | ---: | ---: |
 | causal_multislot | 15/18 | 40.793 / 52.151 s | 54 | 3 |
 | independent | 18/18 | 51.198 / 76.538 s | 48 | 0 |
 
-Both profiles passed all nine development attempts. Causal passed 6/9 reserved
-transfer attempts, and independent passed 9/9. All three causal failures occurred
+Both profiles passed all nine development oracle checks. Causal passed 6/9 reserved
+transfer oracle checks, and independent passed 9/9. All three causal failures occurred
 on the same reserved task, so these are not three independent failure domains.
 The reserved outcomes did not guide the prefix-cache implementation, which was
 derived from duplicated computation in development snapshots.
 
-Independent mode had higher observed success and higher latency on this small
-population. No claim of overall optimization or superiority to market models is
-made. Text generation was never invoked. These are actual local DOM interactions,
+The [oracle diagnostic](oracle-diagnostic.json) shows that all three failures
+reject only `0 places in ` instead of `0 places`. The model submitted an empty
+search after selecting Coastal. Category, cancellation, empty destination, zero
+results and the empty-result message all satisfy the task. The goal does not
+prohibit an empty search submission. Observer and executor records are consistent,
+and corresponding requests and probabilities are identical across the three
+repeats. This is an unnecessary action, but genuine task failure is unproven.
+
+Frozen scores and the raw archive remain unchanged. The earlier description of
+these cases as proven false completion is withdrawn; the score difference cannot
+support a reliability improvement. The exact count/order checks for
+`dev-design-free` have a similar potential interpretation limitation, without an
+observed counterexample asserted here. Fresh external tasks are needed.
+
+Independent mode had higher frozen-oracle conformance and higher latency on this
+small population. No claim of overall optimization or superiority to market models
+is made. Text generation was never invoked. These are actual local DOM interactions,
 not external website acceptance or official/sealed JevBench scores. Cost remains
 unknown. First-use kernel costs were retained, and the host also performed browser
 diagnostics; timings are exploratory. CUDA tests belong to gx10 and are not mixed
