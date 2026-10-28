@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "suite": "ultrafast-local-public-v1",
+  "upstream_revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+  "scope": "Public local DOM integration screening; not official JevBench scores or a general real-world browser benchmark.",
+  "split_policy": "Assigned before first model inference. Reserved transfer tasks must not drive prompt, model, temperature or harness tuning.",
+  "tasks": [
+    {
+      "id": "dev-reading-choices",
+      "split": "development",
+      "scenario": "travel",
+      "goal": "Open the Reading room, then open and read the article titled A browser is a choice, not a conversation. Stop with that article open.",
+      "expected": {
+        "hash": "#choices",
+        "heading": "A browser is a choice, not a conversation",
+        "title": "A browser is a choice, not a conversation · Forma",
+        "body_contains": ["Freshness is part of correctness.", "End of article"]
+      }
+    },
+    {
+      "id": "dev-reading-latency",
+      "split": "development",
+      "scenario": "research",
+      "goal": "Open the article Where the milliseconds go and stop with the full article visible.",
+      "expected": {
+        "hash": "#latency",
+        "heading": "Where the milliseconds go",
+        "title": "Where the milliseconds go · Forma",
+        "body_contains": ["Measure the complete loop against an observable result.", "End of article"]
+      }
+    },
+    {
+      "id": "dev-design-free",
+      "split": "development",
+      "scenario": "travel",
+      "goal": "Set the Stay category to Design and enable Free cancellation. Leave the filtered list open, without opening a property or entering a destination.",
+      "expected": {
+        "heading": "Somewhere you can exhale.",
+        "category": "Design",
+        "free_cancellation": true,
+        "destination": "",
+        "count": "2 places",
+        "results": ["Casa Flora", "The Glasshouse"]
+      }
+    },
+    {
+      "id": "transfer-reading-uncertainty",
+      "split": "reserved_transfer",
+      "scenario": "travel",
+      "goal": "Go to the Reading room and open Confidence is not correctness. Stop with that article open.",
+      "expected": {
+        "hash": "#uncertainty",
+        "heading": "Confidence is not correctness",
+        "title": "Confidence is not correctness · Forma",
+        "body_contains": ["What a peaked distribution can and cannot tell you about an outcome.", "End of article"]
+      }
+    },
+    {
+      "id": "transfer-nature-detail",
+      "split": "reserved_transfer",
+      "scenario": "travel",
+      "goal": "Filter stays to the Nature category, leave Free cancellation off, and open Serra Lodge. Do not enter a destination. Stop on the property's details page.",
+      "expected": {
+        "hash": "#serra-lodge",
+        "heading": "Serra Lodge",
+        "title": "Serra Lodge · Forma",
+        "filter_note": "Your filters: Nature · Free cancellation off · Destination anywhere",
+        "body_contains": ["Non-refundable stay", "No reservation has been made."]
+      }
+    },
+    {
+      "id": "transfer-coastal-empty",
+      "split": "reserved_transfer",
+      "scenario": "travel",
+      "goal": "Set Stay category to Coastal and leave Free cancellation off. Do not enter a destination. Stop with the filtered results list showing that there are no matching stays.",
+      "expected": {
+        "heading": "Somewhere you can exhale.",
+        "category": "Coastal",
+        "free_cancellation": false,
+        "destination": "",
+        "count": "0 places",
+        "results": [],
+        "empty_message": "No places match these filters. Try another destination or category."
+      }
+    }
+  ]
+}
