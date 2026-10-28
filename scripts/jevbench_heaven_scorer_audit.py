@@ -157,18 +157,99 @@ def read_pinned_journal(root, plan, expected_sha256):
             os.close(directory)
 
 
-def source_check(plan):
-    allowed = (ROOT / "scripts", ROOT / "src/s1", ROOT / "configs")
-    matching = unavailable = outside = 0
-    for name, expected in plan["source_pins"].items():
+def release_layout(plan, suite, root):
+    """Select one exact release set; an evidence plan cannot name new code paths."""
+    need(suite in ("heaven", "coherence"), "release_version")
+    scripts = root / "scripts"
+    pins = plan.get("source_pins")
+    need(type(pins) is dict, "release_version")
+    prefix = "jev_decision3_jevbench_" + suite
+    releases = {
+        "legacy": (
+            scripts / (prefix + "_owner_release_20261027.py"),
+            scripts / (prefix + "_supervisor_release_20261027.py"),
+        ),
+        "v2": (
+            scripts / (prefix + "_owner_release_v2_20261028.py"),
+            scripts / (prefix + "_supervisor_release_v2_20261028.py"),
+        ),
+    }
+    selected = [
+        version for version, paths in releases.items() if all(str(p) in pins for p in paths)
+    ]
+    need(len(selected) == 1, "release_version")
+    version = selected[0]
+    allowed_releases = {str(path) for path in releases[version]}
+    for name in pins:
         path = Path(name)
-        if not any(path.is_relative_to(prefix) for prefix in allowed):
-            outside += 1
-            continue
-        if not path.is_file() or not any(
-            path.resolve().is_relative_to(p.resolve()) for p in allowed
+        if path.parent == scripts and path.name.startswith(
+            (prefix + "_owner_release", prefix + "_supervisor_release")
         ):
-            unavailable += 1
+            need(name in allowed_releases, "release_version")
+    generic = scripts / "jev_decision3_jevbench_generic_release_20261027.py"
+    lease = scripts / "jev_gpu_forward_lease_release_20261027.py"
+    transport = plan.get("transport")
+    need(
+        type(transport) is dict
+        and plan.get("generic_release") == str(generic)
+        and transport.get("lease_release") == str(lease)
+        and str(generic) in pins
+        and str(lease) in pins,
+        "release_version",
+    )
+    need(
+        all(
+            path.is_file() and path.resolve() == path
+            for path in (*releases[version], generic, lease)
+        ),
+        "release_version",
+    )
+    return version, releases[version], generic, lease
+
+
+def verify_release_pair(held, release, *, failure="release_source_difference"):
+    need(
+        held.is_absolute()
+        and release.is_absolute()
+        and held.resolve() == held
+        and release.resolve() == release
+        and held.is_file()
+        and release.is_file(),
+        failure,
+    )
+    original, activated = held.read_bytes(), release.read_bytes()
+    marker = b"\nSOURCE_ONLY = True\n"
+    need(
+        original.count(marker) == 1
+        and activated == original.replace(marker, b"\nSOURCE_ONLY = False\n", 1),
+        failure,
+    )
+
+
+def public_pin_path(name, allowed, *, failure):
+    """Classify an absolute pin before reading; outside pins remain unread."""
+    need(type(name) is str, failure)
+    path = Path(name)
+    need(path.is_absolute(), failure)
+    if not any(path.is_relative_to(prefix) for prefix in allowed):
+        return None
+    need(
+        str(path) == name and ".." not in path.parts and path.resolve() == path and path.is_file(),
+        failure,
+    )
+    return path
+
+
+def source_check(plan):
+    version, (owner_release, supervisor_release), generic_release, lease_release = release_layout(
+        plan, "heaven", ROOT
+    )
+    allowed = (ROOT / "scripts", ROOT / "src/s1", ROOT / "configs")
+    matching = outside = 0
+    for name, expected in plan["source_pins"].items():
+        path = public_pin_path(name, allowed, failure="public_source_pin")
+        if path is None:
+            outside += 1
             continue
         need(sha(path.read_bytes()) == expected, "public_source_pin")
         matching += 1
@@ -181,9 +262,9 @@ def source_check(plan):
         need(str(path) in plan["source_pins"], "audit_dependency_not_pinned")
     required = (
         "jev_decision3_jevbench_heaven_owner.py",
-        "jev_decision3_jevbench_heaven_owner_release_20261027.py",
+        owner_release.name,
         "jev_decision3_jevbench_heaven_supervisor.py",
-        "jev_decision3_jevbench_heaven_supervisor_release_20261027.py",
+        supervisor_release.name,
         "jev_decision3_jevbench_generic.py",
         "jev_gpu_forward_lease.py",
         "jev_decision3_candidate_browser_child.py",
@@ -191,7 +272,7 @@ def source_check(plan):
         "jev_stage_memory_profile_v2.py",
     )
     expected_paths = [ROOT / "scripts" / name for name in required]
-    expected_paths.extend((Path(plan["generic_release"]), Path(plan["transport"]["lease_release"])))
+    expected_paths.extend((generic_release, lease_release))
     need(
         all(
             path.is_relative_to(ROOT / "scripts") and str(path) in plan["source_pins"]
@@ -202,19 +283,16 @@ def source_check(plan):
     pairs = [
         (expected_paths[0], expected_paths[1]),
         (expected_paths[2], expected_paths[3]),
-        (expected_paths[4], Path(plan["generic_release"])),
-        (expected_paths[5], Path(plan["transport"]["lease_release"])),
+        (expected_paths[4], generic_release),
+        (expected_paths[5], lease_release),
     ]
     for held, release in pairs:
-        original, activated = held.read_bytes(), release.read_bytes()
-        marker = b"\nSOURCE_ONLY = True\n"
-        need(
-            original.count(marker) == 1
-            and activated == original.replace(marker, b"\nSOURCE_ONLY = False\n", 1),
-            "release_source_difference",
-        )
-    need(unavailable == 0 and sha(heaven.CONFIG.read_bytes()) == CONFIG_SHA, "public_source_pin")
-    return {"verified_public_files": matching, "outside_scope_not_read": outside}
+        verify_release_pair(held, release)
+    need(sha(heaven.CONFIG.read_bytes()) == CONFIG_SHA, "public_source_pin")
+    result = {"verified_public_files": matching, "outside_scope_not_read": outside}
+    if version == "v2":
+        result["release_revision"] = version
+    return result
 
 
 def audit(run_root, official_root):

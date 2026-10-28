@@ -14,7 +14,16 @@ import sys
 from pathlib import Path
 
 import jevbench_public_request_inventory as inventory
-from jevbench_heaven_scorer_audit import encode, need, read, read_pinned_journal, sha
+from jevbench_heaven_scorer_audit import (
+    encode,
+    need,
+    public_pin_path,
+    read,
+    read_pinned_journal,
+    release_layout,
+    sha,
+    verify_release_pair,
+)
 
 from s1.contracts import DecisionRequest
 from s1.evaluation.decision3 import native_payload, normalize_native_response
@@ -58,25 +67,23 @@ def lines(root, name):
 
 
 def _source_check(plan):
+    version, (owner_release, supervisor_release), generic_release, lease_release = release_layout(
+        plan, "coherence", ROOT
+    )
     allowed = (ROOT / "scripts", ROOT / "src/s1", ROOT / "configs")
     matched = outside = 0
     for name, expected in plan["source_pins"].items():
-        path = Path(name)
-        if not any(path.is_relative_to(p) for p in allowed):
+        path = public_pin_path(name, allowed, failure="source_pin")
+        if path is None:
             outside += 1
             continue
-        need(
-            path.is_file()
-            and any(path.resolve().is_relative_to(p.resolve()) for p in allowed)
-            and sha(path.read_bytes()) == expected,
-            "source_pin",
-        )
+        need(sha(path.read_bytes()) == expected, "source_pin")
         matched += 1
     names = (
         "jev_decision3_jevbench_coherence_owner.py",
-        "jev_decision3_jevbench_coherence_owner_release_20261027.py",
+        owner_release.name,
         "jev_decision3_jevbench_coherence_supervisor.py",
-        "jev_decision3_jevbench_coherence_supervisor_release_20261027.py",
+        supervisor_release.name,
         "jev_decision3_jevbench_generic.py",
         "jev_gpu_forward_lease.py",
         "jev_decision3_candidate_browser_child.py",
@@ -85,7 +92,7 @@ def _source_check(plan):
         "jevbench_public_request_inventory.py",
     )
     paths = [ROOT / "scripts" / name for name in names]
-    paths += [Path(plan["generic_release"]), Path(plan["transport"]["lease_release"])]
+    paths += [generic_release, lease_release]
     need(
         all(p.is_relative_to(ROOT / "scripts") and str(p) in plan["source_pins"] for p in paths),
         "source_pin_missing",
@@ -96,12 +103,7 @@ def _source_check(plan):
         (paths[4], paths[-2]),
         (paths[5], paths[-1]),
     ):
-        a, b = held.read_bytes(), release.read_bytes()
-        marker = b"\nSOURCE_ONLY = True\n"
-        need(
-            a.count(marker) == 1 and b == a.replace(marker, b"\nSOURCE_ONLY = False\n", 1),
-            "release_source",
-        )
+        verify_release_pair(held, release, failure="release_source")
     for path in (
         inventory.COHERENCE_CONFIG.absolute(),
         Path(sys.modules[DecisionRequest.__module__].__file__).absolute(),
@@ -114,7 +116,10 @@ def _source_check(plan):
         and plan["source_pins"][str(inventory.COHERENCE_CONFIG.absolute())] == CONFIG_SHA,
         "official_config_pin",
     )
-    return {"public_files_verified": matched, "external_files_not_read": outside}, decode(config)
+    result = {"public_files_verified": matched, "external_files_not_read": outside}
+    if version == "v2":
+        result["release_revision"] = version
+    return result, decode(config)
 
 
 class CapturedReplay:
