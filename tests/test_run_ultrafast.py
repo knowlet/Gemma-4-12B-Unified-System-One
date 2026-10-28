@@ -5,7 +5,10 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import sys
+from contextlib import nullcontext
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -227,3 +230,112 @@ def test_archive_sources_creates_destination_for_empty_inputs(tmp_path):
     RUNNER.archive_sources([], destination)
     assert destination.is_dir()
     assert list(destination.iterdir()) == []
+
+
+def fake_native_model(raw, monkeypatch):
+    """Exercise transport handling without importing Torch or dispatching a model."""
+    calls = []
+
+    class Input:
+        shape = (1, 2)
+
+        def to(self, device):
+            assert device == "cpu"
+            return self
+
+    class Output:
+        def __getitem__(self, key):
+            assert key == (0, slice(2, None))
+            return [90, 91, 92]
+
+    class Processor:
+        def apply_chat_template(self, messages, **kwargs):
+            calls.append(("template", messages, kwargs))
+            return "unchanged rendered prompt"
+
+        def __call__(self, **kwargs):
+            assert kwargs == {
+                "text": "unchanged rendered prompt",
+                "return_tensors": "pt",
+                "add_special_tokens": False,
+            }
+            return {"input_ids": Input()}
+
+    def generate(**kwargs):
+        assert set(kwargs) == {"input_ids", "max_new_tokens", "do_sample"}
+        assert kwargs["max_new_tokens"] == 128 and kwargs["do_sample"] is False
+        calls.append(("generate",))
+        return Output()
+
+    def decode(tokens, *, skip_special_tokens):
+        assert tokens == [90, 91, 92] and skip_special_tokens is True
+        return raw
+
+    monkeypatch.setitem(sys.modules, "torch", SimpleNamespace(inference_mode=nullcontext))
+    return SimpleNamespace(
+        name="same specialist",
+        device="cpu",
+        max_context=16384,
+        processor=Processor(),
+        lm=SimpleNamespace(generate=generate),
+        tok=SimpleNamespace(decode=decode),
+    ), calls
+
+
+@pytest.mark.parametrize(
+    "raw, format",
+    [
+        ('{"text":"  Graph theory  "}', "direct"),
+        ('```json\n{"text":"  Graph theory  "}\n```', "fenced"),
+        ('```\n{"text":"  Graph theory  "}\n```', "fenced"),
+    ],
+)
+def test_native_helper_logs_format_normalization_and_preserves_original_generation(
+    raw, format, monkeypatch
+):
+    model, calls = fake_native_model(raw, monkeypatch)
+    records = []
+    instruction = "Original general JSON field instruction"
+    context = {"goal": "Original task context", "observed": ["a", "b"]}
+    value, metadata = RUNNER.native_field_text(model, instruction, records)(context)
+    assert value == "  Graph theory  "
+    assert [call[0] for call in calls] == ["template", "generate"]
+    assert calls[0][1] == [
+        {"role": "system", "content": instruction},
+        {"role": "user", "content": json.dumps(context, ensure_ascii=False)},
+    ]
+    assert calls[0][2] == {
+        "tokenize": False,
+        "add_generation_prompt": True,
+        "enable_thinking": False,
+    }
+    record = records[0]
+    assert record["raw_text"] == raw and record["instruction"] == instruction
+    assert record["context"] == context and record["context"] is not context
+    assert record["max_new_tokens"] == 128 and record["do_sample"] is False
+    assert record["input_tokens"] == 2 and record["output_tokens"] == 3
+    assert record["reported_cost_usd"] is None and record["error"] is None
+    assert record["transport_normalization"] == metadata["transport_normalization"]
+    assert record["transport_normalization"]["format"] == format
+    metadata["transport_normalization"]["format"] = "caller mutation"
+    assert record["transport_normalization"]["format"] == format
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "```json\n" + "_" * 127,
+        'Here is JSON: {"text":"Graph theory"}',
+        '{"text":"first","text":"second"}',
+        '```json\n{"text":NaN}\n```',
+    ],
+)
+def test_native_helper_keeps_raw_invalid_output_and_raises_without_value_repair(raw, monkeypatch):
+    model, calls = fake_native_model(raw, monkeypatch)
+    records = []
+    with pytest.raises(ValueError):
+        RUNNER.native_field_text(model, "Original instruction", records)({"goal": "same context"})
+    assert [call[0] for call in calls].count("generate") == 1
+    assert len(records) == 1 and records[0]["raw_text"] == raw
+    assert records[0]["transport_normalization"] is None
+    assert records[0]["error"] is not None

@@ -20,6 +20,12 @@ import numpy as np
 
 from s1.backends import GemmaBackend, UniformBackend
 from s1.contracts import DecisionRequest
+from s1.evaluation.field_text import parse_field_text
+from s1.evaluation.mps_maintenance import (
+    MPS_CALL_MAINTENANCE_POLICY,
+    MPSCallMaintenance,
+    MPSMaintenanceBackend,
+)
 from s1.evaluation.ultrafast import UltrafastDecisionBridge
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -111,7 +117,7 @@ def summarize(rows):
     return result
 
 
-def native_field_text(model, instruction, records):
+def native_field_text(model, instruction, records, *, maintenance=None, profile=None):
     """Optional shared text helper: original upstream instruction, local generation, no gold values."""
 
     def generate(context):
@@ -125,6 +131,7 @@ def native_field_text(model, instruction, records):
             "max_new_tokens": 128,
             "do_sample": False,
             "raw_text": None,
+            "transport_normalization": None,
             "error": None,
             "reported_cost_usd": None,
         }
@@ -149,17 +156,11 @@ def native_field_text(model, instruction, records):
             record["raw_text"] = raw
             record["input_tokens"] = inputs["input_ids"].shape[1]
             record["output_tokens"] = len(new_tokens)
-            parsed = json.loads(raw)
-            value = parsed["text"]
-            if (
-                set(parsed) != {"text"}
-                or not isinstance(value, str)
-                or not value.strip()
-                or len(value) > 2000
-            ):
-                raise ValueError("Text helper returned no valid field value; nothing typed")
+            value, normalization = parse_field_text(raw)
+            record["transport_normalization"] = normalization
             return value, {
                 "model": model.name,
+                "transport_normalization": copy.deepcopy(normalization),
                 "latency_ms": (time.perf_counter() - started) * 1000,
                 "usage": {
                     "input_tokens": record["input_tokens"],
@@ -173,7 +174,26 @@ def native_field_text(model, instruction, records):
             record["latency_ms"] = (time.perf_counter() - started) * 1000
             records.append(record)
 
-    return generate
+    if maintenance is None:
+        return generate
+
+    def maintained(context):
+        started, record_start, result = time.perf_counter(), len(records), None
+        try:
+            result = maintenance.call(
+                lambda: generate(context), profile=profile, kind="native_helper"
+            )
+            return result
+        finally:
+            elapsed = (time.perf_counter() - started) * 1000
+            if len(records) > record_start:
+                records[-1]["latency_ms"] = elapsed
+                records[-1]["mps_call_maintenance"] = copy.deepcopy(MPS_CALL_MAINTENANCE_POLICY)
+            if result is not None:
+                result[1]["latency_ms"] = elapsed
+                result[1]["mps_call_maintenance"] = copy.deepcopy(MPS_CALL_MAINTENANCE_POLICY)
+
+    return maintained
 
 
 def run_benchmarks(backend, profile, output, args, checkpoint):
@@ -189,6 +209,12 @@ def run_benchmarks(backend, profile, output, args, checkpoint):
     }
 
     def predict(state, questions):
+        if isinstance(backend, MPSMaintenanceBackend):
+            # The controller checks its fault latch before touching MPS and
+            # synchronizes cleanup after the complete dispatched prediction.
+            return backend.predict(
+                DecisionRequest.model_validate({"state": state, "questions": questions})
+            )
         import torch
 
         if backend.model.device == "mps":
@@ -254,9 +280,12 @@ def main():
         "--tasks", help="Comma-separated task IDs; omitted runs full frozen manifest"
     )
     parser.add_argument("--native-text-helper", action="store_true")
+    parser.add_argument("--mps-call-maintenance", action="store_true")
     parser.add_argument("--heaven-root", type=Path)
     parser.add_argument("--coherence-root", type=Path)
     args = parser.parse_args()
+    if args.mps_call_maintenance and args.device != "mps":
+        parser.error("--mps-call-maintenance requires --device mps")
     profiles = args.profiles.split(",")
     if len(set(profiles)) != len(profiles) or set(profiles) - {
         "uniform",
@@ -281,7 +310,16 @@ def main():
     archive_sources(
         [
             *ROOT.glob("src/s1/**/*.py"),
-            *[ROOT / "scripts" / name for name in ["run_ultrafast.py", "ultrafast_browser.py"]],
+            *[
+                ROOT / "scripts" / name
+                for name in [
+                    "run_ultrafast.py",
+                    "ultrafast_browser.py",
+                    "run_jevbench_public.py",
+                    "summarize_jevbench_campaign.py",
+                ]
+            ],
+            ROOT / "configs/benchmarks/jevbench-public.json",
             args.manifest,
         ],
         sources,
@@ -310,10 +348,27 @@ def main():
         "exposure": {key: manifest[key] for key in ("scope", "split_policy")},
         "official_rank": None,
         "native_text_helper": args.native_text_helper,
+        "mps_call_maintenance": {
+            "enabled": args.mps_call_maintenance,
+            "policy": copy.deepcopy(MPS_CALL_MAINTENANCE_POLICY)
+            if args.mps_call_maintenance
+            else None,
+        },
+        "mps_environment": {
+            name: os.environ.get(name)
+            for name in (
+                "PYTORCH_ENABLE_MPS_FALLBACK",
+                "PYTORCH_MPS_FAST_MATH",
+                "PYTORCH_MPS_PREFER_METAL",
+                "PYTORCH_MPS_HIGH_WATERMARK_RATIO",
+                "PYTORCH_MPS_LOW_WATERMARK_RATIO",
+            )
+        },
         "reported_cost_usd": None,
     }
     write_json(args.output / "identity.json", identity)
     rows, backends, forward_records = [], {}, []
+    maintenance = None
     try:
         if set(profiles) - {"uniform"}:
             print("Verifying checkpoint files", flush=True)
@@ -330,6 +385,19 @@ def main():
             identity["load_seconds"] = time.perf_counter() - started
             identity["runtime"] = shared.metadata
             import torch
+
+            if args.mps_call_maintenance:
+                maintenance = MPSCallMaintenance(
+                    torch,
+                    device=shared.model.device,
+                    save=lambda records: write_json(
+                        args.output / "mps-call-maintenance.json", records
+                    ),
+                )
+                identity["runtime"] = {
+                    **shared.metadata,
+                    "mps_call_maintenance": copy.deepcopy(MPS_CALL_MAINTENANCE_POLICY),
+                }
 
             identity["hardware"] = {
                 "processor": platform.processor(),
@@ -356,7 +424,11 @@ def main():
                 backend = copy.copy(shared)
                 backend.question_mode = profile
                 backend.metadata = {**shared.metadata, "question_mode": profile}
-                backends[profile] = backend
+                backends[profile] = (
+                    MPSMaintenanceBackend(backend, maintenance, profile=profile)
+                    if maintenance is not None
+                    else backend
+                )
         backends["uniform"] = UniformBackend()
         write_json(args.output / "identity.json", identity)
         key_before = os.environ.get("TYPESAFE_API_KEY")
@@ -386,6 +458,8 @@ def main():
                                     backends[profile].model,
                                     modules["model"].TEXT_VALUE,
                                     text_records,
+                                    maintenance=maintenance,
+                                    profile=profile,
                                 )
                             transport.set_output(destination)
                             forward_start = len(forward_records)
@@ -433,8 +507,24 @@ def main():
         identity.update(status="error", error={"type": type(exc).__name__, "message": str(exc)})
         raise
     finally:
+        if maintenance is not None:
+            identity["operational_maintenance_errors"] = maintenance.operational_errors()
+            identity["mps_call_maintenance_resource_gate"] = {
+                "passed": maintenance.fault is None,
+                "scope": "Operational cleanup only; task goal verification is unchanged.",
+                "blocked_calls": sum(not row["dispatched"] for row in maintenance.records),
+            }
+            if maintenance.fault is not None and identity["status"] == "completed":
+                identity["status"] = "completed_with_operational_maintenance_errors"
+            write_json(args.output / "mps-call-maintenance.json", maintenance.records)
         write_json(args.output / "identity.json", identity)
-    return 0 if rows and all(row["verified_success"] for row in rows) else 1
+    return (
+        0
+        if rows
+        and all(row["verified_success"] for row in rows)
+        and (maintenance is None or maintenance.fault is None)
+        else 1
+    )
 
 
 if __name__ == "__main__":
