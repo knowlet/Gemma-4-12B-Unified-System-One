@@ -34,6 +34,19 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def archive_sources(paths, destination):
+    destination = Path(destination)
+    destination.mkdir(parents=True, exist_ok=True)
+    for source in paths:
+        source = Path(source).resolve()
+        relative = (
+            source.relative_to(ROOT) if source.is_relative_to(ROOT) else Path("input-manifest.json")
+        )
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+
+
 def verify_checkpoint(path):
     """Verify local published files, including weights; a directory name is not an identity."""
     path = Path(path).resolve()
@@ -265,14 +278,14 @@ def main():
         tasks = [task for task in tasks if task["id"] in selected]
     args.output.mkdir(parents=True, exist_ok=False)
     sources = args.output / "sources"
-    for path in [
-        *ROOT.glob("src/s1/**/*.py"),
-        *[ROOT / "scripts" / name for name in ["run_ultrafast.py", "ultrafast_browser.py"]],
-        args.manifest,
-    ]:
-        target = sources / path.relative_to(ROOT)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(path, target)
+    archive_sources(
+        [
+            *ROOT.glob("src/s1/**/*.py"),
+            *[ROOT / "scripts" / name for name in ["run_ultrafast.py", "ultrafast_browser.py"]],
+            args.manifest,
+        ],
+        sources,
+    )
     identity = {
         "status": "running",
         "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),

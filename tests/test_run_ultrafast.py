@@ -202,3 +202,28 @@ def test_verify_checkpoint_rejects_unsafe_paths_even_when_they_resolve_inside(tm
     (path / "artifact-manifest.json").write_text(json.dumps({"files": files}))
     with pytest.raises(ValueError):
         RUNNER.verify_checkpoint(path)
+
+
+def test_archive_sources_accepts_relative_repository_manifest(tmp_path, monkeypatch):
+    monkeypatch.chdir(ROOT)
+    relative = Path("configs/benchmarks/ultrafast-external.json")
+    destination = tmp_path / "sources"
+    RUNNER.archive_sources([relative], destination)
+    archived = destination / relative
+    assert archived.read_bytes() == relative.read_bytes()
+
+
+def test_archive_sources_copies_external_manifest_under_stable_name(tmp_path):
+    source = tmp_path / "custom-manifest.json"
+    source.write_text('{"tasks": [], "description": "external manifest"}\n')
+    destination = tmp_path / "new" / "sources"
+    RUNNER.archive_sources([source], destination)
+    assert (destination / "input-manifest.json").read_bytes() == source.read_bytes()
+    assert sorted(path.name for path in destination.iterdir()) == ["input-manifest.json"]
+
+
+def test_archive_sources_creates_destination_for_empty_inputs(tmp_path):
+    destination = tmp_path / "new" / "sources"
+    RUNNER.archive_sources([], destination)
+    assert destination.is_dir()
+    assert list(destination.iterdir()) == []
