@@ -17,7 +17,7 @@ TOKEN = "a" * 40
 def service(monkeypatch):
     monkeypatch.setattr(adapter, "SOURCE_ONLY", False)
     monkeypatch.setattr(http, "SOURCE_ONLY", False)
-    monkeypatch.setattr(http.os, "sched_getaffinity", lambda _: set(range(15, 20)))
+    monkeypatch.setattr(http.os, "sched_getaffinity", lambda _: set(range(15, 20)), raising=False)
     runtime = FakeRuntime()
     cpu = adapter.CpuBrowserAdapter(runtime, model_identity="cpu-test", enabled=True)
     events = []
@@ -108,7 +108,7 @@ def test_pending_delivery_or_request_limit_rejects_next(service):
 
 def test_wrong_affinity_latches_without_forward(service, monkeypatch):
     endpoint, runtime, _events = service
-    monkeypatch.setattr(http.os, "sched_getaffinity", lambda _: {15, 16})
+    monkeypatch.setattr(http.os, "sched_getaffinity", lambda _: {15, 16}, raising=False)
     with pytest.raises(ValueError, match="five-CPU"):
         endpoint.prepare(body(), started=time.monotonic())
     assert endpoint.failed and not runtime.forwards

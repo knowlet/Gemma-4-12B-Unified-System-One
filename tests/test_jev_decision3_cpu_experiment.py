@@ -1037,7 +1037,7 @@ def test_v2_checks_actual_cgroup_limits(tmp_path, monkeypatch, name, fault):
         (cg / "memory.max").write_text("max")
     elif fault == "swap":
         (cg / "memory.swap.max").write_text("1")
-    monkeypatch.setattr(worker.os, "sched_getaffinity", lambda _: affinity)
+    monkeypatch.setattr(worker.os, "sched_getaffinity", lambda _: affinity, raising=False)
     if fault is None:
         worker._cpu_limits(group, 123, profile)
     else:
@@ -1212,7 +1212,9 @@ def test_v3_missing_cpuset_remains_fatal_and_records_fixed_check(tmp_path, monke
     leaf.mkdir(parents=True)
     monkeypatch.setattr(worker, "CGROUP_ROOT", root)
     profile = worker._profile({"schema": worker.SCHEMA_V3, "cpu_profile": "cpu10"})
-    monkeypatch.setattr(worker.os, "sched_getaffinity", lambda _: set(profile["cpus"]))
+    monkeypatch.setattr(
+        worker.os, "sched_getaffinity", lambda _: set(profile["cpus"]), raising=False
+    )
     (leaf / "cpu.max").write_text("1000000 100000")
     (leaf / "memory.max").write_text(str(worker.common.MEMORY_MAX))
     (leaf / "memory.swap.max").write_text("0")
