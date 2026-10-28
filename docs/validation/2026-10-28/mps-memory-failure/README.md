@@ -44,3 +44,27 @@ into a fresh output directory. Existing successful coherence cache entries keep
 their original execution epoch; newly dispatched calls have separate raw traces
 and allocator telemetry. Full reports must pass coverage, identity and official
 raw-answer replay audits before being accepted.
+
+## Measured trim resume
+
+The next epoch completed 70 additional callbacks without model errors, but
+unoccupied-cache trimming did **not** bound retained driver allocation. Active
+tensors stayed at 23.919 GB; driver bytes after trim grew from 24.749 GB after
+the first callback to 82.205 GB after callback 70. These are per-process snapshots,
+not peak/RSS measurements. The process was stopped before another OOM, preserving
+all 398 previous cache entries unchanged plus 70 new valid JSON entries.
+
+SIGINT did not stop the continuing model worker; a verified SIGTERM ended the
+owned epoch with code 143. The official cache uses temporary writes and atomic
+replacement. Every surviving cache file was revalidated, and the original entry
+hashes match. This partial run supplies no coherence score. The
+[trim report](trim-resume-report.json) and
+[full epoch archive](trim-resume-evidence.zip) retain raw callback outputs,
+before/after allocation snapshots, sources, stop receipts and new cache entries.
+
+Upstream subsequently changed
+[`empty_cache()` to clear MPSGraphCache](https://github.com/pytorch/pytorch/commit/350cda97a10d843e1df5e556ffe67df5def10fbe).
+This motivates an isolated newer-runtime experiment; it does not prove the cause
+of every retained byte. The current project pins remain unchanged. A bounded
+process-epoch fallback is also being developed so an allocation threshold stops
+before another model dispatch and resumes from verified answers.
