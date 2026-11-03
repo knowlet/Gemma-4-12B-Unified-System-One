@@ -53,7 +53,7 @@ jobs:
             dist/*
   inference:
     # macOS wheels have no CUDA payload; tiny models need no GPU or HF access.
-    runs-on: macos-14
+    runs-on: macos-15
     # The complete CPU suite can approach 15 minutes on shared macOS runners.
     timeout-minutes: 20
     env:
