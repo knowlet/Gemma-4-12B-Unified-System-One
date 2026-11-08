@@ -2,7 +2,9 @@
 
 import hashlib
 import json
+import os
 import subprocess
+from pathlib import Path
 from types import SimpleNamespace
 
 import jev_decision3_cuda_synthetic_system_broker as broker
@@ -21,6 +23,20 @@ def fake(tmp_path, monkeypatch):
     run.mkdir(parents=True)
     output = run / "worker"
     output.mkdir(mode=0o700)
+    # Only the authored worker directory impersonates the designated worker UID.
+    # Preserve real mode/type/size data and leave every other path untouched.
+    ownership = {"uid": 1001}
+    original_stat = Path.stat
+
+    def synthetic_stat(path, *args, **kwargs):
+        info = original_stat(path, *args, **kwargs)
+        if path == output:
+            values = list(info)
+            values[4] = ownership["uid"]
+            return os.stat_result(values)
+        return info
+
+    monkeypatch.setattr(Path, "stat", synthetic_stat)
     receipt_root = tmp_path / "receipts"
     receipt_root.mkdir()
     bootstrap = tmp_path / "bootstrap_release.py"
@@ -69,6 +85,7 @@ def fake(tmp_path, monkeypatch):
     monkeypatch.setattr(broker, "_call", lambda args, **kwargs: calls.append((args, kwargs)) or b"")
     monkeypatch.setattr(broker, "_show", lambda _: absent if not calls else running)
     return SimpleNamespace(
+        ownership=ownership,
         run=run,
         output=output,
         unit=unit,
@@ -188,3 +205,26 @@ def test_show_uses_only_fixed_system_manager_and_unit(fake, monkeypatch):
     broker._show(fake.unit)
     assert calls[0][0][:4] == ["/usr/bin/systemctl", "--system", "show", fake.unit]
     assert "--user" not in calls[0][0]
+
+
+@pytest.mark.parametrize("uid", [0, 501, 1000, 1002])
+def test_wrong_output_owner_rejected_before_system_call(fake, uid):
+    fake.ownership["uid"] = uid
+    with pytest.raises(ValueError, match="fresh private output"):
+        broker.start()
+    assert not fake.calls and not fake.receipt.exists()
+
+
+def test_nonprivate_output_rejected_before_system_call(fake):
+    fake.output.chmod(0o755)
+    with pytest.raises(ValueError, match="fresh private output"):
+        broker.start()
+    assert not fake.calls and not fake.receipt.exists()
+
+
+def test_nonempty_output_rejected_before_system_call(fake):
+    (fake.output / "existing").write_text("preserve")
+    with pytest.raises(ValueError, match="fresh private output"):
+        broker.start()
+    assert not fake.calls and not fake.receipt.exists()
+    assert (fake.output / "existing").read_text() == "preserve"

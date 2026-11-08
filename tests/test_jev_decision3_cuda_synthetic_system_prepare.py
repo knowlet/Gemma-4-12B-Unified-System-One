@@ -22,6 +22,19 @@ def synthetic(tmp_path, monkeypatch):
     scripts.mkdir(parents=True)
     base = root / "artifacts/jev-runtime/decision3-cuda-synthetic-system"
     base.parent.mkdir(parents=True)
+    monkeypatch.setattr(prepare.os, "getuid", lambda: 1001)
+    monkeypatch.setattr(prepare.os, "geteuid", lambda: 1001)
+    original_stat = Path.stat
+
+    def synthetic_stat(path, *args, **kwargs):
+        info = original_stat(path, *args, **kwargs)
+        if path == base:
+            fields = list(info)
+            fields[4] = 1001
+            return os.stat_result(fields)
+        return info
+
+    monkeypatch.setattr(Path, "stat", synthetic_stat)
     snapshot = root / "publisher"
     snapshot.mkdir()
     real_python = root / "runtime/python3.13"
@@ -355,16 +368,55 @@ def test_directory_open_failure_reports_untracked_run_without_deleting(synthetic
 
 def test_exclusive_fstat_failure_reports_untracked_file_without_deleting(synthetic, monkeypatch):
     original = prepare.os.fstat
+    original_open = prepare.os.open
+    target_fd = None
     target = prepare.SCRIPTS / (".jev-cuda-" + "a" * 32 + "-0.tmp")
 
+    def track_open(path, *args, **kwargs):
+        nonlocal target_fd
+        fd = original_open(path, *args, **kwargs)
+        if Path(path) == target:
+            target_fd = fd
+        return fd
+
     def fail_fstat(fd):
-        if Path(os.readlink("/proc/self/fd/" + str(fd))) == target:
+        if fd == target_fd:
             raise OSError("synthetic fstat failure")
         return original(fd)
 
+    monkeypatch.setattr(prepare.os, "open", track_open)
     monkeypatch.setattr(prepare.os, "fstat", fail_fstat)
     with pytest.raises(OSError, match="fstat failure") as caught:
         prepare.prepare()
     assert target.is_file()
     assert "cleanup unconfirmed" in " ".join(caught.value.__notes__)
     assert not prepare.BASE.exists()
+
+
+@pytest.mark.parametrize("uid,euid", [(0, 1001), (1001, 0), (501, 501)])
+def test_wrong_real_or_effective_uid_rejected_before_io(monkeypatch, uid, euid):
+    monkeypatch.setattr(prepare, "SOURCE_ONLY", False)
+    monkeypatch.setattr(prepare.os, "getuid", lambda: uid)
+    monkeypatch.setattr(prepare.os, "geteuid", lambda: euid)
+    monkeypatch.setattr(prepare, "_pinned", lambda: pytest.fail("unexpected source read"))
+    with pytest.raises(ValueError, match="UID 1001"):
+        prepare.prepare()
+
+
+def test_wrong_existing_base_owner_rejected(synthetic, monkeypatch):
+    prepare.BASE.mkdir(mode=0o700)
+    original = Path.stat
+
+    def wrong_owner(path, *args, **kwargs):
+        info = original(path, *args, **kwargs)
+        if path == prepare.BASE:
+            fields = list(info)
+            fields[4] = 0
+            return os.stat_result(fields)
+        return info
+
+    monkeypatch.setattr(Path, "stat", wrong_owner)
+    with pytest.raises(ValueError, match="owned private"):
+        prepare.prepare()
+    assert not any(prepare.BASE.iterdir())
+    assert all(not os.path.lexists(prepare._release(name)) for name in prepare.HELD_SHA)
