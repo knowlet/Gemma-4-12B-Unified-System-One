@@ -539,7 +539,7 @@ def test_missing_system_control_broker_fails_before_plan_read(monkeypatch):
     "fault", ["cpuset", "affinity", "quota", "memory", "swap", "uid", "cgroup"]
 )
 def test_launcher_enforces_real_effective_system_limits_in_synthetic_tree(
-    tmp_path, monkeypatch, fault
+    tmp_path, monkeypatch, fault, affinity_api
 ):
     unit = "jev-cuda-synthetic-system-" + "a" * 32 + ".service"
     group = "/system.slice/" + unit
@@ -560,6 +560,7 @@ def test_launcher_enforces_real_effective_system_limits_in_synthetic_tree(
         launcher.os,
         "sched_getaffinity",
         lambda _: {15, 16, 17, 18, 19} if fault != "affinity" else {15},
+        raising=False,
     )
     monkeypatch.setattr(
         launcher.common.systemd,
@@ -579,7 +580,7 @@ def test_launcher_enforces_real_effective_system_limits_in_synthetic_tree(
         launcher._group({"unit": unit})
 
 
-def test_launcher_accepts_exact_effective_system_limits(tmp_path, monkeypatch):
+def test_launcher_accepts_exact_effective_system_limits(tmp_path, monkeypatch, affinity_api):
     unit = "jev-cuda-synthetic-system-" + "a" * 32 + ".service"
     group = "/system.slice/" + unit
     cg = tmp_path / group.lstrip("/")
@@ -595,7 +596,9 @@ def test_launcher_accepts_exact_effective_system_limits(tmp_path, monkeypatch):
     monkeypatch.setattr(launcher.os, "getuid", lambda: 1001)
     monkeypatch.setattr(launcher.os, "geteuid", lambda: 1001)
     monkeypatch.setattr(launcher.os, "getpid", lambda: 123)
-    monkeypatch.setattr(launcher.os, "sched_getaffinity", lambda _: {15, 16, 17, 18, 19})
+    monkeypatch.setattr(
+        launcher.os, "sched_getaffinity", lambda _: {15, 16, 17, 18, 19}, raising=False
+    )
     monkeypatch.setattr(launcher.common.systemd, "cgroup_membership", lambda _: group)
     assert launcher._group({"unit": unit}) == group
 
@@ -625,3 +628,16 @@ def test_invalid_effective_cpu_never_gets_go(tmp_path, monkeypatch):
     assert not (output / "go.json").exists() and stopped == []
     closure = json.loads((report / "closure.json").read_bytes())
     assert closure["status"] == "cleanup_unconfirmed"
+
+
+@pytest.fixture(params=["present", "absent"])
+def affinity_api(request, monkeypatch):
+    # Exercise both Linux-like and macOS-like API surfaces on any POSIX runner.
+    if request.param == "absent":
+        monkeypatch.delattr(launcher.os, "sched_getaffinity", raising=False)
+    else:
+
+        def unexpected_affinity(_pid):
+            pytest.fail("host affinity must be replaced by a synthetic observation")
+
+        monkeypatch.setattr(launcher.os, "sched_getaffinity", unexpected_affinity, raising=False)
